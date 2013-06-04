@@ -1,0 +1,10 @@
+addEmptyValue:1,
+customValues:"High|10
+Medium|20
+Low|30
+",
+name:"project_todo_priority",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"B94B7FDF-30F9-48D2-8EED-9EE8AD638826"

@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"feature",
+dataProviderID2:"feature",
+dataSource:"db:/example_data/project_todo",
+name:"project_todo_features",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"CE306FB4-F2BD-4F6D-8DAA-E4BF9AA1FB64",
+valueListType:1

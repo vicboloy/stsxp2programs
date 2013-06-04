@@ -1,0 +1,6 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/example_data/suppliers",
+name:"suppliers$foundset",
+primaryDataSource:"db:/example_data/suppliers",
+typeid:22,
+uuid:"f1e570ec-427e-4e88-8640-753c2088642d"

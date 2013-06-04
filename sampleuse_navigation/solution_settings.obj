@@ -1,0 +1,9 @@
+i18nDataSource:"db:/svy_framework/i18n_messages",
+loginFormID:"-1",
+modulesNames:"svy_framework,svyMonitoring,svy_login_vw_pv",
+onCloseMethodID:"7A5BA424-0891-4A07-A72C-8D7E0C390C1E",
+onErrorMethodID:"29E39484-4E1A-4B58-80C3-21886DD6B42D",
+onOpenMethodID:"9ACB94B4-7402-4DA3-96F5-1C1537A604CC",
+titleText:"i18n:svy.fr.lbl.sampleuse_navigation",
+typeid:43,
+uuid:"14359bdd-70bc-4a1c-8d48-5178c849fd5c"

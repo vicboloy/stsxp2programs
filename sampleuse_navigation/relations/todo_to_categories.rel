@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/example_data/categories",
+items:[
+{foreignColumnName:"categoryid",primaryDataProviderID:"category_id",typeid:23,uuid:"D6FEC933-BF59-4889-A327-15BEB1DC39DF"}
+],
+joinType:1,
+name:"todo_to_categories",
+primaryDataSource:"db:/example_data/todo",
+typeid:22,
+uuid:"AB8660FB-D983-42BE-B47F-AA30D4AA57B2"

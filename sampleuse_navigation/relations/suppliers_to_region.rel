@@ -1,0 +1,9 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/example_data/region",
+items:[
+{foreignColumnName:"regiondescription",primaryDataProviderID:"region",typeid:23,uuid:"303025cf-f274-45e1-ad63-98168e7ae8c1"}
+],
+name:"suppliers_to_region",
+primaryDataSource:"db:/example_data/suppliers",
+typeid:22,
+uuid:"4699a2c2-5732-44c6-9129-c970d403b013"

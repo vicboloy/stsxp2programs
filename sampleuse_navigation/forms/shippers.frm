@@ -1,0 +1,9 @@
+dataSource:"db:/example_data/shippers",
+extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
+name:"shippers",
+paperPrintScale:100,
+size:"400,480",
+styleName:"pv",
+transparent:true,
+typeid:3,
+uuid:"031ACD5F-8A39-4AF1-B3B8-A81764C75485"

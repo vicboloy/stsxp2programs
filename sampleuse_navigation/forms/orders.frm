@@ -1,0 +1,9 @@
+dataSource:"db:/example_data/orders",
+extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
+name:"orders",
+paperPrintScale:100,
+size:"400,480",
+styleName:"pv",
+transparent:true,
+typeid:3,
+uuid:"A839360E-D9D9-499D-9999-7AF124B899D9"

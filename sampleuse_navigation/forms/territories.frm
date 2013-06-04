@@ -1,0 +1,9 @@
+dataSource:"db:/example_data/territories",
+extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
+name:"territories",
+paperPrintScale:100,
+size:"400,480",
+styleName:"pv",
+transparent:true,
+typeid:3,
+uuid:"A1A31C3B-CFBB-48A5-8B72-AC9BA1AEA25C"

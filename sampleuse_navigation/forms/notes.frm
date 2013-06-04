@@ -1,0 +1,9 @@
+dataSource:"db:/example_data/notes",
+extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
+name:"notes",
+paperPrintScale:100,
+size:"400,480",
+styleName:"pv",
+transparent:true,
+typeid:3,
+uuid:"C9590D44-E606-45EB-AF24-50DCBDAC07DE"

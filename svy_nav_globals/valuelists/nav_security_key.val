@@ -1,0 +1,10 @@
+dataProviderID1:"security_key_id",
+dataProviderID2:"name",
+dataSource:"db:/svy_framework/sec_security_key",
+name:"nav_security_key",
+returnDataProviders:1,
+showDataProviders:2,
+sortOptions:"name asc",
+typeid:34,
+uuid:"4A2B9E4E-A2C1-40CE-9C01-9975F60F84EC",
+valueListType:1

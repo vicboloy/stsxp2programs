@@ -1,0 +1,7 @@
+customValues:"i18n:svy.fr.lbl.regular_search|R
+i18n:svy.fr.lbl.advanced_search|A",
+name:"search_types",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"5DB0C305-8FA4-4292-AD54-AE73EE5E5529"

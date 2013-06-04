@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_bookmarks",
+items:[
+{foreignColumnName:"program_id",primaryDataProviderID:"program_id",typeid:23,uuid:"6B10F066-3C45-4D9F-8D84-C446E1C3D7A3"}
+],
+name:"nav_program_to_nav_bookmarks",
+primaryDataSource:"db:/svy_framework/nav_program",
+typeid:22,
+uuid:"1671B8FE-5A29-40BA-B56C-B58126F31685"

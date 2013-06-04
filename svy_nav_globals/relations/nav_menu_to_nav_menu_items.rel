@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_menu_items",
+items:[
+{foreignColumnName:"menu_id",primaryDataProviderID:"menu_id",typeid:23,uuid:"991B405F-9B52-4A5A-A5A9-4CB0A393623C"}
+],
+name:"nav_menu_to_nav_menu_items",
+primaryDataSource:"db:/svy_framework/nav_menu",
+typeid:22,
+uuid:"F0FBAB1E-8AA9-47A4-BE94-D66E08E7518C"

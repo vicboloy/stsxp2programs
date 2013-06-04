@@ -1,0 +1,9 @@
+encapsulation:2,
+name:"svy_nav_c_scripts",
+navigatorID:"-1",
+onShowMethodID:"0D111346-2624-449D-91B0-B73B5900EF38",
+paperPrintScale:100,
+size:"82,480",
+styleName:"navigation",
+typeid:3,
+uuid:"DD43308E-9FAB-4BBB-B769-EB5ECD35357C"

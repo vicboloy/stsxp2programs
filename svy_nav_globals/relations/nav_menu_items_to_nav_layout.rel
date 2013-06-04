@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_layout",
+items:[
+{foreignColumnName:"layout_id",primaryDataProviderID:"layout_id",typeid:23,uuid:"B638A803-DB11-411C-A75F-A078C75C4A10"}
+],
+joinType:1,
+name:"nav_menu_items_to_nav_layout",
+primaryDataSource:"db:/svy_framework/nav_menu_items",
+typeid:22,
+uuid:"1D15ADDB-36C8-46BB-8E96-CF89A0D4585B"

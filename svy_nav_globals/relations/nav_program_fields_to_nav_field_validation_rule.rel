@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_field_validation_rule",
+items:[
+{foreignColumnName:"dataprovider",primaryDataProviderID:"dataprovider",typeid:23,uuid:"C0F5E819-7667-4A6B-BFC4-465D1008834C"},
+{foreignColumnName:"program_id",primaryDataProviderID:"program_id",typeid:23,uuid:"D3AF2F8A-8102-45E7-82B0-0341604714CE"}
+],
+name:"nav_program_fields_to_nav_field_validation_rule",
+primaryDataSource:"db:/svy_framework/nav_program_fields",
+typeid:22,
+uuid:"B7D294ED-16A0-4F3F-A41E-5BFA88062A25"

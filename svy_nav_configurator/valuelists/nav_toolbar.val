@@ -1,0 +1,11 @@
+addEmptyValue:1,
+dataProviderID1:"toolbar_id",
+dataProviderID2:"name",
+dataSource:"db:/svy_framework/nav_toolbar",
+name:"nav_toolbar",
+returnDataProviders:1,
+showDataProviders:2,
+sortOptions:"name asc",
+typeid:34,
+uuid:"E6DE5E9E-01EF-4826-8E44-35D8DE60B3AE",
+valueListType:1

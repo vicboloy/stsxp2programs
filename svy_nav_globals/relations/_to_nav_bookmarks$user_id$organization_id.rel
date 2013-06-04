@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_bookmarks",
+items:[
+{foreignColumnName:"user_id",primaryDataProviderID:"globals.svy_sec_lgn_user_id",typeid:23,uuid:"C1901EF3-E839-46CB-96A2-444509CF9E04"},
+{foreignColumnName:"organization_id",primaryDataProviderID:"globals.svy_sec_lgn_organization_id",typeid:23,uuid:"DA029740-318F-4043-A7AD-53258CF20154"}
+],
+name:"_to_nav_bookmarks$user_id$organization_id",
+primaryDataSource:"db:/svy_framework/nav_bookmarks",
+typeid:22,
+uuid:"B15E8BA0-32CC-4B67-8776-D58DD30A26A4"

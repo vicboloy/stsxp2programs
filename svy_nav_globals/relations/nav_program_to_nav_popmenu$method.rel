@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_popmenu",
+items:[
+{foreignColumnName:"menu_type",primaryDataProviderID:"globals.nav_function",typeid:23,uuid:"34EB2D76-9B84-4497-8613-D308A977F18C"},
+{foreignColumnName:"program_name",primaryDataProviderID:"program_name",typeid:23,uuid:"F450AD1B-5FFC-4E0E-B1CF-D04D72B7B47B"}
+],
+name:"nav_program_to_nav_popmenu$method",
+primaryDataSource:"db:/svy_framework/nav_program",
+typeid:22,
+uuid:"C093AF73-F5C1-4CCC-AF06-E4B4A00E5D0B"

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry excluding=".stp/|medias/" kind="src" path=""/>
+	<buildpathentry exported="true" kind="prj" path="/mod_dialog"/>
+	<buildpathentry exported="true" kind="prj" path="/svyProperties$impl"/>
+	<buildpathentry exported="true" kind="prj" path="/svy_conversion"/>
+	<buildpathentry exported="true" kind="prj" path="/svy_security"/>
+	<buildpathentry exported="true" kind="prj" path="/svy_utl_valuelists"/>
+</buildpath>

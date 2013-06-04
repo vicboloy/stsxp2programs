@@ -1,0 +1,12 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_user_table_view",
+items:[
+{foreignColumnName:"organization_id",primaryDataProviderID:"scopes.globals.svy_sec_lgn_organization_id",typeid:23,uuid:"7A637B91-2609-4D10-AFB9-BB87C2C033A4"},
+{foreignColumnName:"user_id",primaryDataProviderID:"scopes.globals.svy_sec_lgn_user_id",typeid:23,uuid:"8A30F4A0-61F0-4710-A026-D36AA6F2BCED"},
+{foreignColumnName:"program_id",primaryDataProviderID:"scopes.globals.nav_program_id",typeid:23,uuid:"AB7D98DC-4BD9-4A63-9B21-A5B5E7A4048F"},
+{foreignColumnName:"flag_user_default",primaryDataProviderID:"scopes.globals.one",typeid:23,uuid:"DDD8B2BD-82ED-4971-B73F-BF75C823B9AE"}
+],
+name:"_to_nav_user_table_view$default",
+primaryDataSource:"db:/svy_framework/nav_user_table_view",
+typeid:22,
+uuid:"306A9DB2-B922-436C-B1B6-CCB0BF20A760"

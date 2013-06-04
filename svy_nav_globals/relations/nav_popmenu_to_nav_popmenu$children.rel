@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_popmenu",
+items:[
+{foreignColumnName:"parent_popmenu_id",primaryDataProviderID:"nav_popmenu_id",typeid:23,uuid:"AED7322B-4909-430C-98A6-6973C7BE1BDA"}
+],
+joinType:1,
+name:"nav_popmenu_to_nav_popmenu$children",
+primaryDataSource:"db:/svy_framework/nav_popmenu",
+typeid:22,
+uuid:"08C4B76D-FC83-4543-BD0D-D61C84D31346"

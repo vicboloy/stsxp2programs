@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_program_fields",
+items:[
+{foreignColumnName:"program_id",primaryDataProviderID:"program_id",typeid:23,uuid:"3239EA5C-E020-4854-B286-DC13F215E5D8"},
+{foreignColumnName:"flag_default",primaryDataProviderID:"scopes.globals.one",typeid:23,uuid:"73401929-DD06-4CE8-8CC1-06CD256790D3"}
+],
+name:"nav_program_to_nav_program_fields$default",
+primaryDataSource:"db:/svy_framework/nav_program",
+typeid:22,
+uuid:"5C602709-73C8-44C9-B303-028F37B59E03"

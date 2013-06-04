@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_toolbar_item",
+items:[
+{foreignColumnName:"toolbar_item_id",operator:5,primaryDataProviderID:"toolbar_item_id",typeid:23,uuid:"4159929E-F0C2-44FE-AF6B-B415D92B4FA1"},
+{foreignColumnName:"toolbar_id",primaryDataProviderID:"toolbar_id",typeid:23,uuid:"749240A1-C683-4765-8C62-9963334EB65D"}
+],
+joinType:1,
+name:"nav_toolbar_item_to_nav_toolbar_item$parents",
+primaryDataSource:"db:/svy_framework/nav_toolbar_item",
+typeid:22,
+uuid:"D854BBC2-7687-4C16-BA6D-8ED8A1399E95"

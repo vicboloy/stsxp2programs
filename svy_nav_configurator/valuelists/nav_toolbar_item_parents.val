@@ -1,0 +1,9 @@
+dataProviderID1:"toolbar_item_id",
+dataProviderID2:"description",
+name:"nav_toolbar_item_parents",
+relationName:"nav_toolbar_item_to_nav_toolbar_item$parents",
+returnDataProviders:1,
+showDataProviders:2,
+typeid:34,
+uuid:"343DB4D5-EA42-4302-A414-BF119689F357",
+valueListType:1

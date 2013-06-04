@@ -1,0 +1,12 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_program_toolbar",
+initialSort:"sequence asc",
+items:[
+{foreignColumnName:"program_id",primaryDataProviderID:"program_id",typeid:23,uuid:"953C1E5E-720A-41FF-A312-C026F285235B"}
+],
+joinType:1,
+name:"nav_program_to_nav_program_toolbar",
+primaryDataSource:"db:/svy_framework/nav_program",
+typeid:22,
+uuid:"1339E70B-8508-4529-8E14-19557A386453"

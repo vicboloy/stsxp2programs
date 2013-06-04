@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_navigation_keys",
+items:[
+{foreignColumnName:"code",primaryDataProviderID:"menu_type",typeid:23,uuid:"6245AE51-3B36-4DE1-B6C1-B6A7473DBBBD"},
+{foreignColumnName:"nav_popmenu_id",primaryDataProviderID:"nav_popmenu_id",typeid:23,uuid:"9CE73FA3-6651-4A3B-B3C3-04EF85EAC980"}
+],
+name:"nav_popmenu_to_nav_navigation_keys$popmenu",
+primaryDataSource:"db:/svy_framework/nav_popmenu",
+typeid:22,
+uuid:"7E98D8CE-50CE-417E-AE83-FF64A70A5D24"

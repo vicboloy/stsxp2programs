@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/i18n_messages",
+items:[
+{foreignColumnName:"message_key",primaryDataProviderID:"message_key",typeid:23,uuid:"17A75975-A675-4360-B5F4-91CBD7300AD0"},
+{foreignColumnName:"message_language",primaryDataProviderID:"message_language",typeid:23,uuid:"3704A389-4A8C-42DF-ACB6-C7E68E0867DF"},
+{foreignColumnName:"i18n_organization_id",primaryDataProviderID:"globals.i18n_filter",typeid:23,uuid:"9633C85F-91EB-4F06-BECC-0220867C69CF"}
+],
+name:"i18n_messages_to_i18n_messages",
+primaryDataSource:"db:/svy_framework/i18n_messages",
+typeid:22,
+uuid:"577A0816-F7A5-412B-8E6A-B709925BB010"

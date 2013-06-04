@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_advanced_search_criteria",
+items:[
+{foreignColumnName:"advanced_search_criteria_id",primaryDataProviderID:"advanced_search_criteria_id",typeid:23,uuid:"72592DEA-8C76-40C2-BF25-C2931B7D3569"}
+],
+joinType:1,
+name:"nav_advanced_search_criteria_to_nav_advanced_search_criteria",
+primaryDataSource:"db:/svy_framework/nav_advanced_search_criteria",
+typeid:22,
+uuid:"16BBF00F-2BB5-4997-BFED-354CE5A29E36"

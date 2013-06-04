@@ -1,0 +1,9 @@
+dataProviderID1:"nav_popmenu_id",
+dataProviderID2:"label",
+name:"popmenu",
+relationName:"nav_popmenu_to_nav_popmenu$possible_parents",
+returnDataProviders:1,
+showDataProviders:2,
+typeid:34,
+uuid:"99A0A062-5CBF-42C7-89C5-50FCD28DAFC4",
+valueListType:1

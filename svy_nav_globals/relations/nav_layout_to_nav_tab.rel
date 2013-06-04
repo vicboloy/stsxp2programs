@@ -1,0 +1,12 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_tab",
+initialSort:"panel_id asc, sequence asc",
+items:[
+{foreignColumnName:"layout_id",primaryDataProviderID:"layout_id",typeid:23,uuid:"01A21144-28B8-41E4-8C8A-B328A8C18D2F"}
+],
+joinType:1,
+name:"nav_layout_to_nav_tab",
+primaryDataSource:"db:/svy_framework/nav_layout",
+typeid:22,
+uuid:"CB41738C-5BC6-4D5E-95CA-AAA2DA97CF83"

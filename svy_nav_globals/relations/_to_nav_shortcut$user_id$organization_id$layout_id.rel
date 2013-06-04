@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_shortcut",
+items:[
+{foreignColumnName:"user_id",primaryDataProviderID:"globals.svy_sec_lgn_user_id",typeid:23,uuid:"92336BF4-AFE5-4C1E-95ED-506F4BA53ADD"},
+{foreignColumnName:"organization_id",primaryDataProviderID:"globals.svy_sec_lgn_organization_id",typeid:23,uuid:"AAD240A2-F5F8-4173-8635-F110B754A67C"},
+{foreignColumnName:"layout_id",primaryDataProviderID:"globals.nav_layout_id",typeid:23,uuid:"C3A66429-FCF0-4E33-99BD-6F1235B39031"}
+],
+name:"_to_nav_shortcut$user_id$organization_id$layout_id",
+primaryDataSource:"db:/svy_framework/nav_shortcut",
+typeid:22,
+uuid:"16DE16F1-85CD-4506-A4AA-F8266CB5080D"

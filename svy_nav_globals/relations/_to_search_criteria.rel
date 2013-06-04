@@ -1,0 +1,9 @@
+allowParentDeleteWhenHavingRelatedRecords:false,
+foreignDataSource:"db:/svy_framework/search_criteria",
+items:[
+{foreignColumnName:"search_criteria_id",primaryDataProviderID:"globals.nav_searchCriteriaID",typeid:23,uuid:"1C4567A0-C2EB-470B-9A09-66D2473877A6"}
+],
+name:"_to_search_criteria",
+primaryDataSource:"db:/svy_framework/search_criteria",
+typeid:22,
+uuid:"8F9C0C38-055A-4245-B074-9D2E88C20FBB"

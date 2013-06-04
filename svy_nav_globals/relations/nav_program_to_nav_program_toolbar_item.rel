@@ -1,0 +1,12 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_program_toolbar_item",
+items:[
+{foreignColumnName:"program_id",primaryDataProviderID:"program_id",typeid:23,uuid:"47DA27F2-0C91-41CE-948C-1AC271BB4CC7"},
+{foreignColumnName:"toolbar_item_id",primaryDataProviderID:"scopes.globals.nav_toolbar_item_id",typeid:23,uuid:"ECF13B2A-A21D-4F54-9890-8C252FFFC59A"}
+],
+joinType:1,
+name:"nav_program_to_nav_program_toolbar_item",
+primaryDataSource:"db:/svy_framework/nav_program",
+typeid:22,
+uuid:"7EE2D625-5C79-419F-AADB-6374E519EAA7"

@@ -1,0 +1,13 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_tab",
+initialSort:"sequence asc",
+items:[
+{foreignColumnName:"layout_id",primaryDataProviderID:"layout_id",typeid:23,uuid:"33DD5CF4-7184-4C80-9754-79D77BFC71B8"},
+{foreignColumnName:"panel_id",primaryDataProviderID:"globals.svy_nav_panel_nr",typeid:23,uuid:"37D28575-94F0-4480-BE1B-F5015EA7040E"}
+],
+joinType:1,
+name:"nav_layout_to_nav_tab$panel",
+primaryDataSource:"db:/svy_framework/nav_layout",
+typeid:22,
+uuid:"BA924D64-9D3F-4EB0-AE49-B70D4317D1E4"

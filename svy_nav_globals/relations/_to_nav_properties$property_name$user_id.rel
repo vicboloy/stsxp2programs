@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_properties",
+items:[
+{foreignColumnName:"property_name",primaryDataProviderID:"scopes.globals.nav_properties",typeid:23,uuid:"8751D862-8821-47AF-A28B-86100A07A767"},
+{foreignColumnName:"user_id",primaryDataProviderID:"scopes.globals.nav_properties_user_id",typeid:23,uuid:"A7811E9A-ABC2-4FF8-9215-CDEC4C750546"}
+],
+name:"_to_nav_properties$property_name$user_id",
+primaryDataSource:"db:/svy_framework/nav_properties",
+typeid:22,
+uuid:"8F4BEBC0-5A30-4BB9-8DC1-3765C9F95233"

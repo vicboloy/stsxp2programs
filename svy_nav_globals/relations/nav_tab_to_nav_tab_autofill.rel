@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_tab_autofill",
+items:[
+{foreignColumnName:"tab_id",primaryDataProviderID:"tab_id",typeid:23,uuid:"5A92C55C-219E-4B98-A7AA-ADD8329F70C7"}
+],
+joinType:1,
+name:"nav_tab_to_nav_tab_autofill",
+primaryDataSource:"db:/svy_framework/nav_tab",
+typeid:22,
+uuid:"84864433-5141-48C6-B8D4-5B5B27F9DC53"

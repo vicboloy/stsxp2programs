@@ -1,0 +1,9 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_foundset_filter",
+items:[
+{foreignColumnName:"nav_foundset_filter_id",primaryDataProviderID:"nav_foundset_filter_id",typeid:23,uuid:"F162A41A-38CD-4D1B-924D-D85F7018C149"}
+],
+name:"nav_program_to_nav_foundset_filter",
+primaryDataSource:"db:/svy_framework/nav_program",
+typeid:22,
+uuid:"4D496289-1BE4-4862-8C2F-271A01C08884"

@@ -1,0 +1,11 @@
+addEmptyValue:1,
+customValues:"i18n:svy.fr.lbl.hide|1
+i18n:svy.fr.lbl.top|2
+i18n:svy.fr.lbl.bottom|3
+i18n:svy.fr.lbl.left|4
+i18n:svy.fr.lbl.right|5",
+name:"nav_orientation_tabs",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"F8971848-B86B-4F06-8798-6EADA39ECB0D"

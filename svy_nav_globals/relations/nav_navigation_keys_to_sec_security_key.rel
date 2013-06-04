@@ -1,0 +1,9 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/sec_security_key",
+items:[
+{foreignColumnName:"security_key_id",primaryDataProviderID:"security_key_id",typeid:23,uuid:"11F0D768-31FD-465D-BC32-8BAF46741735"}
+],
+name:"nav_navigation_keys_to_sec_security_key",
+primaryDataSource:"db:/svy_framework/nav_navigation_keys",
+typeid:22,
+uuid:"8617573E-5947-4307-8348-CF62D3D74FA7"

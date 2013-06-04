@@ -1,0 +1,9 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_properties",
+items:[
+{foreignColumnName:"property_name",primaryDataProviderID:"globals.nav_properties",typeid:23,uuid:"01C43500-E9DC-414F-A7BE-B0D6FAF67AB4"}
+],
+name:"_to_nav_properties$property_name",
+primaryDataSource:"db:/svy_framework/nav_properties",
+typeid:22,
+uuid:"997FEA43-3DB3-4A91-9EA4-3F42876D73DE"

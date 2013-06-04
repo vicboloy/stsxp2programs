@@ -1,0 +1,12 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/sec_user_table_properties",
+items:[
+{foreignColumnName:"layout_id",primaryDataProviderID:"layout_id",typeid:23,uuid:"C95E2B3A-FEDD-497B-8134-F731774E23CF"},
+{foreignColumnName:"program_id",primaryDataProviderID:"program_id",typeid:23,uuid:"D3A2DBC7-8B65-4FE7-AF36-AFD47CE13BCE"},
+{foreignColumnName:"user_table_view_id",primaryDataProviderID:"user_table_view_id",typeid:23,uuid:"D60A7918-BE47-4AC4-B4E1-8F7C19362BE9"}
+],
+name:"nav_user_table_view_to_sec_user_table_properties",
+primaryDataSource:"db:/svy_framework/nav_user_table_view",
+typeid:22,
+uuid:"AA60AC71-1AA0-47D1-A052-177E7746EFC1"

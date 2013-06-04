@@ -1,0 +1,9 @@
+addEmptyValue:1,
+customValues:"i18n:svy.fr.lbl.all|^
+i18n:svy.fr.lbl.main|1
+i18n:svy.fr.lbl.tab|2",
+name:"nav_popmenu_show_in",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"DDADBF74-B9CD-47DB-8B51-82F1E5CA4225"

@@ -1,0 +1,8 @@
+foreignDataSource:"db:/svy_framework/nav_layout",
+items:[
+{foreignColumnName:"short_name",primaryDataProviderID:"globals.layout_shortname",typeid:23,uuid:"C98694E6-3FEE-4D01-9DB3-062C4A01468F"}
+],
+name:"_to_nav_layout$shortname",
+primaryDataSource:"db:/svy_framework/nav_layout",
+typeid:22,
+uuid:"4D6F4292-C423-490B-B1DB-9BFEF08D59F0"

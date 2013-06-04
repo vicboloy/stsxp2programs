@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_toolbar_item",
+items:[
+{foreignColumnName:"toolbar_item_id",primaryDataProviderID:"toolbar_item_id",typeid:23,uuid:"56C7DC9E-D5D2-4570-AF16-8B8C8B6EEF12"}
+],
+joinType:1,
+name:"nav_program_toolbar_item_to_nav_toolbar_item",
+primaryDataSource:"db:/svy_framework/nav_program_toolbar_item",
+typeid:22,
+uuid:"7CFA4B2F-C7DE-4D01-BDF6-064CC603A9B1"

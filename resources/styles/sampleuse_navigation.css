@@ -1,0 +1,203 @@
+field
+{
+	background-color: #FFFFFF; /* E1E1E1 */
+	border-style: solid; 
+	font: 9px "Verdana"; 
+	text-align: left; 
+	margin: 1px 2px 1px 1px; 
+	border-color: #60696E;  /*60696E */
+	border-width: 1px;
+}
+field.table
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	border-color: #869298;
+	margin: 0px;
+}
+field.print
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	border-color: #f0f0f0;
+	margin: 0px;
+}
+field.print_number
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	text-align: right; 
+	border-color: #f0f0f0;
+	margin: 0px;
+}
+field.number
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	border-color: #869298;
+	margin: 0px;
+}
+tabpanel
+{
+	background-color: #E4E4E4; 
+	border-style: solid; 
+	border-width: 0px;
+}
+form
+{
+	background-color: #F3F3F3; 
+	border-style: solid; 
+	border-width: 0px;
+}
+form.template
+{
+	background-color: #F3F3F3; 
+	border-style: solid; 
+	border-width: 0px;
+}
+label
+{
+	color: #3E4447 ;
+	border-style: solid; 
+	font:  8.5px Verdana; 
+	border-width: 0px;
+}
+label.pop_header
+{
+	color: #FFFFFF ;
+	border-style: solid;
+	border-width: 0px;
+	border-bottom-width: 1px;
+	border-color: #FFFFFF;
+	font-family: Helvetica;
+	font-size: 8px;
+	
+}
+label.pop_line1
+{
+	color: #FFFFFF ;
+	border-style: solid; 
+	font-family: Verdana;
+	font-size: 8px;
+	font-weight: bold;
+	border-width: 0px;
+}
+label.pop_line2
+{
+	color: #FFFFFF ;
+	border-style: solid; 
+	font-family: Verdana;
+	font-size: 7px;
+	font-weight: normal;
+	border-width: 0px;
+}
+label.bg_item
+{
+	color: #FFFFFF ;
+	border-style: solid; 
+	font-family: Verdana;
+	font-size: 7px;
+	font-weight: normal;
+	border-width: 0px;
+	background-image: url(media:///pv_pop_bg_bookmark.png);
+}
+label.print
+{
+	color: #3E4447 ;
+	border-style: solid; 
+	font:  10px Verdana; 
+	border-width: 0px;
+}
+label.dayname
+{
+	color: #ffffff ;
+	border-style: solid; 
+	font: 10pt Arial; 
+	border-width: 0px;
+	text-align: center;
+	font-weight: bold
+}
+label.daynumber
+{
+	color: #2E2E2C ;
+	border-style: solid; 
+	font:   48pt Arial; 
+	border-width: 0px;
+	text-align: center;
+	font-weight: bold
+}
+label.print_number
+{
+	color: #3E4447 ;
+	border-style: solid; 
+	font:  10px Verdana;
+	text-align: right;  
+	border-width: 0px;
+}
+label.table
+{
+	color: #FFFFFF;
+	background-color: #2B364A;
+	border-style: solid; 
+	border-color: #2B364A #7A8290 #2B364A #2B364A; 
+	border-width: 0px 1px 0px 3px;
+}
+label.table2
+{
+	color: #FFFFFF;
+	background-color: #2B364A;
+	border-style: solid; 
+	border-color: #7A8290 #7A8290 #7A8290 #7A8290; 
+	border-width: 1px 1px 1px 1px;
+}
+label.field_table
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	background-color: #FFFFFF; 
+	border-color: #869298;
+	margin: 0px;
+}
+label.header
+{
+	background-color: #42413E; 
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+	border-color: #303a52;
+	text-align: center;
+	color: #FFFFFF;	
+	vertical-align: middle;
+}
+button
+{
+	color: #50636E;
+	margin: 2px 2px 0px 0px;
+	font:  9px "Verdana"; 
+}
+combobox
+{
+	background-color: #e9e8e8; 
+	border-style: solid; 
+	border-color: #60696E;
+	font: 9px "Verdana"; 
+	text-align: left; 
+	margin: 1px 1px 1px 1px;
+}
+combobox.table
+{
+	background-color: #e9e8e8; 
+	border-style: inset; 
+	font: 9px "Verdana"; 
+	text-align: left; 
+	margin: 1px 2px 1px 1px;
+}
+selected {
+ background-color: #3D80DF;
+}
+odd {
+ background-color: #f0f0f0;
+}
+
+even {
+ background-color: #FFFFFF;
+}

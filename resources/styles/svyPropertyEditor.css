@@ -1,0 +1,110 @@
+/* 
+ * Style sheet for the property editor in scopes.svyPropertyEditor
+ *
+ */
+
+form {
+	background-color: #FFFFFF;
+	border: 0px solid;
+}
+
+form.main {
+	
+}
+
+form.propertySets {
+	
+}
+
+form.propertyDetails {
+	
+}
+
+field {
+	font-family: "Segoe UI", Avenir, "Helvetica Neue", Helvetica, "Lucida Grande", Arial, sans-serif; 
+	font-size: 10px;
+	margin-left: 2px;
+	margin-right: 2px; 
+}
+
+field.propertyValueText {
+	
+}
+
+combobox {
+	font-family: "Segoe UI", Avenir, "Helvetica Neue", Helvetica, "Lucida Grande", Arial, sans-serif; 
+	font-size: 10px;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+combobox.propertyValueText {
+	
+}
+
+check {
+	font-family: "Segoe UI", Avenir, "Helvetica Neue", Helvetica, "Lucida Grande", Arial, sans-serif; 
+	font-size: 10px;
+	color: #3E4447;
+	background: transparent;
+}
+
+check.propertyValueText {
+	
+}
+
+label {
+	font-family: "Segoe UI", Avenir, "Helvetica Neue", Helvetica, "Lucida Grande", Arial, sans-serif; 
+	font-size: 10px;
+	color: #3E4447;
+	background: transparent;
+}
+
+label.propertyValueHeader {
+	font-weight: bold;
+}
+
+label.propertyValueLabel {
+	
+}
+
+label.propertyValueDescription {
+	
+}
+
+/**
+ *	Label holding the name of the property set
+ */
+label.propertySetText {
+	font-weight: bold;
+}
+
+/**
+ * Label holding the icon of a property set
+ */
+label.propertySetIcon {
+	text-align: center;
+	vertical-align: middle;
+}
+
+/**
+ *	Label show in detail form holding the description of the property set
+ */
+label.propertySetDescription {
+	font-weight: bold;
+}
+
+/**
+ *	Background highlight label for the selected property set
+ */
+label.propertySetSelectionBackground {
+	background: #CAD3E4;
+}
+
+tabpanel {
+	border: 0px solid;
+}
+
+tabpanel.main {
+	background: transparent;
+}

@@ -1,0 +1,291 @@
+field
+{
+	background-color: #FFFFFF; /* E1E1E1 */
+	border-style: solid; 
+	font: 9px Tahoma; 
+	text-align: left; 
+	margin: 1px 1px 1px 1px; 
+	border-color: #adb2b6;  /*60696E */
+	border-width: 1px;
+	color: #6d6e70;
+}
+field.table
+{
+	border-style: solid;
+	border-width: 0px 1px 1px 0px;
+	border-color: #6d6e70 #b3bec2 #dbecf6 #dbecf6;
+	margin: 3px;
+}
+field.print
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	border-color: #f0f0f0;
+	margin: 0px;
+}
+field.print_number
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	text-align: right; 
+	border-color: #f0f0f0;
+	margin: 0px;
+}
+field.checkbox
+{
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+}
+field.search
+{
+	border-style: solid;
+	border-width: 0px;
+	font: 9px "Verdana"; 
+	text-align: left; 
+	color: #000000;
+
+}
+label.username
+{
+	border-style: solid;
+	border-width: 0px;
+	text-align: left; 
+	color: #cedae3;
+	font-family: Myriad Pro;
+	font-size: 12pt;
+	vertical-align: middle;
+}
+label.login_bg
+{
+	background-image: url(media:///pv_bg_calm.png);
+}
+label.loading
+{
+	background-color: #ff6600;
+	font-family: Tahoma;
+	font-size: 11pt;
+	font-weight: bold;
+	text-align: left; 
+}
+label.info_text
+{
+	color: #cedae3;
+	font-family: Tahoma;
+	font-size: 8pt;
+	text-align: left; 
+	font-weight: bold;
+}
+field.number
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	border-color: #869298;
+	margin: 0px;
+}
+tabpanel
+{
+	border-style: solid; 
+	border-width: 0px;
+}
+form
+{
+	background-color: #F3F3F3; 
+	border-style: solid; 
+	border-width: 0px;
+}
+form.lookupwindow
+{
+	background-color: #145479; 
+	border-style: solid; 
+	border-width: 0px;
+
+}
+form.advancedsearchwindow
+{
+	background-color: #145479; 
+	border-style: solid; 
+	border-width: 0px;
+
+}
+form.bg
+{
+	background-image: url(media:///pv_bg_calm.png);
+	background-repeat:no-repeat;
+	background-size: 100% 100%;
+}
+form.template
+{
+	background-color: #F3F3F3; 
+	border-style: solid; 
+	border-width: 0px;
+}
+label
+{
+	color: #4b4c4d;
+	border-style: solid; 
+	font:  9px Tahoma; 
+	border-width: 0px;
+	vertical-align: top;
+}
+label.bold
+{
+	font-weight: bold;
+}
+label.print
+{
+	color: #3E4447 ;
+	border-style: solid; 
+	font:  10px Verdana; 
+	border-width: 0px;
+}
+label.login_title
+{
+	color: #d0dee4 ;
+	border-style: solid; 
+	border-width: 0px;
+	font-family: Tahoma;
+	font-size: 11pt;
+	font-weight: bold;
+	text-align: left; 
+}
+label.button
+{
+	color: #606060;
+	border-style: solid; 
+	border-width: 0px;
+	font-family: Myriad Pro;
+	font-size: 10px;
+	text-align: center;
+	vertical-align: middle;
+	border-width: 0px;
+	border-style: solid; 
+}
+label.dayname
+{
+	color: #cedae3 ;
+	border-style: solid; 
+	font: 10pt Arial; 
+	border-width: 0px;
+	text-align: center;
+	font-weight: bold
+}
+label.dayname_small
+{
+	color: #cedae3 ;
+	border-style: solid; 
+	font: 8pt Arial; 
+	border-width: 0px;
+	text-align: center;
+	font-weight: bold;
+	vertical-align: middle;
+}
+label.headermainmenu
+{
+	color: #cedae3 ;
+	border-style: solid; 
+	font: 13pt Arial; 
+	border-width: 0px;
+	text-align: center;
+	font-weight: bold
+}
+label.mainmenu
+{
+	color: #ffffff ;
+	border-style: solid; 
+	font: 10pt Arial; 
+	border-width: 0px;
+	text-align: center;
+	font-weight: bold
+}
+label.daynumber
+{
+	color: #2E2E2C ;
+	border-style: solid; 
+	font:   48pt Arial; 
+	border-width: 0px;
+	text-align: center;
+	font-weight: bold
+}
+label.print_number
+{
+	color: #3E4447 ;
+	border-style: solid; 
+	font:  10px Verdana;
+	text-align: right;  
+	border-width: 0px;
+}
+label.table
+{
+	color: #4b4c4d;
+	background-color: #d0dee4;
+	border-style: solid; 
+	font:  9px Tahoma; 
+	border-width: 0px;
+	text-align: left;
+}
+label.table2
+{
+	color: #FFFFFF;
+	background-color: #2B364A;
+	border-style: solid; 
+	border-color: #7A8290 #7A8290 #7A8290 #7A8290; 
+	border-width: 1px 1px 1px 1px;
+}
+label.field_table
+{
+	border-style: solid;
+	border-width: 0px 1px 1px 0px;
+	border-color: #6d6e70 #b3bec2 #dbecf6 #dbecf6;
+	background-color: #FFFFFF; 
+	margin: 0px;
+}
+label.header
+{
+	background-color: #42413E; 
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+	border-color: #303a52;
+	text-align: center;
+	color: #FFFFFF;	
+	vertical-align: middle;
+}
+label.tab_header
+{
+	border-width: 0px 0px 0px 0px;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 7px;
+}
+button
+{
+	color: #50636E;
+	margin: 2px 2px 0px 0px;
+	font:  9px "Verdana"; 
+}
+combobox
+{
+	background-color: #e9e8e8; 
+	border-style: solid; 
+	border-color: #60696E;
+	font: 9px "Verdana"; 
+	text-align: left; 
+	margin: 1px 1px 1px 1px;
+}
+combobox.table
+{
+	background-color: #e9e8e8; 
+	border-style: inset; 
+	font: 9px "Verdana"; 
+	text-align: left; 
+	margin: 1px 2px 1px 1px;
+}
+selected {
+ background-color: #dbecf6;
+}
+odd {
+ background-color: #d3e2ec;
+}
+
+even {
+ background-color: #c6d6df;
+}

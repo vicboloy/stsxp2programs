@@ -1,0 +1,171 @@
+/* 
+ * Default Styling for all Servoy objects
+ * 
+ * Note: Servoy automatically converts font-sizes for use in the Web Client, in order to achieve client compatibility:
+ * - 9px is set to 11px
+ * - other pixel sizes (like 12px) are converted using (value * 4/3).toFixed() + 'px'
+ * for pt sizes (12pt) or values that don't specify the unit, the following logic applies:
+ * - 9pt (or 9) becomes 7pt
+ * - other values  are converted using (value * 3/4).toFixed() + 'pt'
+ */
+form {
+	background-color: #FFF;
+	border: 0px solid;
+}
+
+tabpanel {
+	border: 0px solid;
+}
+
+label, button, field, combobox, check, radio, listbox, spinner, tabpanel {
+	/*Default fonts on resp. Android 4, Android < 4, Windows 8, Windows 7, iOS 6, iOS >= 5, iOS < 4, OSX otherwise just Arial with final fallback to sans-serif*/
+	font-family: Roboto, "Droid Sans", "Segoe WP", "Segoe UI", Avenir, "Helvetica Neue", Helvetica, "Lucida Grande", Arial, sans-serif; 
+	font-size: 16px;
+	margin: 0px
+}
+
+field, combobox {
+	background-color: #FFF;
+	color: #000;
+	font-size: 9px;
+	border: 1px solid #f0f0f0;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+field.search {
+	border-radius: 10px	
+}
+
+field.link {
+	font-size: 16px;
+	border: none;
+	margin: 0px
+}
+
+combobox {}
+
+check {}
+
+radio {}
+
+listbox {}
+
+spinner {}
+
+label {
+	color: #727784;
+}
+label.warning{
+text-align: left;
+	font-size: 10px;
+	font-weight: bold;
+	color: #ff0000;
+	
+}
+label.fieldlabel {
+	text-align: right;
+	font-size: 7px;
+}
+
+label.fieldlabelLeft {
+	text-align: left;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+label.title {
+	font-size: 24px;
+	color: #bbbbff;
+}
+
+label.fieldset {
+	font-weight: 500;
+	text-transform: uppercase;
+	font-size: 16px;
+	color: #38c9e2;
+	border: 0px solid #f0f0f0;
+	border-bottom-width: 1px
+}
+
+label.icon {
+	border-radius: 5px;
+	background-color: #d4d4d4
+}
+
+button {
+	font-size: 12px;
+}
+
+button.dark {
+	color: white;
+	/*This is what is should be, but not supported by Servoy:
+	background: linear-gradient(top, #8d8d8d 0%,#848484 22%,#676767 72%,#5a5a5a 100%);
+	*/
+	background-image: linear-gradient(top, #8d8d8d #5a5a5a);
+	border-radius: 5px;
+	border-width: 0px
+}
+
+portal {}
+
+/* 
+ * Example of additional grid styling (Portals and TableViews)
+ * The gridheader and gridcell style classes needs to be set on resp. the header labels and the cell elements of TableView's and Portals
+ */
+grid_header, odd, even, selected {
+	background-color: #FFF;
+	color: #5C5C5D;
+	border: 0px solid #C9CACA;
+	/*border-right-width: 1px;*/
+	margin-left: 5px;
+	margin-right: 3px;
+	padding-right: 10px
+}
+
+grid_header {
+	border-width: 0px;
+	border-bottom-width: 1px;
+	border-bottom-color: #646464
+}
+
+selected {
+	background-color: #f3f3f3; /*#d4d4d4;*/
+	color: #FFF;
+}
+
+tabpanel.grid { /*Style for a TabPanel that contains just a TableView*/
+	border: 1px solid #C9CACA;
+}
+
+/*
+ * Example style for the main form of a solution
+ */
+form.main {
+	background-color: #FFF	
+}
+
+form.main title_header {
+	/*
+	background-color: red;
+	background-image: linear-gradient(top, #FFF, #f0f0f0);
+	*/
+}
+
+form.main footer {
+	/*
+	background-color: red;
+	background-image: linear-gradient(top,#f0f0f0, #FFF);	
+	*/
+}
+
+form.main tabpanel.container {
+	border: 1px solid #f0f0f0;
+	border-radius: 5px;
+	background-image: linear-gradient(top,#fff,#f0f0f0);
+}
+form.no_row_styling odd,
+form.no_row_styling even,
+form.no_row_styling selected {
+	background-color: transparent	
+}

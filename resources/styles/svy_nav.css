@@ -1,0 +1,319 @@
+form {
+	background-color: #FFFFFF;
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+}
+form.grey {
+	background-color: #F4F2F2;
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+}
+form.user {
+	background-color: #F3F3F3;
+}
+form.main
+{
+	background-color: #F3F3F3; 
+	border-style: solid; 
+	border-width: 0px;
+}
+form.template
+{
+	background-color: #F3F3F3; 
+	border-style: solid; 
+	border-width: 0px;
+}
+label {
+	color: #ffffff;
+	border-style: solid;
+	font: bold 8px Verdana;
+	border-width: 0px 0px 0px 0px;
+}
+label.normal {
+	color: #000000;
+	border-style: solid;
+	font: bold 10pt Verdana;
+	margin: 1px 1px 1px 1px;
+	border-width: 0px 0px 0px 0px;
+}
+label.line {
+	color: #000000;
+	border-style: solid;
+	font: bold 11pt Tahoma;
+	margin: 1px 1px 1px 1px;
+	border-width: 0px 1px 0px 0px;
+}
+label.toolbar_line {
+	background-color: #666666;
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+}
+tabpanel {
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+	background-color: #F4F2F2;
+}
+button.btn_new
+{
+	border-width: 0px 1px 0px 0px;
+	background-image: url(media:///bar_new_sel.png);
+	
+}
+label.btn_new
+{
+	background-image: url(media:///bar_new_sel.png);
+	
+}
+label.btn_edit
+{
+	background-image: url(media:///bar_edit_sel.png);
+	
+}
+label.btn_delete
+{
+	background-image: url(media:///bar_del_sel.png);
+	
+}
+label.btn_duplicate
+{
+	background-image: url(media:///bar_duplicate_sel.png);
+	
+}
+label.btn_methods
+{
+	background-image: url(media:///bar_methods.png);
+	
+}
+label.btn_sort
+{
+	background-image: url(media:///bar_sort.png);
+	
+}
+label.btn_find
+{
+	background-image: url(media:///bar_find.png);
+	
+}
+label.btn_find_menu
+{
+	background-image: url(media:///bar_find_menu.png);
+	
+}
+label.btn_loadAllRecords
+{
+	background-image: url(media:///table_replace.png);
+	
+}
+label.btn_export
+{
+	background-image: url(media:///bar_export_sel.png);
+	
+}
+label.btn_resettblheader
+{
+	background-image: url(media:///bar_table_headers.png);
+	
+}
+label.btn_save
+{
+	background-image: url(media:///bar_save.png);
+	
+}
+label.btn_cancel
+{
+	background-image: url(media:///bar_cancel.png);
+	
+}
+label.btn_first
+{
+	background-image: url(media:///bar_rec_first.png);
+	
+}
+label.btn_prev
+{
+	background-image: url(media:///bar_rec_prev.png);
+	
+}
+label.btn_next
+{
+	background-image: url(media:///bar_rec_next.png);
+	
+}
+label.btn_last
+{
+	background-image: url(media:///bar_rec_last.png);
+	
+}
+label.btn_record_information
+{
+	background-image: url(media:///bar_record_information.png);
+	
+}
+label.btn_help
+{
+	background-image: url(media:///bar_help.png);
+	
+}
+label.btn_selected_template
+{
+	background-image: url(media:///selected_template.png);
+	
+}
+label.dc_background
+{
+	background-image: url(media:///dc_bg.png);
+	
+}
+label.top_bg
+{
+	background-image: url(media:///top_bg.png);
+	
+}
+label.btn_history_back
+{
+	background-image: url(media:///nav_left.png);
+	
+}
+label.btn_history_forward
+{
+	background-image: url(media:///nav_right.png);
+	
+}
+label.btn_new_shortcut
+{
+	background-image: url(media:///shortcut_add.png);
+	
+}
+label.btn_new_bookmark
+{
+	background-image: url(media:///bookmark_add.png);
+	
+}
+label.btn_print
+{
+	background-image: url(media:///bar_print_sel.png);
+	
+}
+label.btn_template
+{
+	
+}
+label.btn_his_back
+{
+	background-image: url(media:///nav_left.png);
+	
+}
+label.btn_his_for
+{
+	background-image: url(media:///nav_right.png);
+	
+}
+label.btn_shortcut_new
+{
+	background-image: url(media:///shortcut_add.png);
+	
+}
+label.btn_bookmark_new
+{
+	background-image: url(media:///bookmark_add.png);
+	
+}
+label.btn_shortcut
+{
+	background-image: url(media:///shortcut_16_16.png);
+	
+}
+label.btn_bookmark
+{
+	background-image: url(media:///bookmark_16_16.png);
+	
+}
+label.btn_record_history
+{
+	background-image: url(media:///record_history_16_16.png);
+	
+}
+label.btn_logout
+{
+	background-image: url(media:///logout_16_16.png);
+	
+}
+label.small_tab
+{
+	background-image: url(media:///small_tab.png);
+	
+}
+label.btn_bookmark_up
+{
+	background-image: url(media:///bookmark_up.png);
+	
+}
+label.btn_bookmark_down
+{
+	background-image: url(media:///bookmark_down.png);
+	
+}
+
+label.btn_bookmark_delete
+{
+	background-image: url(media:///bookmark_delete.png);
+	
+}
+label.btn_record_compare
+{
+	background-image: url(media:///record_compare.png);
+	
+}
+
+label.btn_doc_management
+{
+	background-image: url(media:///doc_management.png);
+	
+}
+label.btn_doc_attachtment
+{
+	background-image: url(media:///doc_attachment.png);
+	
+}
+label.bookmark_border
+{
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	border-color: #698111;  /*60696E   7C868B*/
+	background-color: #D8E7AB;
+}
+label.bookmark
+{
+	color: #000000;
+	font:  10pt Verdana; 
+
+}
+label.bookmark_program
+{
+	color: #000000;
+	font:  10pt Verdana bold; 
+}
+label.opentab
+{
+	color: #000000;
+	font:  10pt Verdana; 
+}
+label.pv_opentab
+{
+	color: #000000;
+	font:  8pt Verdana;
+	vertical-align: middle;
+	
+}
+label.opentab_sel
+{
+	color: #000000;
+	font:  10pt Verdana; 
+}
+dbtreeview {
+	background-color: #F4F2F2;
+	color: #666666;
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+	font:  12pt Verdana; 
+}

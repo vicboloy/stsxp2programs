@@ -1,0 +1,17 @@
+extendsID:"-1",
+items:[
+{
+height:21,
+partType:5,
+typeid:19,
+uuid:"6A7D19C2-0CF2-441A-AD54-D511F08061D2"
+}
+],
+name:"svy_nav_fr_popmenu_base",
+navigatorID:"-1",
+showInMenu:true,
+size:"57,21",
+styleName:"sampleuse_navigation",
+transparent:true,
+typeid:3,
+uuid:"4AEEF7BE-DE0E-478C-BC32-72FE51CD7BB0"

@@ -1,0 +1,11 @@
+extendsID:"-1",
+name:"svy_nav_fr_openLayouts_base",
+navigatorID:"-1",
+onLoadMethodID:"AAB79CF2-08B0-4ADA-9526-6E7525E09D38",
+onResizeMethodID:"D03F3954-2B60-4565-A269-59AD7E7C03C9",
+scrollbars:36,
+showInMenu:true,
+size:"640,480",
+styleName:"svy_nav",
+typeid:3,
+uuid:"83B960B2-4248-49B6-814D-5C79C4BC45F8"

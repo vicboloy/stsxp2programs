@@ -1,0 +1,9 @@
+extendsID:"-1",
+name:"svy_nav_fr_toolbar_base",
+navigatorID:"-1",
+scrollbars:36,
+showInMenu:true,
+size:"100,34",
+styleName:"svy_nav",
+typeid:3,
+uuid:"5A6CB1BF-EFAD-4C68-B5BC-4DF5B4F0BAEE"

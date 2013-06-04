@@ -1,0 +1,11 @@
+addEmptyValue:1,
+dataProviderID1:"program_name",
+dataProviderID2:"program_name",
+dataSource:"db:/svy_framework/nav_program",
+name:"lgt_program",
+returnDataProviders:1,
+showDataProviders:1,
+sortOptions:"program_name asc",
+typeid:34,
+uuid:"BF821C86-E74D-4BDD-9018-1DE0B3CD777C",
+valueListType:1

@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/nav_print_list",
+items:[
+{foreignColumnName:"print_list_id",primaryDataProviderID:"globals.ltg_print_list_id",typeid:23,uuid:"0A74EDAC-607F-4E9A-BC3F-9DA62E8742F9"}
+],
+joinType:1,
+name:"_to_nav_print_list",
+primaryDataSource:"db:/svy_framework/nav_print_list",
+typeid:22,
+uuid:"DFF4ACF5-A00F-4FF4-9DF6-E9C6734769CD"

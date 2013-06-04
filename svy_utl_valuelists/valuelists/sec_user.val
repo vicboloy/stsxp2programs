@@ -1,0 +1,9 @@
+dataProviderID1:"user_id",
+dataProviderID2:"user_name",
+dataSource:"db:/svy_framework/sec_user",
+name:"sec_user",
+returnDataProviders:1,
+showDataProviders:2,
+typeid:34,
+uuid:"4848349c-4edb-41cc-8398-c4c1138b79df",
+valueListType:1

@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/doc_revision",
+items:[
+{foreignColumnName:"revision_number",primaryDataProviderID:"max_revision_number",typeid:23,uuid:"05384C53-B3AF-46A5-BC61-EDD638CC044A"},
+{foreignColumnName:"doc_document_id",primaryDataProviderID:"doc_document_id",typeid:23,uuid:"9D405960-08E6-4D7C-893F-A0CBF742A329"}
+],
+name:"doc_document_to_doc_revision$latest_revision",
+primaryDataSource:"db:/svy_framework/doc_document",
+typeid:22,
+uuid:"C276ADA2-0BE1-4577-8E27-97A4B780DB06"

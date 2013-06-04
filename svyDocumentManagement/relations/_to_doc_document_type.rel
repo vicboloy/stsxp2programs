@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/doc_document_type",
+items:[
+{foreignColumnName:"extension",primaryDataProviderID:"scopes.svyDocumentManagement$model.selectedFileExtension",typeid:23,uuid:"06B2F08C-6B3F-46F6-8390-8E46273009E3"}
+],
+joinType:1,
+name:"_to_doc_document_type",
+primaryDataSource:"db:/svy_framework/doc_document",
+typeid:22,
+uuid:"034EFBB9-7327-4E12-8640-D7AC14A67EFC"

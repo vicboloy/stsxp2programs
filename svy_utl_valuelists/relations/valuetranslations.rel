@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/vlt_valuetranslations",
+items:[
+{foreignColumnName:"valuelistvalue_id",primaryDataProviderID:"globals.utl_valuelistvalue_id",typeid:23,uuid:"5ae76abb-c143-4cba-b1c0-e5ff7b85792c"},
+{foreignColumnName:"language_key",primaryDataProviderID:"globals.utl_languageCode",typeid:23,uuid:"e5f6b766-4ebf-4b95-a713-356fb3e7d6d6"}
+],
+name:"valuetranslations",
+primaryDataSource:"db:/svy_framework/vlt_valuetranslations",
+typeid:22,
+uuid:"f7a356a9-0a7a-455f-95cd-4cf5942fdcb9"

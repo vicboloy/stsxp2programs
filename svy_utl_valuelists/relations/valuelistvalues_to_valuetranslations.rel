@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/vlt_valuetranslations",
+items:[
+{foreignColumnName:"valuelistvalue_id",primaryDataProviderID:"valuelistvalue_id",typeid:23,uuid:"9a0f8dd8-cb28-4488-8ec4-36749cbed79e"}
+],
+name:"valuelistvalues_to_valuetranslations",
+primaryDataSource:"db:/svy_framework/vlt_valuelistvalues",
+typeid:22,
+uuid:"9ebda2a1-751f-4944-85da-e2271fef28e3"

@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/doc_revision",
+joinType:1,
+name:"doc_revision$foundset",
+primaryDataSource:"db:/svy_framework/doc_revision",
+typeid:22,
+uuid:"DEE724F2-0A2D-4655-93DC-8903A5A33F98"

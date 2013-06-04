@@ -1,0 +1,8 @@
+foreignDataSource:"db:/svy_framework/vlt_valuelistvalues",
+items:[
+{foreignColumnName:"valuelistvalue_id",primaryDataProviderID:"valuelistvalue_id",typeid:23,uuid:"b5f392a2-01de-4e47-b9e5-291986741a25"}
+],
+name:"valuetranslations_to_valuelistvalues",
+primaryDataSource:"db:/svy_framework/vlt_valuetranslations",
+typeid:22,
+uuid:"18e10f68-590f-4e79-bbcf-a84b97c4ef00"

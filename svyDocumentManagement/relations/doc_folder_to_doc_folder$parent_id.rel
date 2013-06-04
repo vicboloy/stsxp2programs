@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/doc_folder",
+items:[
+{foreignColumnName:"parent_id",primaryDataProviderID:"parent_id",typeid:23,uuid:"5F6D39BD-900B-4B98-A673-D4F3D463BE90"}
+],
+joinType:1,
+name:"doc_folder_to_doc_folder$parent_id",
+primaryDataSource:"db:/svy_framework/doc_folder",
+typeid:22,
+uuid:"AB8A5ABC-9CB1-4922-BA76-35019D3DACDB"

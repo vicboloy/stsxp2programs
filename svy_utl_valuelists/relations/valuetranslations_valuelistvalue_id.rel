@@ -1,0 +1,9 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/vlt_valuetranslations",
+items:[
+{foreignColumnName:"valuelistvalue_id",primaryDataProviderID:"globals.utl_valuelistvalue_id2",typeid:23,uuid:"bf4af21e-e04c-41fb-880a-668224a83fd4"}
+],
+name:"valuetranslations_valuelistvalue_id",
+primaryDataSource:"db:/svy_framework/vlt_valuetranslations",
+typeid:22,
+uuid:"1c14db5a-275f-4b77-9ab5-5fff53ca98bd"

@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/doc_document",
+items:[
+{foreignColumnName:"security_level",primaryDataProviderID:"scopes.svyDocumentManagement.DOC_SECURITY_PUBLIC",typeid:23,uuid:"4418B4FC-E118-4B6A-AE42-08AEFD772B20"},
+{foreignColumnName:"doc_folder_id",primaryDataProviderID:"doc_folder_id",typeid:23,uuid:"DB12BB52-D7F9-4568-B047-3956721BC1A1"}
+],
+name:"doc_folder_to_doc_document$public_documents",
+primaryDataSource:"db:/svy_framework/doc_folder",
+typeid:22,
+uuid:"55983E72-D834-4CFB-862B-F86DC12D5E8B"

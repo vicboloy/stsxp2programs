@@ -1,0 +1,12 @@
+dataSource:"db:/svy_framework/doc_revision",
+items:[
+{
+dataProviderIDToAggregate:"revision_number",
+name:"latest_revision_number",
+type:1,
+typeid:40,
+uuid:"AFF76180-463A-4638-83BB-F245DC779336"
+}
+],
+typeid:39,
+uuid:"E96AB133-F03F-46DD-BE73-561DF0FF9AA3"

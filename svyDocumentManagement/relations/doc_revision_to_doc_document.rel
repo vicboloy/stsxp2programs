@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/svy_framework/doc_document",
+items:[
+{foreignColumnName:"doc_document_id",primaryDataProviderID:"doc_document_id",typeid:23,uuid:"A26810D0-A7E2-465C-BAB5-4176FCA3D804"}
+],
+joinType:1,
+name:"doc_revision_to_doc_document",
+primaryDataSource:"db:/svy_framework/doc_revision",
+typeid:22,
+uuid:"790DB77D-E6E4-4ECE-A063-852FCD89A3AD"

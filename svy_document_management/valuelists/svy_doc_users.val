@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"user_id",
+dataProviderID2:"name_compound",
+dataSource:"db:/svy_framework/sec_user",
+name:"svy_doc_users",
+returnDataProviders:1,
+showDataProviders:2,
+typeid:34,
+uuid:"8F3838FB-2658-4085-BF17-DCA88C2321DC",
+valueListType:1

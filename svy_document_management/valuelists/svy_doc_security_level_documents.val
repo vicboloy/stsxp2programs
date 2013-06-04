@@ -1,0 +1,9 @@
+addEmptyValue:1,
+customValues:"Private|0
+Public|2
+Group|1",
+name:"svy_doc_security_level_documents",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"FAEB48CE-3819-4942-A274-13B4DC6449DB"

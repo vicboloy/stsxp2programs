@@ -1,0 +1,10 @@
+dataSource:"db:/svy_framework/doc_revision",
+extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
+name:"svy_doc_revision",
+onShowMethodID:"1F9AEDD3-DE40-441D-B25F-1004C0665DC2",
+showInMenu:true,
+size:"640,100",
+styleName:"pv",
+transparent:true,
+typeid:3,
+uuid:"189071BB-D7DC-41C0-8037-BAE08B978D9A"

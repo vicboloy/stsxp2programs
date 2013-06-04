@@ -1,0 +1,11 @@
+dataSource:"db:/svy_framework/doc_document",
+extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
+name:"svy_doc_documents",
+onRecordSelectionMethodID:"16BD9642-A11B-44C2-8838-4E694E689436",
+onShowMethodID:"6AC3B609-0AF5-4773-A6CF-4EC068280C33",
+showInMenu:true,
+size:"640,480",
+styleName:"pv",
+transparent:true,
+typeid:3,
+uuid:"D90E6BC2-4293-4497-B530-32B5D9DCA6AD"

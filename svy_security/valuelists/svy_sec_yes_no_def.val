@@ -1,0 +1,9 @@
+addEmptyValue:1,
+customValues:"i18n:svy.fr.lbl.default|-1
+i18n:svy.fr.lbl.yes|1
+i18n:svy.fr.lbl.no|0",
+name:"svy_sec_yes_no_def",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"2aedd1da-3122-4361-82f7-cf8e0f28ba2c"

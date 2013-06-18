@@ -1,0 +1,8 @@
+firstFormID:"736DD56B-6713-4F53-8D98-21E36A4E2347",
+i18nDataSource:"db:/svy_framework/i18n_messages",
+modulesNames:"svy_login_vw_pv,svy_framework,svyMonitoring",
+onCloseMethodID:"7A5BA424-0891-4A07-A72C-8D7E0C390C1E",
+onErrorMethodID:"29E39484-4E1A-4B58-80C3-21886DD6B42D",
+onOpenMethodID:"68845D96-E6BD-406C-AAE4-324BF971F0C0",
+typeid:43,
+uuid:"F38E47D8-D5AF-4602-AF5F-362F2D44CD14"

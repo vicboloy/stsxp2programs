@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"state",
+name:"sts_state_codes",
+relationName:"sts_city_to_states",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+useTableFilter:true,
+uuid:"E4083BE9-D4BC-4BDC-A6CD-3F79018F8572",
+valueListType:1

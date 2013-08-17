@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/valuelists",
+items:[
+{foreignColumnName:"valuelist_name",primaryDataProviderID:"LITERAL:'address_type'",typeid:23,uuid:"885D1AA2-55DD-4F1A-9E86-B09816ACD504"}
+],
+joinType:1,
+name:"sts_vlcnt_address_type",
+primaryDataSource:"db:/stsservoy/valuelists",
+typeid:22,
+uuid:"922BD62F-E438-44E8-8BFC-C475E159EEF5"

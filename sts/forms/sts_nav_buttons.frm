@@ -1,0 +1,14 @@
+dataSource:"db:/teststsdata/customers",
+extendsID:"42B52AF1-2360-49B4-9A28-7B7DCF1B9B95",
+items:[
+{
+extendsID:"747B1B90-FF04-4C5B-8D9B-2081776AA50F",
+height:44,
+typeid:19,
+uuid:"21142211-2415-4A0D-923E-70380AAEAE7B"
+}
+],
+name:"sts_nav_buttons",
+styleName:"pv",
+typeid:3,
+uuid:"E8EE8D74-0BCB-493F-B154-E202C4A4DE80"

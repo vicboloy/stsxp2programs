@@ -26,3 +26,10 @@ function onSolutionOpen(arg, queryParams) {
 	
 	globals.svy_nav_onOpen(arg, queryParams);
 }
+
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"4CC2F563-970C-43A6-B900-2AF4F9D7EA44",variableType:4}
+ */
+var vlcnt_addressType = 0;

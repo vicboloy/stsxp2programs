@@ -84,6 +84,7 @@ uuid:"E933072C-3A7F-4A7B-AAEA-B3E3E60A11FA"
 }
 ],
 name:"customers_tab2",
+scrollbars:32,
 size:"472,100",
 styleName:"pv",
 typeid:3,

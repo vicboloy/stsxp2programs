@@ -4,5 +4,6 @@
 	<buildpathentry exported="true" kind="prj" path="/svyMonitoring"/>
 	<buildpathentry exported="true" kind="prj" path="/svy_framework"/>
 	<buildpathentry exported="true" kind="prj" path="/svy_login_vw_pv"/>
+	<buildpathentry exported="true" kind="prj" path="/svy_nav_navigation"/>
 	<buildpathentry exported="true" kind="prj" path="/svy_utl_valuelists"/>
 </buildpath>

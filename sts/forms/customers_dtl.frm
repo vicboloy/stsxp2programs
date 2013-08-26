@@ -274,5 +274,6 @@ name:"customers_dtl",
 scrollbars:32,
 size:"646,395",
 styleName:"pv",
+transparent:true,
 typeid:3,
 uuid:"D13247F2-5F93-4032-84D9-7EC74AE8CE18"

@@ -39,36 +39,16 @@ function onDataChangeZipCode(oldValue, newValue, event) {
  * @AllowToRunInFind
  */
 function onAddressTypeChange(oldValue, newValue, event) {
-	var sql_query = "select value_id,valuelist_name,value1 from valuelists where valuelist_name = ?"
-	var dataset = databaseManager.getDataSetByQuery("stsservoy",sql_query,["address_types"],200)
-	var textOut = dataset.getMaxRowIndex() + " rows"
-	var newAddressID = 0;
-	var currentIndex = 0;
-	var alreadyIn = false;
-	for (var i=1; i <= dataset.getMaxRowIndex();i++){
-		currentIndex = dataset.getValue(i,1)
-		if (newAddressID < currentIndex) {newAddressID = currentIndex}
-		//var rows = "row " + dataset.getValue(i,1) + "," + dataset.getValue(i,2) + "," + dataset.getValue(i,3) + "new ID" + newAddressID
-		//application.output(rows)
-		if (alreadyIn){continue}
-		if (dataset.getValue(i,3) == newValue){alreadyIn=true}
-	}
-	application.output(textOut)
-	if (!alreadyIn && (sts_addresses_to_vl_addresstype.value1 != oldValue)){
-		application.output(newValue)
+	var ds = application.getValueListItems('address_types').getColumnAsArray(2);
+	if(ds.indexOf(newValue) == -1) {
 		/**@type {JSFoundSet<db:/stsservoy/valuelists>} */
-		var fs = databaseManager.getFoundSet("db:/stsservoy/valuelists")
-		var newIdx = fs.newRecord()
+		var fs = databaseManager.getFoundSet("db:/stsservoy/valuelists");
+		fs.newRecord();
 		fs.value1 = newValue;
 		fs.creation_date = new Date;
 		fs.value2 = null;
 		fs.valuelist_name = "address_types";
-		fs.value_id = ++newAddressID;
-		//var savedDataQ = databaseManager.saveData(fs)
-		//application.output(savedDataQ);
-		//application.output("adding new Address Type")
+		fs.value_id = application.getValueListArray('address_types').length + 1;
 	}
-
-
 	return true
 }

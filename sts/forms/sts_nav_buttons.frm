@@ -1,4 +1,4 @@
-dataSource:"db:/teststsdata/customers",
+dataSource:"db:/stsservoy/customers",
 extendsID:"42B52AF1-2360-49B4-9A28-7B7DCF1B9B95",
 items:[
 {

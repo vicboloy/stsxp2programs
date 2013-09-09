@@ -3,7 +3,7 @@
 	<name>STS3</name>
 	<comment></comment>
 	<projects>
-		<project>resources</project>
+		<project>resources_sts</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

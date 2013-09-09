@@ -8,6 +8,7 @@ typeid:19,
 uuid:"164CBD2C-D094-419C-9417-9B9E02E4C8ED"
 },
 {
+anchors:15,
 items:[
 {
 containsFormID:"EE9D7F11-257C-4193-ADC9-803B65C4698D",

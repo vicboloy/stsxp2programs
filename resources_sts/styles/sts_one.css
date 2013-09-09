@@ -12,7 +12,7 @@ tabpanel {
 
 label, button, field, combobox, check, radio, listbox, spinner {
 	font-family: Arial;
-	font-size: 12px;
+	font-size: 10px;
 }
 
 field, combobox {

@@ -33,7 +33,7 @@ function addCarrierRecord(event) {
  */
 function onShow(firstShow, event) {
 	var carriersDivider = globals.carriersDividerLocation;
-	if (carriersDivider = 0.0){
+	if (carriersDivider == 0.0){
 		forms.carriers.elements.tabs.dividerLocation = 317.0;
 	}
 }

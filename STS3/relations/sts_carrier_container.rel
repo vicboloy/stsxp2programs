@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/carrier",
+joinType:1,
+name:"sts_carrier_container",
+primaryDataSource:"db:/stsservoy/carrier",
+typeid:22,
+uuid:"313AD2BD-0351-4256-8F2B-6BC4D375F21E"

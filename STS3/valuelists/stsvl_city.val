@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"primary_city",
+dataSource:"db:/stsservoy/zipcodes",
+name:"stsvl_city",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"08308B8A-82EC-4397-87CC-DF0087D34A30",
+valueListType:1

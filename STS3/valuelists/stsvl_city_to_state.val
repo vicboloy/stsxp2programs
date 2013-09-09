@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"state",
+name:"stsvl_city_to_state",
+relationName:"sts_city_state",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"FEA9C79D-E28C-47BC-85D0-7365A4B60B43",
+valueListType:1

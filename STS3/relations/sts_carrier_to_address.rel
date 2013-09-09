@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/addresses",
+items:[
+{foreignColumnName:"customer_id",primaryDataProviderID:"carrier_id",typeid:23,uuid:"AF6D1E11-1F22-492C-977F-CB692096785D"}
+],
+joinType:1,
+name:"sts_carrier_to_address",
+primaryDataSource:"db:/stsservoy/carrier",
+typeid:22,
+uuid:"761D2B47-EB50-4F84-8263-5BB551A6D59A"

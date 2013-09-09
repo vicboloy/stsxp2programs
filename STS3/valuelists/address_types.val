@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"value1",
+dataSource:"db:/stsservoy/valuelists",
+name:"address_types",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+useTableFilter:true,
+uuid:"A04D21F2-6B62-4C04-A544-1DA8F6DFA5F4",
+valueListType:1

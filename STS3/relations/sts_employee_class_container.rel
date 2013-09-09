@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/employee_class",
+joinType:1,
+name:"sts_employee_class_container",
+primaryDataSource:"db:/stsservoy/employee_class",
+typeid:22,
+uuid:"AD77C500-CAF5-48B7-A142-FF829A32717E"

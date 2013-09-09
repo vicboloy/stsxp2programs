@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/zipcodes",
+items:[
+{foreignColumnName:"primary_city",primaryDataProviderID:"city",typeid:23,uuid:"72096E6B-399D-4DDD-A99F-B5DD7A6C35CC"}
+],
+joinType:1,
+name:"sts_cities",
+primaryDataSource:"db:/stsservoy/addresses",
+typeid:22,
+uuid:"2722893B-2A8B-4092-A137-EFA9E0C30242"

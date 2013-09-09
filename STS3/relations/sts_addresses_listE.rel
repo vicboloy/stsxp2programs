@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/addresses",
+joinType:1,
+name:"sts_addresses_listE",
+primaryDataSource:"db:/stsservoy/addresses",
+typeid:22,
+uuid:"83D52DF7-A6CE-4D50-A164-11CD02CAFB56"

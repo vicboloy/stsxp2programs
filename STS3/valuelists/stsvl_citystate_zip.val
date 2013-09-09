@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"zipcode_id",
+name:"stsvl_citystate_zip",
+relationName:"sts_citystate_to_zip",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"1E3F1416-0A70-4F20-AA48-C026EF17DF8F",
+valueListType:1

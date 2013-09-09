@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/zipcodes",
+items:[
+{foreignColumnName:"zipcode_id",primaryDataProviderID:"zip_postal_code",typeid:23,uuid:"A6D71558-5A94-4738-B513-61C9E8A98645"}
+],
+joinType:1,
+name:"sts_addresses_to_zip",
+primaryDataSource:"db:/stsservoy/addresses",
+typeid:22,
+uuid:"D0AE3BA3-0092-4810-AD49-646EBDC32534"

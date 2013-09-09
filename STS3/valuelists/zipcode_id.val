@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"zipcode_id",
+name:"zipcode_id",
+relationName:"sts_addresses_to_zip",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+useTableFilter:true,
+uuid:"93C64F3E-A737-41B7-BBA0-E4BAF7C4D3ED",
+valueListType:1

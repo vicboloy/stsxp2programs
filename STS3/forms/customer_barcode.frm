@@ -3,24 +3,19 @@ encapsulation:60,
 items:[
 {
 dataProviderID:"barcode_job_length",
+displayType:2,
+enabled:false,
 location:"190,95",
 name:"barcode_job_length",
 size:"140,20",
 text:"Barcode Job Length",
+transparent:true,
 typeid:4,
-uuid:"12D3143D-EBBE-4794-A2A4-DD95AABE6924"
+uuid:"12D3143D-EBBE-4794-A2A4-DD95AABE6924",
+valuelistID:"0DE765BF-7A48-488B-9D28-C57724D29F55"
 },
 {
-dataProviderID:"barcode_fixed_length",
-location:"190,35",
-name:"barcode_fixed_length",
-size:"140,20",
-text:"Barcode Fixed Length",
-typeid:4,
-uuid:"21F36F3D-B134-49DA-ADC9-CA0E8637658E"
-},
-{
-labelFor:"barcode_include_prefix",
+labelFor:"",
 location:"10,65",
 name:"barcode_include_prefix_label",
 size:"165,20",
@@ -33,7 +28,7 @@ uuid:"2E52C996-C54D-49FA-B9B9-636B14ECADE5"
 dataProviderID:"barcode_prefix",
 location:"190,155",
 name:"barcode_prefix",
-size:"140,20",
+size:"45,20",
 text:"Barcode Prefix",
 typeid:4,
 uuid:"5BBAB127-CC1E-495E-845F-24CDB7490E01"
@@ -58,22 +53,25 @@ typeid:7,
 uuid:"69BCE33E-0842-4C77-B7C5-A2A10E6D6B6E"
 },
 {
-dataProviderID:"barcode_job_start",
-location:"190,125",
-name:"barcode_job_start",
-size:"140,20",
-text:"Barcode Job Start",
+dataProviderID:"barcode_include_prefix",
+displayType:4,
+location:"190,65",
+size:"22,20",
+transparent:true,
 typeid:4,
-uuid:"A5F70BF4-688D-4C6A-8E14-C26346FE3C1D"
+uuid:"6EF60150-1BE0-4138-8D3B-FCE3AA316AE7"
 },
 {
-dataProviderID:"barcode_include_prefix",
-location:"190,65",
-name:"barcode_include_prefix",
-size:"140,20",
-text:"Barcode Include Prefix",
+dataProviderID:"barcode_job_start",
+displayType:2,
+location:"190,125",
+name:"barcode_job_start",
+size:"38,20",
+text:"Barcode Job Start",
+transparent:true,
 typeid:4,
-uuid:"BD947456-D29F-4C6B-8F0F-B5E1B17FCAB8"
+uuid:"A5F70BF4-688D-4C6A-8E14-C26346FE3C1D",
+valuelistID:"014DC1FC-D461-40A5-8386-9F09ACBE0623"
 },
 {
 height:300,
@@ -92,7 +90,17 @@ typeid:7,
 uuid:"D6B6918B-1B88-46B1-B73B-9D589A458DD5"
 },
 {
-labelFor:"barcode_fixed_length",
+dataProviderID:"barcode_fixed_length",
+displayType:3,
+location:"190,35",
+scrollbars:4,
+transparent:true,
+typeid:4,
+uuid:"DC61F588-F637-4314-AABA-5341DBF854C8",
+valuelistID:"5D1B4A12-A078-4B74-94FF-ACD0AB638DFF"
+},
+{
+labelFor:"",
 location:"10,35",
 name:"barcode_fixed_length_label",
 size:"165,20",

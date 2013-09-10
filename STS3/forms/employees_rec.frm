@@ -30,7 +30,7 @@ uuid:"A8C073B1-9C65-42B5-B4DC-492B88360968"
 },
 {
 location:"46,5",
-onActionMethodID:"9270663C-8A5A-40DE-A4A1-FB1B9F481DAB",
+onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"212,26",
@@ -41,7 +41,7 @@ uuid:"DD849FC7-FEF4-4EB9-9AC3-FB30D4B47D7C"
 ],
 name:"employees_rec",
 navigatorID:"-1",
-onShowMethodID:"0B925DC6-4609-4234-9C84-7063123F32F2",
+onShowMethodID:"-1",
 scrollbars:32,
 size:"305,451",
 styleName:"sts_one",

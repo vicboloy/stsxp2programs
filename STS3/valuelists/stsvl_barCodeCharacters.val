@@ -1,0 +1,9 @@
+addEmptyValue:1,
+customValues:"Last Characters\r
+First Characters\r
+Starting at position",
+name:"stsvl_barCodeCharacters",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"0DE765BF-7A48-488B-9D28-C57724D29F55"

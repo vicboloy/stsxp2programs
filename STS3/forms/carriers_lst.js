@@ -7,9 +7,6 @@
  */
 function addCustomerRecord(event) {
 	var success = forms.customers_lst.controller.newRecord();
-	if (success) {
-		application.output("Success adding customer record.")
-	}
 }
 
 /**
@@ -22,15 +19,4 @@ function delCustomerRecord(event) {
 	//var success = forms.customers_lst.controller.deleteRecord();
 	// TODO confirmation Delete
 	application.output('Deleting Record. '+forms.customers_lst.customer_number);
-}
-
-/**
- * Handle record selected.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"C7209F87-C977-4622-A7B0-2E89F0D8BB28"}
- */
-function onCustomerRecordSelection(event) {
-	globals.currentCustomer = controller.getDataProviderValue('customer');
 }

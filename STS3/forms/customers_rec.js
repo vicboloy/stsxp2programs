@@ -36,7 +36,7 @@ function addCustomerRecord(event) {
  */
 function onShow(firstShow, event) {
 	var customersDivider = globals.customersDividerLocation;
-	if (customersDivider = 0.0){
+	if (customersDivider == 0.0){
 		forms.customers.elements.tabs.dividerLocation = 317.0;
 	}
 }

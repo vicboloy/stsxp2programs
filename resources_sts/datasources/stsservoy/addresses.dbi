@@ -1,9 +1,11 @@
 columns:[
 {
 allowNull:false,
+autoEnterSubType:3,
+autoEnterType:2,
 creationOrderIndex:0,
 dataType:12,
-flags:1,
+flags:5,
 length:36,
 name:"address_id"
 },
@@ -25,6 +27,7 @@ name:"city"
 allowNull:true,
 creationOrderIndex:8,
 dataType:12,
+flags:4,
 length:36,
 name:"customer_id"
 },

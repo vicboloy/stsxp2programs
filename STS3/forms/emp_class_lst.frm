@@ -2,6 +2,7 @@ dataSource:"db:/stsservoy/employee_class",
 encapsulation:60,
 items:[
 {
+anchors:11,
 labelFor:"class_description",
 location:"110,5",
 name:"class_description_label",
@@ -18,6 +19,7 @@ typeid:19,
 uuid:"237FD4D3-6124-45D1-83F5-5540A413F323"
 },
 {
+anchors:11,
 dataProviderID:"class_code",
 location:"5,25",
 name:"class_code",
@@ -27,6 +29,7 @@ typeid:4,
 uuid:"3464906D-7EA7-47B3-8E33-5015557642C7"
 },
 {
+anchors:11,
 labelFor:"class_code",
 location:"5,5",
 name:"class_code_label",
@@ -37,6 +40,7 @@ typeid:7,
 uuid:"4F0F9A65-192D-4092-A8EB-DB02A05F10C6"
 },
 {
+anchors:11,
 dataProviderID:"class_description",
 location:"110,25",
 name:"class_description",

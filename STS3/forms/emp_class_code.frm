@@ -37,7 +37,7 @@ typeid:7,
 uuid:"33872FDA-344B-4025-B056-BB7EF5F9EB0A"
 },
 {
-location:"353,195",
+location:"385,185",
 name:"empClassDeleteButton",
 onActionMethodID:"0F0E5A77-AE9D-496C-B320-6F45FB46FE36",
 onDoubleClickMethodID:"-1",
@@ -57,12 +57,12 @@ typeid:4,
 uuid:"7EB1C709-A794-430F-9FAF-53D9C9819078"
 },
 {
-location:"460,243",
+location:"104,4",
 name:"empClassAddButtonc",
 onActionMethodID:"0AC1F465-7E38-41C1-9CB9-AC43FEAB1DEE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"161,33",
+size:"97,26",
 text:"Add Class",
 typeid:7,
 uuid:"8565BA6F-578A-4618-B435-2142937A6AF2"
@@ -128,17 +128,17 @@ uuid:"B5564D40-8DC5-48D8-9415-21F833633F0A"
 items:[
 {
 containsFormID:"A45A2D53-6AA5-4C05-9285-86864C2E4D0B",
-location:"5,35",
+location:"5,66",
 relationName:"sts_employee_class_container",
 text:"emp_class_lst",
 typeid:15,
 uuid:"E9F21DDB-62AA-4367-8559-B332B3219B2E"
 }
 ],
-location:"5,5",
+location:"5,36",
 name:"tabless",
 printable:false,
-size:"322,322",
+size:"322,291",
 tabOrientation:-1,
 transparent:true,
 typeid:16,

@@ -3,6 +3,7 @@ encapsulation:60,
 items:[
 {
 dataProviderID:"other1",
+format:"(###) ###-####",
 location:"146,155",
 name:"other1",
 size:"140,20",
@@ -31,6 +32,7 @@ uuid:"0A40B5A7-8CCF-44FB-8C59-AF8D770F7DE6"
 },
 {
 dataProviderID:"other2",
+format:"(###) ###-####",
 location:"146,185",
 name:"other2",
 size:"140,20",
@@ -101,6 +103,7 @@ uuid:"7B20DF30-80BD-4A8A-8EF7-371F78D533AF"
 },
 {
 dataProviderID:"other3",
+format:"(###) ###-####",
 location:"146,215",
 name:"other3",
 size:"140,20",
@@ -120,6 +123,7 @@ uuid:"9A66860E-F784-4ADA-9735-D5A7EE72BA3F"
 },
 {
 dataProviderID:"phone",
+format:"(###) ###-####",
 location:"146,245",
 name:"phone",
 size:"140,20",
@@ -175,6 +179,7 @@ uuid:"DF151109-8801-4450-9117-1C4AF2A93E6E"
 },
 {
 dataProviderID:"fax",
+format:"(###) ###-####",
 location:"146,125",
 name:"fax",
 size:"140,20",

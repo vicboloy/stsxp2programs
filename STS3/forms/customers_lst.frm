@@ -3,6 +3,7 @@ encapsulation:0,
 extendsID:"-1",
 items:[
 {
+anchors:11,
 dataProviderID:"customer_number",
 editable:false,
 location:"0,20",
@@ -30,6 +31,7 @@ typeid:7,
 uuid:"B82BB0FA-1869-4B39-922E-AB950D992EA3"
 },
 {
+anchors:11,
 labelFor:"customer_number",
 location:"0,0",
 name:"customer_number_label",
@@ -53,10 +55,10 @@ uuid:"BFF8EB46-BA8E-4C60-9990-CB06BAF59A16"
 ],
 name:"customers_lst",
 navigatorID:"-1",
-onRecordSelectionMethodID:"F9CC4451-2D7A-4846-8DB7-5BD91C240CA9",
+onRecordSelectionMethodID:"-1",
 scrollbars:0,
 selectionMode:1,
-size:"295,259",
+size:"300,259",
 styleName:"sts_one",
 typeid:3,
 uuid:"FBCAAC07-199B-4669-A402-96C99CE97065",

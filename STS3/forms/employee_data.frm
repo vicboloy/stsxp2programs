@@ -23,6 +23,7 @@ uuid:"02288F15-4702-42DD-92B4-4CB2F973BF81"
 },
 {
 dataProviderID:"employee_cellphone",
+format:"(###) ###-####",
 location:"105,220",
 name:"employee_cellphone",
 size:"140,20",
@@ -32,6 +33,7 @@ uuid:"0B3FB992-EF9A-44D9-84F1-0E3E34AD2680"
 },
 {
 dataProviderID:"employee_ssn",
+format:"###-##-####",
 location:"105,130",
 name:"employee_ssn",
 size:"140,20",
@@ -87,6 +89,15 @@ typeid:4,
 uuid:"45ED89A6-D780-41F0-98FD-ED04CD387762"
 },
 {
+dataProviderID:"employee_active_flag",
+displayType:4,
+location:"369,5",
+size:"23,20",
+transparent:true,
+typeid:4,
+uuid:"45FEA83F-4C4F-4FED-ABF8-ECD4D1F12470"
+},
+{
 dataProviderID:"employee_firstname",
 location:"105,40",
 name:"employee_firstname",
@@ -96,7 +107,7 @@ typeid:4,
 uuid:"5120A5B6-B919-4AA4-8AB7-450A9C8E2F53"
 },
 {
-labelFor:"employee_active_flag",
+labelFor:"",
 location:"305,5",
 name:"employee_active_flag_label",
 size:"59,20",
@@ -128,6 +139,7 @@ uuid:"6925867E-61E2-44B1-BAF4-90B8453B68E7"
 },
 {
 dataProviderID:"employee_otherphone2",
+format:"(###) ###-####",
 location:"142,250",
 name:"employee_otherphone2",
 size:"153,20",
@@ -138,6 +150,7 @@ uuid:"6BF1D663-ED2E-416A-93F8-570A59AA8664"
 {
 dataProviderID:"employee_dob",
 displayType:5,
+format:"MM/dd/yyyy",
 location:"105,155",
 name:"employee_dob",
 size:"140,20",
@@ -146,16 +159,8 @@ typeid:4,
 uuid:"7DC87E79-0E3B-4480-A82C-974E750E19A5"
 },
 {
-dataProviderID:"employee_active_flag",
-location:"374,5",
-name:"employee_active_flag",
-size:"20,20",
-text:"Employee Active Flag",
-typeid:4,
-uuid:"7FA2FB2F-5479-4470-84EB-2E98FDD6011B"
-},
-{
 dataProviderID:"employee_workphone",
+format:"(###) ###-####",
 location:"205,337",
 name:"employee_workphone",
 size:"140,20",

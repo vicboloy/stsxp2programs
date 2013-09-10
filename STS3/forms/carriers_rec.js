@@ -3,24 +3,10 @@
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"4A030A8E-D2AA-4965-9650-2C5465BDF161"}
- */
-function delCarrierRecord(event) {
-	//var success = forms.carriers_lst.controller.deleteRecord();
-	// TODO confirmation Delete
-}
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
  * @properties={typeid:24,uuid:"FA29E187-8F22-43AD-B141-BE6934214905"}
  */
 function addCarrierRecord(event) {
 	var newCarrier = forms.carriers_lst.controller.newRecord();
-	var newAddy = sts_carrier_to_address.newRecord;
-	newCarrier.carrier_address = newAddy.address_id;
 }
 
 /**
@@ -34,6 +20,6 @@ function addCarrierRecord(event) {
 function onShow(firstShow, event) {
 	var carriersDivider = globals.carriersDividerLocation;
 	if (carriersDivider == 0.0){
-		forms.carriers.elements.tabs.dividerLocation = 317.0;
+		forms.carriers.elements.split.dividerLocation = 317.0;
 	}
 }

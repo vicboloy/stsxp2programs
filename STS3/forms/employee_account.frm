@@ -3,10 +3,10 @@ encapsulation:60,
 items:[
 {
 labelFor:"employee_ssn",
-location:"15,225",
+location:"15,105",
 name:"employee_ssn_label",
 size:"168,20",
-text:"Employee SSN",
+text:"SSN",
 transparent:true,
 typeid:7,
 uuid:"14A02FA1-9361-4819-89A5-F29B739B1144"
@@ -42,6 +42,7 @@ uuid:"32D5B606-D00A-4574-94DF-CE064AA9CF50"
 },
 {
 dataProviderID:"employee_workphone",
+format:"(###) ###-####",
 location:"198,195",
 name:"employee_workphone",
 size:"140,20",
@@ -51,7 +52,7 @@ uuid:"351C4684-7A38-48F2-8DA4-007614C9FABE"
 },
 {
 labelFor:"employee_username",
-location:"15,165",
+location:"15,75",
 name:"employee_username_label",
 size:"168,20",
 text:"Employee Username",
@@ -67,7 +68,7 @@ uuid:"3729C472-847C-462B-93FE-8AE9CF3982A4"
 },
 {
 labelFor:"employee_terminationdate",
-location:"15,135",
+location:"15,165",
 name:"employee_terminationdate_label",
 size:"168,20",
 text:"Employee Terminationdate",
@@ -86,16 +87,15 @@ uuid:"55EE0870-F636-4CD7-89EB-DB33E366DF50"
 },
 {
 dataProviderID:"employee_active_flag",
-location:"198,255",
-name:"employee_active_flag",
-size:"140,20",
-text:"Employee Active Flag",
+displayType:4,
+location:"198,230",
+transparent:true,
 typeid:4,
-uuid:"756F33B3-9F5D-47AD-8FC1-3938D447A4A0"
+uuid:"66803B3D-DAFD-416B-BAE9-D381D07D262B"
 },
 {
 dataProviderID:"employee_username",
-location:"198,165",
+location:"198,75",
 name:"employee_username",
 size:"140,20",
 text:"Employee Username",
@@ -105,7 +105,8 @@ uuid:"A64295E7-E276-4DAA-9CFD-A51F0E891573"
 {
 dataProviderID:"employee_hiredate",
 displayType:5,
-location:"198,75",
+format:"MM/dd/yyyy",
+location:"198,135",
 name:"employee_hiredate",
 size:"140,20",
 text:"Employee Hiredate",
@@ -114,7 +115,7 @@ uuid:"C44780E4-5E5D-4F78-AD22-E1EB78DD6E4D"
 },
 {
 labelFor:"employee_save_rftransaction",
-location:"15,105",
+location:"15,260",
 name:"employee_save_rftransaction_label",
 size:"168,20",
 text:"Employee Save Rftransaction",
@@ -123,8 +124,8 @@ typeid:7,
 uuid:"C5F67DC4-2DEB-407A-A263-71B3ADD32B49"
 },
 {
-labelFor:"employee_active_flag",
-location:"15,255",
+labelFor:"",
+location:"15,230",
 name:"employee_active_flag_label",
 size:"168,20",
 text:"Employee Active Flag",
@@ -135,7 +136,8 @@ uuid:"C6BBBFC7-8AD4-463A-ABF5-DEA9D5704BDB"
 {
 dataProviderID:"employee_terminationdate",
 displayType:5,
-location:"198,135",
+format:"MM/dd/yyyy",
+location:"198,165",
 name:"employee_terminationdate",
 size:"140,20",
 text:"Employee Terminationdate",
@@ -144,7 +146,8 @@ uuid:"E2F99908-F4EC-4C80-AA4A-1834D034D85D"
 },
 {
 dataProviderID:"employee_ssn",
-location:"198,225",
+format:"###-##-####",
+location:"198,105",
 name:"employee_ssn",
 size:"140,20",
 text:"Employee Ssn",
@@ -163,7 +166,7 @@ uuid:"FBCA9874-30BA-44AF-ADD5-F06364054486"
 },
 {
 labelFor:"employee_hiredate",
-location:"15,75",
+location:"15,135",
 name:"employee_hiredate_label",
 size:"168,20",
 text:"Employee Hiredate",
@@ -173,10 +176,10 @@ uuid:"FD5D206B-A5E5-4479-8514-DBE04C9D72E1"
 },
 {
 dataProviderID:"employee_save_rftransaction",
-location:"198,105",
+displayType:4,
+location:"198,260",
 name:"employee_save_rftransaction",
 size:"140,20",
-text:"Employee Save Rftransaction",
 typeid:4,
 uuid:"FE7E4D40-0B83-430F-876D-D9B2C6A14FF0"
 }

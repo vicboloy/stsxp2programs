@@ -42,6 +42,7 @@ uuid:"1CBFE863-1E97-44B2-934F-E663F67522DB"
 },
 {
 dataProviderID:"carrier_otherphone2",
+format:"(###) ###-####",
 location:"206,345",
 name:"carrier_otherphone2",
 size:"140,20",
@@ -102,6 +103,7 @@ uuid:"465F3F16-E8FE-4170-82AF-942E7284E8E6"
 },
 {
 dataProviderID:"carrier_workphone",
+format:"(###) ###-####",
 location:"206,315",
 name:"carrier_workphone",
 size:"140,20",
@@ -111,6 +113,7 @@ uuid:"4DEB7AC6-6991-44E6-963B-C93AA5D9065B"
 },
 {
 dataProviderID:"carrier_cellphone",
+format:"(###) ###-####",
 location:"206,285",
 name:"carrier_cellphone",
 size:"140,20",
@@ -170,6 +173,7 @@ uuid:"808A21BE-903F-44E6-98E7-A75E3B4FBB4C"
 },
 {
 dataProviderID:"carrier_otherphone3",
+format:"(###) ###-####",
 location:"206,375",
 name:"carrier_otherphone3",
 size:"140,20",
@@ -179,6 +183,7 @@ uuid:"80B4B051-E479-4CD9-BC5D-DF205E55E154"
 },
 {
 dataProviderID:"carrier_otherphone4",
+format:"(###) ###-####",
 location:"206,405",
 name:"carrier_otherphone4",
 size:"140,20",
@@ -207,6 +212,7 @@ uuid:"93A608BA-BB49-4CC2-9062-EAB01A600586"
 },
 {
 dataProviderID:"carrier_fax",
+format:"(###) ###-####",
 location:"206,435",
 name:"carrier_fax",
 size:"140,20",

@@ -1,4 +1,3 @@
-
 /**
  * @type {Number}
  *
@@ -91,9 +90,10 @@ function onDialogNo(event) {
 
 /**
  * TODO generated, please specify type and doc for the params
- * @param message
- * @param buttonYes
- * @param buttonNo
+ * @param winTitle Name of window in border
+ * @param message Message for delete operation
+ * @param buttonYes Well, yes.
+ * @param buttonNo Maybe, no.
  *
  * @properties={typeid:24,uuid:"B57D889C-179C-491D-83DC-A9647BD2EF93"}
  */

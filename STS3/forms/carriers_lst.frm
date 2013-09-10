@@ -20,6 +20,7 @@ typeid:19,
 uuid:"28AEEE90-1747-493C-9ED6-2341BAB956FA"
 },
 {
+anchors:11,
 dataProviderID:"carrier_number",
 editable:false,
 location:"5,25",
@@ -41,7 +42,8 @@ typeid:4,
 uuid:"C50087AC-3AA4-4BEA-853B-87F9FE821DC1"
 },
 {
-labelFor:"customer_number",
+anchors:11,
+labelFor:"carrier_number_label",
 location:"5,5",
 name:"carrier_number_label",
 size:"86,20",
@@ -53,7 +55,7 @@ uuid:"CBEFE966-51BB-44A5-94DE-EB72CF40B20C"
 ],
 name:"carriers_lst",
 navigatorID:"-1",
-onRecordSelectionMethodID:"C7209F87-C977-4622-A7B0-2E89F0D8BB28",
+onRecordSelectionMethodID:"-1",
 scrollbars:0,
 selectionMode:1,
 size:"309,287",

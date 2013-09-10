@@ -20,10 +20,9 @@ function delCustomerRecord(event) {
  * @properties={typeid:24,uuid:"C8FE22F3-9879-4FD0-A0ED-8D4F46D0F3CF"}
  */
 function addCustomerRecord(event) {
+	globals.selectedCustomerIndex = controller.getSelectedIndex();
+	forms.customer_contact.onEditCustomer(event,true);
 	var success = forms.customers_lst.controller.newRecord();
-	if (success) {
-		application.output("Success adding customer record.")
-	}
 }
 
 /**

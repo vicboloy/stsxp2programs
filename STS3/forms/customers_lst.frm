@@ -55,7 +55,7 @@ uuid:"BFF8EB46-BA8E-4C60-9990-CB06BAF59A16"
 ],
 name:"customers_lst",
 navigatorID:"-1",
-onRecordSelectionMethodID:"-1",
+onRecordSelectionMethodID:"5676FC4B-0DA9-4836-88A8-09A587AA36D6",
 scrollbars:0,
 selectionMode:1,
 size:"300,259",

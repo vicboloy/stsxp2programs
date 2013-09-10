@@ -32,7 +32,9 @@ function addNewAddress(event) {
 	}
 	if (form.title == "Customers"){
 		foundset.customer_id = customerUUID;
+		onActionEditAddress(event);
 	}
+	
 }
 
 /**
@@ -90,3 +92,29 @@ function onAddressTypeChange(oldValue, newValue, event) {
 
 
 
+
+/**
+ * Called before the form component is rendered.
+ *
+ * @param {JSRenderEvent} event the render event
+ *
+ * @properties={typeid:24,uuid:"AC080D32-4094-4A4B-9591-EA87495D8865"}
+ */
+function onRenderDeleteAddressButton(event) {
+	// TODO Auto-generated method stub
+	// NOTE: a property set on the renderable, will be kept on the element only during onRender
+	/** if (event.isRecordSelected()) {
+		event.getRenderable().fgcolor = '#00ff00';
+	} else if (event.getRecordIndex() % 2) {
+		event.getRenderable().fgcolor = '#ff0000';
+	}
+	**/
+	var addyType = address_type;
+	if (addyType != null){
+		elements.deleteButton.text = "Delete \'"+addyType+"\'";
+		elements.deleteButton.visible = true;
+	} else {
+		elements.deleteButton.visible = false;
+	}
+	
+}

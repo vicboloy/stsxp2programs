@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/customers",
+joinType:1,
+name:"sts_customer_container_search",
+primaryDataSource:"db:/stsservoy/customers",
+typeid:22,
+uuid:"CDF55B81-7EA9-4530-B7F9-9C92225B84E7"

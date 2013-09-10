@@ -2,7 +2,7 @@ addEmptyValue:1,
 customValues:"Last Characters\r
 First Characters\r
 Starting at position",
-name:"stsvl_barCodeCharacters",
+name:"stsvl_barCodeJobStart",
 returnDataProviders:1,
 showDataProviders:1,
 typeid:34,

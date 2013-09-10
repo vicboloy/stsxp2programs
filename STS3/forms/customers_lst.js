@@ -12,3 +12,14 @@ function addCustomerRecord(event) {
 		application.output("Success adding customer record.")
 	}
 }
+
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"5676FC4B-0DA9-4836-88A8-09A587AA36D6"}
+ */
+function onRecordSelection(event) {
+	globals.selectedCustomerIndex = controller.getSelectedIndex(); 
+}

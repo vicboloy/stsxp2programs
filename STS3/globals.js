@@ -1,6 +1,12 @@
 /**
  * @type {Number}
  *
+ * @properties={typeid:35,uuid:"3675EA64-17BD-4B4E-A636-14D3251F077A",variableType:4}
+ */
+var selectedCustomerIndex = 0;
+/**
+ * @type {Number}
+ *
  * @properties={typeid:35,uuid:"6543531E-F775-417D-B5ED-702402B31B02",variableType:8}
  */
 var dividerLocation = 0.0;

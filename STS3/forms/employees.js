@@ -6,8 +6,9 @@
  * @properties={typeid:24,uuid:"D6F28D92-40D4-4CE3-8583-A89421109813"}
  */
 function onLoadCreateRecord(event) {
-	if (controller.getMaxRecordIndex() == 0){
-		controller.newRecord()
+	var count = databaseManager.getTableCount(sts_employee_container);
+	if (count == 0){
+		controller.newRecord();
 	}
 	if (globals.employeesDividerLocation == 0.0) {
 		elements.tabs.dividerLocation = 333.0;

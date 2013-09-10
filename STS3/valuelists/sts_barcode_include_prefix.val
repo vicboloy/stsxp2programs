@@ -1,0 +1,8 @@
+addEmptyValue:1,
+customValues:"Include Prefix\r
+Exclude Prefix",
+name:"sts_barcode_include_prefix",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"80AAE927-22FE-4E72-AE33-10EAC798E020"

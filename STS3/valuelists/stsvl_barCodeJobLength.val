@@ -1,5 +1,16 @@
 addEmptyValue:1,
-customValues:"9\r
+customValues:"20\r
+19\r
+18\r
+17\r
+16\r
+15\r
+14\r
+13\r
+12\r
+11\r
+10\r
+9\r
 8\r
 7\r
 6\r
@@ -8,7 +19,7 @@ customValues:"9\r
 3\r
 2\r
 1",
-name:"stsvl_barCodeStart",
+name:"stsvl_barCodeJobLength",
 returnDataProviders:1,
 showDataProviders:1,
 typeid:34,

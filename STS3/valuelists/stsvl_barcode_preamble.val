@@ -1,7 +1,7 @@
 addEmptyValue:1,
 customValues:"4\r
 5",
-name:"stsvl_barcode",
+name:"stsvl_barcode_preamble",
 returnDataProviders:1,
 showDataProviders:1,
 typeid:34,

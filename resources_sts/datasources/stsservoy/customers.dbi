@@ -18,7 +18,7 @@ name:"applystax"
 },
 {
 allowNull:true,
-compatibleColumnTypes:"[[8,17,17]]",
+compatibleColumnTypes:"[[8,17,17],[5,0,0]]",
 creationOrderIndex:13,
 dataType:8,
 length:17,
@@ -33,7 +33,7 @@ name:"barcode_include_prefix"
 },
 {
 allowNull:true,
-compatibleColumnTypes:"[[8,17,17]]",
+compatibleColumnTypes:"[[8,17,17],[5,0,0]]",
 creationOrderIndex:14,
 dataType:8,
 length:17,
@@ -41,10 +41,17 @@ name:"barcode_job_length"
 },
 {
 allowNull:true,
+compatibleColumnTypes:"[[12,25,0]]",
 creationOrderIndex:11,
 dataType:12,
 length:35,
 name:"barcode_job_start"
+},
+{
+allowNull:true,
+creationOrderIndex:26,
+dataType:5,
+name:"barcode_preamble_length"
 },
 {
 allowNull:true,

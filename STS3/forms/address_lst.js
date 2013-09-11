@@ -15,5 +15,4 @@ function onRecordSelection(event) {
 	} else {
 		forms.addresses.elements.deleteButton.visible = true;
 	}
-	
 }

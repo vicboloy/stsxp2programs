@@ -8,7 +8,7 @@
  */
  function onLoadCreateRecord(event) {
 		if (controller.getMaxRecordIndex() == 0){
-			var newCarrier = controller.newRecord()
+			controller.newRecord()
 		}
 		if (globals.carriersDividerLocation == 0.0) {
 			elements.split.dividerLocation = 300.0;

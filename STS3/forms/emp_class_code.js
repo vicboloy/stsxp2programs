@@ -42,14 +42,12 @@ function onActionAddClass(event){
  * @properties={typeid:24,uuid:"0F0E5A77-AE9D-496C-B320-6F45FB46FE36"}
  */
 function onActionDeleteClass(event) {
-	var takeAction = globals.doDialog("Remove Employee Class","Delete this Class?","Delete","Cancel");
+	globals.doDialog("Remove Employee Class","Delete this Class?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
 			controller.deleteRecord();
 		}
 
 }
-
-
 
 /**
  * Handle record selected.

@@ -7,13 +7,10 @@
  * @properties={typeid:24,uuid:"1965D683-4062-420F-A3A7-09CE735A5E8E"}
  */
 function delSelectedAddress(event) {
-	var takeAction = globals.doDialog("Delete Record","Delete this address?","Delete","Cancel Action");
+	globals.doDialog("Delete Record","Delete this address?","Delete","Cancel Action");
 	if (globals.dialogResponse == "yes"){
 		foundset.deleteRecord();
 	}
-	
-	// TODO handle dialog for proper delete
-	//application.output("deleting address")
 }
 
 /**
@@ -26,13 +23,13 @@ function addNewAddress(event) {
 	var employeeUUID = forms.employees_lst.employee_id;
 	var customerUUID = forms.customers_lst.customer_id;
 	var form = application.getActiveWindow();
-	var success = foundset.newRecord();
+	foundset.newRecord();
 	if (form.title == "Employees"){
 		foundset.customer_id = employeeUUID;
 	}
 	if (form.title == "Customers"){
 		foundset.customer_id = customerUUID;
-		onActionEditAddress(event);
+		forms.addressesCustomer.onActionEditAddress(event);
 	}
 	
 }
@@ -90,9 +87,6 @@ function onAddressTypeChange(oldValue, newValue, event) {
 	return true
 }
 
-
-
-
 /**
  * Called before the form component is rendered.
  *
@@ -101,14 +95,6 @@ function onAddressTypeChange(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"AC080D32-4094-4A4B-9591-EA87495D8865"}
  */
 function onRenderDeleteAddressButton(event) {
-	// TODO Auto-generated method stub
-	// NOTE: a property set on the renderable, will be kept on the element only during onRender
-	/** if (event.isRecordSelected()) {
-		event.getRenderable().fgcolor = '#00ff00';
-	} else if (event.getRecordIndex() % 2) {
-		event.getRenderable().fgcolor = '#ff0000';
-	}
-	**/
 	var addyType = address_type;
 	if (addyType != null){
 		elements.deleteButton.text = "Delete \'"+addyType+"\'";

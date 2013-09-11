@@ -8,5 +8,5 @@
  */
 function onDialogLoad(event) {
 	globals.dialogResponse = "";
-	//elements.message.text = globals.dialogMessage;
+	//TODO Is this ever called?
 }

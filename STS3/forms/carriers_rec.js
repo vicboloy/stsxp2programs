@@ -6,7 +6,7 @@
  * @properties={typeid:24,uuid:"FA29E187-8F22-43AD-B141-BE6934214905"}
  */
 function addCarrierRecord(event) {
-	var newCarrier = forms.carriers_lst.controller.newRecord();
+	forms.carriers_lst.controller.newRecord();
 }
 
 /**

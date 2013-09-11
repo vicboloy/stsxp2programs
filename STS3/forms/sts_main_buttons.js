@@ -26,7 +26,6 @@ function onActionClickEmployee(event) {
 	win.show('employees');
 }
 
-
 /**
  * TODO generated, please specify type and doc for the params
  * @param event

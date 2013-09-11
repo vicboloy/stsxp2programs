@@ -6,7 +6,7 @@
  * @properties={typeid:24,uuid:"11FFFF66-EEDC-44A2-87F7-9EC38EE99CF5"}
  */
  function delCustomerRecord(event) {
-		var takeAction = globals.doDialog("Delete Record","Delete this Customer?","Delete","Cancel");
+		globals.doDialog("Delete Record","Delete this Customer?","Delete","Cancel");
 		if (globals.dialogResponse == "yes"){
 			controller.deleteRecord();
 		}
@@ -32,15 +32,6 @@ function delCustomerRecordCancel(event) {
  * @properties={typeid:24,uuid:"6756ADA3-D8F6-4D60-8D6A-ABD51DEE1680"}
  */
 function onRenderCustomer(event) {
-	// TODO Auto-generated method stub
-	// NOTE: a property set on the renderable, will be kept on the element only during onRender
-	/**
-	 * if (event.isRecordSelected()) {
-		event.getRenderable().fgcolor = '#00ff00';
-	} else if (event.getRecordIndex() % 2) {
-		event.getRenderable().fgcolor = '#ff0000';
-	}
-	**/
 	elements.delCustomerButton.text = 'Delete Customer \''+name+'\'';
 }
 
@@ -57,13 +48,11 @@ function onRenderCustomer(event) {
  * @AllowToRunInFind
  */
 function onDataChange(oldValue, newValue, event) {
-	//databaseManager.setAutoSave(false);
-	var foundCustomer = false;
 	var fs = foundset.find();
 	if (fs) //find will fail if autosave is disabled and there are unsaved records
 	{
 		name = newValue;
-		foundCustomer = foundset.search();
+		foundset.search();
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
 			foundset.deleteRecord();
@@ -71,7 +60,6 @@ function onDataChange(oldValue, newValue, event) {
 		foundset.sts_customer_container.loadAllRecords();
 		foundset.setSelectedIndex(globals.selectedCustomerIndex);
 	}
-	application.output("found "+newValue+" Customer ");
 	return true
 }
 
@@ -92,7 +80,6 @@ function onEditCustomer(event,editStatus){
 	forms.customer_contact.elements.editMessage.visible = editStatus;
 	forms.customer_barcode.elements.editMessage.visible = editStatus;
 	forms.customer_taxes.elements.editMessage.visible = editStatus;
-	//forms.addressesCustomer.elements.editMessage.visible = editStatus;
 }
 
 /**
@@ -103,10 +90,8 @@ function onEditCustomer(event,editStatus){
  * @properties={typeid:24,uuid:"73627914-DC7D-4E58-B968-7F35A79246F7"}
  */
 function onActionEditCustomer(event) {
-	//var status = false;
 	onEditCustomer(event,true);
 	databaseManager.setAutoSave(false);
-	//forms.customer_specs.editCustomerFlag = status;
 }
 
 /**
@@ -117,11 +102,9 @@ function onActionEditCustomer(event) {
  * @properties={typeid:24,uuid:"8798C5E6-4D6B-4E89-9CE8-FF5E8ED73D60"}
  */
 function onActionCancelEditCustomer(event) {
-	//var status = false;
 	onEditCustomer(event,false);
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
-	//forms.customer_specs.editCustomerFlag = status;
 }
 /**
  * TODO generated, please specify type and doc for the params

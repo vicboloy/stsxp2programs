@@ -7,9 +7,7 @@
  * @properties={typeid:24,uuid:"081939EA-C4C9-44E6-9462-46A2FE8A9FB7"}
  */
 function delCustomerRecord(event) {
-	//var success = forms.customers_lst.controller.deleteRecord();
-	// TODO confirmation Delete
-	application.output('Deleting Record. '+forms.customers_lst.customer_number);
+	//TODO probably don't need this.  Never used this method...
 }
 
 /**
@@ -22,7 +20,7 @@ function delCustomerRecord(event) {
 function addCustomerRecord(event) {
 	globals.selectedCustomerIndex = controller.getSelectedIndex();
 	forms.customer_contact.onEditCustomer(event,true);
-	var success = forms.customers_lst.controller.newRecord();
+	forms.customers_lst.controller.newRecord();
 }
 
 /**

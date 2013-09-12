@@ -1,3 +1,35 @@
+//TODO Work Navigation
+//TODO UUID/bolt-on issues speak with Jason
+//TODO Codes left/data on the right
+//TODO Pull record upon entry of data
+//TODO Category codes
+//TODO Customer codes
+//TODO Navicat with Mark on resolving changes in Model
+//TODO Ensure uniqueness of record since UUID doesn't do this for employee, etc
+//TODO Customer record select on Customer Number entry
+//TODO Address record by address type, one per type per customer
+//TODO Carrier search on entry
+//TODO Customer Class search on entry
+//TODO test
+//TODO Work Login and security
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C2560643-8DED-47E5-8286-E2FF84C20A36"}
+ */
+var current_db;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"AEA18AFC-E1F3-4EDA-A35C-43C5304CCF2F"}
+ */
+var new_project_db;
+
+/**
+ * @properties={typeid:35,uuid:"74338781-F357-47CA-B0D9-FDC670EBEACF",variableType:-4}
+ */
+var newCustomerRecord = null;
 /**
  * @type {Number}
  *
@@ -66,6 +98,22 @@ var dialogButtonNo = "";
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
+	databaseManager.nullColumnValidatorEnabled = false;
+	var success = false;
+	current_db = "stsservoy";
+	new_project_db = "stsservoy_remote";
+	new_project_db = "";
+	if (globals.new_project_db != globals.current_db && globals.new_project_db != null && globals.new_project_db != "") 
+
+{
+		//TODO Change database to production versus development
+		success = databaseManager.switchServer(current_db,new_project_db);
+		application.output(success+" CHANGED "+current_db+" changed to "+new_project_db,LOGGINGLEVEL.WARNING);
+		current_db = new_project_db;
+	} else {
+		application.output(success+" FAIL: "+current_db+" changed to "+new_project_db,LOGGINGLEVEL.WARNING);
+	}
+	
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
 }
 

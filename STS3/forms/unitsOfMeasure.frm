@@ -1,0 +1,15 @@
+dataSource:"db:/stsservoy/uom_types",
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"7D1F05A0-0EE1-44F3-A18D-2BF7BC00A8A2"
+}
+],
+name:"unitsOfMeasure",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"53754107-B83A-4043-A61D-C61D47ECE4BF"

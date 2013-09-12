@@ -132,15 +132,6 @@ typeid:19,
 uuid:"93BBD139-F3E7-4BC9-ACBD-327162CAEC7C"
 },
 {
-borderType:"EmptyBorder,0,0,0,0",
-location:"1,0",
-onActionMethodID:"97502051-1127-4175-A3E6-52F200147563",
-size:"414,374",
-transparent:true,
-typeid:7,
-uuid:"95002B5B-62A4-43CF-BDF2-751D16D26AC1"
-},
-{
 dataProviderID:"staxmta",
 location:"200,215",
 name:"staxmta",

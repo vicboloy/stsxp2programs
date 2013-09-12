@@ -75,6 +75,7 @@ uuid:"CE2D0310-BC47-40AE-94A2-0AC468B2D257"
 name:"customer_specs",
 navigatorID:"-1",
 onLoadMethodID:"-1",
+onShowMethodID:"1FC02317-CBF4-4ED9-A5EF-EF22CD4EB0E3",
 scrollbars:36,
 size:"604,479",
 styleName:"sts_one",

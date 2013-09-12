@@ -3,3 +3,28 @@
  */
 var editCustomerFlag = false;
 
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @private
+ *
+ * @properties={typeid:24,uuid:"1FC02317-CBF4-4ED9-A5EF-EF22CD4EB0E3"}
+ */
+function onShow(firstShow, event) {
+	//set this up for edit, save, cancel
+	controller.readOnly = true;
+	/**
+	// /**@type {JSFoundSet<db:/stsservoy/customers>} */
+	/**var fs = databaseManager.getFoundSet('db:/stsservoy/customers')
+	fs.newRecord()
+	databaseManager.saveData(fs)
+	if(fs.find()){
+		fs.customer_number = customer_number
+		
+	}
+	**/
+}

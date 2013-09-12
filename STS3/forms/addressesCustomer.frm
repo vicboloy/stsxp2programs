@@ -2,17 +2,6 @@ dataSource:"db:/stsservoy/addresses",
 extendsID:"E6818EAD-F587-4B8F-AA52-012EE881207A",
 items:[
 {
-anchors:11,
-borderType:"EmptyBorder,0,0,0,0",
-location:"0,0",
-name:"coverSheet",
-onActionMethodID:"37B360EE-FBFB-4C4B-A231-D5677474A5B1",
-size:"519,150",
-transparent:true,
-typeid:7,
-uuid:"01CC42FB-E86F-4706-975A-D7095CA90C8C"
-},
-{
 location:"10,364",
 name:"saveButton",
 onActionMethodID:"9831D84F-EC5A-4F02-9E78-9A6D5909C76D",

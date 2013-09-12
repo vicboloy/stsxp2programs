@@ -21,6 +21,7 @@ function addCustomerRecord(event) {
 	globals.selectedCustomerIndex = controller.getSelectedIndex();
 	forms.customer_contact.onEditCustomer(event,true);
 	forms.customers_lst.controller.newRecord();
+	globals.newCustomerRecord = null; //reset customer record for save current edit record
 }
 
 /**

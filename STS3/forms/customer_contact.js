@@ -32,7 +32,7 @@ function delCustomerRecordCancel(event) {
  * @properties={typeid:24,uuid:"6756ADA3-D8F6-4D60-8D6A-ABD51DEE1680"}
  */
 function onRenderCustomer(event) {
-	elements.delCustomerButton.text = 'Delete Customer \''+name+'\'';
+	elements.delCustomerButton.text = 'Delete \''+name+'\'';
 }
 
 /**
@@ -48,6 +48,14 @@ function onRenderCustomer(event) {
  * @AllowToRunInFind
  */
 function onDataChange(oldValue, newValue, event) {
+	databaseManager.nullColumnValidatorEnabled = false;
+	if (customer_number == null){
+		customer_number = "Number Required";
+	}
+	databaseManager.setAutoSave(true);
+	if (globals.newCustomerRecord == null){
+		globals.newCustomerRecord = customer_id;
+	}
 	var fs = foundset.find();
 	if (fs) //find will fail if autosave is disabled and there are unsaved records
 	{
@@ -56,12 +64,53 @@ function onDataChange(oldValue, newValue, event) {
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
 			foundset.deleteRecord();
+			onEditCustomer(event,false);
+		}
+		foundset.sts_customer_container.loadAllRecords();
+		foundset.setSelectedIndex(globals.selectedCustomerIndex);
+		
+	}
+	databaseManager.setAutoSave(true);
+	return true
+}
+/**
+ * 
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param oldValue
+ * @param newValue
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"01D244B3-B723-422D-9634-598FA70A6A99"}
+ * @AllowToRunInFind
+ */
+function onDataChangeCustomerNumber(oldValue, newValue, event) {
+	if (name == null){
+		name = "X";
+	}
+	databaseManager.setAutoSave(true);
+	databaseManager.nullColumnValidatorEnabled = false;
+	if (globals.newCustomerRecord != null){
+		globals.newCustomerRecord = customer_id;
+	}
+	var fs = foundset.find();
+	var inFind = foundset.isInFind();
+	if (fs) //find will fail if autosave is disabled and there are unsaved records
+	{
+		customer_number = newValue;
+		foundset.search();
+		var count = databaseManager.getFoundSetCount(foundset);
+		if (count > 1){
+			foundset.deleteRecord();
+			onEditCustomer(event,false);
 		}
 		foundset.sts_customer_container.loadAllRecords();
 		foundset.setSelectedIndex(globals.selectedCustomerIndex);
 	}
+	databaseManager.setAutoSave(true);
 	return true
 }
+
 
 /**
  * TODO generated, please specify type and doc for the params
@@ -71,9 +120,8 @@ function onDataChange(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"E7FE9A7F-8D92-459A-A1E8-7DBE7BFFFB1C"}
  */
 function onEditCustomer(event,editStatus){
+	forms.customer_specs.controller.readOnly = !editStatus;
 	forms.customer_specs.editCustomerFlag = !editStatus;
-	forms.customer_contact.elements.coverSheet.visible = !editStatus;
-	forms.customer_barcode.elements.coverSheet.visible = !editStatus;
 	forms.customer_contact.elements.cancelButton.visible = editStatus;
 	forms.customer_contact.elements.saveButton.visible = editStatus;
 	forms.customer_contact.elements.editButton.visible = !editStatus;

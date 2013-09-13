@@ -1,3 +1,7 @@
+/**
+ * @properties={typeid:35,uuid:"771DC8CA-C43E-43D4-B00F-A46693305167",variableType:-4}
+ */
+var editAddressFlag = false;
 
 /**
  * Perform the element default action.
@@ -20,6 +24,7 @@ function delSelectedAddress(event) {
  * @properties={typeid:24,uuid:"3268BC50-5A10-4EE0-9547-CC071F13BFDA"}
  */
 function addNewAddress(event) {
+	onEditAddress(event,true);
 	var employeeUUID = forms.employees_lst.employee_id;
 	var customerUUID = forms.customers_lst.customer_id;
 	var form = application.getActiveWindow();
@@ -29,9 +34,9 @@ function addNewAddress(event) {
 	}
 	if (form.title == "Customers"){
 		foundset.customer_id = customerUUID;
-		forms.addressesCustomer.onActionEditAddress(event);
+		//forms.addressesCustomer.onActionEditAddress(event);
 	}
-	
+	onActionEditAddress(event);
 }
 
 /**
@@ -109,12 +114,66 @@ function onAddressTypeChange(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"AC080D32-4094-4A4B-9591-EA87495D8865"}
  */
 function onRenderDeleteAddressButton(event) {
-	var addyType = address_type;
-	if (addyType != null){
-		elements.deleteButton.text = "Delete \'"+addyType+"\'";
-		elements.deleteButton.visible = true;
-	} else {
-		elements.deleteButton.visible = false;
+	if (!editAddressFlag){
+		var addyType = address_type;
+		if (addyType != null){
+			elements.deleteButton.text = "Delete \'"+addyType+"\'";
+			elements.deleteButton.visible = true;
+		} else {
+			elements.deleteButton.visible = false;
+		}
 	}
-	
 }
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"D92C5F5E-161C-410F-A7DA-0243B2333602"}
+ */
+function onActionEditAddress(event) {
+	onEditAddress(event,true);
+	databaseManager.setAutoSave(false);
+}
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param editStatus
+ *
+ * @properties={typeid:24,uuid:"ED0E61C4-70AF-43D4-949A-4632C8344733"}
+ */
+function onEditAddress(event,editStatus){
+	editAddressFlag = editStatus;
+	elements.deleteButton.visible = !editStatus;
+	elements.addAddressButton.visible = !editStatus;
+	elements.cancelButton.visible = editStatus;
+	elements.saveButton.visible = editStatus;
+	elements.editButton.visible = !editStatus;
+	controller.readOnly = !editStatus;
+}
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"FF7606F7-99DE-4C97-8E9E-385A230040D9"}
+ */
+function onActionSaveEditAddress(event) {
+	onEditAddress(event,false);
+	databaseManager.saveData(foundset);
+	databaseManager.setAutoSave(true);
+}
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"E71A7A0A-4F5D-4AE6-AC22-33D055AD20FB"}
+ */
+function onActionCancelEditAddress(event) {
+	onEditAddress(event,false);
+	databaseManager.revertEditedRecords(foundset);
+	databaseManager.setAutoSave(true);
+}
+

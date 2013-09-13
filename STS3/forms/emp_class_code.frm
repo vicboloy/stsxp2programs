@@ -38,7 +38,7 @@ uuid:"33872FDA-344B-4025-B056-BB7EF5F9EB0A"
 },
 {
 location:"385,185",
-name:"empClassDeleteButton",
+name:"deleteButton",
 onActionMethodID:"0F0E5A77-AE9D-496C-B320-6F45FB46FE36",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

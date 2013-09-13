@@ -11,7 +11,7 @@ var editEmployeeClassFlag = false;
  * @properties={typeid:24,uuid:"C4E0A0F7-3C92-4804-8FFA-98BC9B85EAB5"}
  */
 function onActionRecordSelect(event) {
-	elements.empClassDeleteButton.text = elements.class_code.titleText;
+	elements.deleteButton.text = elements.class_code.titleText;
 }
 
 /**
@@ -27,7 +27,7 @@ function onShowEmployeeClasses(firstShow, event) {
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
 	}
-	elements.empClassDeleteButton.text = 'Delete code \''+class_code+'\'';
+	elements.deleteButton.text = 'Delete code \''+class_code+'\'';
 }
 
 /**
@@ -65,7 +65,7 @@ function onActionDeleteClass(event) {
  * @properties={typeid:24,uuid:"76EF827F-5EBC-488E-AF0B-920AE2FC2807"}
  */
 function onRecordSelectionEmpClass(event) {
-	elements.empClassDeleteButton.text = 'Delete code \''+class_code+'\'';
+	elements.deleteButton.text = 'Delete code \''+class_code+'\'';
 }
 
 /**
@@ -88,11 +88,12 @@ function onActionEditEmpClass(event) {
  * @properties={typeid:24,uuid:"39586DFE-D834-4968-8522-100C81C768A9"}
  */
 function onEditEmpClass(event,editStatus){
-	forms.emp_class_code.editEmployeeClassFlag = !editStatus;
+	editEmployeeClassFlag = editStatus;
 	controller.readOnly = !editStatus;
-	forms.emp_class_code.elements.saveButton.visible = editStatus;
-	forms.emp_class_code.elements.cancelButton.visible = editStatus;
-	forms.emp_class_code.elements.editButton.visible = !editStatus;
+	elements.saveButton.visible = editStatus;
+	elements.cancelButton.visible = editStatus;
+	elements.editButton.visible = !editStatus;
+	elements.deleteButton.visible = !editStatus;
 }
 
 /**

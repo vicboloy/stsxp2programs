@@ -4,7 +4,7 @@ items:[
 {
 horizontalAlignment:0,
 imageMediaID:"723F6B37-119D-43E4-8CD6-EFD373F5B7F4",
-location:"447,140",
+location:"405,50",
 mediaOptions:14,
 onActionMethodID:"C61C110C-151B-4C9D-B0AB-FA32D9401D16",
 onDoubleClickMethodID:"-1",
@@ -19,7 +19,7 @@ verticalAlignment:0
 {
 horizontalAlignment:0,
 imageMediaID:"84DD9786-2A3E-45F0-9F1E-3E73FC1AEDC4",
-location:"375,50",
+location:"196,145",
 mediaOptions:14,
 onActionMethodID:"B0C80879-16DA-4098-8801-18C1D7F24E96",
 onDoubleClickMethodID:"-1",
@@ -39,7 +39,7 @@ uuid:"61897401-6782-4561-978A-35F3D04F1314"
 },
 {
 imageMediaID:"48422983-E635-4432-82B7-7EE705C47AB2",
-location:"55,140",
+location:"37,145",
 mediaOptions:12,
 onActionMethodID:"AE5DFB87-E846-4DFB-9C25-E57140EC29C3",
 onDoubleClickMethodID:"-1",
@@ -53,7 +53,7 @@ uuid:"BEFCAD6C-0C94-478F-A1EB-87C23C9822FA"
 {
 horizontalAlignment:0,
 imageMediaID:"C35ED607-484A-4DDF-8F61-835855592BED",
-location:"114,50",
+location:"119,50",
 onActionMethodID:"027567CC-C0C7-43F6-8F87-7A8878ED6B55",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

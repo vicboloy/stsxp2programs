@@ -8,7 +8,7 @@
  */
 function onActionClickCustomer(event) {
 	var win = application.createWindow("customers", JSWindow.WINDOW);
-	win.setInitialBounds(10, 10, 880, 490);
+	win.setInitialBounds(10, 10, 880, 510);
 	win.title = "Customers";
 	win.show('customers');
 }
@@ -21,7 +21,7 @@ function onActionClickCustomer(event) {
  */
 function onActionClickEmployee(event) {
 	var win = application.createWindow("Employees", JSWindow.WINDOW);
-	win.setInitialBounds(50, 50, 870, 520);
+	win.setInitialBounds(50, 50, 870, 540);
 	win.title = "Employees";
 	win.show('employees');
 }

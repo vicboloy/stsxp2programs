@@ -78,12 +78,14 @@ uuid:"3B455BD3-6D9F-416D-9E28-C604723E6563"
 },
 {
 dataProviderID:"employee_classid",
+displayType:2,
 location:"198,15",
 name:"employee_classid",
 size:"140,20",
 text:"Employee Classid",
 typeid:4,
-uuid:"55EE0870-F636-4CD7-89EB-DB33E366DF50"
+uuid:"55EE0870-F636-4CD7-89EB-DB33E366DF50",
+valuelistID:"8F99FF4F-720E-4C04-99BD-DE80D774B8F0"
 },
 {
 dataProviderID:"employee_active_flag",

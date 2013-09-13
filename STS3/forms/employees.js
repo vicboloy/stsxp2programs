@@ -1,4 +1,9 @@
 /**
+ * @properties={typeid:35,uuid:"D7F2AC4F-B13B-4D37-8678-75C421B7AE0C",variableType:-4}
+ */
+var editEmployeeFlag = false;
+
+/**
  * Callback method when form is (re)loaded.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -25,4 +30,20 @@ function onLoadCreateRecord(event) {
  */
 function onTabChange(previousIndex, event) {
 	globals.employeesDividerLocation = elements.tabs.dividerLocation;
+}
+
+/**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @private
+ *
+ * @properties={typeid:24,uuid:"ED2A7507-650C-4E32-B610-5214AF60E105"}
+ */
+function onLoadEmployees(event) {
+	controller.readOnly = true;
+	if (globals.employeesDividerLocation == 0.0) {
+		elements.tabs.dividerLocation = 310.0;
+	}
 }

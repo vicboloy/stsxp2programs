@@ -19,4 +19,5 @@ function addCustomerRecord(event) {
  */
 function onRecordSelection(event) {
 	globals.selectedCustomerIndex = controller.getSelectedIndex(); 
+	globals.selectedCustomerID = customer_id; 
 }

@@ -25,10 +25,10 @@ function onActionEditAddress(event) {
 function onEditAddress(event,editStatus){
 	forms.addressesCustomer.editCustomerAddressFlag = !editStatus;
 	forms.addressesCustomer.elements.editMessage.visible = editStatus;
-	forms.addressesCustomer.elements.coverSheet.visible = !editStatus;
 	forms.addressesCustomer.elements.cancelButton.visible = editStatus;
 	forms.addressesCustomer.elements.saveButton.visible = editStatus;
 	forms.addressesCustomer.elements.editButton.visible = !editStatus;
+	controller.readOnly = !editStatus;
 }
 /**
  * Perform the element default action.
@@ -56,13 +56,3 @@ function onActionCancelEditAddress(event) {
 	databaseManager.setAutoSave(true);
 }
 
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"37B360EE-FBFB-4C4B-A231-D5677474A5B1"}
- */
-function onActionCoverSheet(event) {
-	//Intercept data entry field clicks to prohibit editing
-}

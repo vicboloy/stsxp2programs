@@ -71,6 +71,7 @@ function onDataChangeZipCode(oldValue, newValue, event) {
  * @param event
  *
  * @properties={typeid:24,uuid:"EC5EA9E7-95A5-4380-A18D-20EDCE050212"}
+ * @AllowToRunInFind
  */
 function onAddressTypeChange(oldValue, newValue, event) {
 	var ds = application.getValueListItems('address_types').getColumnAsArray(2);
@@ -84,7 +85,20 @@ function onAddressTypeChange(oldValue, newValue, event) {
 		fs.valuelist_name = "address_types";
 		fs.value_id = application.getValueListArray('address_types').length + 1;
 	}
-	return true
+	//TODO Address should have only one in each Address Type
+	//var fs = databaseManager.getFoundSet('db:/stsservoy/addresses')
+	/** var fs = databaseManager.getFoundSet('db:/stsservoy/customers');
+	if(fs.find()){
+		fs.customer_id = globals.selectedCustomerID;
+		sts_cust_to_address.address_id = address_id;
+		var count = fs.search();
+		if (count > 0) {
+			controller.deleteRecord();
+			controller.setSelectedIndex(globals.selectedAddressIndex);
+		}
+	}
+	**/
+ 	return true
 }
 
 /**

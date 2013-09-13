@@ -36,6 +36,37 @@ var newCustomerRecord = null;
  * @properties={typeid:35,uuid:"3675EA64-17BD-4B4E-A636-14D3251F077A",variableType:4}
  */
 var selectedCustomerIndex = 0;
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"5B0F4055-3996-4A9D-A4BB-B90E10470D37"}
+ */
+var selectedCustomerID = "";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"8AB2EAB0-28A6-4575-940C-BC5C813524F5",variableType:4}
+ */
+var selectedAddressIndex = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"B5E00747-6C17-4F14-BBA0-03E869AF3B08",variableType:4}
+ */
+var selectedEmployeeIndex = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"467BBBB0-DF3C-4DFB-A50D-550A25BC6C67",variableType:4}
+ */
+var selectedEmpClassIndex = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"BF79272C-B516-4388-B4F4-DB6CE3E2394D",variableType:4}
+ */
+var selectedUOMIndex = 0;
 /**
  * @type {Number}
  *

@@ -23,6 +23,7 @@ function onActionRecordSelect(event) {
  * @properties={typeid:24,uuid:"E47D7FF2-8473-4AD4-AD69-AC99BA008846"}
  */
 function onShowEmployeeClasses(firstShow, event) {
+	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
 	}
@@ -36,7 +37,10 @@ function onShowEmployeeClasses(firstShow, event) {
  * @properties={typeid:24,uuid:"0AC1F465-7E38-41C1-9CB9-AC43FEAB1DEE"}
  */
 function onActionAddClass(event){
+	globals.selectedEmpClassIndex = controller.getSelectedIndex();
+	forms.emp_class_code.onEditEmpClass(event,true);
 	controller.newRecord();
+	//globals.newEmpClassRecord = null; //reset customer record for save current edit record
 }
 /**
  * Perform the element default action.
@@ -79,17 +83,16 @@ function onActionEditEmpClass(event) {
 /**
  * TODO generated, please specify type and doc for the params
  * @param event
- * @param status
+ * @param editStatus Status of boolean for record edit status changes
  *
  * @properties={typeid:24,uuid:"39586DFE-D834-4968-8522-100C81C768A9"}
  */
-function onEditEmpClass(event,status){
+function onEditEmpClass(event,editStatus){
 	forms.emp_class_code.editEmployeeClassFlag = !editStatus;
-	forms.emp_class_code.elements.coverSheet.visible = !editStatus;
+	controller.readOnly = !editStatus;
 	forms.emp_class_code.elements.saveButton.visible = editStatus;
 	forms.emp_class_code.elements.cancelButton.visible = editStatus;
 	forms.emp_class_code.elements.editButton.visible = !editStatus;
-	//forms.customer_barcode.elements.editMessage.visible = editStatus;
 }
 
 /**
@@ -141,10 +144,10 @@ function onDataChangeEmpClassCode(oldValue, newValue, event) {
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
 			foundset.deleteRecord();
-			onEditCustomer(event,false);
+			onEditEmpClass(event,false);
 		}
-		foundset.sts_customer_container.loadAllRecords();
-		foundset.setSelectedIndex(globals.selectedCustomerIndex);
+		foundset.sts_employee_class_container.loadAllRecords();
+		foundset.setSelectedIndex(globals.selectedEmpClassIndex);
 		
 	}
 	databaseManager.setAutoSave(true);

@@ -17,14 +17,4 @@ var editCustomerFlag = false;
 function onShow(firstShow, event) {
 	//set this up for edit, save, cancel
 	controller.readOnly = true;
-	/**
-	// /**@type {JSFoundSet<db:/stsservoy/customers>} */
-	/**var fs = databaseManager.getFoundSet('db:/stsservoy/customers')
-	fs.newRecord()
-	databaseManager.saveData(fs)
-	if(fs.find()){
-		fs.customer_number = customer_number
-		
-	}
-	**/
 }

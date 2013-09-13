@@ -52,6 +52,7 @@ uuid:"F6271AF2-F383-4D16-8B57-BEBA55ECA33C"
 ],
 name:"emp_class_lst",
 navigatorID:"-1",
+onRecordSelectionMethodID:"3AF13BA7-C288-4AFD-A798-8B0A70FABC62",
 scrollbars:32,
 showInMenu:true,
 size:"321,339",

@@ -165,14 +165,3 @@ function onActionSaveEditCustomer(event){
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
 }
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"4A8AAD25-897E-4AA0-AA35-2B8716A9DD96"}
- */
-function onActionCoverButton(event) {
-	// cover buttons rather than set enabled for edit
-}

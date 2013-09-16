@@ -129,11 +129,32 @@ function onRenderDeleteAddressButton(event) {
  * TODO generated, please specify type and doc for the params
  * @param event
  *
+ * @properties={typeid:24,uuid:"86B853C9-AA6A-4395-89A8-B1BB1F8939C7"}
+ */
+function onRenderEditAddressButton(event) {
+	if (!editAddressFlag){
+		var addyType = address_type;
+		if (addyType != null){
+			elements.editButton.visible = true;
+		} else {
+			elements.editButton.visible = false;
+		}
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
  * @properties={typeid:24,uuid:"D92C5F5E-161C-410F-A7DA-0243B2333602"}
  */
 function onActionEditAddress(event) {
 	onEditAddress(event,true);
 	databaseManager.setAutoSave(false);
+	var count = databaseManager.getFoundSetCount(foundset);
+	if (count == 0){
+		controller.newRecord();
+	}
+
 }
 
 /**
@@ -176,4 +197,3 @@ function onActionCancelEditAddress(event) {
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
-

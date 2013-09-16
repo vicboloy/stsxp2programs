@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/uom_types",
+joinType:1,
+name:"sts_units_of_measure",
+primaryDataSource:"db:/stsservoy/uom_types",
+typeid:22,
+uuid:"B0C95677-96C8-4DFB-AE0E-C5E02D35B995"

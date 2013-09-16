@@ -94,7 +94,6 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 		globals.newCustomerRecord = customer_id;
 	}
 	var fs = foundset.find();
-	var inFind = foundset.isInFind();
 	if (fs) //find will fail if autosave is disabled and there are unsaved records
 	{
 		customer_number = newValue;
@@ -120,8 +119,11 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"E7FE9A7F-8D92-459A-A1E8-7DBE7BFFFB1C"}
  */
 function onEditCustomer(event,editStatus){
-	forms.customers_rec.controller.readOnly = !editStatus;
+	//forms.customers_rec.controller.readOnly = !editStatus;
 	forms.customers_rec.controller.enabled = !editStatus;
+	forms.customer_contact.controller.readOnly = !editStatus;
+	forms.customer_barcode.controller.readOnly = !editStatus;
+	forms.customer_taxes.controller.readOnly = !editStatus;
 	forms.customer_specs.editCustomerFlag = editStatus;
 	forms.customers_rec.elements.addNewCustomerButton.visible = !editStatus;
 	forms.customer_contact.elements.cancelButton.visible = editStatus;

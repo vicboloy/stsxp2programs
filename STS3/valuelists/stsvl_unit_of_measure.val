@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"uom_code",
+dataProviderID2:"uom_id",
+dataSource:"db:/stsservoy/uom_types",
+name:"stsvl_unit_of_measure",
+returnDataProviders:2,
+showDataProviders:1,
+typeid:34,
+uuid:"0D5F1C3A-6AF5-42C8-9E59-158AC0E0F18A",
+valueListType:1

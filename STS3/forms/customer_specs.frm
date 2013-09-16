@@ -15,7 +15,7 @@ uuid:"11BADAB5-CA04-42E9-88CA-EE8949BBD084"
 },
 {
 containsFormID:"34C436F3-F50C-4094-B2E6-E79C008D7264",
-location:"160,58",
+location:"248,54",
 name:"customer_addresses",
 relationName:"sts_cust_to_address",
 text:"Addresses",
@@ -24,7 +24,7 @@ uuid:"8F5B3453-754E-473A-8951-B9EFC1BA348B"
 },
 {
 containsFormID:"09ED1A58-743D-40D0-90E6-5C82E76BEC57",
-location:"240,58",
+location:"158,57",
 name:"Financial",
 relationName:"sts_customer_container",
 text:"Accounting",

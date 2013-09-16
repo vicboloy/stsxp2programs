@@ -52,3 +52,15 @@ function onActionClickEmployeeClass(event) {
 	win.title = "Employee Class Codes";
 	win.show('emp_class_code');
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"BFF5857C-588C-4703-B859-CF9A5A1BF8B9"}
+ */
+function onActionClickUOM(event) {
+	var win = application.createWindow("Units of Measure", JSWindow.WINDOW);
+	win.setInitialBounds(50, 50, 660, 380);
+	win.title = "Units of Measure";
+	win.show('unit_of_measure');
+}

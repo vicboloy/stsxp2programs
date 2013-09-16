@@ -35,7 +35,7 @@ function onRenderCarrierButton(event) {
 function onEditCarrier(event,editStatus){
 		forms.carriers.controller.readOnly = !editStatus;
 		forms.carriers_lst.controller.enabled = !editStatus;
-		forms.carriers.editCarrierFlag = editStatus;
+		editCarrierFlag = editStatus;
 		forms.carriers_rec.elements.addNewCarrierButton.visible = !editStatus;
 		forms.carrier_info.elements.deleteCarrierButton.visible = !editStatus;
 		forms.carrier_info.elements.cancelButton.visible = editStatus;

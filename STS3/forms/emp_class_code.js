@@ -4,17 +4,6 @@
 var editEmployeeClassFlag = false;
 
 /**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"C4E0A0F7-3C92-4804-8FFA-98BC9B85EAB5"}
- */
-function onActionRecordSelect(event) {
-	elements.deleteButton.text = elements.class_code.titleText;
-}
-
-/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -27,7 +16,7 @@ function onShowEmployeeClasses(firstShow, event) {
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
 	}
-	elements.deleteButton.text = 'Delete code \''+class_code+'\'';
+	elements.deleteButton.text = 'Delete class \''+class_code+'\'';
 }
 
 /**
@@ -40,7 +29,6 @@ function onActionAddClass(event){
 	globals.selectedEmpClassIndex = controller.getSelectedIndex();
 	forms.emp_class_code.onEditEmpClass(event,true);
 	controller.newRecord();
-	//globals.newEmpClassRecord = null; //reset customer record for save current edit record
 }
 /**
  * Perform the element default action.
@@ -65,7 +53,7 @@ function onActionDeleteClass(event) {
  * @properties={typeid:24,uuid:"76EF827F-5EBC-488E-AF0B-920AE2FC2807"}
  */
 function onRecordSelectionEmpClass(event) {
-	elements.deleteButton.text = 'Delete code \''+class_code+'\'';
+	elements.deleteButton.text = 'Delete class \''+class_code+'\'';
 }
 
 /**
@@ -90,7 +78,6 @@ function onActionEditEmpClass(event) {
 function onEditEmpClass(event,editStatus){
 	editEmployeeClassFlag = editStatus;
 	controller.readOnly = !editStatus;
-	//forms.emp_class_code.controller.enabled = !editStatus;
 	elements.empClassAddButton.visible = !editStatus;
 	elements.saveButton.visible = editStatus;
 	elements.cancelButton.visible = editStatus;

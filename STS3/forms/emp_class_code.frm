@@ -70,7 +70,7 @@ uuid:"7EB1C709-A794-430F-9FAF-53D9C9819078"
 },
 {
 location:"104,4",
-name:"empClassAddButtonc",
+name:"empClassAddButton",
 onActionMethodID:"0AC1F465-7E38-41C1-9CB9-AC43FEAB1DEE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -154,6 +154,7 @@ items:[
 {
 containsFormID:"A45A2D53-6AA5-4C05-9285-86864C2E4D0B",
 location:"5,66",
+name:"emp_class_lst",
 relationName:"sts_employee_class_container",
 text:"emp_class_lst",
 typeid:15,
@@ -161,7 +162,7 @@ uuid:"E9F21DDB-62AA-4367-8559-B332B3219B2E"
 }
 ],
 location:"5,36",
-name:"tabless",
+name:"tablessX",
 printable:false,
 size:"322,291",
 tabOrientation:-1,

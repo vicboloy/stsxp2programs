@@ -24,14 +24,14 @@ location:"0,5",
 name:"split",
 onChangeMethodID:"5439B6EE-D2FE-4164-9A77-3923DC176DE2",
 printable:false,
-size:"845,533",
+size:"845,576",
 tabOrientation:-2,
 transparent:true,
 typeid:16,
 uuid:"24B0632E-F0A9-41BD-AF3F-4347E14AD44F"
 },
 {
-height:562,
+height:591,
 partType:5,
 typeid:19,
 uuid:"E867A28B-CD66-44C4-AE75-B141D438ADAE"

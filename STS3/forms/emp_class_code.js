@@ -90,6 +90,8 @@ function onActionEditEmpClass(event) {
 function onEditEmpClass(event,editStatus){
 	editEmployeeClassFlag = editStatus;
 	controller.readOnly = !editStatus;
+	//forms.emp_class_code.controller.enabled = !editStatus;
+	elements.empClassAddButton.visible = !editStatus;
 	elements.saveButton.visible = editStatus;
 	elements.cancelButton.visible = editStatus;
 	elements.editButton.visible = !editStatus;

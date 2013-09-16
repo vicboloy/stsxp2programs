@@ -79,8 +79,12 @@ uuid:"3B455BD3-6D9F-416D-9E28-C604723E6563"
 {
 dataProviderID:"employee_classid",
 displayType:2,
+editable:false,
 location:"198,15",
 name:"employee_classid",
+onActionMethodID:"-1",
+onDataChangeMethodID:"-1",
+onRenderMethodID:"-1",
 size:"140,20",
 text:"Employee Classid",
 typeid:4,

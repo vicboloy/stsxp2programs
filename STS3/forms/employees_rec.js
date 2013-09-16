@@ -8,4 +8,5 @@
  */
 function onActionAddEmployee(event) {
 	forms.employees_lst.controller.newRecord();
+	forms.employee_specs.onEditEmployee(event,true);
 }

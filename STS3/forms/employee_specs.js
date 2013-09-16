@@ -25,7 +25,9 @@ function onRenderEmployeeData(event) {
  */
 function onEditEmployee(event,editStatus){
 	forms.employees.controller.readOnly = !editStatus;
-	forms.employees.editEmployeeFlag = !editStatus;
+	forms.employees_lst.controller.enabled = !editStatus;
+	forms.employees.editEmployeeFlag = editStatus;
+	forms.employees_rec.elements.addNewEmployeeButton.visible = !editStatus;
 	forms.employee_specs.elements.cancelButton.visible = editStatus;
 	forms.employee_specs.elements.saveButton.visible = editStatus;
 	forms.employee_specs.elements.editButton.visible = !editStatus;

@@ -7,6 +7,7 @@
  */
 function addCarrierRecord(event) {
 	forms.carriers_lst.controller.newRecord();
+	forms.carrier_info.onEditCarrier(event,true);
 }
 
 /**

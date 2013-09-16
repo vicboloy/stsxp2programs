@@ -3,6 +3,7 @@ extendsID:"-1",
 items:[
 {
 location:"46,5",
+name:"addNewCustomerButton",
 onActionMethodID:"C8FE22F3-9879-4FD0-A0ED-8D4F46D0F3CF",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

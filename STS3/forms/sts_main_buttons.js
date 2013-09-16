@@ -8,7 +8,7 @@
  */
 function onActionClickCustomer(event) {
 	var win = application.createWindow("customers", JSWindow.WINDOW);
-	win.setInitialBounds(10, 10, 880, 510);
+	win.setInitialBounds(10, 10, 880, 475);
 	win.title = "Customers";
 	win.show('customers');
 }
@@ -34,7 +34,7 @@ function onActionClickEmployee(event) {
  */
 function onActionClickCarrier(event) {
 	var win = application.createWindow("carriers", JSWindow.WINDOW);
-	win.setInitialBounds(50, 50, 775, 560);
+	win.setInitialBounds(50, 50, 775, 585);
 	win.title = "Carriers";
 	win.show('carriers');
 }
@@ -48,7 +48,7 @@ function onActionClickCarrier(event) {
  */
 function onActionClickEmployeeClass(event) {
 	var win = application.createWindow("Employee Class", JSWindow.WINDOW);
-	win.setInitialBounds(50, 50, 660, 340);
+	win.setInitialBounds(50, 50, 660, 310);
 	win.title = "Employee Class Codes";
 	win.show('emp_class_code');
 }

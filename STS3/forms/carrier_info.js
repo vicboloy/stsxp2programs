@@ -1,4 +1,8 @@
 /**
+ * @properties={typeid:35,uuid:"BC520223-1796-4CDA-92F5-0FD0630A9FC5",variableType:-4}
+ */
+var editCarrierFlag = false;
+/**
  * TODO generated, please specify type and doc for the params
  * @param event
  *
@@ -21,3 +25,56 @@ function delCarrierRecordAndAddress(event) {
 function onRenderCarrierButton(event) {
 	elements.deleteCarrierButton.text = 'Delete \''+carrier_name+'\'';
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param editStatus
+ *
+ * @properties={typeid:24,uuid:"E3D11FE7-21BB-4673-BA26-ECA02C3B8401"}
+ */
+function onEditCarrier(event,editStatus){
+		forms.carriers.controller.readOnly = !editStatus;
+		forms.carriers_lst.controller.enabled = !editStatus;
+		forms.carriers.editCarrierFlag = editStatus;
+		forms.carriers_rec.elements.addNewCarrierButton.visible = !editStatus;
+		forms.carrier_info.elements.deleteCarrierButton.visible = !editStatus;
+		forms.carrier_info.elements.cancelButton.visible = editStatus;
+		forms.carrier_info.elements.saveButton.visible = editStatus;
+		forms.carrier_info.elements.editButton.visible = !editStatus;
+		
+	}
+
+	/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"B9D2388A-C4A5-411A-A952-9EA4CC7D76FE"}
+ */
+function onActionEditCarrier(event) {
+		onEditCarrier(event,true);
+		databaseManager.setAutoSave(false);
+	}
+
+	/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"2D2FDD4C-4DC6-4BB9-B450-9446D0DB8840"}
+ */
+function onActionCancelEditCarrier(event) {
+		onEditCarrier(event,false);
+		databaseManager.revertEditedRecords(foundset);
+		databaseManager.setAutoSave(true);
+	}
+
+	/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"100B8F88-B23F-43E4-BC9F-2CB51D291148"}
+ */
+function onActionSaveEditCarrier(event){
+		onEditCarrier(event,false);
+		databaseManager.saveData(foundset);
+		databaseManager.setAutoSave(true);
+	}

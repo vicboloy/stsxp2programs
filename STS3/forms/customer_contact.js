@@ -120,9 +120,12 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"E7FE9A7F-8D92-459A-A1E8-7DBE7BFFFB1C"}
  */
 function onEditCustomer(event,editStatus){
-	forms.customer_specs.controller.readOnly = !editStatus;
-	forms.customer_specs.editCustomerFlag = !editStatus;
+	forms.customers_rec.controller.readOnly = !editStatus;
+	forms.customers_rec.controller.enabled = !editStatus;
+	forms.customer_specs.editCustomerFlag = editStatus;
+	forms.customers_rec.elements.addNewCustomerButton.visible = !editStatus;
 	forms.customer_contact.elements.cancelButton.visible = editStatus;
+	forms.customer_contact.elements.delCustomerButton.visible = !editStatus;
 	forms.customer_contact.elements.saveButton.visible = editStatus;
 	forms.customer_contact.elements.editButton.visible = !editStatus;
 	forms.customer_contact.elements.editMessage.visible = editStatus;

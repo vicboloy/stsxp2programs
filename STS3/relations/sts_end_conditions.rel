@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/end_conditions",
+joinType:1,
+name:"sts_end_conditions",
+primaryDataSource:"db:/stsservoy/end_conditions",
+typeid:22,
+uuid:"FF6750D3-61E0-4D4A-9937-960BD8C124A1"

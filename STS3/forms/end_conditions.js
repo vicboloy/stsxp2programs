@@ -1,26 +1,27 @@
 /**
- * @properties={typeid:35,uuid:"875A0E2C-8EB8-4619-87F7-D28341B835BB",variableType:-4}
+ * @properties={typeid:35,uuid:"455A2791-CC8F-45FE-A564-C1C02BA5B179",variableType:-4}
  */
-var editUOMFlag = false;
+var editFlag = false;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"AE5913C3-B7F9-4BC5-891B-D932C7EF7EC9",variableType:4}
+ * @properties={typeid:35,uuid:"54B21135-162E-4ABD-B337-4CB15D5A67D8",variableType:4}
  */
-var selectedUOMIndex = 0;
+var selectedIndex = 0;
+
 /**
  * TODO generated, please specify type and doc for the params
  * @param firstShow
  * @param event
  *
- * @properties={typeid:24,uuid:"36033168-4C98-4CC2-87E0-FD49B6946777"}
+ * @properties={typeid:24,uuid:"16DA5ADC-AD41-4B59-93B4-EBB53F37C097"}
  */
-function onShowUOM(firstShow, event) {
+function onShow(firstShow, event) {
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
 	} else {
-		elements.deleteButton.text = 'Delete UOM \''+uom_code+'\'';
+		elements.deleteButton.text = 'Delete End Condition \''+end_prep+'\'';
 	}
 }
 
@@ -28,11 +29,11 @@ function onShowUOM(firstShow, event) {
  * TODO generated, please specify type and doc for the params
  * @param event
  *
- * @properties={typeid:24,uuid:"E48C67E7-992B-409E-8B64-2F280239F708"}
+ * @properties={typeid:24,uuid:"BBCAFF29-FA7C-4C79-89F3-B649CD227D28"}
  */
-function onActionAddUOM(event){
-	globals.selectedUOMIndex = controller.getSelectedIndex();
-	forms.unit_of_measure.onEditUOM(event,true);
+function onActionAdd(event){
+	selectedIndex = controller.getSelectedIndex();
+	onEdit(event,true);
 	controller.newRecord();
 }
 
@@ -40,10 +41,10 @@ function onActionAddUOM(event){
  * TODO generated, please specify type and doc for the params
  * @param event
  *
- * @properties={typeid:24,uuid:"2E41F535-CE15-4213-B79C-20B4F4122D6D"}
+ * @properties={typeid:24,uuid:"CDFF9131-9C62-44EC-9FB4-AD364EEAA176"}
  */
-function onActionDeleteUOM(event) {
-	globals.doDialog("Remove UOM","Delete this UOM?","Delete","Cancel");
+function onActionDelete(event) {
+	globals.doDialog("Remove End Condition","Delete this End Condition?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
 			controller.deleteRecord();
 		}
@@ -54,20 +55,20 @@ function onActionDeleteUOM(event) {
  * TODO generated, please specify type and doc for the params
  * @param event
  *
- * @properties={typeid:24,uuid:"8BFBB16C-B5EB-4D10-8E51-77728A017A2A"}
+ * @properties={typeid:24,uuid:"C7BBBE77-1B45-4874-BCF4-C79131018700"}
  */
-function onRecordSelectionUOM(event) {
-	elements.deleteButton.text = 'Delete UOM \''+uom_code+'\'';
+function onRecordSelectionEP(event) {
+	elements.deleteButton.text = 'Delete UOM \''+end_prep+'\'';
 }
 
 /**
  * TODO generated, please specify type and doc for the params
  * @param event
  *
- * @properties={typeid:24,uuid:"592AC6AF-8E61-42CB-AED4-6DF63CAD4403"}
+ * @properties={typeid:24,uuid:"1248B902-DB67-48F1-BD63-FB87D937D5D0"}
  */
-function onActionEditUOM(event) {
-	onEditUOM(event,true);
+function onActionEdit(event) {
+	onEdit(event,true);
 	databaseManager.setAutoSave(false);	
 }
 
@@ -76,27 +77,26 @@ function onActionEditUOM(event) {
  * @param event
  * @param editStatus
  *
- * @properties={typeid:24,uuid:"AE63828B-36C7-46F0-88F2-05CC8FA1FF64"}
+ * @properties={typeid:24,uuid:"BE307F94-F375-403F-8A60-7CD895058CF8"}
  */
-function onEditUOM(event,editStatus){
-	editUOMFlag = editStatus;
+function onEdit(event,editStatus){
+	editFlag = editStatus;
 	controller.readOnly = !editStatus;
-	elements.addUOMButton.visible = !editStatus;
+	elements.addButton.visible = !editStatus;
 	elements.saveButton.visible = editStatus;
 	elements.cancelButton.visible = editStatus;
 	elements.editButton.visible = !editStatus;
 	elements.deleteButton.visible = !editStatus;
 }
 
-
 /**
  * TODO generated, please specify type and doc for the params
  * @param event
  *
- * @properties={typeid:24,uuid:"3675CD88-2B85-4DA5-AA05-B005CA40B258"}
+ * @properties={typeid:24,uuid:"A6202325-9051-40BE-B2D6-7474956362B2"}
  */
-function onActionCancelEditUOM(event) {
-	onEditUOM(event,false);
+function onActionCancelEdit(event) {
+	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -105,11 +105,11 @@ function onActionCancelEditUOM(event) {
  * TODO generated, please specify type and doc for the params
  * @param event
  *
- * @properties={typeid:24,uuid:"EB19EADC-193D-44C9-9455-8EC9DC5D406A"}
+ * @properties={typeid:24,uuid:"2CD566F5-14CB-4CC4-9AAC-E158AA9E3B99"}
  */
-function onActionSaveEditUOM(event) {
-	uom_edit_date = new Date;
-	onEditUOM(event,false);
+function onActionSaveEdit(event) {
+	end_prep_edit_date = new Date;
+	onEdit(event,false);
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -122,23 +122,23 @@ function onActionSaveEditUOM(event) {
  * @param newValue
  * @param event
  *
- * @properties={typeid:24,uuid:"E76BFEA2-E89F-4F46-B86C-021B8EC86E2F"}
+ * @properties={typeid:24,uuid:"CF0DAAF4-CED6-447C-8442-F3F050C78726"}
  */
-function onDataChangeUOMCode(oldValue, newValue, event) {
+function onDataChange(oldValue, newValue, event) {
 	databaseManager.nullColumnValidatorEnabled = false;
 	databaseManager.setAutoSave(true);
 	var fs = foundset.find();
 	if (fs) //find will fail if autosave is disabled and there are unsaved records
 	{
-		uom_code = newValue;
+		end_prep = newValue;
 		foundset.search();
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
 			foundset.deleteRecord();
-			onEditUOM(event,false);
+			onEdit(event,false);
 		}
-		foundset.sts_units_of_measure.loadAllRecords();
-		foundset.setSelectedIndex(globals.selectedUOMIndex);
+		foundset.sts_end_conditions.loadAllRecords();
+		foundset.setSelectedIndex(selectedIndex);
 		
 	}
 	databaseManager.setAutoSave(true);

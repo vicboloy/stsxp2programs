@@ -88,13 +88,13 @@ typeid:7,
 uuid:"93C5F0D0-590F-4AAF-8651-9BCB9F122A43"
 },
 {
-location:"104,4",
+location:"83,4",
 name:"addUOMButton",
 onActionMethodID:"E48C67E7-992B-409E-8B64-2F280239F708",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"97,26",
-text:"Add Class",
+size:"176,26",
+text:"Add Unit of Measure",
 typeid:7,
 uuid:"A2DC759D-4853-4FE8-8AB3-079E2872259E"
 },

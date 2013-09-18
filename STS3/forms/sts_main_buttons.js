@@ -64,3 +64,16 @@ function onActionClickUOM(event) {
 	win.title = "Units of Measure";
 	win.show('unit_of_measure');
 }
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"994929DE-14ED-4426-A743-D0A7169117EA"}
+ */
+function onActionClickEP(event) {
+	var win = application.createWindow("End Conditions", JSWindow.WINDOW);
+	win.setInitialBounds(50, 50, 660, 380);
+	win.title = "End Conditions";
+	win.show('end_conditions');
+}

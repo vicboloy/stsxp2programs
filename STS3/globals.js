@@ -12,6 +12,12 @@
 //TODO Customer Class search on entry
 //TODO test
 //TODO Work Login and security
+//TODO When pushing tables to remote sts, the UUID is left out.  Need to automate distribution.
+
+/**
+ * @properties={typeid:35,uuid:"FE89CF50-1B43-46F8-A8DD-250A8C617C79",variableType:-4}
+ */
+var change_to_remote = false;
 
 /**
  * @type {String}
@@ -49,6 +55,12 @@ var selectedCustomerID = "";
  * @properties={typeid:35,uuid:"8AB2EAB0-28A6-4575-940C-BC5C813524F5",variableType:4}
  */
 var selectedAddressIndex = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"1D679179-739D-4050-8676-4166740233DE",variableType:4}
+ */
+var selectedEPIndex = 0;
 /**
  * @type {Number}
  *
@@ -133,16 +145,18 @@ function onSolutionOpen() {
 	var success = false;
 	current_db = "stsservoy";
 	new_project_db = "stsservoy_remote";
-	new_project_db = "";
-	if (globals.new_project_db != globals.current_db && globals.new_project_db != null && globals.new_project_db != "") 
-
-{
-		//TODO Change database to production versus development
+	//new_project_db = "";
+	if (globals.change_to_remote) {
+		//TODO Change database to remote db versus local development
 		success = databaseManager.switchServer(current_db,new_project_db);
-		application.output(success+" CHANGED "+current_db+" changed to "+new_project_db,LOGGINGLEVEL.WARNING);
+		if (success){
+			application.output("CHANGED to REMOTE Database.");
+		} else {
+			application.output('FAILED change to REMOTE Database.')
+		}
 		current_db = new_project_db;
 	} else {
-		application.output(success+" FAIL: "+current_db+" changed to "+new_project_db,LOGGINGLEVEL.WARNING);
+		application.output('USING local development Database.')
 	}
 	
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle

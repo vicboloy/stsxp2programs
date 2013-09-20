@@ -24,5 +24,5 @@ function onLoadCreateRecord(event) {
  * @properties={typeid:24,uuid:"139836B6-AE07-4E83-8B58-AEEDFAD3A352"}
  */
 function onTabChange(previousIndex, event) {
-	globals.customersDividerLocation = forms.customers.elements.tabs.dividerLocation;
+	globals.customersDividerLocation = elements.tabs.dividerLocation;
 }

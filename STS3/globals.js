@@ -72,6 +72,13 @@ var selectedAddressIndex = 0;
  * @properties={typeid:35,uuid:"1D679179-739D-4050-8676-4166740233DE",variableType:4}
  */
 var selectedEPIndex = 0;
+
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"16B48E49-BF05-48DD-931D-F0FF183BE3A4",variableType:4}
+ */
+var selectedEndPrepIndex = 0;
 /**
  * @type {Number}
  *

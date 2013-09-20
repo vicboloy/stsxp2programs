@@ -32,7 +32,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"BBCAFF29-FA7C-4C79-89F3-B649CD227D28"}
  */
 function onActionAdd(event){
-	globals.selectedEndCondIndex = controller.getSelectedIndex();
+	globals.selectedEndPrepIndex = controller.getSelectedIndex();
 	onEdit(event,true);
 	controller.newRecord();
 	globals.newRecordKey = end_condition_id;
@@ -134,10 +134,11 @@ function onDataChange(oldValue, newValue, event) {
 	{
 		end_prep = newValue;
 		foundset.search();
+		var index = 0;
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
 			var record = null;
-			for (var index = 1;index <= foundset.getSize(); index++){
+			for (index = 1;index <= foundset.getSize(); index++){
 				record = foundset.getRecord(index);
 				if (record.end_condition_id == globals.newRecordKey){
 					foundset.deleteRecord(record);
@@ -148,7 +149,7 @@ function onDataChange(oldValue, newValue, event) {
 		foundset.sts_end_conditions.loadAllRecords();
 		foundset.setSelectedIndex(globals.newRecordIndex);
 	}
-	for (var index = 1; index <= foundset.getSize(); index++){
+	for (index = 1; index <= foundset.getSize(); index++){
 		if (foundset.getRecord(index).end_prep == newValue){
 			controller.setSelectedIndex(index);
 		}

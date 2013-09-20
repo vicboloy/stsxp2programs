@@ -27,6 +27,7 @@ function onDataChange(oldValue, newValue, event) {
 		foundset.search();
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
+			var record = "";
 			for (var index = 1;index <= foundset.getSize(); index++){	
 				record = foundset.getRecord(index);
 				if (record.name == 'Name Required' || record.customer_number == 'Number Required'){

@@ -48,8 +48,8 @@ name:"line2"
 {
 allowNull:true,
 creationOrderIndex:4,
-dataType:2000,
-length:36,
+dataType:12,
+length:200,
 name:"note"
 },
 {

@@ -32,9 +32,10 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"BBCAFF29-FA7C-4C79-89F3-B649CD227D28"}
  */
 function onActionAdd(event){
-	selectedIndex = controller.getSelectedIndex();
+	globals.selectedEndCondIndex = controller.getSelectedIndex();
 	onEdit(event,true);
 	controller.newRecord();
+	globals.newRecordKey = end_condition_id;
 }
 
 /**
@@ -87,6 +88,7 @@ function onEdit(event,editStatus){
 	elements.cancelButton.visible = editStatus;
 	elements.editButton.visible = !editStatus;
 	elements.deleteButton.visible = !editStatus;
+	elements.tablessX.enabled = !editStatus;
 }
 
 /**
@@ -134,13 +136,24 @@ function onDataChange(oldValue, newValue, event) {
 		foundset.search();
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
-			foundset.deleteRecord();
+			var record = null;
+			for (var index = 1;index <= foundset.getSize(); index++){
+				record = foundset.getRecord(index);
+				if (record.end_condition_id == globals.newRecordKey){
+					foundset.deleteRecord(record);
+				}
+			}
 			onEdit(event,false);
 		}
 		foundset.sts_end_conditions.loadAllRecords();
-		foundset.setSelectedIndex(selectedIndex);
-		
+		foundset.setSelectedIndex(globals.newRecordIndex);
+	}
+	for (var index = 1; index <= foundset.getSize(); index++){
+		if (foundset.getRecord(index).end_prep == newValue){
+			controller.setSelectedIndex(index);
+		}
 	}
 	databaseManager.setAutoSave(true);
+	globals.newRecordKey = "";
 	return true
 }

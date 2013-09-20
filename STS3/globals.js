@@ -31,7 +31,18 @@ var current_db;
  * @properties={typeid:35,uuid:"AEA18AFC-E1F3-4EDA-A35C-43C5304CCF2F"}
  */
 var new_project_db;
-
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"B7FC57AD-E13F-43EB-B80A-A1861B205B63",variableType:4}
+ */
+var newRecordIndex = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"41980ABA-12F7-4A94-A4BE-C85866E13679"}
+ */
+var newRecordKey = "";
 /**
  * @properties={typeid:35,uuid:"74338781-F357-47CA-B0D9-FDC670EBEACF",variableType:-4}
  */
@@ -68,11 +79,21 @@ var selectedEPIndex = 0;
  */
 var selectedEmployeeIndex = 0;
 /**
+ * @properties={typeid:35,uuid:"317091B8-7FA8-415A-BC35-A79383A99DE2",variableType:-4}
+ */
+var newEmployeeRecord = null;
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"467BBBB0-DF3C-4DFB-A50D-550A25BC6C67",variableType:4}
  */
 var selectedEmpClassIndex = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"516042AE-9CA5-4549-8E9A-4452AE9F562F",variableType:4}
+ */
+var selectedEndCondIndex = 0;
 /**
  * @type {Number}
  *

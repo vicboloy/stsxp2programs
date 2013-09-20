@@ -72,8 +72,10 @@ uuid:"2E84BBDD-BB80-402D-AB0A-A3CF7E926DFC"
 },
 {
 dataProviderID:"employee_number",
+displayType:10,
 location:"139,5",
 name:"employee_number",
+onDataChangeMethodID:"FEBFA4D4-CEDB-42ED-9148-7DB8B0F313E6",
 size:"140,20",
 text:"Employee Number",
 typeid:4,
@@ -115,18 +117,6 @@ text:"Active?",
 transparent:true,
 typeid:7,
 uuid:"55767145-CAC0-4DA8-8352-DC03AFAFC849"
-},
-{
-location:"65,376",
-name:"delCustomerButton",
-onActionMethodID:"F545C75F-A84C-43DF-BA74-1AB91158C183",
-onDoubleClickMethodID:"-1",
-onRenderMethodID:"C74EDC7C-1D05-4C89-A7DD-DDA85668ACD1",
-onRightClickMethodID:"-1",
-size:"254,20",
-text:"Delete",
-typeid:7,
-uuid:"5FE90F7F-0EF1-4F0B-B630-61084EC3B947"
 },
 {
 dataProviderID:"employee_otherphone3",
@@ -208,7 +198,7 @@ typeid:4,
 uuid:"D831DB92-9549-448C-8C6A-DE2B8080A7E6"
 },
 {
-height:406,
+height:323,
 partType:5,
 typeid:19,
 uuid:"DFCA0E38-BED1-4B49-A58C-6F8EBD270431"

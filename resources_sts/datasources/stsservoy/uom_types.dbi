@@ -25,6 +25,8 @@ name:"uom_code_description"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
 creationOrderIndex:5,
 dataType:93,
 name:"uom_edit_date"

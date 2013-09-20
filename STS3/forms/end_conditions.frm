@@ -20,6 +20,7 @@ uuid:"38A82ABD-23AE-4092-B821-909E9D489ADF"
 },
 {
 dataProviderID:"end_prep_description",
+displayType:10,
 location:"449,70",
 name:"end_prep_description",
 size:"140,20",
@@ -101,8 +102,10 @@ visible:false
 },
 {
 dataProviderID:"end_prep",
+displayType:10,
 location:"449,40",
 name:"end_prep",
+onDataChangeMethodID:"CF0DAAF4-CED6-447C-8442-F3F050C78726",
 size:"140,20",
 text:"End Prep",
 typeid:4,

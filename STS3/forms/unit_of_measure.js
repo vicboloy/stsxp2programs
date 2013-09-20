@@ -1,7 +1,7 @@
 /**
  * @properties={typeid:35,uuid:"875A0E2C-8EB8-4619-87F7-D28341B835BB",variableType:-4}
  */
-var editUOMFlag = false;
+var editFlag = false;
 /**
  * @type {Number}
  *
@@ -15,7 +15,7 @@ var selectedUOMIndex = 0;
  *
  * @properties={typeid:24,uuid:"36033168-4C98-4CC2-87E0-FD49B6946777"}
  */
-function onShowUOM(firstShow, event) {
+function onShow(firstShow, event) {
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
@@ -30,10 +30,11 @@ function onShowUOM(firstShow, event) {
  *
  * @properties={typeid:24,uuid:"E48C67E7-992B-409E-8B64-2F280239F708"}
  */
-function onActionAddUOM(event){
+function onActionAdd(event){
 	globals.selectedUOMIndex = controller.getSelectedIndex();
-	forms.unit_of_measure.onEditUOM(event,true);
+	onEdit(event,true);
 	controller.newRecord();
+	globals.newRecordKey =  uom_id;
 }
 
 /**
@@ -42,7 +43,7 @@ function onActionAddUOM(event){
  *
  * @properties={typeid:24,uuid:"2E41F535-CE15-4213-B79C-20B4F4122D6D"}
  */
-function onActionDeleteUOM(event) {
+function onActionDelete(event) {
 	globals.doDialog("Remove UOM","Delete this UOM?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
 			controller.deleteRecord();
@@ -56,7 +57,7 @@ function onActionDeleteUOM(event) {
  *
  * @properties={typeid:24,uuid:"8BFBB16C-B5EB-4D10-8E51-77728A017A2A"}
  */
-function onRecordSelectionUOM(event) {
+function onRecordSelection(event) {
 	elements.deleteButton.text = 'Delete UOM \''+uom_code+'\'';
 }
 
@@ -66,8 +67,8 @@ function onRecordSelectionUOM(event) {
  *
  * @properties={typeid:24,uuid:"592AC6AF-8E61-42CB-AED4-6DF63CAD4403"}
  */
-function onActionEditUOM(event) {
-	onEditUOM(event,true);
+function onActionEdit(event) {
+	onEdit(event,true);
 	databaseManager.setAutoSave(false);	
 }
 
@@ -78,10 +79,10 @@ function onActionEditUOM(event) {
  *
  * @properties={typeid:24,uuid:"AE63828B-36C7-46F0-88F2-05CC8FA1FF64"}
  */
-function onEditUOM(event,editStatus){
-	editUOMFlag = editStatus;
+function onEdit(event,editStatus){
+	editFlag = editStatus;
 	controller.readOnly = !editStatus;
-	elements.addUOMButton.visible = !editStatus;
+	elements.addButton.visible = !editStatus;
 	elements.saveButton.visible = editStatus;
 	elements.cancelButton.visible = editStatus;
 	elements.editButton.visible = !editStatus;
@@ -95,8 +96,8 @@ function onEditUOM(event,editStatus){
  *
  * @properties={typeid:24,uuid:"3675CD88-2B85-4DA5-AA05-B005CA40B258"}
  */
-function onActionCancelEditUOM(event) {
-	onEditUOM(event,false);
+function onActionCancelEdit(event) {
+	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -107,9 +108,8 @@ function onActionCancelEditUOM(event) {
  *
  * @properties={typeid:24,uuid:"EB19EADC-193D-44C9-9455-8EC9DC5D406A"}
  */
-function onActionSaveEditUOM(event) {
-	uom_edit_date = new Date;
-	onEditUOM(event,false);
+function onActionSaveEdit(event) {
+	onEdit(event,false);
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -124,7 +124,7 @@ function onActionSaveEditUOM(event) {
  *
  * @properties={typeid:24,uuid:"E76BFEA2-E89F-4F46-B86C-021B8EC86E2F"}
  */
-function onDataChangeUOMCode(oldValue, newValue, event) {
+function onDataChange(oldValue, newValue, event) {
 	databaseManager.nullColumnValidatorEnabled = false;
 	databaseManager.setAutoSave(true);
 	var fs = foundset.find();
@@ -134,13 +134,20 @@ function onDataChangeUOMCode(oldValue, newValue, event) {
 		foundset.search();
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
-			foundset.deleteRecord();
-			onEditUOM(event,false);
+			var record = null;
+			for (var index = 1;index <= foundset.getSize(); index++){
+				record = foundset.getRecord(index);
+				if (record.uom_id == globals.newRecordKey){
+					foundset.deleteRecord(record);
+				}
+			}
+			onEdit(event,false);
 		}
 		foundset.sts_units_of_measure.loadAllRecords();
 		foundset.setSelectedIndex(globals.selectedUOMIndex);
 		
 	}
 	databaseManager.setAutoSave(true);
+	globals.newRecordKey = "";
 	return true
 }

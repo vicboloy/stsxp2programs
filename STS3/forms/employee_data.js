@@ -1,24 +1,41 @@
 /**
- * Perform the element default action.
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param oldValue
+ * @param newValue
+ * @param event
  *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"F545C75F-A84C-43DF-BA74-1AB91158C183"}
+ * @properties={typeid:24,uuid:"FEBFA4D4-CEDB-42ED-9148-7DB8B0F313E6"}
  */
-function delEmployeeRecord(event) {
-		globals.doDialog("Remove Employee","Delete this Employee?","Remove","Cancel");
-		if (globals.dialogResponse == "yes"){
-			controller.deleteRecord();
-		}
+function onDataChange(oldValue, newValue, event) {
+	databaseManager.nullColumnValidatorEnabled = false;
+	if (employee_number == null){
+		employee_number = "Employee Number Required";
 	}
-
-/**
- * Called before the form component is rendered.
- *
- * @param {JSRenderEvent} event the render event
- *
- * @properties={typeid:24,uuid:"C74EDC7C-1D05-4C89-A7DD-DDA85668ACD1"}
- */
-function onRenderEmployeeButton(event) {
-	elements.delCustomerButton.text = 'Delete '+employee_lastname+", "+employee_firstname;
+	databaseManager.setAutoSave(true);
+	if (globals.newEmployeeRecord == null){
+		globals.newEmployeeRecord = employee_id;
+	}
+	var fs = foundset.find();
+	if (fs) //find will fail if autosave is disabled and there are unsaved records
+	{
+		employee_number = newValue;
+		foundset.search();
+		var count = databaseManager.getFoundSetCount(foundset);
+		if (count > 1){
+			var record = null;
+			for (var index = 1;index <= foundset.getSize(); index++){
+				record = foundset.getRecord(index);
+				if (record.employee_firstname == null || record.employee_lastname == null){
+					foundset.deleteRecord(index);
+				}
+			}
+		}
+		foundset.sts_employee_container.loadAllRecords();
+		foundset.setSelectedIndex(globals.selectedEmployeeIndex);
+	}
+	databaseManager.setAutoSave(true);
+	//forms.employee_specs.onEdit(event,false);
+	return true
 }

@@ -10,7 +10,7 @@ var editEmployeeFlag = false;
  *
  * @properties={typeid:24,uuid:"EC2B3965-7A1D-4E43-83D4-8A09844BD098"}
  */
-function onRenderEmployeeData(event) {
+function onRender(event) {
 	if (employee_lastname != null) {
 		elements.employeeFullName.text = "RECORD: "+employee_firstname+" "+employee_middlename+" "+employee_lastname;
 	}
@@ -23,14 +23,15 @@ function onRenderEmployeeData(event) {
  *
  * @properties={typeid:24,uuid:"7FD30029-67F1-43B1-81F2-88F062280C00"}
  */
-function onEditEmployee(event,editStatus){
+function onEdit(event,editStatus){
 	forms.employees.controller.readOnly = !editStatus;
 	forms.employees_lst.controller.enabled = !editStatus;
 	forms.employees.editEmployeeFlag = editStatus;
-	forms.employees_rec.elements.addNewEmployeeButton.visible = !editStatus;
+	forms.employees_rec.elements.addNewButton.visible = !editStatus;
 	forms.employee_specs.elements.cancelButton.visible = editStatus;
 	forms.employee_specs.elements.saveButton.visible = editStatus;
 	forms.employee_specs.elements.editButton.visible = !editStatus;
+	forms.employee_specs.elements.delButton.visible = !editStatus;
 	
 }
 
@@ -40,8 +41,8 @@ function onEditEmployee(event,editStatus){
  *
  * @properties={typeid:24,uuid:"CC3812E4-6FD8-461F-9749-A972DF579433"}
  */
-function onActionEditEmployee(event) {
-	onEditEmployee(event,true);
+function onActionEdit(event) {
+	onEdit(event,true);
 	databaseManager.setAutoSave(false);
 }
 
@@ -51,8 +52,8 @@ function onActionEditEmployee(event) {
  *
  * @properties={typeid:24,uuid:"868EBCCD-CB9C-4014-A79F-9BF649AE09C0"}
  */
-function onActionCancelEditEmployee(event) {
-	onEditEmployee(event,false);
+function onActionCancelEdit(event) {
+	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -63,8 +64,33 @@ function onActionCancelEditEmployee(event) {
  *
  * @properties={typeid:24,uuid:"7C64DFF6-6587-439E-B5C3-F9204FDA3248"}
  */
-function onActionSaveEditEmployee(event){
-	onEditEmployee(event,false);
+function onActionSaveEdit(event){
+	onEdit(event,false);
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F545C75F-A84C-43DF-BA74-1AB91158C183"}
+ */
+function delRecord(event) {
+		globals.doDialog("Remove Employee","Delete this Employee?","Remove","Cancel");
+		if (globals.dialogResponse == "yes"){
+			controller.deleteRecord();
+		}
+	}
+
+/**
+ * Called before the form component is rendered.
+ *
+ * @param {JSRenderEvent} event the render event
+ *
+ * @properties={typeid:24,uuid:"C74EDC7C-1D05-4C89-A7DD-DDA85668ACD1"}
+ */
+function onRenderDelButton(event) {
+	elements.delButton.text = 'Delete '+employee_lastname+", "+employee_firstname;
 }

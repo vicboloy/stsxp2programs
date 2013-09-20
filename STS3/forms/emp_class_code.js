@@ -1,7 +1,7 @@
 /**
  * @properties={typeid:35,uuid:"2E713F4C-7CE4-44ED-9B1F-2C1334A562B5",variableType:-4}
  */
-var editEmployeeClassFlag = false;
+var editFlag = false;
 
 /**
  * Callback method for when form is shown.
@@ -11,7 +11,7 @@ var editEmployeeClassFlag = false;
  *
  * @properties={typeid:24,uuid:"E47D7FF2-8473-4AD4-AD69-AC99BA008846"}
  */
-function onShowEmployeeClasses(firstShow, event) {
+function onShow(firstShow, event) {
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
@@ -25,10 +25,11 @@ function onShowEmployeeClasses(firstShow, event) {
  *
  * @properties={typeid:24,uuid:"0AC1F465-7E38-41C1-9CB9-AC43FEAB1DEE"}
  */
-function onActionAddClass(event){
+function onActionAdd(event){
 	globals.selectedEmpClassIndex = controller.getSelectedIndex();
-	forms.emp_class_code.onEditEmpClass(event,true);
+	onEdit(event,true);
 	controller.newRecord();
+	globals.newRecordKey = employee_clas_id;
 }
 /**
  * Perform the element default action.
@@ -37,7 +38,7 @@ function onActionAddClass(event){
  *
  * @properties={typeid:24,uuid:"0F0E5A77-AE9D-496C-B320-6F45FB46FE36"}
  */
-function onActionDeleteClass(event) {
+function onActionDelete(event) {
 	globals.doDialog("Remove Employee Class","Delete this Class?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
 			controller.deleteRecord();
@@ -52,7 +53,7 @@ function onActionDeleteClass(event) {
  *
  * @properties={typeid:24,uuid:"76EF827F-5EBC-488E-AF0B-920AE2FC2807"}
  */
-function onRecordSelectionEmpClass(event) {
+function onRecordSelection(event) {
 	elements.deleteButton.text = 'Delete class \''+class_code+'\'';
 }
 
@@ -63,8 +64,8 @@ function onRecordSelectionEmpClass(event) {
  *
  * @properties={typeid:24,uuid:"88A9ED29-5564-4694-A956-13D2D5BA098C"}
  */
-function onActionEditEmpClass(event) {
-	onEditEmpClass(event,true);
+function onActionEdit(event) {
+	onEdit(event,true);
 	databaseManager.setAutoSave(false);	
 }
 
@@ -75,14 +76,15 @@ function onActionEditEmpClass(event) {
  *
  * @properties={typeid:24,uuid:"39586DFE-D834-4968-8522-100C81C768A9"}
  */
-function onEditEmpClass(event,editStatus){
-	editEmployeeClassFlag = editStatus;
+function onEdit(event,editStatus){
+	editFlag = editStatus;
 	controller.readOnly = !editStatus;
-	elements.empClassAddButton.visible = !editStatus;
+	elements.addButton.visible = !editStatus;
 	elements.saveButton.visible = editStatus;
 	elements.cancelButton.visible = editStatus;
 	elements.editButton.visible = !editStatus;
 	elements.deleteButton.visible = !editStatus;
+	elements.tablessX.enabled = !editStatus;
 }
 
 /**
@@ -92,8 +94,8 @@ function onEditEmpClass(event,editStatus){
  *
  * @properties={typeid:24,uuid:"84142266-FF85-4162-912D-D02BCBE7310A"}
  */
-function onActionCancelEditEmpClass(event) {
-	onEditEmpClass(event,false);
+function onActionCancelEdit(event) {
+	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -105,8 +107,8 @@ function onActionCancelEditEmpClass(event) {
  *
  * @properties={typeid:24,uuid:"79A78EA7-A841-4268-9B58-8F4C44C432EB"}
  */
-function onActionSaveEditEmpClass(event) {
-	onEditEmpClass(event,false);
+function onActionSaveEdit(event) {
+	onEdit(event,false);
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -123,7 +125,7 @@ function onActionSaveEditEmpClass(event) {
  * @properties={typeid:24,uuid:"9C590279-636E-480A-85F3-41C7518730A7"}
  * @AllowToRunInFind
  */
-function onDataChangeEmpClassCode(oldValue, newValue, event) {
+function onDataChange(oldValue, newValue, event) {
 	databaseManager.nullColumnValidatorEnabled = false;
 	databaseManager.setAutoSave(true);
 	var fs = foundset.find();
@@ -133,13 +135,20 @@ function onDataChangeEmpClassCode(oldValue, newValue, event) {
 		foundset.search();
 		var count = databaseManager.getFoundSetCount(foundset);
 		if (count > 1){
-			foundset.deleteRecord();
-			onEditEmpClass(event,false);
+			var record = null;
+			for (var index = 1;index <= foundset.getSize(); index++){
+				record = foundset.getRecord(index);
+				if (record.employee_clas_id == globals.newRecordKey){
+					foundset.deleteRecord(record);
+				}
+			}
+			onEdit(event,false);
 		}
 		foundset.sts_employee_class_container.loadAllRecords();
 		foundset.setSelectedIndex(globals.selectedEmpClassIndex);
 		
 	}
 	databaseManager.setAutoSave(true);
+	globals.newRecordKey = "";
 	return true
 }

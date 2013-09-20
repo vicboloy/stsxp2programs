@@ -89,7 +89,7 @@ uuid:"93C5F0D0-590F-4AAF-8651-9BCB9F122A43"
 },
 {
 location:"83,4",
-name:"addUOMButton",
+name:"addButton",
 onActionMethodID:"E48C67E7-992B-409E-8B64-2F280239F708",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

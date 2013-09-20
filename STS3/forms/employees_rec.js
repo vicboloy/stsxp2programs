@@ -6,7 +6,7 @@
  *
  * @properties={typeid:24,uuid:"0E76A0C5-1857-4089-8E25-97D995FC0B4A"}
  */
-function onActionAddEmployee(event) {
+function onActionAdd(event) {
 	forms.employees_lst.controller.newRecord();
-	forms.employee_specs.onEditEmployee(event,true);
+	forms.employee_specs.onEdit(event,true);
 }

@@ -16,6 +16,7 @@ items:[
 {
 extendsID:"4A5D02D8-4B4D-479D-9EF3-2CC6217BA41F",
 relationName:"sts_addresses_listC",
+text:"address_lstC",
 typeid:15,
 uuid:"0493AC27-DE95-44AD-82B4-8644BB51C31B"
 }

@@ -70,7 +70,7 @@ uuid:"7EB1C709-A794-430F-9FAF-53D9C9819078"
 },
 {
 location:"104,4",
-name:"empClassAddButton",
+name:"addButton",
 onActionMethodID:"0AC1F465-7E38-41C1-9CB9-AC43FEAB1DEE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

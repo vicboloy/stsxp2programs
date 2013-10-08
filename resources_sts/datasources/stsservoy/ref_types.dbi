@@ -27,6 +27,14 @@ creationOrderIndex:3,
 dataType:12,
 length:15,
 name:"reference_descriptor"
+},
+{
+allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:4,
+dataType:93,
+name:"reference_type_edit_date"
 }
 ],
 name:"ref_types",

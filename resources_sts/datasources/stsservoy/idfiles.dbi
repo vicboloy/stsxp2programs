@@ -164,6 +164,14 @@ name:"id_fabrication_shop"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:59,
+dataType:93,
+name:"id_file_edit_date"
+},
+{
+allowNull:true,
 creationOrderIndex:13,
 dataType:12,
 length:30,

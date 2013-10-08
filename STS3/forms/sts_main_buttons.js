@@ -1,3 +1,38 @@
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event System selection event
+ * @param windowTitle Window bar title
+ * @param formName Main form name for button selection
+ * @param xOrigin Top form corner for displayed form
+ * @param yOrigin Left form corner for displayed form
+ * @param xWidth Width of displayed form
+ * @param yHeight Height form bound for displayed form
+ * @param multiWindow allow multiple windows to be created
+ *
+ * @properties={typeid:24,uuid:"AB5FA848-1D56-44C8-8B74-23EA4659F2D3"}
+ * @AllowToRunInFind
+ */
+function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
+	var formNameNew = formName;
+	if (multiWindow){
+		windowTitle = windowTitle+"_";
+		formNameNew = formNameNew+"_";
+		while (application.getWindow(windowTitle) != null){
+			windowTitle = windowTitle+"o";
+			formNameNew = formNameNew+"o";
+		}
+		// make a clone/copy from it
+		var clone = createFormClone(formName,formNameNew);
+	}
+	var win = application.createWindow(windowTitle, JSWindow.WINDOW);
+	var xBeg = xOrigin;
+	var yBeg = yOrigin;
+	var xEnd = xOrigin+xWidth;
+	var yEnd = yOrigin+yHeight;
+	win.setInitialBounds(xBeg, yBeg, xEnd, yEnd);
+	win.title = windowTitle;
+	win.show(formNameNew);
+}
 
 /**
  * Perform the element default action.
@@ -7,10 +42,7 @@
  * @properties={typeid:24,uuid:"027567CC-C0C7-43F6-8F87-7A8878ED6B55"}
  */
 function onActionClickCustomer(event) {
-	var win = application.createWindow("customers", JSWindow.WINDOW);
-	win.setInitialBounds(10, 10, 880, 540);
-	win.title = "Customers";
-	win.show('customers');
+	onActionClickMainButton(event,"Customers",'customers',10,10,890,550,false);
 }
 
 /**
@@ -20,10 +52,7 @@ function onActionClickCustomer(event) {
  * @properties={typeid:24,uuid:"B0C80879-16DA-4098-8801-18C1D7F24E96"}
  */
 function onActionClickEmployee(event) {
-	var win = application.createWindow("Employees", JSWindow.WINDOW);
-	win.setInitialBounds(50, 50, 880, 540);
-	win.title = "Employees";
-	win.show('employees');
+	onActionClickMainButton(event,"Employees",'employees',50,50,880,490,false);
 }
 
 /**
@@ -33,10 +62,7 @@ function onActionClickEmployee(event) {
  * @properties={typeid:24,uuid:"AE5DFB87-E846-4DFB-9C25-E57140EC29C3"}
  */
 function onActionClickCarrier(event) {
-	var win = application.createWindow("carriers", JSWindow.WINDOW);
-	win.setInitialBounds(50, 50, 775, 585);
-	win.title = "Carriers";
-	win.show('carriers');
+	onActionClickMainButton(event,"Carriers",'carriers',50, 50, 775, 535,false);
 }
 
 /**
@@ -47,10 +73,7 @@ function onActionClickCarrier(event) {
  * @properties={typeid:24,uuid:"C61C110C-151B-4C9D-B0AB-FA32D9401D16"}
  */
 function onActionClickEmployeeClass(event) {
-	var win = application.createWindow("Employee Class", JSWindow.WINDOW);
-	win.setInitialBounds(50, 50, 660, 310);
-	win.title = "Employee Class Codes";
-	win.show('emp_class_code');
+	onActionClickMainButton(event,"Employee Class",'emp_class_code',50,50,610,270,true);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -59,10 +82,7 @@ function onActionClickEmployeeClass(event) {
  * @properties={typeid:24,uuid:"BFF5857C-588C-4703-B859-CF9A5A1BF8B9"}
  */
 function onActionClickUOM(event) {
-	var win = application.createWindow("Units of Measure", JSWindow.WINDOW);
-	win.setInitialBounds(50, 50, 660, 380);
-	win.title = "Units of Measure";
-	win.show('unit_of_measure');
+	onActionClickMainButton(event,"Units of Measure",'unit_of_measure',50,50,610,330,false);
 }
 
 /**
@@ -72,8 +92,15 @@ function onActionClickUOM(event) {
  * @properties={typeid:24,uuid:"994929DE-14ED-4426-A743-D0A7169117EA"}
  */
 function onActionClickEP(event) {
-	var win = application.createWindow("End Conditions", JSWindow.WINDOW);
-	win.setInitialBounds(50, 50, 660, 380);
-	win.title = "End Conditions";
-	win.show('end_conditions');
+	onActionClickMainButton(event,"End Conditions",'end_conditions',50,50,610,330,false);
+}
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"B5B3AFA8-95D7-49CD-AB3E-256306625504"}
+ */
+function onActionClickSC(event) {
+	onActionClickMainButton(event,"Status Codes",'status_descriptions',50,50,750,540,false);
 }

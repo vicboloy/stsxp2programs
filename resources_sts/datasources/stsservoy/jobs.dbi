@@ -56,6 +56,14 @@ name:"job_care_of"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:22,
+dataType:93,
+name:"job_edit_date"
+},
+{
+allowNull:true,
 compatibleColumnTypes:"[[8,17,17]]",
 creationOrderIndex:17,
 dataType:8,

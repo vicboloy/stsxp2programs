@@ -25,6 +25,14 @@ name:"class_description"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:6,
+dataType:93,
+name:"class_edit_date"
+},
+{
+allowNull:true,
 compatibleColumnTypes:"[[8,17,17]]",
 creationOrderIndex:4,
 dataType:8,

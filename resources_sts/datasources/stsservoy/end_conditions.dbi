@@ -11,6 +11,14 @@ name:"end_condition_id"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:4,
+dataType:93,
+name:"end_condition_edit_date"
+},
+{
+allowNull:true,
 creationOrderIndex:1,
 dataType:12,
 length:15,

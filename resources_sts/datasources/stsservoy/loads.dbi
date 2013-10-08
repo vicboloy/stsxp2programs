@@ -70,6 +70,14 @@ name:"load_comment"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:27,
+dataType:93,
+name:"load_edit_date"
+},
+{
+allowNull:true,
 creationOrderIndex:2,
 dataType:12,
 length:20,

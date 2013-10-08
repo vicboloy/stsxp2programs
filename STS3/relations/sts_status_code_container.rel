@@ -1,0 +1,8 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/status_description",
+initialSort:"status_sequence asc, status_code asc",
+joinType:1,
+name:"sts_status_code_container",
+primaryDataSource:"db:/stsservoy/status_description",
+typeid:22,
+uuid:"595BBEF3-DACB-44BF-A7F6-5328D61C6B8F"

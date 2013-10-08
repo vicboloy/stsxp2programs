@@ -32,6 +32,14 @@ name:"carrier_contactname"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:13,
+dataType:93,
+name:"carrier_edit_date"
+},
+{
+allowNull:true,
 creationOrderIndex:11,
 dataType:12,
 length:45,

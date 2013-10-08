@@ -16,6 +16,8 @@ name:"color"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
 creationOrderIndex:4,
 dataType:93,
 name:"edit_date"

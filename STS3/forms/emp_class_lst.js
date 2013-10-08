@@ -7,5 +7,8 @@
  * @properties={typeid:24,uuid:"3AF13BA7-C288-4AFD-A798-8B0A70FABC62"}
  */
 function onRecordSelectionEmployee(event) {
-	globals.selectedEmpClassIndex = controller.getSelectedIndex();
+	var dataset = controller.getFormContext().getValue(1,2);
+	//getParentForm().selectedIndex = controller.getSelectedIndex();
+	application.output('employee class list form parent '+dataset+" form name "+controller.getName());
+	getParentForm().controller.setSelectedIndex(controller.getSelectedIndex());
 }

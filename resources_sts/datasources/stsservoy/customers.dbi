@@ -62,6 +62,14 @@ name:"barcode_prefix"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:27,
+dataType:93,
+name:"customer_edit_date"
+},
+{
+allowNull:true,
 creationOrderIndex:25,
 dataType:12,
 length:15,

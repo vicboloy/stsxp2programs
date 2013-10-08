@@ -1,5 +1,6 @@
 dataSource:"db:/stsservoy/employee_class",
 encapsulation:60,
+extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {
 anchors:11,
@@ -13,8 +14,8 @@ typeid:7,
 uuid:"014FEECC-796B-4CC1-9920-C2982A96B9B3"
 },
 {
+extendsID:"B8264F35-3B2C-445D-8057-07A22DF67C55",
 height:339,
-partType:5,
 typeid:19,
 uuid:"237FD4D3-6124-45D1-83F5-5540A413F323"
 },

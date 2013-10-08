@@ -1,5 +1,6 @@
 dataSource:"db:/stsservoy/employee_class",
 encapsulation:60,
+extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {
 labelFor:"class_description",
@@ -21,8 +22,8 @@ typeid:4,
 uuid:"2615852F-E992-4C24-9604-27250BF88711"
 },
 {
+extendsID:"B8264F35-3B2C-445D-8057-07A22DF67C55",
 height:337,
-partType:5,
 typeid:19,
 uuid:"323F63CE-AE36-4F14-BDF3-A7206B9B4E21"
 },
@@ -185,6 +186,7 @@ visible:false
 name:"emp_class_code",
 navigatorID:"-1",
 onHideMethodID:"-1",
+onLoadMethodID:"-1",
 onRecordSelectionMethodID:"76EF827F-5EBC-488E-AF0B-920AE2FC2807",
 onShowMethodID:"E47D7FF2-8473-4AD4-AD69-AC99BA008846",
 showInMenu:true,

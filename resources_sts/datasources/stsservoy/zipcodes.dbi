@@ -36,6 +36,14 @@ length:10,
 name:"state"
 },
 {
+allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:6,
+dataType:93,
+name:"zipcode_edit_date"
+},
+{
 allowNull:false,
 creationOrderIndex:1,
 dataType:12,

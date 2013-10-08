@@ -1,0 +1,14 @@
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"D186C765-07B1-4DCC-977C-F44188337A8B"
+}
+],
+name:"preferences_global",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"34E005CA-7BD4-4026-BB88-1A0E90DD5949"

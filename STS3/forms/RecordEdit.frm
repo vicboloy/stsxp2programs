@@ -1,0 +1,14 @@
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"309DAEC2-F9E3-4DBF-8718-0884B5FE1FBF"
+}
+],
+name:"RecordEdit",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"B437E60E-3696-4619-BACC-D42AE6A64D83"

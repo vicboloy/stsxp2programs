@@ -13,7 +13,12 @@
 //TODO test
 //TODO Work Login and security
 //TODO When pushing tables to remote sts, the UUID is left out.  Need to automate distribution.
-
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"0A22242D-4F65-4DCB-8EAA-8453B5A09EAB",variableType:4}
+ */
+var currentStatusCodeSequence = 0;
 /**
  * @properties={typeid:35,uuid:"FE89CF50-1B43-46F8-A8DD-250A8C617C79",variableType:-4}
  */
@@ -162,6 +167,10 @@ var dialogButtonYes = "";
  */
 var dialogButtonNo = "";
 
+/**
+ * @properties={typeid:35,uuid:"623E3015-14CD-4100-AA28-70F45E9FFC30",variableType:-4}
+ */
+var openWindows = new Array();
 
 /**
  * Callback method for when solution is opened.

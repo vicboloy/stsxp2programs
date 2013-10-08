@@ -33,6 +33,14 @@ name:"customer_id"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:9,
+dataType:93,
+name:"edit_date"
+},
+{
+allowNull:true,
 creationOrderIndex:1,
 dataType:12,
 length:100,

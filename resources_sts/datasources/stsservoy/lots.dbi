@@ -9,6 +9,8 @@ name:"lot_id"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
 creationOrderIndex:3,
 dataType:93,
 name:"edit_date"

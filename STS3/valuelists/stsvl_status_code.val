@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"status_code",
+dataSource:"db:/stsservoy/status_description",
+name:"stsvl_status_code",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"23486681-EB49-4DB3-9720-0D8BDC65914E",
+valueListType:1

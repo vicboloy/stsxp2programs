@@ -234,6 +234,9 @@ function onActionAddToCurrent(event) {
  */
 function onShowStatusOverwrite(firstShow, event) {
 	var newStatusList = overwrite_field_list;
+	if (newStatusList == null){
+		newStatusList = "";
+	}
 	newStatusList = newStatusList.replace("<html>","");
 	newStatusList = newStatusList.replace(/<br>/g," ");
 	var tempSelected = newStatusList.split(" ");

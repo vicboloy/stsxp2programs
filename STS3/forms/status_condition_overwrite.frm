@@ -62,6 +62,14 @@ typeid:7,
 uuid:"684A03CD-D6B0-426C-82E3-ACFEB972A61C"
 },
 {
+location:"181,5",
+size:"79,20",
+text:"Status code:",
+transparent:true,
+typeid:7,
+uuid:"70602BF1-78AA-4AEF-8284-50E714387157"
+},
+{
 location:"395,15",
 size:"138,20",
 text:"Selected Status Codes",
@@ -74,6 +82,18 @@ height:301,
 partType:5,
 typeid:19,
 uuid:"A8CF6227-45C5-4B41-AEED-BC661376C823"
+},
+{
+dataProviderID:"status_code",
+horizontalAlignment:2,
+labelFor:"",
+location:"261,5",
+name:"currentStatus",
+size:"86,20",
+text:"type",
+transparent:true,
+typeid:7,
+uuid:"B1BB26E4-B51C-4E25-B0CF-990B90E14FD6"
 },
 {
 location:"210,143",

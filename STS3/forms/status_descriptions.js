@@ -27,7 +27,7 @@ var editFlag = false;
  * @properties={typeid:24,uuid:"D81A8770-3094-4934-BD90-8005AEFC2407"}
  */
 function onShow(firstShow, event) {
-	var dataset = controller.getFormContext().getValue(1,2);
+	//var dataset = controller.getFormContext().getValue(1,2);
 	//application.output('employee class list form parent on show '+dataset);
 
 	controller.readOnly = true;

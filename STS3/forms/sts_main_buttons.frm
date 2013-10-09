@@ -93,14 +93,14 @@ uuid:"F4AECAA4-8EA8-446B-8BE5-4CBA01AC27A2"
 },
 {
 horizontalAlignment:0,
-location:"405,335",
+location:"119,335",
 mediaOptions:14,
-onActionMethodID:"B5B3AFA8-95D7-49CD-AB3E-256306625504",
+onActionMethodID:"CCC7C093-1A7B-4EC7-A8E7-1E0A2B0DC5ED",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 printSliding:3,
 size:"126,80",
-text:"<html>Status<br>Codes",
+text:"Preferences",
 typeid:7,
 uuid:"F6BD91F8-2FAC-4EF8-A72C-F4411116BF2E",
 verticalAlignment:0

@@ -102,5 +102,15 @@ function onActionClickEP(event) {
  * @properties={typeid:24,uuid:"B5B3AFA8-95D7-49CD-AB3E-256306625504"}
  */
 function onActionClickSC(event) {
-	onActionClickMainButton(event,"Status Codes",'status_descriptions',50,50,750,540,false);
+	onActionClickMainButton(event,"Status Codes",'status_descriptions',50,50,750,595,false);
+}
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"CCC7C093-1A7B-4EC7-A8E7-1E0A2B0DC5ED"}
+ */
+function onActionClickPref(event) {
+	onActionClickMainButton(event,"Preferences",'preferences_main',50,50,700,580,false);
 }

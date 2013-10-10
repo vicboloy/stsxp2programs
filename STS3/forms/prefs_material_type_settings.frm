@@ -2,7 +2,7 @@ extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
 items:[
 {
 labelFor:"cValidatePartNumber",
-location:"68,179",
+location:"68,165",
 name:"cValidatePartNumber_label",
 size:"190,20",
 text:"Validate Material Type Against",
@@ -22,7 +22,7 @@ uuid:"1B565A9D-201C-4EFD-A74F-D115146E8BDF"
 {
 dataProviderID:"eachWtUom",
 displayType:2,
-location:"68,264",
+location:"68,250",
 name:"eachWtUom",
 size:"111,20",
 text:"Eachwtuom",
@@ -31,7 +31,7 @@ uuid:"271B4976-E0BA-4F7B-9D70-16418946F311"
 },
 {
 labelFor:"partNumLength",
-location:"134,120",
+location:"134,105",
 name:"partNumLength_label",
 size:"141,20",
 text:"Material Type # Length",
@@ -42,7 +42,7 @@ uuid:"53862C0C-98E6-4FCB-B316-D98F2E084724"
 {
 dataProviderID:"lPartMasterModule",
 displayType:4,
-location:"68,60",
+location:"68,55",
 name:"lPartMasterModule",
 size:"219,20",
 text:"Material Type Module Installed",
@@ -50,6 +50,7 @@ typeid:4,
 uuid:"6163D36D-463D-4C92-879A-C3932FAC856D"
 },
 {
+background:"#ffffff",
 fontType:"Arial,0,13",
 location:"358,30",
 size:"251,20",
@@ -60,7 +61,7 @@ uuid:"66C0B353-5789-473F-B983-47925A03944C"
 },
 {
 labelFor:"eachWtUom",
-location:"68,239",
+location:"68,225",
 name:"eachWtUom_label",
 size:"133,20",
 text:"Wt. Each UOM Code",
@@ -81,7 +82,7 @@ uuid:"8306124A-DE93-4047-A6D7-95CAD15DB363"
 {
 dataProviderID:"validatePartNumber",
 displayType:2,
-location:"68,204",
+location:"68,190",
 name:"cValidatePartNumber",
 size:"219,20",
 text:"Cvalidatepartnumber",
@@ -99,7 +100,7 @@ uuid:"C53A492B-FDB3-486C-8918-4BD89E0B77DD"
 },
 {
 labelFor:"pnPadCharacter",
-location:"134,149",
+location:"134,130",
 name:"pnPadCharacter_label",
 size:"141,20",
 text:"Part # Pad Character",
@@ -108,8 +109,9 @@ typeid:7,
 uuid:"CEA907F9-E047-4C43-913A-1692C5789DC3"
 },
 {
+dataProviderID:"lPcMarkEntryValidate",
 displayType:4,
-location:"394,60",
+location:"375,51",
 size:"183,20",
 text:"Piece Mark Entry Window",
 transparent:true,
@@ -118,7 +120,7 @@ uuid:"E8B50B17-8808-4E7B-85AA-FCA286BCA3B7"
 },
 {
 dataProviderID:"pnPadCharacter",
-location:"90,149",
+location:"90,130",
 name:"pnPadCharacter",
 size:"34,20",
 text:"Pnpadcharacter",
@@ -128,7 +130,7 @@ uuid:"EEBC9347-AF79-4130-A36C-4F9CDA286EE6"
 {
 dataProviderID:"lAutoPartNum",
 displayType:4,
-location:"68,90",
+location:"68,80",
 name:"lAutoPartNum",
 size:"219,20",
 text:"Auto Material Number Generation",
@@ -138,7 +140,7 @@ uuid:"F838E557-49F4-4348-9975-3B6732CCB89E"
 {
 dataProviderID:"partNumLength",
 displayType:9,
-location:"90,120",
+location:"90,105",
 name:"partNumLength",
 size:"34,20",
 text:"Partnumlength",

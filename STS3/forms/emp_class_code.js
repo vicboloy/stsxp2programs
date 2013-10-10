@@ -19,7 +19,7 @@ var editFlag = false;
  */
 function onShow(firstShow, event) {
 	var dataset = controller.getFormContext().getValue(1,2);
-	application.output('employee class list form parent on show '+dataset);
+	//application.output('employee class list form parent on show '+dataset);
 
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){

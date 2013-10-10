@@ -1,6 +1,7 @@
 customProperties:"",
 dataSource:"db:/stsservoy/status_description",
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
+initialSort:"status_sequence asc",
 items:[
 {
 anchors:11,

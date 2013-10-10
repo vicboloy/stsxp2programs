@@ -54,7 +54,7 @@ function onActionAdd(event){
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
- *
+ * @param {String} itemDescription item description to delete
  *
  * @properties={typeid:24,uuid:"2BD445F0-CAC3-47A9-8209-748004C6544E"}
  */

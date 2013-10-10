@@ -137,16 +137,6 @@ typeid:4,
 uuid:"95B3AE03-8470-46DB-8D52-C210B8972FD8"
 },
 {
-labelFor:"localFiles",
-location:"136,45",
-name:"localFiles_label",
-size:"80,20",
-text:"Localfiles",
-transparent:true,
-typeid:7,
-uuid:"A0B65D2F-8054-4552-B0E0-BC8E852BF1C2"
-},
-{
 horizontalAlignment:4,
 labelFor:"mtrpath",
 location:"48,285",
@@ -185,6 +175,16 @@ text:"Network Data File Path:",
 transparent:true,
 typeid:7,
 uuid:"E9E05FCA-260B-4269-BE76-846D141018AF"
+},
+{
+location:"76,45",
+onActionMethodID:"-1",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"111,20",
+text:"Local Files",
+typeid:7,
+uuid:"F704EA97-1843-44A3-BA5A-8FA6700A47E2"
 },
 {
 horizontalAlignment:4,

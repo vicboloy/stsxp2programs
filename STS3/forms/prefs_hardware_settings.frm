@@ -22,6 +22,7 @@ uuid:"08B0E2E2-1754-464D-9FDE-AA89704FDE8A"
 },
 {
 dataProviderID:"portableType",
+displayType:2,
 location:"324,40",
 name:"portableType",
 size:"216,20",
@@ -36,18 +37,6 @@ text:"(Y/N)",
 transparent:true,
 typeid:7,
 uuid:"1279803E-BFE5-4AA1-A81D-A6B46C6F0F3A"
-},
-{
-background:"#ffff80",
-borderType:"SpecialMatteBorder,1.0,0.0,0.0,0.0,#000000,#000000,#000000,#000000,0.0,",
-foreground:"#ffff80",
-horizontalAlignment:4,
-location:"15,270",
-size:"246,114",
-text:"",
-transparent:true,
-typeid:7,
-uuid:"14E24222-D674-47DD-A437-4C6DD29A9B2A"
 },
 {
 dataProviderID:"idLblTxt1",
@@ -110,11 +99,11 @@ uuid:"48488DE3-B83B-48FC-BA22-1FE697DBCA23"
 },
 {
 dataProviderID:"ignoreBatchJobLoadQty",
-displayType:9,
+displayType:4,
 location:"480,252",
 name:"ignoreBatchJobLoadQty",
 size:"31,20",
-text:"Ignorebatchjobloadqty",
+transparent:true,
 typeid:4,
 uuid:"4EEDD95F-F8D2-4EE6-8409-54A9C35F1AD6"
 },
@@ -138,9 +127,10 @@ typeid:4,
 uuid:"704DC163-ABF4-4898-8B63-D82728363714"
 },
 {
-labelFor:"iDbLine1",
+dataProviderID:"idBLine1",
+labelFor:"idBLine1",
 location:"15,75",
-name:"iDbLine1_label",
+name:"idBLine1_label",
 size:"200,20",
 text:"1st Line of ID Bar Code Label",
 transparent:true,
@@ -148,6 +138,7 @@ typeid:7,
 uuid:"86BA27B5-4BDF-40E8-91A5-53CA6C1ADE9E"
 },
 {
+formIndex:2,
 labelFor:"startLoadNum",
 location:"118,355",
 name:"startLoadNum_label",
@@ -175,6 +166,7 @@ uuid:"A1D21365-915A-4312-BD0E-5C1F317AD86B"
 },
 {
 dataProviderID:"dflIdFmt",
+displayType:2,
 location:"15,40",
 name:"dflIdFmt",
 size:"166,20",
@@ -184,6 +176,7 @@ uuid:"B579BEE1-8174-4D27-8797-CC6159B0F64F"
 },
 {
 dataProviderID:"startLoadNum",
+formIndex:3,
 location:"41,355",
 name:"startLoadNum",
 size:"72,20",
@@ -193,6 +186,7 @@ uuid:"B615870C-B15D-489F-9278-1851C263CF30"
 },
 {
 dataProviderID:"idBLine1",
+displayType:2,
 location:"15,100",
 name:"idBLine1",
 size:"166,20",
@@ -212,7 +206,16 @@ typeid:7,
 uuid:"C435F406-A5EB-4E5E-A972-36B922BCFE35"
 },
 {
-labelFor:"iDbLine2",
+lineSize:2,
+location:"15,270",
+shapeType:1,
+size:"211,114",
+transparent:true,
+typeid:21,
+uuid:"C5C4E2D3-DF97-450F-B2CF-CA26D67489D6"
+},
+{
+labelFor:"idBLine2",
 location:"15,160",
 name:"iDbLine2_label",
 size:"200,20",
@@ -233,6 +236,7 @@ uuid:"C800AA3E-E8F4-422F-8276-B5810A68E55D"
 },
 {
 dataProviderID:"idBLine2",
+displayType:2,
 location:"15,185",
 name:"idBLine2",
 size:"166,20",
@@ -281,6 +285,7 @@ uuid:"F4C1915D-705A-433B-AFEC-0262A20F8C9A"
 {
 dataProviderID:"loadCreate",
 displayType:3,
+formIndex:1,
 location:"20,277",
 size:"227,73",
 text:"Job Number Specific",

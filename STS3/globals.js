@@ -241,3 +241,15 @@ function doDialog(winTitle,message,buttonYes,buttonNo){
 	win.title = winTitle;
 	win.show('dialog');
 }
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F8DA2C40-ECF1-4137-9F4E-1778F13040AE"}
+ */
+function onActionCancelButton(event) {
+	// Generic close on Cancel
+	var win = application.getActiveWindow();
+	win.hide();
+}

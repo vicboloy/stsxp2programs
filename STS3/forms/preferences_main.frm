@@ -19,7 +19,7 @@ uuid:"3DE0733E-A81E-4A87-BB2D-3AF69243462F"
 items:[
 {
 containsFormID:"54A817D1-7A4A-48E3-ADA0-C38AB0A83F39",
-location:"383,24",
+location:"196,96",
 text:"Misc Info.",
 typeid:15,
 uuid:"0526F7C3-8172-4273-98FA-742FD62C2B88"
@@ -34,21 +34,21 @@ uuid:"09C98220-9502-4E8B-8DFC-3AD99E1CC801"
 },
 {
 containsFormID:"D70BB16B-D1C8-40B2-8FF9-B0F0CED4B12E",
-location:"14,86",
+location:"307,144",
 text:"Material Type Settings",
 typeid:15,
 uuid:"24317BD1-DF17-4B94-BAFE-0BA3DBB6AB23"
 },
 {
 containsFormID:"204F21F0-5721-47FC-AE91-E6D5122D9BD9",
-location:"558,24",
+location:"264,124",
 text:"RF Settings",
 typeid:15,
 uuid:"34082775-FC80-4527-8FE9-A30B59729B97"
 },
 {
 containsFormID:"DF7F6C5B-E087-4365-B0D2-A4EFB497B4B9",
-location:"193,27",
+location:"100,65",
 name:"display_settings",
 text:"Display Settings",
 typeid:15,
@@ -56,21 +56,21 @@ uuid:"371AC415-B8ED-41D9-BBAD-E1ED61EB30FF"
 },
 {
 containsFormID:"4B00C8DD-33E8-4575-A7C7-4E1C347544D9",
-location:"295,24",
+location:"165,81",
 text:"P.O. Info.",
 typeid:15,
 uuid:"6E40234E-CAA5-493B-92E4-9A1E63C3EB3B"
 },
 {
 containsFormID:"3AD632B7-04AD-4EE8-897E-5116F1BE7B53",
-location:"481,26",
+location:"230,109",
 text:"Sounds",
 typeid:15,
 uuid:"746F3257-1AC0-4EBB-864D-A63009A3815C"
 },
 {
 containsFormID:"147F8275-D530-4B97-9762-FB775C02B534",
-location:"80,30",
+location:"38,47",
 name:"hardware_settings",
 text:"Hardware Settings",
 typeid:15,
@@ -78,14 +78,14 @@ uuid:"87B851A0-D57F-40B6-BCAE-461023F62532"
 },
 {
 containsFormID:"AFA286CD-7451-49C2-A2BE-48E8FCF2CCA1",
-location:"258,85",
+location:"474,184",
 text:"RF Screen Settings",
 typeid:15,
 uuid:"950813DD-C31F-4775-9DFE-DB40B900A440"
 },
 {
 containsFormID:"0ABA9A34-522B-4564-BEC6-282A67EC1E25",
-location:"146,85",
+location:"409,164",
 text:"Other Applications",
 typeid:15,
 uuid:"95194F15-85E2-4BDC-9E9A-CBF4B9A2510E"

@@ -21,12 +21,6 @@ var lanVersion = "TESTING";
  */
 var debugtesting = false;
 /**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"8F7761A4-D78A-4C0E-A87E-57E53251332B"}
- */
-var stsInstalled = "Fabricator";
-/**
  * @properties={typeid:35,uuid:"DCECCF79-BC9A-4E09-B176-894ABA3FD493",variableType:-4}
  */
 var rfSystem = false;
@@ -313,48 +307,6 @@ var idyes = 6.000000;
  */
 var idno = 7.000000;
 /**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"57A9C5B8-9BC2-4848-99A0-2B87FADF3112"}
- */
-var stsStart = "C:\WINDOWS\THE MICROSOFT SOUND.WAV";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"F4BA8260-6F64-493A-AE4B-107614A5BE49"}
- */
-var stsExit = "C:\WINDOWS\CHIMES.WAV";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"11D886D5-6B41-4B76-A794-DDFE1DF10AE7"}
- */
-var stsBell = "C:\WINDOWS\DING.WAV";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"B19ED9B8-1BA8-4927-A144-83B13BD34287"}
- */
-var stsInfo = "C:\WINDOWS\TADA.WAV";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"D7CB2364-50A8-44E7-8D7C-72E686722C23"}
- */
-var stsStop = "C:\WINDOWS\CHORD.WAV";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"F09B7BE9-9FFE-4826-B851-01C0E738CE37"}
- */
-var stsQues = "C:\WINDOWS\CHORD.WAV";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"8E01B8E5-29C0-4DBF-B2A1-273727BB2B55"}
- */
-var stsAster = "C:\WINDOWS\CHORD.WAV";
-/**
  * @properties={typeid:35,uuid:"BC4BCD35-26EA-4610-931D-613ABE49CE2A",variableType:-4}
  */
 var aSTSMasterTables = new Array;
@@ -461,18 +413,6 @@ var lanUsers = new Array;
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"D315BE9B-3282-4141-ACA2-027764CFC60E"}
- */
-var yourFcCallSign = "TEST CALL SIGN";
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"228A2C74-4196-432E-AF98-C42DFC5EB557",variableType:8}
- */
-var maxwt = 42000.000000;
-/**
- * @type {String}
- *
  * @properties={typeid:35,uuid:"407749C5-0E67-403F-A192-FC701AE2756C"}
  */
 var yourName = "";
@@ -534,72 +474,6 @@ var shipTranCode = "FABSH";
  * @properties={typeid:35,uuid:"3310B039-1166-4776-937D-28F214B4690A"}
  */
 var recvTranCode = "FABRC";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"B841A433-CC9D-4B4B-B6B6-8263E8256C2C"}
- */
-var markZip = "MARKUNIQ";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"A9682ED5-B331-455B-91AD-B946FAEC754F"}
- */
-var recrZip = "RECEIVER";
-/**
- * @properties={typeid:35,uuid:"AF111640-E4A4-4EA6-A6A0-A8F25FFD1A3B",variableType:-4}
- */
-var lCowCustSpc = true;
-/**
- * @properties={typeid:35,uuid:"7C5253A2-A665-4DB2-97D3-228D80EAC2B7",variableType:-4}
- */
-var lCowPosPC = true;
-/**
- * @properties={typeid:35,uuid:"F5F736D4-27D1-4C6E-AF0D-E0AA386A951E",variableType:-4}
- */
-var lLogoDisplay = false;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"077F5BC3-558E-425A-AF26-BD5FFC34806A",variableType:8}
- */
-var paintDelay = 0.000000;
-/**
- * @properties={typeid:35,uuid:"A3330E84-6C48-45F5-990C-E20C37502EF6",variableType:-4}
- */
-var lShows = false;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"795802EE-4E88-4563-97C5-69F564286F0F",variableType:8}
- */
-var xmitDelay = 0.010000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"1A8C6092-099A-4B58-A8A4-DC2D605F2330",variableType:8}
- */
-var powerUpDelay = 20.000000;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"C74E2575-1DF1-498E-A151-2DBCDC765700"}
- */
-var madeIn = "Made in USA";
-/**
- * @properties={typeid:35,uuid:"E3642D3F-4D61-49B1-81B7-A7210779DF5D",variableType:-4}
- */
-var smallMadeInFont = true;
-/**
- * @properties={typeid:35,uuid:"0C091770-F95A-40A6-88DC-50AC962D0D1E",variableType:-4}
- */
-var printIdQty = false;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"C6019523-2915-4067-98EF-B0826F430632",variableType:8}
- */
-var paralPort = 1.000000;
 
 /**
  * @type {String}
@@ -614,14 +488,6 @@ var dlApp = "LDTDNLD.APP";
  */
 var portApp = "LDTPROG.APP";
 /**
- * @properties={typeid:35,uuid:"56490300-AF19-4B81-9247-22FCFECBBC9A",variableType:-4}
- */
-var lUseSeq = false;
-/**
- * @properties={typeid:35,uuid:"FC788F6D-F6F5-47D3-AEE9-43C8765E8C70",variableType:-4}
- */
-var lFabShip = false;
-/**
  * @properties={typeid:35,uuid:"BC17DE04-6401-4487-891E-16A966535D66",variableType:-4}
  */
 var rfPort = false;
@@ -633,66 +499,6 @@ var lRfNetLoadWt =false;
  * @properties={typeid:35,uuid:"8FF9F181-932E-48F2-A39B-68412BDAF2EB",variableType:-4}
  */
 var lbPort = false;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"25546FC2-8845-4102-8A6E-F8971E4BC62F",variableType:8}
- */
-var wtPrompt = 0.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"B595138D-C857-425F-8B75-5D79449F6B39",variableType:8}
- */
-var qtyPrompt = 9.000000;
-/**
- * @properties={typeid:35,uuid:"18464B0F-E917-4470-B345-AD2E57B51D0E",variableType:-4}
- */
-var lMuJobName = true;
-/**
- * @properties={typeid:35,uuid:"F3164517-0032-4A72-A312-3E0BFF520DB3",variableType:-4}
- */
-var lRecJobName = true;
-/**
- * @properties={typeid:35,uuid:"B9FD6921-DF52-48EF-AA4B-CF1458FE5FD9",variableType:-4}
- */
-var chngRecvLoad = true;
-/**
- * @properties={typeid:35,uuid:"A6F26379-ED77-4507-8C8C-117E3DCA7FA4",variableType:-4}
- */
-var chngShipLoad = true;
-/**
- * @properties={typeid:35,uuid:"2F36151A-22B5-43F2-B4EF-FFD7C0264422",variableType:-4}
- */
-var lNewRecvId = false;
-/**
- * @properties={typeid:35,uuid:"D5E9FA7E-5D10-4720-BEEB-D19E4874807C",variableType:-4}
- */
-var autoCreateLoad = true;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"3B1EB578-2D37-434C-A9BA-A6A2A914EF0D"}
- */
-var poSetting = "Use the Job P.O. Number";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"6A91320B-AD2F-4F7F-939F-2F1B593DAF35"}
- */
-var relSetting = "Use the Load Release #";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"119371A6-CEF2-4440-A117-7F4521257115"}
- */
-var poCostSetting = "Use the Job P.O. Number";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"9804B5CD-59D6-4619-9C6D-55601AAC8070"}
- */
-var rfPlRpType = "Summary Report";
 /**
  * @type {String}
  *
@@ -712,10 +518,6 @@ var rfDlApp = "RFSYM38X.APP";
  */
 var rfPortApp = "RFSYM38X.APP";
 /**
- * @properties={typeid:35,uuid:"839CF1D3-A844-437F-A936-468D68A4E0EC",variableType:-4}
- */
-var rfRefresh = true;
-/**
  * @properties={typeid:35,uuid:"02A9BE96-BD53-4D80-9A2A-C519712F05B4",variableType:-4}
  */
 var enableDebug = false;
@@ -726,93 +528,17 @@ var enableDebug = false;
  */
 var rfShipStatus = "WELD";
 /**
- * @properties={typeid:35,uuid:"38F3DAC9-B028-4574-A982-486E9F2D17F6",variableType:-4}
- */
-var rfDuplStatusScans = false;
-/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"79F392DB-7703-4476-A9AA-24778D4931A7"}
  */
 var defaultRfPrinter = "";
 /**
- * @properties={typeid:35,uuid:"DAD96B44-9408-46CC-BCDB-23DC914986BB",variableType:-4}
- */
-var rfStamperConnected = false;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"14FE2873-7ECE-4116-A677-B3AB2D259615"}
- */
-var dflRouteCode = "NORMAL";
-/**
- * @properties={typeid:35,uuid:"C4727821-F7C2-46A3-9DD6-7354434FFF6A",variableType:-4}
- */
-var validStatusCodes = true;
-/**
- * @properties={typeid:35,uuid:"BF4A0BC8-C5F9-46E8-8AF7-0A82F0F85322",variableType:-4}
- */
-var reqdShipStatusCode = true;
-/**
- * @properties={typeid:35,uuid:"74419785-D23B-4524-AB99-1D62D1BBCD67",variableType:-4}
- */
-var lKeepMinorPcMarks = true;
-/**
- * @properties={typeid:35,uuid:"A465D2FA-32C0-44CF-8328-E0000BACB3C1",variableType:-4}
- */
-var lOnlyOneCustPerJob = false;
-/**
- * @properties={typeid:35,uuid:"85C8A4C4-4B72-4F06-BECA-3D61C52C9520",variableType:-4}
- */
-var promptFabShop = true;
-/**
- * @properties={typeid:35,uuid:"8D444690-59A8-4469-B6FC-B229BAB86274",variableType:-4}
- */
-var lAllowInterimShipments = false;
-/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"FD4A4AEA-73B9-46A9-A0DB-0577E60523C3"}
  */
 var aRfShipStatus = "";
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"0B50AB0D-C576-4C01-9F99-CFFCC0FCF20F",variableType:8}
- */
-var welderGroupQty = 0.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"BA641444-9C03-4FDA-AB97-F36AAC385D1F",variableType:8}
- */
-var welderGroupRange = 0.000000;
-/**
- * @properties={typeid:35,uuid:"3CD3CC7E-5CFF-4741-8039-B3B4A0D18716",variableType:-4}
- */
-var lSaveRfTrans = true;
-/**
- * @properties={typeid:35,uuid:"C51A7D1A-B782-426E-9F12-524123BADCEF",variableType:-4}
- */
-var globalF8Off = false;
-/**
- * @properties={typeid:35,uuid:"5B9524AF-62A2-4E69-90ED-46AFC72B605D",variableType:-4}
- */
-var shipF8Off = true;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"48F62126-5080-4814-8ECE-BAC7D9BB6F39",variableType:8}
- */
-var rfPromptDuration = 0.000000;
-/**
- * @properties={typeid:35,uuid:"20A17489-EAE6-4FB4-9426-C290EF93A85D",variableType:-4}
- */
-var lAddLocationWtPcs = false;
-/**
- * @properties={typeid:35,uuid:"701C9677-1FDF-40BC-9609-6F69CC615393",variableType:-4}
- */
-var lForceReload = true;
 /**
  * @properties={typeid:35,uuid:"2DC4D608-C379-4099-B42B-9CC837C0BCE8",variableType:-4}
  */
@@ -838,7 +564,334 @@ var lStatLoaded = false;
  */
 var stspath = false;
 
+//RF Settings preferences -----------------------------------------------------------------
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"058BF360-2419-4156-BC59-1FD4798DA8DB"}
+ */
+var rfPortableType = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"D315BE9B-3282-4141-ACA2-027764CFC60E"}
+ */
+var yourFcCallSign = "TEST CALL SIGN";
+/**
+ * @properties={typeid:35,uuid:"A3330E84-6C48-45F5-990C-E20C37502EF6",variableType:-4}
+ */
+var lShowRs = false;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"795802EE-4E88-4563-97C5-69F564286F0F",variableType:8}
+ */
+var xmitDelay = 0.010000;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"1A8C6092-099A-4B58-A8A4-DC2D605F2330",variableType:8}
+ */
+var powerUpDelay = 20.000000;
+/**
+ * @properties={typeid:35,uuid:"701C9677-1FDF-40BC-9609-6F69CC615393",variableType:-4}
+ */
+var lForceReload = true;
+/**
+ * @properties={typeid:35,uuid:"56490300-AF19-4B81-9247-22FCFECBBC9A",variableType:-4}
+ */
+var lUseSeq = false;
+/**
+ * @properties={typeid:35,uuid:"0C091770-F95A-40A6-88DC-50AC962D0D1E",variableType:-4}
+ */
+var printIdQty = false;
+/**
+ * @properties={typeid:35,uuid:"839CF1D3-A844-437F-A936-468D68A4E0EC",variableType:-4}
+ */
+var rfRefresh = true;
+/**
+ * @properties={typeid:35,uuid:"DAD96B44-9408-46CC-BCDB-23DC914986BB",variableType:-4}
+ */
+var rfStamperConnected = false;
+/**
+ * @properties={typeid:35,uuid:"BF4A0BC8-C5F9-46E8-8AF7-0A82F0F85322",variableType:-4}
+ */
+var reqdShipStatusCode = true;
+/**
+ * @properties={typeid:35,uuid:"85C8A4C4-4B72-4F06-BECA-3D61C52C9520",variableType:-4}
+ */
+var promptFabShop = true;
+/**
+ * @properties={typeid:35,uuid:"3CD3CC7E-5CFF-4741-8039-B3B4A0D18716",variableType:-4}
+ */
+var lSaveRfTrans = true;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"0B50AB0D-C576-4C01-9F99-CFFCC0FCF20F",variableType:8}
+ */
+var welderGroupQty = 0.000000;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"BA641444-9C03-4FDA-AB97-F36AAC385D1F",variableType:8}
+ */
+var welderGroupRange = 0.000000;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"48F62126-5080-4814-8ECE-BAC7D9BB6F39",variableType:8}
+ */
+var rfPromptDuration = 0.000000;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"1F8231C8-FC45-438A-BCE6-560E6E6F5AA5"}
+ */
+var rfLoadWt = "";
+/**
+ * @properties={typeid:35,uuid:"B9FD6921-DF52-48EF-AA4B-CF1458FE5FD9",variableType:-4}
+ */
+var chngRecvLoad = true;
+/**
+ * @properties={typeid:35,uuid:"A6F26379-ED77-4507-8C8C-117E3DCA7FA4",variableType:-4}
+ */
+var chngShipLoad = true;
+/**
+ * @properties={typeid:35,uuid:"2F36151A-22B5-43F2-B4EF-FFD7C0264422",variableType:-4}
+ */
+var lNewRecvId = false;
+/**
+ * @properties={typeid:35,uuid:"D5E9FA7E-5D10-4720-BEEB-D19E4874807C",variableType:-4}
+ */
+var autoCreateLoad = true;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"9804B5CD-59D6-4619-9C6D-55601AAC8070"}
+ */
+var rfPlRpType = "Summary Report";
+/**
+ * @properties={typeid:35,uuid:"38F3DAC9-B028-4574-A982-486E9F2D17F6",variableType:-4}
+ */
+var rfDuplStatusScans = false;
+/**
+ * @properties={typeid:35,uuid:"8D444690-59A8-4469-B6FC-B229BAB86274",variableType:-4}
+ */
+var lAllowInterimShipments = false;
+/**
+ * @properties={typeid:35,uuid:"C51A7D1A-B782-426E-9F12-524123BADCEF",variableType:-4}
+ */
+var globalF8Off = false;
+/**
+ * @properties={typeid:35,uuid:"5B9524AF-62A2-4E69-90ED-46AFC72B605D",variableType:-4}
+ */
+var shipF8Off = true;
+/**
+ * @properties={typeid:35,uuid:"20A17489-EAE6-4FB4-9426-C290EF93A85D",variableType:-4}
+ */
+var lAddLocationWtPcs = false;
+
+//Sounds preferences -----------------------------------------------------------------
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"57A9C5B8-9BC2-4848-99A0-2B87FADF3112"}
+ */
+var stsStart = "C:\WINDOWS\THE MICROSOFT SOUND.WAV";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F4BA8260-6F64-493A-AE4B-107614A5BE49"}
+ */
+var stsExit = "C:\WINDOWS\CHIMES.WAV";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"11D886D5-6B41-4B76-A794-DDFE1DF10AE7"}
+ */
+var stsBell = "C:\WINDOWS\DING.WAV";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B19ED9B8-1BA8-4927-A144-83B13BD34287"}
+ */
+var stsInfo = "C:\WINDOWS\TADA.WAV";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"D7CB2364-50A8-44E7-8D7C-72E686722C23"}
+ */
+var stsStop = "C:\WINDOWS\CHORD.WAV";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F09B7BE9-9FFE-4826-B851-01C0E738CE37"}
+ */
+var stsQues = "C:\WINDOWS\CHORD.WAV";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"8E01B8E5-29C0-4DBF-B2A1-273727BB2B55"}
+ */
+var stsAster = "C:\WINDOWS\CHORD.WAV";
+
+//Misc Info Settings preferences -----------------------------------------------------------------
+
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"228A2C74-4196-432E-AF98-C42DFC5EB557",variableType:8}
+ */
+var maxwt = 42000.000000;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B841A433-CC9D-4B4B-B6B6-8263E8256C2C"}
+ */
+var markZip = "MARKUNIQ";
+/**
+ * @properties={typeid:35,uuid:"18464B0F-E917-4470-B345-AD2E57B51D0E",variableType:-4}
+ */
+var lMuJobName = true;
+/**
+ * @properties={typeid:35,uuid:"F3164517-0032-4A72-A312-3E0BFF520DB3",variableType:-4}
+ */
+var lRecJobName = true;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"C6019523-2915-4067-98EF-B0826F430632",variableType:8}
+ */
+var paralPort = 1.000000;
+/**
+ * @properties={typeid:35,uuid:"AF111640-E4A4-4EA6-A6A0-A8F25FFD1A3B",variableType:-4}
+ */
+var lCowCustSpc = true;
+/**
+ * @properties={typeid:35,uuid:"7C5253A2-A665-4DB2-97D3-228D80EAC2B7",variableType:-4}
+ */
+var lCowPosPC = true;
+/**
+ * @properties={typeid:35,uuid:"FC788F6D-F6F5-47D3-AEE9-43C8765E8C70",variableType:-4}
+ */
+var lFabShip = false;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"25546FC2-8845-4102-8A6E-F8971E4BC62F",variableType:8}
+ */
+var wtPrompt = 0.000000;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"B595138D-C857-425F-8B75-5D79449F6B39",variableType:8}
+ */
+var qtyPrompt = 9.000000;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"A9682ED5-B331-455B-91AD-B946FAEC754F"}
+ */
+var recvrZip = "RECEIVER";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"077F5BC3-558E-425A-AF26-BD5FFC34806A",variableType:8}
+ */
+var paintDelay = 0.000000;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"14FE2873-7ECE-4116-A677-B3AB2D259615"}
+ */
+var dflRouteCode = "NORMAL";
+/**
+ * @properties={typeid:35,uuid:"C4727821-F7C2-46A3-9DD6-7354434FFF6A",variableType:-4}
+ */
+var validStatusCodes = true;
+/**
+ * @properties={typeid:35,uuid:"74419785-D23B-4524-AB99-1D62D1BBCD67",variableType:-4}
+ */
+var lKeepMinorPcMarks = true;
+/**
+ * @properties={typeid:35,uuid:"A465D2FA-32C0-44CF-8328-E0000BACB3C1",variableType:-4}
+ */
+var lOnlyOneCustPerJob = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C74E2575-1DF1-498E-A151-2DBCDC765700"}
+ */
+var madeIn = "Made in USA";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"8F7761A4-D78A-4C0E-A87E-57E53251332B"}
+ */
+var stsInstalled = "Fabricator";
+/**
+ * @properties={typeid:35,uuid:"E3642D3F-4D61-49B1-81B7-A7210779DF5D",variableType:-4}
+ */
+var smallMadeInFont = true;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"4ED3B99C-0856-446B-8F7E-254228CD0761"}
+ */
+var yourNumber = "";
+
+//PO Info preferences -----------------------------------------------------------------
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3B1EB578-2D37-434C-A9BA-A6A2A914EF0D"}
+ */
+var poSetting = "Use the Job P.O. Number";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"6A91320B-AD2F-4F7F-939F-2F1B593DAF35"}
+ */
+var relSetting = "Use the Load Release #";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"119371A6-CEF2-4440-A117-7F4521257115"}
+ */
+var poCostSetting = "Use the Job P.O. Number";
+
+
+//Display Settings preferences -----------------------------------------------------------------
+
+/**
+ * @properties={typeid:35,uuid:"F5F736D4-27D1-4C6E-AF0D-E0AA386A951E",variableType:-4}
+ */
+var lLogoDisplay = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"FCEAED07-F6CF-4187-86CD-7C3306872008"}
+ */
+var bmpFile = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3B150F4D-E359-4CA4-8609-008AF07F51D6"}
+ */
+var iconFile = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"CD3A7B83-4DE9-4B9A-8F6F-1036BEEF2EB8"}
+ */
+var winTitle = "";
+
 //Hardware Settings preferences -----------------------------------------------------------------
+
 /**
  * @properties={typeid:35,uuid:"E5A798F7-22A4-4AD9-9283-11D2BFCAA890",variableType:-4}
  */

@@ -21,7 +21,7 @@ uuid:"02618318-419A-4C5C-9583-8F54643FFC42"
 {
 dataProviderID:"lFabtrolSeqTesting",
 displayType:4,
-location:"143,71",
+location:"143,75",
 name:"lFabtrolSeqTesting",
 size:"165,20",
 text:"Full Sequence Testing",
@@ -41,7 +41,7 @@ uuid:"0F51F741-B5AF-40FC-8AEB-E8029A6C6337"
 },
 {
 dataProviderID:"fabtrolRootPath",
-location:"145,50",
+location:"143,50",
 name:"fabtrolRootPath",
 size:"425,20",
 text:"Fabtrolrootpath",
@@ -50,7 +50,7 @@ uuid:"28F95B97-A4C4-4EBE-A379-684CBAC58A10"
 },
 {
 dataProviderID:"fabtrolDatabase",
-location:"144,196",
+location:"143,191",
 name:"fabtrolDatabase",
 size:"163,20",
 text:"Fabtroldatabase",
@@ -80,7 +80,7 @@ uuid:"4B56B1DF-381D-42D1-BC95-B8DD3C134643"
 },
 {
 labelFor:"ftSimpleJobs",
-location:"314,226",
+location:"314,216",
 name:"ftSimpleJobs_label",
 size:"120,20",
 text:"Simple Jobs Tables:",
@@ -112,7 +112,8 @@ uuid:"6AABB839-C63F-4E16-80B8-5357631B7EDD"
 },
 {
 dataProviderID:"ftSimpleJobs",
-location:"435,226",
+displayType:2,
+location:"435,216",
 name:"ftSimpleJobs",
 size:"140,20",
 text:"Ftsimplejobs",
@@ -133,7 +134,7 @@ uuid:"6D1CA5C6-3BA6-4718-A8D9-7AF3CCB174DE"
 {
 dataProviderID:"lFabtrolShip",
 displayType:4,
-location:"144,101",
+location:"143,101",
 name:"lFabtrolShip",
 size:"163,20",
 text:"Update FabTrol Loads",
@@ -143,7 +144,7 @@ uuid:"7196073A-EE70-488D-B58F-FBBA1B1FB9E9"
 },
 {
 dataProviderID:"fabtrolPassword",
-location:"435,196",
+location:"435,191",
 name:"fabtrolPassword",
 size:"140,20",
 text:"Fabtrolpassword",
@@ -153,7 +154,7 @@ uuid:"780ECBB2-9A30-4A2D-8CB0-84B606FFDE18"
 {
 dataProviderID:"lFabtrolSqlVersion",
 displayType:4,
-location:"143,136",
+location:"143,141",
 name:"lFabtrolSqlVersion",
 size:"163,20",
 text:"SQL Version",
@@ -162,7 +163,7 @@ uuid:"7D66D272-FB70-4933-B792-740DF8FE1DAD"
 },
 {
 dataProviderID:"ftProjectOdbc",
-location:"143,296",
+location:"143,291",
 name:"ftProjectOdbc",
 size:"140,20",
 text:"Ftprojectodbc",
@@ -192,7 +193,7 @@ uuid:"8B4C87C6-AD04-45B9-AF0E-9608289DDC64"
 {
 horizontalAlignment:4,
 labelFor:"ftUnitOdbc",
-location:"314,296",
+location:"314,291",
 name:"ftUnitOdbc_label",
 size:"120,20",
 text:"Unit ODBC:",
@@ -202,7 +203,7 @@ uuid:"922B4023-F996-431D-BA9F-EDFE364BCC7B"
 },
 {
 dataProviderID:"ftUnitOdbc",
-location:"435,296",
+location:"435,291",
 name:"ftUnitOdbc",
 size:"140,20",
 text:"Ftunitodbc",
@@ -211,7 +212,7 @@ uuid:"AA6D5D94-A731-44A6-8A9D-5BA755A35332"
 },
 {
 dataProviderID:"fabtrolServerName",
-location:"144,166",
+location:"143,166",
 name:"fabtrolServerName",
 size:"163,20",
 text:"Fabtrolservername",
@@ -221,7 +222,7 @@ uuid:"B51574AC-6FB8-4AB2-A5E1-E7D316BF0C40"
 {
 horizontalAlignment:4,
 labelFor:"ftProjectOdbc",
-location:"40,296",
+location:"39,291",
 name:"ftProjectOdbc_label",
 size:"99,20",
 text:"Project ODBC:",
@@ -232,7 +233,7 @@ uuid:"B96E9613-164D-45DC-A5D7-261B04110C78"
 {
 dataProviderID:"ftVer2x",
 displayType:4,
-location:"143,348",
+location:"143,342",
 name:"ftVer2x",
 size:"140,20",
 text:"FabTrol Version 2.x",
@@ -252,7 +253,7 @@ uuid:"C5D4C24B-D35A-44BC-9354-37310F3D55BC"
 {
 horizontalAlignment:4,
 labelFor:"fabtrolDatabase",
-location:"60,196",
+location:"60,191",
 name:"fabtrolDatabase_label",
 size:"80,20",
 text:"Database:",
@@ -263,7 +264,7 @@ uuid:"CB11595D-26C4-4037-A500-584959D602EC"
 {
 dataProviderID:"ftDoNotMuliplyMinors",
 displayType:4,
-location:"145,321",
+location:"143,321",
 name:"ftDoNotMuliplyMinors",
 size:"465,20",
 text:"Do not multiply minor pc mark quantity by assembly quantity during import.",
@@ -292,7 +293,7 @@ uuid:"EBDE8440-0E47-4EEA-9440-85BEC4118F76"
 {
 horizontalAlignment:4,
 labelFor:"fabtrolPassword",
-location:"354,196",
+location:"354,191",
 name:"fabtrolPassword_label",
 size:"80,20",
 text:"Password:",

@@ -27,7 +27,7 @@ uuid:"B62E4AE2-1AF5-41A6-AD35-AA55EB271870"
 location:"0,0",
 name:"tabs",
 printable:false,
-size:"676,478",
+size:"671,472",
 transparent:true,
 typeid:16,
 uuid:"15A9B991-32EB-4849-9AE1-79DAE2BE5DBF"

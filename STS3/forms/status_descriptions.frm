@@ -1,28 +1,8 @@
 customProperties:"",
 dataSource:"db:/stsservoy/status_description",
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
-initialSort:"status_sequence asc, status_code asc",
+initialSort:"status_sequence asc",
 items:[
-{
-labelFor:"prompt_complete",
-location:"581,417",
-name:"prompt_complete_label",
-size:"98,30",
-text:"<html><red>Prompt<\/red> for <br>100% Complete",
-transparent:true,
-typeid:7,
-uuid:"0AB3C31D-1F1D-4D60-A1F0-69FE72E2D95A"
-},
-{
-labelFor:"mtr_pdf_required",
-location:"581,321",
-name:"mtr_pdf_required_label",
-size:"141,30",
-text:"<HTML>MTR PDF Required<br>at this Status Point",
-transparent:true,
-typeid:7,
-uuid:"0BB4D3B1-88FE-41DD-A932-49C4873C9414"
-},
 {
 labelFor:"status_type",
 location:"254,100",
@@ -34,6 +14,7 @@ typeid:7,
 uuid:"0DB0F59D-8240-4E3C-9CE8-E4CCF9685024"
 },
 {
+horizontalAlignment:4,
 labelFor:"fabtrol_labor_code",
 location:"495,195",
 name:"fabtrol_labor_code_label",
@@ -55,17 +36,19 @@ uuid:"141376BE-293F-4ED6-A1BC-E6F2C299D35B"
 {
 dataProviderID:"prompt_complete",
 displayType:4,
-location:"544,417",
-size:"28,20",
+location:"544,422",
+size:"221,30",
+text:"<html><red>Prompt<\/red> for <br>100% Complete",
 transparent:true,
 typeid:4,
 uuid:"1B61412C-AE66-4665-AC6D-D268E648638B"
 },
 {
-labelFor:"warn_not_pass",
+horizontalAlignment:4,
+labelFor:"",
 location:"503,236",
 name:"warn_not_pass_label",
-size:"154,38",
+size:"121,38",
 text:"<html>Warn on RF if not <br>passed to 3rd Party",
 transparent:true,
 typeid:7,
@@ -84,8 +67,9 @@ uuid:"2EF9DD23-F94A-466F-8BF0-727DBEDC0DB8"
 {
 dataProviderID:"allow_multi_scan",
 displayType:4,
-location:"544,351",
-size:"28,20",
+location:"544,356",
+size:"221,20",
+text:"Allow Multiple Scans",
 transparent:true,
 typeid:4,
 uuid:"30AE4379-9755-483E-9B01-487747E7409F"
@@ -99,16 +83,6 @@ text:"Status Description",
 transparent:true,
 typeid:7,
 uuid:"3BAE7E73-546B-426A-8332-7D5C72D5352E"
-},
-{
-labelFor:"push_a_station",
-location:"581,376",
-name:"push_a_station_label",
-size:"126,31",
-text:"<html>Push Transaction to <br>Third Party",
-transparent:true,
-typeid:7,
-uuid:"4B986496-7A08-4929-9612-DC7FA2B1392E"
 },
 {
 dataProviderID:"fab_shop",
@@ -137,8 +111,9 @@ uuid:"59E7DD2E-6114-4C1E-94F3-32D462CD14B9"
 {
 dataProviderID:"push_a_station",
 displayType:4,
-location:"544,376",
-size:"28,20",
+location:"544,381",
+size:"221,31",
+text:"<html>Push Transaction to <br>Third Party",
 transparent:true,
 typeid:4,
 uuid:"5CD4F64C-1FAB-4800-8878-586CE08336A0"
@@ -237,16 +212,6 @@ typeid:7,
 uuid:"7CF641E4-349E-4ED6-B753-3EE70189BCFE"
 },
 {
-labelFor:"emp_number_required",
-location:"581,296",
-name:"emp_number_required_label",
-size:"184,20",
-text:"Worker Employee # Required",
-transparent:true,
-typeid:7,
-uuid:"83F8B14F-C445-4D7C-8C04-5509887C568B"
-},
-{
 labelFor:"fab_shop",
 location:"254,10",
 name:"fab_shop_label",
@@ -288,6 +253,7 @@ typeid:16,
 uuid:"88B16424-76CB-458D-ABB8-72E63494807E"
 },
 {
+horizontalAlignment:4,
 labelFor:"thirdpty_station_name",
 location:"508,155",
 name:"thirdpty_station_name_label",
@@ -325,7 +291,8 @@ uuid:"CA2985F7-F082-415F-9612-322F41361D88"
 dataProviderID:"emp_number_required",
 displayType:4,
 location:"543,296",
-size:"28,20",
+size:"220,20",
+text:"Worker Employee # Required",
 transparent:true,
 typeid:4,
 uuid:"CAEA9732-C784-4046-8576-1FFA5A024A83"
@@ -345,7 +312,8 @@ dataProviderID:"mtr_pdf_required",
 displayType:4,
 location:"543,321",
 name:"mtr_pdf_required",
-size:"28,20",
+size:"224,30",
+text:"<HTML>MTR PDF Required<br>at this Status Point",
 transparent:true,
 typeid:4,
 uuid:"CE9BAC88-F350-4BF3-BDDA-032503E33F5E"
@@ -362,6 +330,7 @@ uuid:"D1FECC85-45DB-4FBB-9003-44688289D2D9",
 visible:false
 },
 {
+horizontalAlignment:4,
 labelFor:"status_sequence",
 location:"522,130",
 name:"status_sequence_label",
@@ -383,16 +352,6 @@ text:"End For Status",
 typeid:4,
 uuid:"E2549BB3-80BE-4D35-94EE-E53E2662047A",
 valuelistID:"23486681-EB49-4DB3-9720-0D8BDC65914E"
-},
-{
-labelFor:"allow_multi_scan",
-location:"581,351",
-name:"allow_multi_scan_label",
-size:"184,20",
-text:"Allow Multiple Scans",
-transparent:true,
-typeid:7,
-uuid:"EC079D44-13C7-4B52-8AFA-7B126515ECC9"
 },
 {
 dataProviderID:"status_sequence",

@@ -17,6 +17,16 @@ typeid:19,
 uuid:"300411BA-FED4-4532-AEB2-2E2D48B1BA84"
 },
 {
+dataProviderID:"lFabsuiteInstalled",
+displayType:4,
+location:"156,28",
+name:"lFabsuiteInstalled",
+size:"161,20",
+text:"FabSuite Installation",
+typeid:4,
+uuid:"407BAFE3-1051-4F8C-87A8-9DEBE7819A49"
+},
+{
 horizontalAlignment:4,
 labelFor:"fabsuitepassword",
 location:"311,168",
@@ -103,7 +113,7 @@ uuid:"C1390AD9-DD31-48D1-A596-0635D8DB1046"
 {
 dataProviderID:"lFsAllowNonSerial",
 displayType:4,
-location:"155,233",
+location:"155,228",
 name:"lFsAllowNonSerial",
 size:"381,20",
 text:"Allow Audit Scans of Serial Numbers Not In FabSuite or STS.",
@@ -131,7 +141,7 @@ uuid:"D8DEAC1F-675D-4623-BBE1-C2E9F59406E6"
 {
 dataProviderID:"lFabsuiteImportOnly",
 displayType:4,
-location:"291,28",
+location:"340,28",
 name:"lFabsuiteImportOnly",
 size:"212,20",
 text:"Use Settings For Imports Only",

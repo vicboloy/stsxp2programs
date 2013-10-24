@@ -11,38 +11,33 @@ var selectedIndex = 0;
  */
 var editFlag = false;
 
-/**
- * Callback method for when form is shown.
- *
- * @param {Boolean} firstShow form is shown first time after load
- * @param {JSEvent} event the event that triggered the action
- *
- *
- * @properties={typeid:24,uuid:"AA27341F-9B53-4E78-AA52-B5E4D85DE604"}
- */
-function onShow(firstShow, event) {
+/*
+function onShowRE(firstShow, event) {
 	var dataset = controller.getFormContext().getValue(1,2);
 	application.output('employee class list form parent on show '+dataset);
 
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
+	} else {
+		elements.deleteButton.text = 'Delete class \''+class_code+'\'';
 	}
-	elements.deleteButton.text = 'Delete class \''+class_code+'\'';
 }
-
+*/
 /**
  * TODO generated, please specify type and doc for the params
  * @param event
+ * @param {string} recordKeyID
  *
  *
  * @properties={typeid:24,uuid:"1C48C95D-A375-495D-9D45-70364F986DDB"}
  */
-function onActionAdd(event){
+function onActionAdd(event,recordKeyID){
 	selectedIndex = controller.getSelectedIndex();
 	onEdit(event,true);
-	controller.newRecord();
-	//globals.newRecordKey = employee_clas_id;
+	foundset.newRecord();
+	globals.newRecordKey = eval(recordKeyID);
+	additionalActionAddFunctions();
 }
 /**
  * Perform the element default action.
@@ -57,8 +52,8 @@ function onActionDelete(event) {
 	var itemDescr = "Remove "+itemDescription;
 	globals.doDialog(itemDescr,"Delete this Class?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
-			controller.deleteRecord();
-		}
+		controller.deleteRecord();
+	}
 
 }
 
@@ -66,13 +61,22 @@ function onActionDelete(event) {
  * Handle record selected.
  *
  * @param {JSEvent} event the event that triggered the action
+ * @param {String} buttonTextSrc source in record for button text
  *
  * @properties={typeid:24,uuid:"0D273E9E-ECB7-4362-9492-21A6DACDA13D"}
  */
-function onRecordSelection(event) {
-	//elements.deleteButton.text = 'Delete \''+type_code+'\'';
-	elements.deleteButton.text = 'Delete';
-	forms.status_descriptions.currentStatusCode = code;
+function onRecordSelection(event,buttonTextSrc) {
+	var form = getParentForm();
+	var text = form[buttonTextSrc];
+	if (text == null){
+			form.elements['deleteButton'].text = "Delete";
+		} else {
+			form.elements['deleteButton'].text = "Delete \'"+text+"\'";
+		}
+	form.addOtherChangeFunctions(); //Run change functions to update comboboxen
+	//elements.deleteButton.text = 'Delete';
+	//forms.status_descriptions.currentStatusCode = code;
+	//selectedIndex = getSelectedIndex();
 }
 
 /**
@@ -84,8 +88,12 @@ function onRecordSelection(event) {
  * @properties={typeid:24,uuid:"5A03D84F-63FE-439C-908A-54F4839CD8F2"}
  */
 function onActionEdit(event) {
-	onEdit(event,true);
-	databaseManager.setAutoSave(false);	
+	var count = databaseManager.getFoundSetCount(foundset);
+	if (count > 0){
+		onEdit(event,true);
+		databaseManager.setAutoSave(false);	
+	}
+	additionalEditFunctions(); //stubbed out on this for extending for other forms
 }
 
 /**
@@ -97,7 +105,7 @@ function onActionEdit(event) {
  * @properties={typeid:24,uuid:"2CA6B5AA-5E72-412F-9002-67AB9698B7E9"}
  */
 function onEdit(event,editStatus){
-	editFlag = editStatus;
+	//editFlag = editStatus;
 	controller.readOnly = !editStatus;
 	elements.addButton.visible = !editStatus;
 	elements.saveButton.visible = editStatus;
@@ -117,6 +125,7 @@ function onEdit(event,editStatus){
  */
 function onActionCancelEdit(event) {
 	onEdit(event,false);
+	additionalEditCancelFunctions();
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -131,7 +140,14 @@ function onActionCancelEdit(event) {
  */
 function onActionSaveEdit(event) {
 	onEdit(event,false);
-	databaseManager.saveData(foundset);
+	additionalSaveFunctions();
+	try {
+		databaseManager.saveData(foundset);
+	}
+	catch (e) {
+		application.output("No code entered to save.");
+		controller.deleteRecord();
+	}
 	databaseManager.setAutoSave(true);
 }
 
@@ -141,6 +157,8 @@ function onActionSaveEdit(event) {
  * @param {String} oldValue old value
  * @param {String} newValue new value
  * @param {JSEvent} event the event that triggered the action
+ * @param {String} recordUniq unique record that shall not have a duplicate
+ * @param {String} recordKeyID id field for the unique name
  *
  * @returns {Boolean}
  *
@@ -148,30 +166,148 @@ function onActionSaveEdit(event) {
  *
  * @properties={typeid:24,uuid:"DA80D0B2-0857-4B1E-9481-96DB80FEDA1C"}
  */
-function onDataChange(oldValue, newValue, event) {
+function onDataChange(oldValue, newValue, event, recordUniq, recordKeyID) {
 	databaseManager.nullColumnValidatorEnabled = false;
 	databaseManager.setAutoSave(true);
 	var fs = foundset.find();
 	if (fs) //find will fail if autosave is disabled and there are unsaved records
 	{
-		class_code = newValue;
+		foundset[recordUniq] = newValue;
 		foundset.search();
 		var count = databaseManager.getFoundSetCount(foundset);
+		var otherIndex = 0;
 		if (count > 1){
 			var record = null;
 			for (var index = 1;index <= foundset.getSize(); index++){
 				record = foundset.getRecord(index);
-				if (record.employee_clas_id == globals.newRecordKey){
+				if (record[recordKeyID] == globals.newRecordKey){
 					foundset.deleteRecord(record);
+				} else {
+					otherIndex = index;
 				}
 			}
 			onEdit(event,false);
 		}
-		foundset.sts_employee_class_container.loadAllRecords();
-		foundset.setSelectedIndex(globals.selectedEmpClassIndex);
-		
+		//foundset.sts_employee_class_container.loadAllRecords();
+		foundset.loadAllRecords();
+		//foundset.setSelectedIndex(globals.selectedEmpClassIndex);
+		foundset.setSelectedIndex(otherIndex);
+		addOtherChangeFunctions();
 	}
 	databaseManager.setAutoSave(true);
 	globals.newRecordKey = "";
 	return true
+}
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @private
+ *
+ * @properties={typeid:24,uuid:"593A9BD1-BB9E-4DAD-A223-4C4CD45106A1"}
+ */
+function onShow(firstShow, event) {
+	// disable form on entry. Must hit edit
+	if (firstShow) {
+		onEdit(event,false);
+	}
+}
+
+/**
+ * @return {RuntimeForm}
+ * @properties={typeid:24,uuid:"C55DD876-7D70-4FF0-8AED-BE57D8330604"}
+ */
+function getParentForm() {
+
+	/** @type {JSDataSet} */
+	var dataset = controller.getFormContext();
+	if (dataset.getMaxRowIndex() > 1) {
+		// form is in a tabpanel
+		var parentFormName = dataset.getValue(dataset.getMaxRowIndex()-1, 2)
+		return forms[parentFormName]
+	}
+	else {
+		throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param array {array} array to be changed
+ * @param element {string} element to be added
+ *
+  *
+ * @properties={typeid:24,uuid:"2884B6C8-F0D4-4EB9-8833-76D9526872D4"}
+ */
+function addElementToArray(array,element){
+	var newArray = new Array;
+	var found = false;
+	newArray = array;
+	var length = array.length;
+	for (var index = 0; index < length; index++){
+		if (array[index] == element){
+			found = true;
+		}
+	}
+	if (!found){
+		newArray.push(element);
+	}
+	return newArray;
+}
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param array {array} array to be changed
+ * @param element {string} element to be added
+  *
+ *
+ * @properties={typeid:24,uuid:"07EC411E-09A8-46D6-B6A5-B97DCF38EAA3"}
+ */
+function removeElementFromArray(array,element){
+	var newArray = [];
+	var length = array.length;
+	for (var index = 0; index < length; index++){
+		if (array[index] != element){
+			newArray.push(array[index]);
+		}
+	}
+	return newArray;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param array
+ * @param element
+ *
+ * @properties={typeid:24,uuid:"2E3A29CC-B9CC-41E4-8102-82A9ACED85A0"}
+ */
+function elementIsInArray(array,element){
+	var length = array.length;
+	for (var index = 0; index < length; index++){
+		if (array[index] == element){
+			return true;
+		}
+	}
+	return false;
+}
+/**
+ * @properties={typeid:24,uuid:"7926D310-5A4E-41F5-A8F5-61EC7A4FB724"}
+ */
+function additionalSaveFunctions(){
+}
+/**
+ * @properties={typeid:24,uuid:"445F7661-5159-48BE-8887-D90E31CC01BF"}
+ */
+function additionalEditFunctions(){
+}
+/**
+ * @properties={typeid:24,uuid:"CDB571D7-FBF6-43C0-A4E1-6E73438F812E"}
+ */
+function additionalActionAddFunctions(){
+}
+/**
+ * @properties={typeid:24,uuid:"5CBAF25C-1DAE-417E-B427-FA30016ECFE3"}
+ */
+function addOtherChangeFunctions(){
 }

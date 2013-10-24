@@ -13,6 +13,7 @@ uuid:"182E0C51-C261-4DC6-997C-C6BF0B4CAE5A",
 valuelistID:"D4133123-4FCB-4F9D-9924-B1AD494616FE"
 },
 {
+dataProviderID:"availCodesOverwrite",
 displayType:12,
 location:"26,50",
 name:"availableCodes",

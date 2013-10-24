@@ -17,19 +17,26 @@ var currentStatusCode = "";
  */
 var editFlag = false;
 
+
 /**
- * Callback method for when form is shown.
+ * TODO generated, please specify type and doc for the params
+ * @param firstShow
+ * @param event
  *
- * @param {Boolean} firstShow form is shown first time after load
- * @param {JSEvent} event the event that triggered the action
- *
- *
- * @properties={typeid:24,uuid:"D81A8770-3094-4934-BD90-8005AEFC2407"}
+ * @properties={typeid:24,uuid:"E44816A6-43AC-40C4-AB19-74B1B1EB170C"}
+ * @AllowToRunInFind
  */
-function onShow(firstShow, event) {
+function onShowStatusDescr(firstShow, event) {
 	//var dataset = controller.getFormContext().getValue(1,2);
 	//application.output('employee class list form parent on show '+dataset);
-
+	globals.initLaborCodes();
+	globals.initStatusCodes();
+	elements.fab_shop.enabled = globals.promptFabShop;
+	elements.fab_shop.transparent = !globals.promptFabShop;
+	elements.push_transaction.enabled = globals.promptFabShop;
+	elements.percent_complete.enabled = globals.promptFabShop;
+	elements.fabtrol_labor_code.enabled = globals.lFabtrolInstalled;
+	elements.fabtrol_labor_code.transparent = !globals.lFabtrolInstalled;
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
@@ -48,7 +55,7 @@ function onActionAdd(event){
 	selectedIndex = controller.getSelectedIndex();
 	onEdit(event,true);
 	controller.newRecord();
-	//globals.newRecordKey = employee_clas_id;
+	globals.newRecordKey = status_description_id;
 }
 /**
  * Perform the element default action.
@@ -100,6 +107,7 @@ function onActionEdit(event) {
  *
  *
  * @properties={typeid:24,uuid:"7AB91C86-4EF3-462B-8B2C-9E754824FDF4"}
+ * @AllowToRunInFind
  */
 function onEdit(event,editStatus){
 	editFlag = editStatus;
@@ -109,6 +117,11 @@ function onEdit(event,editStatus){
 	elements.cancelButton.visible = editStatus;
 	elements.editButton.visible = !editStatus;
 	elements.deleteButton.visible = !editStatus;
+	if (status_code.search(RegExp('TRANS')) != -1 || status_code.search(RegExp('XFER')) != -1) {
+		elements.req_xfer_status.enabled = true;
+	} else {
+		elements.req_xfer_status.enabled = false;
+	}
 	try {
 		elements.tablessX.enabled = !editStatus; //just ignore the tabless on some screens
 	}
@@ -169,7 +182,7 @@ function onDataChange(oldValue, newValue, event) {
 			var record = null;
 			for (var index = 1;index <= foundset.getSize(); index++){
 				record = foundset.getRecord(index);
-				if (record.status_code == globals.newRecordKey){
+				if (record.status_description_id == globals.newRecordKey){
 					foundset.deleteRecord(record);
 				}
 			}
@@ -181,6 +194,10 @@ function onDataChange(oldValue, newValue, event) {
 	}
 	databaseManager.setAutoSave(true);
 	globals.newRecordKey = "";
+	index = onEntryStatusCode(newValue);
+	if (index != -1){
+		status_type = globals.aStatusTypes[index];
+	}
 	return true
 }
 
@@ -208,3 +225,26 @@ function onActionOverwrite(event) {
 	win.title = windowTitle;
 	win.show('status_condition_overwrite');
 }
+
+
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param statusCode
+ *
+ * @properties={typeid:24,uuid:"88505C08-1487-4B7C-81A0-BC87C51DB9BB"}
+ */
+function onEntryStatusCode(statusCode) {
+	// globals.aStatusTypes
+	var processString = "";
+	var upCasedElement = "";
+	for (var index = 0;index < globals.aStatusTypes.length;index++){
+		upCasedElement = globals.aStatusTypes[index].toUpperCase();
+		if (upCasedElement.search(RegExp(statusCode)) != -1){
+			return index;
+		}
+	}
+	return -1;
+}
+

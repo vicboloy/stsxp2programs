@@ -1,383 +1,5 @@
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"97443FF2-66A9-49A4-BF9A-653F22DE34BE"}
- */
-var action = "Cancel";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"43A42C32-7259-4753-A8EB-535755F31CFB"}
- */
-var cTempSTSInstalled = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"9CA0D824-A182-4104-94C1-D5D9B5265938"}
- */
-var lanVersion = "TESTING";
-/**
- * @properties={typeid:35,uuid:"D4BD3675-E2AF-45FC-8D5B-3AD4D7361F51",variableType:-4}
- */
-var debugtesting = false;
-/**
- * @properties={typeid:35,uuid:"DCECCF79-BC9A-4E09-B176-894ABA3FD493",variableType:-4}
- */
-var rfSystem = false;
-/**
- * @properties={typeid:35,uuid:"C6D58B5E-D1EE-4837-8D99-69D901E24F43",variableType:-4}
- */
-var lrfSystem = false;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"FD6A3E1E-4F66-40D7-861B-831AB96A3155"}
- */
-var loginID = "P";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"08043FCF-5E98-4D98-B387-C7A4CA52E4F8"}
- */
-var password = "P";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"3478609E-1296-4A16-9FF5-2082F6C086B5"}
- */
-var compileVersion = "0.1";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"A99654D2-95DD-4DC8-9D43-611417A8E9EE"}
- */
-var compileDate = "2013.01.01";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"8A34FB25-26B5-4713-A39B-BCC5C68CD345"}
- */
-var compileTime = "00:00:00";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"F170B68E-FA02-47E9-8203-05840C52C452"}
- */
-var cSwitch = "PC";
-/**
- * @properties={typeid:35,uuid:"2BA40487-E146-4D6A-B7A3-4F824FD89306",variableType:-4}
- */
-var exitProgram = false;
-/**
- * @properties={typeid:35,uuid:"651D9C99-95F0-432A-979A-59D2D7E40365",variableType:-4}
- */
-var lockError = false;
-/**
- * @properties={typeid:35,uuid:"9CF6D1D5-5AB8-4F24-9F4C-F3F2F782452F",variableType:-4}
- */
-var yn = true;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"75BF6077-7084-4C7B-8DCF-4F68271B09A5"}
- */
-var popupName = "MASTEREDIT";
-/**
- * @properties={typeid:35,uuid:"2CF804C5-AFE8-4356-9D27-41DAACB69F50",variableType:-4}
- */
-var localError = false;
-/**
- * @properties={typeid:35,uuid:"E5C0D8B3-20F9-4A2E-995C-E97FFE19D365",variableType:-4}
- */
-var printerName = false;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"E7A9C9B3-A893-44AC-BF26-FD9E8E81C375",variableType:8}
- */
-var tries = 0.000000;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"5265D3A8-027A-4516-9EF4-D8A0868E3766"}
- */
-var passwrd = "P";
-/**
- * @properties={typeid:35,uuid:"7728188F-FB10-42C3-B07D-05014866EF51",variableType:-4}
- */
-var lok2Exit = false;
-/**
- * @properties={typeid:35,uuid:"85C63438-93A0-44E7-8268-3B81D477E390",variableType:-4}
- */
-var lprintPreview = false;
-/**
- * @properties={typeid:35,uuid:"6DBDB5B7-66F4-4512-B61D-871BC61498FE",variableType:-4}
- */
-var sndPlaySound = false;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"EE23F951-0592-46DD-A688-3059329A4BF9",variableType:4}
- */
-var playFlag = 1;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"21801A9F-041F-49F9-BA28-CB0A2DF79198"}
- */
-var fileAlias = "_3WC0UCC5Z";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"383CF050-50B1-446B-9A59-D3A9D4D6EB26"}
- */
-var ulApp = "LDTUPLD.APP";
-/**
- * @properties={typeid:35,uuid:"F7255DF8-D536-41F8-823F-65B5D779B074",variableType:-4}
- */
-var poPort = false;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"E268522F-C52C-4D8A-9053-45D164C0308C"}
- */
-var lanGroup = "P";
-/**
- * @properties={typeid:35,uuid:"7E4B3BDE-AFB0-4C33-931E-BFC2DE5AD159",variableType:-4}
- */
-var lPortMultiuse = false;
-/**
- * @properties={typeid:35,uuid:"21C9E3FA-B797-40F7-B55F-B3F3BC333A19",variableType:-4}
- */
-var lRemoveDeleted = false;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"E997037F-728D-44F9-8D5F-4689EDE10F81"}
- */
-var nssValue = "792.000000";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"35481123-B46E-4EE0-952B-A2ABC9F9993D"}
- */
-var cssMessage = "Fully Registered LAN Version.";
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"47671E03-52C2-4E24-B2BF-F184B66B7239",variableType:8}
- */
-var mb_ok = 0.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"AB96EADC-4F0D-496A-97F4-CB1B49285089",variableType:8}
- */
-var mb_okcancel = 1.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"A9601110-B647-4518-A744-9AE1F4D43858",variableType:8}
- */
-var mb_abortretryignore = 2.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"7A11B424-6C46-4075-A246-42DB563D3B1D",variableType:8}
- */
-var mb_yesnocancel = 3.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"99938A79-44B2-48F7-B5B4-2A3F1319C4FD",variableType:8}
- */
-var mb_yesno = 4.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"9EBDB81C-7CE9-49EA-AD27-3133E4C2F7C3",variableType:8}
- */
-var mb_retrycancel = 5.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"EEEBE1C5-2FE1-47D4-8D51-6456D5F67199",variableType:8}
- */
-var mb_iconhand = 16.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"796CCF97-FC68-4895-BE61-164B23EF5B59",variableType:8}
- */
-var mb_iconstop = 16.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"FD9673E7-9379-4FB9-A156-1A7B88C7FA23",variableType:8}
- */
-var mb_iconquestion = 32.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"BE40C777-BF62-4A1F-AF3E-0AE9965C324E",variableType:8}
- */
-var mb_iconexclamation = 48.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"47513260-198A-4F3E-826E-EF382E314F5F",variableType:8}
- */
-var mb_iconasterisk = 64.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"62AE216E-CBCA-4884-9C9A-3C35D391F455",variableType:8}
- */
-var mb_iconinformation = 64.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"86090823-C32C-4073-95EB-3F8EBA9F62E5",variableType:8}
- */
-var mb_1defbutton = 0.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"E5D948E0-F882-494B-B6E0-FC1A07EB5036",variableType:8}
- */
-var mb_2defbutton = 256.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"B2B52822-6E05-424D-8149-A75D9B8CFE06",variableType:8}
- */
-var mb_3defbutton = 512.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"057D33C1-9967-4666-898F-497EE9A89D03",variableType:8}
- */
-var mb_applmodal = 0.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"E60FC844-D8CF-4F12-8FE7-437B95D10894",variableType:8}
- */
-var mb_systemmodal = 4096.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"9FE8A274-ED50-41EF-9B53-2E5B4CD12AB9",variableType:8}
- */
-var idok = 1.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"5FEA8BCF-6A94-4B33-BA39-590024A6E497",variableType:8}
- */
-var idcancel = 2.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"CEBF01BE-D443-478F-9773-35351B83BDB6",variableType:8}
- */
-var idabort = 3.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"A223DDC5-07EE-494F-A8A0-495C1882F16C",variableType:8}
- */
-var idretry = 4.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"012B5DDE-3F99-4B5F-B4FF-566C67869A49",variableType:8}
- */
-var idignore = 5.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"8A593C8C-C48F-4493-B6D5-C771FA773D79",variableType:8}
- */
-var idyes = 6.000000;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"BAE1B510-2C18-450B-BC1B-82647BCC73D0",variableType:8}
- */
-var idno = 7.000000;
-/**
- * @properties={typeid:35,uuid:"BC4BCD35-26EA-4610-931D-613ABE49CE2A",variableType:-4}
- */
-var aSTSMasterTables = new Array;
 
-/**
- * @properties={typeid:35,uuid:"9F0D0E57-F7F2-4001-AF33-4B9B130EEA5B",variableType:-4}
- * @type aStatusTypes {Array} Status condition types
- */
-var aStatusTypes = new Array;
-aStatusTypes.push("");
-aStatusTypes.push("None");
-aStatusTypes.push("Fab Raw Received");
-aStatusTypes.push("Fab Receive");
-aStatusTypes.push("Fab Cut");
-aStatusTypes.push("Fab Beam Line");
-aStatusTypes.push("Fab Blased");
-aStatusTypes.push("Fab Drilled");
-aStatusTypes.push("Fab Layout");
-aStatusTypes.push("Fab Fitup");
-aStatusTypes.push("Fab Welded");
-aStatusTypes.push("Fab 1stInspect");
-aStatusTypes.push("Fab 2ndInspect");
-aStatusTypes.push("Fab 3rdInspect");
-aStatusTypes.push("Fab 4thInspect");
-aStatusTypes.push("Fab Inspected");
-aStatusTypes.push("Fab Fabricated");
-aStatusTypes.push("Fab Paint");
-aStatusTypes.push("Fab Bundled");
-aStatusTypes.push("Fab Move");
-aStatusTypes.push("Fab Transfer");
-aStatusTypes.push("Fab Loading");
-aStatusTypes.push("Fab Loaded");
-aStatusTypes.push("Fab LoadVerify");
-aStatusTypes.push("Fab Ship");
-aStatusTypes.push("Galvanizer Received");
-aStatusTypes.push("Galvanizer Shipped");
-aStatusTypes.push("Galvan LoadVerify");
-aStatusTypes.push("Painter Received");
-aStatusTypes.push("Painter Shipped");
-aStatusTypes.push("Paint LoadVerify");
-aStatusTypes.push("FireProofer Received");
-aStatusTypes.push("FireProofer Shipped");
-aStatusTypes.push("FireProof LoadVerify");
-aStatusTypes.push("Other Received");
-aStatusTypes.push("Other Shipped");
-aStatusTypes.push("Other LoadVerify");
-aStatusTypes.push("Jobsite Received");
-aStatusTypes.push("Jobsite Shipped");
-aStatusTypes.push("Jobsite LoadVerify");
-aStatusTypes.push("Jobsite Inspected");
-aStatusTypes.push("Jobsite Painted");
-aStatusTypes.push("Jobsite Field Work");
-aStatusTypes.push("Jobsite Move");
-aStatusTypes.push("Jobsite Issued");
-aStatusTypes.push("Jobsite Erected");
 
-/**
- * @properties={typeid:35,uuid:"D517798E-F5B2-4753-ABB1-5359EEAD4343",variableType:-4}
- * @type uomarray {Array} Array containing units of measure
- */
-var uomarray = new Array;
-uomarray[1] = "CWT";
-uomarray.push("EACH");
-uomarray.push("LBS");
-uomarray.push("LNFT");
-uomarray.push("METR");
-uomarray.push("MTON");
-uomarray.push("MTR2");
-uomarray.push("PNLS");
-uomarray.push("SQFT");
-uomarray.push("TON");
 
 
 /**
@@ -409,59 +31,6 @@ aLabelType.push("Standard");
  */
 var lanUsers = new Array;
 
-
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"407749C5-0E67-403F-A192-FC701AE2756C"}
- */
-var yourName = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"DA0D68BB-6E39-445E-82CE-0E9780BC7650"}
- */
-var yourAddr = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"AF1DE43E-FE8E-4A51-BF5D-3029EF84735C"}
- */
-var yourCity = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"DC099794-2418-48BC-A827-8E5A5C442976"}
- */
-var yourState = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"7D382E36-8FC5-4C56-AE12-4D1C6523F99B"}
- */
-var yourZip = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"5C3F9B2D-153B-43CA-ABEE-5067FC442FB3"}
- */
-var yourPhone = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"2F531F69-28F9-4AB0-86FF-5B95301A6258"}
- */
-var yourShipTo = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"78E479BB-71B1-410D-AD09-5FD6EDE90712"}
- */
-var yourBillTo = "";
-/**
- * @properties={typeid:35,uuid:"5F8EF939-243E-4937-8F7D-FDDEFDE3FDFA",variableType:-4}
- */
-var yourFax = false;
 /**
  * @type {String}
  *
@@ -566,12 +135,14 @@ var stspath = false;
 
 //RF Settings preferences -----------------------------------------------------------------
 
+
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"058BF360-2419-4156-BC59-1FD4798DA8DB"}
+ * @properties={typeid:35,uuid:"A3719393-AA8C-4A20-A8B2-DDC84D633A2E"}
  */
 var rfPortableType = "";
+
 /**
  * @type {String}
  *
@@ -603,13 +174,17 @@ var lForceReload = true;
  */
 var lUseSeq = false;
 /**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"0C091770-F95A-40A6-88DC-50AC962D0D1E",variableType:-4}
  */
 var printIdQty = false;
 /**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"839CF1D3-A844-437F-A936-468D68A4E0EC",variableType:-4}
  */
-var rfRefresh = true;
+var rfRefresh = false;
 /**
  * @properties={typeid:35,uuid:"DAD96B44-9408-46CC-BCDB-23DC914986BB",variableType:-4}
  */
@@ -618,10 +193,7 @@ var rfStamperConnected = false;
  * @properties={typeid:35,uuid:"BF4A0BC8-C5F9-46E8-8AF7-0A82F0F85322",variableType:-4}
  */
 var reqdShipStatusCode = true;
-/**
- * @properties={typeid:35,uuid:"85C8A4C4-4B72-4F06-BECA-3D61C52C9520",variableType:-4}
- */
-var promptFabShop = true;
+
 /**
  * @properties={typeid:35,uuid:"3CD3CC7E-5CFF-4741-8039-B3B4A0D18716",variableType:-4}
  */
@@ -836,12 +408,6 @@ var stsInstalled = "Fabricator";
  * @properties={typeid:35,uuid:"E3642D3F-4D61-49B1-81B7-A7210779DF5D",variableType:-4}
  */
 var smallMadeInFont = true;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"4ED3B99C-0856-446B-8F7E-254228CD0761"}
- */
-var yourNumber = "";
 
 //PO Info preferences -----------------------------------------------------------------
 
@@ -1274,6 +840,19 @@ var lRomacPassWorker = false;
  */
 var foundPassword = false;
 
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param {Object} updateValue dataprovider that needs the update
+ *
+ * @properties={typeid:24,uuid:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E"}
+ */
+function onActionFileOpenDialog(event,updateValue) {
+	var dirs = plugins.file.showFileOpenDialog(2, "\\", false, null);
+	var path = dirs.getAbsolutePath();
+	var formName = event.getFormName();
+	forms[formName][updateValue] = path;
+}
 
 
 

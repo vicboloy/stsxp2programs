@@ -1,0 +1,15 @@
+dataSource:"db:/stsservoy/routings",
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"EAB9C54F-5620-4A47-AF60-DF6F2A125385"
+}
+],
+name:"route_codes",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"F7EFCEAE-ABB0-4DD5-9A4A-DAC3A1401216"

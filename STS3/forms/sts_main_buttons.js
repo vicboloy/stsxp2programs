@@ -114,3 +114,27 @@ function onActionClickSC(event) {
 function onActionClickPref(event) {
 	onActionClickMainButton(event,"Preferences",'preferences_main',50,50,700,580,false);
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"F0E82BB1-3030-4DD4-973C-75E91FBA179A"}
+ */
+function onActionRoutings(event) {
+	onActionClickMainButton(event,"Routings",'routing_codes',50,50,610,485,false);
+}
+/**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"35F5B55F-AE50-40D1-BF9F-6EA16BFBDD7D"}
+ */
+function onLoadMain(event) {
+	globals.initStatusTypes();
+	globals.initUomArray();
+	application.setValueListItems('stsvl_rfPortableType',forms.preferences_main.arfPortableType);
+	application.setValueListItems('stsvl_status_type',globals.aStatusTypes);
+	globals.initLaborCodes();
+
+}

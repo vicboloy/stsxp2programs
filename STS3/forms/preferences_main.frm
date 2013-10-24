@@ -16,6 +16,7 @@ typeid:7,
 uuid:"3DE0733E-A81E-4A87-BB2D-3AF69243462F"
 },
 {
+borderType:"RoundedBorder,0.0,0.0,0.0,0.0,#000000,#000000,#000000,#000000,0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0,solid;solid;solid;solid",
 items:[
 {
 containsFormID:"54A817D1-7A4A-48E3-ADA0-C38AB0A83F39",
@@ -111,6 +112,7 @@ uuid:"46E5E5EF-9C44-46D5-928C-DBCC33CF7564"
 ],
 name:"preferences_main",
 navigatorID:"-1",
+onShowMethodID:"46471F9F-18E4-4ECA-BFB0-3DB75F4EC181",
 size:"698,593",
 styleName:"sts_one",
 typeid:3,

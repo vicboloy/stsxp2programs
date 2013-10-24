@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/routings",
+joinType:1,
+name:"sts_routing_codes_container",
+primaryDataSource:"db:/stsservoy/routings",
+typeid:22,
+uuid:"DFC5C4B2-7086-4BBD-85FD-793FB856EC77"

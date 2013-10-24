@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"route_code",
+dataSource:"db:/stsservoy/route_detail",
+name:"stsvl_route_codes",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"4396072D-8680-4181-B7A7-6E6D7873952B",
+valueListType:1

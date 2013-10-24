@@ -1,0 +1,9 @@
+addEmptyValue:1,
+customValues:"Symbol RF 38xx - SO\r
+Symbol RF 38xx - Job\r
+Symbol RF WaveLink",
+name:"stsvl_rfPortableType",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"63C493B4-03E0-42EC-B467-3979096DDE85"

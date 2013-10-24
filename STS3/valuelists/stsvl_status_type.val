@@ -1,6 +1,6 @@
 addEmptyValue:1,
-name:"stsvl_status_code",
+name:"stsvl_status_type",
 returnDataProviders:1,
 showDataProviders:1,
 typeid:34,
-uuid:"23486681-EB49-4DB3-9720-0D8BDC65914E"
+uuid:"9205CAB4-A798-4EBC-BC29-B26CDAE8659F"

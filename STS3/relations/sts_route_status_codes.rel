@@ -1,0 +1,12 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/route_detail",
+initialSort:"route_code asc",
+items:[
+{foreignColumnName:"e_route_code_id",primaryDataProviderID:"routing_id",typeid:23,uuid:"047EEECF-092C-4D0A-972B-82BF34179FA8"}
+],
+joinType:1,
+name:"sts_route_status_codes",
+primaryDataSource:"db:/stsservoy/routings",
+typeid:22,
+uuid:"9D5C37A1-EE8F-4804-9CFA-DDE639ACD219"

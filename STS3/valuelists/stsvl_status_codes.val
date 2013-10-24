@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"status_code",
+dataSource:"db:/stsservoy/status_description",
+name:"stsvl_status_codes",
+returnDataProviders:1,
+showDataProviders:1,
+sortOptions:"status_sequence asc, status_code asc",
+typeid:34,
+uuid:"A2797E20-1E12-4538-8389-18E0A2459577",
+valueListType:1

@@ -46,6 +46,13 @@ name:"fabtrol_labor_code"
 },
 {
 allowNull:true,
+creationOrderIndex:19,
+dataType:12,
+length:15,
+name:"labor_code_department"
+},
+{
+allowNull:true,
 creationOrderIndex:11,
 dataType:12,
 length:5,

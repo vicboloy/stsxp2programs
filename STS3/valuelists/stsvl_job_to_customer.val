@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"customer_number",
+name:"stsvl_job_to_customer",
+relationName:"sts_job_to_customer",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"6C2905C9-795B-4F40-A676-E8EC59D6F510",
+valueListType:1

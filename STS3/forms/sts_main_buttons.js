@@ -124,6 +124,15 @@ function onActionRoutings(event) {
 	onActionClickMainButton(event,"Routings",'routing_codes',50,50,610,485,false);
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"CE4DD060-E710-49BA-9DAB-0760EE82DF4B"}
+ */
+function onActionJobs(event) {
+	onActionClickMainButton(event,"Jobs",'jobs_tabs',50,50,960,450,false);
+}
+/**
  * Callback method when form is (re)loaded.
  *
  * @param {JSEvent} event the event that triggered the action

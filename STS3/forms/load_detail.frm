@@ -1,0 +1,15 @@
+dataSource:"db:/stsservoy/route_detail",
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"677329B8-CD9A-4070-B85E-ECD248EAF700"
+}
+],
+name:"load_detail",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"C504C8D7-7AF5-4730-9D86-620853BDF88E"

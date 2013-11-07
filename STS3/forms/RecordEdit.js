@@ -10,7 +10,6 @@ var selectedIndex = 0;
  * @properties={typeid:35,uuid:"D7E3DA3F-3F1C-40C0-A9C1-A9D1920B9967",variableType:-4}
  */
 var editFlag = false;
-
 /*
 function onShowRE(firstShow, event) {
 	var dataset = controller.getFormContext().getValue(1,2);
@@ -40,6 +39,16 @@ function onActionAdd(event,recordKeyID){
 	additionalActionAddFunctions();
 }
 /**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"A939DCF6-66E6-4E1B-AA03-B49FE47EAADE"}
+ */
+function onActionAddForm(event){
+	onEdit(event,true);
+	selectedIndex = controller.getSelectedIndex();
+	
+}
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -56,7 +65,6 @@ function onActionDelete(event) {
 	}
 
 }
-
 /**
  * Handle record selected.
  *
@@ -74,11 +82,11 @@ function onRecordSelection(event,buttonTextSrc) {
 			form.elements['deleteButton'].text = "Delete \'"+text+"\'";
 		}
 	form.addOtherChangeFunctions(); //Run change functions to update comboboxen
+	form.otherSelectionFunctions();
 	//elements.deleteButton.text = 'Delete';
 	//forms.status_descriptions.currentStatusCode = code;
 	//selectedIndex = getSelectedIndex();
 }
-
 /**
  * Perform the element default action.
  *
@@ -95,7 +103,6 @@ function onActionEdit(event) {
 	}
 	additionalEditFunctions(); //stubbed out on this for extending for other forms
 }
-
 /**
  * TODO generated, please specify type and doc for the params
  * @param event
@@ -105,7 +112,7 @@ function onActionEdit(event) {
  * @properties={typeid:24,uuid:"2CA6B5AA-5E72-412F-9002-67AB9698B7E9"}
  */
 function onEdit(event,editStatus){
-	//editFlag = editStatus;
+	editFlag = editStatus;
 	controller.readOnly = !editStatus;
 	elements.addButton.visible = !editStatus;
 	elements.saveButton.visible = editStatus;
@@ -114,7 +121,6 @@ function onEdit(event,editStatus){
 	elements.deleteButton.visible = !editStatus;
 	elements.tablessX.enabled = !editStatus;
 }
-
 /**
  * Perform the element default action.
  *
@@ -129,7 +135,6 @@ function onActionCancelEdit(event) {
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
-
 /**
  * Perform the element default action.
  *
@@ -149,6 +154,18 @@ function onActionSaveEdit(event) {
 		controller.deleteRecord();
 	}
 	databaseManager.setAutoSave(true);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"99A66AB2-1E7B-4867-9711-C57528428608"}
+ */
+function onActionSaveEditForm(event) {
+	
+	onEdit(event,false);
+ 	additionalSaveFunctions();
+	//databaseManager.setAutoSave(true);
 }
 
 /**
@@ -198,24 +215,21 @@ function onDataChange(oldValue, newValue, event, recordUniq, recordKeyID) {
 	globals.newRecordKey = "";
 	return true
 }
-
 /**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
  * @param {JSEvent} event the event that triggered the action
  *
- * @private
- *
  * @properties={typeid:24,uuid:"593A9BD1-BB9E-4DAD-A223-4C4CD45106A1"}
  */
 function onShow(firstShow, event) {
 	// disable form on entry. Must hit edit
 	if (firstShow) {
+		controller.recreateUI();	
 		onEdit(event,false);
 	}
 }
-
 /**
  * @return {RuntimeForm}
  * @properties={typeid:24,uuid:"C55DD876-7D70-4FF0-8AED-BE57D8330604"}
@@ -242,21 +256,13 @@ function getParentForm() {
  * @properties={typeid:24,uuid:"2884B6C8-F0D4-4EB9-8833-76D9526872D4"}
  */
 function addElementToArray(array,element){
+	element = element.replace(/ /g,"");
 	var newArray = new Array;
-	var found = false;
 	newArray = array;
-	var length = array.length;
-	for (var index = 0; index < length; index++){
-		if (array[index] == element){
-			found = true;
-		}
-	}
-	if (!found){
-		newArray.push(element);
-	}
+	var found = array.indexOf(element) != -1;
+	if (!found){newArray.push(element)}
 	return newArray;
 }
-
 /**
  * TODO generated, please specify type and doc for the params
  * @param array {array} array to be changed
@@ -266,10 +272,12 @@ function addElementToArray(array,element){
  * @properties={typeid:24,uuid:"07EC411E-09A8-46D6-B6A5-B97DCF38EAA3"}
  */
 function removeElementFromArray(array,element){
+	element = element.replace(/ /g,"");
 	var newArray = [];
 	var length = array.length;
 	for (var index = 0; index < length; index++){
-		if (array[index] != element){
+		if (array[index].replace(/ /g,"") != element){
+		//if (array[index] != element){
 			newArray.push(array[index]);
 		}
 	}
@@ -302,6 +310,11 @@ function additionalSaveFunctions(){
 function additionalEditFunctions(){
 }
 /**
+ * @properties={typeid:24,uuid:"7D1B3452-AC6A-4426-B456-C4DF4642331D"}
+ */
+function additionalEditCancelFunctions(){
+}
+/**
  * @properties={typeid:24,uuid:"CDB571D7-FBF6-43C0-A4E1-6E73438F812E"}
  */
 function additionalActionAddFunctions(){
@@ -310,4 +323,14 @@ function additionalActionAddFunctions(){
  * @properties={typeid:24,uuid:"5CBAF25C-1DAE-417E-B427-FA30016ECFE3"}
  */
 function addOtherChangeFunctions(){
+}
+/**
+ * @properties={typeid:24,uuid:"ADEDBF08-6121-42B3-91ED-03B35A2E91A2"}
+ */
+function addOnShowFunctions(){
+}
+/**
+ * @properties={typeid:24,uuid:"EEB33379-74A4-434A-9441-DF3FEB207381"}
+ */
+function 	otherSelectionFunctions(){
 }

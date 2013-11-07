@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/customers",
+items:[
+{foreignColumnName:"customer_id",primaryDataProviderID:"scopes.globals.selectedCustomerID",typeid:23,uuid:"3ACBEB63-8030-40BD-B848-B5EFE1E9B3F7"}
+],
+joinType:1,
+name:"sts_customernum_to_uuid",
+primaryDataSource:"db:/stsservoy/customers",
+typeid:22,
+uuid:"3CD0C890-249D-43E8-AA87-6D36889B4AD9"

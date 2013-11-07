@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"customer_number",
+dataSource:"db:/stsservoy/customers",
+name:"stsvl_customer",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"B53B74FF-081E-462E-BDBA-40249F200298",
+valueListType:1

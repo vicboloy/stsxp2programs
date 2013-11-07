@@ -1,0 +1,17 @@
+dataSource:"db:/stsservoy/jobs",
+encapsulation:60,
+items:[
+{
+height:405,
+partType:5,
+typeid:19,
+uuid:"82C20F26-6AA9-40E8-8701-9A98412E9DD1"
+}
+],
+name:"jobs_frm",
+navigatorID:"-1",
+showInMenu:true,
+size:"925,480",
+styleName:"sts_one",
+typeid:3,
+uuid:"03CD7A9B-0E33-4B2A-BA0E-D9DA96423E5F"

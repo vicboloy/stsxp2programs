@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/loads",
+joinType:1,
+name:"sts_loads_container",
+primaryDataSource:"db:/stsservoy/loads",
+typeid:22,
+uuid:"E735D1D3-9221-4F27-872E-B34652E643CA"

@@ -1,4 +1,44 @@
 /**
+ * @properties={typeid:35,uuid:"D998449E-9AE9-4F99-B659-9A842AFF0D7A",variableType:-4}
+ */
+var moveNoMove = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"4CA77876-3AB5-485D-ACE8-BF47162DA059"}
+ */
+var lastStatusRouted = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"4C4E27B3-FDF8-4AF5-8F93-89539944FDC8"}
+ */
+var lastStatusAvail = "";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"71DDA116-7073-4EEA-94F7-DFDD6B6C12FE",variableType:4}
+ */
+var fRecordIndex = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"45E083EF-6FB4-45BA-B20A-5409ABEC725E",variableType:8}
+ */
+var fDoubleClickTime = 0.0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"B4850ED2-6E52-4702-B017-BFC78AA4CA49",variableType:4}
+ */
+var clickTime = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"EC20C619-23F8-4384-966B-22D7C2FB6FE4"}
+ */
+var itemClicked = "";
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"B1FA743B-0F45-4D91-A6CB-6FFE3C3A2139"}
@@ -57,12 +97,15 @@ function onShowLoadData(firstShow, event) {
 		for(var index=1;index<=fs.getSize();index++){
 			var record = fs.getRecord(index);
 			var code = record.status_code;
-			aRouteCodes.push(code);
+			aRouteCodes.push(code+"  ");
 			aStatusCodes = removeElementFromArray(aStatusCodes,code);
 		}
 	}
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
+	elements.orderUp.enabled = false;
+	elements.orderDown.enabled = false;
+
 }
 /**
  * @properties={typeid:24,uuid:"FA9BA21D-6B8A-45D9-9468-FFC8F13645FF"}
@@ -82,17 +125,26 @@ function getAvailableCodes(){
  * @properties={typeid:24,uuid:"3D1E9757-FA9B-4E00-9FD8-12CD2249934B"}
  */
 function onActionSelectAvailable(event) {
-	aStatusCodes = application.getValueListArray('stsvl_route_status_avail');
-	aRouteCodes = application.getValueListArray('stsvl_route_status_selected');
-	var arraySource = elements.availableCodes.getSelectedElements();
-	var length = arraySource.length;
-	for (var index = 0; index < length; index++) {
-		var code = arraySource[index];
-		aRouteCodes = addElementToArray(aRouteCodes,code);
-		aStatusCodes = removeElementFromArray(aStatusCodes,code);
-	}
-	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
-	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
+	//get last code selected in each list, cannot repeat name or locks it up
+	var item = elements.availableCodes.getSelectedElements()[0];
+	lastStatusAvail = item;
+	//var codeTemp = item.replace(/ /g,"");
+	//var codeAvail = lastStatusAvail;
+	//var codeRouted = lastStatusRouted;
+	//if (codeRouted == null){codeRouted = codeAvail;}
+	//adjust avail to different text, blanks are invisible so using blanks
+	//if (lastStatusAvail == codeTemp) {codeTemp = codeTemp+" "}
+	//lastStatusAvail == codeTemp;
+	aStatusCodes = removeElementFromArray(aStatusCodes,item);
+	application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
+	
+	//now adjust routed codes
+	//codeTemp = item.replace(/ /g,"");
+	//if (lastStatusRouted == codeTemp){codeTemp = codeTemp+"  "}
+	//lastStatusRouted == codeTemp;
+	aRouteCodes = addElementToArray(aRouteCodes,item);
+	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
+	//return true;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -103,16 +155,75 @@ function onActionSelectAvailable(event) {
  * @properties={typeid:24,uuid:"4CD3262A-EBA4-431D-ACB6-1A742DD12980"}
  */
 function onActionUnselect(event) {
-	aStatusCodes = application.getValueListArray('stsvl_route_status_avail');
-	aRouteCodes = application.getValueListArray('stsvl_route_status_selected');
-	var arraySource = elements.selectedCodes.getSelectedElements();
-	var length = arraySource.length;
-	for (var index = 0; index < length; index++) {
-		aRouteCodes = removeElementFromArray(aRouteCodes,arraySource[index]);
-		aStatusCodes = addElementToArray(aStatusCodes,arraySource[index])
+	//if (moveNoMove) {return}
+	// now ensure that the unselect marks the correct variable for removal
+	application.output("unselection");
+	var item = elements.selectedCodes.getSelectedElements()[0];
+	aStatusCodes = addElementToArray(aStatusCodes,item);
+	application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
+	//now adjust routed codes
+	//codeTemp = item.replace(/ /g,"");
+	//if (lastStatusRouted == codeTemp){codeTemp = codeTemp+"  "}
+	//lastStatusRouted == codeTemp;
+	aRouteCodes = removeElementFromArray(aRouteCodes,item);
+	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
+	return;
+	lastStatusRouted = item;
+	//onSingleClickRename2(item);
+	//return;
+	var doubleC = onDoubleClick(event);
+	//if (!doubleC){return}
+	application.output("pass double-click"+doubleC);
+	if (doubleC) {
+		//get last code selected in each list, cannot repeat name or locks it up 
+		//var codeTemp = item.replace(/ /g,"");
+		//adjust avail to different text, blanks are invisible so using blanks
+		//if (lastStatusAvail == codeTemp) {codeTemp = codeTemp+" "}
+		//lastStatusAvail == item;
+		aStatusCodes = addElementToArray(aStatusCodes,uniqueStatusAvailCode(item));
+		application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
+		//now adjust routed codes
+		//codeTemp = item.replace(/ /g,"");
+		//if (lastStatusRouted == codeTemp){codeTemp = codeTemp+"  "}
+		//lastStatusRouted == codeTemp;
+		aRouteCodes = removeElementFromArray(aRouteCodes,item);
+		application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
+		
+		/**
+		application.output("inside Double Click event");
+		var code = item;
+		code = code.replace(/ /g, "");
+		var code2 = code;
+		if (lastStatusAvail == code) {code = code+" "}
+		if (lastStatusRouted == code2){code2 = code2+" "}
+		aStatusCodes = addElementToArray(aStatusCodes,code);
+		lastStatusAvail = code;
+		lastStatusRouted = code2;
+		aStatusCodes = removeElementFromArray(aStatusCodes,code);
+		aRouteCodes = removeElementFromArray(aRouteCodes,code2);
+		application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
+		application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
+		*/
+	} else {
+		//return;
+		//now adjust routed codes
+		//codeTemp = item.replace(/ /g,"");
+		////lastStatusRouted == codeTemp;
+		//if (lastStatusRouted == codeTemp){codeTemp = codeTemp+" "}
+		onSingleClickRename(item);
+		application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
+		//return;
+/**
+		
+		application.output("inside single click update");
+		lastStatusRouted = item;
+		item = item.replace(/ /g,"");
+		if (lastStatusRouted == item){item = item+" "}
+		aRouteCodes = onSingleClickRename(item);
+		application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
+		*/
 	}
-	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
-	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
+	//return true;
 }
 
 /**
@@ -121,32 +232,40 @@ function onActionUnselect(event) {
 function additionalSaveFunctions(){
 	var routeUUID = routing_id;
 	var routeName = route_code;
-	/**@type {JSFoundSet<db:/stsservoy/routings>} */
-	var newFS = sts_route_status_codes;
+	var aCurrentSort = [];
 	var length = aRouteCodes.length;
+	// selected codes and order
+	var maxSort = 0;
 	for (var index = 0; index < length; index++) {
+		maxSort += 10;
+		aCurrentSort[aRouteCodes[index]] = maxSort;
+	}
+	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
+	var newFS = sts_route_to_status_code;
+	//add code to route
+	length = aRouteCodes.length;
+	for (index = 0; index < length; index++) {
 		var code = aRouteCodes[index];
 		if (elementIsInArray(aRouteCodesTemp,code)){continue}
-		var newIdx = newFS.newRecord();
-		var newRec = newFS.getRecord(newIdx);
-		newRec.e_route_code_id = routeUUID;
-		newRec.status_code = code;
-		newRec.route_code = routeName;
-		newRec.route_order = index;
-	}
-	length = aStatusCodes.length;
-	for (index = 0; index < length; index++) {
-		code = aStatusCodes[index];
-		if (elementIsInArray(aStatusCodesTemp,code)){continue}
-		for(var index=1;index<=newFS.getSize();index++){
-			var record = newFS.getRecord(index);
-			if (record.status_code == code){
-				newFS.deleteRecord(index);
-			}
+		if (aRouteCodes[index] != null){
+			newFS.newRecord();
+			newFS.e_route_code_id = routeUUID;
+			newFS.route_code = routeName.replace(/ /g,"");
+			newFS.status_code = code;
+			newFS.route_order = aCurrentSort[code];
 		}
-	}	
-	//getSelectedCodes();
-	//application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
+	}
+	//delete rest of routes
+	var maxIndex = newFS.getSize();
+	for (index = 1; index <= maxIndex; index++) {
+		newFS.setSelectedIndex(index);
+		if (aCurrentSort[newFS.status_code] != null) {
+			newFS.route_order = aCurrentSort[newFS.status_code];
+			aCurrentSort[newFS.status_code] = 0;
+		} else {
+			newFS.deleteRecord();
+		}
+	}
 }
 /**
  * @properties={typeid:24,uuid:"D2D53AB2-7D32-49B1-A929-1BDAB3AC0875"}
@@ -154,7 +273,11 @@ function additionalSaveFunctions(){
 function additionalEditFunctions(){
 	aStatusCodesTemp = aStatusCodes;
 	aRouteCodesTemp = aRouteCodes;
-	//getSelectedCodes();
+	aStatusCodesTemp = application.getValueListArray('stsvl_route_status_avail');
+	aRouteCodesTemp = application.getValueListArray('stsvl_route_status_selected');
+	elements.orderUp.enabled = editFlag;
+	elements.orderDown.enabled = editFlag;
+	//elements.deselect.enabled = editFlag;
 }
 /**
  * @properties={typeid:24,uuid:"1FCC8418-4959-4FE3-A91E-0FEB1C5EDCB3"}
@@ -162,6 +285,11 @@ function additionalEditFunctions(){
 function additionalEditCancelFunctions(){
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodesTemp,true);
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodesTemp,true);
+	aStatusCodes = aStatusCodesTemp;
+	aRouteCodes = aRouteCodesTemp;
+	elements.orderUp.enabled = editFlag;
+	elements.orderDown.enabled = editFlag;
+	//elements.deselect.enabled = editFlag;
 }
 /**
  * @properties={typeid:24,uuid:"32AB060D-1D0C-4B46-8DF7-46E47EE4B3D5"}
@@ -194,12 +322,138 @@ function addOtherChangeFunctions(){
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
+ * @param {String} sortDirection which way to move the selected item
  *
  * @private
  *
  * @properties={typeid:24,uuid:"2454B75A-0C1B-4C08-847D-3EC92DF8DF03"}
  */
-function onActionMoveUp(event) {
-	var index = elements.tabless.codes_list.getSelectedIndex();
-	var x = "";
+function onActionMoveUp(event,sortDirection) {
+	var code = elements.selectedCodes.getSelectedElements()[0];
+	if (code == null){
+		application.output("No item selected.");
+		return;
+	}
+	var length = aRouteCodes.length;
+	var targetIndex = 0;
+	var index = 0;
+	var tempIndex = 0;
+	index = aRouteCodes.indexOf(code);
+	if (sortDirection == "up"){
+		if (index == 0) {return}
+		targetIndex = index-1;
+	} else {
+		if (index == length-1) {return}
+		targetIndex = index+1;
+	}
+	tempIndex = aRouteCodes[index];
+	aRouteCodes[index] = aRouteCodes[targetIndex];
+	aRouteCodes[targetIndex] = tempIndex;
+	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
+}
+
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @private
+ *
+ * @properties={typeid:24,uuid:"2DA7D5F0-E771-4932-AD49-DE34BEAC3AFE"}
+ */
+function onActionSelect(event) {
+	var selection = "";
+	moveNoMove = !moveNoMove;
+	elements.orderUp.enabled = moveNoMove;
+	elements.orderDown.enabled = moveNoMove;
+}
+
+/**
+ * Perform the element right-click action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @private
+ *
+ * @properties={typeid:24,uuid:"4DF2CF10-28D2-4BC6-92C4-3BA208FCBA6E"}
+ */
+function onDoubleClick(event) {
+	var time = event.getTimestamp().getSeconds()+"."+event.getTimestamp().getMilliseconds();
+	var item = elements.selectedCodes.getSelectedElements();
+	if (item == null){return}
+	var item = time[0].replace(/ /g,"");
+	var timeDiff = time - fDoubleClickTime;
+	//application.output("time "+timeDiff);
+    if(item == itemClicked && timeDiff < 300)
+    {
+       return true;
+    } else {
+    	fDoubleClickTime = time;
+    	itemClicked = item;
+    	return false;
+    }
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param name
+ * @param aRouteCodes
+ *
+ * @properties={typeid:24,uuid:"FED504C6-A4AD-42CC-AF54-2B6580490BB1"}
+ */
+function onSingleClickRename(name){
+	var nameRep = name.replace(/ /g,"");
+	var index = aRouteCodes.indexOf(nameRep+" ");
+	if (index == -1){
+		index = aRouteCodes.indexOf(nameRep);
+		aRouteCodes[index] = nameRep;
+	} else {
+		aRouteCodes[index] = nameRep+" ";
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"FC4CC10A-5375-4E2C-9A2C-2090FDAB6983"}
+ */
+function onSingleClickRename2(){
+	var name = elements.selectedCodes.getSelectedElements()[0];
+	var nameRep = name.replace(/ /g,"")+"  ";
+	for (var index = 0;index < aRouteCodes.length;index++){
+		var indexedName = aRouteCodes[index];
+		var indexedNameRep = indexedName.replace(/ /g,"");
+		if (indexedNameRep == nameRep){
+			if (indexedName == nameRep) {
+				indexedName = nameRep+"   ";
+			}else {
+				indexedName = nameRep+"  ";
+			}
+			aRouteCodes[index] = indexedName;
+			break;
+		}
+	}
+	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
+}
+
+/**
+ * @properties={typeid:24,uuid:"442E121D-7FDA-4970-99C1-4AC903943A1F"}
+ */
+function uniqueStatusAvailCode (name){
+	//lastStatusAvail
+	var nameRep = name.replace(/ /g,"");
+	if (lastStatusAvail == nameRep){
+		return nameRep;
+	} else {
+		return nameRep+" ";
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"694B32FA-E235-4BF6-B395-BDAEF553B140"}
+ */
+function uniqueStatusRouteCode (name){
+	//lastStatusRouted
+	var nameRep = name.replace(/ /g,"");
+	if (lastStatusRouted == nameRep){
+		return nameRep+"   ";
+	} else {
+		return nameRep+"  ";
+	}
 }

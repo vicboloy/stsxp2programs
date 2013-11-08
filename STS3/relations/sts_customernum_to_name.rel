@@ -1,7 +1,7 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/customers",
 items:[
-{foreignColumnName:"customer_number",primaryDataProviderID:"scopes.globals.selectedCustomerID",typeid:23,uuid:"7CC75453-4ABF-46A5-B519-B9D04E9945BF"}
+{foreignColumnName:"customer_number",primaryDataProviderID:"scopes.globals.lookupItem",typeid:23,uuid:"7CC75453-4ABF-46A5-B519-B9D04E9945BF"}
 ],
 joinType:1,
 name:"sts_customernum_to_name",

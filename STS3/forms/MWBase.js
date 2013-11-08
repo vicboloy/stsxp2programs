@@ -83,6 +83,8 @@ function getParentForm() {
 		return forms[parentFormName]
 	}
 	else {
-		throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
+		if (globals.debugtesting){
+			throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
+		}
 	}
 }

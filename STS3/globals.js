@@ -16,6 +16,22 @@
 //------------------ Public Variables from STS ---------------------------------------
 //Version-----------------------------------------------------------------------------
 /**
+ * @properties={typeid:35,uuid:"6ACA8CE7-B08B-45EA-80DD-C6543E3393A0",variableType:-4}
+ */
+var debug = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"715F3FA9-EF61-4230-9341-6E0E042F243C"}
+ */
+var lookupItem = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"D35A9875-04D9-4403-B673-20B8CD59CB06"}
+ */
+var lookupItem2 = "";
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"8FF33969-FEA3-4DE9-8B3D-23263C4BFEDD"}

@@ -36,7 +36,7 @@ typeid:7,
 uuid:"09EA75A8-C0BF-473D-B980-CB26100A8B41"
 },
 {
-dataProviderID:"project_year",
+dataProviderID:"vProjectYear",
 format:"yyyy",
 location:"715,200",
 name:"project_year",
@@ -57,7 +57,7 @@ typeid:7,
 uuid:"1ABD2389-E9A6-4D1B-B01C-6D6C8CE53BEE"
 },
 {
-dataProviderID:"job_plant",
+dataProviderID:"vJobPlant",
 location:"715,150",
 name:"job_plant",
 size:"140,20",
@@ -107,7 +107,7 @@ typeid:7,
 uuid:"308598D7-2CA3-4CD1-A674-70DB951831BE"
 },
 {
-dataProviderID:"labe_format",
+dataProviderID:"vLabelFormat",
 displayType:2,
 location:"315,285",
 name:"labe_format",
@@ -149,7 +149,7 @@ typeid:4,
 uuid:"510EB579-D384-4C13-AB85-77D0B88CC4D1"
 },
 {
-dataProviderID:"job_weight",
+dataProviderID:"vJobWeight",
 editable:false,
 location:"762,75",
 name:"job_weight",
@@ -160,7 +160,7 @@ typeid:4,
 uuid:"529FE8FF-E26F-4DFC-BD66-CBFF2D2DF280"
 },
 {
-dataProviderID:"ship_to",
+dataProviderID:"vShipTo",
 location:"715,175",
 name:"ship_to",
 size:"140,20",
@@ -170,23 +170,13 @@ typeid:4,
 uuid:"56B6552D-E6F1-4B2F-9BEA-1F5EDF576F9E"
 },
 {
-customProperties:"methods:{
-onDataChangeMethodID:{
-arguments:[
-null,
-null,
-null,
-\"'job_number'\",
-\"'job_id'\"
-]
-}
-}",
+customProperties:"",
 dataProviderID:"vJobNumber",
 displayType:10,
 format:"|U",
 location:"315,15",
 name:"job_number",
-onDataChangeMethodID:"DA80D0B2-0857-4B1E-9481-96DB80FEDA1C",
+onDataChangeMethodID:"177EE23C-05E3-4131-A6C1-586D259F1790",
 size:"140,20",
 tabSeq:1,
 text:"Job Number",
@@ -283,7 +273,7 @@ typeid:7,
 uuid:"7E739804-67C3-4D0F-853B-6D4332C7D6EE"
 },
 {
-dataProviderID:"metric_job",
+dataProviderID:"vMetricJob",
 displayType:4,
 location:"581,100",
 name:"metric_job",
@@ -393,7 +383,7 @@ uuid:"B2D40E0B-C294-48E1-8022-764C33B81A3C",
 valuelistID:"B53B74FF-081E-462E-BDBA-40249F200298"
 },
 {
-dataProviderID:"job_hours",
+dataProviderID:"vProjectHours",
 location:"715,225",
 name:"job_hours",
 size:"140,20",
@@ -426,7 +416,7 @@ typeid:7,
 uuid:"C53B6308-18F3-45DD-A5F8-1B45F2995AA0"
 },
 {
-dataProviderID:"rf_interface",
+dataProviderID:"vRFInterface",
 location:"315,240",
 name:"rf_interface",
 size:"140,20",
@@ -467,7 +457,7 @@ typeid:7,
 uuid:"DA6D7C7D-9282-429F-96D0-B3B367FFA8D7"
 },
 {
-dataProviderID:"job_efficiency",
+dataProviderID:"vJobEfficiency",
 location:"715,255",
 name:"job_efficiency",
 size:"140,20",
@@ -499,7 +489,7 @@ typeid:7,
 uuid:"E87326BA-D4D9-4165-85DD-BBA408912C5D"
 },
 {
-dataProviderID:"ft_projectid",
+dataProviderID:"vFTProjectID",
 location:"715,285",
 name:"ft_projectid",
 size:"140,20",

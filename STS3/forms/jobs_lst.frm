@@ -35,7 +35,7 @@ uuid:"B1AF6551-6408-4185-8B46-FEE206BBB87B"
 },
 {
 anchors:11,
-dataProviderID:"sts_job__to_customer.customer_number",
+dataProviderID:"sts_job_to_customer.customer_number",
 location:"77,20",
 name:"customer_number",
 size:"62,20",

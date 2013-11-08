@@ -46,7 +46,7 @@ function onActionAdd(event,recordKeyID){
 function onActionAddForm(event){
 	onEdit(event,true);
 	selectedIndex = controller.getSelectedIndex();
-	
+	additionalActionAddFunctions();
 }
 /**
  * Perform the element default action.
@@ -61,9 +61,9 @@ function onActionDelete(event) {
 	var itemDescr = "Remove "+itemDescription;
 	globals.doDialog(itemDescr,"Delete this Class?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
+		addOnActionDelete();
 		controller.deleteRecord();
 	}
-
 }
 /**
  * Handle record selected.
@@ -162,10 +162,8 @@ function onActionSaveEdit(event) {
  * @properties={typeid:24,uuid:"99A66AB2-1E7B-4867-9711-C57528428608"}
  */
 function onActionSaveEditForm(event) {
-	
 	onEdit(event,false);
  	additionalSaveFunctions();
-	//databaseManager.setAutoSave(true);
 }
 
 /**
@@ -226,7 +224,7 @@ function onDataChange(oldValue, newValue, event, recordUniq, recordKeyID) {
 function onShow(firstShow, event) {
 	// disable form on entry. Must hit edit
 	if (firstShow) {
-		controller.recreateUI();	
+		//controller.recreateUI();	
 		onEdit(event,false);
 	}
 }
@@ -332,5 +330,10 @@ function addOnShowFunctions(){
 /**
  * @properties={typeid:24,uuid:"EEB33379-74A4-434A-9441-DF3FEB207381"}
  */
-function 	otherSelectionFunctions(){
+function otherSelectionFunctions(){
+}
+/**
+ * @properties={typeid:24,uuid:"8C04B490-3A73-47FE-9A01-399B89B04B93"}
+ */
+function addOnActionDelete(){
 }

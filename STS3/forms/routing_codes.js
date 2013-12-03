@@ -397,7 +397,6 @@ function onDoubleClick(event) {
 /**
  * TODO generated, please specify type and doc for the params
  * @param name
- * @param aRouteCodes
  *
  * @properties={typeid:24,uuid:"FED504C6-A4AD-42CC-AF54-2B6580490BB1"}
  */

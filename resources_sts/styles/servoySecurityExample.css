@@ -1,0 +1,113 @@
+field
+{
+	color: #000000;
+	background-color: #fafafa;
+	border-style: solid;
+	border-color: #cccccc;
+	font: 11pt "Verdana";
+	text-align: left;
+	margin: 1px 4px 1px 4px;
+}
+field.tableview
+{
+	font: 10pt "Verdana";
+	border-width: 0px 0px 1px 0px;
+}
+check
+{
+	color: #666666;
+	background-color: #ffffff;
+	font: bold 11pt Verdana;
+}
+check.valuelist
+{
+	color: #000000;
+	background-color: #fafafa;
+	border-style: solid;
+	border-color: #cccccc;
+	font: 11pt "Verdana";
+	text-align: left;
+	margin: 4px 4px 4px 4px;
+}
+radio
+{
+	background-color: #dddddd;
+	border-style: empty;
+	font: bold 10pt "Verdana";
+}
+combobox
+{
+	color: #000000;
+	border-style: solid;
+	border-color: #cccccc;
+	background-color: #fafafa;
+	text-align:left;
+	font: 11pt "Verdana";
+}
+portal
+{
+	background-color: #cccccc;
+	border-style: inset;
+}
+tabpanel
+{
+
+}
+tabpanel.split
+{
+	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+}
+tabpanel.split_border
+{
+	border-style: solid;
+	border-color: #cccccc;
+	border-width: 1px 1px 1px 1px;
+}
+form
+{
+	background-color: #ffffff;
+	border-style: empty;
+}
+label
+{
+	color: #666666;
+	font: bold 11pt Verdana;
+}
+label.header1
+{
+	font: bold 14pt "Verdana";
+	color: #666666;
+}
+label.column_header
+{
+	background-color: #666666;
+	color: #ffffff;
+}
+label.table_view
+{
+	border-style: solid;
+	border-color: #cccccc;
+	border-width: 0px 0px 1px 0px;
+}
+label.error
+{
+	color: red;
+}
+button
+{
+	color: #000000;
+	margin: 2px 4px 2px 4px;
+	font: 11pt "Verdana";
+}
+odd {
+   background-color: #F5F7F9;
+}
+
+even {}
+
+selected {
+   background-color: blue;
+   color: #FFF;
+}
+

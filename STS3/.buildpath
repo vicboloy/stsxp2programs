@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
 	<buildpathentry excluding=".stp/|medias/" kind="src" path=""/>
+	<buildpathentry exported="true" kind="prj" path="/servoyCommons"/>
+	<buildpathentry exported="true" kind="prj" path="/servoySecurity"/>
+	<buildpathentry exported="true" kind="prj" path="/servoySecurityAuthenticator"/>
+	<buildpathentry exported="true" kind="prj" path="/servoySecurityLogin"/>
 </buildpath>

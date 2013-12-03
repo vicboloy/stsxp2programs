@@ -777,6 +777,10 @@ function onSolutionOpen() {
 	}
 	
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
+	//globals.secSetCurrentApplication(globals.secGetApplicationID(APPLICATION_NAME));
+	//globals.secCurrentUserID = security.getUserUID();
+	//globals.secSetCurrentTenant(sec_current_user.tenant_id)
+	//globals.secSetSecuritySettings();
 }
 
 /**
@@ -845,4 +849,54 @@ function onActionCancelButton(event) {
 function onActionFileOpenDialog(event,updateValue) {
 	var dirs = plugins.file.showFileOpenDialog(2, "\\", false, null);
 	var path = dirs.getAbsolutePath();
+}
+//----------------------------------------
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"BC04042B-4656-4CB8-A49A-80DF6FA28D94"}
+ */
+var APPLICATION_NAME = 'Servoy Security Example';
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"CA1268E9-881B-4390-A14A-E648C2C977B5"}
+ */
+var rowBGColorEven = '#FFFFFF';
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B89F6530-467F-402D-A497-3D16F6D1A34A"}
+ */
+var rowBGColorOdd = '#EEEEFF';
+
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"FB9F536B-7DAF-4194-9EEA-B5A8054E3A67"}
+ */
+var rowBGColorSelected = '#FFFF80';
+
+/**
+ * @param {Number} index row index
+ * @param {Boolean} selected is the row selected
+ * @param {String} elementType element type
+ * @param {String} dataProviderID element data provider
+ * @param {String} formName form name
+ * @param {JSRecord} record selected record
+ * @param {Boolean} edited is the record edited
+ *
+ * @returns {Color}
+ * @properties={typeid:24,uuid:"591CD53E-FB57-4531-B6F1-7ED95C91CE42"}
+ */
+function rowBGColor(index, selected, elementType, dataProviderID, formName, record, edited) {
+
+	if (selected)
+		return rowBGColorSelected;
+	else if (index % 2)
+		return rowBGColorOdd;
+	else
+		return rowBGColorEven;
 }

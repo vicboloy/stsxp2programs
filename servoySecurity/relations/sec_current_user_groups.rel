@@ -1,0 +1,9 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/user_groups",
+items:[
+{foreignColumnName:"user_id",primaryDataProviderID:"globals.secCurrentUserID",typeid:23,uuid:"C5551D26-249B-4379-8599-6D3B4916A1D7"}
+],
+name:"sec_current_user_groups",
+primaryDataSource:"db:/stsservoy/user_groups",
+typeid:22,
+uuid:"E32234A9-9432-4046-9745-5754511F6E86"

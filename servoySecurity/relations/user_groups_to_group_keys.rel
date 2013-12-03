@@ -1,0 +1,8 @@
+foreignDataSource:"db:/stsservoy/group_keys",
+items:[
+{foreignColumnName:"group_id",primaryDataProviderID:"group_id",typeid:23,uuid:"44C4539D-B931-4BB9-8DE4-CC96411E2449"}
+],
+name:"user_groups_to_group_keys",
+primaryDataSource:"db:/stsservoy/user_groups",
+typeid:22,
+uuid:"7EBCD9D3-576E-4D63-B50D-F0E54190E12D"

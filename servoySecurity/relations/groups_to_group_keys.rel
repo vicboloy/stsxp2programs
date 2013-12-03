@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/group_keys",
+items:[
+{foreignColumnName:"group_id",primaryDataProviderID:"group_id",typeid:23,uuid:"76E33983-824B-4117-8B4F-E51F3E90C951"}
+],
+name:"groups_to_group_keys",
+primaryDataSource:"db:/stsservoy/groups",
+typeid:22,
+uuid:"14555B98-2243-432D-A580-3195679F6D9D"

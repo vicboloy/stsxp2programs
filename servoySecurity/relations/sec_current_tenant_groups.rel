@@ -1,0 +1,9 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/groups",
+items:[
+{foreignColumnName:"tenant_id",primaryDataProviderID:"globals.secCurrentTenantID",typeid:23,uuid:"37390293-FBBE-47DD-8317-1EFEEEE9F1B6"}
+],
+name:"sec_current_tenant_groups",
+primaryDataSource:"db:/stsservoy/groups",
+typeid:22,
+uuid:"E87034CB-25AC-49FD-8101-10CB426E9149"

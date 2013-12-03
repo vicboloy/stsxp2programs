@@ -1,0 +1,11 @@
+addEmptyValue:1,
+dataProviderID1:"application_name",
+dataProviderID2:"application_id",
+dataSource:"db:/stsservoy/applications",
+name:"secApplications",
+returnDataProviders:2,
+showDataProviders:1,
+sortOptions:"application_name asc",
+typeid:34,
+uuid:"FF6764AA-508A-4D3A-824D-0DB756548544",
+valueListType:1

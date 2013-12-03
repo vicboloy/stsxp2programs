@@ -1,0 +1,8 @@
+addEmptyValue:1,
+customValues:"globals.secGetTableNames",
+name:"secTableNames",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"9E2F8E18-40D9-4911-BF64-E73F5528D753",
+valueListType:4

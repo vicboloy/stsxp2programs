@@ -1,0 +1,11 @@
+addEmptyValue:1,
+dataProviderID1:"key_name",
+dataProviderID2:"key_id",
+name:"secKeys",
+relationName:"sec_current_app_keys",
+returnDataProviders:2,
+showDataProviders:1,
+sortOptions:"key_name asc",
+typeid:34,
+uuid:"1A81A359-EC9A-48C6-ADB5-B92AF56F7351",
+valueListType:1

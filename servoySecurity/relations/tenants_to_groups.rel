@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/groups",
+items:[
+{foreignColumnName:"tenant_id",primaryDataProviderID:"tenant_id",typeid:23,uuid:"98C3DAC3-92AA-423D-8ECD-8A87B21F8B89"}
+],
+name:"tenants_to_groups",
+primaryDataSource:"db:/stsservoy/tenants",
+typeid:22,
+uuid:"6B472BD3-AC70-49C2-8CF2-1CCC71217CCA"

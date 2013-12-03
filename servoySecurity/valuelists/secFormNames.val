@@ -1,0 +1,8 @@
+addEmptyValue:1,
+customValues:"globals.secGetFormNames",
+name:"secFormNames",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"F84B4576-B68D-4FC8-A8E6-7D009F81EDB2",
+valueListType:4

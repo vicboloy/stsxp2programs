@@ -1,0 +1,8 @@
+addEmptyValue:1,
+customValues:"globals.secGetElementUUIDs",
+name:"secElementUUIDs",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"77F89236-A655-4EB9-8211-FA21623DFC05",
+valueListType:4

@@ -1,0 +1,8 @@
+addEmptyValue:1,
+customValues:"globals.secGetServerNames",
+name:"secServerNames",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"1A0D8A9C-115E-4B97-9843-31BF46C590F4",
+valueListType:4

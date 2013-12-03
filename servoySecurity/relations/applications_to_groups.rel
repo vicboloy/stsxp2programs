@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/groups",
+items:[
+{foreignColumnName:"application_id",primaryDataProviderID:"application_id",typeid:23,uuid:"18945D82-05FF-4C5E-89D4-79FC54D40DBD"}
+],
+name:"applications_to_groups",
+primaryDataSource:"db:/stsservoy/applications",
+typeid:22,
+uuid:"7799EDDB-F3D5-48AE-B883-378AE6073BAF"

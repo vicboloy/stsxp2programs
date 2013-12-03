@@ -1,0 +1,9 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/applications",
+items:[
+{foreignColumnName:"application_id",primaryDataProviderID:"globals.secCurrentApplicationID",typeid:23,uuid:"1A5950EF-1405-4841-A946-F9E9C8F7E3A4"}
+],
+name:"sec_current_application",
+primaryDataSource:"db:/stsservoy/applications",
+typeid:22,
+uuid:"DBFA57F7-DBA5-406D-AFE4-1239FB858FF3"

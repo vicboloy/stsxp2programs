@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/groups",
+items:[
+{foreignColumnName:"application_id",primaryDataProviderID:"globals.secCurrentApplicationID",typeid:23,uuid:"1F20C5DE-4DFD-4BFF-BB07-A333F146539F"},
+{foreignColumnName:"tenant_id",primaryDataProviderID:"globals.SEC_NULL",typeid:23,uuid:"68819A8F-0130-4D5F-89C4-9759E90DFE66"}
+],
+name:"sec_current_app_groups",
+primaryDataSource:"db:/stsservoy/groups",
+typeid:22,
+uuid:"D58C43AC-7DED-402B-80F7-DFCA7A20FDD5"

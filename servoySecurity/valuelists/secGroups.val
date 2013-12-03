@@ -1,0 +1,11 @@
+addEmptyValue:1,
+dataProviderID1:"group_name",
+dataProviderID2:"group_id",
+dataSource:"db:/stsservoy/groups",
+name:"secGroups",
+returnDataProviders:2,
+showDataProviders:1,
+sortOptions:"group_name asc",
+typeid:34,
+uuid:"681D4A75-FD76-4AB5-BD61-282DA3330713",
+valueListType:1

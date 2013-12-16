@@ -1,4 +1,5 @@
 dataSource:"db:/stsservoy/addresses",
+encapsulation:0,
 extendsID:"E6818EAD-F587-4B8F-AA52-012EE881207A",
 items:[
 {

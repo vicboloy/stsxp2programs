@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/employee",
-encapsulation:60,
 items:[
 {
 height:515,

@@ -80,9 +80,9 @@ function login(){
 		errorMessage = 'Please specify a password';
 		return false;
 	}
-	var tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[companyName]);
+	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[companyName]);
 	if(tenantID){
-		var userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
+		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
 		if(userID){
 			var passCheck = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_PASSWORD,[userID, password]);
 			if(passCheck && security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
@@ -91,4 +91,5 @@ function login(){
 		}
 	}
 	errorMessage = 'Login Failed';
+	return null;
 }

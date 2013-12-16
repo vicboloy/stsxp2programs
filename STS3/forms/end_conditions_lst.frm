@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/end_conditions",
-encapsulation:60,
 items:[
 {
 labelFor:"end_prep",

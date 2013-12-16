@@ -1,4 +1,5 @@
 dataSource:"db:/stsservoy/jobs",
+encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
 items:[
 {
@@ -6,7 +7,7 @@ anchors:11,
 labelFor:"customer_number",
 location:"77,0",
 name:"customer_number_label",
-size:"62,20",
+size:"55,20",
 text:"Customer",
 transparent:true,
 typeid:7,
@@ -38,7 +39,7 @@ anchors:11,
 dataProviderID:"sts_job_to_customer.customer_number",
 location:"77,20",
 name:"customer_number",
-size:"62,20",
+size:"55,20",
 text:"Customer Number",
 typeid:4,
 uuid:"CCBF52D5-5F8F-4376-9CA0-EE714357A1BD"

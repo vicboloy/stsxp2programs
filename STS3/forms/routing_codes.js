@@ -155,75 +155,13 @@ function onActionSelectAvailable(event) {
  * @properties={typeid:24,uuid:"4CD3262A-EBA4-431D-ACB6-1A742DD12980"}
  */
 function onActionUnselect(event) {
-	//if (moveNoMove) {return}
-	// now ensure that the unselect marks the correct variable for removal
 	application.output("unselection");
 	var item = elements.selectedCodes.getSelectedElements()[0];
 	aStatusCodes = addElementToArray(aStatusCodes,item);
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
-	//now adjust routed codes
-	//codeTemp = item.replace(/ /g,"");
-	//if (lastStatusRouted == codeTemp){codeTemp = codeTemp+"  "}
-	//lastStatusRouted == codeTemp;
 	aRouteCodes = removeElementFromArray(aRouteCodes,item);
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
 	return;
-	lastStatusRouted = item;
-	//onSingleClickRename2(item);
-	//return;
-	var doubleC = onDoubleClick(event);
-	//if (!doubleC){return}
-	application.output("pass double-click"+doubleC);
-	if (doubleC) {
-		//get last code selected in each list, cannot repeat name or locks it up 
-		//var codeTemp = item.replace(/ /g,"");
-		//adjust avail to different text, blanks are invisible so using blanks
-		//if (lastStatusAvail == codeTemp) {codeTemp = codeTemp+" "}
-		//lastStatusAvail == item;
-		aStatusCodes = addElementToArray(aStatusCodes,uniqueStatusAvailCode(item));
-		application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
-		//now adjust routed codes
-		//codeTemp = item.replace(/ /g,"");
-		//if (lastStatusRouted == codeTemp){codeTemp = codeTemp+"  "}
-		//lastStatusRouted == codeTemp;
-		aRouteCodes = removeElementFromArray(aRouteCodes,item);
-		application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
-		
-		/**
-		application.output("inside Double Click event");
-		var code = item;
-		code = code.replace(/ /g, "");
-		var code2 = code;
-		if (lastStatusAvail == code) {code = code+" "}
-		if (lastStatusRouted == code2){code2 = code2+" "}
-		aStatusCodes = addElementToArray(aStatusCodes,code);
-		lastStatusAvail = code;
-		lastStatusRouted = code2;
-		aStatusCodes = removeElementFromArray(aStatusCodes,code);
-		aRouteCodes = removeElementFromArray(aRouteCodes,code2);
-		application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
-		application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
-		*/
-	} else {
-		//return;
-		//now adjust routed codes
-		//codeTemp = item.replace(/ /g,"");
-		////lastStatusRouted == codeTemp;
-		//if (lastStatusRouted == codeTemp){codeTemp = codeTemp+" "}
-		onSingleClickRename(item);
-		application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
-		//return;
-/**
-		
-		application.output("inside single click update");
-		lastStatusRouted = item;
-		item = item.replace(/ /g,"");
-		if (lastStatusRouted == item){item = item+" "}
-		aRouteCodes = onSingleClickRename(item);
-		application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
-		*/
-	}
-	//return true;
 }
 
 /**
@@ -373,6 +311,7 @@ function onActionSelect(event) {
  * Perform the element right-click action.
  *
  * @param {JSEvent} event the event that triggered the action
+ * @return Boolean
  *
  * @private
  *
@@ -382,7 +321,7 @@ function onDoubleClick(event) {
 	var time = event.getTimestamp().getSeconds()+"."+event.getTimestamp().getMilliseconds();
 	var item = elements.selectedCodes.getSelectedElements();
 	if (item == null){return}
-	var item = time[0].replace(/ /g,"");
+	item = time[0].replace(/ /g,"");
 	var timeDiff = time - fDoubleClickTime;
 	//application.output("time "+timeDiff);
     if(item == itemClicked && timeDiff < 300)

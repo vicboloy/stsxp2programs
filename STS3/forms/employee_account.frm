@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/employee",
-encapsulation:60,
 items:[
 {
 labelFor:"employee_ssn",
@@ -95,6 +94,7 @@ valuelistID:"8F99FF4F-720E-4C04-99BD-DE80D774B8F0"
 dataProviderID:"employee_active_flag",
 displayType:4,
 location:"198,230",
+size:"27,20",
 transparent:true,
 typeid:4,
 uuid:"66803B3D-DAFD-416B-BAE9-D381D07D262B"

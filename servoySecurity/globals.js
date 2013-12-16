@@ -78,7 +78,7 @@ var SEC_TABLE_KEYS = 'keys';
  *
  * @properties={typeid:35,uuid:"5C14D3F4-8C24-4163-AF45-86185DE69747"}
  */
-var SEC_TABLE_TENANTS = 'tenants';
+var SEC_TABLE_TENANTS = 'tenant_list';
 
 /**
  * @type {String}
@@ -109,9 +109,9 @@ var SEC_TENANT_FILTER = 'secTenantFilter';
 var secCurrentApplicationID = null;
 
 /**
- * @type {Number}
+ * @type {String}
  *
- * @properties={typeid:35,uuid:"237E841F-6CA3-45AB-84F8-4D60FD5ADDA4",variableType:4}
+ * @properties={typeid:35,uuid:"237E841F-6CA3-45AB-84F8-4D60FD5ADDA4"}
  */
 var secCurrentTenantID = null;
 
@@ -182,7 +182,7 @@ function secSetSecuritySettings() {
 			groupKeys,groupKeys.group_keys_to_permissions);
 	}
 	if(keyPermissions){
-		for(var i = 1; i <= keyPermissions.getSize(); i++){				//	iterate over all permissions related to this user
+		for(i = 1; i <= keyPermissions.getSize(); i++){				//	iterate over all permissions related to this user
 			appendSetting(keyPermissions.getRecord(i));					//	append permission
 		}
 	}
@@ -610,7 +610,6 @@ function secGetGroupID(groupName, tenantID, appID) {
  * @AllowToRunInFind
  */
 function secGetTenantID(companyName){
-
 	var tenants;														//	the tenants foundset
 	if(!companyName){													//	validate input...	
 		return null;													//	must provide a copmany name
@@ -619,7 +618,7 @@ function secGetTenantID(companyName){
 	if(tenants.find()){													//	search the tenant foundset...
 		tenants.company_name = companyName;								//	search by tenant name	
 		if(tenants.search()){												
-			return tenants.tenant_id;									//	return the ID
+			return tenants.tenant_uuid;									//	return the ID
 		}
 	}
 	return null;														//	could not find tenant

@@ -133,6 +133,15 @@ function onActionJobs(event) {
 	onActionClickMainButton(event,"Jobs",'jobs_tabs',50,50,960,450,false);
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"62683739-AB1C-4C81-9DD8-C03DD2959842"}
+ */
+function onActionUserManage(event) {
+	onActionClickMainButton(event,"User Management",'user_management',50,50,960,450,false);
+}
+/**
  * Callback method when form is (re)loaded.
  *
  * @param {JSEvent} event the event that triggered the action

@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/users",
+items:[
+{foreignColumnName:"user_name",primaryDataProviderID:"employee_username",typeid:23,uuid:"54220CDB-10F0-4D86-893A-AE5622E91A8D"},
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.secCurrentTenantID",typeid:23,uuid:"D16D479F-2D3E-471F-82CD-823C34D3EAAF"}
+],
+joinType:1,
+name:"secx_employee_to_users_tenant",
+primaryDataSource:"db:/stsservoy/employee",
+typeid:22,
+uuid:"853932D4-144A-419D-899B-40EF8CBCD83B"

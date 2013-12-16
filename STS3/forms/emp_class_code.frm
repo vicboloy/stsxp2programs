@@ -1,5 +1,5 @@
 dataSource:"db:/stsservoy/employee_class",
-encapsulation:60,
+encapsulation:0,
 extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {

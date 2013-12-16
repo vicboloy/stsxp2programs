@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/jobs",
-encapsulation:60,
 items:[
 {
 items:[

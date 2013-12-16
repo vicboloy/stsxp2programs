@@ -1,4 +1,5 @@
 dataSource:"db:/stsservoy/customers",
+encapsulation:0,
 extendsID:"3A25DF3A-EA0A-454E-9B54-D8B16EB6DBAF",
 name:"customer_button",
 styleName:"sts_one",

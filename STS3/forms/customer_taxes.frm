@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/customers",
-encapsulation:60,
 items:[
 {
 labelFor:"quickbooks_state_tax_agent",

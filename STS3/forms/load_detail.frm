@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/route_detail",
-encapsulation:60,
 items:[
 {
 height:480,

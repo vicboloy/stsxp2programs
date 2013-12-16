@@ -18,8 +18,7 @@ var editFlag = false;
  * @properties={typeid:24,uuid:"E47D7FF2-8473-4AD4-AD69-AC99BA008846"}
  */
 function onShow(firstShow, event) {
-	var dataset = controller.getFormContext().getValue(1,2);
-	//application.output('employee class list form parent on show '+dataset);
+	controller.getFormContext().getValue(1,2);
 
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){

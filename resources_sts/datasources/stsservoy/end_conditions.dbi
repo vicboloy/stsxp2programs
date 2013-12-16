@@ -55,6 +55,14 @@ creationOrderIndex:5,
 dataType:12,
 length:15,
 name:"tenant_id"
+},
+{
+allowNull:true,
+creationOrderIndex:8,
+dataType:12,
+flags:4,
+length:36,
+name:"tenant_uuid"
 }
 ],
 name:"end_conditions",

@@ -17,6 +17,7 @@ function onRecordSelectionStatusCode(event) {
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
+ * @param {String} direction sort direction
  *
  * @private
  *

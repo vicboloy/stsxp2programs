@@ -229,7 +229,7 @@ function onShow(firstShow, event) {
 	}
 }
 /**
- * @return {RuntimeForm}
+ * @return RuntimeForm
  * @properties={typeid:24,uuid:"C55DD876-7D70-4FF0-8AED-BE57D8330604"}
  */
 function getParentForm() {

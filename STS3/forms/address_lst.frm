@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/addresses",
-encapsulation:60,
 items:[
 {
 labelFor:"city",

@@ -48,6 +48,14 @@ dataType:4,
 foreignType:"tenants",
 lookupValue:"globals.secCurrentTenantID",
 name:"tenant_id"
+},
+{
+allowNull:true,
+creationOrderIndex:6,
+dataType:12,
+flags:4,
+length:36,
+name:"tenant_uuid"
 }
 ],
 name:"groups",

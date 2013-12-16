@@ -777,9 +777,9 @@ function onSolutionOpen() {
 	}
 	
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
-	//globals.secSetCurrentApplication(globals.secGetApplicationID(APPLICATION_NAME));
-	//globals.secCurrentUserID = security.getUserUID();
-	//globals.secSetCurrentTenant(sec_current_user.tenant_id)
+	globals.secSetCurrentApplication(globals.secGetApplicationID(APPLICATION_NAME));
+	globals.secCurrentUserID = security.getUserUID();
+	globals.secSetCurrentTenant(sec_current_user.tenant_uuid)
 	//globals.secSetSecuritySettings();
 }
 
@@ -888,7 +888,7 @@ var rowBGColorSelected = '#FFFF80';
  * @param {JSRecord} record selected record
  * @param {Boolean} edited is the record edited
  *
- * @returns {Color}
+ * @returns {String}
  * @properties={typeid:24,uuid:"591CD53E-FB57-4531-B6F1-7ED95C91CE42"}
  */
 function rowBGColor(index, selected, elementType, dataProviderID, formName, record, edited) {

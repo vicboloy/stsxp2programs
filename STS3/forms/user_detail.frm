@@ -1,0 +1,113 @@
+dataSource:"db:/stsservoy/users",
+extendsID:"66E5E134-B5C4-43B3-B810-281E2BFF03C1",
+items:[
+{
+labelFor:"is_account_active",
+location:"47,39",
+name:"is_account_active_label",
+size:"80,20",
+text:"Is Account Active",
+transparent:true,
+typeid:7,
+uuid:"195DAA77-4FBD-4305-BD24-F278A3CA0C33"
+},
+{
+labelFor:"name_last",
+location:"47,129",
+name:"name_last_label",
+size:"80,20",
+text:"Name Last",
+transparent:true,
+typeid:7,
+uuid:"28B928FB-83DE-41DA-90CE-864DB293A305"
+},
+{
+dataProviderID:"name_last",
+location:"137,129",
+name:"name_last",
+size:"140,20",
+text:"Name Last",
+typeid:4,
+uuid:"2D036CD4-E0FF-4282-AEF1-594EB8CDAC66"
+},
+{
+labelFor:"user_name",
+location:"47,159",
+name:"user_name_label",
+size:"80,20",
+text:"User Name",
+transparent:true,
+typeid:7,
+uuid:"3478F1D4-55E9-4C0D-A7EC-E4F0A0D1E030"
+},
+{
+dataProviderID:"is_account_active",
+displayType:4,
+location:"137,39",
+name:"is_account_active",
+size:"140,20",
+text:"Is Account Active",
+typeid:4,
+uuid:"669E0DD9-3CC4-4B4A-95F4-E2122E472163"
+},
+{
+labelFor:"last_login",
+location:"47,69",
+name:"last_login_label",
+size:"80,20",
+text:"Last Login",
+transparent:true,
+typeid:7,
+uuid:"880D0B2D-2225-4916-B472-8DFA56CD3AF1"
+},
+{
+dataProviderID:"user_name",
+location:"137,159",
+name:"user_name",
+size:"140,20",
+text:"User Name",
+typeid:4,
+uuid:"95B8F41A-FAE2-4E5B-AAD0-66CA59B27A57"
+},
+{
+height:209,
+partType:5,
+typeid:19,
+uuid:"C8957F46-1AC6-40EF-BAB9-84B86D525ED5"
+},
+{
+dataProviderID:"last_login",
+displayType:5,
+editable:false,
+location:"137,69",
+name:"last_login",
+size:"140,20",
+text:"Last Login",
+typeid:4,
+uuid:"CB00ED87-3D74-4F8C-B134-FB51CE1B085B"
+},
+{
+labelFor:"name_first",
+location:"47,99",
+name:"name_first_label",
+size:"80,20",
+text:"Name First",
+transparent:true,
+typeid:7,
+uuid:"E9633899-3B5A-4484-8A95-6B7456FC277A"
+},
+{
+dataProviderID:"name_first",
+location:"137,99",
+name:"name_first",
+size:"140,20",
+text:"Name First",
+typeid:4,
+uuid:"EE993F01-E42F-4D30-ADE0-D052859D42FA"
+}
+],
+name:"user_detail",
+size:"341,209",
+styleName:"sts_one",
+typeid:3,
+uuid:"BB1B2F7E-C46C-4524-95B5-1F69B94CF939"

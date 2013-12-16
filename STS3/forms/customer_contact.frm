@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/customers",
-encapsulation:60,
 items:[
 {
 dataProviderID:"other1",

@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/carrier",
-encapsulation:60,
 items:[
 {
 dataProviderID:"sts_carrier_to_address.line1",

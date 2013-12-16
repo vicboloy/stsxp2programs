@@ -82,7 +82,7 @@ function onDataChangeKeyGroups(oldValue, newValue, event) {
 	newIDs.sort();															//	sort the array
 	
 	if(newIDs.length > oldIDs.length){										//	check difference: id was ADDED
-		var id = newIDs[newIDs.length - 1];									//	determine the id, starting with the last element in the array
+		id = newIDs[newIDs.length - 1];									//	determine the id, starting with the last element in the array
 		for(i in oldIDs){													//	iterate by the old ids
 			if(oldIDs[i] != newIDs[i])										//	until the corresponding new id doesn't match
 				id = newIDs[i];												//	which gives the id that was added
@@ -92,7 +92,7 @@ function onDataChangeKeyGroups(oldValue, newValue, event) {
 			databaseManager.saveData(fs.getSelectedRecord());				//	save data
 		}
 	} else {																//	id was REMOVED	
-		var id = oldIDs[oldIDs.length - 1];									//	determine the id, starting with the last element in the array
+		id = oldIDs[oldIDs.length - 1];									//	determine the id, starting with the last element in the array
 		for(i in newIDs){													//	iterate by the new ids
 			if(oldIDs[i] != newIDs[i])										//	until the corresponding old id doesn't match
 				id = oldIDs[i];												//	which gives the id that was removed

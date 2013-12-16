@@ -46,7 +46,7 @@ function createFormClone(formName, cloneName) {
  * 
  * @param {String} tpName
  * @param {String} tabName
- * @return {RuntimeForm}
+ * @return RuntimeForm
  *
  *
  * @properties={typeid:24,uuid:"E81664E2-9184-40DC-96E1-4293CFC5A91B"}
@@ -68,7 +68,7 @@ function getTabForm(tpName, tabName) {
 }
 
 /**
- * @return {RuntimeForm}
+ * @return RuntimeForm
  *
  *
  * @properties={typeid:24,uuid:"DEDB2FF3-DB64-441B-A58C-1C3B4F84314F"}
@@ -87,4 +87,5 @@ function getParentForm() {
 			throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
 		}
 	}
+	return null;
 }

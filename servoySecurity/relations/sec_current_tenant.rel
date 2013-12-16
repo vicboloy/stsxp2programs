@@ -1,9 +1,9 @@
 allowCreationRelatedRecords:true,
-foreignDataSource:"db:/stsservoy/tenants",
+foreignDataSource:"db:/stsservoy/tenant_list",
 items:[
-{foreignColumnName:"tenant_id",primaryDataProviderID:"globals.secCurrentTenantID",typeid:23,uuid:"46F4F236-F67B-4126-B718-19E126A38530"}
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.secCurrentTenantID",typeid:23,uuid:"46F4F236-F67B-4126-B718-19E126A38530"}
 ],
 name:"sec_current_tenant",
-primaryDataSource:"db:/stsservoy/tenants",
+primaryDataSource:"db:/stsservoy/tenant_list",
 typeid:22,
 uuid:"B7A75E88-66EA-4CC6-889E-70A5225C5368"

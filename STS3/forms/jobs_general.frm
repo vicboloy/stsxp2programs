@@ -1,5 +1,5 @@
 dataSource:"db:/stsservoy/jobs",
-encapsulation:60,
+encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
 items:[
 {

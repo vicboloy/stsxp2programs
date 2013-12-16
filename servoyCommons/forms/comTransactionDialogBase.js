@@ -85,5 +85,7 @@ function saveEdits(record) {
 	if(_super.saveEdits(record)){						//	Invoke super to save edits
 		editsSaved = true;								//	Set the 'saved' flag (used in the callback)
 		closeDialog();									//	close the dialog
+		return true;
 	}
+	return false;
 }

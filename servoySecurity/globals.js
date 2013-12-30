@@ -447,7 +447,7 @@ function secLogin(userID){
 	}
 	
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a users foundset
-	security.createGroup(SEC_ADMINISTRATORS);							//	Create the group (This may not be necessary)
+	//security.createGroup(SEC_ADMINISTRATORS);							//	Create the group (This may not be necessary)
 	if(users.loadRecords(userID) && users.is_account_active){ 			//	load user record, check if active account
 		users.last_login = new Date();									//	reset last login date & login user
 		return security.login(users.user_name,users.user_id,[SEC_ADMINISTRATORS]);

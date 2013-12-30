@@ -13,6 +13,7 @@
  * @AllowToRunInFind
  */
 function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
+	application.output(windowTitle);
 	var formNameNew = formName;
 	if (multiWindow){
 		windowTitle = windowTitle+"_";

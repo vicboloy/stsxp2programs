@@ -18,6 +18,7 @@ function createFormClone(formName, cloneName) {
 	
 	var clonedForm = solutionModel.cloneForm(cloneName, solutionModel.getForm(formName))
 	clonedForm.namedFoundSet = JSForm.SEPARATE_FOUNDSET;
+	globals.setWindowOpened(cloneName);
 
 	// Now we will do a depth-first traversal through all the tabs in all the tabpanels of the original form (formName),
 	// and for each tab we will make a clone of the form in that tab, and assign it
@@ -88,4 +89,41 @@ function getParentForm() {
 		}
 	}
 	return null;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param windowName
+ *
+ * @properties={typeid:24,uuid:"C6231BA9-FA7B-469D-91C5-C22E34A6B477"}
+ */
+function addWindowList(windowName){
+	globals.aTrackWindows.push(windowName);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param windowName
+ *
+ * @properties={typeid:24,uuid:"29F2DCD5-FF81-47D9-B83B-8D0064EB5A43"}
+ */
+function focusWindow(){
+	var windowName = elements.windows.getSelectedElements()[0];
+	if (windowName == null){return}
+	var windowx = application.getWindow(windowName);
+	windowx.toFront();
+}
+/**
+ * @properties={typeid:24,uuid:"F136BFBF-4BE1-48EC-87FE-5C11DFC2727D"}
+ */
+function removeWindowTrack(){
+	var formName = controller.getName();
+	var tempArray = new Array;
+	tempArray = globals.aTrackWindows;
+	tempLength = tempArray.length;
+	for (var index = 0; index < tempLength; index++){
+		if (tempArray[index]!=formName){
+			tempArray.push(array[index]);
+		}
+	}
+	globals.aTrackWindows = tempArray;
+	application.setValueListItems('stsvl_nav_windows',tempArray);
 }

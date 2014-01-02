@@ -85,6 +85,11 @@ function initUomArray() {
  */
 var aStatusTypes = new Array;
 /**
+ * @properties={typeid:35,uuid:"0A0B01AA-138B-4C3F-85E0-1EBE650867EE",variableType:-4}
+ * @type aTrackWindows {Array} Windows lists
+ */
+var aTrackWindows = new Array;
+/**
  * @properties={typeid:24,uuid:"E55D375F-2EA8-4D4E-8234-B7AF6A47619E"}
  */
 //do not resort this array, needed in this order for export to tekla
@@ -746,12 +751,6 @@ var dialogButtonYes = "";
  * @properties={typeid:35,uuid:"4CE72FCD-265B-48D2-9208-ADAF4F9F9F5A"}
  */
 var dialogButtonNo = "";
-
-/**
- * @properties={typeid:35,uuid:"623E3015-14CD-4100-AA28-70F45E9FFC30",variableType:-4}
- */
-var openWindows = new Array();
-
 /**
  * Callback method for when solution is opened.
  *
@@ -899,4 +898,19 @@ function rowBGColor(index, selected, elementType, dataProviderID, formName, reco
 		return rowBGColorOdd;
 	else
 		return rowBGColorEven;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param windowName
+ *
+ * @properties={typeid:24,uuid:"DA5676A8-77BE-4A25-86C3-B1FF6FE993E5"}
+ */
+function setWindowOpened(windowName){
+	if (globals.aOpenWindows[windowName] == null) {
+		globals.aOpenWindows[windowName] = true;
+		//application.setValueListItems('xsts_nav_openWindows',globals.aOpenWindows);
+		application.setValueListItems('sts_nav_openWindows',globals.aOpenWindows);
+
+	}
+	application.output(globals.aOpenWindows); //joeremove
 }

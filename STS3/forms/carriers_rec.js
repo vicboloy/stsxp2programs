@@ -1,4 +1,13 @@
 /**
+ * @properties={typeid:24,uuid:"C53979B3-7CAF-4472-B6B8-865E64B159E4"}
+ */
+function mainWindowFront(){
+	var windowx = application.getWindow();
+	if (windowx != null){
+		windowx.toFront();
+	}
+}
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action

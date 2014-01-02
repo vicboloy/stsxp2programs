@@ -337,3 +337,34 @@ function otherSelectionFunctions(){
  */
 function addOnActionDelete(){
 }
+/**
+ * @properties={typeid:24,uuid:"6BE4A05A-3DF4-461F-AE75-6966D1774E30"}
+ */
+function mainWindowFront(){
+	var windowx = application.getWindow();
+	if (windowx != null){
+		windowx.toFront();
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"E21EE873-34C3-488D-8F27-F113B59EAEDE"}
+ */
+function removeWindowTrack(){
+	var win = application.getActiveWindow();
+	var winName = win.getName();
+	
+	winName = winName.replace(/_/g," ");
+	var tempArray = new Array;
+	application.output('array '+tempArray+' remove '+winName);
+	var length = globals.aTrackWindows.length;
+	for (var index = 0; index < length; index++){
+		application.output(winName+' '+globals.aTrackWindows[index]);
+		if (globals.aTrackWindows[index] != winName){
+			tempArray.push(globals.aTrackWindows[index]);
+			application.output('add '+globals.aTrackWindows[index]);
+		}
+	}
+	globals.aTrackWindows = tempArray;
+	application.output(tempArray);
+	application.setValueListItems('stsvl_nav_windows',tempArray);
+}

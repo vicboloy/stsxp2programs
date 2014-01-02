@@ -61,6 +61,12 @@ uuid:"5689C374-AA81-4E01-BCB3-20E62B575DE0"
 },
 {
 mimeType:"image/gif",
+name:"sts_home_tx.gif",
+typeid:37,
+uuid:"4A0BD695-A1F2-494F-A2DA-C6C92FC90EF9"
+},
+{
+mimeType:"image/gif",
 name:"sts_tab.gif",
 typeid:37,
 uuid:"5EDB18BA-02B5-400A-8067-50830A7ECE1C"

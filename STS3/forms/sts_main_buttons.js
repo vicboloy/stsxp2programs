@@ -1,4 +1,10 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"BADC9EA2-CBA1-450E-93B3-77B0AD78BAA1"}
+ */
+var winderList = "";
+/**
  * TODO generated, please specify type and doc for the params
  * @param event System selection event
  * @param windowTitle Window bar title
@@ -13,6 +19,8 @@
  * @AllowToRunInFind
  */
 function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
+	var tempArray = new Array;
+	tempArray = globals.aTrackWindows;
 	application.output(windowTitle);
 	var formNameNew = formName;
 	if (multiWindow){
@@ -33,6 +41,14 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
 	win.setInitialBounds(xBeg, yBeg, xEnd, yEnd);
 	win.title = windowTitle;
 	win.show(formNameNew);
+	//application.setValueListItems('stsvl_nav_windows',new Array('Item 1', 'Item 2', 'Item 3'));
+	
+	if (tempArray[windowTitle] == null) {
+		tempArray.push(windowTitle);
+		application.output(tempArray);
+		application.setValueListItems('stsvl_nav_windows',tempArray);
+	}
+	globals.aTrackWindows = tempArray;
 }
 
 /**

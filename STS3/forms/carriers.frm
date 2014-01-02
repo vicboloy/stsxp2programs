@@ -1,4 +1,5 @@
 dataSource:"db:/stsservoy/carrier",
+extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
 items:[
 {
 items:[
@@ -30,14 +31,15 @@ typeid:16,
 uuid:"24B0632E-F0A9-41BD-AF3F-4347E14AD44F"
 },
 {
+extendsID:"309DAEC2-F9E3-4DBF-8718-0884B5FE1FBF",
 height:591,
-partType:5,
 typeid:19,
 uuid:"E867A28B-CD66-44C4-AE75-B141D438ADAE"
 }
 ],
 name:"carriers",
 navigatorID:"-1",
+onHideMethodID:"E21EE873-34C3-488D-8F27-F113B59EAEDE",
 onShowMethodID:"A1B2FEC9-34A6-46A3-A972-5DE0B0C609B9",
 scrollbars:4,
 showInMenu:true,

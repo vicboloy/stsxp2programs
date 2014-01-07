@@ -352,7 +352,7 @@ function mainWindowFront(){
 function removeWindowTrack(){
 	var win = application.getActiveWindow();
 	var winName = win.getName();
-	
+	if (winName == null){return}
 	winName = winName.replace(/_/g," ");
 	var tempArray = new Array;
 	application.output('array '+tempArray+' remove '+winName);

@@ -16,6 +16,10 @@
 //------------------ Public Variables from STS ---------------------------------------
 //Version-----------------------------------------------------------------------------
 /**
+ * @properties={typeid:35,uuid:"FE89CF50-1B43-46F8-A8DD-250A8C617C79",variableType:-4}
+ */
+var change_to_remote = false;
+/**
  * @properties={typeid:35,uuid:"6ACA8CE7-B08B-45EA-80DD-C6543E3393A0",variableType:-4}
  */
 var debug = false;
@@ -604,10 +608,7 @@ var route_code = "";
  * @properties={typeid:35,uuid:"0A22242D-4F65-4DCB-8EAA-8453B5A09EAB",variableType:4}
  */
 var currentStatusCodeSequence = 0;
-/**
- * @properties={typeid:35,uuid:"FE89CF50-1B43-46F8-A8DD-250A8C617C79",variableType:-4}
- */
-var change_to_remote = false;
+
 
 /**
  * @type {String}

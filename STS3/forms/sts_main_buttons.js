@@ -6,12 +6,12 @@
 var winderList = "";
 /**
  * TODO generated, please specify type and doc for the params
- * @param tabName
+ * @param tabName {String} identify the tab selected to open that form view
  *
  * @properties={typeid:24,uuid:"DAB11C9F-D47B-4C2A-AA3A-F07D4B9AFE63"}
  */
 function onActionMenu(event,tabName){
-	application.output(tabName);
+	//application.output(tabName);
 	switch (tabName){
 		case 'edit':
 			elements.split.setLeftForm(forms.sts_nav_edit,null);
@@ -47,5 +47,5 @@ function onLoadMain(event) {
 	globals.initLaborCodes();
 	elements.split.rightFormMinSize = 40;
 	elements.split.dividerLocation = 0.80;
-
+	application.output('current tenant '+globals.secCurrentTenantID);
 }

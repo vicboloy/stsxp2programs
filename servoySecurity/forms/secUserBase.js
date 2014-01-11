@@ -161,7 +161,7 @@ function validateUserName(event){
 		errorMessage = 'Please provide a user name'							//	TODO: i18n HERE
 		return false;														//	failed validation
 	}
-	var id = globals.secGetUserID(user_name,tenant_id);						//	Check user ID
+	var id = globals.secGetUserID(user_name,tenant_uuid);						//	Check user ID
 	if(id && id != user_id){												//	It should be unique
 		errorMessage = 'User name is already in use';						//	TODO: i18n HERE
 		return false;														//	failed validation

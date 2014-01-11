@@ -491,7 +491,7 @@ function secSetCurrentApplication(applicationID){
 /**
  * sets the value for secCurrentTenantID, which drives global relations
  * removes and re adds the application data filter
- * @param {Number} [tenantID] the tenant ID
+ * @param {String} [tenantID] the tenant ID
  * @properties={typeid:24,uuid:"7184F80F-6D6E-4A21-A34D-AF5F8BB789EE"}
  */
 function secSetCurrentTenant(tenantID){
@@ -563,7 +563,7 @@ function secGetUserID(userName, tenantID) {
 	}
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a user foundset
 	if(users.find()){													//	search the user foundset...
-		users.tenant_id = (tenantID) ? tenantID : secCurrentTenantID;	//	search by tenant (use the current tenant when no tenant id specified)
+		users.tenant_uuid = (tenantID) ? tenantID : secCurrentTenantID;	//	search by tenant (use the current tenant when no tenant id specified)
 		users.user_name = userName;										//	search by user name	
 		if(users.search()){												
 			return users.user_id;										//	return the ID

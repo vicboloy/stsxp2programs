@@ -150,6 +150,15 @@ function onActionJobs(event) {
 function onActionUserManage(event) {
 	onActionClickMainButton(event,"User Management",'user_management',50,50,960,450,false);
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
+ */
+function onActionTenants(event) {
+	onActionClickMainButton(event,"Tenants",'tenants',50,50,960,450,false);
+}
 
 /**
  * @param {String} formName

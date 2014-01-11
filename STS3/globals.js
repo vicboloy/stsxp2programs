@@ -28,6 +28,12 @@ var debug = false;
  *
  * @properties={typeid:35,uuid:"715F3FA9-EF61-4230-9341-6E0E042F243C"}
  */
+var solutionTables = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"6E529CE4-313E-463D-B35D-4CE852FD885F"}
+ */
 var lookupItem = "";
 /**
  * @type {String}
@@ -779,8 +785,10 @@ function onSolutionOpen() {
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
 	globals.secSetCurrentApplication(globals.secGetApplicationID(APPLICATION_NAME));
 	globals.secCurrentUserID = security.getUserUID();
-	globals.secSetCurrentTenant(sec_current_user.tenant_uuid)
-	//globals.secSetSecuritySettings();
+	globals.secCurrentTenantID = sec_current_users.tenant_uuid;
+	var tenantID = sec_current_user.tenant_uuid;
+	secSetCurrentTenant(tenantID);
+	getTablesFilters(tenantID);	
 }
 
 /**
@@ -915,3 +923,25 @@ function setWindowOpened(windowName){
 	}
 	application.output(globals.aOpenWindows); //joeremove
 }
+/**
+ * Set tenant filters on applicable tables to enable access to creating more tenants, but not view other information.  This expressly leaves out the 
+ * tenant table, filtering all other tables which reference the current login's tenant.
+ *
+ * @properties={typeid:24,uuid:"1261FFFE-27A8-4F4B-8986-6B13DF623AC6"}
+ */
+function getTablesFilters(tenantID) {
+	var tableNames = databaseManager.getTableNames(SEC_SERVER);
+	var tableName = "";
+	var controlledTable = false;
+	for (var index = 0;index < tableNames.length; index++){
+		tableName = tableNames[index];
+		if (tableName == 'tenant_list'){continue}
+		var dataSource = 'db:/'+SEC_SERVER+'/'+tableName; 
+		var jsTableColumns = databaseManager.getTable(dataSource);
+		var tableColumn = jsTableColumns.getColumn('tenant_uuid');
+		if (tableColumn == null){continue}
+		tableFilter = 'Filter_'+tableName;
+		application.output('table '+tableName+' filter '+tableFilter)
+		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','=',tenantID,tableFilter);
+	}
+ }

@@ -1,5 +1,5 @@
 fileVersion:43,
-mustAuthenticate:false,
+mustAuthenticate:true,
 name:"STS3",
 solutionType:1,
 typeid:43,

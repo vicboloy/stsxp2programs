@@ -1,0 +1,10 @@
+encapsulation:60,
+extendsID:"75DFEFBE-D100-4082-8005-E5C62B4BC2BC",
+name:"tenant_detail",
+namedFoundSet:"separate",
+showInMenu:true,
+size:"-3,228",
+styleName:"sts_one",
+transparent:true,
+typeid:3,
+uuid:"B1FAB1C5-080C-48E0-827A-CBE1C9810162"

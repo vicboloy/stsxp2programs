@@ -785,7 +785,7 @@ function onSolutionOpen() {
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
 	globals.secSetCurrentApplication(globals.secGetApplicationID(APPLICATION_NAME));
 	globals.secCurrentUserID = security.getUserUID();
-	globals.secCurrentTenantID = sec_current_users.tenant_uuid;
+	globals.secCurrentTenantID = sec_current_user.tenant_uuid;
 	var tenantID = sec_current_user.tenant_uuid;
 	secSetCurrentTenant(tenantID);
 	getTablesFilters(tenantID);	
@@ -926,6 +926,8 @@ function setWindowOpened(windowName){
 /**
  * Set tenant filters on applicable tables to enable access to creating more tenants, but not view other information.  This expressly leaves out the 
  * tenant table, filtering all other tables which reference the current login's tenant.
+ * 
+ * Delete flag is set as well for the entire database.
  *
  * @properties={typeid:24,uuid:"1261FFFE-27A8-4F4B-8986-6B13DF623AC6"}
  */
@@ -941,7 +943,9 @@ function getTablesFilters(tenantID) {
 		var tableColumn = jsTableColumns.getColumn('tenant_uuid');
 		if (tableColumn == null){continue}
 		tableFilter = 'Filter_'+tableName;
-		application.output('table '+tableName+' filter '+tableFilter)
+		//application.output('table '+tableName+' filter '+tableFilter)
 		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','=',tenantID,tableFilter);
 	}
+	// Enable filter of all deleted records.
+	databaseManager.addTableFilterParam(SEC_SERVER,null,'delete_flag','!=',0,'enableDelete');
  }

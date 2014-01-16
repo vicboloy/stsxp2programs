@@ -12,6 +12,7 @@ var winderList = "";
  */
 function onActionMenu(event,tabName){
 	//application.output(tabName);
+	replaceTabIcon(tabName);
 	switch (tabName){
 		case 'edit':
 			elements.split.setLeftForm(forms.sts_nav_edit,null);
@@ -33,6 +34,57 @@ function onActionMenu(event,tabName){
 	}
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param tabName
+ *
+ * @properties={typeid:24,uuid:"1866A7CB-D2A5-4FD5-92FA-ECC35CA24587"}
+ */
+function replaceTabIcon(tabName){
+	elements.iFirstL.imageURL = "media:///sts_tab_start_txc.gif";
+	elements.iOne.imageURL = "media:///sts_tab_top_txc.gif";
+	elements.iTwo.imageURL = "media:///sts_tab_top_txc.gif";
+	elements.iThree.imageURL = "media:///sts_tab_top_txc.gif";
+	elements.iFour.imageURL = "media:///sts_tab_top_txc.gif";
+	elements.iFive.imageURL = "media:///sts_tab_top_txc.gif";
+	elements.iHome.imageURL = "media:///sts_text_txc.gif";
+	elements.iEndR.imageURL = "media:///sts_tab_end_txc.gif";
+	elements.iOneTwo.imageURL = "media:///sts_tab_mid_txc.gif";
+	elements.iTwoThree.imageURL = "media:///sts_tab_mid_txc.gif";
+	elements.iThreeFour.imageURL = "media:///sts_tab_mid_txc.gif";
+	elements.iFourFive.imageURL = "media:///sts_tab_mid_txc.gif";
+	switch (tabName){
+	case 'edit':
+	elements.iOneTwo.imageURL = "media:///sts_tab_mid_txcA.gif";
+	elements.iTwo.imageURL = "media:///sts_tab_top_txcA.gif";
+	elements.iTwoThree.imageURL = "media:///sts_tab_mid_txcB.gif";
+		break;
+	case 'import':
+	elements.iFirstL.imageURL = "media:///sts_tab_start_txcA.gif";
+	elements.iOne.imageURL = "media:///sts_tab_top_txcA.gif";
+	elements.iOneTwo.imageURL = "media:///sts_tab_mid_txcB.gif";
+
+		break;
+	case 'view':
+	elements.iTwoThree.imageURL = "media:///sts_tab_mid_txcA.gif";
+	elements.iThree.imageURL = "media:///sts_tab_top_txcA.gif";
+	elements.iThreeFour.imageURL = "media:///sts_tab_mid_txcB.gif";
+		break;
+	case 'reports':
+	elements.iThreeFour.imageURL = "media:///sts_tab_mid_txcA.gif";
+	elements.iFour.imageURL = "media:///sts_tab_top_txcA.gif";
+	elements.iFourFive.imageURL = "media:///sts_tab_mid_txcB.gif";
+		break;
+	case 'labels':
+	elements.iFourFive.imageURL = "media:///sts_tab_mid_txcA.gif";
+	elements.iFive.imageURL = "media:///sts_tab_top_txcA.gif";
+	elements.iEndR.imageURL = "media:///sts_tab_end_txcA.gif";
+		break
+	default:
+	elements.iHome.imageURL = "media:///sts_text_txcA.gif";
+}
+
+}
+/**
  * Callback method when form is (re)loaded.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -48,4 +100,6 @@ function onLoadMain(event) {
 	elements.split.rightFormMinSize = 40;
 	elements.split.dividerLocation = 0.80;
 	application.output('current tenant '+globals.secCurrentTenantID);
+	replaceTabIcon('');
+
 }

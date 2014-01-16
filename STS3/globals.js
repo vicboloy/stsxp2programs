@@ -787,7 +787,7 @@ function onSolutionOpen() {
 	globals.secCurrentUserID = security.getUserUID();
 	globals.secCurrentTenantID = sec_current_user.tenant_uuid;
 	var tenantID = sec_current_user.tenant_uuid;
-	secSetCurrentTenant(tenantID);
+	//secSetCurrentTenant(tenantID);
 	getTablesFilters(tenantID);	
 }
 
@@ -932,6 +932,8 @@ function setWindowOpened(windowName){
  * @properties={typeid:24,uuid:"1261FFFE-27A8-4F4B-8986-6B13DF623AC6"}
  */
 function getTablesFilters(tenantID) {
+	var permitArray = [];
+	permitArray.push(tenantID);
 	var tableNames = databaseManager.getTableNames(SEC_SERVER);
 	var tableName = "";
 	var controlledTable = false;
@@ -944,7 +946,8 @@ function getTablesFilters(tenantID) {
 		if (tableColumn == null){continue}
 		tableFilter = 'Filter_'+tableName;
 		//application.output('table '+tableName+' filter '+tableFilter)
-		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','=',tenantID,tableFilter);
+		//databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','=',tenantID,tableFilter);
+		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','IN',permitArray,tableFilter);
 	}
 	// Enable filter of all deleted records.
 	databaseManager.addTableFilterParam(SEC_SERVER,null,'delete_flag','!=',0,'enableDelete');

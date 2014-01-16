@@ -13,7 +13,7 @@ uuid:"0AC41C49-90F3-4D2B-92D8-C0CF94A9952E"
 {
 dataProviderID:"company_name",
 editable:false,
-location:"0,20",
+location:"0,22",
 onActionMethodID:"DBCCAA09-6AE8-4D55-AC57-43F0E19C3231",
 size:"217,22",
 typeid:4,
@@ -26,7 +26,7 @@ typeid:19,
 uuid:"28A99E4A-575F-454E-AC5D-3DC524722AA5"
 },
 {
-height:20,
+height:19,
 partType:2,
 typeid:19,
 uuid:"36C54582-ED76-471C-ABA9-542030F50A92"
@@ -43,7 +43,7 @@ uuid:"794D2562-2D5E-45AA-BB9F-7B33400C6CB1"
 },
 {
 horizontalAlignment:0,
-location:"215,20",
+location:"215,22",
 name:"delRec",
 onActionMethodID:"23DF4B40-3BF9-4277-A9FB-EEDA7CBCD90C",
 onDoubleClickMethodID:"-1",

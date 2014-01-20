@@ -91,7 +91,7 @@ function onShowLoadData(firstShow, event) {
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
 	aRouteCodes = [];
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
-	/**@type {JSFoundSet<db:/stsservoy/routings>} */
+	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
 	var fs = sts_route_status_codes;
 	if (fs != null) {
 		for(var index=1;index<=fs.getSize();index++){
@@ -243,7 +243,7 @@ function addOtherChangeFunctions(){
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
 	aRouteCodes = [];
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
-	/**@type {JSFoundSet<db:/stsservoy/routings>} */
+	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
 	var fs = sts_route_status_codes;
 	if (fs != null) {
 		for(var index=1;index<=fs.getSize();index++){
@@ -301,37 +301,10 @@ function onActionMoveUp(event,sortDirection) {
  * @properties={typeid:24,uuid:"2DA7D5F0-E771-4932-AD49-DE34BEAC3AFE"}
  */
 function onActionSelect(event) {
-	var selection = "";
+	//var selection = "";
 	moveNoMove = !moveNoMove;
 	elements.orderUp.enabled = moveNoMove;
 	elements.orderDown.enabled = moveNoMove;
-}
-
-/**
- * Perform the element right-click action.
- *
- * @param {JSEvent} event the event that triggered the action
- * @return Boolean
- *
- * @private
- *
- * @properties={typeid:24,uuid:"4DF2CF10-28D2-4BC6-92C4-3BA208FCBA6E"}
- */
-function onDoubleClick(event) {
-	var time = event.getTimestamp().getSeconds()+"."+event.getTimestamp().getMilliseconds();
-	var item = elements.selectedCodes.getSelectedElements();
-	if (item == null){return}
-	item = time[0].replace(/ /g,"");
-	var timeDiff = time - fDoubleClickTime;
-	//application.output("time "+timeDiff);
-    if(item == itemClicked && timeDiff < 300)
-    {
-       return true;
-    } else {
-    	fDoubleClickTime = time;
-    	itemClicked = item;
-    	return false;
-    }
 }
 /**
  * TODO generated, please specify type and doc for the params

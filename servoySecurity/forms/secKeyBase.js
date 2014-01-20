@@ -44,7 +44,7 @@ function validateKeyName(){
  * Updates the user interface including form variables to reflect the state of the model
  * Ensures that the keyGroups variable reflects the associated related groups
  * 
- * @param event
+ * @param {JSEvent} event
  *
  *
  * @properties={typeid:24,uuid:"E3CA4B60-D12D-4975-A022-349464BC3E20"}
@@ -74,6 +74,9 @@ function onDataChangeKeyGroups(oldValue, newValue, event) {
 	var fs = keys_to_group_keys.duplicateFoundSet();						//	The related foundset 
 	var idColumnName = 'group_id';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
+	var i;
+	var newIDs = [];
+	var oldIDs = [];
 	
 	oldIDs = (oldIDs) ? new String(oldIDs).split('\n') : [];				//	split the old id list into an array by carriage return
 	oldIDs.sort();															//	sort the array
@@ -103,7 +106,7 @@ function onDataChangeKeyGroups(oldValue, newValue, event) {
 				fs.deleteRecord();											//	delete record
 		}
 	}
-	updateUI();																//	update user interface
+	updateUI(event);																//	update user interface
 	return true;															//	allow data change
 }
 
@@ -120,5 +123,5 @@ function onDataChangeKeyGroups(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"7FB71AB8-D696-4BE8-90C1-206BB037E898"}
  */
 function onDataChangeKeyName(oldValue, newValue, event) {
-	return isEditing() || validateKeyName();								//	validates key name when not in transaction
+	return isEditing(event) || validateKeyName();								//	validates key name when not in transaction
 }

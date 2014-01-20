@@ -192,13 +192,6 @@ name:"shipped_weight"
 },
 {
 allowNull:true,
-creationOrderIndex:28,
-dataType:12,
-length:15,
-name:"tenant_id"
-},
-{
-allowNull:true,
 creationOrderIndex:31,
 dataType:12,
 flags:4,

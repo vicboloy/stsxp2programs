@@ -6,7 +6,7 @@
  * Implementation forms should override this method to update the user interface.
  * Implementation forms should call this method when the data model is programmatically changed.
  * 
- * @param {JSEevent} event The event that triggered the action.
+ * @param {JSEvent} event The event that triggered the action.
  * @return {Boolean} Should always be true;
  * @properties={typeid:24,uuid:"9D9BD4F7-306C-46F9-929C-BF4B76CB52F9"}
  */

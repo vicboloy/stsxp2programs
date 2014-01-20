@@ -143,10 +143,10 @@ function updateElementsForTabPanel(tabName){
 	var elementName;																//	The name of the trigger element
 	var args;																		//	Args that will be parsed from the element name	
 	var tabPanelName;																//	The name of the tabpanel component
-	var tabPanel;																	//	The tabpanel component
+	//var tabPanel;																	//	The tabpanel component
 	var tabIndex;																	//	The current index of the tabpanel
 	
-	for(i in elements.allnames){													//	search elements in form...
+	for(var i in elements.allnames){													//	search elements in form...
 		elementName = elements.allnames[i];											//	the element name	
 		args = elementName.split(ARGUMENT_DELIMITER);								//	parse tab arguments (if any)
 		tabPanelName = args[1];														//	the name of the tab panel
@@ -196,11 +196,12 @@ function updateElementsForTabPanel(tabName){
  * Overrides the default updateUI implementation
  * Updates all tab controllers on the form
  * 
- * @param {JSEvent} event The event that triggered the action
+ * @param {JSEvent} [event] The event that triggered the action
  * @see updateElementsForTabPanel
  * @properties={typeid:24,uuid:"EA37B51A-8DD6-40FC-878A-75704C759280"}
  */
 function updateUI(event) {
+	var i;
 	for(i in elements){																//	check each form element
 		if(elements[i].getElementType() == ELEMENT_TYPES.TABPANEL){					//	element is a tabpanel component...
 			updateElementsForTabPanel(elements[i].getName());						//	update controlles for the component

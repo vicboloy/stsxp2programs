@@ -39,6 +39,7 @@ function onDataChangeUserGroups(oldIDs, newIDs, event) {
 	var fs = users_to_user_groups.duplicateFoundSet();						//	The related foundset 
 	var idColumnName = 'group_id';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
+	var i;
 	
 	oldIDs = (oldIDs) ? new String(oldIDs).split('\n') : [];				//	split the old id list into an array by carriage return
 	oldIDs.sort();															//	sort the array
@@ -68,7 +69,7 @@ function onDataChangeUserGroups(oldIDs, newIDs, event) {
 				fs.deleteRecord();											//	delete record
 		}
 	}
-	updateUI();																//	update user interface
+	updateUI(event);																//	update user interface
 	return true;															//	allow data change
 }
 
@@ -144,7 +145,7 @@ function validatePassword(event){
  * @properties={typeid:24,uuid:"D0FCF3BD-84E7-4E11-A38C-760717319236"}
  */
 function onDataChangeUserName(oldValue, newValue, event) {
-	return isEditing() || validateUserName();								//	validate user name when not in transaction
+	return isEditing(event) || validateUserName(event);								//	validate user name when not in transaction
 }
 
 /**

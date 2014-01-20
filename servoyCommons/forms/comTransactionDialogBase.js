@@ -26,7 +26,7 @@ var isInDialog = false;
  */
 function onHide(event) {
 	if(isInDialog){
-		stopEditing();									//	close in-memory transaction - could be overridden
+		stopEditing(event);									//	close in-memory transaction - could be overridden
 		if(callback){									//	detrmine if a callback method shsould be called
 			callback.apply(this, editsSaved)			//	invoke the callback and pass in the value for saved edits
 		}
@@ -57,7 +57,7 @@ function onHide(event) {
 function showDialog(event, onDialogClose,x,y,width,height,dialogTitle,resizable,showTextToolbar) {
 	isInDialog = true;									//	set the in-dialog flag
 	callback = onDialogClose;							//	set the form variable for the callback	
-	startEditing();										//	open the in-memory transaction
+	startEditing(event);										//	open the in-memory transaction
 	application.showFormInDialog(						//	show the form in the center of the screen (parameters may be overridden)
 		forms[controller.getName()],
 		x,y,width,height,dialogTitle,resizable,showTextToolbar,controller.getName());
@@ -77,14 +77,16 @@ function closeDialog(event) {
 /**
  * Base method to validate and save outstanding edits, then closing the dialog.
  * @param {JSRecord} [record] Optionally save only one record (i.e. foundset.getSelectedRecord())
+ * @param {JSEvent} [event] triggering event
+ * @param {Boolean} [stopEdit] stop editing selection
  * @returns {Boolean} True when the data was validated and saved
  *
  * @properties={typeid:24,uuid:"A00338B1-275D-410E-8F3D-9A8B85602CBC"}
  */
-function saveEdits(record) {					
-	if(_super.saveEdits(record)){						//	Invoke super to save edits
+function saveEdits(event,record,stopEdit) {					
+	if(_super.saveEdits(event,record,stopEdit)){						//	Invoke super to save edits
 		editsSaved = true;								//	Set the 'saved' flag (used in the callback)
-		closeDialog();									//	close the dialog
+		closeDialog(event);									//	close the dialog
 		return true;
 	}
 	return false;

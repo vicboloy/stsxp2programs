@@ -154,7 +154,7 @@ function additionalSaveFunctions(){
  * @properties={typeid:24,uuid:"5E618682-B6B8-4203-93BC-918C9D00FDD2"}
  */
 function otherSelectionFunctions(){
-	var record = foundset.getSelectedIndex();
+	//var record = foundset.getSelectedIndex();
 	vJobNumber= job_number;
 	globals.selectedCustomerID = customer_id;
 	vCustomerNumber = sts_customeruuid_to_field.customer_number;
@@ -272,7 +272,7 @@ function loadRecordIntoForm(fs){
 function saveRecordFromForm(fs){
 	fs.job_number = vJobNumber;
 	globals.lookupItem2 = vCustomerNumber;
-	var temp_id = sts_check_custnum.customer_id;
+	//var temp_id = sts_check_custnum.customer_id;
 	fs.customer_id = sts_check_custnum.customer_id;
 	//fs.customer_id = sts_customernum_to_name.customer_id;
 	fs.customer_po = vCustomerPO;

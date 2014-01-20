@@ -1,7 +1,7 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/users",
 items:[
-{foreignColumnName:"tenant_id",primaryDataProviderID:"globals.SEC_ONE",typeid:23,uuid:"918F0608-AA6A-4C84-9521-2B7E0CF4F09F"}
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.SEC_ONE",typeid:23,uuid:"918F0608-AA6A-4C84-9521-2B7E0CF4F09F"}
 ],
 name:"sec_current_tenant_users",
 primaryDataSource:"db:/stsservoy/users",

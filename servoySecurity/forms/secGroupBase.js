@@ -18,8 +18,8 @@ var groupUsers = null;
  * It is ideal for a checkbox valuelist
  * The action either adds or removes a related record for a Key link
  *
- * @param {Object} oldValue old value
- * @param {Object} newValue new value
+ * @param {Object} oldIDs old value
+ * @param {Object} newIDs new value
  * @param {JSEvent} event the event that triggered the action
  *
  * @returns {Boolean}
@@ -32,6 +32,7 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 	var fs = groups_to_group_keys.duplicateFoundSet();						//	The related foundset 
 	var idColumnName = 'key_id';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
+	var i;
 	
 	oldIDs = (oldIDs) ? new String(oldIDs).split('\n') : [];				//	split the old id list into an array by carriage return
 	oldIDs.sort();															//	sort the array
@@ -61,7 +62,8 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 				fs.deleteRecord();											//	delete record
 		}
 	}
-	updateUI();																//	update user interface
+	//updateUI();																//	update user interface
+	updateUI(event);																//	update user interface
 	return true;															//	allow data change
 }
 
@@ -86,6 +88,9 @@ function onDataChangeGroupUsers(oldValue, newValue, event) {
 	var fs = groups_to_user_groups.duplicateFoundSet();						//	The related foundset 
 	var idColumnName = 'user_id';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
+	var i;
+	var newIDs =[];
+	var oldIDs = [];
 	
 	oldIDs = (oldIDs) ? new String(oldIDs).split('\n') : [];				//	split the old id list into an array by carriage return
 	oldIDs.sort();															//	sort the array
@@ -115,7 +120,7 @@ function onDataChangeGroupUsers(oldValue, newValue, event) {
 				fs.deleteRecord();											//	delete record
 		}
 	}
-	updateUI();																//	update user interface
+	updateUI(event);																//	update user interface
 	return true;															//	allow data change
 }
 
@@ -157,7 +162,9 @@ function validateGroupName(){
 		errorMessage = 'Please provide a group name'						//	TODO: i18n HERE
 		return false;														//	failed validation
 	}
-	var id = globals.secGetGroupID(group_name,tenant_id, application_id);	//	Check group ID
+	/** @type {UUID} tenant_uuid */
+	/** @type {Number} application_id */
+	var id = globals.secGetGroupID(group_name,tenant_uuid, application_id);	//	Check group ID
 	if(id && id != group_id){												//	It should be unique
 		errorMessage = 'Group name is already in use';						//	TODO: i18n HERE
 		return false;														//	failed validation

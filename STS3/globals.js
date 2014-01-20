@@ -855,8 +855,9 @@ function onActionCancelButton(event) {
  * @properties={typeid:24,uuid:"3227F354-E244-4B7C-9F63-D4C4B2F0BF5C"}
  */
 function onActionFileOpenDialog(event,updateValue) {
-	var dirs = plugins.file.showFileOpenDialog(2, "\\", false, null);
-	var path = dirs.getAbsolutePath();
+	//var dirs = 
+	plugins.file.showFileOpenDialog(2, "\\", false, null);
+	//var path = dirs.getAbsolutePath();
 }
 //----------------------------------------
 /**
@@ -936,7 +937,8 @@ function getTablesFilters(tenantID) {
 	permitArray.push(tenantID);
 	var tableNames = databaseManager.getTableNames(SEC_SERVER);
 	var tableName = "";
-	var controlledTable = false;
+	var tableFilter = "";
+	//var controlledTable = false;
 	for (var index = 0;index < tableNames.length; index++){
 		tableName = tableNames[index];
 		if (tableName == 'tenant_list'){continue}

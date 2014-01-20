@@ -2,7 +2,7 @@ encapsulation:0,
 extendsID:"4E83FC43-0E9E-45F9-B01E-036E71805DF5",
 items:[
 {
-labelFor:"company_name",
+labelFor:"compName",
 location:"0,0",
 size:"217,20",
 text:"Company",
@@ -14,7 +14,8 @@ uuid:"0AC41C49-90F3-4D2B-92D8-C0CF94A9952E"
 dataProviderID:"company_name",
 editable:false,
 location:"0,22",
-onActionMethodID:"DBCCAA09-6AE8-4D55-AC57-43F0E19C3231",
+name:"compName",
+onActionMethodID:"B4DA9FD0-0287-4BA4-A6DD-21B9321AE891",
 size:"217,22",
 typeid:4,
 uuid:"0E902511-8E6C-4F03-A882-A51354E38D5B"
@@ -26,7 +27,7 @@ typeid:19,
 uuid:"28A99E4A-575F-454E-AC5D-3DC524722AA5"
 },
 {
-height:19,
+height:22,
 partType:2,
 typeid:19,
 uuid:"36C54582-ED76-471C-ABA9-542030F50A92"

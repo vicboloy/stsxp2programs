@@ -1,23 +1,9 @@
 /**
- * @type {Number}
- *
- *
- * @properties={typeid:35,uuid:"4CC0E715-714C-4429-827A-A66B5BBA0410",variableType:8}
- */
-var selectedIndex = 0;
-/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"35A9EEFD-D19A-45DB-B25F-EC4BFD735A8D"}
  */
 var currentStatusCode = "";
-/**
- *
- * @properties={typeid:35,uuid:"C8B05923-9241-4808-9CA0-3C3CCD38D84D",variableType:-4}
- */
-var editFlag = false;
-
-
 /**
  * TODO generated, please specify type and doc for the params
  * @param firstShow
@@ -237,7 +223,7 @@ function onActionOverwrite(event) {
  */
 function onEntryStatusCode(statusCode) {
 	// globals.aStatusTypes
-	var processString = "";
+	//var processString = "";
 	var upCasedElement = "";
 	for (var index = 0;index < globals.aStatusTypes.length;index++){
 		upCasedElement = globals.aStatusTypes[index].toUpperCase();

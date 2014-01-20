@@ -18,18 +18,18 @@ var SEC_ADMINISTRATORS = 'Administrators';
 var SEC_APPLICATION_FILTER = 'secApplicationFilter';
 
 /**
- * @type {Number}
+ * @type {String}
  *
- * @properties={typeid:35,uuid:"BB035415-D696-4A09-BD0C-14071875FAC3",variableType:4}
+ * @properties={typeid:35,uuid:"BB035415-D696-4A09-BD0C-14071875FAC3"}
  */
 var SEC_NULL = null;
 
 /**
- * @type {Number}
+ * @type {String}
  *
- * @properties={typeid:35,uuid:"2DE2544F-43DD-4DCB-B4DC-C3CDA5F52616",variableType:4}
+ * @properties={typeid:35,uuid:"2DE2544F-43DD-4DCB-B4DC-C3CDA5F52616"}
  */
-var SEC_ONE = 1;
+var SEC_ONE = ""; //TODO JOE this was a 1 type {Number}
 
 /**
  * @type {Number}
@@ -135,7 +135,7 @@ function secAddUserToGroup(userID, groupID){
 																		//	variable declarations
 	var userGroups;														//	the users-groups foundset
 	if(!(userID && groupID)){											//	validate required input
-		return false;													//	failed validation returns false
+		return null;													//	failed validation returns false
 	}
 
 	userGroups = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USER_GROUPS);
@@ -153,7 +153,7 @@ function secAddUserToGroup(userID, groupID){
 	
 
 	//	group not found or user already in group
-	return false;
+	return null;
 }
 
 /**
@@ -186,7 +186,7 @@ function secSetSecuritySettings() {
 			appendSetting(keyPermissions.getRecord(i));					//	append permission
 		}
 	}
-	for(id in settings){												//	iterate over the settings object array
+	for(var id in settings){												//	iterate over the settings object array
 		dataset.addRow([id, settings[id].flags]);						//	add setting to dataset
 	}
 	security.setSecuritySettings(dataset);								//	apply to Servoy Security Engine
@@ -202,7 +202,6 @@ function secSetSecuritySettings() {
 	function appendSetting(permission){
 																		//	local variable declarations
 		var id;															//	the id of the recource (either server.table or element)
-
 		if(permission.permission_type == SEC_PERMISSION_TYPE_DATA){		//	TABLE permission...
 			
 			id = permission.server_name + '.' + permission.table_name;	//	the resource id is server_name.table_name
@@ -224,7 +223,7 @@ function secSetSecuritySettings() {
 
 		}else if(permission.permission_type == SEC_PERMISSION_TYPE_UI){	//	UI permission...
 
-			id = permission.element_uuid;								//	The reource ID is the element UUID
+			id = permission.element_uuid;								//	The resource ID is the element UUID
 			settings[id] = (settings[id]) ? settings[id] : {};			//	get or create object to store the ui permission for this element uuid
 			
 																		//	merge settings (to least restrictive)...
@@ -248,6 +247,7 @@ function secSetSecuritySettings() {
  */
 function secChangeGroupName(groupID, newName){
 																		//	variable declarations:
+	/** @type {JSFoundSet<db:/stsservoy/groups>} */																	
 	var groups;															//	the groups foundset
 	var groupToChange;													//	the group to change
 	
@@ -259,7 +259,7 @@ function secChangeGroupName(groupID, newName){
 	if(groupToChange.loadRecords(groupID) && groups.find()){			//	load the group to change, search other groups
 		groups.group_name = oldName;									//	search by name
 		groups.application_id = groupToChange.application_id;			//	search by application
-		groups.tenant_id = groupToChange.tenant_id;						//	search by tenant
+		groups.tenant_uuid = groupToChange.tenant_uuid;						//	search by tenant
 		if(!groups.search()){											//	group name NOT already in use
 			
 			groupToChange.group_name = newName;							//	rename group
@@ -307,6 +307,7 @@ function secChangeUserName(userID, userName){
  */
 function secCheckPassword(userID, password){
 																		//	variable declarations
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var users;															//	the users foundset
 	
 	if(!(userID && password)){											//	validate input
@@ -327,7 +328,7 @@ function secCheckPassword(userID, password){
  * The method will not creat groups w/ duplicate names in the application or tenant
  * @param {String} groupName the name of the new group. 
  * @param {Number} [tenantID] the tenant. If null, then application-wide groups are used
- * @param {Number} [applicationID] the appliction. If null, then current application is used
+ * @param {Number} [appID] the appliction. If null, then current application is used
  * @returns {JSRecord} the group record
  * @properties={typeid:24,uuid:"3790A22A-5A55-4F02-AB97-6D63A034DF2A"}
  * @AllowToRunInFind
@@ -337,7 +338,7 @@ function secCreateGroup(groupName, tenantID, appID){
 	var groups;															//	the groups foundset
 	
 	if(!groupName){														//	validate input	
-		return false;
+		return null;
 	}
 	appID = (appID) ? appID : secCurrentApplicationID;					//	a null aplication param defaults to the current app
 
@@ -345,12 +346,12 @@ function secCreateGroup(groupName, tenantID, appID){
 	if(groups.find()){
 		groups.group_name = groupName;									//	search by group name
 		groups.application_id = appID;									//	search within the specified app
-		groups.tenant_id = (tenantID) ? tenantID : '^';					//	search within the specified tenant (null defaults to NULL search param)
+		groups.tenant_uuid = (tenantID) ? tenantID : '^';					//	search within the specified tenant (null defaults to NULL search param)
 		if(!groups.search()){
 			
 			if(groups.newRecord()){										//	create the group
 				groups.group_name = groupName;							//	set the group name
-				groups.tenant_id = tenantID;							//	set the tenant ID
+				groups.tenant_uuid = tenantID;							//	set the tenant ID
 				groups.application_id = appID;							//	set the app ID
 				if(databaseManager.saveData(groups.getSelectedRecord())){
 					return groups.getSelectedRecord();					//	return the group	
@@ -367,7 +368,7 @@ function secCreateGroup(groupName, tenantID, appID){
  * Creates a new user in the current tenant
  * @param {String} userName the new user name
  * @param {String} password the password
- * @param (Number} [tenantID] the Tenant in which to create the user. Default is current tenant
+ * @param {Number} [tenantID] the Tenant in which to create the user. Default is current tenant
  * @returns {JSRecord} the user record
  * @properties={typeid:24,uuid:"E1D8EF68-9F1F-4E3A-ABEF-CB07A1930235"}
  * @AllowToRunInFind
@@ -377,20 +378,20 @@ function secCreateUser(userName, password, tenantID){
 	var users;															//	users foundset
 
 	if(!(userName && password)){										//	validate input
-		return false;
+		return null;
 	}		
 	tenantID = (tenantID) ? tenantID : secCurrentTenantID;				//	default is current tenant when null;
 	
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get the users foundset
 	if(users.find()){													//	search users table
 		users.user_name = userName;										//	search by user name
-		users.tenant_id = tenantID;										//	search by tenant ID
+		users.tenant_uuid = tenantID;										//	search by tenant ID
 		if(!users.search()){	
 			
 			if(users.newRecord()){										//	create the new user
 				users.user_name = userName;								//	set user name
 				users.user_password = password;							//	set password
-				users.tenant_id = tenantID;								//	set the tenant ID
+				users.tenant_uuid = tenantID;								//	set the tenant ID
 				if(databaseManager.saveData(users.getSelectedRecord())){//	save the record
 					return users.getSelectedRecord();					//	return user ID
 				}
@@ -440,6 +441,7 @@ function secDeleteUser(userID){
  */
 function secLogin(userID){
 																		//	local variable declaraions:
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var users;															//	The users foundset
 	
 	if(!userID){														//	validate input
@@ -452,6 +454,7 @@ function secLogin(userID){
 		users.last_login = new Date();									//	reset last login date & login user
 		return security.login(users.user_name,users.user_id,[SEC_ADMINISTRATORS]);
 	}
+	return null;  //added to return some value JOE
 }
 
 /**
@@ -463,7 +466,8 @@ function secLogin(userID){
 function secRemoveUserFromGroup(userID, groupID){	
 																		//	variable declarations
 	var userGroups;														//	the users-groups foundset
-	if(!(userID && groupName)){											//	validate required input		
+	if(!(userID && groupID)){											//	validate required input	
+																		//TODO JOE above was 'groupName' changed 'groupID;
 		return false;
 	}
 	userGroups = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USER_GROUPS);
@@ -472,6 +476,7 @@ function secRemoveUserFromGroup(userID, groupID){
 		userGroups.group_id= groupID;									//	search by group
 		return userGroups.search() && userGroups.deleteRecord();		//	delete record
 	}
+	return false; //added to return some value JOE
 }
 
 /**
@@ -498,7 +503,7 @@ function secSetCurrentTenant(tenantID){
 	secCurrentTenantID = tenantID;
 	databaseManager.removeTableFilterParam(SEC_SERVER,SEC_TENANT_FILTER);
 	if(tenantID){
-		databaseManager.addTableFilterParam(SEC_SERVER,null,'tenant_id','^||=',tenantID,SEC_TENANT_FILTER);
+		databaseManager.addTableFilterParam(SEC_SERVER,null,'tenant_uuid','^||=',tenantID,SEC_TENANT_FILTER);
 	}
 }
 
@@ -506,7 +511,7 @@ function secSetCurrentTenant(tenantID){
  * This is the encryption method which is used internally by the Column Conversion settings for users.password.
  * The user's password is encrypted using the MD5 Base-16 algorythm
  * It may also be called externally as a convenience
- * @param {String} the password to convert.
+ * @param {String} password the password to convert.
  * @returns {Object} The encrypted string
  * @properties={typeid:24,uuid:"7DA05793-8B70-4FCC-9250-28FBCECA48CE"}
  */
@@ -550,13 +555,14 @@ function secCreateTenant(companyName) {
  * If no user name is specified, then the logged-in user is returned
  * If no tenant is specifed, then the current tenant is searched
  * @param {String} [userName] The user name. Default is the current user
- * @param {Number} [tenantID] The id of the tenant to search. Default is current tenant
+ * @param {UUID} [tenantID] The id of the tenant to search. Default is current tenant
  * @returns {Number} The user ID
  * @properties={typeid:24,uuid:"5D0770EA-6F96-469A-9480-727A5F0EC310"}
  * @AllowToRunInFind
  */
 function secGetUserID(userName, tenantID) {
 																		//	variable declarations
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var users;															//	the users foundset
 	if(!userName){														//	validate input...	
 		return sec_current_user.getSelectedRecord();					//	return current user when no user name specified
@@ -576,7 +582,7 @@ function secGetUserID(userName, tenantID) {
  * Gets the specified group record in the specified tenant
  * 
  * @param {String} groupName The group name
- * @param {Number} [tenantID] The id of the tenant to search. Default is null (app-wide groups)
+ * @param {UUID} [tenantID] The id of the tenant to search. Default is null (app-wide groups)
  * @param {Number} [appID] The id of the application to search. Default is the current app
  * @returns {Number} The group ID
  * @properties={typeid:24,uuid:"573C0611-08AB-4929-8F73-FD5BBB5F7108"}
@@ -590,7 +596,7 @@ function secGetGroupID(groupName, tenantID, appID) {
 	}
 	groups = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_GROUPS);	//	get a group foundset
 	if(groups.find()){													//	search the group foundset...
-		groups.tenant_id = (tenantID) ? tenantID : '^';					//	search by tenant (a null tenant param defaults to NULL search param)
+		groups.tenant_uuid = (tenantID) ? tenantID : '^';					//	search by tenant (a null tenant param defaults to NULL search param)
 		groups.application_id = (appID)?appID:secCurrentApplicationID;	//	search the pplication ID
 		groups.group_name = groupName;									//	search by group name	
 		if(groups.search()){												
@@ -605,11 +611,12 @@ function secGetGroupID(groupName, tenantID, appID) {
  * Gets the specified tenant record
  * 
  * @param {String} companyName The copmany name
- * @returns {Number} The tenant id
+ * @returns {UUID} The tenant id
  * @properties={typeid:24,uuid:"975EA4C7-93B2-4265-AD4F-CCAC7075DD7D"}
  * @AllowToRunInFind
  */
 function secGetTenantID(companyName){
+	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */																	
 	var tenants;														//	the tenants foundset
 	if(!companyName){													//	validate input...	
 		return null;													//	must provide a copmany name
@@ -627,7 +634,7 @@ function secGetTenantID(companyName){
 /**
  * Creates a new application record.
  * 
- * @param {String} applicationName. Must be unique
+ * @param {String} applicationName Must be unique
  * @returns {JSRecord} The application record
  * @properties={typeid:24,uuid:"90A37E12-2B17-4EB3-8D16-D8AD77EF8379"}
  * @AllowToRunInFind
@@ -642,7 +649,9 @@ function secCreateApplication(applicationName) {
 	if(apps.find()){													//	Search the applications table...
 		apps.application_name = applicationName;						//	...by a name
 		if(!apps.search() && apps.newRecord()){							//	app name is unique. create the record
+			//TODO JOE apps.applicationName = companyName;							//	set the app name
 			apps.applicationName = companyName;							//	set the app name
+
 			if(databaseManager.saveData(apps.getSelectedRecord())){		//	save the record
 				return apps.getSelectedRecord();						//	return the tenant id
 			}
@@ -661,7 +670,8 @@ function secCreateApplication(applicationName) {
 function secDeleteApplication(applicationID) {
 																		//	Variable Declarations
 	var apps;															//	Foundset for the apps
-	if(!applicationName){												//	validate input
+	if(!applicationID){												//	validate input
+		//if(!applicationName){												//	validate input
 		return null;
 	}
 	apps = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_APPLICATIONS);
@@ -699,6 +709,7 @@ function secGetApplicationID(applicationName) {
  * 
  * @param {String} keyName The name of the key, must be unique within the application
  * @param {Number} [appID] The ID of the application in which to create the security key
+ * @returns {Object}
  * @properties={typeid:24,uuid:"B7A51A70-C8C7-41D4-BCB9-08082A045088"}
  * @AllowToRunInFind
  */
@@ -754,10 +765,12 @@ function secDeleteKey(keyID) {
  */
 function secGetKeyID(keyName, appID) {
 																	//	variable declaraions
+    /** @type {JSFoundSet<db:/stsservoy/keys>} */
 	var keys;														//	the keys foundset
 	
 	if(!keyName){													//	validate input
-		return false;
+		//return false;
+		return null;
 	}
 	appID = (appID) ? appID : secCurrentApplicationID;				//	a null app id defaults to the current application
 	keys = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_KEYS);	//	get the foundset
@@ -768,6 +781,7 @@ function secGetKeyID(keyName, appID) {
 			return keys.key_id;										//	get the record
 		}
 	}
+	return null;  //added to return some value JOE
 }
 
 /**
@@ -902,7 +916,7 @@ function secGetServerNames(displayValue, realValue, record, valueListName) {
 		return databaseManager.convertToDataSet(values);
 	} else if (displayValue != null) {
 		var array = [];
-		for(i in values){
+		for(var i in values){
 			if(displayValue.equalsIgnoreCase(utils.stringLeft(values[i],displayValue.length))){
 				array.push(values[i]);
 			}
@@ -912,6 +926,7 @@ function secGetServerNames(displayValue, realValue, record, valueListName) {
 	} else if (realValue != null) {
 		return databaseManager.convertToDataSet([realValue]);
 	}
+	return null;  //added to return some value JOE
 }
 
 /**
@@ -936,7 +951,7 @@ function secGetTableNames(displayValue, realValue, record, valueListName) {
 				return databaseManager.convertToDataSet(values);
 			} else if (displayValue != null) {
 				var array = [];
-				for(i in values){
+				for(var i in values){
 					if(displayValue.equalsIgnoreCase(utils.stringLeft(values[i],displayValue.length))){
 						array.push(values[i]);
 					}
@@ -973,7 +988,7 @@ function secGetFormNames(displayValue, realValue, record, valueListName) {
 		return databaseManager.convertToDataSet(values);
 	} else if (displayValue != null) {
 		var array = [];
-		for(i in values){
+		for(var i in values){
 			if(displayValue.equalsIgnoreCase(utils.stringLeft(values[i],displayValue.length))){
 				array.push(values[i]);
 			}
@@ -983,6 +998,7 @@ function secGetFormNames(displayValue, realValue, record, valueListName) {
 	} else if (realValue != null) {
 		return databaseManager.convertToDataSet([realValue]);
 	}
+	return null; //added to return some value JOE
 }
 
 /**
@@ -1021,6 +1037,7 @@ function secGetElementUUIDs(displayValue, realValue, record, valueListName) {
 			return values;
 		}
 	}
+	return null; //added for return of some value JOE
 }
 
 /**
@@ -1050,7 +1067,7 @@ function secSetPassword(userID, password) {
 function ARRAY_getAllServers(){
     var vServerAmount = plugins.UserManager.Server().getSettingsProperty('ServerManager.numberOfServers') -1;
     var vProperty, vServers = [];
-    var vPropertiesArray = plugins.UserManager.Server().getServerProperties();
+    //var vPropertiesArray = plugins.UserManager.Server().getServerProperties();
     for(var i = 0 ; i < vServerAmount ; i++){
        vProperty = 'server.' + i + '.serverName';
        vServers.push(plugins.UserManager.Server().getSettingsProperty(vProperty));

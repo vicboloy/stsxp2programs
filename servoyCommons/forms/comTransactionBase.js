@@ -25,6 +25,7 @@ function stopEditing(event) {
 	databaseManager.rollbackEditedRecords();								//	Rollback edits											
 	databaseManager.setAutoSave(true);										//	Close in-memory transaction
 	updateUI(event);														//	MVC: update the view based on the model
+	return true;
 }
 
 /**
@@ -39,7 +40,7 @@ function stopEditing(event) {
  * @properties={typeid:24,uuid:"4EFE3557-7731-4C65-80A3-8EBA08C3BF04"}
  */
 function saveEdits(event, record, stopEdit) {
-	if(validate() && databaseManager.saveData(record)){						//	Validate the form and save data
+	if(validate(event) && databaseManager.saveData(record)){						//	Validate the form and save data
 		if(!(stopEdit instanceof Boolean) || stopEdit){						//	optionally close in-mem transaction
 			stopEditing(event);												//	Default action is to stop editing
 		}else{
@@ -54,10 +55,11 @@ function saveEdits(event, record, stopEdit) {
  * Base method to determine if a form is editing.
  * This is a convenience method for checking auto-save.
  * 
+ * @param {JSEvent} event trigering event
  * @returns {Boolean} True if the form is editing
  * @properties={typeid:24,uuid:"B6A2AFB8-E77D-4651-A343-0A01D334297F"}
  */
-function isEditing() {
+function isEditing(event) {
 	return !databaseManager.getAutoSave();									//	Check Auto-Save
 }
 
@@ -70,7 +72,7 @@ function isEditing() {
  * @properties={typeid:24,uuid:"BA297A8A-FAB9-417A-BBCA-40CD90E95DB0"}
  */
 function startFind(event) {
-	return !isEditing() && validate(event) && _super.startFind(event);		//	enter find only if not editing and valid
+	return !isEditing(event) && validate(event) && _super.startFind(event);		//	enter find only if not editing and valid
 }
 
 /**
@@ -87,7 +89,7 @@ function startFind(event) {
  * @properties={typeid:24,uuid:"5E85197C-4A42-4D56-B1EE-7C833A2AB724"}
  */
 function newRecord(event, location, changeSelection, transactional) {
-	if(!isEditing() && !validate(event)){									//	check if invalid state outside of in-mem transaction
+	if(!isEditing(event) && !validate(event)){									//	check if invalid state outside of in-mem transaction
 		return null;														//	No record added
 	}
 	if(transactional){ 														//	default action is transactional
@@ -103,7 +105,7 @@ function newRecord(event, location, changeSelection, transactional) {
  * @properties={typeid:24,uuid:"BCE0A9FC-4497-4647-B834-AA6672BBF7FB"}
  */
 function nextRecord(event) {
-	if(!isEditing() && validate(event)){									//	check if already editing or invalid state
+	if(!isEditing(event) && validate(event)){									//	check if already editing or invalid state
 		_super.nextRecord(event);											//	pass to super for logic
 	}
 }
@@ -115,7 +117,7 @@ function nextRecord(event) {
  * @properties={typeid:24,uuid:"2553AA20-4C46-401E-B8C8-92B1EFD7BAF0"}
  */
 function previousRecord(event) {
-	if(!isEditing() && validate(event)){									//	check if already editing or invalid state
+	if(!isEditing(event) && validate(event)){									//	check if already editing or invalid state
 		_super.previousRecord(event);										//	pass to super for logic
 	}
 }
@@ -127,7 +129,7 @@ function previousRecord(event) {
  * @properties={typeid:24,uuid:"9330D986-2BAE-46D7-BF2A-0E7E8BD061D7"}
  */
 function firstRecord(event) {
-	if(!isEditing() && validate(event)){									//	check if already editing or invalid state
+	if(!isEditing(event) && validate(event)){									//	check if already editing or invalid state
 		_super.firstRecord(event);											//	pass to super for logic
 	}
 }
@@ -139,7 +141,7 @@ function firstRecord(event) {
  * @properties={typeid:24,uuid:"34FC3ACC-AF56-495F-AC3A-0FE3223A4F76"}
  */
 function lastRecord(event) {
-	if(!isEditing() && validate(event)){									//	check if already editing or invalid state
+	if(!isEditing(event) && validate(event)){									//	check if already editing or invalid state
 		_super.lastRecord(event);											//	pass to super for logic
 	}
 }
@@ -176,7 +178,7 @@ function deleteRecord(event, index, stopEdit) {
  * @properties={typeid:24,uuid:"5CAA4819-E609-41BB-9AF5-1EC523FC19DB"}
  */
 function onRecordEditStop(record, event) {	
-	if(!isEditing()){														//	Validate when not in an in-memory transaction,
+	if(!isEditing(event)){														//	Validate when not in an in-memory transaction,
 		return validate(event) && _super.onRecordEditStop(record,event);	
 	}
 	return _super.onRecordEditStop(record, event);							//	pass control to super
@@ -190,7 +192,7 @@ function onRecordEditStop(record, event) {
  * @param {Number} [index] The index of the record to duplicate. Defaults to selected index.
  * @param {Number} [location] The index where the new record should be inserted. Default is bottom.
  * @param {Number} [changeSelection] True if the selection should change. Default is True.
- * @param {Boolean}[transactional] True if the record should be created within an in-memory transaction. Default is false.
+ * @param {Boolean} [transactional] True if the record should be created within an in-memory transaction. Default is false.
  * 
  * @returns {Number} The index of the new record
  * 
@@ -211,7 +213,7 @@ function duplicateRecord(event, index, location, changeSelection, transactional)
  * @properties={typeid:24,uuid:"6CB84CF6-37D4-4702-8026-725CC784ABE9"}
  */
 function invertRecords(event) {
-	return !isEditing() && validate(event) && _super.invertRecords(event);
+	return !isEditing(event) && validate(event) && _super.invertRecords(event);
 }
 
 /**
@@ -225,7 +227,7 @@ function invertRecords(event) {
  * @properties={typeid:24,uuid:"D3BB5B1D-F954-4774-B993-358774A31411"}
  */
 function onSort(dataProviderID, asc, event) {
-	return !isEditing() && validate(event) && _super.onSort(dataProviderID, asc, event);
+	return !isEditing(event) && validate(event) && _super.onSort(dataProviderID, asc, event);
 }
 
 /**
@@ -238,7 +240,7 @@ function onSort(dataProviderID, asc, event) {
  * @properties={typeid:24,uuid:"CBD7EDCD-F4BC-400F-AAE7-C97634B57FBD"}
  */
 function showAllRecords(event) {
-	return !isEditing() && validate(event) && _super.showAllRecords(event);
+	return !isEditing(event) && validate(event) && _super.showAllRecords(event);
 }
 
 /**
@@ -250,5 +252,5 @@ function showAllRecords(event) {
  * @properties={typeid:24,uuid:"3186C464-A8B0-44F8-BB37-03F4015E2EA4"}
  */
 function showOmittedRecords(event) {
-	return !isEditing() && validate(event) && _super.showOmittedRecords(event);
+	return !isEditing(event) && validate(event) && _super.showOmittedRecords(event);
 }

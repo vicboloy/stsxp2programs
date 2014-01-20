@@ -1,7 +1,7 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/users",
 items:[
-{foreignColumnName:"tenant_id",primaryDataProviderID:"tenant_id",typeid:23,uuid:"45A0A9D7-8ED8-473B-9DDF-F863ADAD9B4F"},
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"tenant_uuid",typeid:23,uuid:"45A0A9D7-8ED8-473B-9DDF-F863ADAD9B4F"},
 {foreignColumnName:"user_id",operator:5,primaryDataProviderID:"user_id",typeid:23,uuid:"EFB35E61-3C20-495C-BFC5-02C3B43EA576"}
 ],
 name:"users_to_tenant_users",

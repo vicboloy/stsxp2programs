@@ -42,7 +42,7 @@ function validate(event) {
  * This method updates the form appearance based on the state of the model.
  * Clears the error message.
  * 
- * @param {JSEvent} event
+ * @param {JSEvent} [event]
  *
  * @properties={typeid:24,uuid:"1FEAC37C-B9E3-413E-ADA3-96FC82CE33A1"}
  */

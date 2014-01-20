@@ -29,7 +29,8 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
 			formNameNew = formNameNew+"o";
 		}
 		// make a clone/copy from it
-		var clone = createFormClone(formName,formNameNew);
+		//var clone = 
+		createFormClone(formName,formNameNew);
 	}
 	var win = application.createWindow(windowTitle, JSWindow.WINDOW);
 	var xBeg = xOrigin;
@@ -266,7 +267,6 @@ function addWindowList(windowName){
 }
 /**
  * TODO generated, please specify type and doc for the params
- * @param windowName
  *
  * @properties={typeid:24,uuid:"29F2DCD5-FF81-47D9-B83B-8D0064EB5A43"}
  */
@@ -282,11 +282,13 @@ function focusWindow(){
 function removeWindowTrack(){
 	var formName = controller.getName();
 	var tempArray = new Array;
-	tempArray = globals.aTrackWindows;
-	tempLength = tempArray.length;
+	//tempArray = globals.aTrackWindows;
+	var tempLength = globals.aTrackWindows.length;
+	var windowName = "";
 	for (var index = 0; index < tempLength; index++){
-		if (tempArray[index]!=formName){
-			tempArray.push(array[index]);
+		windowName = globals.aTrackWindows[index];
+		if (windowName != formName){
+			tempArray.push(windowName);
 		}
 	}
 	globals.aTrackWindows = tempArray;

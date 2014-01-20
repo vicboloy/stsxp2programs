@@ -28,7 +28,7 @@ uuid:"A109A90F-BE19-46C8-8CF4-34792CA86A6E"
 },
 {
 location:"241,5",
-onActionMethodID:"3515AA20-5946-4470-AB1C-C244F779D12E",
+onActionMethodID:"5E85197C-4A42-4D56-B1EE-7C833A2AB724",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 text:"New",
@@ -45,10 +45,10 @@ typeid:7,
 uuid:"D6F8A1CD-EC42-407F-A88D-BE637F891B84"
 },
 {
-dataProviderID:"companyName",
+dataProviderID:"company_name",
 location:"5,30",
 name:"companyEntry",
-onDataChangeMethodID:"-1",
+onDataChangeMethodID:"7CF8C088-C3E4-4C8A-A67F-F6EE593511AF",
 size:"316,20",
 typeid:4,
 uuid:"E58F6F83-B40E-4B99-9425-DFDBF19766B7"

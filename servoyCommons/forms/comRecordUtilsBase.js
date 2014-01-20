@@ -17,7 +17,7 @@ function deleteAllRecords(event) {
  * @param {JSEvent} event the event that triggered the action
  * @param {Number} [index] The index of the record to duplicate. Defaults to selected index.
  * @param {Number} [location] The index where the new record should be inserted. Default is bottom.
- * @param {Number} [changeSelection] True if the selection should change. Default is True.
+ * @param {Boolean} [changeSelection] True if the selection should change. Default is True.
  * @returns {Number} The index of the new record
  * @properties={typeid:24,uuid:"FA872F51-755F-49B0-BAE3-BCDA62435C6C"}
  */
@@ -28,7 +28,7 @@ function duplicateRecord(event,index,location,changeSelection) {
 /**
  * Base method to start a find.
  * 
- * @param {JSEvent} event the event that triggered the action
+ * @param {JSEvent} [event] the event that triggered the action
  * @returns {Boolean} true when the form entered find mode
  * @properties={typeid:24,uuid:"9FCE6C1D-4A3E-4BCD-93C0-201E6BD17D14"}
  */
@@ -56,7 +56,7 @@ function invertRecords(event) {
  *
  * @param {JSEvent} event the event that triggered the action
  * @param {Number} [location] The index where the new record should be inserted. Default is bottom.
- * @param {Number} [changeSelection] True if the selection should change. Default is True.
+ * @param {Boolean} [changeSelection] True if the selection should change. Default is True.
  * @returns {Number} The index of the record that was added
  * @properties={typeid:24,uuid:"8A3583BF-DC0F-42FA-99FE-7B6B869A1560"}
  */
@@ -115,9 +115,9 @@ function previousRecord(event) {
  * Base method to show print preview.
  *
  * @param {JSEvent} event the event that triggered the action
- * @param {Boolean} [printCurrentRecordOnly] Print only the current record
- * @param (String} [printerJob] The job name
- * @param (Number} [zoomFactor] The zoom factor
+ * @param {Boolean} printCurrentRecordOnly Print only the current record
+ * @param {PrinterJob} printerJob The job name
+ * @param {Number} zoomFactor The zoom factor
  * @properties={typeid:24,uuid:"7B37E37E-8C30-4FDD-A8EC-D79BFE7CC2E0"}
  */
 function printPreview(event,printCurrentRecordOnly,printerJob,zoomFactor) {

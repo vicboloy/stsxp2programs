@@ -22,12 +22,6 @@ creationOrderIndex:2,
 dataType:12,
 length:50,
 name:"company_name"
-},
-{
-allowNull:true,
-creationOrderIndex:3,
-dataType:4,
-name:"tenant_id"
 }
 ],
 name:"tenant_list",

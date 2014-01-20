@@ -6,6 +6,7 @@
 var winderList = "";
 /**
  * TODO generated, please specify type and doc for the params
+ * @param {JSEvent} event event that launched this function
  * @param tabName {String} identify the tab selected to open that form view
  *
  * @properties={typeid:24,uuid:"DAB11C9F-D47B-4C2A-AA3A-F07D4B9AFE63"}

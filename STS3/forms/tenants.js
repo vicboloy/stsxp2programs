@@ -1,9 +1,4 @@
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"0067668D-18DC-4796-95C0-65B6208FE5E0"}
- */
-var errorMessage = "";
+
 /**
  * @type {String}
  *

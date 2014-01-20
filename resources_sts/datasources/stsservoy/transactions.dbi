@@ -47,7 +47,7 @@ name:"code"
 },
 {
 allowNull:true,
-creationOrderIndex:33,
+creationOrderIndex:32,
 dataType:4,
 name:"delete_flag"
 },
@@ -113,7 +113,7 @@ name:"location"
 },
 {
 allowNull:true,
-creationOrderIndex:32,
+creationOrderIndex:31,
 dataType:4,
 name:"logic_flag"
 },
@@ -155,10 +155,12 @@ name:"status"
 },
 {
 allowNull:true,
-creationOrderIndex:31,
+autoEnterType:2,
+creationOrderIndex:33,
 dataType:12,
-length:15,
-name:"tenant_id"
+flags:4,
+length:36,
+name:"tenant_uuid"
 },
 {
 allowNull:true,

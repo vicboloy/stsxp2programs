@@ -1,8 +1,0 @@
-addEmptyValue:1,
-customValues:"i18n:servoy.texttoolbar.tooltip.alignleft|1
-i18n:servoy.texttoolbar.tooltip.alignright|2",
-name:"nav_alignment",
-returnDataProviders:1,
-showDataProviders:1,
-typeid:34,
-uuid:"82B048C0-8C46-48D0-B5A6-A38673806FB2"

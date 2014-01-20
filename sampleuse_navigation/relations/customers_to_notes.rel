@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/example_data/notes",
-items:[
-{foreignColumnName:"customer_id",primaryDataProviderID:"customerid",typeid:23,uuid:"B38DB8F3-1CD8-4D68-AE1B-A0845C63AE30"}
-],
-name:"customers_to_notes",
-primaryDataSource:"db:/example_data/customers",
-typeid:22,
-uuid:"9290EB65-FCDB-435F-8597-D076122B2920"

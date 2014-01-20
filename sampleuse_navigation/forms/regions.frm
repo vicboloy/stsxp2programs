@@ -1,9 +1,0 @@
-dataSource:"db:/example_data/region",
-extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
-name:"regions",
-paperPrintScale:100,
-size:"400,480",
-styleName:"pv",
-transparent:true,
-typeid:3,
-uuid:"680E43EE-96AB-4778-B186-E479566D5C81"

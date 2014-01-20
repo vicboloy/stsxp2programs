@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/example_data/suppliers",
-items:[
-{foreignColumnName:"supplierid",primaryDataProviderID:"supplierid",typeid:23,uuid:"69b9583d-02f3-4d79-9eda-573fb2c4d99b"}
-],
-name:"products_to_suppliers",
-primaryDataSource:"db:/example_data/products",
-typeid:22,
-uuid:"6b1dbd23-89c2-4225-85a0-46c38cf4cd14"

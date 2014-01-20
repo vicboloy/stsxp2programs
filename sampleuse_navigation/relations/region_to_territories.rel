@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/example_data/territories",
-items:[
-{foreignColumnName:"regionid",primaryDataProviderID:"regionid",typeid:23,uuid:"586ee84f-24ea-40a1-a21d-a04ecf035ea7"}
-],
-name:"region_to_territories",
-primaryDataSource:"db:/example_data/region",
-typeid:22,
-uuid:"1db076f4-387d-4990-8b61-bfeec9542f1d"

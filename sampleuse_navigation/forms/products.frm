@@ -1,9 +1,0 @@
-dataSource:"db:/example_data/products",
-extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
-name:"products",
-paperPrintScale:100,
-size:"400,480",
-styleName:"pv",
-transparent:true,
-typeid:3,
-uuid:"667318D6-1F7B-4DCC-86E9-AB01F7F2C099"

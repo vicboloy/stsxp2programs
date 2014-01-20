@@ -1,6 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/example_data/categories",
-name:"categories$foundset",
-primaryDataSource:"db:/example_data/categories",
-typeid:22,
-uuid:"7B656072-14BD-44D6-B83A-E0639E2E01F7"

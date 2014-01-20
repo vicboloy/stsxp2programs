@@ -1,7 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/example_data/customers",
-joinType:1,
-name:"customers$foundset",
-primaryDataSource:"db:/example_data/customers",
-typeid:22,
-uuid:"2F371EEF-5B76-4ACC-AACB-A30D02F73253"

@@ -1,9 +1,0 @@
-dataSource:"db:/example_data/project_todo",
-extendsID:"E1B6951E-8C22-4464-9B19-707548D2B2DE",
-name:"project_todo",
-paperPrintScale:100,
-size:"640,480",
-styleName:"pv",
-transparent:true,
-typeid:3,
-uuid:"54ACC214-A9FA-4047-B6FF-4334B8B9F8EB"

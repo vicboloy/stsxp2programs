@@ -1,9 +1,0 @@
-addEmptyValue:1,
-dataProviderID1:"search_criteria_id",
-dataSource:"db:/svy_framework/search_criteria",
-name:"svy_nav_search",
-returnDataProviders:1,
-showDataProviders:1,
-typeid:34,
-uuid:"3BCDF86E-6FC7-4EAC-9817-5D1E8DB69109",
-valueListType:1

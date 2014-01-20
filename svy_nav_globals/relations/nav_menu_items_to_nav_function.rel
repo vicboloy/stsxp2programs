@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/svy_framework/nav_function",
-items:[
-{foreignColumnName:"function_id",primaryDataProviderID:"function_id",typeid:23,uuid:"7480EBE0-FD70-4A3D-A3D0-486C818860FC"}
-],
-name:"nav_menu_items_to_nav_function",
-primaryDataSource:"db:/svy_framework/nav_menu_items",
-typeid:22,
-uuid:"8C46C4D9-1B6C-4516-A990-34853ABD682F"

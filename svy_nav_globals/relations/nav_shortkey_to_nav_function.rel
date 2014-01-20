@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/svy_framework/nav_function",
-items:[
-{foreignColumnName:"function_id",primaryDataProviderID:"function_id",typeid:23,uuid:"77E84CD5-08FE-4EB5-9F6F-020D05B37712"}
-],
-name:"nav_shortkey_to_nav_function",
-primaryDataSource:"db:/svy_framework/nav_shortkey",
-typeid:22,
-uuid:"214389C3-46D4-4EAD-9850-273286C963F2"

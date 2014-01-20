@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/svy_framework/nav_user_table_view",
-items:[
-{foreignColumnName:"user_table_view_id",primaryDataProviderID:"user_table_view_id",typeid:23,uuid:"8701EE9A-85EC-445B-A20D-8CD333B517EE"}
-],
-name:"sec_user_table_properties_to_nav_user_table_view",
-primaryDataSource:"db:/svy_framework/sec_user_table_properties",
-typeid:22,
-uuid:"A43AB994-32F3-4764-A9B1-19B8B7F40321"

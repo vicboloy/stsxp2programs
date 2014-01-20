@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/svy_framework/nav_menu_items",
-items:[
-{foreignColumnName:"program_name",primaryDataProviderID:"program_name",typeid:23,uuid:"4E84E524-C38E-4D23-88C8-6A432DA0FDA5"}
-],
-name:"nav_program_to_nav_menu_items",
-primaryDataSource:"db:/svy_framework/nav_program",
-typeid:22,
-uuid:"363990A8-853E-4905-98BA-28187CCD5D67"

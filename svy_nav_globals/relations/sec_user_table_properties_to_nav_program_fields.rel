@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/svy_framework/nav_program_fields",
-items:[
-{foreignColumnName:"program_field_id",primaryDataProviderID:"program_field_id",typeid:23,uuid:"85B8E42F-7276-4651-9EBC-B93ED7180C73"}
-],
-name:"sec_user_table_properties_to_nav_program_fields",
-primaryDataSource:"db:/svy_framework/sec_user_table_properties",
-typeid:22,
-uuid:"1D3627B7-E44A-4D8E-BCC3-5DE10B0D34E4"

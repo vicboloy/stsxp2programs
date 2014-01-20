@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/svy_framework/nav_menu_items",
-items:[
-{foreignColumnName:"menu_item_id",primaryDataProviderID:"parent_id",typeid:23,uuid:"2E26FB09-8146-4062-96E3-E0CF6C091F05"}
-],
-name:"nav_menu_items_to_nav_menu_items$child_to_parent",
-primaryDataSource:"db:/svy_framework/nav_menu_items",
-typeid:22,
-uuid:"C592A75C-833F-4B85-91EF-46A7F274AFC1"

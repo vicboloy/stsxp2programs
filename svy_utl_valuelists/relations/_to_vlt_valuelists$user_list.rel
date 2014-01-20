@@ -1,9 +1,0 @@
-allowCreationRelatedRecords:true,
-foreignDataSource:"db:/svy_framework/vlt_valuelists",
-items:[
-{foreignColumnName:"system_list",operator:1,primaryDataProviderID:"globals.utl_system_list",typeid:23,uuid:"47e00934-2cc3-46d1-b212-24fd982a21d2"}
-],
-name:"_to_vlt_valuelists$user_list",
-primaryDataSource:"db:/svy_framework/vlt_valuelists",
-typeid:22,
-uuid:"19e8f1d6-d46e-450c-80aa-d014ca6a85b9"

@@ -1,9 +1,0 @@
-addEmptyValue:1,
-dataProviderID1:"primary_city",
-dataSource:"db:/stsservoy/zipcodes",
-name:"sts_city_codes",
-returnDataProviders:1,
-showDataProviders:1,
-typeid:34,
-uuid:"83DF2197-7710-408D-A4F8-51CF492D2B3F",
-valueListType:1

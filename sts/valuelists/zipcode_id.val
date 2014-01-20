@@ -1,9 +1,0 @@
-addEmptyValue:1,
-dataProviderID1:"zipcode_id",
-name:"zipcode_id",
-relationName:"sts_city_and_state_to_zip",
-returnDataProviders:1,
-showDataProviders:1,
-typeid:34,
-uuid:"D31972A3-CC3D-4C53-AEE5-80E0D5DB9940",
-valueListType:1

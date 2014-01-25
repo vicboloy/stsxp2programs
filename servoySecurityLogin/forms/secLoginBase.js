@@ -68,6 +68,12 @@ function login(){
 
 	var tenantID, userID;
 	errorMessage = null;
+	if(companyName == "NEW"){
+		security.authenticate('createNewRecord','secInitialStart',[])
+		errorMessage = 'New company record created. User:'+companyName+' Password: password';
+		companyName = "";
+		return false;
+	}
 	if(!companyName){
 		errorMessage = 'Please specify a company name';
 		return false;

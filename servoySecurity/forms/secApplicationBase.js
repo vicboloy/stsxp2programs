@@ -43,5 +43,5 @@ function validateApplicationName(){
  * @properties={typeid:24,uuid:"99787ACF-C835-43FF-875F-7D88D7757B52"}
  */
 function onDataChangeApplicationName(oldValue, newValue, event) {
-	return isEditing() || validateApplicationName();						//	validate changed name wwhen not in transaction	
+	return isEditing(event) || validateApplicationName();						//	validate changed name wwhen not in transaction	
 }

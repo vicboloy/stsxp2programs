@@ -7,7 +7,7 @@ creationOrderIndex:0,
 dataType:12,
 flags:5,
 length:36,
-name:"association_id"
+name:"association_uuid"
 },
 {
 allowNull:true,
@@ -51,9 +51,16 @@ name:"tenant_data"
 },
 {
 allowNull:true,
-creationOrderIndex:2,
+creationOrderIndex:9,
 dataType:12,
 flags:4,
+length:36,
+name:"tenant_group_uuid"
+},
+{
+allowNull:true,
+creationOrderIndex:2,
+dataType:12,
 length:36,
 name:"tenant_member"
 },

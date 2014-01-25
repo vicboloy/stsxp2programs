@@ -24,6 +24,13 @@ var change_to_remote = false;
  */
 var debug = false;
 /**
+ *
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E95D70E8-A990-4219-9FFE-3A9A957570B5"}
+ */
+var selectedTenants = null;
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"715F3FA9-EF61-4230-9341-6E0E042F243C"}
@@ -865,7 +872,7 @@ function onActionFileOpenDialog(event,updateValue) {
  *
  * @properties={typeid:35,uuid:"BC04042B-4656-4CB8-A49A-80DF6FA28D94"}
  */
-var APPLICATION_NAME = 'Servoy Security Example';
+var APPLICATION_NAME = 'Steel Tracking System';
 
 /**
  * @type {String}
@@ -942,6 +949,7 @@ function getTablesFilters(tenantID) {
 	for (var index = 0;index < tableNames.length; index++){
 		tableName = tableNames[index];
 		if (tableName == 'tenant_list'){continue}
+		if (tableName == 'associations'){continue}
 		var dataSource = 'db:/'+SEC_SERVER+'/'+tableName; 
 		var jsTableColumns = databaseManager.getTable(dataSource);
 		var tableColumn = jsTableColumns.getColumn('tenant_uuid');
@@ -950,7 +958,9 @@ function getTablesFilters(tenantID) {
 		//application.output('table '+tableName+' filter '+tableFilter)
 		//databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','=',tenantID,tableFilter);
 		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','IN',permitArray,tableFilter);
+		tableColumn = jsTableColumns.getColumn('delete_flag');
+		if (tableColumn == null){continue}
+		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'delete_flag','!=',0,'enableDelete');
 	}
 	// Enable filter of all deleted records.
-	databaseManager.addTableFilterParam(SEC_SERVER,null,'delete_flag','!=',0,'enableDelete');
  }

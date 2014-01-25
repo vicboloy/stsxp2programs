@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/associations",
+joinType:1,
+name:"sec_associations",
+primaryDataSource:"db:/stsservoy/associations",
+typeid:22,
+uuid:"3395829A-FADF-477E-901B-978526B64328"

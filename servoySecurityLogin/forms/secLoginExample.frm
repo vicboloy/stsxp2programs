@@ -130,6 +130,7 @@ uuid:"F4CCF570-38BD-4A36-B670-31B814C52414"
 ],
 name:"secLoginExample",
 navigatorID:"-1",
+onLoadMethodID:"560E2591-06E2-4976-9A4A-BD25FDF2E2E6",
 paperPrintScale:100,
 showInMenu:true,
 size:"270,200",

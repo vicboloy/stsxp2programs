@@ -255,6 +255,7 @@ function getParentForm() {
  */
 function addElementToArray(array,element){
 	element = element.replace(/ /g,"");
+	/** @type {Array} [newArray] */
 	var newArray = new Array;
 	newArray = array;
 	var found = array.indexOf(element) != -1;

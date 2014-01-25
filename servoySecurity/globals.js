@@ -79,7 +79,12 @@ var SEC_TABLE_KEYS = 'keys';
  * @properties={typeid:35,uuid:"5C14D3F4-8C24-4163-AF45-86185DE69747"}
  */
 var SEC_TABLE_TENANTS = 'tenant_list';
-
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"7A88DD48-B8CC-4214-9CE8-0AECA59C0C00"}
+ */
+var SEC_TABLE_ASSOCIATIONS = 'associations';
 /**
  * @type {String}
  *
@@ -100,7 +105,17 @@ var SEC_TABLE_USERS = 'users';
  * @properties={typeid:35,uuid:"557BD8A0-07C2-4964-A94B-EE8669BC20EB"}
  */
 var SEC_TENANT_FILTER = 'secTenantFilter';
-
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"CD472BBA-FF43-467D-BD05-CC62A0174B96"}
+ */
+var SEC_ASSOCIATION_FILTER = 'secAssociationFilter';
+/**
+ * @type {Array}
+ * @properties={typeid:35,uuid:"9DB32D6A-C316-470B-BDA4-2648B171315B",variableType:-4}
+ */
+var tenantFiltersArray = [];
 /**
  * @type {Number}
  *
@@ -114,7 +129,17 @@ var secCurrentApplicationID = null;
  * @properties={typeid:35,uuid:"237E841F-6CA3-45AB-84F8-4D60FD5ADDA4"}
  */
 var secCurrentTenantID = null;
-
+/**
+ * @type {Array}
+ * @properties={typeid:35,uuid:"4D9E3186-80E6-44BD-ADB6-0812354D0A90",variableType:-4}
+ */
+var secCurrentAssociationID = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E1DA5383-3DFB-43F2-A992-8C64FF74377B"}
+ */
+var secCurrentAssociationName = "";
 /**
  * @type {Number}
  *
@@ -155,7 +180,41 @@ function secAddUserToGroup(userID, groupID){
 	//	group not found or user already in group
 	return null;
 }
+/**
+ * Adds the specified user to the named group
+ * Looks first in the current tenant's groups, then the current application-wide groups
+ * @param {String} [tenantName] the name of the tenant
+ * @param {String} [assocName] the name of the association to which the tenant is added
+ * @returns {String} The associations UUID  if the tenant was added
+ * @properties={typeid:24,uuid:"DFEF34C8-F137-49D3-A371-8F472356136D"}
+ * @AllowToRunInFind
+ */
+function secAddTenantToAssociation(tenantName, assocName){	
+																		//	variable declarations
+	var association;														//	the users-groups foundset
+	if(!(tenantName && assocName)){											//	validate required input
+		return null;													//	failed validation returns false
+	}
 
+    /** @type {JSFoundSet<db:/stsservoy/associations>} */																		
+	association = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_ASSOCIATIONS);
+	if(association.find()){												//	search the user groups table for existing entry
+		association.tenant_member = tenantName;									//	search by user id
+		association.association_name = assocName;									//	search by group id	
+		if(!association.search() && association.newRecord()){				//	not already in group, so create the record
+			association.tenant_member = tenantName;								//	set the user id
+			association.association_name = assocName;								//	set the group id
+			association.tenant_uuid = secGetTenantID(tenantName);
+			if(databaseManager.saveData(association.getSelectedRecord())){
+				return association.association_uuid;
+			}
+		}
+	}
+	
+
+	//	group not found or user already in group
+	return null;
+}
 /**
  * Sets (or resets) runtime security settings based on the current application and logged-in user
  * Application-wide permissions are first applied, then merged w/ users access to keys via group membership
@@ -166,7 +225,8 @@ function secSetSecuritySettings() {
 																		//	local variable declarations:
 	var settings = {};													//	Object - An object array to hold settings i.e. {server.table:{canRead:1,canInsert:0}}
 	var dataset = databaseManager.createEmptyDataSet(0,['id','flags']);	//	JSDataset - This is passed into the servoy sec engine
-	var groupKeys;														//	JSFoundset - A given group's group-keys records													
+	var groupKeys;														//	JSFoundset - A given group's group-keys records		
+	/** @type {JSFoundSet<db:/stsservoy/permissions>} */											
 	var keyPermissions;													//	JSFounddset - A given key's permission records		
 
 	for(var i = 1; i <= sec_current_app_permissions.getSize(); i++){	//	iterate over application-wide permissions
@@ -200,7 +260,6 @@ function secSetSecuritySettings() {
 	 * @param {JSRecord} permission The permission record
 	 */
 	function appendSetting(permission){
-																		//	local variable declarations
 		var id;															//	the id of the recource (either server.table or element)
 		if(permission.permission_type == SEC_PERMISSION_TYPE_DATA){		//	TABLE permission...
 			
@@ -256,6 +315,7 @@ function secChangeGroupName(groupID, newName){
 	}
 	groups = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_GROUPS);
 	groupToChange = groups.duplicateFoundSet();
+	var oldName = groupToChange.group_name;  //added to existing base, oldName was undefined for below
 	if(groupToChange.loadRecords(groupID) && groups.find()){			//	load the group to change, search other groups
 		groups.group_name = oldName;									//	search by name
 		groups.application_id = groupToChange.application_id;			//	search by application
@@ -278,7 +338,7 @@ function secChangeGroupName(groupID, newName){
  * @AllowToRunInFind
  */
 function secChangeUserName(userID, userName){
-	
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var users;															//	Variable Ddeclaration - the users foundset
 	
 	if(!(userID && userName)){											//	validate input
@@ -368,7 +428,7 @@ function secCreateGroup(groupName, tenantID, appID){
  * Creates a new user in the current tenant
  * @param {String} userName the new user name
  * @param {String} password the password
- * @param {Number} [tenantID] the Tenant in which to create the user. Default is current tenant
+ * @param {UUID} [tenantID] the Tenant in which to create the user. Default is current tenant
  * @returns {JSRecord} the user record
  * @properties={typeid:24,uuid:"E1D8EF68-9F1F-4E3A-ABEF-CB07A1930235"}
  * @AllowToRunInFind
@@ -433,7 +493,33 @@ function secDeleteUser(userID){
 	users = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USERS);	//	get a users foundset
 	return users.loadRecords(userID) && users.deleteRecord();			//	find and delete user record
 }
+/**
+ * @properties={typeid:24,uuid:"560E2591-06E2-4976-9A4A-BD25FDF2E2E6"}
+ */
+function secInitialStart(){
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	var users = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USERS);
+	users.loadAllRecords();
+	var userCount = users.getSize();
+	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
+	var tenants = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_TENANTS);
+	tenants.loadAllRecords();
+	var tenantCount = tenants.getSize();
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */
+	var associations = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_ASSOCIATIONS);
+	associations.loadAllRecords();
+	associations.deleteAllRecords();
+	associations.loadAllRecords();
+	var associationCount = associations.getSize();
+	//if (associationCount != 0 || true){
+		var assocUUID = secCreateAssociation('demo1');
+		//var tenantRec = secCreateTenant('demo1');
+		//secAddTenantToAssociation('demo1','demo1');
+		secCreateUser('demo1','password',assocUUID);
+	//}
+	application.output('users: '+userCount+' tenants:' +tenantCount+' associations: '+associationCount);
 
+}
 /**
  * Logs in the specified user
  * @param {Number} userID the id of the user
@@ -447,7 +533,9 @@ function secLogin(userID){
 	if(!userID){														//	validate input
 		return false;
 	}
-	
+	if (userID == "NEW"){
+		globals.secInitialStart();
+	}
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a users foundset
 	//security.createGroup(SEC_ADMINISTRATORS);							//	Create the group (This may not be necessary)
 	if(users.loadRecords(userID) && users.is_account_active){ 			//	load user record, check if active account
@@ -506,6 +594,19 @@ function secSetCurrentTenant(tenantID){
 		databaseManager.addTableFilterParam(SEC_SERVER,null,'tenant_uuid','^||=',tenantID,SEC_TENANT_FILTER);
 	}
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param assocID
+ *
+ * @properties={typeid:24,uuid:"FF0A15E2-196E-4CF0-B87B-9762ED9B7E7C"}
+ */
+function secSetCurrentAssociation(assocID){
+	secCurrentAssociationID = assocID;
+	databaseManager.removeTableFilterParam(SEC_SERVER,SEC_ASSOCIATION_FILTER);
+	if(assocID){
+		databaseManager.addTableFilterParam(SEC_SERVER,null,'tenant_uuid','^||=',tenantFiltersArray,SEC_ASSOCIATION_FILTER);
+	}
+}
 
 /**
  * This is the encryption method which is used internally by the Column Conversion settings for users.password.
@@ -521,7 +622,39 @@ function secEncryptPassword(password) {
 	}
 	return utils.stringMD5HashBase16(password);							//	encrypt string
 }
-
+/**
+ * Creates or updates a group for a login, enabling overall tenant filters for the application tables
+ * 
+ * @param {String} [assocName] association name
+ * @return {UUID} [assocArray] array of tenants within association
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"E122828D-EDF3-43CB-B2BD-27B444F2CAE8"}
+ */
+function secCreateAssociation(assocName){
+	//var associationArray = [];
+	if (!assocName){
+		return null;
+	}
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */
+	var assoc;
+	// continue with association creation
+	assoc = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);
+	if(assoc.find()){													//	Search the associations table...
+		assoc.association_name = assocName;								//	...by association name
+		//assoc.tenant_uuid = tenantUUID;
+		if(!assoc.search() && assoc.newRecord()){						//	association name is unique. create the association record
+			assoc.association_name = assocName;							//	set the company name
+			//associationArray.push(assoc.association_uuid);
+			if(databaseManager.saveData(assoc.getSelectedRecord())){	//	save the record
+				assoc.getSelectedRecord();
+				return assoc.association_uuid;						//	return the associaton id
+			}
+		}
+	}
+	
+	return null;														//	could not create tenant
+}
 /**
  * Creates a tenant with the specified company name
  * Verifies that the company name is unique
@@ -541,6 +674,7 @@ function secCreateTenant(companyName) {
 		tenants.company_name = companyName;								//	...by company name
 		if(!tenants.search() && tenants.newRecord()){					//	company name is unique. create the tenant record
 			tenants.company_name = companyName;							//	set the company name
+			
 			if(databaseManager.saveData(tenants.getSelectedRecord())){	//	save the record
 				return tenants.getSelectedRecord();						//	return the tenant id
 			}
@@ -549,7 +683,6 @@ function secCreateTenant(companyName) {
 	
 	return null;														//	could not create tenant
 }
-
 /**
  * Gets the specified user record in the specified tenant
  * If no user name is specified, then the logged-in user is returned
@@ -630,6 +763,61 @@ function secGetTenantID(companyName){
 	}
 	return null;														//	could not find tenant
 }
+/**
+ * Gets the specified tenant record
+ * 
+ * @param {String} [assocID] The company association ID
+ * @returns {Array} The tenant id array for filtering purposes
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"9B308245-148C-4C1A-A7B2-D0ABA73D5156"}
+ */
+function secGetTenantIDs(assocID){
+	if(!assocID){													//	validate input...	
+		return null;													//	must provide an association name
+	}
+	var tenantArray = [];														//	the association's tenant array
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */																	
+	var assocs = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);  // get an association's foundset
+	if(assocs.find()){													//	search the association's foundset...
+		assocs.association_uuid = assocID;								//	search by association name	
+		if(assocs.search()){												
+			var count = databaseManager.getFoundSetCount(assocs);
+			for (var i=1;i<=count;i++){
+				assocs.setSelectedIndex(i);
+				tenantArray.push(assocs.tenant_uuid);
+			}
+		}
+	}
+	return tenantArray;														//	return tenantArray
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param {String} [assocName]
+ *
+ * @properties={typeid:24,uuid:"04BA1A04-95CA-49F8-B077-57CAA6B79423"}
+ */
+function secGetAssociationID(assocName){
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */																	
+	var associations;														//	the tenants foundset
+	if(!assocName){													//	validate input...	
+		return null;													//	must provide a copmany name
+	}
+	associations = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);//	get an association foundset
+	if(associations.find()){													//	search the association foundset...
+		associations.association_name = assocName;								//	search by association name	
+		if(associations.search()){		
+			var count = databaseManager.getFoundSetCount(associations);
+			if (count > 0){
+				associations.setSelectedIndex(1);
+				return associations.association_uuid;
+			}
+		}
+	}
+	return null;														//	could not find tenant
+}
 
 /**
  * Creates a new application record.
@@ -650,7 +838,7 @@ function secCreateApplication(applicationName) {
 		apps.application_name = applicationName;						//	...by a name
 		if(!apps.search() && apps.newRecord()){							//	app name is unique. create the record
 			//TODO JOE apps.applicationName = companyName;							//	set the app name
-			apps.applicationName = companyName;							//	set the app name
+			apps.applicationName = applicationName;							//	set the app name
 
 			if(databaseManager.saveData(apps.getSelectedRecord())){		//	save the record
 				return apps.getSelectedRecord();						//	return the tenant id
@@ -714,7 +902,7 @@ function secGetApplicationID(applicationName) {
  * @AllowToRunInFind
  */
 function secCreateKey(keyName, appID) {
-																		//	variable declarations
+	/** @type {JSFoundSet<db:/stsservoy/keys>} */																	//	variable declarations
 	var keys;															//	The keys foundset
 	
 	if(!keyName){														//	validate input
@@ -862,7 +1050,8 @@ function secCheckKeyAccess(keyName) {
 	var keys = databaseManager.convertFoundSet(sec_current_user_groups,sec_current_user_groups.user_groups_to_group_keys);
 	if(keys.find()){
 		keys.group_keys_to_keys.key_name = keyName;
-		return checks.search() >= 1;
+		//return checks.search() >= 1;
+		return keys.search() >= 1;
 	}
 	return false;
 

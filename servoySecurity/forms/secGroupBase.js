@@ -185,5 +185,5 @@ function validateGroupName(){
  * @properties={typeid:24,uuid:"EFEB8913-0AF9-4CB4-99D0-07632FC7AAE2"}
  */
 function onDataChangeGroupName(oldValue, newValue, event) {
-	return isEditing() || validateGroupName();								//	validates group name when not in transaction
+	return isEditing(event) || validateGroupName();								//	validates group name when not in transaction
 }

@@ -125,6 +125,7 @@ function onActionUnselect(event) {
  * @properties={typeid:24,uuid:"83DE767C-3941-4889-90C8-9594344B8F3B"}
  */
 function addElementToArray(array,element){
+	/** @type {Array} [newArray] */
 	var newArray = new Array;
 	var found = false;
 	newArray = array;

@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/associations",
+items:[
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"tenant_uuid",typeid:23,uuid:"19E85CC1-8545-4F23-8E6B-0796542FCBC0"}
+],
+joinType:1,
+name:"sec_tenant_to_associations",
+primaryDataSource:"db:/stsservoy/tenant_list",
+typeid:22,
+uuid:"B5152389-E885-4723-9136-5965C40D57D1"

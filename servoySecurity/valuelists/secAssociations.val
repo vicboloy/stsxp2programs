@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"association_name",
+dataProviderID2:"association_uuid",
+dataSource:"db:/stsservoy/associations",
+name:"secAssociations",
+returnDataProviders:2,
+showDataProviders:1,
+typeid:34,
+uuid:"7171223D-A518-458A-B051-215CF16CBCBE",
+valueListType:1

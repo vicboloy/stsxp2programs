@@ -1,0 +1,12 @@
+allowCreationRelatedRecords:true,
+allowParentDeleteWhenHavingRelatedRecords:false,
+foreignDataSource:"db:/stsservoy/associations",
+items:[
+{foreignColumnName:"tenant_group_uuid",primaryDataProviderID:"scopes.globals.secCurrentAssociationMasterID",typeid:23,uuid:"A14319F0-227C-45E5-B1C3-0A899BBBA352"},
+{foreignColumnName:"association_uuid",operator:5,primaryDataProviderID:"scopes.globals.secCurrentAssociationMasterID",typeid:23,uuid:"CF996930-630B-4B5C-B868-5FEDBAD30C4D"}
+],
+joinType:1,
+name:"sec_current_association_members",
+primaryDataSource:"db:/stsservoy/associations",
+typeid:22,
+uuid:"E7C67CC7-1016-41D2-970F-8EB8C18DCA8F"

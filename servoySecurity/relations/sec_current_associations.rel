@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+allowParentDeleteWhenHavingRelatedRecords:false,
+foreignDataSource:"db:/stsservoy/associations",
+items:[
+{foreignColumnName:"tenant_group_uuid",primaryDataProviderID:"scopes.globals.secCurrentAssociationMasterID",typeid:23,uuid:"608A48E1-8FC6-42AF-A5DB-AE5459C5440A"}
+],
+joinType:1,
+name:"sec_current_associations",
+primaryDataSource:"db:/stsservoy/associations",
+typeid:22,
+uuid:"6284894A-E7D5-42CB-A93F-D073B978D5F2"

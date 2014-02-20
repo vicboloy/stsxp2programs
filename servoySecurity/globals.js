@@ -30,7 +30,18 @@ var SEC_NULL = null;
  * @properties={typeid:35,uuid:"2DE2544F-43DD-4DCB-B4DC-C3CDA5F52616"}
  */
 var SEC_ONE = ""; //TODO JOE this was a 1 type {Number}
-
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"6177C79F-5204-45ED-B806-83F760BC936C",variableType:4}
+ */
+var SEC_ONE1 = 1;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"942A4054-8B7A-4FE0-89C2-A53F0395484C",variableType:4}
+ */
+var SEC_ZERO = 0;
 /**
  * @type {Number}
  *
@@ -130,8 +141,12 @@ var secCurrentApplicationID = null;
  */
 var secCurrentTenantID = null;
 /**
- * @type {Array}
- * @properties={typeid:35,uuid:"4D9E3186-80E6-44BD-ADB6-0812354D0A90",variableType:-4}
+ * @properties={typeid:35,uuid:"9504A967-9F84-4D58-9306-7A92214F4F54",variableType:-4}
+ */
+var secCurrentTenantIDs = [];
+/**
+ * @type {String}
+ * @properties={typeid:35,uuid:"4D9E3186-80E6-44BD-ADB6-0812354D0A90"}
  */
 var secCurrentAssociationID = null;
 /**
@@ -141,12 +156,26 @@ var secCurrentAssociationID = null;
  */
 var secCurrentAssociationName = "";
 /**
+ * @type {String}
+ * @properties={typeid:35,uuid:"10432D30-207C-4AC3-96CC-D53F7A611D67"}
+ */
+var secCurrentAssociationMasterID = "";
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"7B1F0B21-B375-49E5-B768-6E3947F8280B",variableType:4}
  */
 var secCurrentUserID = null;
-
+/**
+ * @type {Array}
+ * 
+ * @properties={typeid:35,uuid:"BF845CC4-3FA1-40F4-AD43-70BB21DF9DDC",variableType:-4}
+ */
+var secTenantArray = [""];
+/**
+ * @properties={typeid:35,uuid:"84E03118-BE96-4341-A73F-68682F6CC32D",variableType:-4}
+ */
+var secTenantArraySearch = [""];
 /**
  * Adds the specified user to the named group
  * Looks first in the current tenant's groups, then the current application-wide groups
@@ -526,7 +555,7 @@ function secInitialStart(){
  * @properties={typeid:24,uuid:"AF48473F-8602-42CB-B8E7-7AB6D383C925"}
  */
 function secLogin(userID){
-																		//	local variable declaraions:
+																		//	local variable declarations:
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var users;															//	The users foundset
 	
@@ -656,6 +685,69 @@ function secCreateAssociation(assocName){
 	return null;														//	could not create tenant
 }
 /**
+ * @properties={typeid:24,uuid:"27F01BE6-C2EC-4EB0-967C-2D8291AF57A3"}
+ */
+function secCreateAssocGroup(){
+	
+}
+/**
+ * @properties={typeid:24,uuid:"02AFFE82-FA4A-4822-BE8B-FD9F6C60D103"}
+ * @AllowToRunInFind
+ */
+function secUpdateAssociation(){
+	//globals.secCurrentAssociationID;
+	//globals.secTenantArray;
+	var selection = 0;
+	var indexStr = [];
+	var tenant = "";
+	var tenantUUID = "";
+	var searchCount = 0;
+	var storeRecord = false;
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */
+	var associations = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);
+	//var maxLength = globals.secTenantArray.length;
+	for(var index in globals.secTenantArray){
+		selection = secTenantArray[index];
+		indexStr=index.split(",");
+		tenant=indexStr[0];
+		tenantUUID=indexStr[1];	
+		//XXXapplication.output(tenant+'---'+tenantUUID);
+		// Deleted record is simply flagging from the group association
+		// adding record is undeleting record OR adding new record
+		/** @type {JSFoundSet<db:/stsservoy/associations>} */
+		if (associations.find()){
+			associations.tenant_group_uuid = globals.secCurrentAssociationID;
+			associations.tenant_uuid = tenantUUID;
+			//associations.tenant_member = tenant;
+			searchCount = associations.search(true);
+			//xxxapplication.output('searchCount '+searchCount+' selection: '+selection+' find tid: '+tenantUUID+' assoc id '+globals.secCurrentAssociationID+' membername '+tenant)
+			if (selection && !searchCount){ // new record. don't overwrite another association's tenant
+				associations.newRecord();
+				associations.tenant_member = tenant;
+				associations.tenant_uuid = tenantUUID;
+				associations.association_name = globals.secCurrentAssociationName;
+				associations.tenant_group_uuid = globals.secCurrentAssociationID;
+				associations.delete_flag = 0;
+				storeRecord = true;
+			}
+			if (selection && searchCount){
+				associations.delete_flag=0;	// re-enable group association membership
+				storeRecord = true;
+			}
+			if (!selection && searchCount){
+				associations.delete_flag=1;  //disable but maintain membership in group association
+				storeRecord = true;
+			}
+			if(storeRecord){
+				databaseManager.saveData(associations.getSelectedRecord());
+			}
+			
+		}
+		
+	}
+	globals.secTenantArray = [];
+}
+/**
  * Creates a tenant with the specified company name
  * Verifies that the company name is unique
  * @param {String} companyName The name of the tenant
@@ -664,7 +756,7 @@ function secCreateAssociation(assocName){
  * @AllowToRunInFind
  */
 function secCreateTenant(companyName) {
-																		//	variable declaraions	
+																		//	variable declarations	
 	var tenants;														//	Foundset for the tenants
 	if(!companyName){													//	validate input
 		return null;
@@ -703,9 +795,69 @@ function secGetUserID(userName, tenantID) {
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a user foundset
 	if(users.find()){													//	search the user foundset...
 		users.tenant_uuid = (tenantID) ? tenantID : secCurrentTenantID;	//	search by tenant (use the current tenant when no tenant id specified)
+		//users.tenant_uuid IN 
 		users.user_name = userName;										//	search by user name	
 		if(users.search()){												
 			return users.user_id;										//	return the ID
+		}
+	}
+	return null;														//	could not get user
+}
+/**
+ * Gets the specified user record in the specified group from which the tenant is selected.
+ * Multiple associations have limited edit permissions due to data originated from single corp sources
+ * If no user name is specified, then the logged-in user is returned
+ * If no tenant is specifed, then the current tenant is searched
+ * @param {String} [userName] The user name. Default is the current user
+ * @param {UUID} [assocID] The id of the association to search. Default is current association
+ * @returns {Number} The user ID
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"16229D20-143D-43BA-8AA8-B9B56B666CBF"}
+ */
+function secGetUserID2(userName, tenantID) {
+																		//	variable declarations
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	var users;															//	the users foundset
+	if(!userName){														//	validate input...	
+		return sec_current_user.getSelectedRecord();					//	return current user when no user name specified
+	}
+	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a user foundset
+	if(users.find()){													//	search the user foundset...
+		users.tenant_uuid = (tenantID) ? tenantID : secCurrentTenantID;	//	search by tenant (use the current tenant when no tenant id specified)
+		users.user_name = userName;										//	search by user name	
+		if(users.search()){												
+			return users.user_id;										//	return the ID
+		}
+	}
+	return null;														//	could not get user
+}
+
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param userName
+ *
+ * @properties={typeid:24,uuid:"1B936C87-8D76-4E7C-A218-AC4BB2718734"}
+ * @AllowToRunInFind
+*/
+function secGetAssocID(userName) {
+	//	variable declarations
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	var users;															//	the users foundset
+	if(!userName){														//	validate input...	
+		return false;
+	}
+	application.output('test');
+	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a user foundset
+	if(users.find()){													//	search the user foundset...
+		application.output('find');
+		//users.tenant_uuid = (tenantID) ? tenantID : secCurrentTenantID;	//	search by tenant (use the current tenant when no tenant id specified)
+		users.user_name = userName;										//	search by user name	
+		if(users.search()){			
+			application.output('search zone '+users.association_uuid)
+			return users.association_uuid;										//	return the ID
 		}
 	}
 	return null;														//	could not get user
@@ -757,14 +909,50 @@ function secGetTenantID(companyName){
 	tenants = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_TENANTS);//	get a tenant foundset
 	if(tenants.find()){													//	search the tenant foundset...
 		tenants.company_name = companyName;								//	search by tenant name	
-		if(tenants.search()){												
+		if(tenants.search()){
 			return tenants.tenant_uuid;									//	return the ID
+		}  else {
+			/** @type {JSFoundSet<db:/stsservoy/associations>} */
+			associations = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);
+			if (associations.find()){
+				associations.association_name = companyName;
+				if (associations.search()){
+					return associations.tenant_group_uuid;
+				}
+			}
 		}
 	}
 	return null;														//	could not find tenant
 }
 /**
- * Gets the specified tenant record
+ * Gets the specified tenant record.  This is stored as the primary login for a user within an association.
+ * The main association is then picked up from the user or from the main association table. If no association, then
+ * the main associaton is assumed and editing is for the local plant.
+ * 
+ * @param {String} userName The copmany name
+ * @returns {UUID} The tenant id
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"34672C20-8C8D-487B-8B7E-E4B24B08847B"}
+ */
+function secGetTenantID2(userName){
+	/** @type {JSFoundSet<db:/stsservoy/users>} */																	
+	var users;														//	the tenants foundset
+	if(!userName){													//	validate input...	
+		return null;													//	must provide a copmany name
+	}
+	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);//	get a tenant foundset
+	if(users.find()){													//	search the tenant foundset...
+		users.user_name = userName;								//	search by tenant name	
+		if(users.search()){
+			return users.tenant_uuid;									//	return the ID
+		}
+	}
+	return null;														//	could not find tenant
+}
+
+/**
+ * Returns all tenants as the array index and the value as deleted or not.  No tenants really deleted as they are associated with others.
  * 
  * @param {String} [assocID] The company association ID
  * @returns {Array} The tenant id array for filtering purposes
@@ -780,16 +968,41 @@ function secGetTenantIDs(assocID){
 	/** @type {JSFoundSet<db:/stsservoy/associations>} */																	
 	var assocs = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);  // get an association's foundset
 	if(assocs.find()){													//	search the association's foundset...
-		assocs.association_uuid = assocID;								//	search by association name	
+		assocs.tenant_group_uuid = assocID;								//	search by association name	
 		if(assocs.search()){												
 			var count = databaseManager.getFoundSetCount(assocs);
 			for (var i=1;i<=count;i++){
-				assocs.setSelectedIndex(i);
-				tenantArray.push(assocs.tenant_uuid);
+				var rec = assocs.getRecord(i);
+				tenantArray[rec.tenant_uuid]=rec.delete_flag;
 			}
 		}
 	}
 	return tenantArray;														//	return tenantArray
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param tenant_name
+ *
+ * @properties={typeid:24,uuid:"4CEF9138-EB73-4473-8041-E179E87EEFB8"}
+ */
+function secDeleteTenant(tenantName){
+	if (!tenantName){
+		//errorMessage = 'Please provide a company name';
+		return false;
+	}
+	// /** @type {JSFoundset<db:/stsservoy/tenant_list>} */
+	var tenants = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_TENANTS)
+	if (tenants.find()){
+		tenants.company_name = tenantName;
+		if (tenants.search()) {
+			//var count=
+			databaseManager.getFoundSetCount(tenants);
+			// TODO delete a tenant
+		}
+	}
+	return true;
 }
 /**
  * @AllowToRunInFind
@@ -800,14 +1013,25 @@ function secGetTenantIDs(assocID){
  * @properties={typeid:24,uuid:"04BA1A04-95CA-49F8-B077-57CAA6B79423"}
  */
 function secGetAssociationID(assocName){
+	var compareTo = "";
 	/** @type {JSFoundSet<db:/stsservoy/associations>} */																	
 	var associations;														//	the tenants foundset
 	if(!assocName){													//	validate input...	
 		return null;													//	must provide a copmany name
 	}
+	if (assocName.lastIndexOf("-") == -1){
+		compareTo = null
+	} else {
+		compareTo = secCurrentTenantID;
+	}
 	associations = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);//	get an association foundset
 	if(associations.find()){													//	search the association foundset...
-		associations.association_name = assocName;								//	search by association name	
+		if (compareTo == null){
+			associations.association_name = assocName;								//	search by association name	
+			associations.tenant_group_uuid = compareTo;
+		} else {
+			associations.tenant_uuid = compareTo;
+		}
 		if(associations.search()){		
 			var count = databaseManager.getFoundSetCount(associations);
 			if (count > 0){
@@ -818,7 +1042,33 @@ function secGetAssociationID(assocName){
 	}
 	return null;														//	could not find tenant
 }
-
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param tenantUUID
+ *
+ * @properties={typeid:24,uuid:"FB78739F-A47B-4C6A-B624-7147F4D3E8C4"}
+ */
+function secGetCurrentMasterAssociation(tenantUUID){
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */																	
+	var associations;														//	the tenants foundset
+	if(!tenantUUID){													//	validate input...	
+		return null;													//	must provide a copmany name
+	}
+	associations = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);//	get an association foundset
+	if(associations.find()){													//	search the association foundset...
+		associations.tenant_uuid = tenantUUID;
+		if(associations.search()){		
+			var count = databaseManager.getFoundSetCount(associations);
+			if (count > 0){
+				associations.setSelectedIndex(1);
+				return associations.tenant_group_uuid;
+			}
+		}
+	}
+	return null;														//	could not find tenant
+}
 /**
  * Creates a new application record.
  * 
@@ -1099,7 +1349,9 @@ function secLogout(solutionToLoad,method,argument) {
  */
 function secGetServerNames(displayValue, realValue, record, valueListName) {
 	//var values = plugins.maintenance.getServerNames(true,true).sort();
-	var values = ARRAY_getAllServers(); //TODO: DONE leave maintenance mode
+	//var values = ARRAY_getAllServers(); //TODO: DONE leave maintenance mode
+	var values = [];
+	values.push('stsservoy');
 	
 	if (displayValue == null && realValue == null) {
 		return databaseManager.convertToDataSet(values);
@@ -1198,8 +1450,8 @@ function secGetFormNames(displayValue, realValue, record, valueListName) {
  *
  * @param {String} displayValue The value of a lookupfield that a user types
  * @param {Object} realValue The real value for a lookupfield where a display value should be get for
- * @param {JSRecord} record The current record for the valuelist.
- * @param {String} valueListName The valuelist name that triggers the method.
+ * @param {JSRecord} [record] The current record for the valuelist.
+ * @param {String} [valueListName] The valuelist name that triggers the method.
  *
  * @returns {JSDataSet} A dataset with 1 or 2 columns display[,real]
  *
@@ -1254,6 +1506,10 @@ function secSetPassword(userID, password) {
  * @properties={typeid:24,uuid:"B4D445DB-2AEA-4E9D-9E97-A63AA1C51241"}
  */
 function ARRAY_getAllServers(){
+	var vServers = [];
+	vServers.push('stsservoy');
+	return vServers;
+	/*
     var vServerAmount = plugins.UserManager.Server().getSettingsProperty('ServerManager.numberOfServers') -1;
     var vProperty, vServers = [];
     //var vPropertiesArray = plugins.UserManager.Server().getServerProperties();
@@ -1263,4 +1519,5 @@ function ARRAY_getAllServers(){
     }
     vServers.sort();
     return vServers;
+    */
  }

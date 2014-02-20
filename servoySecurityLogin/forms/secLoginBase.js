@@ -10,14 +10,19 @@ var AUTH_METHOD_CHECK_PASSWORD = 'secCheckPassword';
  *
  * @properties={typeid:35,uuid:"CB52A5E1-E737-486E-9586-837BA96F53BC"}
  */
-var AUTH_METHOD_GET_TENANT_ID = 'secGetTenantID';
-
+var AUTH_METHOD_GET_TENANT_ID = 'secGetTenantID2';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"DF880749-5DB3-4618-81D6-FC42EF550249"}
+ */
+var AUTH_METHOD_GET_ASSOC_ID = 'secGetAssocID';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"FFDBFD48-759F-44CA-AFB8-F3B2AAE3630F"}
  */
-var AUTH_METHOD_GET_USER_ID = 'secGetUserID';
+var AUTH_METHOD_GET_USER_ID = 'secGetUserID2';
 
 /**
  * @type {String}
@@ -74,19 +79,21 @@ function login(){
 		companyName = "";
 		return false;
 	}
+	/*
 	if(!companyName){
 		errorMessage = 'Please specify a company name';
 		return false;
 	}
+	*/
 	if(!userName){
-		errorMessage = 'Please specify a user namex';
+		errorMessage = 'Please specify a user name';
 		return false;
 	}
 	if(!password){
 		errorMessage = 'Please specify a password';
 		return false;
 	}
-	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[companyName]);
+	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[userName]);
 	if(tenantID){
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
 		if(userID){

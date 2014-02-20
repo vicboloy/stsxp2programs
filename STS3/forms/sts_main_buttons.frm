@@ -180,6 +180,7 @@ typeid:7,
 uuid:"8802B7BB-4B19-4472-A3D9-9E7278F3F273"
 },
 {
+anchors:15,
 formIndex:2,
 items:[
 {

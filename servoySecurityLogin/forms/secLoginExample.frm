@@ -22,6 +22,7 @@ uuid:"41C19520-9D79-4871-88F9-E385ACBDF300"
 {
 dataProviderID:"companyName",
 formIndex:7,
+format:"|U",
 location:"110,40",
 name:"companyName",
 placeholderText:"Division Name",
@@ -106,6 +107,7 @@ uuid:"C194F0A9-1906-4651-AF44-0DBC7D69F74F"
 {
 dataProviderID:"userName",
 formIndex:8,
+format:"|U",
 location:"110,70",
 name:"userName",
 placeholderText:"Username",

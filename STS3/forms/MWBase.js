@@ -19,7 +19,7 @@ var windowList = "";
  * @AllowToRunInFind
  */
 function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
-	application.output(windowTitle);
+	//application.output(windowTitle);
 	var formNameNew = formName;
 	if (multiWindow){
 		windowTitle = windowTitle+"_";
@@ -158,7 +158,36 @@ function onActionUserManage(event) {
  * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
  */
 function onActionTenants(event) {
-	onActionClickMainButton(event,"Tenants",'tenants',50,50,960,450,false);
+	onActionClickMainButton(event,"Organizations",'tenants',50,50,730,450,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"3CD18375-D0A0-466D-A181-6D585BEE8E70"}
+ */
+function onActionTenantGroups(event) {
+	onActionClickMainButton(event,"Membership",'members',50,50,450,450,false);
+}
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"5E1968E2-1C90-4ED2-B0AC-C8860E10B2A4"}
+ */
+function onActionUserss(event) {
+	onActionClickMainButton(event,"Users",'users',50,50,960,450,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ *
+ * @properties={typeid:24,uuid:"5426D223-B48C-4FF8-B12D-AAE9F4FDD1FA"}
+ */
+function onActionPermissions(event) {
+	onActionClickMainButton(event,"Application Permissions",'app_permissions',50,50,960,450,false);
 }
 
 /**

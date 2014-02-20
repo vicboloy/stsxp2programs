@@ -13,8 +13,8 @@ location:"10,177",
 onActionMethodID:"0BD62770-5A9E-45E0-85B0-3DB856E01950",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"121,20",
-text:"Tenants",
+size:"192,20",
+text:"Organization Users",
 transparent:true,
 typeid:7,
 uuid:"145AE80B-B5BD-4EE6-89EA-F19B5DD88357"
@@ -31,6 +31,16 @@ text:"Barcode Printer",
 transparent:true,
 typeid:7,
 uuid:"269447BA-E929-44DB-AF22-1BE7D0D5B522"
+},
+{
+location:"10,216",
+onActionMethodID:"3CD18375-D0A0-466D-A181-6D585BEE8E70",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"192,20",
+text:"Organization Members",
+typeid:7,
+uuid:"41BD123E-FFE6-4897-BD3A-94B147149463"
 },
 {
 fontType:"Arial,0,12",
@@ -57,6 +67,16 @@ text:"Who am I",
 transparent:true,
 typeid:7,
 uuid:"87190193-57A8-4EA2-8CD9-A33B4B4D2CDC"
+},
+{
+location:"10,261",
+onActionMethodID:"5426D223-B48C-4FF8-B12D-AAE9F4FDD1FA",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"192,20",
+text:"Application Permissions",
+typeid:7,
+uuid:"8867AA06-B928-493A-B688-78D78283F4C6"
 },
 {
 fontType:"Arial,0,12",

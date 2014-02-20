@@ -1,7 +1,7 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/associations",
 items:[
-{foreignColumnName:"tenant_uuid",primaryDataProviderID:"tenant_uuid",typeid:23,uuid:"19E85CC1-8545-4F23-8E6B-0796542FCBC0"}
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.secCurrentTenantID",typeid:23,uuid:"19E85CC1-8545-4F23-8E6B-0796542FCBC0"}
 ],
 joinType:1,
 name:"sec_tenant_to_associations",

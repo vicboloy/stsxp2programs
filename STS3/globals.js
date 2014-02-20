@@ -175,6 +175,7 @@ function initLaborCodes(){
 	/**@type {JSFoundSet<db:/stsservoy/labor_codes>} */
 	var fs = databaseManager.getFoundSet('db:/stsservoy/labor_codes');
 	fs.loadAllRecords();
+	//fs.loadRecords();
 	for (var index = 1;index <= fs.getSize();index++){
 		fs.setSelectedIndex(index);
 		aLaborCodes.push(fs.labor_code);
@@ -790,10 +791,15 @@ function onSolutionOpen() {
 	}
 	
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
-	globals.secSetCurrentApplication(globals.secGetApplicationID(APPLICATION_NAME));
-	globals.secCurrentUserID = security.getUserUID();
-	globals.secCurrentTenantID = sec_current_user.tenant_uuid;
+	secSetCurrentApplication(secGetApplicationID(APPLICATION_NAME));
+	secCurrentUserID = security.getUserUID();
+	secCurrentTenantID = sec_current_user.tenant_uuid;
+	secCurrentAssociationID = secGetAssociationID(secCurrentTenantID);
+	secCurrentAssociationMasterID = secGetCurrentMasterAssociation(secCurrentTenantID);
+	secSetCurrentApplication(17); // 17 is already STS, could be anything
+	application.output('assoc master '+secCurrentAssociationMasterID+' assoc '+secCurrentAssociationID+' tenant '+secCurrentTenantID);
 	var tenantID = sec_current_user.tenant_uuid;
+	secCurrentTenantIDs = secGetTenantIDs(secCurrentAssociationMasterID);
 	//secSetCurrentTenant(tenantID);
 	getTablesFilters(tenantID);	
 }
@@ -917,6 +923,13 @@ function rowBGColor(index, selected, elementType, dataProviderID, formName, reco
 		return rowBGColorEven;
 }
 /**
+ * @properties={typeid:24,uuid:"B382C799-AD08-4B8C-A26E-4CA3B8E2D59B"}
+ */
+function debugPause (){
+	var joe = "debug";
+	application.output(joe);
+}
+/**
  * TODO generated, please specify type and doc for the params
  * @param windowName
  *
@@ -941,7 +954,9 @@ function setWindowOpened(windowName){
  */
 function getTablesFilters(tenantID) {
 	var permitArray = [];
-	permitArray.push(tenantID);
+	for (var index0 in secCurrentTenantIDs){
+		permitArray.push(index0)
+	}
 	var tableNames = databaseManager.getTableNames(SEC_SERVER);
 	var tableName = "";
 	var tableFilter = "";
@@ -962,5 +977,7 @@ function getTablesFilters(tenantID) {
 		if (tableColumn == null){continue}
 		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'delete_flag','!=',0,'enableDelete');
 	}
+	// Filter associations table for all present
+	//databaseManager.addTableFilterParam(SEC_SERVER,'associations','tenant_group_uuid','=',secCurrentAssociationMasterID,'associationFilter');
 	// Enable filter of all deleted records.
  }

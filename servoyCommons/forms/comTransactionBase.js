@@ -81,7 +81,7 @@ function startFind(event) {
  * 
  * @param {JSEvent} event the event that triggered the action
  * @param {Number} [location] The index where the new record should be inserted. Default is bottom.
- * @param {Number} [changeSelection] True if the selection should change. Default is true.
+ * @param {Boolean} [changeSelection] True if the selection should change. Default is true.
  * @param {Boolean} [transactional] Specifies if this record is created inside an in-memory transaction. Default is false.
  * @returns {Number} The index of the record that was added
  * 

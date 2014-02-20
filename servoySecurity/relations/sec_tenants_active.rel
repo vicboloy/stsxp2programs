@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/tenant_list",
+items:[
+{foreignColumnName:"delete_flag",operator:256,primaryDataProviderID:"scopes.globals.SEC_ZERO",typeid:23,uuid:"800284DB-95CE-4B7E-BA0B-49EE9317B84C"}
+],
+joinType:1,
+name:"sec_tenants_active",
+primaryDataSource:"db:/stsservoy/tenant_list",
+typeid:22,
+uuid:"CE1F93BE-D88E-4BDA-9BD3-8363BBA80C7A"

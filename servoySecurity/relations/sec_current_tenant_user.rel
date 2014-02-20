@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/users",
+items:[
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.secCurrentTenantID",typeid:23,uuid:"B9F011FE-BF77-4D2D-A3EB-950CEC145B27"}
+],
+joinType:1,
+name:"sec_current_tenant_user",
+primaryDataSource:"db:/stsservoy/tenant_list",
+typeid:22,
+uuid:"7804C22D-81AD-47CD-A340-43B1B7124053"

@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/associations",
+items:[
+{foreignColumnName:"association_uuid",primaryDataProviderID:"association_uuid",typeid:23,uuid:"FE020B76-34DF-4A5A-AEBB-6AAAE7CB37D2"}
+],
+joinType:1,
+name:"sec_user_association",
+primaryDataSource:"db:/stsservoy/users",
+typeid:22,
+uuid:"EDC1BEF3-118E-45DD-B2C1-A308719FACEC"

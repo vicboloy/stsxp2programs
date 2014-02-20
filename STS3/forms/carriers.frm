@@ -1,4 +1,5 @@
 dataSource:"db:/stsservoy/carrier",
+encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
 items:[
 {

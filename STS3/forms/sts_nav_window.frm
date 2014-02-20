@@ -19,7 +19,7 @@ typeid:7,
 uuid:"EA42B19B-90B5-4775-80E6-94F50F89154F"
 },
 {
-anchors:15,
+anchors:7,
 dataProviderID:"windowList",
 displayType:11,
 location:"5,28",

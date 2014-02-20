@@ -34,17 +34,17 @@ uuid:"91B52B09-501A-44B5-A5E0-D0E0E022219B"
 {
 items:[
 {
-containsFormID:"AE848BFF-13CD-4F82-AEA3-09959C089F29",
-location:"394,105",
-relationName:"secx_employee_to_users_tenant.sec_users_x",
-text:"Account",
+containsFormID:"BB1B2F7E-C46C-4524-95B5-1F69B94CF939",
+location:"457,75",
+name:"Login_Details",
+text:"user_detail",
 typeid:15,
-uuid:"5FDB780D-E656-4796-9364-95DB87AEC5EB"
+uuid:"1954C50B-5025-4EA1-AB5E-F2ED31E29EF9"
 },
 {
 containsFormID:"4B0A4F42-885F-493A-AF55-DD6A25926088",
 location:"169,61",
-name:"employeer_addresses",
+name:"employee_addresses",
 relationName:"sts_employee_to_address",
 text:"Addresses (%%sts_employee_to_address.maxRecordIndex%%)",
 typeid:15,

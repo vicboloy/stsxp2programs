@@ -1,6 +1,6 @@
 /**
  * TODO generated, please specify type and doc for the params
- * @param {index} 
+ * @param {Number} [index] 
  *
  *
  * @properties={typeid:24,uuid:"632687C8-5715-4EF2-B917-A823999EDDBD"}

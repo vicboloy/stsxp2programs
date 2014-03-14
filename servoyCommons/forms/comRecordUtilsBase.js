@@ -22,6 +22,7 @@ function deleteAllRecords(event) {
  * @properties={typeid:24,uuid:"FA872F51-755F-49B0-BAE3-BCDA62435C6C"}
  */
 function duplicateRecord(event,index,location,changeSelection) {
+	index = (index) ? index :  foundset.getSelectedIndex();
 	return foundset.duplicateRecord(index,location,changeSelection);
 }
 

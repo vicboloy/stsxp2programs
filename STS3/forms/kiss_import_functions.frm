@@ -1,0 +1,16 @@
+dataSource:"db:/stsservoy/mapping",
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"55516C57-208F-43E1-B25B-2778C3119E86"
+}
+],
+name:"kiss_import_functions",
+namedFoundSet:"empty",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"0EB8F12E-E08C-440A-A004-A6B692EABF60"

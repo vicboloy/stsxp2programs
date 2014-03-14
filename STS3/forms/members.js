@@ -7,15 +7,16 @@
  * @AllowToRunInFind
  */
 function onActionUpdateGroup(event) {
-	var updateArray = [];
+	//var updateArray = [];
 	var searchCount = 0;
 	var right = elements.split.getRightForm();
 	var left = elements.split.getLeftForm();
-	var group = left.tenant_group_uuid;
+	//var group = left.tenant_group_uuid;
 	var master = left.association_uuid;
 	var masterName = left.association_name;
 	var count = right.foundset.getSize();
 	for (var index = 1;index<=count;index++){
+		/** @type {JSFoundset<db:/stsservoy/tenant_list>} */
 		var rec = right.foundset.getRecord(index);
 		/** @type {JSFoundset<db:/stsservoy/associations>} */
 		var assocs = databaseManager.getFoundSet(globals.SEC_SERVER,globals.SEC_TABLE_ASSOCIATIONS);
@@ -41,7 +42,7 @@ function onActionUpdateGroup(event) {
 					newRec.association_name = masterName;
 					newRec.delete_flag = 0;
 					newRec.edit_date = new Date();
-					var success = databaseManager.saveData(newRec);
+					databaseManager.saveData(newRec);
 				}
 			}
 			

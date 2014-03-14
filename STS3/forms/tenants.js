@@ -36,7 +36,7 @@ function newRecord(event, location, changeSelection) {
 		foundset.loadRecords();
 		return true;
 	}
-	
+	//return false; 
 }
 
 /**

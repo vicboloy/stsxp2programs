@@ -94,6 +94,15 @@ function onActionClickEmployeeClass(event) {
 function onActionClickUOM(event) {
 	onActionClickMainButton(event,"Units of Measure",'unit_of_measure',50,50,610,330,false);
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"23EBA98D-FA40-4997-9BC9-730473CF4B54"}
+ */
+function onActionClickMapping(event) {
+	onActionClickMainButton(event,"Import Mapping",'mappings',50,50,860,530,false);
+}
 
 /**
  * TODO generated, please specify type and doc for the params
@@ -123,6 +132,15 @@ function onActionClickSC(event) {
  */
 function onActionClickPref(event) {
 	onActionClickMainButton(event,"Preferences",'preferences_main',50,50,700,580,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248"}
+ */
+function onActionClickKISS(event) {
+	onActionClickMainButton(event,"Import KISS",'kiss_import',50,50,610,330,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -158,7 +176,7 @@ function onActionUserManage(event) {
  * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
  */
 function onActionTenants(event) {
-	onActionClickMainButton(event,"Organizations",'tenants',50,50,730,450,false);
+	onActionClickMainButton(event,"Divisions",'tenants',50,50,890,410,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -167,7 +185,7 @@ function onActionTenants(event) {
  * @properties={typeid:24,uuid:"3CD18375-D0A0-466D-A181-6D585BEE8E70"}
  */
 function onActionTenantGroups(event) {
-	onActionClickMainButton(event,"Membership",'members',50,50,450,450,false);
+	onActionClickMainButton(event,"Department and Division Management",'members',50,50,355,300,false);
 }
 
 /**
@@ -177,7 +195,7 @@ function onActionTenantGroups(event) {
  * @properties={typeid:24,uuid:"5E1968E2-1C90-4ED2-B0AC-C8860E10B2A4"}
  */
 function onActionUserss(event) {
-	onActionClickMainButton(event,"Users",'users',50,50,960,450,false);
+	onActionClickMainButton(event,"Users",'users',50,50,700,470,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -187,7 +205,7 @@ function onActionUserss(event) {
  * @properties={typeid:24,uuid:"5426D223-B48C-4FF8-B12D-AAE9F4FDD1FA"}
  */
 function onActionPermissions(event) {
-	onActionClickMainButton(event,"Application Permissions",'app_permissions',50,50,960,450,false);
+	onActionClickMainButton(event,"Application Permissions",'app_permissions',50,50,640,480,false);
 }
 
 /**

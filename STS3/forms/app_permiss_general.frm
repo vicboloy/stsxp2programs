@@ -24,21 +24,22 @@ typeid:7,
 uuid:"043F36AF-8FFE-46A6-9214-920BD2E06EE8"
 },
 {
-height:225,
+height:251,
 partType:5,
 typeid:19,
 uuid:"0827DBE5-6B74-4910-BA98-4279DD1CEF54"
 },
 {
 anchors:11,
-dataProviderID:"display_resource",
+dataProviderID:"permission_type",
 location:"0,55",
 name:"permission_type",
 onActionMethodID:"9D6C9EDE-BB07-4BE7-821E-90A53BAF5F40",
 size:"127,20",
 text:"Permission Type",
 typeid:4,
-uuid:"082DB233-390E-47D5-BFE4-23258826FA42"
+uuid:"082DB233-390E-47D5-BFE4-23258826FA42",
+valuelistID:"1530E9F5-9055-4876-9783-D2CB2E7195E9"
 },
 {
 height:28,
@@ -105,7 +106,7 @@ uuid:"A48786C9-EC5E-41FC-8BA1-AF312C41AAB5"
 {
 location:"5,5",
 size:"197,20",
-text:"Application Permissions",
+text:"STS Application Permissions",
 transparent:true,
 typeid:7,
 uuid:"AC00CE62-ABD5-40F1-95B8-D1DC2A8DFD94"

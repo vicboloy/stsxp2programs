@@ -20,7 +20,7 @@ uuid:"2CC09AF0-3C0B-43A7-AD9B-3EC98BF105F8"
 },
 {
 anchors:3,
-location:"370,5",
+location:"415,5",
 onActionMethodID:"5E85197C-4A42-4D56-B1EE-7C833A2AB724",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -97,7 +97,7 @@ uuid:"DDAB510B-CD4F-400C-8F89-81638D2C1B7C"
 ],
 name:"app_key_list",
 scrollbars:32,
-size:"450,93",
+size:"500,93",
 styleName:"sts_one",
 typeid:3,
 uuid:"ED8DEB1A-A352-45C4-9F36-6AB09559EA2B",

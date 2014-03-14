@@ -1,3 +1,5 @@
+
+
 /*
  Papa Parse
  v2.0.3
@@ -14,11 +16,88 @@ function t(e) {
 		return typeof e === "function"
 	}
 	/**
+ * @properties={typeid:24,uuid:"905EDD6A-24B2-4341-82E2-3000B6D6AD42"}
+ */
+function savePiecemarks(){
+		var data = forms.kiss_import.importResults.results;
+		var mappedFormatArray = forms.kiss_import.mappedFormatArray;
+		//var fs5 = databaseManager.getFoundSet("db:/stsservoy/piecemarks");
+		/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
+		var fs5 = sts_piecemark;
+		fs5.loadAllRecords();
+		fs5.deleteAllRecords();//temporary
+		application.output('record piecemark count: '+fs5.getSize());
+		var length = data.length;
+		var skipHeader = true;
+		var fieldCount = 0;
+		var lineArray = [];
+		var mapTo2 = "";
+		var newRecField = "D";
+		var recCount = 0;
+		var newRec = "";
+		var newRecIndex = 0;
+		// mappedFormatArray['mapping_key_line','field_order','0..1..2'] is database.field
+		// data[line_in_file], data array sized to number of fields on the line
+		for (var i6 = 1;i6<length;i6++){
+			//if (i6 > 30){break}
+			skipHeader = skipHeader && data[i6][0] == "*";
+			if (skipHeader){continue}
+			if (data[i6][0] == null){continue}
+			if (data[i6][0] == newRecField){
+				recCount++;
+				application.output('new record');
+				newRecIndex = fs5.newRecord();
+				newRec = fs5.getRecord(newRecIndex);
+				newRec.tenant_uuid = globals.secCurrentTenantID;
+				newRec.sheet_id = globals.secCurrentTenantID;//temporary
+				//continue;
+			}
+			lineArray = data[i6];
+			fieldCount = lineArray.length;
+			var mapIndex = 0;
+			var skip = "";
+			var mappings = [];
+			for (var i = 1;i<fieldCount;i++){
+				if (lineArray[i] == ""){continue}
+				mapTo2 = lineArray[0]+','+i;
+				mapIndex = 0;
+				mappings = [];
+				
+				var fieldValue = "";
+				while (mapTo2+','+mapIndex in mappedFormatArray) {
+					//mapTo2 = lineArray[0]+','+i;
+					
+					if (i6<500){
+						application.output('   line: '+skip+lineArray[0]+' value: '+lineArray[i]+', maps to field: '+mappedFormatArray[mapTo2+','+mapIndex]+', map '+mapTo2+','+mapIndex);
+					}
+					mappings.push(mappedFormatArray[mapTo2+','+mapIndex]); //for ordering of +1 field values after exit this while
+					mapIndex++;
+				}
+				for (var i2=0;i2<mappings.length;i2++){
+					if (!(i2 in mappings)){break}
+					application.output(lineArray);
+					var field = mappings[i2].split('.');
+					fieldValue = newRec[field[1]];
+					if (newRec[field[1]] == null){
+						newRec[field[1]] = lineArray[i];
+					} else {
+						newRec[field[1]] = newRec[field[1]]+' '+lineArray[i];
+					}
+					application.output('newRec field: '+field[1]+' newRec[field]: '+newRec[field[1]]);
+				}
+			}
+			application.output(newRec);
+		}
+		application.output('new Record count: '+recCount);
+	}
+
+	/**
  * TODO generated, please specify type and doc for the params
  * @param e
  * @param t
  *
- * @properties={typeid:24,uuid:"F2FD7DA1-2F64-47EB-8A2B-416FBAC080AF"}
+ * @SuppressWarnings(deprecated,hides,wrongparameters,undeclared,unused,nls)
+* @properties={typeid:24,uuid:"F2FD7DA1-2F64-47EB-8A2B-416FBAC080AF"}
  */
 function n(e, t) {
 		function a(n) {
@@ -73,6 +152,8 @@ function n(e, t) {
  * TODO generated, please specify type and doc for the params
  * @param e
  *
+ *
+ * @SuppressWarnings(deprecated,hides,wrongparameters,undeclared,unused,nls)
  * @properties={typeid:24,uuid:"0115493C-393C-4FA6-820C-B7CEEB46F4F7"}
  */
 function r(e) {
@@ -364,7 +445,7 @@ function r(e) {
  * TODO generated, please specify type and doc for the params
  * @param e
  * @param t
- *
+ * @SuppressWarnings(deprecated,hides,wrongparameters,undeclared,unused,nls)
  * @properties={typeid:24,uuid:"A4A8DE34-3A1B-4963-819A-7918F84E36B3"}
  */
 function parse(e, t) {
@@ -384,6 +465,9 @@ function parse(e, t) {
  */
 function Parser(config)
 	{
+	}
+
+/**
 		var self = this;
 		var _invocations = 0;
 		var _input = "";
@@ -477,7 +561,7 @@ function Parser(config)
 				|| config.delimiter.length != 1)
 				config.delimiter = _defaultConfig.delimiter;
 
-			if (config.deimiter == '"' || config.delimiter == "\n")
+			if (config.delimiter == '"' || config.delimiter == "\n")
 				config.delimiter = _defaultConfig.delimiter;
 
 			if (typeof config.header !== 'boolean')
@@ -855,3 +939,4 @@ function Parser(config)
 			};
 		}
 	}	
+		*/

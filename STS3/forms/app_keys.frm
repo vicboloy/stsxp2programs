@@ -2,7 +2,7 @@ dataSource:"db:/stsservoy/applications",
 extendsID:"A79F1F6F-C6D5-423B-990D-B21783F0F1EA",
 items:[
 {
-height:288,
+height:289,
 partType:5,
 typeid:19,
 uuid:"4D28E6C4-9056-4D2F-A3EF-7C0414C8349B"
@@ -26,7 +26,7 @@ anchors:15,
 items:[
 {
 containsFormID:"59EA6ECC-62D2-403B-AABF-E9C3BCCF94E7",
-location:"85,73",
+location:"85,62",
 relationName:"applications_to_keys",
 text:"app_key_details",
 typeid:15,
@@ -34,17 +34,17 @@ uuid:"E37AE2A3-A072-4BF2-8B00-49D32B4A2726"
 },
 {
 containsFormID:"ED8DEB1A-A352-45C4-9F36-6AB09559EA2B",
-location:"5,73",
+location:"5,62",
 relationName:"applications_to_keys",
 text:"app_key_list",
 typeid:15,
 uuid:"EA3D8884-E7A0-4C1B-9B11-EE81DE0010D1"
 }
 ],
-location:"5,43",
+location:"5,32",
 name:"split",
 printable:false,
-size:"426,220",
+size:"492,252",
 tabOrientation:-3,
 transparent:true,
 typeid:16,
@@ -52,7 +52,7 @@ uuid:"F0415FD6-71F1-4F94-A065-DA183E4ECB31"
 }
 ],
 name:"app_keys",
-scrollbars:0,
+scrollbars:32,
 showInMenu:false,
 size:"502,288",
 styleName:"sts_one",

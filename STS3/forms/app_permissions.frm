@@ -14,7 +14,7 @@ uuid:"3BD94FF2-FF09-44A5-9952-721E5C4F4886"
 {
 containsFormID:"31E5E8CB-B508-4AD3-8B69-A2B0079B56FF",
 location:"225,120",
-text:"User Groups",
+text:"Permission Groups",
 typeid:15,
 uuid:"6831BC83-97B6-4099-8917-B6D58078C84B"
 },
@@ -30,7 +30,7 @@ uuid:"82F41797-043E-4885-BB5C-061988DF7BE0"
 location:"5,30",
 name:"tabs",
 printable:false,
-size:"633,445",
+size:"502,445",
 transparent:true,
 typeid:16,
 uuid:"368C0DEC-6360-49BA-AAEC-10F394846CBA"
@@ -54,7 +54,7 @@ name:"app_permissions",
 navigatorID:"-1",
 scrollbars:0,
 showInMenu:true,
-size:"643,480",
+size:"512,480",
 styleName:"sts_one",
 typeid:3,
 uuid:"1CEA6243-E7E7-4183-ADC9-0E3595113A90"

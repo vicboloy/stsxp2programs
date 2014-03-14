@@ -27,6 +27,7 @@ uuid:"3131136D-1C91-463D-9AB2-4CB63A79B9EE"
 {
 anchors:11,
 dataProviderID:"errorMessage",
+foreground:"#ff0000",
 location:"5,30",
 size:"434,20",
 transparent:true,

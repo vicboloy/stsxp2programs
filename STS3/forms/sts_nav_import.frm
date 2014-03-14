@@ -130,6 +130,16 @@ typeid:7,
 uuid:"4E006D5F-074E-42F0-9D68-8C9440523320"
 },
 {
+location:"176,85",
+onActionMethodID:"23EBA98D-FA40-4997-9BC9-730473CF4B54",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"153,20",
+text:"Identify Mapping",
+typeid:7,
+uuid:"5382FC0D-609E-42FF-8B45-4D6456488EA0"
+},
+{
 fontType:"Arial,1,12",
 formIndex:8,
 location:"28,29",
@@ -240,6 +250,17 @@ typeid:7,
 uuid:"9D42A109-3237-4E69-85C4-AB63E6FE5AB5"
 },
 {
+formIndex:9,
+location:"43,113",
+onActionMethodID:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"227,20",
+text:"Standard Format w/Action Codes",
+typeid:7,
+uuid:"A1DF2835-16CF-42B9-8D25-29195880A686"
+},
+{
 fontType:"Arial,0,12",
 formIndex:8,
 location:"45,141",
@@ -254,10 +275,10 @@ typeid:7,
 uuid:"A8BDCF78-28EC-42EA-909E-EE25DCBB50A1"
 },
 {
-fontType:"Arial,0,12",
+displaysTags:true,
 formIndex:8,
 location:"45,113",
-onActionMethodID:"-1",
+onActionMethodID:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 showClick:false,

@@ -1,0 +1,14 @@
+dataSource:"db:/stsservoy/mapping",
+extendsID:"-1",
+items:[
+{
+height:396,
+partType:5,
+typeid:19,
+uuid:"47AAEEA3-E7FC-427B-B65C-9F34D7898F1D"
+}
+],
+name:"importTransactionBase",
+styleName:"sts_one",
+typeid:3,
+uuid:"421C115E-95E9-4E04-9B4B-F19B46F304B4"

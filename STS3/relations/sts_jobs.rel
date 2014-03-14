@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/jobs",
+joinType:1,
+name:"sts_jobs",
+primaryDataSource:"db:/stsservoy/jobs",
+typeid:22,
+uuid:"B3F5E684-8F98-4ED3-B6EC-5B5B24F96E04"

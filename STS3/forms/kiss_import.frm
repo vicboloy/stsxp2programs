@@ -1,0 +1,46 @@
+dataSource:"db:/stsservoy/mapping",
+encapsulation:0,
+extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
+items:[
+{
+location:"10,84",
+onActionMethodID:"23EBA98D-FA40-4997-9BC9-730473CF4B54",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"153,20",
+text:"Identify Mapping",
+typeid:7,
+uuid:"8FF24EB2-8D8D-483E-9E4C-AF0C3695BAD7"
+},
+{
+location:"10,45",
+onActionMethodID:"E4409B8F-40DD-42A8-8C59-570B2AEA8235",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"153,20",
+text:"Get KISS file",
+typeid:7,
+uuid:"B2B777E8-966C-46F8-B8AF-48E5D33F4848"
+},
+{
+height:245,
+partType:1,
+typeid:19,
+uuid:"EED1313A-B822-445F-BEE7-539A205ABCA8"
+},
+{
+location:"15,15",
+text:"KISS import",
+transparent:true,
+typeid:7,
+uuid:"F87D040C-62AD-458D-B27F-C2ABA972FF83"
+}
+],
+name:"kiss_import",
+namedFoundSet:"empty",
+navigatorID:"-1",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"C251C71D-C610-4509-A117-663D55B03720",
+view:0

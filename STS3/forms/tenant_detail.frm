@@ -14,7 +14,7 @@ typeid:4,
 uuid:"31E8C7BB-64F7-46BC-83AF-03F9FEA0E471"
 },
 {
-height:423,
+height:379,
 partType:5,
 typeid:19,
 uuid:"7D070EAF-E70D-4945-97E9-13EFCD1A1C74"
@@ -42,7 +42,7 @@ uuid:"8C92490D-2749-4EE0-A068-BAB3D227E3D1"
 location:"5,19",
 name:"split",
 printable:false,
-size:"565,399",
+size:"565,355",
 tabOrientation:-2,
 transparent:true,
 typeid:16,

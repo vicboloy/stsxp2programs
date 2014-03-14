@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/piecemarks",
+joinType:1,
+name:"sts_piecemark",
+primaryDataSource:"db:/stsservoy/piecemarks",
+typeid:22,
+uuid:"2F715C70-A5FB-4430-99E4-ED3DBC45EAA0"

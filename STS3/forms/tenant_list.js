@@ -22,12 +22,12 @@ function setTenantCheck(){
 function deleteRecord(event, index) {
 	delete_flag = 1;
 	foundset.loadRecords();
-	/** @type {JSFoundset<db:/stsservoy/associations>} */
-	var fs = sec_tenant_to_association;
-	var fsCount = fs.getSize();
-	for (var i=1;i<=fsCount;i++){
-		group = fs.getRecord(i).delete_flag;
-	}
+	//  ** @type {JSFoundset<db:/stsservoy/associations>} */
+	//var fs = sec_tenant_to_association;
+	//var fsCount = fs.getSize();
+	//for (var i=1;i<=fsCount;i++){
+	//	var group = fs.getRecord(i).delete_flag;
+	//}
 	//if(!(stopEdit instanceof Boolean)||stopEdit)						//	default to close transaction if not specified
 	//stopEditing(event);												//	close in-mem transaction
 	//return true;	

@@ -24,7 +24,7 @@ function validate(event) {
  * @properties={typeid:24,uuid:"36BA5FF2-283B-40D6-BE47-83DF5A718A6B"}
  */
 function onDataChangeCompanyName(oldValue, newValue, event) {
-	return isEditing(event) || validateCompanyName();							//	validates company name when not in transaction
+	return isEditing(event) || validateCompanyName(oldValue);							//	validates company name when not in transaction
 }
 
 /**
@@ -32,7 +32,7 @@ function onDataChangeCompanyName(oldValue, newValue, event) {
  * @returns {Boolean}
  * @properties={typeid:24,uuid:"7CF8C088-C3E4-4C8A-A67F-F6EE593511AF"}
  */
-function validateCompanyName(){
+function validateCompanyName(oldValue){
 	errorMessage = null;													//	reset the error message
 	if(!company_name){														//	company name must be non-null;
 		errorMessage = 'Please provide a company name'						//	TODO: i18n HERE
@@ -41,6 +41,7 @@ function validateCompanyName(){
 	var id = globals.secGetTenantID(company_name);							//	Check tenant ID
 	if(id && id != tenant_uuid){												//	It should be unique
 		errorMessage = 'Company name is already in use';					//	TODO: i18n HERE
+		company_name = oldValue;											// 	return value to old value
 		return false;														//	failed validation
 	}
 	return true;															//	validation success	

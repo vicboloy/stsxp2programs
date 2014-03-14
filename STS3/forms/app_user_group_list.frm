@@ -28,7 +28,7 @@ uuid:"370AE1E0-510B-4CB5-95EF-4655FD8E0981"
 anchors:3,
 location:"285,72",
 name:"delButton",
-onActionMethodID:"-1",
+onActionMethodID:"23DF4B40-3BF9-4277-A9FB-EEDA7CBCD90C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"24,20",

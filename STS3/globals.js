@@ -33,6 +33,12 @@ var selectedTenants = null;
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"4DA2A86A-4705-43F2-B33F-25E0557345E1"}
+ */
+var STS_UNIVERSAL_TENANT = "01234567-0123-4567-89AB-0123456789AB";
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"715F3FA9-EF61-4230-9341-6E0E042F243C"}
  */
 var solutionTables = "";
@@ -801,7 +807,7 @@ function onSolutionOpen() {
 	var tenantID = sec_current_user.tenant_uuid;
 	secCurrentTenantIDs = secGetTenantIDs(secCurrentAssociationMasterID);
 	//secSetCurrentTenant(tenantID);
-	getTablesFilters(tenantID);	
+	//getTablesFilters(tenantID);	
 }
 
 /**
@@ -869,7 +875,7 @@ function onActionCancelButton(event) {
  */
 function onActionFileOpenDialog(event,updateValue) {
 	//var dirs = 
-	plugins.file.showFileOpenDialog(2, "\\", false, null);
+	var file = plugins.file.showFileOpenDialog(2, "\\", false, null);
 	//var path = dirs.getAbsolutePath();
 }
 //----------------------------------------
@@ -951,20 +957,25 @@ function setWindowOpened(windowName){
  * Delete flag is set as well for the entire database.
  *
  * @properties={typeid:24,uuid:"1261FFFE-27A8-4F4B-8986-6B13DF623AC6"}
+ * @AllowToRunInFind
  */
 function getTablesFilters(tenantID) {
 	var permitArray = [];
+	var ignoreTableList = 'associations users groups keys group_keys keys_table permissions tenant_list user_groups ';
+	
 	for (var index0 in secCurrentTenantIDs){
 		permitArray.push(index0)
 	}
 	var tableNames = databaseManager.getTableNames(SEC_SERVER);
 	var tableName = "";
 	var tableFilter = "";
-	//var controlledTable = false;
+	var regex = "";
+	var ignoreindex5 = 0;
 	for (var index = 0;index < tableNames.length; index++){
 		tableName = tableNames[index];
-		if (tableName == 'tenant_list'){continue}
-		if (tableName == 'associations'){continue}
+		regex = new RegExp(tableName+" ");
+		ignoreindex5 = ignoreTableList.search(regex);
+		if (ignoreindex5 != -1){continue}
 		var dataSource = 'db:/'+SEC_SERVER+'/'+tableName; 
 		var jsTableColumns = databaseManager.getTable(dataSource);
 		var tableColumn = jsTableColumns.getColumn('tenant_uuid');

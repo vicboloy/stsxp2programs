@@ -3,12 +3,12 @@ extendsID:"2FE2D88B-0E43-4246-8AEE-1BBF9C7D9D31",
 items:[
 {
 anchors:3,
-location:"297,5",
+location:"202,5",
 onActionMethodID:"16FB7385-D1C1-4E70-A59F-BBEE985AA926",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"133,20",
-text:"Update Group",
+size:"150,20",
+text:"Update Department",
 typeid:7,
 uuid:"18E4F2BF-84DA-477C-84FD-C20D0568E60E"
 },
@@ -17,7 +17,7 @@ anchors:15,
 items:[
 {
 containsFormID:"8B09D889-B2FF-4ED0-81E5-5A559CB16EFD",
-location:"86,71",
+location:"86,52",
 name:"tenants",
 relationName:"sec_tenants_active",
 text:"member_list_detail",
@@ -26,7 +26,7 @@ uuid:"06BAEA85-A499-486B-9B89-35D78DB989F4"
 },
 {
 containsFormID:"A58B7F94-B432-4FF1-84DB-0885E19AEC4D",
-location:"5,79",
+location:"5,60",
 name:"groups",
 relationName:"sec_current_association_members",
 text:"member_list",
@@ -34,17 +34,17 @@ typeid:15,
 uuid:"F4A9018B-C223-4D82-A484-9192ED719961"
 }
 ],
-location:"5,49",
+location:"5,30",
 name:"split",
 printable:false,
-size:"425,462",
+size:"348,265",
 tabOrientation:-2,
 transparent:true,
 typeid:16,
 uuid:"8A7A1457-A760-4F6F-BB7A-F1041DEF1218"
 },
 {
-height:516,
+height:301,
 partType:5,
 typeid:19,
 uuid:"F3A9DCA2-BB3E-405D-B777-1E5A102E26B5"
@@ -53,7 +53,7 @@ uuid:"F3A9DCA2-BB3E-405D-B777-1E5A102E26B5"
 name:"members",
 onLoadMethodID:"AAA6E7E0-FD63-4AC4-BB01-645B730ED523",
 onShowMethodID:"-1",
-size:"435,516",
+size:"357,301",
 styleName:"sts_one",
 typeid:3,
 uuid:"29E22243-CF84-4FC3-88F8-E3B350815C4F",

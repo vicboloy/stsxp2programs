@@ -8,6 +8,7 @@ uuid:"B8264F35-3B2C-445D-8057-07A22DF67C55"
 }
 ],
 name:"MWBase",
+navigatorID:"-1",
 showInMenu:true,
 styleName:"sts_one",
 typeid:3,

@@ -11,7 +11,7 @@ typeid:7,
 uuid:"5445D2E7-2087-4B71-8E59-FEEA308E42AB"
 },
 {
-height:480,
+height:376,
 partType:5,
 typeid:19,
 uuid:"6329F609-9DF4-4C74-97F4-ADAE59320D44"
@@ -19,7 +19,7 @@ uuid:"6329F609-9DF4-4C74-97F4-ADAE59320D44"
 {
 location:"172,5",
 size:"152,20",
-text:"Plant Usernames",
+text:"Divisions",
 transparent:true,
 typeid:7,
 uuid:"9055347A-CBE6-41D0-BDB7-033EA3BAF4E3"
@@ -47,7 +47,7 @@ uuid:"CFAF7C77-99BC-43D8-B7B2-048272FF639B"
 location:"5,30",
 name:"split",
 printable:false,
-size:"945,445",
+size:"870,341",
 tabOrientation:-2,
 transparent:true,
 typeid:16,
@@ -56,8 +56,8 @@ uuid:"D0BDDC3F-0707-4D71-A106-ECD99CA53E2E"
 {
 dataProviderID:"errorMessage",
 foreground:"#ff0000",
-location:"651,5",
-size:"299,20",
+location:"442,5",
+size:"433,20",
 transparent:true,
 typeid:7,
 uuid:"D6F8A1CD-EC42-407F-A88D-BE637F891B84"
@@ -66,7 +66,7 @@ uuid:"D6F8A1CD-EC42-407F-A88D-BE637F891B84"
 name:"tenants",
 onLoadMethodID:"8892A0D9-A658-4625-96FC-392F3EEE7274",
 showInMenu:true,
-size:"955,480",
+size:"880,376",
 typeid:3,
 uuid:"AF8D7058-F1ED-419C-9C22-0FDEA09C57AF",
 view:0

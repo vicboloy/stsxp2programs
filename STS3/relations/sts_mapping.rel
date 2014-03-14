@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/mapping",
+joinType:1,
+name:"sts_mapping",
+primaryDataSource:"db:/stsservoy/mapping",
+typeid:22,
+uuid:"B736F3F5-69E3-43F7-A5F7-C0D6814ECFB7"

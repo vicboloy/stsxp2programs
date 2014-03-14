@@ -275,8 +275,8 @@ function secSetSecuritySettings() {
 			appendSetting(keyPermissions.getRecord(i));					//	append permission
 		}
 	}
-	for(var id in settings){												//	iterate over the settings object array
-		dataset.addRow([id, settings[id].flags]);						//	add setting to dataset
+	for(var ident1 in settings){												//	iterate over the settings object array
+		dataset.addRow([ident1, settings[ident1].flags]);						//	add setting to dataset
 	}
 	security.setSecuritySettings(dataset);								//	apply to Servoy Security Engine
 	
@@ -289,38 +289,39 @@ function secSetSecuritySettings() {
 	 * @param {JSRecord} permission The permission record
 	 */
 	function appendSetting(permission){
-		var id;															//	the id of the recource (either server.table or element)
+		/** @type {JSFoundset<db:/stsservoy/permissions>} */
+		var ident2;															//	the id of the resource (either server.table or element)
 		if(permission.permission_type == SEC_PERMISSION_TYPE_DATA){		//	TABLE permission...
 			
-			id = permission.server_name + '.' + permission.table_name;	//	the resource id is server_name.table_name
-			settings[id] = (settings[id]) ? settings[id] : {};			//	get or create object to store the table permission for this server.table
+			ident2 = permission.server_name + '.' + permission.table_name;	//	the resource id is server_name.table_name
+			settings[ident2] = (settings[ident2]) ? settings[ident2] : {};			//	get or create object to store the table permission for this server.table
 
 																		//	merge settings (to least restrictive)...			
-			settings[id].canRead     = settings[id].canRead|permission.can_read;
-			settings[id].canInsert   = settings[id].canInsert|permission.can_insert
-			settings[id].canUpdate   = settings[id].canUpdate|permission.can_update;
-			settings[id].canDelete   = settings[id].canDelete|permission.can_delete;
-			settings[id].useTracking = settings[id].useTracking|permission.use_tracking;
+			settings[ident2].canRead     = settings[ident2].canRead|permission.can_read;
+			settings[ident2].canInsert   = settings[ident2].canInsert|permission.can_insert
+			settings[ident2].canUpdate   = settings[ident2].canUpdate|permission.can_update;
+			settings[ident2].canDelete   = settings[ident2].canDelete|permission.can_delete;
+			settings[ident2].useTracking = settings[ident2].useTracking|permission.use_tracking;
 			
 																		//	Set the integer flags w/ bitwise operators
-			settings[id].flags = (settings[id].canRead * JSSecurity.READ)|
-								 (settings[id].canInsert * JSSecurity.INSERT)|
-								 (settings[id].canUpdate * JSSecurity.UPDATE)|
-								 (settings[id].canDelete * JSSecurity.DELETE)|
-								 (settings[id].useTracking * JSSecurity.TRACKING);
+			settings[ident2].flags = (settings[ident2].canRead * JSSecurity.READ)|
+								 (settings[ident2].canInsert * JSSecurity.INSERT)|
+								 (settings[ident2].canUpdate * JSSecurity.UPDATE)|
+								 (settings[ident2].canDelete * JSSecurity.DELETE)|
+								 (settings[ident2].useTracking * JSSecurity.TRACKING);
 
 		}else if(permission.permission_type == SEC_PERMISSION_TYPE_UI){	//	UI permission...
 
-			id = permission.element_uuid;								//	The resource ID is the element UUID
-			settings[id] = (settings[id]) ? settings[id] : {};			//	get or create object to store the ui permission for this element uuid
+			ident2 = permission.element_uuid;								//	The resource ID is the element UUID
+			settings[ident2] = (settings[ident2]) ? settings[ident2] : {};			//	get or create object to store the ui permission for this element uuid
 			
 																		//	merge settings (to least restrictive)...
-			settings[id].isAccessible = settings[id].isAccessible|permission.is_accessible;
-			settings[id].isVisible    = settings[id].isVisible|permission.is_visible;
+			settings[ident2].isAccessible = settings[ident2].isAccessible|permission.is_accessible;
+			settings[ident2].isVisible    = settings[ident2].isVisible|permission.is_visible;
 			
 																		//	Set the integer flags w/ bitwise operators
-			settings[id].flags        = (settings[id].isVisible * JSSecurity.VIEWABLE)|
-			                            (settings[id].isAccessible * JSSecurity.ACCESSIBLE);
+			settings[ident2].flags        = (settings[ident2].isVisible * JSSecurity.VIEWABLE)|
+			                            (settings[ident2].isAccessible * JSSecurity.ACCESSIBLE);
 		}
 	}
 }
@@ -809,7 +810,7 @@ function secGetUserID(userName, tenantID) {
  * If no user name is specified, then the logged-in user is returned
  * If no tenant is specifed, then the current tenant is searched
  * @param {String} [userName] The user name. Default is the current user
- * @param {UUID} [assocID] The id of the association to search. Default is current association
+ * @param {UUID} [tenantID] The id of the association to search. Default is current association
  * @returns {Number} The user ID
  * @AllowToRunInFind
  *
@@ -913,11 +914,11 @@ function secGetTenantID(companyName){
 			return tenants.tenant_uuid;									//	return the ID
 		}  else {
 			/** @type {JSFoundSet<db:/stsservoy/associations>} */
-			associations = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);
-			if (associations.find()){
-				associations.association_name = companyName;
-				if (associations.search()){
-					return associations.tenant_group_uuid;
+			var assocs = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);
+			if (assocs.find()){
+				assocs.association_name = companyName;
+				if (assocs.search()){
+					return assocs.tenant_group_uuid;
 				}
 			}
 		}
@@ -929,22 +930,33 @@ function secGetTenantID(companyName){
  * The main association is then picked up from the user or from the main association table. If no association, then
  * the main associaton is assumed and editing is for the local plant.
  * 
- * @param {String} userName The copmany name
+ * @param {String} userName The company name
  * @returns {UUID} The tenant id
  * @AllowToRunInFind
  *
  * @properties={typeid:24,uuid:"34672C20-8C8D-487B-8B7E-E4B24B08847B"}
  */
 function secGetTenantID2(userName){
+	var companyName = "";
 	/** @type {JSFoundSet<db:/stsservoy/users>} */																	
 	var users;														//	the tenants foundset
 	if(!userName){													//	validate input...	
-		return null;													//	must provide a copmany name
+		return null;													//	must provide a company name
 	}
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);//	get a tenant foundset
+	//users.loadRecords();
+	application.output('Users '+users);
 	if(users.find()){													//	search the tenant foundset...
 		users.user_name = userName;								//	search by tenant name	
-		if(users.search()){
+		var count = users.search();
+		if(count){
+			if (count > 1){
+				if (!companyName){
+					application.output(count+' users named '+userName);
+					return null; 
+				}
+				globals.secTenantArray = globals.secGetTenantIDs(assocID);
+			}
 			return users.tenant_uuid;									//	return the ID
 		}
 	}
@@ -983,7 +995,7 @@ function secGetTenantIDs(assocID){
  * @AllowToRunInFind
  * 
  * TODO generated, please specify type and doc for the params
- * @param tenant_name
+ * @param {String} [tenantName]
  *
  * @properties={typeid:24,uuid:"4CEF9138-EB73-4473-8041-E179E87EEFB8"}
  */

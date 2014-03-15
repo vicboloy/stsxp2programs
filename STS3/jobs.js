@@ -21,9 +21,9 @@ function t(e) {
 function savePiecemarks(){
 		var data = forms.kiss_import.importResults.results;
 		var mappedFormatArray = forms.kiss_import.mappedFormatArray;
-		//var fs5 = databaseManager.getFoundSet("db:/stsservoy/piecemarks");
 		/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
-		var fs5 = sts_piecemark;
+		var fs5 = databaseManager.getFoundSet("db:/stsservoy/piecemarks");
+		//var fs5 = sts_piecemark;
 		fs5.loadAllRecords();
 		fs5.deleteAllRecords();//temporary
 		application.output('record piecemark count: '+fs5.getSize());

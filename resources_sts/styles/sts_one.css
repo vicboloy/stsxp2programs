@@ -2,17 +2,20 @@
  * Default Styling for all Servoy objects
  */
 form {
+	color: black;
 	background-color: #F3F5F8;
 	border: 0px solid;
 }
 
 
 tabpanel {
+	color: black;
 	border: 0px solid;
 	font-size: 12px;
 }
 
 label, button, field, combobox, check, radio, listbox, spinner {
+	color: black;
 	font-family: Arial;
 	font-size: 10px;
 }
@@ -31,12 +34,15 @@ check {}
 
 radio {}
 
-listbox {}
+listbox {
+	color: black;
+	font-size: 10px;
+}
 
 spinner {}
 
 label {
-	color: #727784;
+	color: black;
 }
 
 label.fieldlabel {

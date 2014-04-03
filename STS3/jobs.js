@@ -211,7 +211,7 @@ function idHeaders(){
 		}
 		for (var i3=1;i3 < headLineSize;i3++){
 			//create records for missing mapping fields under mapping format
-			/** @type {JSFoundset<db:/stsservoy/mappings> */
+			/** @type {JSFoundset<db:/stsservoy/mappings>} */
 			var fs2 = databaseManager.getFoundSet("db:/stsservoy/mapping");
 			//var fs2 = sts_mapping;
 			fieldName = data[index][i3].trim();

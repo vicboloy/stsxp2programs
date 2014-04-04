@@ -116,3 +116,14 @@ function login(){
 	errorMessage = 'Login Failed';
 	return null;
 }
+
+/**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"A3E09D87-2EED-4CA4-8E02-C5014E5AA356"}
+ */
+function onLoad(event) {
+	application.JSWindow.title = "STS Login";
+}

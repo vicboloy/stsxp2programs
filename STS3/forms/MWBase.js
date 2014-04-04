@@ -140,6 +140,10 @@ function onActionClickPref(event) {
  * @properties={typeid:24,uuid:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248"}
  */
 function onActionClickKISS(event) {
+	var success = history.removeForm('kiss_barcode_request');
+	if (success){
+		var success2 = solutionModel.removeForm('kiss_barcode_request');
+	}
 	onActionClickMainButton(event,"Import KISS",'kiss_import',50,50,610,330,false);
 }
 /**

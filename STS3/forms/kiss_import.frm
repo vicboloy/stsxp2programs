@@ -14,7 +14,7 @@ uuid:"8FF24EB2-8D8D-483E-9E4C-AF0C3695BAD7"
 },
 {
 location:"10,45",
-onActionMethodID:"E4409B8F-40DD-42A8-8C59-570B2AEA8235",
+onActionMethodID:"B3F01716-FF60-4B1E-94C0-C57744ED6B31",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"153,20",

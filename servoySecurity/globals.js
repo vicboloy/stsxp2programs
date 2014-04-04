@@ -548,7 +548,6 @@ function secInitialStart(){
 		secCreateUser('demo1','password',assocUUID);
 	//}
 	application.output('users: '+userCount+' tenants:' +tenantCount+' associations: '+associationCount);
-
 }
 /**
  * Logs in the specified user

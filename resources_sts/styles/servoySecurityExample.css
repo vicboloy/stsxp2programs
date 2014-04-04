@@ -66,18 +66,19 @@ tabpanel.split_border
 }
 form
 {
-	background-color: #ffffff;
+	color: black;
+	background-color: #F3F5F8;
 	border-style: none;
 }
 label
 {
-	color: #666666;
+	color: black;
 	font: bold 11pt Verdana;
 }
 label.header1
 {
 	font: bold 14pt "Verdana";
-	color: #666666;
+	color: black;
 }
 label.column_header
 {
@@ -96,7 +97,7 @@ label.error
 }
 button
 {
-	color: #000000;
+	color: black;
 	margin: 2px 4px 2px 4px;
 	font: 11pt "Verdana";
 }

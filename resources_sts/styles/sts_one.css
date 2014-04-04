@@ -18,6 +18,8 @@ label, button, field, combobox, check, radio, listbox, spinner {
 	color: black;
 	font-family: Arial;
 	font-size: 10px;
+	text-align: left;
+	vertical-align: middle;
 }
 
 field, combobox {

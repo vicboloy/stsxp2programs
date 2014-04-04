@@ -44,7 +44,6 @@ typeid:7,
 uuid:"18377E63-6F79-496D-973B-D5DE234187D1"
 },
 {
-fontType:"Arial,0,12",
 formIndex:3,
 location:"10,38",
 name:"jobs",
@@ -57,7 +56,6 @@ typeid:7,
 uuid:"18A7B569-C824-40A4-A430-7573A154F097"
 },
 {
-fontType:"Arial,0,12",
 location:"246,201",
 mediaOptions:14,
 name:"endconditions",
@@ -68,8 +66,7 @@ printSliding:3,
 size:"177,23",
 text:"Edit End Conditions",
 typeid:7,
-uuid:"1A31FF95-3F6F-444F-911E-BA16F1BFA8FE",
-verticalAlignment:0
+uuid:"1A31FF95-3F6F-444F-911E-BA16F1BFA8FE"
 },
 {
 fontType:"Arial,0,12",
@@ -86,7 +83,6 @@ typeid:7,
 uuid:"1A7B2E9F-71CE-4B6F-B709-EC9C8923584F"
 },
 {
-fontType:"Arial,0,12",
 formIndex:8,
 location:"473,402",
 name:"preferences",
@@ -159,7 +155,6 @@ typeid:7,
 uuid:"47C6E8A5-446A-4788-A4E2-6B905CC13510"
 },
 {
-fontType:"Arial,0,12",
 location:"246,89",
 mediaOptions:14,
 name:"uomcodes",
@@ -170,8 +165,7 @@ printSliding:3,
 size:"177,23",
 text:"Units of Measure Codes",
 typeid:7,
-uuid:"55E71BF5-0DE7-4347-BED7-242FDD174E20",
-verticalAlignment:0
+uuid:"55E71BF5-0DE7-4347-BED7-242FDD174E20"
 },
 {
 fontType:"Arial,0,12",
@@ -202,7 +196,6 @@ typeid:7,
 uuid:"660D7AF9-A8AA-40B5-B987-EC99A8F366D9"
 },
 {
-fontType:"Arial,0,12",
 location:"246,145",
 mediaOptions:14,
 name:"routingcodes",
@@ -213,8 +206,7 @@ printSliding:3,
 size:"177,23",
 text:"Edit Routing Codes",
 typeid:7,
-uuid:"68B94B8F-4F3E-431B-95CC-4819F9573BC2",
-verticalAlignment:0
+uuid:"68B94B8F-4F3E-431B-95CC-4819F9573BC2"
 },
 {
 fontType:"Arial,0,12",
@@ -245,7 +237,6 @@ typeid:7,
 uuid:"6CCB0F02-E901-4F9B-BD61-BDF700D0C543"
 },
 {
-fontType:"Arial,0,12",
 formIndex:6,
 location:"25,374",
 name:"carriers",
@@ -254,7 +245,6 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"177,23",
 text:"Edit Carrier Information",
-transparent:true,
 typeid:7,
 uuid:"771F1DC0-32BB-47FF-92E9-9590902E6914"
 },
@@ -315,7 +305,6 @@ typeid:7,
 uuid:"8912581C-E11D-4BB3-A93B-A137B6702569"
 },
 {
-fontType:"Arial,0,12",
 location:"25,430",
 mediaOptions:14,
 onActionMethodID:"C61C110C-151B-4C9D-B0AB-FA32D9401D16",
@@ -324,13 +313,10 @@ onRightClickMethodID:"-1",
 printSliding:3,
 size:"177,23",
 text:"Edit Employee Class Info",
-transparent:true,
 typeid:7,
-uuid:"8CA2DAC9-DF42-4D35-BF89-95D61D0C5ECD",
-verticalAlignment:0
+uuid:"8CA2DAC9-DF42-4D35-BF89-95D61D0C5ECD"
 },
 {
-fontType:"Arial,0,12",
 formIndex:7,
 location:"25,402",
 name:"employees",
@@ -339,7 +325,6 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"177,23",
 text:"Edit Employee Information",
-transparent:true,
 typeid:7,
 uuid:"93017A64-48AA-4C8F-8639-C888A23CCDB5"
 },
@@ -368,7 +353,6 @@ typeid:7,
 uuid:"96176829-8987-457F-9954-CFE7F5BB56DE"
 },
 {
-fontType:"Arial,0,12",
 formIndex:5,
 location:"25,346",
 name:"customers",
@@ -377,7 +361,6 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"177,23",
 text:"Edit Customer Information",
-transparent:true,
 typeid:7,
 uuid:"97DB1DD9-0C8C-4675-9F79-90F558AF8A7B"
 },
@@ -396,7 +379,6 @@ typeid:7,
 uuid:"9995F820-0729-48E8-B64B-19C785133D0D"
 },
 {
-fontType:"Arial,0,12",
 location:"473,430",
 mediaOptions:14,
 name:"usermanagement",
@@ -407,8 +389,7 @@ printSliding:3,
 size:"177,23",
 text:"User Management",
 typeid:7,
-uuid:"9C38CED9-4859-4D22-86A5-9B055AB060E9",
-verticalAlignment:0
+uuid:"9C38CED9-4859-4D22-86A5-9B055AB060E9"
 },
 {
 fontType:"Arial,0,12",
@@ -473,7 +454,6 @@ typeid:7,
 uuid:"B56756D6-9D51-4761-9036-5D38B6F94C41"
 },
 {
-fontType:"Arial,0,12",
 location:"246,117",
 mediaOptions:14,
 name:"statuscodes",
@@ -484,8 +464,7 @@ printSliding:3,
 size:"177,23",
 text:"Edit Status Codes",
 typeid:7,
-uuid:"B69DA3C7-7F93-4B79-9A7F-1CA4D666208E",
-verticalAlignment:0
+uuid:"B69DA3C7-7F93-4B79-9A7F-1CA4D666208E"
 },
 {
 fontType:"Arial,0,12",

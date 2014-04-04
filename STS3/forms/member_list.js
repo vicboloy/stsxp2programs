@@ -27,7 +27,8 @@ function newRecord(event, location, changeSelection) {
  * @AllowToRunInFind
  */
 function onRecordSelection(event) {
-	var record = foundset.getSelectedRecord();
+	var record = foundset.getSelectedRecord(); //initial entry may result in no selected records when there are no records
+	if (record == null){return}
 	var arrayTenant = [];
 	//var tenantGroup = record.tenant_group_uuid; //selected group is the corporate uuid
 	var group = record.association_uuid;   //selected association is the corporate tenants

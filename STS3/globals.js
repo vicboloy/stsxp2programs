@@ -992,3 +992,65 @@ function getTablesFilters(tenantID) {
 	//databaseManager.addTableFilterParam(SEC_SERVER,'associations','tenant_group_uuid','=',secCurrentAssociationMasterID,'associationFilter');
 	// Enable filter of all deleted records.
  }
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"C4A6BAC3-7D9A-44DC-A872-B7E8524A432F",variableType:4}
+ */
+var sortColumn = -8;
+/**
+ * @properties={typeid:35,uuid:"397D4445-2560-47C3-B455-6FCB47F00B5B",variableType:-4}
+ */
+var sortType = false;//alpha
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"56AC3759-5C9A-4430-8994-6C872E0F877F",variableType:4}
+ */
+var firstTimeKISS = 1;
+/**
+ * @param r1
+ * @param r2
+ *
+ * @properties={typeid:24,uuid:"6ADD2E9F-8324-4B4B-A9B3-6A86880647AD"}
+ */
+function numSort(r1,r2){ //use negative number for reverse sort or read column header
+	var c = globals.sortColumn;
+	var s = c < 0 ? -1 : 1;
+	c = Math.abs(c);
+	var o = 0;
+	if (r1[c] * s < r2[c] * s) {
+		o = -1;
+	} else if (r1[c] * s > r2[c] * s) {
+		o = 1;
+	}
+	return o;
+}
+/**
+ * @param r1
+ * @param r2
+ *
+ * @properties={typeid:24,uuid:"17676391-205F-4234-9C9E-032A903CEFBA"}
+ */
+function alphaSort(r1,r2){
+	application.output('alphaSort');
+	//use negative number for reverse sort or read column header
+	var c = globals.sortColumn;
+	var s = c < 0 ? -1 : 1;
+	c = Math.abs(c);
+	var o = 0;
+	if (s > 0) {
+		if (r1[c] < r2[c]) {
+			o = -1;
+		} else if (r1[c] > r2[c]) {
+			o = 1;
+		}
+	} else {
+		if (r1[c] > r2[c]) {
+			o = -1;
+		} else if (r1[c] < r2[c]) {
+			o = 1;
+		}
+	}
+	return o;
+}

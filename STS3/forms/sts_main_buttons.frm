@@ -126,7 +126,7 @@ uuid:"4DBF9E85-4F64-4CBC-959B-242709B89DEA"
 {
 formIndex:5,
 imageMediaID:"E33EC3B3-10E3-40B2-8E06-12B3B5ABB771",
-location:"277,1",
+location:"277,0",
 mediaOptions:6,
 name:"iTwoThree",
 size:"61,58",
@@ -335,6 +335,6 @@ showInMenu:true,
 size:"927,538",
 styleName:"sts_one",
 titleText:"Main Buttons",
-transparent:true,
+transparent:false,
 typeid:3,
 uuid:"DD530A04-FFAF-42A6-9AA0-A07D94A28512"

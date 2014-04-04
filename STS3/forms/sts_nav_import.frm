@@ -4,7 +4,7 @@ items:[
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"28,225",
+location:"28,244",
 size:"148,23",
 text:"Import Generic Text Files",
 transparent:true,
@@ -14,7 +14,7 @@ uuid:"12917DC4-38B8-4B9D-A249-602C1A142021"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,141",
+location:"312,140",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -28,7 +28,7 @@ uuid:"196F9377-7629-44CD-A55C-E2A39E9259B9"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,225",
+location:"312,224",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -42,7 +42,7 @@ uuid:"29237F15-5FF9-45FD-931D-6ED0622A5132"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"23,387",
+location:"23,406",
 size:"148,23",
 text:"Standard Format Export",
 transparent:true,
@@ -52,7 +52,7 @@ uuid:"33D2667E-1290-4B76-B572-059A364E09F1"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,337",
+location:"312,336",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -66,7 +66,7 @@ uuid:"3A968465-7BBF-4535-AD51-DFFF0DC9FCF4"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"23,331",
+location:"23,352",
 size:"148,23",
 text:"Receiver Format Export",
 transparent:true,
@@ -76,7 +76,7 @@ uuid:"3C1132D7-17CE-4104-8625-3AEEC742E5F2"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,113",
+location:"312,112",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -90,7 +90,7 @@ uuid:"3CACFAD0-7C3C-4317-895D-F1B8FBBEC655"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,281",
+location:"312,280",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -104,7 +104,7 @@ uuid:"3ECAD068-2554-4DBB-89B9-25E336700028"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,57",
+location:"312,56",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -118,7 +118,7 @@ uuid:"3FC62D81-D481-4BBA-A891-97ABB00A5BD5"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"23,443",
+location:"23,460",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -130,11 +130,12 @@ typeid:7,
 uuid:"4E006D5F-074E-42F0-9D68-8C9440523320"
 },
 {
-location:"176,85",
+horizontalAlignment:2,
+location:"45,109",
 onActionMethodID:"23EBA98D-FA40-4997-9BC9-730473CF4B54",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"153,20",
+size:"128,23",
 text:"Identify Mapping",
 typeid:7,
 uuid:"5382FC0D-609E-42FF-8B45-4D6456488EA0"
@@ -142,7 +143,7 @@ uuid:"5382FC0D-609E-42FF-8B45-4D6456488EA0"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"28,29",
+location:"28,28",
 size:"148,23",
 text:"Import Receiver Format",
 transparent:true,
@@ -152,7 +153,7 @@ uuid:"545D7CA8-F598-4186-B55E-BE54FE2FF5B2"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"43,415",
+location:"43,433",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -166,7 +167,7 @@ uuid:"546ED1AC-60B6-4EDA-AD9D-9DF6AC1004A8"
 {
 fontType:"Arial,1,14",
 formIndex:8,
-location:"0,303",
+location:"0,325",
 size:"148,23",
 text:"Export Data",
 transparent:true,
@@ -176,7 +177,7 @@ uuid:"5A3C9CB0-560F-47F5-BB13-4F5B85ACD2F2"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"28,169",
+location:"28,190",
 size:"148,23",
 text:"Custom Import Modules",
 transparent:true,
@@ -186,7 +187,7 @@ uuid:"5F933612-EB7E-4099-A24B-F21B014CEEFF"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,309",
+location:"312,308",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -200,7 +201,7 @@ uuid:"5FA24B01-16D1-4EB1-8F75-268C469A5641"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"45,57",
+location:"45,55",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -214,7 +215,7 @@ uuid:"68F83A59-1737-417D-8714-D915D74E8349"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"45,197",
+location:"45,217",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -228,7 +229,7 @@ uuid:"8909AA8D-6EFC-421D-943E-6DC48EADA757"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"45,253",
+location:"45,271",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -251,11 +252,12 @@ uuid:"9D42A109-3237-4E69-85C4-AB63E6FE5AB5"
 },
 {
 formIndex:9,
-location:"43,113",
+horizontalAlignment:2,
+location:"45,136",
 onActionMethodID:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"227,20",
+size:"232,23",
 text:"Standard Format w/Action Codes",
 typeid:7,
 uuid:"A1DF2835-16CF-42B9-8D25-29195880A686"
@@ -263,7 +265,7 @@ uuid:"A1DF2835-16CF-42B9-8D25-29195880A686"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"45,141",
+location:"45,163",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -275,23 +277,9 @@ typeid:7,
 uuid:"A8BDCF78-28EC-42EA-909E-EE25DCBB50A1"
 },
 {
-displaysTags:true,
-formIndex:8,
-location:"45,113",
-onActionMethodID:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248",
-onDoubleClickMethodID:"-1",
-onRightClickMethodID:"-1",
-showClick:false,
-size:"150,23",
-text:"Standard Format w/Action Codes",
-transparent:true,
-typeid:7,
-uuid:"A9459E4A-D38F-4206-91C9-5C35BDB2B6D3"
-},
-{
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,197",
+location:"312,196",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -305,7 +293,7 @@ uuid:"AA6A948B-2F2A-4D4A-A70B-8F4B337C011B"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,393",
+location:"312,392",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -319,7 +307,7 @@ uuid:"AC5D216D-4A50-4729-B3AB-FE8D6CFB7355"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,85",
+location:"312,84",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -333,7 +321,7 @@ uuid:"AFB21705-C5F1-42A9-ABDF-89D6E29632B6"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,421",
+location:"312,420",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -347,7 +335,7 @@ uuid:"B1641766-7A47-4C58-A852-FD5CAA2E2A52"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"43,359",
+location:"43,379",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -361,7 +349,7 @@ uuid:"B1C16851-F345-4373-B939-3468901F7845"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,253",
+location:"312,252",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -375,7 +363,7 @@ uuid:"B611074C-4732-43D2-87B5-58B3CA96BE9B"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"292,29",
+location:"292,28",
 size:"148,23",
 text:"Custom Export Modules",
 transparent:true,
@@ -401,7 +389,7 @@ uuid:"D0E5C028-E3CC-42D0-B95E-1B75EBE04423"
 {
 fontType:"Arial,1,14",
 formIndex:8,
-location:"297,365",
+location:"297,364",
 size:"148,23",
 text:"Data Conversion",
 transparent:true,
@@ -411,7 +399,7 @@ uuid:"D88E4887-F710-4948-83B3-81D81979A118"
 {
 fontType:"Arial,1,14",
 formIndex:8,
-location:"297,169",
+location:"297,168",
 size:"192,23",
 text:"Portable Communicaton",
 transparent:true,
@@ -421,7 +409,7 @@ uuid:"E9CD20A1-A7F9-4905-B664-9B6CDFAEE0DF"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"28,85",
+location:"28,82",
 size:"148,23",
 text:"Import Standard Format",
 transparent:true,
@@ -431,7 +419,7 @@ uuid:"EB8D5009-EF35-46D1-9D7D-A2488C00A7F1"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"45,281",
+location:"45,298",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -445,7 +433,7 @@ uuid:"EC91E9C9-3080-4E02-954D-59DF8EDC77CE"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,449",
+location:"312,448",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -459,7 +447,7 @@ uuid:"F3197E86-F695-4D5B-B9E1-3F0E42D1BD48"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"312,477",
+location:"312,476",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

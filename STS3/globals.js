@@ -1033,7 +1033,6 @@ function numSort(r1,r2){ //use negative number for reverse sort or read column h
  * @properties={typeid:24,uuid:"17676391-205F-4234-9C9E-032A903CEFBA"}
  */
 function alphaSort(r1,r2){
-	application.output('alphaSort');
 	//use negative number for reverse sort or read column header
 	var c = globals.sortColumn;
 	var s = c < 0 ? -1 : 1;

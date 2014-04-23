@@ -1,4 +1,5 @@
 firstFormID:"DD530A04-FFAF-42A6-9AA0-A07D94A28512",
+i18nDataSource:"db:/stsservoy/i18n_table",
 modulesNames:"servoyCommons,servoySecurity,servoySecurityAuthenticator,servoySecurityLogin",
 onOpenMethodID:"D0109E13-1A5A-42E8-91A7-1211E35A99EC",
 typeid:43,

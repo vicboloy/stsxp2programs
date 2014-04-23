@@ -1,3 +1,4 @@
+dataSource:"db:/stsservoy/preferences2",
 extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
 items:[
 {
@@ -8,7 +9,7 @@ uuid:"19DE1FC9-1107-4F3A-B0C4-9973CA78FAD7"
 },
 {
 location:"162,551",
-onActionMethodID:"-1",
+onActionMethodID:"AFBA62E6-C20B-4626-ADB8-DC2D7D17E805",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 text:"Update",
@@ -112,6 +113,7 @@ uuid:"46E5E5EF-9C44-46D5-928C-DBCC33CF7564"
 ],
 name:"preferences_main",
 navigatorID:"-1",
+onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
 onShowMethodID:"46471F9F-18E4-4ECA-BFB0-3DB75F4EC181",
 size:"698,593",
 styleName:"sts_one",

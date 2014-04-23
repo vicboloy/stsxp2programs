@@ -162,7 +162,7 @@ uuid:"FB1D3882-5E4C-499A-98AB-8110C2688275"
 ],
 name:"unit_of_measure",
 navigatorID:"-1",
-onHideMethodID:"-1",
+onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
 onRecordSelectionMethodID:"8BFBB16C-B5EB-4D10-8E51-77728A017A2A",
 onShowMethodID:"36033168-4C98-4CC2-87E0-FD49B6946777",
 showInMenu:true,

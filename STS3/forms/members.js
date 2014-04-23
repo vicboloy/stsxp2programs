@@ -60,3 +60,17 @@ function onActionUpdateGroup(event) {
 function onLoad(event) {
 	elements.split.dividerLocation = 190.0;
 }
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"3D2BE672-8F9A-4905-9686-C38325E09AED"}
+ */
+function onHide(event) {
+	globals.setWindowClosed("");
+	return _super.onHide(event)
+}

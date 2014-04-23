@@ -54,6 +54,7 @@ uuid:"98DDCBF6-7F75-4DB8-B849-B187B97FA8C4"
 ],
 name:"user_management",
 navigatorID:"-1",
+onHideMethodID:"6019A443-F0FC-425F-B29D-03FBE67C6345",
 size:"641,0",
 styleName:"sts_one",
 transparent:true,

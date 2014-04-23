@@ -839,7 +839,6 @@ var lRomacPassWorker = false;
  * @properties={typeid:35,uuid:"67618A1C-68DA-49F7-BCB3-8DBBF10D2B3D",variableType:-4}
  */
 var foundPassword = false;
-
 /**
  * TODO generated, please specify type and doc for the params
  * @param event
@@ -848,10 +847,15 @@ var foundPassword = false;
  * @properties={typeid:24,uuid:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E"}
  */
 function onActionFileOpenDialog(event,updateValue) {
-	var dirs = plugins.file.showFileOpenDialog(2, "\\", false, null);
+	var priorPath = scopes.prefs[updateValue];
+	if (priorPath == "" || priorPath == null){priorPath = "C:\\"}
+	var dirs = plugins.file.showDirectorySelectDialog();
+	application.output(dirs);
+	//var dirs = plugins.file.showFileOpenDialog(2, priorPath, false, fileReceipt2);
+	if (dirs == null){return}
 	var path = dirs.getAbsolutePath();
 	var formName = event.getFormName();
-	forms[formName][updateValue] = path;
+	scopes.prefs[updateValue] = path;
 }
 
 

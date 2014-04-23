@@ -17,12 +17,13 @@ function onShowStatusDescr(firstShow, event) {
 	//application.output('employee class list form parent on show '+dataset);
 	globals.initLaborCodes();
 	globals.initStatusCodes();
-	elements.fab_shop.enabled = globals.promptFabShop;
-	elements.fab_shop.transparent = !globals.promptFabShop;
-	elements.push_transaction.enabled = globals.promptFabShop;
-	elements.percent_complete.enabled = globals.promptFabShop;
-	elements.fabtrol_labor_code.enabled = globals.lFabtrolInstalled;
-	elements.fabtrol_labor_code.transparent = !globals.lFabtrolInstalled;
+	var promptFS = (scopes.prefs.promptFabShop) ? true : false;
+	elements.fab_shop.enabled = promptFS;
+	elements.fab_shop.transparent = !scopes.prefs.promptFabShop;
+	elements.push_transaction.enabled = promptFS;
+	elements.percent_complete.enabled = promptFS;
+	elements.fabtrol_labor_code.enabled = promptFS;
+	elements.fabtrol_labor_code.transparent = !promptFS;
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();

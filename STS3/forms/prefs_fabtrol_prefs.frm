@@ -1,7 +1,7 @@
 extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
 items:[
 {
-dataProviderID:"fabtrolUserid",
+dataProviderID:"scopes.prefs.fabtrolUserid",
 location:"435,166",
 name:"fabtrolUserid",
 size:"140,20",
@@ -10,7 +10,7 @@ typeid:4,
 uuid:"0084B2EA-FFC0-443C-A2F9-9A4E8F62DFCE"
 },
 {
-dataProviderID:"ftSystemOdbc",
+dataProviderID:"scopes.prefs.ftSystemOdbc",
 location:"435,266",
 name:"ftSystemOdbc",
 size:"140,20",
@@ -19,7 +19,7 @@ typeid:4,
 uuid:"02618318-419A-4C5C-9583-8F54643FFC42"
 },
 {
-dataProviderID:"lFabtrolSeqTesting",
+dataProviderID:"scopes.prefs.lFabtrolSeqTesting",
 displayType:4,
 location:"143,75",
 name:"lFabtrolSeqTesting",
@@ -40,7 +40,7 @@ typeid:7,
 uuid:"0F51F741-B5AF-40FC-8AEB-E8029A6C6337"
 },
 {
-dataProviderID:"fabtrolRootPath",
+dataProviderID:"scopes.prefs.fabtrolRootPath",
 location:"143,50",
 name:"fabtrolRootPath",
 size:"425,20",
@@ -49,7 +49,7 @@ typeid:4,
 uuid:"28F95B97-A4C4-4EBE-A379-684CBAC58A10"
 },
 {
-dataProviderID:"fabtrolDatabase",
+dataProviderID:"scopes.prefs.fabtrolDatabase",
 location:"143,191",
 name:"fabtrolDatabase",
 size:"163,20",
@@ -69,10 +69,11 @@ typeid:7,
 uuid:"418F3C79-E69F-44EA-8505-7A8C95AF36F1"
 },
 {
-dataProviderID:"lFabtrolMrp",
+dataProviderID:"scopes.prefs.lFabtrolMrp",
 displayType:4,
 location:"143,241",
 name:"lFabtrolMrp",
+onActionMethodID:"868AFB1F-A0DB-4410-B3A3-1B25578AD0CE",
 size:"140,20",
 text:"MRP  Version",
 typeid:4,
@@ -129,7 +130,7 @@ typeid:7,
 uuid:"6AABB839-C63F-4E16-80B8-5357631B7EDD"
 },
 {
-dataProviderID:"ftSimpleJobs",
+dataProviderID:"scopes.prefs.ftSimpleJobs",
 displayType:2,
 location:"435,216",
 name:"ftSimpleJobs",
@@ -150,7 +151,7 @@ typeid:7,
 uuid:"6D1CA5C6-3BA6-4718-A8D9-7AF3CCB174DE"
 },
 {
-dataProviderID:"lFabtrolShip",
+dataProviderID:"scopes.prefs.lFabtrolShip",
 displayType:4,
 location:"143,101",
 name:"lFabtrolShip",
@@ -161,7 +162,7 @@ typeid:4,
 uuid:"7196073A-EE70-488D-B58F-FBBA1B1FB9E9"
 },
 {
-dataProviderID:"fabtrolPassword",
+dataProviderID:"scopes.prefs.fabtrolPassword",
 location:"435,191",
 name:"fabtrolPassword",
 size:"140,20",
@@ -170,17 +171,18 @@ typeid:4,
 uuid:"780ECBB2-9A30-4A2D-8CB0-84B606FFDE18"
 },
 {
-dataProviderID:"lFabtrolSqlVersion",
+dataProviderID:"scopes.prefs.lFabtrolSqlVersion",
 displayType:4,
 location:"143,141",
 name:"lFabtrolSqlVersion",
+onActionMethodID:"868AFB1F-A0DB-4410-B3A3-1B25578AD0CE",
 size:"163,20",
 text:"SQL Version",
 typeid:4,
 uuid:"7D66D272-FB70-4933-B792-740DF8FE1DAD"
 },
 {
-dataProviderID:"ftProjectOdbc",
+dataProviderID:"scopes.prefs.ftProjectOdbc",
 location:"143,291",
 name:"ftProjectOdbc",
 size:"140,20",
@@ -189,7 +191,7 @@ typeid:4,
 uuid:"7EE854A1-11F2-4B87-9BE1-370710C4591E"
 },
 {
-dataProviderID:"ftMatchType",
+dataProviderID:"scopes.prefs.ftMatchType",
 displayType:2,
 location:"430,75",
 name:"ftMatchType",
@@ -199,7 +201,7 @@ typeid:4,
 uuid:"8A1A3001-4EEE-4BA4-B47E-65EB0537C178"
 },
 {
-dataProviderID:"lFabtrolImportOnly",
+dataProviderID:"scopes.prefs.lFabtrolImportOnly",
 displayType:4,
 location:"314,15",
 name:"lFabtrolImportOnly",
@@ -220,7 +222,7 @@ typeid:7,
 uuid:"922B4023-F996-431D-BA9F-EDFE364BCC7B"
 },
 {
-dataProviderID:"ftUnitOdbc",
+dataProviderID:"scopes.prefs.ftUnitOdbc",
 location:"435,291",
 name:"ftUnitOdbc",
 size:"140,20",
@@ -229,7 +231,7 @@ typeid:4,
 uuid:"AA6D5D94-A731-44A6-8A9D-5BA755A35332"
 },
 {
-dataProviderID:"fabtrolServerName",
+dataProviderID:"scopes.prefs.fabtrolServerName",
 location:"143,166",
 name:"fabtrolServerName",
 size:"163,20",
@@ -249,7 +251,7 @@ typeid:7,
 uuid:"B96E9613-164D-45DC-A5D7-261B04110C78"
 },
 {
-dataProviderID:"ftVer2x",
+dataProviderID:"scopes.prefs.ftVer2x",
 displayType:4,
 location:"143,342",
 name:"ftVer2x",
@@ -259,10 +261,11 @@ typeid:4,
 uuid:"C3F39E9E-D718-4E8E-ABC1-D5C10AF397E6"
 },
 {
-dataProviderID:"lFabtrolInstalled",
+dataProviderID:"scopes.prefs.lFabtrolInstalled",
 displayType:4,
 location:"145,15",
 name:"lFabtrolInstalled",
+onActionMethodID:"868AFB1F-A0DB-4410-B3A3-1B25578AD0CE",
 size:"144,20",
 text:"FabTrol Installation",
 typeid:4,
@@ -280,7 +283,7 @@ typeid:7,
 uuid:"CB11595D-26C4-4037-A500-584959D602EC"
 },
 {
-dataProviderID:"ftDoNotMuliplyMinors",
+dataProviderID:"scopes.prefs.ftDoNotMuliplyMinors",
 displayType:4,
 location:"143,321",
 name:"ftDoNotMuliplyMinors",
@@ -290,7 +293,7 @@ typeid:4,
 uuid:"D56E370E-62BC-41F7-A985-7F270738B432"
 },
 {
-dataProviderID:"ftFabtrolOdbc",
+dataProviderID:"scopes.prefs.ftFabtrolOdbc",
 location:"143,266",
 name:"ftFabtrolOdbc",
 size:"140,20",

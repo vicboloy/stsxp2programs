@@ -20,7 +20,7 @@ typeid:7,
 uuid:"03F6E9D2-ED34-4438-9055-265C2F7AAA22"
 },
 {
-dataProviderID:"reportpath",
+dataProviderID:"scopes.prefs.reportpath",
 location:"215,255",
 name:"reportpath",
 size:"356,20",
@@ -65,7 +65,7 @@ typeid:7,
 uuid:"0FC13EDD-D4C8-4625-B7E8-19CB76C4B17E"
 },
 {
-dataProviderID:"xportpath",
+dataProviderID:"scopes.prefs.xportpath",
 location:"215,165",
 name:"xportpath",
 size:"356,20",
@@ -74,7 +74,7 @@ typeid:4,
 uuid:"10EE4C02-ADBF-41A2-B045-B0EFAC93F74F"
 },
 {
-dataProviderID:"mtrpath",
+dataProviderID:"scopes.prefs.mtrpath",
 location:"215,285",
 name:"mtrpath",
 size:"356,20",
@@ -105,7 +105,7 @@ typeid:7,
 uuid:"221F042F-88F4-493F-90A5-6F88CF8FFFB9"
 },
 {
-dataProviderID:"importpath",
+dataProviderID:"scopes.prefs.importpath",
 location:"215,195",
 name:"importpath",
 size:"356,20",
@@ -132,7 +132,7 @@ typeid:7,
 uuid:"2AAAFE92-5A84-4180-9EC8-E45DE5B31F80"
 },
 {
-dataProviderID:"localpath",
+dataProviderID:"scopes.prefs.localpath",
 location:"215,75",
 name:"localpath",
 size:"356,20",
@@ -245,7 +245,7 @@ typeid:7,
 uuid:"85BFF98F-E61C-4D07-908A-275E403914AE"
 },
 {
-dataProviderID:"datapath",
+dataProviderID:"scopes.prefs.datapath",
 location:"215,15",
 name:"datapath",
 size:"356,20",
@@ -254,7 +254,7 @@ typeid:4,
 uuid:"880DFC0C-B16A-4ED3-8F24-5DFCA862DB1C"
 },
 {
-dataProviderID:"foxfirepath",
+dataProviderID:"scopes.prefs.foxfirepath",
 location:"215,225",
 name:"foxfirepath",
 size:"356,20",
@@ -274,7 +274,7 @@ typeid:7,
 uuid:"A5EBA9C7-F0C5-44ED-B89F-8CA898C12B96"
 },
 {
-dataProviderID:"wh32datapath",
+dataProviderID:"scopes.prefs.wh32datapath",
 location:"215,105",
 name:"wh32datapath",
 size:"356,20",
@@ -283,7 +283,7 @@ typeid:4,
 uuid:"BA22475E-40BF-4E2B-B342-F513AFD8BF42"
 },
 {
-dataProviderID:"temppath",
+dataProviderID:"scopes.prefs.temppath",
 location:"215,135",
 name:"temppath",
 size:"356,20",
@@ -339,8 +339,16 @@ typeid:7,
 uuid:"EF86C278-67CE-4473-8281-3D43040672FE"
 },
 {
+customProperties:"methods:{
+onActionMethodID:{
+arguments:[
+null,
+\"'localFiles'\"
+]
+}
+}",
 location:"76,45",
-onActionMethodID:"-1",
+onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"111,20",

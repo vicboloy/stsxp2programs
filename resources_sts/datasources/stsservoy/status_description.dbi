@@ -18,7 +18,7 @@ name:"allow_multi_scan"
 },
 {
 allowNull:true,
-creationOrderIndex:22,
+creationOrderIndex:21,
 dataType:4,
 name:"delete_flag"
 },
@@ -59,7 +59,7 @@ name:"labor_code_department"
 },
 {
 allowNull:true,
-creationOrderIndex:21,
+creationOrderIndex:20,
 dataType:4,
 name:"logic_flag"
 },
@@ -139,6 +139,14 @@ creationOrderIndex:3,
 dataType:12,
 length:20,
 name:"status_type"
+},
+{
+allowNull:true,
+creationOrderIndex:22,
+dataType:12,
+flags:4,
+length:36,
+name:"tenant_uuid"
 },
 {
 allowNull:true,

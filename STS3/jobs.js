@@ -1,4 +1,34 @@
 /**
+* @type abcPrinterList {Array} Array containing units of measure
+ *
+ * @properties={typeid:35,uuid:"4E21A316-7E58-4E95-86A4-2D8FAEEDF8F3",variableType:-4}
+ */
+var abcPrinterList = new Array;
+abcPrinterList.push("Allegro");
+abcPrinterList.push("DataMax");
+abcPrinterList.push("LabeLase 1000");
+abcPrinterList.push("Pinnacle");
+abcPrinterList.push("Prodigy Plus");
+abcPrinterList.push("TEC B-400");
+abcPrinterList.push("Zebra");
+
+/**
+ * @type aLabelType {Array} aLabelType Array containing units of measure
+*
+ * @properties={typeid:35,uuid:"02B9543F-345C-4593-8040-1815159F3615",variableType:-4}
+ */
+var aLabelType = new Array;
+aLabelType.push("Raw Matl");
+aLabelType.push("Serial #");
+aLabelType.push("Serial01");
+aLabelType.push("Standard");
+/**
+ * @type lanUsers {Array} lanUsers Array containing units of measure
+ *
+ * @properties={typeid:35,uuid:"A543810F-CC73-4F16-A330-E50E11B16632",variableType:-4}
+ */
+var lanUsers = new Array;
+/**
  * @properties={typeid:35,uuid:"C21C7885-423A-458D-A0AC-E90ACF5D7D37",variableType:-4}
  */
 var importResults = [];
@@ -14,6 +44,10 @@ var mappedFormatArray = [];
  * @properties={typeid:35,uuid:"1C39F0C7-0609-47D5-AF72-C34E9A51E89F",variableType:-4}
  */
 var mappedFormatArrayDescrips = [];
+/**
+ * @properties={typeid:35,uuid:"7445E671-3137-437B-9240-AFE9CCE38848",variableType:-4}
+ */
+var usedFields = [];
 /**
  * @type {String}
  *
@@ -62,7 +96,7 @@ function getFieldDataMapping(columnName, content){
 		fs.mapped_format = "FabSuite";
 		if (fs.search() > 0){
 			var rec = fs.getSelectedRecord();
-			fieldMap = rec.mapping_key+","+rec.field_order+",0";
+			fieldMap = rec.mapping_key+","+rec.field_order;
 			return fieldMap;
 		} else {
 			return "";
@@ -130,7 +164,7 @@ function readKissTextFile(file) {
 	dataErrorCheck(index);
 	var mappingDone = loadKissMapping();
 	if (!mappingDone){return}
-	savePiecemarks();
+	//savePiecemarks();
 }
 /**
  * @AllowToRunInFind
@@ -155,10 +189,10 @@ function loadKissMapping(){
 			for (var i6=1;i6 <= count;i6++){
 				var rec6 = fs5.getRecord(i6);
 				mapTo = rec6.mapping_key+','+rec6.field_order;
-				if (mapTo == oldMapTo){mapCount++}else{mapCount = 0}
+				//if (mapTo == oldMapTo){mapCount++}else{mapCount = 0}
 				if (rec6.mapped_field == null){continue}  // skip null mappings, won't work
-				mappedFormatArray[mapTo+','+mapCount] = rec6.mapped_field;
-				mappedFormatArrayDescrips[mapTo+','+mapCount] = rec6.field_name;
+				mappedFormatArray[mapTo] = rec6.mapped_field+'.'+rec6.field_sort_order;
+				mappedFormatArrayDescrips[mapTo] = rec6.field_name;
 				oldMapTo = mapTo;
 			}
 		}
@@ -175,12 +209,11 @@ function loadKissMapping(){
 		for (var i7=1;i7<fieldCount;i7++){ // start at index=1 since line name is the prefix and is not mapped
 			var fieldValue = data[i6][i7];
 			if (fieldValue == ""){continue}	// no need to map empty fields
-			var indexName = lineNumber[0]+","+i7+",0"; //at least this field is mapped.  ignore additional mappings, not fatal
+			var indexName = lineNumber[0]+","+i7; //at least this field is mapped.  ignore additional mappings, not fatal
 			if (!mappedFormatArray[indexName]){
 				if (!(indexName in needsMap)){
 					needsMap[indexName]="";
 				}
-				//application.output("NOT MAPPED: "+data[i6]);
 			}
 		}
 	}
@@ -213,14 +246,9 @@ function idHeaders(){
 			//create records for missing mapping fields under mapping format
 			/** @type {JSFoundset<db:/stsservoy/mappings>} */
 			var fs2 = databaseManager.getFoundSet("db:/stsservoy/mapping");
-			//var fs2 = sts_mapping;
 			fieldName = data[index][i3].trim();
 			if (fieldName.search(RegExp('[A-Za-z]+')) == -1){fieldName = "UNDEFINED";}
 			var fieldPosition = i3;
-			//if (mappingLine == fieldName){
-			//	application.output('field name same '+mappingLine);
-			//}
-			//application.output('mapping format: '+format+', Mapping key: '+mappingKey+', Line: '+mappingLine+', index: '+fieldPosition+', field name: '+fieldName);
 			if (fs2.find()){
 				fs2.mapped_format = format;
 				fs2.mapping_line = mappingLine;
@@ -238,7 +266,6 @@ function idHeaders(){
 					rec.field_name = fieldName;
 					rec.field_order = fieldPosition-1;
 					databaseManager.saveData(rec);
-					//application.output('format '+rec.mapped_format+ ' '+rec.field_name);
 				}
 			}
 		}
@@ -261,11 +288,13 @@ function idHeaders(){
  */
 function dataErrorCheck(index) {
  	var data = importResults.results;
+ 	usedFields = [];
 	//var index2 = index;
-	var length2 = length < 3000 ? length : length*.10;
+	//var length2 = length < 3000 ? length : length*.10;
 	var lines = [];
 	var lineType = "";
 	var typeFieldCount = 0;
+	var length = data.length;
 	for (var i = index;i < length; i++){ // get sample line types and sizes
 		lineType = data[i][0];
 		typeFieldCount = data[i].length;
@@ -276,6 +305,11 @@ function dataErrorCheck(index) {
 			if (lines[lineType] != typeFieldCount){
 				application.output('Found '+lineType+' '+typeFieldCount+' but had '+lines[lineType]+' fields')
 			}
+		}
+		for (var i5=1;i5<typeFieldCount;i5++){
+			if (lineType == "H"){continue}
+			var indexed = lineType+","+i5;
+			if (data[i][i5] && !usedFields[indexed]){usedFields[indexed] = true;} // get list of unused/blank fields
 		}
 	}
 	// Update key code temp
@@ -376,6 +410,7 @@ function savePiecemarks(){
 				application.output(lineArray);
 				var field = mappings[i2].split('.');
 				fieldValue = newRec[field[1]];
+				if (!(field[1] in usedFields) && lineArray[i] != ""){usedFields[field[1]]=true}
 				if (newRec[field[1]] == null){
 					newRec[field[1]] = lineArray[i];
 				} else {

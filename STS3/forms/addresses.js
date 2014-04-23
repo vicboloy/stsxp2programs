@@ -89,6 +89,7 @@ function onAddressTypeChange(oldValue, newValue, event) {
 		fs.value2 = null;
 		fs.valuelist_name = "address_types";
 		fs.value_id = application.getValueListArray('address_types').length + 1;
+		fs.tenant_uuid = globals.secCurrentTenantID;
 	}
 	//TODO Address should have only one in each Address Type
 	//var fs = databaseManager.getFoundSet('db:/stsservoy/addresses')

@@ -39,6 +39,7 @@ uuid:"E5E33D9F-0877-48F6-A242-868531092CD2"
 ],
 name:"customers",
 navigatorID:"-1",
+onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
 onLoadMethodID:"A785614B-DB14-4162-B492-EBA64064C985",
 onShowMethodID:"-1",
 scrollbars:4,

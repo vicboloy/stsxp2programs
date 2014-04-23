@@ -207,15 +207,7 @@ function initStatusCodes(){
 	}
 	application.setValueListItems('stsvl_status_code',aStatusCodes);
 }
-//Globals------------------------------------------------------------------------------
-/**
- * @properties={typeid:35,uuid:"E1DC94D2-8655-4C50-9A57-2658AD82EFB6",variableType:-4}
- */
-var promptFabShop = false;
-/**
- * @properties={typeid:35,uuid:"B007F807-72DF-4D25-8E3B-69DDD61AF26B",variableType:-4}
- */
-var lFabtrolInstalled =false;
+//Globals-------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------
 
@@ -807,7 +799,14 @@ function onSolutionOpen() {
 	var tenantID = sec_current_user.tenant_uuid;
 	secCurrentTenantIDs = secGetTenantIDs(secCurrentAssociationMasterID);
 	//secSetCurrentTenant(tenantID);
-	//getTablesFilters(tenantID);	
+	getTablesFilters(tenantID);
+	var appType = application.getApplicationType();
+	//application.output(appType+"app type"); //2 is smart client
+	if (appType == 1){
+		var texts = plugins.file.readFile('c:\\STS.txt');
+		application.output(texts);
+	}
+	onStartLoadPrefs();	
 }
 
 /**
@@ -877,6 +876,33 @@ function onActionFileOpenDialog(event,updateValue) {
 	//var dirs = 
 	var file = plugins.file.showFileOpenDialog(2, "\\", false, null);
 	//var path = dirs.getAbsolutePath();
+}
+/**
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"A6F4FD9B-D10C-4BFD-9ADB-89DAA8CBDCD7"}
+ */
+function onStartLoadPrefs(){
+	//var prefs = scopes.prefs;
+	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
+	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
+	if (fs.find()){
+		fs.user_id = -1;
+		fs.tenant_id = globals.secCurrentTenantID;
+		var recIndex = 1;
+		var recCount = fs.search();
+		var record = null;
+		while (recCount > 0 && recIndex <= recCount){
+			record = fs.getRecord(recIndex);
+			if (record.field_type == "boolean"){
+				scopes.prefs[record.field_name] = record.field_value == "true" ? true : false;
+			} else {
+				scopes.prefs[record.field_name] = record.field_value;
+			}
+			recIndex++;
+		}
+
+	}
 }
 //----------------------------------------
 /**
@@ -948,7 +974,29 @@ function setWindowOpened(windowName){
 		application.setValueListItems('sts_nav_openWindows',globals.aOpenWindows);
 
 	}
-	application.output(globals.aOpenWindows); //joeremove
+//	application.output(globals.aOpenWindows); //joeremove
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param windowName
+ *
+ * @properties={typeid:24,uuid:"D0A287B8-0F23-4C9E-8821-023919515D46"}
+ */
+function setWindowClosed(windowName){
+	var win = application.getActiveWindow();
+	var formName = win.title;
+	var tempArray = new Array;
+	//tempArray = globals.aTrackWindows;
+	var tempLength = globals.aTrackWindows.length;
+	var windowName = "";
+	for (var index = 0; index < tempLength; index++){
+		windowName = globals.aTrackWindows[index];
+		if (windowName != formName){
+			tempArray.push(windowName);
+		}
+	}
+	globals.aTrackWindows = tempArray;
+	application.setValueListItems('stsvl_nav_windows',tempArray);
 }
 /**
  * Set tenant filters on applicable tables to enable access to creating more tenants, but not view other information.  This expressly leaves out the 
@@ -961,11 +1009,13 @@ function setWindowOpened(windowName){
  */
 function getTablesFilters(tenantID) {
 	var permitArray = [];
+	permitArray.push(null);
 	var ignoreTableList = 'associations users groups keys group_keys keys_table permissions tenant_list user_groups ';
 	
 	for (var index0 in secCurrentTenantIDs){
 		permitArray.push(index0)
 	}
+	permitArray.push(globals.secCurrentTenantID);
 	var tableNames = databaseManager.getTableNames(SEC_SERVER);
 	var tableName = "";
 	var tableFilter = "";
@@ -981,12 +1031,12 @@ function getTablesFilters(tenantID) {
 		var tableColumn = jsTableColumns.getColumn('tenant_uuid');
 		if (tableColumn == null){continue}
 		tableFilter = 'Filter_'+tableName;
-		//application.output('table '+tableName+' filter '+tableFilter)
 		//databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','=',tenantID,tableFilter);
-		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','IN',permitArray,tableFilter);
+		var success = databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','IN',permitArray,tableFilter);
+		//application.output(success+' table '+tableName+' filter '+tableFilter+" "+permitArray);
 		tableColumn = jsTableColumns.getColumn('delete_flag');
-		if (tableColumn == null){continue}
-		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'delete_flag','!=',0,'enableDelete');
+		//if (tableColumn == null){continue}
+		//databaseManager.addTableFilterParam(SEC_SERVER,tableName,'delete_flag','!=',0,'enableDelete');
 	}
 	// Filter associations table for all present
 	//databaseManager.addTableFilterParam(SEC_SERVER,'associations','tenant_group_uuid','=',secCurrentAssociationMasterID,'associationFilter');

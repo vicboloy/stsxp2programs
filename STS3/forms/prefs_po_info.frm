@@ -35,7 +35,7 @@ typeid:21,
 uuid:"4FD3BDEA-FA17-4F90-84CB-18457C9352A4"
 },
 {
-dataProviderID:"relSetting",
+dataProviderID:"scopes.prefs.relSetting",
 displayType:3,
 formIndex:1,
 location:"54,268",
@@ -66,7 +66,7 @@ typeid:7,
 uuid:"835065E7-B1EE-41D6-99FD-18E677DAA4D5"
 },
 {
-dataProviderID:"poCostSetting",
+dataProviderID:"scopes.prefs.poCostSetting",
 displayType:3,
 formIndex:2,
 location:"376,141",
@@ -78,7 +78,7 @@ uuid:"8787E372-44A4-4462-88D0-1714D2FDE402",
 valuelistID:"16E184D8-7C10-47C2-8627-2502F6547807"
 },
 {
-dataProviderID:"poSetting",
+dataProviderID:"scopes.prefs.poSetting",
 displayType:3,
 formIndex:1,
 location:"54,145",

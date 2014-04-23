@@ -1,7 +1,7 @@
 extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
 items:[
 {
-dataProviderID:"lFsLocnBatch",
+dataProviderID:"scopes.prefs.lFsLocnBatch",
 displayType:4,
 location:"155,203",
 name:"lFsLocnBatch",
@@ -35,10 +35,11 @@ typeid:7,
 uuid:"329A71E7-BED2-497D-AE4B-1E560D79A0E9"
 },
 {
-dataProviderID:"lFabsuiteInstalled",
+dataProviderID:"scopes.prefs.lFabsuiteInstalled",
 displayType:4,
 location:"156,28",
 name:"lFabsuiteInstalled",
+onActionMethodID:"FC48C4DA-1691-4F14-9A7D-1AE283AA5FFE",
 size:"161,20",
 text:"FabSuite Installation",
 typeid:4,
@@ -67,7 +68,7 @@ typeid:7,
 uuid:"6F69FFEE-1384-4DC3-9041-CE5CB5071D30"
 },
 {
-dataProviderID:"lFabsuitePassWorker",
+dataProviderID:"scopes.prefs.lFabsuitePassWorker",
 displayType:4,
 location:"155,88",
 name:"lFabsuitePassWorker",
@@ -78,7 +79,7 @@ typeid:4,
 uuid:"712B0C35-BE36-46FD-B23F-5E7AE4DF8053"
 },
 {
-dataProviderID:"fabsuiteDatabase",
+dataProviderID:"scopes.prefs.fabsuiteDatabase",
 location:"156,168",
 name:"fabsuiteDatabase",
 size:"140,20",
@@ -87,7 +88,7 @@ typeid:4,
 uuid:"8A8127BB-6123-4C78-985B-05CF2C093F92"
 },
 {
-dataProviderID:"lFabsuiteSqlVersion",
+dataProviderID:"scopes.prefs.lFabsuiteSqlVersion",
 displayType:4,
 location:"156,123",
 name:"lFabsuiteSqlVersion",
@@ -109,7 +110,8 @@ typeid:7,
 uuid:"AFE1113E-E5A1-4B03-BEFA-8162CC89D349"
 },
 {
-dataProviderID:"fabsuitepassword",
+dataProviderID:"scopes.prefs.fabsuitepassword",
+displayType:6,
 location:"383,168",
 name:"fabsuitepassword",
 size:"140,20",
@@ -129,7 +131,7 @@ typeid:7,
 uuid:"C1390AD9-DD31-48D1-A596-0635D8DB1046"
 },
 {
-dataProviderID:"lFsAllowNonSerial",
+dataProviderID:"scopes.prefs.lFsAllowNonSerial",
 displayType:4,
 location:"155,228",
 name:"lFsAllowNonSerial",
@@ -139,7 +141,8 @@ typeid:4,
 uuid:"D0E4226F-4955-4E74-B2F8-42A88F5A86D7"
 },
 {
-dataProviderID:"fabsuiteUserid",
+dataProviderID:"scopes.prefs.fabsuiteUserid",
+displayType:6,
 location:"383,146",
 name:"fabsuiteUserid",
 size:"140,20",
@@ -148,7 +151,7 @@ typeid:4,
 uuid:"D356BE64-897F-4D2C-AE82-83E873A23707"
 },
 {
-dataProviderID:"fabsuiteServerName",
+dataProviderID:"scopes.prefs.fabsuiteServerName",
 location:"156,148",
 name:"fabsuiteServerName",
 size:"140,20",
@@ -157,7 +160,7 @@ typeid:4,
 uuid:"D8DEAC1F-675D-4623-BBE1-C2E9F59406E6"
 },
 {
-dataProviderID:"lFabsuiteImportOnly",
+dataProviderID:"scopes.prefs.lFabsuiteImportOnly",
 displayType:4,
 location:"340,28",
 name:"lFabsuiteImportOnly",
@@ -168,7 +171,7 @@ typeid:4,
 uuid:"E49C9E2F-F0C2-429B-9DED-D1867842607D"
 },
 {
-dataProviderID:"fabsuiteRootPath",
+dataProviderID:"scopes.prefs.fabsuiteRootPath",
 location:"156,58",
 name:"fabsuiteRootPath",
 size:"396,20",

@@ -124,7 +124,7 @@ uuid:"D099EF15-74EB-46DB-B767-792E9120EC41"
 ],
 name:"end_conditions",
 navigatorID:"-1",
-onHideMethodID:"-1",
+onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
 onRecordSelectionMethodID:"C7BBBE77-1B45-4874-BCF4-C79131018700",
 onShowMethodID:"16DA5ADC-AD41-4B59-93B4-EBB53F37C097",
 showInMenu:true,

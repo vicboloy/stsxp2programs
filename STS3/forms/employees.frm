@@ -1,8 +1,9 @@
 dataSource:"db:/stsservoy/employee",
+extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {
+extendsID:"B8264F35-3B2C-445D-8057-07A22DF67C55",
 height:515,
-partType:5,
 typeid:19,
 uuid:"57B52994-278F-43D8-B74E-A214459BCF31"
 },
@@ -38,6 +39,7 @@ uuid:"6063A910-9E01-414D-854A-5CC103D2AA4A"
 ],
 name:"employees",
 navigatorID:"-1",
+onHideMethodID:"F136BFBF-4BE1-48EC-87FE-5C11DFC2727D",
 onLoadMethodID:"ED2A7507-650C-4E32-B610-5214AF60E105",
 onShowMethodID:"D6F28D92-40D4-4CE3-8583-A89421109813",
 scrollbars:4,

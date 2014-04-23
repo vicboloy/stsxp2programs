@@ -10,7 +10,7 @@ typeid:4,
 uuid:"02E07BD9-9DDB-457E-9427-DB61B2AD36B2"
 },
 {
-dataProviderID:"lForceReload",
+dataProviderID:"scopes.prefs.lForceReload",
 displayType:4,
 format:"(YN)",
 location:"176,193",
@@ -21,7 +21,7 @@ typeid:4,
 uuid:"059A8F52-258E-4B8D-ADA7-A6600DAEDD21"
 },
 {
-dataProviderID:"promptFabShop",
+dataProviderID:"scopes.prefs.promptFabShop",
 displayType:4,
 location:"176,370",
 name:"promptFabShop",
@@ -31,7 +31,7 @@ typeid:4,
 uuid:"0A8EDB56-EEEF-4518-86C6-DC32B6BF4B80"
 },
 {
-dataProviderID:"reqdShipStatusCode",
+dataProviderID:"scopes.prefs.reqdShipStatusCode",
 displayType:4,
 location:"176,345",
 name:"reqdShipStatusCode",
@@ -41,7 +41,7 @@ typeid:4,
 uuid:"173A0D09-1FD0-411A-9D0E-E1666FFE7641"
 },
 {
-dataProviderID:"xmitDelay",
+dataProviderID:"scopes.prefs.xmitDelay",
 location:"176,143",
 name:"xmitDelay",
 size:"46,20",
@@ -50,7 +50,7 @@ typeid:4,
 uuid:"18116424-D642-45EE-AC03-B74115F2C2A5"
 },
 {
-dataProviderID:"shipF8Off",
+dataProviderID:"scopes.prefs.shipF8Off",
 displayType:4,
 location:"327,422",
 name:"shipF8Off",
@@ -72,7 +72,7 @@ typeid:7,
 uuid:"1F59F2B4-AE56-423A-896D-8B1C4F9174D1"
 },
 {
-dataProviderID:"defaultRfPrinter",
+dataProviderID:"scopes.prefs.defaultRfPrinter",
 location:"327,342",
 name:"defaultRfPrinter",
 size:"241,20",
@@ -91,7 +91,7 @@ typeid:7,
 uuid:"2699FD60-5208-4A84-9A8B-112844E01C2F"
 },
 {
-dataProviderID:"rfPlRpType",
+dataProviderID:"scopes.prefs.rfPlRpType",
 displayType:2,
 location:"327,215",
 name:"rfPlRpType",
@@ -101,7 +101,7 @@ typeid:4,
 uuid:"27BD3E86-F3C8-42ED-A9A0-8870BA31BE13"
 },
 {
-dataProviderID:"welderGroupQty",
+dataProviderID:"scopes.prefs.welderGroupQty",
 location:"176,420",
 name:"welderGroupQty",
 size:"46,20",
@@ -129,7 +129,7 @@ typeid:7,
 uuid:"30E6AA9A-F8B3-489D-9A07-FC52FE09F5CA"
 },
 {
-dataProviderID:"lShowRs",
+dataProviderID:"scopes.prefs.lShowRs",
 displayType:4,
 format:"(YN)",
 location:"176,118",
@@ -140,7 +140,7 @@ typeid:4,
 uuid:"39BDDB86-C6C0-48E9-BDA3-5594329DDBDA"
 },
 {
-dataProviderID:"rfStamperConnected",
+dataProviderID:"scopes.prefs.rfStamperConnected",
 displayType:4,
 location:"176,308",
 name:"rfStamperConnected",
@@ -161,7 +161,7 @@ typeid:7,
 uuid:"3FE285E1-086B-4765-84C9-E1C3A6CB93B0"
 },
 {
-dataProviderID:"rfRefresh",
+dataProviderID:"scopes.prefs.rfRefresh",
 displayType:4,
 format:"(YN)",
 location:"176,268",
@@ -205,7 +205,7 @@ typeid:7,
 uuid:"4D8ECF29-7AD4-4BD1-9B04-0D3675538A51"
 },
 {
-dataProviderID:"autoCreateLoad",
+dataProviderID:"scopes.prefs.autoCreateLoad",
 displayType:4,
 formIndex:3,
 location:"331,165",
@@ -217,7 +217,7 @@ typeid:4,
 uuid:"4F63B152-DD41-4820-9998-BEFF85F05809"
 },
 {
-dataProviderID:"lAllowInterimShipments",
+dataProviderID:"scopes.prefs.lAllowInterimShipments",
 displayType:4,
 location:"327,372",
 name:"lAllowInterimShipments",
@@ -248,7 +248,7 @@ typeid:7,
 uuid:"56EDA0BD-70DC-489A-BD16-97B85CD68D9E"
 },
 {
-dataProviderID:"printIdQty",
+dataProviderID:"scopes.prefs.printIdQty",
 displayType:4,
 format:"(YN)",
 location:"176,243",
@@ -259,7 +259,7 @@ typeid:4,
 uuid:"5925C27A-9B10-4B7B-A0D9-6CC2FCE82954"
 },
 {
-dataProviderID:"rfPortableType",
+dataProviderID:"scopes.prefs.rfPortableType",
 displayType:2,
 location:"10,43",
 name:"rfPortableType",
@@ -281,7 +281,7 @@ typeid:7,
 uuid:"64971CAB-EDAC-46D9-B518-D431D9AA16D7"
 },
 {
-dataProviderID:"globalF8Off",
+dataProviderID:"scopes.prefs.globalF8Off",
 displayType:4,
 location:"327,397",
 name:"globalF8Off",
@@ -313,7 +313,7 @@ typeid:7,
 uuid:"870A718A-801A-4B50-8FF7-A5131D5467C7"
 },
 {
-dataProviderID:"lNewRecvId",
+dataProviderID:"scopes.prefs.lNewRecvId",
 displayType:4,
 formIndex:2,
 location:"331,145",
@@ -336,7 +336,7 @@ typeid:7,
 uuid:"8B396259-0A67-4699-BB10-CB4CA0ED933B"
 },
 {
-dataProviderID:"chngShipLoad",
+dataProviderID:"scopes.prefs.chngShipLoad",
 displayType:4,
 formIndex:4,
 location:"331,125",
@@ -348,7 +348,7 @@ typeid:4,
 uuid:"8D0E57CD-86DC-43EE-95A4-1323674E4CBF"
 },
 {
-dataProviderID:"chngRecvLoad",
+dataProviderID:"scopes.prefs.chngRecvLoad",
 displayType:4,
 formIndex:1,
 location:"331,105",
@@ -360,7 +360,7 @@ typeid:4,
 uuid:"8F3AA4B1-A7E8-4F6E-B348-A7098F01936D"
 },
 {
-dataProviderID:"lAddLocationWtPcs",
+dataProviderID:"scopes.prefs.lAddLocationWtPcs",
 displayType:4,
 location:"327,447",
 name:"lAddLocationWtPcs",
@@ -392,7 +392,7 @@ typeid:7,
 uuid:"9642B9F1-ADC7-4B40-941A-29C2F58818DE"
 },
 {
-dataProviderID:"welderGroupRange",
+dataProviderID:"scopes.prefs.welderGroupRange",
 location:"237,420",
 name:"welderGroupRange",
 size:"46,20",
@@ -402,7 +402,7 @@ uuid:"9937456B-07BD-49C8-BD1B-998B4D950B8C"
 },
 {
 borderType:"RoundedBorder,1.0,1.0,1.0,1.0,#000000,#000000,#000000,#000000,3.0;3.0;3.0;3.0;3.0;3.0;3.0;3.0,dotted;dotted;dotted;dotted",
-dataProviderID:"rfLoadWt",
+dataProviderID:"scopes.prefs.rfLoadWt",
 displayType:3,
 formIndex:1,
 location:"327,25",
@@ -426,7 +426,7 @@ typeid:7,
 uuid:"9E83C413-1EE4-4B00-B9C9-5E6FE7D95365"
 },
 {
-dataProviderID:"lUseSeq",
+dataProviderID:"scopes.prefs.lUseSeq",
 displayType:4,
 format:"(YN)",
 location:"176,218",
@@ -487,7 +487,7 @@ typeid:21,
 uuid:"BF5AB78A-DA36-4B6F-AD87-4A300811BC6E"
 },
 {
-dataProviderID:"yourFcCallSign",
+dataProviderID:"scopes.prefs.yourFcCallSign",
 location:"10,93",
 name:"yourFcCallSign",
 size:"210,20",
@@ -538,7 +538,7 @@ typeid:7,
 uuid:"ECD980AF-2069-4D8C-84C2-27AE7210C832"
 },
 {
-dataProviderID:"lSaveRfTrans",
+dataProviderID:"scopes.prefs.lSaveRfTrans",
 displayType:4,
 location:"176,395",
 name:"lSaveRfTrans",
@@ -548,7 +548,7 @@ typeid:4,
 uuid:"ECEEC35B-26D9-42BA-B7F3-243BEF2F35DC"
 },
 {
-dataProviderID:"rfPromptDuration",
+dataProviderID:"scopes.prefs.rfPromptDuration",
 location:"176,445",
 name:"rfPromptDuration",
 size:"70,20",
@@ -557,7 +557,7 @@ typeid:4,
 uuid:"F24F8E12-7344-4C13-8F25-F1D00C2D0A2D"
 },
 {
-dataProviderID:"rfDuplStatusScans",
+dataProviderID:"scopes.prefs.rfDuplStatusScans",
 displayType:4,
 location:"327,297",
 name:"rfDuplStatusScans",

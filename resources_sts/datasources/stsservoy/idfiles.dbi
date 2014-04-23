@@ -17,6 +17,14 @@ name:"altitude"
 },
 {
 allowNull:true,
+creationOrderIndex:65,
+dataType:12,
+flags:4,
+length:36,
+name:"barcode_id"
+},
+{
+allowNull:true,
 creationOrderIndex:43,
 dataType:-7,
 name:"bhn_test"

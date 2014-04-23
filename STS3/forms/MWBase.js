@@ -83,7 +83,7 @@ function onActionClickCarrier(event) {
  * @properties={typeid:24,uuid:"C61C110C-151B-4C9D-B0AB-FA32D9401D16"}
  */
 function onActionClickEmployeeClass(event) {
-	onActionClickMainButton(event,"Employee Class",'emp_class_code',50,50,610,270,true);
+	onActionClickMainButton(event,"Employee Class",'emp_class_code',50,50,610,270,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -331,7 +331,9 @@ function focusWindow(){
  * @properties={typeid:24,uuid:"F136BFBF-4BE1-48EC-87FE-5C11DFC2727D"}
  */
 function removeWindowTrack(){
-	var formName = controller.getName();
+	var win = application.getActiveWindow();
+	var formName = win.title;
+	//var formName = controller.getName();
 	var tempArray = new Array;
 	//tempArray = globals.aTrackWindows;
 	var tempLength = globals.aTrackWindows.length;

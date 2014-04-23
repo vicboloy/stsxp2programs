@@ -1,7 +1,7 @@
 extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
 items:[
 {
-dataProviderID:"stsQues",
+dataProviderID:"scopes.prefs.stsQues",
 location:"184,198",
 name:"stsQues",
 size:"387,20",
@@ -104,7 +104,7 @@ typeid:7,
 uuid:"5ACA6C55-72DA-4752-8F3D-08F89D241F50"
 },
 {
-dataProviderID:"stsStop",
+dataProviderID:"scopes.prefs.stsStop",
 location:"184,168",
 name:"stsStop",
 size:"387,20",
@@ -131,7 +131,7 @@ typeid:7,
 uuid:"635BEFD5-350F-4FCF-9AD7-E736986A5031"
 },
 {
-dataProviderID:"stsBell",
+dataProviderID:"scopes.prefs.stsBell",
 location:"184,108",
 name:"stsBell",
 size:"387,20",
@@ -173,7 +173,7 @@ typeid:7,
 uuid:"9270D33F-E32E-4780-B7D4-74684755224B"
 },
 {
-dataProviderID:"stsAster",
+dataProviderID:"scopes.prefs.stsAster",
 location:"184,228",
 name:"stsAster",
 size:"387,20",
@@ -200,7 +200,7 @@ typeid:7,
 uuid:"9BCBEBE1-4C92-4D8C-BEF5-D7A77B9398D4"
 },
 {
-dataProviderID:"stsExit",
+dataProviderID:"scopes.prefs.stsExit",
 location:"184,78",
 name:"stsExit",
 size:"387,20",
@@ -249,7 +249,7 @@ typeid:7,
 uuid:"CA81FB32-1FD2-490B-9212-BD6A9290386C"
 },
 {
-dataProviderID:"stsStart",
+dataProviderID:"scopes.prefs.stsStart",
 location:"184,48",
 name:"stsStart",
 size:"387,20",
@@ -258,7 +258,7 @@ typeid:4,
 uuid:"E928BAAA-9F95-4CC8-8856-3622F87A1D2B"
 },
 {
-dataProviderID:"stsInfo",
+dataProviderID:"scopes.prefs.stsInfo",
 location:"184,138",
 name:"stsInfo",
 size:"387,20",

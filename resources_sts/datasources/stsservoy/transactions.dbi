@@ -7,7 +7,7 @@ creationOrderIndex:34,
 dataType:12,
 flags:4,
 length:36,
-name:"transaction_id"
+name:"trans_id"
 },
 {
 allowNull:true,

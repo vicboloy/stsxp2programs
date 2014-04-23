@@ -1,7 +1,7 @@
 extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
 items:[
 {
-dataProviderID:"winTitle",
+dataProviderID:"scopes.prefs.winTitle",
 location:"150,160",
 name:"winTitle",
 size:"424,20",
@@ -47,7 +47,7 @@ typeid:7,
 uuid:"66E8370E-C46E-4F2A-B859-652A41EEE0D8"
 },
 {
-dataProviderID:"iconFile",
+dataProviderID:"scopes.prefs.iconFile",
 location:"150,100",
 name:"iconFile",
 size:"424,20",
@@ -74,7 +74,7 @@ typeid:7,
 uuid:"B05888E3-7F03-4606-87A2-8C4339755F49"
 },
 {
-dataProviderID:"bmpFile",
+dataProviderID:"scopes.prefs.bmpFile",
 location:"150,130",
 name:"bmpFile",
 size:"424,20",
@@ -83,7 +83,7 @@ typeid:4,
 uuid:"BCF810EF-FA8A-48E9-B605-4003981C4506"
 },
 {
-dataProviderID:"lLogoDisplay",
+dataProviderID:"scopes.prefs.lLogoDisplay",
 displayType:4,
 location:"150,70",
 name:"lLogoDisplay",

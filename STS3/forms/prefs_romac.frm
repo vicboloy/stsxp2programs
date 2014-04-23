@@ -19,7 +19,7 @@ typeid:7,
 uuid:"2134E286-5A93-4A14-804B-F3EDAC230A0F"
 },
 {
-dataProviderID:"romacRootPath",
+dataProviderID:"scopes.prefs.romacRootPath",
 location:"146,57",
 name:"romacRootPath",
 size:"425,20",
@@ -28,10 +28,11 @@ typeid:4,
 uuid:"29879F3A-268D-48C3-B14E-FB6E8C7FCF1C"
 },
 {
-dataProviderID:"lRomacInstalled",
+dataProviderID:"scopes.prefs.lRomacInstalled",
 displayType:4,
 location:"160,22",
 name:"lRomacInstalled",
+onActionMethodID:"17D85BA2-FF21-4F2C-B6CB-DA8F23A36AC8",
 size:"135,20",
 text:"Romac Installation",
 transparent:true,
@@ -39,7 +40,7 @@ typeid:4,
 uuid:"41F2E103-F046-4BAC-839C-22CE3B0D3212"
 },
 {
-dataProviderID:"lRomacPassWorker",
+dataProviderID:"scopes.prefs.lRomacPassWorker",
 displayType:4,
 location:"159,92",
 name:"lRomacPassWorker",
@@ -50,9 +51,10 @@ typeid:4,
 uuid:"8DF8FB1B-D723-45C0-9B3A-63A031D33FB3"
 },
 {
-dataProviderID:"lRomacImportOnly",
+dataProviderID:"scopes.prefs.lRomacImportOnly",
 displayType:4,
 location:"348,22",
+name:"lRomacImportOnly",
 onActionMethodID:"-1",
 onDataChangeMethodID:"-1",
 size:"203,20",

@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/preferences2",
+joinType:1,
+name:"sts_prefs",
+primaryDataSource:"db:/stsservoy/preferences2",
+typeid:22,
+uuid:"60908A35-DCFE-45AE-8BF4-9AC58CB2D692"

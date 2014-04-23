@@ -1,0 +1,14 @@
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"0D082124-7389-4611-9460-DD84D431C5D2"
+}
+],
+name:"kiss_option_discards",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"427DFA44-6E49-474B-8D19-57096AB82240"

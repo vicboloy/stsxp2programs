@@ -160,3 +160,4 @@ function onDataChange(oldValue, newValue, event) {
 	globals.newRecordKey = "";
 	return true
 }
+

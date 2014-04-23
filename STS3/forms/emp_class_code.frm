@@ -185,7 +185,7 @@ visible:false
 ],
 name:"emp_class_code",
 navigatorID:"-1",
-onHideMethodID:"-1",
+onHideMethodID:"F136BFBF-4BE1-48EC-87FE-5C11DFC2727D",
 onLoadMethodID:"-1",
 onRecordSelectionMethodID:"76EF827F-5EBC-488E-AF0B-920AE2FC2807",
 onShowMethodID:"E47D7FF2-8473-4AD4-AD69-AC99BA008846",

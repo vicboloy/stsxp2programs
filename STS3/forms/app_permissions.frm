@@ -52,6 +52,7 @@ uuid:"627D4746-D2A5-4993-8AC0-D91EFA7C0A8B"
 ],
 name:"app_permissions",
 navigatorID:"-1",
+onHideMethodID:"41C6029A-BC29-4525-B403-ACA73D655FD8",
 scrollbars:0,
 showInMenu:true,
 size:"512,480",

@@ -34,6 +34,7 @@ uuid:"A1FEAFE9-803E-4E40-8CE4-A49E0FECE6EF"
 ],
 name:"jobs_tabs",
 navigatorID:"-1",
+onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
 showInMenu:true,
 size:"957,450",
 styleName:"sts_one",

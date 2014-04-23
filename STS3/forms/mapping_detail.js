@@ -60,6 +60,9 @@ function onActionSaveButton(event) {
 	if (rec.mapping_key == null){
 		rec.mapping_key = mappingKey;
 	}
+	if (rec.field_sort_order == null && rec.field_order != 0){
+		rec.field_sort_order = 1;
+	}
 	if (mapColumn != "" && mapTable != ""){
 		rec.mapped_field = mapTable+ '.'+mapColumn;
 	}
@@ -169,6 +172,8 @@ function duplicateRecord(event, index, location, changeSelection) {
 	//startEditing(event);
 	var indexNew = _super.duplicateRecord(event, index, location, changeSelection) 
 	var rec = foundset.getRecord(indexNew);
+	var recSort = rec.field_sort_order;
+	if (recSort == null){recSort = 2} else {recSort += 1;}
 	rec.mapped_field = null;
 	//foundset.sort('mapped_format asc, mapping_key asc, field_order asc');
 	return indexNew;

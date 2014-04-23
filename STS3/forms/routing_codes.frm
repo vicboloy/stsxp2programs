@@ -239,6 +239,7 @@ valuelistID:"10D3DCDA-BA13-438A-BF13-C22D734E8E65"
 ],
 name:"routing_codes",
 navigatorID:"-1",
+onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
 onShowMethodID:"01A10811-600F-47BB-9936-2B301CB8668A",
 size:"653,0",
 styleName:"sts_one",

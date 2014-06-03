@@ -30,7 +30,8 @@ placeholderText:"Division Name",
 size:"140,22",
 tabSeq:-2,
 typeid:4,
-uuid:"567F5170-E5C1-4C1E-87B3-52E21B140A53"
+uuid:"567F5170-E5C1-4C1E-87B3-52E21B140A53",
+visible:false
 },
 {
 fontType:"Verdana,1,11",
@@ -44,7 +45,8 @@ tabSeq:-1,
 text:"Company:",
 transparent:true,
 typeid:7,
-uuid:"5E53A8A7-32BD-4BA5-82C7-7352928D3052"
+uuid:"5E53A8A7-32BD-4BA5-82C7-7352928D3052",
+visible:false
 },
 {
 dataProviderID:"errorMessage",

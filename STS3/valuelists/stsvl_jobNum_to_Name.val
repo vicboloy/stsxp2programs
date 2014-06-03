@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"job_number",
+dataProviderID2:"job_title",
+dataSource:"db:/stsservoy/jobs",
+name:"stsvl_jobNum_to_Name",
+returnDataProviders:2,
+showDataProviders:2,
+typeid:34,
+uuid:"C3DFE726-7BF2-4AE3-89A1-46285815AA27",
+valueListType:1

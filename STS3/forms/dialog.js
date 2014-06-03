@@ -8,5 +8,4 @@
  */
 function onDialogLoad(event) {
 	globals.dialogResponse = "";
-	//TODO Is this ever called?
 }

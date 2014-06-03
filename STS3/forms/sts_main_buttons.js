@@ -104,3 +104,14 @@ function onLoadMain(event) {
 	replaceTabIcon('');
 
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"090C0E7C-8BB9-4683-8822-491A39A5DF32"}
+ */
+function onActionLogout(event) {
+	globals.doLogout();
+}

@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/piecemarks",
+items:[
+{foreignColumnName:"piecemark_id",primaryDataProviderID:"piecemark_id",typeid:23,uuid:"75659D3B-8FD3-44E8-9507-8C520F0D14A8"}
+],
+joinType:1,
+name:"st2_idfiles_to_piecemarks",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"46D45B1E-6E4F-4BB6-8E60-72EF702ECEFD"

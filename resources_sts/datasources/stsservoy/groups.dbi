@@ -19,7 +19,7 @@ name:"application_id"
 },
 {
 allowNull:true,
-creationOrderIndex:5,
+creationOrderIndex:4,
 dataType:12,
 length:1024,
 name:"description",
@@ -27,7 +27,7 @@ titleText:"Ddescription"
 },
 {
 allowNull:true,
-creationOrderIndex:4,
+creationOrderIndex:3,
 dataType:12,
 length:50,
 name:"display_name",
@@ -35,14 +35,14 @@ titleText:"Display Name"
 },
 {
 allowNull:true,
-creationOrderIndex:3,
+creationOrderIndex:2,
 dataType:12,
 length:50,
 name:"group_name"
 },
 {
 allowNull:true,
-creationOrderIndex:6,
+creationOrderIndex:5,
 dataType:12,
 flags:4,
 length:36,

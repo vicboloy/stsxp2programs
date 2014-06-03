@@ -123,6 +123,15 @@ function onActionClickEP(event) {
 function onActionClickSC(event) {
 	onActionClickMainButton(event,"Status Codes",'status_descriptions',50,50,750,595,false);
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"81C230BD-F337-45A5-9638-883D435E9B82"}
+ */
+function onActionClickViewLoads(event) {
+	onActionClickMainButton(event,"View Loads",'loads_tabs',50,50,750,595,false);
+}
 
 /**
  * TODO generated, please specify type and doc for the params

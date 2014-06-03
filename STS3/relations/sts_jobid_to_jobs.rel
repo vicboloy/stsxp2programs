@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/jobs",
+items:[
+{foreignColumnName:"job_id",primaryDataProviderID:"scopes.jobs.jobUnderCustomer",typeid:23,uuid:"27101BF2-E084-4B97-89E2-80AC4C55A723"}
+],
+joinType:1,
+name:"sts_jobid_to_jobs",
+primaryDataSource:"db:/stsservoy/jobs",
+typeid:22,
+uuid:"B719687D-9EB0-49D2-BEA6-6496B43FE840"

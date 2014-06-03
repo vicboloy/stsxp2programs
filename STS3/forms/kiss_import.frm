@@ -22,6 +22,7 @@ uuid:"61F5AE39-B447-4105-BD5F-DA335FF577E8",
 visible:false
 },
 {
+enabled:false,
 location:"10,84",
 onActionMethodID:"23EBA98D-FA40-4997-9BC9-730473CF4B54",
 onDoubleClickMethodID:"-1",

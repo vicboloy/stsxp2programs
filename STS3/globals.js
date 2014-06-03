@@ -1,4 +1,4 @@
-//TODO Work Navigation
+//TODO Work Navigation test
 //TODO UUID/bolt-on issues speak with Jason
 //TODO Codes left/data on the right
 //TODO Pull record upon entry of data
@@ -172,6 +172,23 @@ function initStatusTypes(){
  * @properties={typeid:35,uuid:"0FA5E1F6-D008-4A83-8DDE-0D72F434B116",variableType:-4}
  */
 var aLaborCodes = [];
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"C8E73EE3-0C3E-484C-ADE7-ECF0D06813E7"}
+ */
+function doLogout(event) {
+	globals.doDialog("Exit Steel Tracking System","Exit STS program?","Exit","Cancel");
+	if (globals.dialogResponse == "yes"){
+		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT) {
+			application.showURL("http://" + application.getHostName() + "/webclient.html", "_top");
+		}	    	  
+	} else {
+		globals.secLogout('STS3','','');
+	}
+	security.logout();
+}
 /**
  * @properties={typeid:24,uuid:"5F61D7B0-929D-4EF0-A151-60BA15B93690"}
  */
@@ -664,6 +681,18 @@ var selectedCustomerIndex = 0;
  */
 var selectedCustomerID = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3AB6046F-A623-4E3B-B2D1-0E306BC21FF2"}
+ */
+var importCustomerID = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F7FFD927-E1DC-4740-BF04-1B8DDC3F1893"}
+ */
+var importCustomerName = "";
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"8AB2EAB0-28A6-4575-940C-BC5C813524F5",variableType:4}
@@ -765,6 +794,18 @@ var dialogButtonYes = "";
  */
 var dialogButtonNo = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"11E851BE-AE58-4698-A1D7-D014829866BD"}
+ */
+var stsMessages = "";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"720F3278-AE0F-4C98-A456-B5A35BA878A4",variableType:4}
+ */
+var importRecordCount=0;
+/**
  * Callback method for when solution is opened.
  *
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
@@ -863,7 +904,17 @@ function onActionCancelButton(event) {
 	var win = application.getActiveWindow();
 	win.hide();
 }
-
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param tableName
+ *
+ * @properties={typeid:24,uuid:"A6C4F80B-AE5D-45BB-A2FB-5BCC9DB19244"}
+ */
+function saveColumnLocations(tableName){
+	
+	
+	
+}
 /**
  * Perform the element default action.
  *
@@ -891,8 +942,10 @@ function onStartLoadPrefs(){
 		fs.tenant_id = globals.secCurrentTenantID;
 		var recIndex = 1;
 		var recCount = fs.search();
+		recCount = databaseManager.getFoundSetCount(fs);
 		var record = null;
-		while (recCount > 0 && recIndex <= recCount){
+		while (recCount > 0 && recIndex < recCount){
+			//while (recCount > 0 && recIndex <= recCount){
 			record = fs.getRecord(recIndex);
 			if (record.field_type == "boolean"){
 				scopes.prefs[record.field_name] = record.field_value == "true" ? true : false;
@@ -1058,6 +1111,10 @@ var sortType = false;//alpha
  * @properties={typeid:35,uuid:"56AC3759-5C9A-4430-8994-6C872E0F877F",variableType:4}
  */
 var firstTimeKISS = 1;
+/**
+ * @properties={typeid:35,uuid:"DB610743-AF57-491A-A949-B4D3A7DC3FFD",variableType:-4}
+ */
+var kissed = [];
 /**
  * @param r1
  * @param r2

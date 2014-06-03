@@ -1,4 +1,9 @@
-
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"2C31DDBD-155A-4F94-8BA1-9B8A6C5066D5",variableType:4}
+ */
+var barcodeLength = 10;
 /**
  * @type {String}
  *
@@ -381,14 +386,14 @@ var lCowPosPC = true;
 var lFabShip = false;
 /**
  * @type {Number}
- *
+ * Weight below which import requests number of piecemarks per ID (independed of quantity)
  *
  * @properties={typeid:35,uuid:"9A30699D-F6DC-4492-94A5-75AB24A3CA4D",variableType:8}
  */
 var wtPrompt = 0.000000;
 /**
  * @type {Number}
- *
+ * Quantity below at which import requests number of piecemarks per ID (independent of weight)
  *
  * @properties={typeid:35,uuid:"4A49D468-DCAF-4954-A5D3-1712FA52481D",variableType:8}
  */
@@ -420,7 +425,7 @@ var dflRouteCode = "NORMAL";
  */
 var validStatusCodes = true;
 /**
- *
+ * Keep minor piecemarks during import or not.
  * @properties={typeid:35,uuid:"B691096B-AAE6-4A20-9715-F1AEDA199594",variableType:-4}
  */
 var lKeepMinorPcMarks = true;
@@ -962,3 +967,4 @@ var lRomacPassWorker = false;
  * @properties={typeid:35,uuid:"FBFBEAD2-3977-4D8D-B00F-E394E09EAB78",variableType:-4}
  */
 var foundPassword = false;
+// _________________________________________________________________________________________________

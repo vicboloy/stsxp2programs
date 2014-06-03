@@ -204,6 +204,17 @@ text:"View Employee Class Information",
 transparent:true,
 typeid:7,
 uuid:"F8AC0690-2FAE-4F3A-BD76-FAE1A05BCE14"
+},
+{
+formIndex:9,
+location:"33,33",
+onActionMethodID:"81C230BD-F337-45A5-9638-883D435E9B82",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"162,23",
+text:"View Load Information",
+typeid:7,
+uuid:"F9E17EB8-7DFB-4F8E-B921-A45EFDE12541"
 }
 ],
 name:"sts_nav_view",

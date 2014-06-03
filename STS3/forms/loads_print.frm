@@ -1,0 +1,15 @@
+dataSource:"db:/stsservoy/jobs",
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"8D6215FE-856A-4892-9655-C180C79ECEF8"
+}
+],
+name:"loads_print",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"E0EA52C4-C8B6-4C18-8DFD-A281A388D877"

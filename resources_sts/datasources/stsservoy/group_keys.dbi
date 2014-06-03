@@ -33,7 +33,7 @@ name:"key_id"
 },
 {
 allowNull:true,
-creationOrderIndex:5,
+creationOrderIndex:4,
 dataType:12,
 flags:4,
 length:36,

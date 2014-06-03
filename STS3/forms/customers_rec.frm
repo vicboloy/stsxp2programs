@@ -8,7 +8,7 @@ onActionMethodID:"C8FE22F3-9879-4FD0-A0ED-8D4F46D0F3CF",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"212,26",
-text:"i18n:Add New Customer",
+text:"Add New Customer",
 typeid:7,
 uuid:"991FF59F-3C3D-44B8-9489-25E25875CE24"
 },

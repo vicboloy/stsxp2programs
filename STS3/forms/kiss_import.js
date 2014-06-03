@@ -4,16 +4,55 @@
 var mappedFormatArray = [];
 /**
  * TODO generated, please specify type and doc for the params
+ * @param file
+ *
+ * @properties={typeid:24,uuid:"CEB68FE5-3762-496D-B815-88ADC962BE24"}
+ */
+function readKissHeader(file){
+	
+}
+/**
+ * TODO generated, please specify type and doc for the params
  *
  * @properties={typeid:24,uuid:"29613655-7267-4CA0-84D1-F961CC7C7709"}
+ * @AllowToRunInFind
  */
 function fileReceipt(file){
 	if (file == null){return}
 	scopes.jobs.readKissTextFile(file);
 	//establish error-free or dialog with errors, correct column count, mapping, 
-	var win = application.createWindow("KISS Import", JSWindow.DIALOG);
-	win.title = "KISS Import";
-	win.show(forms.kiss_option_import);
+	var headerLine = [];
+	for (var index=0;index<40;index++){
+		if (scopes.jobs.importResults.results[index][0] == "H"){
+			headerLine = scopes.jobs.importResults.results[index];
+			break;
+		}
+	}
+	var jobNumberIndex = scopes.jobs.getFieldDataMapping("mapped_field","jobs.job_number").split(",")[1];
+	var jobNumber = headerLine[jobNumberIndex];//global job number setting
+	scopes.jobs.jobName = jobNumber;
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var jobsFS = databaseManager.getFoundSet('stsservoy','jobs');
+	if (jobsFS.find()){
+		jobsFS.job_number = jobNumber;
+		var count = jobsFS.search();
+		if (count > 0){
+			scopes.jobs.customerIDs = [];
+			scopes.jobs.jobIDs = [];
+			for (var index2 = 1;index2 <= count;index2++){
+				scopes.jobs.customerIDs.push(jobsFS.customer_id);
+				scopes.jobs.jobIDs.push(jobsFS.job_id);
+				jobsFS.getRecord(index2);
+			}
+			var win = application.createWindow("KISS Import", JSWindow.DIALOG);
+			win.title = "KISS Import";
+			win.show(forms.kiss_option_import);
+		} else {
+			application.output('job not found');
+			plugins.dialogs.showErrorDialog('Job does not exist.','Job Number '+jobNumber+' does not exist.  Create a new job '+jobNumber+' for this import.');
+			//show dialog for customers
+	}
+	} 
 }
 /**
  * TODO generated, please specify type and doc for the params

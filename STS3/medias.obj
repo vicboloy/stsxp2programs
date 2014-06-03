@@ -7,6 +7,12 @@ uuid:"731966DB-4825-4F2D-9CD0-14F853C4CE8C"
 },
 {
 mimeType:"image/png",
+name:"Logoff.png",
+typeid:37,
+uuid:"E3F8D652-8E42-435C-9C3E-DE4285F2B5B9"
+},
+{
+mimeType:"image/png",
 name:"lt.png",
 typeid:37,
 uuid:"911E8CC8-4253-4552-BFB2-301F40FA4936"

@@ -968,3 +968,74 @@ var lRomacPassWorker = false;
  */
 var foundPassword = false;
 // _________________________________________________________________________________________________
+/**
+ * @properties={typeid:24,uuid:"8F8422B9-2B61-4F09-9761-3E69957359CC"}
+ */
+function mainWindowFront(){
+	application.updateUI();
+	var windowx = application.getWindow();
+	if (windowx != null){
+		windowx.toFront();
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"55DC9A89-CE4E-4A73-B9DD-1F8CF4486A13"}
+ */
+function getLabelFormats(){
+	var reportsDir = scopes.prefs.reportpath;
+	var formatArray = [];
+	formatArray.push('<NONE>');
+	formatArray.push('one.btw');
+	formatArray.push('two.btw');
+	formatArray.push('three.btw');
+	application.setValueListItems('stsvl_label_formats',formatArray);
+}
+/**
+ * @properties={typeid:24,uuid:"67C84D85-364A-462C-8852-C98980D5D716"}
+ */
+function stopWindowTrack(){
+	globals.setWindowClosed("");
+	var win = application.getActiveWindow();
+	win.hide();
+	return true
+}
+/**
+ * Handle focus gained event of an element on the form. Return false when the focus gained event of the element itself shouldn't be triggered.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"6160DF0D-B40D-428D-A490-312C43E14183"}
+ */
+function onElementFocusGained(event) {
+	var fmName = event.getFormName();
+	var elName = event.getElementName();
+	var field = forms[fmName].elements[elName];
+	if (elName && fmName && field.enabled){
+		scopes.prefs.oldBGcolor = field.bgcolor;
+		field.bgcolor = "Silver";
+		//application.updateUI();
+	}
+	return true
+}
+
+/**
+ * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"2E5A08F3-4F2D-49A6-AA9B-585FC6F102D9"}
+ */
+function onElementFocusLost(event) {
+	var fmName = event.getFormName();
+	var elName = event.getElementName();
+	var field = forms[fmName].elements[elName];
+	if (elName && fmName && field.enabled){
+		field.bgcolor = scopes.prefs.oldBGcolor;
+		//application.updateUI();
+	}
+	return true
+}

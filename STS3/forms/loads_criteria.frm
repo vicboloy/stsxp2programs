@@ -1,3 +1,4 @@
+dataSource:"db:/stsservoy/jobs",
 extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
 items:[
 {
@@ -24,7 +25,8 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 text:"button",
 typeid:7,
-uuid:"25FA909F-F0BA-4EB2-88BE-B3D3ECF14F57"
+uuid:"25FA909F-F0BA-4EB2-88BE-B3D3ECF14F57",
+visible:false
 },
 {
 groupID:"6CE07663-D786-40C9-ADB2-0DD930EE5D26",
@@ -35,9 +37,9 @@ typeid:4,
 uuid:"2BEB8B7F-8EC5-495A-A204-A54F065AA532"
 },
 {
+dataProviderID:"vLabTotPieces",
 horizontalAlignment:2,
 location:"336,300",
-name:"frmLabTotPieces",
 transparent:true,
 typeid:7,
 uuid:"2CF55527-6519-4433-B70C-82A4C1486438"
@@ -109,7 +111,7 @@ enabled:false,
 horizontalAlignment:0,
 location:"33,399",
 name:"buttInfo",
-onActionMethodID:"-1",
+onActionMethodID:"8206E21B-8B05-4261-90FE-94191969C2A0",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"129,20",
@@ -126,15 +128,16 @@ onDataChangeMethodID:"24D1CA61-7322-4694-9FDD-A6AFFC7B66CD",
 placeholderText:"Job # Required",
 typeid:4,
 uuid:"61851B26-848D-4EA9-93F3-DA96DBCA2819",
-valuelistID:"9A6B6D4F-CF82-47BC-BAF6-C91B2E34B9D5"
+valuelistID:"FF2CD58D-6470-4DEF-BAB3-2DF4480C978F"
 },
 {
 dataProviderID:"vCustNum",
 displayType:10,
+editable:false,
 location:"100,15",
 name:"frmCustNum",
 onDataChangeMethodID:"105C8AB5-9447-48F1-ABFB-5BB900A1338C",
-placeholderText:"Customer # Required",
+transparent:true,
 typeid:4,
 uuid:"63B1A483-3222-4E91-8023-B367F440C6B7",
 valuelistID:"B53B74FF-081E-462E-BDBA-40249F200298"
@@ -167,7 +170,6 @@ typeid:7,
 uuid:"68870370-E333-4B57-9163-22E20B86F5E7"
 },
 {
-groupID:"9FBBD794-BCD3-49CF-9B48-2BE5A5040A40",
 location:"100,190",
 name:"frmPiecemark",
 size:"73,20",
@@ -208,9 +210,9 @@ typeid:7,
 uuid:"71F18007-3CEB-42D7-8CAB-C56998B2D708"
 },
 {
+dataProviderID:"vLabIDNums",
 horizontalAlignment:2,
 location:"336,275",
-name:"frmLabIDNums",
 transparent:true,
 typeid:7,
 uuid:"879BE5B8-42D6-4A26-ADCE-26DF3DC54CD6"
@@ -226,7 +228,6 @@ typeid:7,
 uuid:"8BBD446B-2AFC-4FE6-A0C3-B59A084DBB95"
 },
 {
-groupID:"9FBBD794-BCD3-49CF-9B48-2BE5A5040A40",
 horizontalAlignment:4,
 location:"15,190",
 text:"Pc Mark:",
@@ -243,9 +244,9 @@ typeid:4,
 uuid:"AED8D63C-66D1-40D8-BF76-49608BD58158"
 },
 {
+dataProviderID:"vLabNumPcmks",
 horizontalAlignment:2,
 location:"336,350",
-name:"frmLabNumPcmks",
 transparent:true,
 typeid:7,
 uuid:"B38F2373-026B-40DA-B952-F83FA99E0D07"
@@ -276,9 +277,9 @@ typeid:7,
 uuid:"BE0DA3F3-3B1C-426E-9ED0-35BA2AFBB7DC"
 },
 {
+dataProviderID:"vLabTotalWt",
 horizontalAlignment:2,
 location:"336,325",
-name:"frmLabTotalWt",
 transparent:true,
 typeid:7,
 uuid:"BECE0D6A-D0B7-488A-B44F-0AA473A4FA9D"
@@ -324,7 +325,7 @@ enabled:false,
 horizontalAlignment:0,
 location:"172,399",
 name:"buttBrowse",
-onActionMethodID:"9A549511-92BB-4AE0-8389-6D2EBBEF238E",
+onActionMethodID:"0920030A-EFA9-4626-BDF7-5D62D4C8D963",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 text:"Browse",

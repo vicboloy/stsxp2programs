@@ -806,6 +806,10 @@ var stsMessages = "";
  */
 var importRecordCount=0;
 /**
+ * @properties={typeid:35,uuid:"C66FF7FA-8440-4E0E-B47E-31C478698CDA",variableType:-4}
+ */
+var tempArray = [];
+/**
  * Callback method for when solution is opened.
  *
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}

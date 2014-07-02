@@ -20,6 +20,7 @@ label, button, field, combobox, check, radio, listbox, spinner {
 	font-size: 10px;
 	text-align: left;
 	vertical-align: middle;
+	selected = gray;
 }
 
 field, combobox {

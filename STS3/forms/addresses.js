@@ -36,6 +36,7 @@ function addNewAddress(event) {
 		foundset.customer_id = customerUUID;
 		//forms.addressesCustomer.onActionEditAddress(event);
 	}
+	foundset.tenant_uuid = globals.secCurrentTenantID;
 	onActionEditAddress(event);
 }
 
@@ -183,6 +184,7 @@ function onEditAddress(event,editStatus){
  */
 function onActionSaveEditAddress(event) {
 	onEditAddress(event,false);
+	foundset.tenant_uuid = globals.secCurrentTenantID;
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
 }

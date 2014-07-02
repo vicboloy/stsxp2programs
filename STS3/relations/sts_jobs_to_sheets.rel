@@ -1,10 +1,11 @@
 allowCreationRelatedRecords:true,
-foreignDataSource:"db:/stsservoy/sheets",
+foreignDataSource:"db:/stsservoy/jobs",
 items:[
+{foreignColumnName:"delete_flag",operator:256,primaryDataProviderID:"delete_flag",typeid:23,uuid:"37423C4F-4AF3-4F05-AB20-9D87D2E2F504"},
 {foreignColumnName:"job_id",primaryDataProviderID:"job_id",typeid:23,uuid:"3A786C8B-ACB5-40D5-B508-86E4C1F930AB"}
 ],
 joinType:1,
 name:"sts_jobs_to_sheets",
-primaryDataSource:"db:/stsservoy/jobs",
+primaryDataSource:"db:/stsservoy/sheets",
 typeid:22,
 uuid:"278ECE61-A6A6-4D8C-A5D3-6535B2F367BC"

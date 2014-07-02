@@ -1,0 +1,10 @@
+addEmptyValue:1,
+customValues:"\r
+Control #\r
+Erection Dwg\r
+Description2",
+name:"stsvl_saveNotesInto",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"49A8373A-A6B1-4D6F-9AF8-40CC141E0E0F"

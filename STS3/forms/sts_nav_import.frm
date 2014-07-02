@@ -131,7 +131,7 @@ uuid:"4E006D5F-074E-42F0-9D68-8C9440523320"
 },
 {
 horizontalAlignment:2,
-location:"45,109",
+location:"28,23",
 onActionMethodID:"23EBA98D-FA40-4997-9BC9-730473CF4B54",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -143,7 +143,7 @@ uuid:"5382FC0D-609E-42FF-8B45-4D6456488EA0"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"28,28",
+location:"28,51",
 size:"148,23",
 text:"Import Receiver Format",
 transparent:true,
@@ -201,7 +201,7 @@ uuid:"5FA24B01-16D1-4EB1-8F75-268C469A5641"
 {
 fontType:"Arial,0,12",
 formIndex:8,
-location:"45,55",
+location:"45,79",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -213,18 +213,16 @@ typeid:7,
 uuid:"68F83A59-1737-417D-8714-D915D74E8349"
 },
 {
-fontType:"Arial,0,12",
-formIndex:8,
-location:"45,217",
-onActionMethodID:"-1",
+formIndex:9,
+horizontalAlignment:2,
+location:"45,216",
+onActionMethodID:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-showClick:false,
-size:"150,23",
-text:"TBD",
-transparent:true,
+size:"103,23",
+text:"KISS Import",
 typeid:7,
-uuid:"8909AA8D-6EFC-421D-943E-6DC48EADA757"
+uuid:"6A5D6B4D-5A8A-4620-8EDE-DBFE555EC994"
 },
 {
 fontType:"Arial,0,12",
@@ -249,18 +247,6 @@ text:"Export Data (cont)",
 transparent:true,
 typeid:7,
 uuid:"9D42A109-3237-4E69-85C4-AB63E6FE5AB5"
-},
-{
-formIndex:9,
-horizontalAlignment:2,
-location:"45,136",
-onActionMethodID:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248",
-onDoubleClickMethodID:"-1",
-onRightClickMethodID:"-1",
-size:"232,23",
-text:"Standard Format w/Action Codes",
-typeid:7,
-uuid:"A1DF2835-16CF-42B9-8D25-29195880A686"
 },
 {
 fontType:"Arial,0,12",
@@ -397,6 +383,20 @@ typeid:7,
 uuid:"D88E4887-F710-4948-83B3-81D81979A118"
 },
 {
+fontType:"Arial,0,12",
+formIndex:8,
+location:"45,136",
+onActionMethodID:"-1",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+showClick:false,
+size:"225,23",
+text:"Standard Format w/Action Codes",
+transparent:true,
+typeid:7,
+uuid:"E3553977-2E7A-4F67-A2FF-96FCBEC940DF"
+},
+{
 fontType:"Arial,1,14",
 formIndex:8,
 location:"297,168",
@@ -409,7 +409,7 @@ uuid:"E9CD20A1-A7F9-4905-B664-9B6CDFAEE0DF"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"28,82",
+location:"28,107",
 size:"148,23",
 text:"Import Standard Format",
 transparent:true,

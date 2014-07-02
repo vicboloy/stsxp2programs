@@ -151,6 +151,7 @@ function onActionCancelEdit(event) {
  */
 function onActionSaveEdit(event){
 	onEdit(event,false);
+	tenant_uuid = scopes.globals.secCurrentTenantID;
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
 }

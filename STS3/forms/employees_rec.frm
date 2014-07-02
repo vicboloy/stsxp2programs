@@ -29,6 +29,7 @@ typeid:16,
 uuid:"A8C073B1-9C65-42B5-B4DC-492B88360968"
 },
 {
+horizontalAlignment:0,
 location:"46,5",
 name:"addNewButton",
 onActionMethodID:"0E76A0C5-1857-4089-8E25-97D995FC0B4A",

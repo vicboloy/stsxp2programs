@@ -14,7 +14,6 @@ typeid:7,
 uuid:"06EBC9B9-03C6-496D-A966-FD87F094AE2A"
 },
 {
-anchors:11,
 labelFor:"job_number",
 location:"0,0",
 name:"job_number_label",
@@ -25,7 +24,6 @@ typeid:7,
 uuid:"35EA5D57-9015-4FE4-B47B-C85022E86990"
 },
 {
-anchors:11,
 dataProviderID:"job_number",
 location:"0,20",
 name:"job_number",
@@ -53,7 +51,8 @@ uuid:"E4890FF4-A10F-4BA1-A3F3-9A8E4F7301A3"
 ],
 name:"jobs_lst",
 navigatorID:"-1",
-onRecordSelectionMethodID:"0D273E9E-ECB7-4362-9492-21A6DACDA13D",
+onRecordSelectionMethodID:"91A975E0-20A3-43A6-AC2F-C0F0FF970E1E",
+scrollbars:32,
 size:"137,350",
 styleName:"sts_one",
 typeid:3,

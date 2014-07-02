@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/sheets",
+items:[
+{foreignColumnName:"delete_flag",operator:256,primaryDataProviderID:"delete_flag",typeid:23,uuid:"DAE06433-49C4-44EC-AE93-6F03F8FD0353"},
+{foreignColumnName:"sheet_id",primaryDataProviderID:"sheet_id",typeid:23,uuid:"F463ADBC-3675-44A9-804F-CAFF1393FCBE"}
+],
+joinType:1,
+name:"stsload_sheets_piecemarks",
+primaryDataSource:"db:/stsservoy/piecemarks",
+typeid:22,
+uuid:"D2813DC4-8820-4E5D-8A4C-91D32B753C96"

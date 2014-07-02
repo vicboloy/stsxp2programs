@@ -7,14 +7,14 @@ var mappedFormatArray = [];
  * @param file
  *
  * @properties={typeid:24,uuid:"CEB68FE5-3762-496D-B815-88ADC962BE24"}
- */
+ *  /
 function readKissHeader(file){
 	
 }
 /**
  * TODO generated, please specify type and doc for the params
  *
- * @properties={typeid:24,uuid:"29613655-7267-4CA0-84D1-F961CC7C7709"}
+ * @properties={typeid:24,uuid:"CEB68FE5-3762-496D-B815-88ADC962BE24"}
  * @AllowToRunInFind
  */
 function fileReceipt(file){
@@ -49,9 +49,9 @@ function fileReceipt(file){
 			win.show(forms.kiss_option_import);
 		} else {
 			application.output('job not found');
-			plugins.dialogs.showErrorDialog('Job does not exist.','Job Number '+jobNumber+' does not exist.  Create a new job '+jobNumber+' for this import.');
+			plugins.dialogs.showErrorDialog('Job does not exist.','Job Number '+jobNumber+' does not exist.  Please setup the job using the \'Edit Job Information\' Window under the Edit/Add Tab.');
 			//show dialog for customers
-	}
+			}
 	} 
 }
 /**
@@ -110,4 +110,16 @@ function onActionAddTenant(event) {
 	}
 	application.output('saved '+error);
 	*/
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"14C4356A-ACE9-4C1C-BB23-03CE563F6DDF"}
+ */
+function onActionHide(event) {
+	scopes.prefs.mainWindowFront();
+	scopes.prefs.stopWindowTrack();
 }

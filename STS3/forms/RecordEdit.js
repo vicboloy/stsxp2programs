@@ -160,10 +160,13 @@ function onActionSaveEdit(event) {
  * @param event
  *
  * @properties={typeid:24,uuid:"99A66AB2-1E7B-4867-9711-C57528428608"}
+ * @AllowToRunInFind
  */
 function onActionSaveEditForm(event) {
 	onEdit(event,false);
  	additionalSaveFunctions();
+ 	controller.loadAllRecords();
+ 	controller.sort('customer_number,asci,job_number asc')
 }
 
 /**

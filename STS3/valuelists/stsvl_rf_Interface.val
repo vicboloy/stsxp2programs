@@ -1,0 +1,11 @@
+addEmptyValue:1,
+customValues:"<NONE>\r
+FabSuite\r
+FabTrol\r
+Romac\r
+Only FabTrol",
+name:"stsvl_rf_Interface",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"A77777B7-95F6-460F-8023-FC73A2BAC602"

@@ -28,6 +28,13 @@ name:"edit_date"
 },
 {
 allowNull:true,
+creationOrderIndex:6,
+dataType:12,
+length:36,
+name:"idfile_id"
+},
+{
+allowNull:true,
 creationOrderIndex:1,
 dataType:4,
 name:"logic_flag"

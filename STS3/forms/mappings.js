@@ -16,3 +16,15 @@ var mappingType = "";
 function onShow(firstShow, event) {
 	databaseManager.setAutoSave(false);
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"3D26E5E5-ABEE-4388-94B6-FF4CA6B2ED3B"}
+ */
+function onActionHide(event) {
+	scopes.prefs.mainWindowFront();
+	scopes.prefs.stopWindowTrack();
+}

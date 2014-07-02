@@ -155,13 +155,14 @@ function additionalSaveFunctions(){
  */
 function otherSelectionFunctions(){
 	//var record = foundset.getSelectedIndex();
-	vJobNumber= job_number;
+	loadRecordIntoForm()
+/**	vJobNumber= job_number;
 	globals.selectedCustomerID = customer_id;
 	vCustomerNumber = sts_customeruuid_to_field.customer_number;
 	vCustomerName = sts_customeruuid_to_field.name;
-	if (vShipTo != ""){
-		ship_to = vShipTo;
-	}
+	//if (vShipTo != ""){
+		vShipTo = ship_to;
+	//}
 	vCustomerPO = customer_po;
 	vJobCareOf = job_care_of;
 	vJobEfficiency = job_efficiency;
@@ -176,7 +177,7 @@ function otherSelectionFunctions(){
 	vPORelease = po_release;
 	vProjectYear = project_year;
 	vRFInterface = rf_interface;
-
+*/
 }
 /**
  * Handle changed data.
@@ -219,7 +220,8 @@ function onDataChangeJobNum(oldValue, newValue, event) {
 	globals.lookupItem = newValue;
 	var fs = sts_check_jobnum;
 	if (fs.getSize() > 0){
-		loadRecordIntoForm(fs);
+		var rec = fs.getRecord(1);
+		loadRecordIntoForm(rec);
 	}
 	return true
 }
@@ -239,29 +241,31 @@ function addOnActionDelete(){
  *
  * @properties={typeid:24,uuid:"A523191B-CF6C-4E0B-AB3F-F52161CDEB04"}
  */
-function loadRecordIntoForm(fs){
-	//fs.getSelectedIndex();
-	vJobNumber= fs.job_number;
-	globals.selectedCustomerID = fs.customer_id;
+function loadRecordIntoForm(rec){
+	vJobNumber= job_number;
+	globals.selectedCustomerID = customer_id;
 	vCustomerNumber = sts_customeruuid_to_field.customer_number;
 	vCustomerName = sts_customeruuid_to_field.name;
-	if (fs.ship_to != ""){
+	if (ship_to != "" && ship_to != null){
 		vShipTo = ship_to;
+	} else {
+		vShipTo = "";
 	}
-	vCustomerPO = fs.customer_po;
-	vJobCareOf = fs.job_care_of;
-	vJobEfficiency = fs.job_efficiency;
-	vProjectHours = fs.job_hours;
-	vJobLocation = fs.job_location;
-	vJobPlant = fs.job_plant;
-	vJobStructure = fs.job_structure;
-	vJobTitle = fs.job_title;
-	vJobWeight = fs.job_weight;
-	vLabelFormat = fs.label_format;
-	vMetricJob = fs.metric_job;
-	vPORelease = fs.po_release;
-	vProjectYear = fs.project_year;
-	vRFInterface = fs.rf_interface;
+	vCustomerPO = customer_po;
+	vJobCareOf = job_care_of;
+	vJobEfficiency = job_efficiency;
+	vProjectHours = job_hours;
+	vJobLocation = job_location;
+	vJobPlant = job_plant;
+	vJobStructure = job_structure;
+	vJobTitle = job_title;
+	vJobWeight = job_weight;
+	vLabelFormat = label_format;
+	vMetricJob = metric_job;
+	vPORelease = po_release;
+	vProjectYear = project_year;
+	vRFInterface = rf_interface;
+	vFTProjectID = ft_projectid;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -269,31 +273,30 @@ function loadRecordIntoForm(fs){
  *
  * @properties={typeid:24,uuid:"1FB02E0B-65E9-4B9C-A3A9-0C31834C2101"}
  */
-function saveRecordFromForm(fs){
-	fs.job_number = vJobNumber;
+function saveRecordFromForm(){
+	var index = controller.getSelectedIndex();
+	var rec = foundset.getRecord(index);
+	job_number = vJobNumber;
 	globals.lookupItem2 = vCustomerNumber;
-	//var temp_id = sts_check_custnum.customer_id;
-	fs.customer_id = sts_check_custnum.customer_id;
-	//fs.customer_id = sts_customernum_to_name.customer_id;
-	fs.customer_po = vCustomerPO;
-	fs.job_care_of =  vJobCareOf;
-	fs.job_efficiency = vJobEfficiency;
-	fs.job_hours = vProjectHours;
-	fs.job_location = vJobLocation;
-	fs.job_plant = vJobPlant;
-	fs.job_structure = vJobStructure;
-	fs.job_title = vJobTitle;
-	fs.job_weight = vJobWeight;
-	fs.label_format = vLabelFormat;
-	fs.metric_job = vMetricJob;
-	fs.po_release = vPORelease;
-	if (vProjectYear != "" && vProjectYear != null){
-		fs.project_year = vProjectYear;
-	}
-	fs.rf_interface = vRFInterface;
-	if (vShipTo != ""){
-		fs.ship_to = vShipTo;
-	}
+	customer_id = sts_check_custnum.customer_id;
+	customer_po = vCustomerPO;
+	job_care_of =  vJobCareOf;
+	job_efficiency = vJobEfficiency;
+	job_hours = vProjectHours;
+	job_location = vJobLocation;
+	job_plant = vJobPlant;
+	job_structure = vJobStructure;
+	job_title = vJobTitle;
+	job_weight = vJobWeight;
+	label_format = vLabelFormat;
+	metric_job = vMetricJob;
+	po_release = vPORelease;
+	project_year = vProjectYear;
+	rf_interface = vRFInterface;
+	ship_to = vShipTo;
+	ft_projectid = vFTProjectID;
+	tenant_uuid = globals.secCurrentTenantID;
+	databaseManager.saveData(rec);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -305,7 +308,7 @@ function loadResetForm(){
 	vJobNumber= "";
 	vCustomerNumber = "";
 	vCustomerName = "";
-	vShipTo = "";
+	vShipTo = null;
 	vCustomerPO = "";
 	vJobCareOf = "";
 	vJobEfficiency = 0;
@@ -320,4 +323,104 @@ function loadResetForm(){
 	vPORelease = "";
 	vProjectYear = null;
 	vRFInterface = "<None>";
+	vFTProjectID = null;
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"8E174CD2-DDD4-4E7C-9992-395387697875"}
+ */
+function onActionHide(event) {
+	scopes.prefs.mainWindowFront();
+	scopes.prefs.stopWindowTrack();
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"808AAD99-A247-420C-99BA-E069124EF97D"}
+ */
+function onRefresh(event) {
+	application.updateUI();
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"ADDF0C91-C9B7-4BA9-BE2E-B0586A227A18"}
+ */
+function onActionRecalcWeight(event) {
+	var queryWeight =  'select sum(item_weight*item_quantity) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '
+	+ ' and sheets.delete_flag IS NULL'
+	+ ' and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL and piecemarks.piecemark = piecemarks.parent_piecemark '
+	+ ' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL'
+	var args = [];
+	args.push(job_id.toString());
+	args.push(globals.secCurrentTenantID);
+	vJobWeight = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , -1)[0][0];
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"B2B75CF3-020F-4AD9-90DF-B86C9DED6120"}
+ */
+function onActionSave(event) {
+	// TODO Auto-generated method stub
+}
+
+/**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"2ED04D21-3603-416A-BD06-3571A9A123DD"}
+ */
+function onLoad(event) {
+	foundset = foundset.duplicateFoundSet();
+}
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D3694EFE-4004-4583-A215-4C9582FF0ED8"}
+ */
+function onShow(firstShow, event) {
+	var path = scopes.prefs.reportpath;
+	var labelList = [];
+	if (scopes.prefs.labelProgram == 'barTender'){
+		var suffix = '.qdf';
+	} else {
+		suffix = '.btw';
+	}
+	var btwFiles = plugins.file.getFolderContents(path,suffix);
+	labelList.push('<NONE>');
+	for (var index = 0;index < btwFiles.length;index++){
+		labelList.push(btwFiles[index].getName());
+	}
+	application.setValueListItems('stsvl_label_formats',labelList);
+	return _super.onShow(firstShow, event)
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D63519B3-ACEA-4BC4-B350-44B2F6DC9273"}
+ */
+function onActionClose(event) {
+	scopes.prefs.stopWindowTrack();
+	scopes.prefs.mainWindowFront();
 }

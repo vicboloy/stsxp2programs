@@ -8,5 +8,6 @@
  */
 function onActionAdd(event) {
 	forms.employees_lst.controller.newRecord();
+	tenant_uuid = globals.secCurrentTenantID;
 	forms.employee_specs.onEdit(event,true);
 }

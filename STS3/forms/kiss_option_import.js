@@ -1,18 +1,18 @@
 /**
  * @type {String}
- * Job Number that is pulled from the Import KISS file
+ * Job Number that is pulled from the Import KISS file.
  * @properties={typeid:35,uuid:"9526AB9B-5AF0-482A-A67B-2B4E220A0310"}
  */
 var jobNumber = "";
 /**
  * @type {String}
- * Name of the Job that is pulled from the Import KISS file
+ * Name of the Job that is pulled from the Import KISS file.
  * @properties={typeid:35,uuid:"F0935F2D-9183-47E0-9995-7C8374F491AB"}
  */
 var jobName = "";
 /**
  * @type {String}
- * Date of the Job that is pulled from the Import KISS file
+ * Date of the Job that is pulled from the Import KISS file.
  * @properties={typeid:35,uuid:"F6C5A4A5-077A-4076-9C78-941486603EA5"}
  */
 var jobDate = "";
@@ -22,6 +22,12 @@ var jobDate = "";
  * @properties={typeid:35,uuid:"D29063B6-B208-4399-A025-16593960C857",variableType:4}
  */
 var jobMetric = 0;
+/**
+ * @type {String}
+ * Shop order optionally entered on the kiss import options page.
+ * @properties={typeid:35,uuid:"876FFC6E-456F-4791-8992-98C150B434D8"}
+ */
+var jobShopOrder = "";
 /**
  * @type {String}
  * List of selected Steel Shapes that are to be excluded from Import KISS file
@@ -36,22 +42,31 @@ var jobImportExc = "Exclude ";
 var jobImportSum = "Summary ";
 /**
  * @type {String}
- * Data provider for form Import Options area
+ * Data provider for form Import Options area.
  * @properties={typeid:35,uuid:"18AA1C61-04C9-4D9E-8D74-E64A3352BFCD"}
  */
 var importOption = "";
 /**
- * @type {Boolean}
- * Local copy of global preference to keep Minor piecemarks or not
- * @properties={typeid:35,uuid:"A806C29B-6D9F-4FC2-A08A-06B52675CA12",variableType:-4}
+ * Set to true to disable import button upon import options change.
+ * @properties={typeid:35,uuid:"ADF593C4-4BB5-4A14-94F7-FC47CD9B8F57",variableType:-4}
  */
-var keepMinors = false;
+var impDirty = true;
+/**
+ * @type {Number}
+ * Local copy of global preference to keep Minor piecemarks or not.
+ * @properties={typeid:35,uuid:"A806C29B-6D9F-4FC2-A08A-06B52675CA12",variableType:4}
+ */
+var keepMinors = 0;
 /**
  * @type {String}
  * Tracking for sequence number for an assembly.
  * @properties={typeid:35,uuid:"894B653A-149F-4C29-9017-9C9D187C28F6"}
  */
 var currentSequence = "";
+/**
+ * @properties={typeid:35,uuid:"505C5557-00D6-4920-851A-193B9A8152C2",variableType:-4}
+ */
+var exitSequence = false;
 /**
  * @type {String}
  * Tracking for a sequence quantity on an assembly.
@@ -90,7 +105,13 @@ var excludeFS = null;
  */
 var shapesArray = [];
 /**
- *  Hold index of piecemark by piecemark, grade, sequence and description.
+ * Holds object of sequence_number and sequence_quantity seq,cnt.
+ * 
+ * @properties={typeid:35,uuid:"FB4D779E-EE86-412B-B2BC-2724E57327B0",variableType:-4}
+ */
+var sequenceArr = [];
+/**
+ *  Hold index of piecemark by piecemark, grade, sequence and description(material)
  * @properties={typeid:35,uuid:"284DF346-C2B9-4EA9-9E41-08248EA4BBF3",variableType:-4}
  */
 var pMarks = [];
@@ -102,8 +123,8 @@ var pMark = {
  cMark : null,
  cParent : null,
  cGrade : null,
- cSequence : null,
- cDescrip : null
+ cSheetNum : null,
+ cFinish :null
 };
 /**
  * @type {String}
@@ -181,6 +202,14 @@ var headerKissNames = [];
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	var window = controller.getWindow();
+	var height = window.getHeight();
+	window.setLocation(0, 0);
+	window.setSize(application.getScreenWidth(),height);
+	scopes.jobs.importLabelCounts = [];
+	importOption = null;
+	elements.importButt.enabled = false;
+	keepMinors = scopes.prefs.lKeepMinorPcMarks;
 	var index;
 	var custRec;
 	controller.enabled = true;
@@ -201,10 +230,13 @@ function onShow(firstShow, event) {
 			scopes.jobs.custRec = custFS;
 		}
 	}
-	headerKissNames['set_bc_qty']='Marks';
+	headerKissNames['item_quantity']='Total PcMarks Import Qty';
+	headerKissNames['quantity']='Import Qty';
+	headerKissNames['set_bc_qty']='Marks Full Label';
+	headerKissNames['total_label_qty']='Per Label Marks';
 	headerKissNames['last_bc_qty']='Remaining';
-	headerKissNames['barcode_qty']='Barcodes';
-	headerKissNames['ext_wt_qty']='Ext Wt';
+	headerKissNames['barcode_qty']='Labels Needed';
+	headerKissNames['ext_wt_qty']='Label Weight';
 	headerKissNames['sheet_number']='Sheet';
 	headerKissNames['piecemark']='Piecemark';
 	var headerLine = [];
@@ -229,11 +261,40 @@ function onShow(firstShow, event) {
 	success = history.removeForm('kiss_barcode_request');
 	success2 = solutionModel.removeForm('kiss_barcode_request');
 	importTempTable();
-	keepMinors = scopes.prefs.lKeepMinorPcMarks;
-	if (!scopes.prefs.lKeepMinorPcMarks) {
+	if (keepMinors == 0) {
 		elements.keep_minors.enabled = false;
+		applyRemoveMinors(transitionFS);
+	} else {
+		elements.keep_minors.enabled = true;
 	}
+	importOption = "Use Sheet Number Matching";
+	scopes.jobs.loadTablePrefs('kiss_option_import');
 	//handle excludes by shape and summaries by piecemark TODO
+	applyImportPreferences();
+
+}
+/**
+ * @properties={typeid:24,uuid:"C010A107-2370-481A-BD1F-99F412CDD06B"}
+ */
+function loadImportLabelCounts(){
+	var counts = scopes.jobs.importLabelCounts;
+	var retainFS = transitionFS;
+	var rows = retainFS.getMaxRowIndex();
+	for (var index = 1;index <= rows;index++){
+		retainFS.rowIndex = index;
+		if (retainFS.piecemark == ""){
+		  var unique = retainFS.material+retainFS.grade+retainFS.finish+retainFS.sequence_number;
+		 } else {
+		  unique = retainFS.piecemark+retainFS.parent_piecemark+retainFS.sheet_number+retainFS.grade+retainFS.finish+retainFS.sequence_number;
+		}
+		if (counts[unique]){
+			var count = counts[unique];
+			if (retainFS.barcode_qty != count){
+				retainFS.barcode_qty = counts[unique];
+				setBarcodeLimits(index);
+			}
+		}
+	}
 }
 /**
  * Load any saved Steel Shape exclusions from the preferences file.
@@ -249,8 +310,8 @@ function loadExclSumms() {
 	var formFS = forms.kiss_excludes_lst.foundset;
 	formFS.loadAllRecords();
 	var fsSize = formFS.getSize();
-	for (index = 1;index < fsSize;index++){
-		rec = formFS.getRecord(index);
+	for (index = 1;index <= fsSize;index++){
+		var rec = formFS.getRecord(index);
 		if (prefsFS.find()) {
 			prefsFS.user_id = -1;
 			prefsFS.form_name = controller.getName();
@@ -288,7 +349,7 @@ function saveExclSumms(){
 	//	//application.output("index "+joeI+" table column "+columnName+" columnNames index "+cnIndex+" columnName by index "+gotColumn+" type "+gotType);
 	//}
 	var formFS = forms.kiss_excludes_lst.foundset;
-	for (var index = 1;index < formFS.getSize();index++){
+	for (var index = 1;index <= formFS.getSize();index++){
 		var rec = formFS.getRecord(index);
 		var newValue = rec.exclude+","+rec.summarize;
 		if (prefsFS.find()) {
@@ -327,7 +388,7 @@ function defineExclDataset(){
 	var item,code;
 	var shapes = [];
 	var results = scopes.jobs.importResults.results;
-	var lineFieldIndex = scopes.jobs.getFieldDataMapping("mapped_field","piecemarks.description").split(",")[1]-1;
+	var lineFieldIndex = scopes.jobs.getFieldDataMapping("mapped_field","piecemarks.material").split(",")[1]-1;
 	for (var i = 0;i < results.length;i++){
 		if (results[i][0] != "D"){continue}
 		var newShape = results[i][lineFieldIndex];
@@ -355,6 +416,7 @@ function defineExclDataset(){
 	item.labelFor='exclude';
 	item = checkForm.newLabel('Summarize',120,0,80,21);
 	item.labelFor='summarize';
+	item.background='pink';
 	item = checkForm.newTextField(columns[0],0,21,60,21);
 	item.name = 'shape'; item.editable = false; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
 	item = checkForm.newCheck(columns[1],60,21,60,21);
@@ -368,8 +430,10 @@ function defineExclDataset(){
 			excld+=shapeX;\
 		}\
 		forms.kiss_option_import.jobImportExc=excld;\
+		forms.kiss_option_import.impDirty = true;\
 		application.updateUI(100);\
 	}';
+	//add impDirty setting to remove red bands after settings change 6/18/2014
 	newMethod = checkForm.newMethod(code);
 	item.onDataChange=newMethod;
 	item = checkForm.newCheck(columns[2],120,21,80,21);
@@ -383,6 +447,7 @@ function defineExclDataset(){
 			summs+=shapeX;\
 		}\
 		forms.kiss_option_import.jobImportSum=summs;\
+		forms.kiss_option_import.impDirty = true;\
 		application.updateUI(100);\
 	}';
 	newMethod = checkForm.newMethod(code);
@@ -453,6 +518,30 @@ var integers = null;
  */
 var rowTemplate = [];
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"46F323C2-6AF2-4248-AB19-23607CCC6FC2"}
+ */
+var saveNotesInto = "";
+/**
+ * @properties={typeid:35,uuid:"C3F4FBC9-6B43-4830-A097-60EE6E14D9A0",variableType:-4}
+ */
+var saveFinishDescrip = false;
+/**
+ * @properties={typeid:35,uuid:"E946ECCE-9384-4AD3-9BDF-18446B6579EC",variableType:-4}
+ */
+var savePhasePcColor = false;
+/**
+ * @properties={typeid:35,uuid:"39945DD6-640C-427F-BBB8-4271C1B7310F",variableType:-4}
+ */
+var notesContainCamber = false;
+/**
+ * @type {String}
+ * Entry in idfiles for original employee that imported the record.
+ * @properties={typeid:35,uuid:"B73FC9FA-0AFD-4986-8541-3F3C940FEAE5"}
+ */
+var employeeNumber = "";
+/**
  * Initial processing of Import KISS file to a visual representation of the Foundset
  * @properties={typeid:24,uuid:"87B9ADB5-5C35-4208-90CF-6E3003F6B9F1"}
  * @AllowToRunInFind
@@ -468,33 +557,74 @@ function importTempTable(){
  * @SuppressWarnings(wrongparameters)
  */
 function saveDetailRow(){
-	newRow[fieldOrderTempTable['sequence_number']] = currentSequence;
-	newRow[fieldOrderTempTable['quantity']] = currentSequenceQty;
-	if (pMarkString in pMarks) {
-		var row = pMarks[pMarkString];
-		var col = fieldOrderTempTable['item_quantity'];
-		var old = transitionFS.getValue(row, col+1);
-		var add = newRow[col];
-		transitionFS.setValue(row, col+1, old * 1 + add * 1);
-		transitionFS.setValue(row, fieldOrderTempTable['parent_piecemark']+1, ""); // no applicable parent piecemark on minor aggregration
-		transitionFS.setValue(row, fieldOrderTempTable['sheet_number']+1, ""); // no applicable parent piecemark on minor aggregration
-		transitionFS.setValue(row, fieldOrderTempTable['sequence_number']+1,"");
-		transitionFS.setValue(row, fieldOrderTempTable['quantity']+1,"");
-		setbarcodeQuantity(row);
-	} else {
-		if (!newRow[fieldOrderTempTable['sequence_number']]){newRow[fieldOrderTempTable['sequence_number']]=""}
-		transitionFS.addRow(newRow);
-		var latestIndex = transitionFS.getMaxRowIndex();
-		setbarcodeQuantity(latestIndex);
-		if (!(pMarkString in pMarks)) {
-			pMarks[pMarkString] = latestIndex;
-			if (pMark.cMark.toLowerCase() == pMark.cParent.toLowerCase()){
-				parentMarkIndex[pMark.cParent] = latestIndex;
-			}
-		}
-		pMark.cSequence = "";
-		pMark.cGrade = "";
+	var length = sequenceArr.length;
+	if (length == 0) {
+		null;
 	}
+	var totalMM = 0;
+	if (length > 1){
+		for (var dex=0;dex < length;dex++){totalMM = totalMM*1+sequenceArr[dex].cnt*1}
+	}
+	for (var index = 0;index < length;index++){
+		newSeqCount = sequenceArr[index].cnt;
+		if (length > 1){
+			newSeqCount = Math.floor((newSeqCount/totalMM)*newRow[fieldOrderTempTable['item_quantity']]+.2);  
+			//sequence_quantity is main mark sequence. So minor sequence count is item_quantity*(seq_total/sequence_quantity)
+		}
+		newRow[fieldOrderTempTable['sequence_number']] = sequenceArr[index].seq;
+		newRow[fieldOrderTempTable['quantity']] = newSeqCount;
+		var pMarkStringSeq = pMarkString+"_"+sequenceArr[index].seq;
+		if (pMarkStringSeq in pMarks) {
+			var row = pMarks[pMarkStringSeq];
+			transitionFS.rowIndex = row;
+			var col = fieldOrderTempTable['item_quantity'];//index into new row array,zero-based
+			//var old = transitionFS.getValue(row, col+1);
+			var old = transitionFS.item_quantity;
+			var add = newRow[col];
+			/**transitionFS.setValue(row, col+1, old * 1 + add * 1);
+			transitionFS.setValue(row, fieldOrderTempTable['parent_piecemark']+1, ""); // no applicable parent piecemark on minor aggregration
+			transitionFS.setValue(row, fieldOrderTempTable['sheet_number']+1, ""); // no applicable parent piecemark on minor aggregration
+			transitionFS.setValue(row, fieldOrderTempTable['sequence_number']+1,"");
+			transitionFS.setValue(row, fieldOrderTempTable['quantity']+1,"");*/
+			transitionFS.item_quantity = old*1 + add*1;
+			transitionFS.parent_piecemark = "";
+			transitionFS.sheet_number = "";
+			transitionFS.sequence_number = "";
+			transitionFS.quantity = "";
+			setbarcodeQuantity(row);
+		} else {
+			//if (!newRow[fieldOrderTempTable['sequence_number']]){newRow[fieldOrderTempTable['sequence_number']]=""}
+			transitionFS.addRow(newRow);
+			var latestIndex = transitionFS.getMaxRowIndex();
+			setbarcodeQuantity(latestIndex);
+			if (!(pMarkStringSeq in pMarks)) {
+				pMarks[pMarkStringSeq] = latestIndex;
+				if (pMark.cMark.toLowerCase() == pMark.cParent.toLowerCase()){
+					parentMarkIndex[pMark.cParent] = latestIndex;
+				}
+			}
+			//pMark.cSequence = "";
+			//pMark.cGrade = "";
+		}
+	}
+	newRow = null; // clear interim data
+	newRow = rowTemplate.concat();
+	if (exitSequence){
+		sequenceArr = []; // sequences no longer apply for the next record
+		exitSequence = false;
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param lineArray
+ *
+ * @properties={typeid:24,uuid:"5CE001A6-0DED-47DB-987D-27AB150DE799"}
+ */
+function newKRecord(lineArray){
+	if (lineArray[0] == "*" && lineArray.length == 1){
+		return true;
+	}
+	return false;
 }
 /**
  * Populate the table for the Import KISS file with piecemark data rows
@@ -515,38 +645,54 @@ function popKISSTable() {
 	var mappingIndex = "";
 	var mappingField = "";
 	var mappingConcatOrder = "";
-	var detail = false;
+	//var detail = false;
 	var checkValue = "";
+	var skippedHeader = false;
 	var skippedFirst = false;
 	currentSequence = "";
 	currentSequenceQty = "";
 	newRow = null;
-	var exitSequence = false;
 	newRow = rowTemplate.concat();
+	//var sequenceArr = [];//keeps sequences for majors and later minors
+	var sequence = {seq : "", cnt :0}
+	//var lastLine = "";var currentLine = "";
 	for (var index = 0;index < lengthResults;index++){
 		lineArray = results[index];
 		lineType = lineArray[0];
-		if  (lineType == "*"){
-			exitSequence = true;
+		if (!skippedHeader){
+			if (!newKRecord(lineArray)){
+				continue;
+			} else {
+				skippedHeader = true;
+			}  //skip header information
+		}
+		/**
+		 * create record if "S" record is identified, collect series record information for all "D" records, yes
+		 * create record if "D" record executed to next "D" record
+		 * if newKRecord, close out old record and clear settings
+		 */
+		if  (lineType == "*" && skippedFirst){
+			//if (exitSequence) {
+			/** pMark.cSheetNum = "";
+			pMark.cGrade = "";
+			pMark.cFinish = "";
+			pMark.cDescrip = "";
+			currentSequence = "";
+			currentSequenceQty = "";
+			*/
+			exitSequence = true ;
+			//}
 			continue;
 		}
-		if (detail == false){	//skip to detail
+		/** deleted
 			if (lineType == "D"){detail = true;} else {continue}
-		}
-		if (lineType == "D" && skippedFirst) { // save detail indicating new line before processing detail
+		} */
+		if (skippedFirst && lineType == "D") { // save detail indicating new line before processing detail
 			saveDetailRow();
-			newRow = null; // clear interim data
-			newRow = rowTemplate.concat();
-			if (exitSequence) {
-				pMark.cSequence = "";
-				pMark.cGrade = "";
-				currentSequence = "";
-				currentSequenceQty = "";
-				exitSequence = false;
-			}
 		} else {
 			skippedFirst = true;
 		}
+		//lastLine = currentLine;
 		for (var index2=1;index2 < lineArray.length;index2++){// insert each item into an array of mappedArray length
 			mappingIndex = lineType+","+index2;  //set mapping index into mapping array
 			if (scopes.jobs.mappedFormatArray[mappingIndex] == null){continue}  //skip null values
@@ -555,43 +701,75 @@ function popKISSTable() {
 			if (!(mappingField in fieldOrderTempTable)){continue}
 			mappingConcatOrder = scopes.jobs.mappedFormatArray[mappingIndex].split(".")[2];
 			lineFieldValue = lineArray[index2]; //value for array entry
-			checkValue = newRow[fieldOrderTempTable[mappingField]];
+			var skip = lineType == "S"; //Sequence line handled out-of-order
+			if (!skip) {
+				checkValue = newRow[fieldOrderTempTable[mappingField]];
+			}
 			if (mappingConcatOrder != 1){
 				lineFieldValue = checkValue+" "+lineFieldValue;
 				checkValue = null;
 			}
-			if ((checkValue == null)){
+			if (checkValue == null){
 				newRow[fieldOrderTempTable[mappingField]] = lineFieldValue;
-				// unique piecemarks use piecemark, description, sequence_number, grade.  aggregate these
+				/** unique piecemarks use piecemark, material, sequence_number, grade.  aggregate these
+				* changed 6/14/2014 
+				* unique piecemarks use parent, piecemark,grade, finish, sheet
+				*/
 				if (lineType == "D"){
 					if (mappingField.search('parent_piecemark') == 0){pMark.cParent = lineFieldValue}
 					if (mappingField.search('piecemark') == 0){pMark.cMark = lineFieldValue}
-					if (mappingField.search('description') == 0){pMark.cDescrip = lineFieldValue}
 					if (mappingField.search('grade') == 0){pMark.cGrade = lineFieldValue}
+					if (mappingField.search('material') == 0){pMark.cDescrip = lineFieldValue}
+					if (mappingField.search('sheet_number') == 0){pMark.cSheetNum = lineFieldValue}
+					/** deleted 
+					 * if (pMark.cMark && pMark.cParent && pMark.cMark.toLowerCase() != pMark.cParent.toLowerCase()){} 
+					 else {
+						pMark.cSheetNum = "";
+						currentSequence = "";
+						currentSequenceQty = "";
+					}
+					*/
+					if (mappingField.search('finish') == 0){pMark.cFinish = lineFieldValue}
+					pMarkString = pMark.cSheetNum+"_"+pMark.cParent+"_"+pMark.cMark+"_"+pMark.cFinish+"_"+pMark.cGrade;
 				}
 				if (lineType == "S"){
-					exitSequence = false;
+					//exitSequence = false;
 					if (mappingField.search('sequence_number') == 0){
+						sequence.seq = lineFieldValue;
 						pMark.cSequence = lineFieldValue;
 						currentSequence = lineFieldValue;
 					}
 					if (mappingField.search('quantity') == 0){
+						sequence.cnt = lineFieldValue;
 						currentSequenceQty = lineFieldValue;
+						sequenceArr.push({seq:sequence.seq,cnt:sequence.cnt});
+						sequence.cnt = 0;sequence.seq = "";
 					}
 				}
-				pMarkString = pMark.cMark+"_"+pMark.cDescrip+"_"+pMark.cGrade+"_"+pMark.cSequence;
+				/** deleted
+				 * 
+				 * jjj can be a new unique identifier for piecemarks
+				* pMarkString = pMark.cSheetNum+"_"+pMark.cParent+"_"+pMark.cMark+"_"+pMark.cGrade+"_"+pMark.cFinish;
+				* */
 			}
 		}
+		/** deleted
+		 * if (lineType == "D"){
+			//lastLine = currentLine;
+			currentLine = lineType+pMark.cMark;
+		}*/
 		if (lineType == "W"){ //save sequence after processing line
 			if (pMark.cMark.toLowerCase() != pMark.cParent.toLowerCase()){
 				var row = parentMarkIndex[pMark.cParent];
 				var col = fieldOrderTempTable['item_weight'];
-				var colT = col+1;
-				var weight = transitionFS.getValue(row,colT); // foundset is 1-based, array is 0-based
+				//var colT = col+1;
+				//var weight = transitionFS.getValue(row,colT); // foundset is 1-based, array is 0-based
 				var addWeight = newRow[col];
 				var addMult = newRow[fieldOrderTempTable['quantity']];
 				if (addMult != ""){addMult = newRow[fieldOrderTempTable['item_quantity']];}
-				transitionFS.setValue(row,colT,weight*1+addWeight*addMult);
+				transitionFS.rowIndex = row;
+				transitionFS.item_weight = transitionFS.item_weight*1+addWeight*addMult;
+				//transitionFS.setValue(row,colT,weight*1+addWeight*addMult);
 			}
 		}
 	}
@@ -618,7 +796,7 @@ function defineKISSdataset() {
 	var item;
 	fieldOrderTempTable = [];
 	// using column names to filter content.  'hide' ensures the data doesn't show
-	columnNames = ['select_hidebool','summ_hidetext','set_bc_qty','last_bc_qty','barcode_qty','total_label_qty','ext_wt_qty'];
+	columnNames = ['select_hidebool','summ_hidetext','set_bc_qty','last_bc_qty','barcode_qty','total_label_qty','ext_wt_qty','import_status'];
 	for(index=0;index < columnNames.length;index++){  // insert administrative columns
 		transitionFS.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
 		transitionFSsink.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
@@ -690,17 +868,17 @@ function createKISSForm (){	// create table in form
 		var stat=forms.kiss_option_import.jobImportExc+forms.kiss_option_import.jobImportSum;\
 		var rec=event.getRecord();\
 		var rend=event.getRenderable();\
-		var srch=rec && (stat.search(" "+rec.description.split(" ")[0]+" ") != -1);\
+		var srch=rec && (stat.search(" "+rec.material.split(" ")[0]+" ") != -1);\
 		var wght=rec && (scopes.prefs.wtPrompt*1 > 0)&&(rec.item_weight*1 > 0)&&(rec.item_weight*1 < scopes.prefs.wtPrompt*1)&&(rec.item_quantity*1 > 1*1);\
 		var quant = 0;\
 		if (rec && rec.quantity && (rec.quantity != "")) {quant = rec.quantity;} else {quant = item_quantity;}\
-		\
 		if(!srch && (rend.bgcolor=="#ff0000")){rend.bgcolor="#f3f5f7"}\
-		if(srch&&(rend.bgcolor!="#daa520")){rend.bgcolor="#ff0000"}\
+		if(srch&&(rend.bgcolor!="#daa520")){rend.bgcolor="pink"}\
 		if (quant < 2){rend.enabled=false;}\
 		if (rec && ((rec.quantity > 1)||(rec.item_quantity>1)) && (quant>1) && (rend.getName()=="barcode_qty")){\
 			if (!rec.select_hidebool){rend.bgcolor="#daa520";}else{rend.bgcolor="yellow";}\
 		}\
+		if (rec&&rec.last_bc_qty&& (rend.getName()=="last_bc_qty")&&(rec.last_bc_qty<0)){rend.bgcolor="red"}\
 	}');	
 	var code1 = 'function mySortFunction(){\
 		forms.kiss_option_import.sortIndex(arguments[0]);\
@@ -723,13 +901,20 @@ function createKISSForm (){	// create table in form
 		var quant = 0;\
 		if (quantity && current*1>quantity){return false;} else if (item_quantity && current*1>item_quantity*1){return false;}\
 		if (quantity&&quantity != ""){quant = quantity} else {quant = item_quantity}\
-		var itemsPerLabel =  Math.ceil(quant/current);\
-		var labelsFull = (quant == itemsPerLabel*current) ? quant : Math.floor(quant/current)*current;\
-		set_bc_qty = labelsFull;\
-		last_bc_qty = quant-labelsFull;\
-		total_label_qty = itemsPerLabel;\
-		ext_wt_qty = itemsPerLabel*item_weight;\
+		var bcNums = scopes.jobs.createBCnums(current,quant,item_weight);\
+		set_bc_qty = bcNums.full;\
+		last_bc_qty = bcNums.last;\
+		total_label_qty = bcNums.per;\
+		ext_wt_qty = bcNums.totwt;\
 		select_hidebool = true;\
+		if (last_bc_qty<0){return false}\
+		if (piecemark == ""){\
+		  var unique = material+grade+finish+sequence_number;\
+		 } else {\
+		  unique = piecemark+parent_piecemark+sheet_number+grade+finish+sequence_number;\
+		 }\
+		scopes.jobs.importLabelCounts[unique] = current;\
+		;\
 		return true;\
 	}';
 	checkForm.newMethod(code);
@@ -806,6 +991,17 @@ function moveRow(row,sourceDb,targetDb){
 	targetDb.addRow(rowArray);
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param row
+ * @param sourceDb
+ *
+ * @properties={typeid:24,uuid:"69802EB8-BCF2-4750-8C28-C39AD3EB4832"}
+ */
+function deleteRow(row,sourceDb){
+	var rowArray = sourceDb.getRowAsArray(row);
+	sourceDb.removeRow(row);
+}
+/**
  * @AllowToRunInFind
  * 
  * Apply selections on the KISS Import form, updating the table shown on the form.
@@ -817,7 +1013,7 @@ function moveRow(row,sourceDb,targetDb){
  * @properties={typeid:24,uuid:"4CB1DF63-FC21-4F9A-8CEB-1A820897013F"}
  */
 function applyShapeExcludes(sourceDb,destDb){
-	var descrip = fieldOrderTempTable['description']+1;
+	var descrip = fieldOrderTempTable['material']+1;
 	var srcLength = sourceDb.getMaxRowIndex();	
 	var i1 = 0;
 	var shape;
@@ -827,10 +1023,10 @@ function applyShapeExcludes(sourceDb,destDb){
 	var minor = fieldOrderTempTable['piecemark']+1;
 	for (i1 = srcLength; i1 > 0; i1--) {
 		errorMessage = "Exclude record "+i1+" processed.";
-		var minorRecord = !keepMinors && (sourceDb.getValue(i1,major).toLowerCase() != sourceDb.getValue(i1,minor).toLowerCase());
-		var description = sourceDb.getValue(i1, descrip);
-		if (!description){continue}
-		shape = description.split(" ")[0];
+		var minorRecord = (keepMinors == 0) && (sourceDb.getValue(i1,major).toLowerCase() != sourceDb.getValue(i1,minor).toLowerCase());
+		var material = sourceDb.getValue(i1, descrip);
+		if (!material){continue}
+		shape = material.split(" ")[0];
 		shape = " " + shape + " ";
 		if (sourceDb.getValue(i1,minor) == "" && sourceDb.getValue(i1,major) == ""){  //remove summaries, excludes overrides
 			sourceDb.removeRow(i1);
@@ -878,7 +1074,7 @@ function applyResetExclusions(){
  * @SuppressWarnings(wrongparameters)
  */
 function applyShapeSummary(sourceDb,destDb){
-	// array of indices for summary records by 'description and length'
+	// array of indices for summary records by 'material and length'
 	var tempTotal=0;
 	var summedArray = [];
 	var summedRemoval = [];
@@ -893,7 +1089,7 @@ function applyShapeSummary(sourceDb,destDb){
 	var itemCount = 0;
 	var sumList = forms.kiss_option_import.jobImportSum;
 	var excList = forms.kiss_option_import.jobImportExc;
-	var descripI = fieldOrderTempTable['description']+1;
+	var descripI = fieldOrderTempTable['material']+1;
 	var lengthI = fieldOrderTempTable['item_length']+1;
 	var gradeI = fieldOrderTempTable['grade']+1
 	var countI = fieldOrderTempTable['item_quantity']+1;
@@ -955,25 +1151,31 @@ function applyShapeSummary(sourceDb,destDb){
  * @properties={typeid:24,uuid:"41F095E2-D5E4-424D-98C6-050C2DA0A156"}
  */
 function setbarcodeQuantity(row){
-	var quant = transitionFS.getValue(row,fieldOrderTempTable['quantity']+1);
+	transitionFS.rowIndex = row;
+	var quant = transitionFS.quantity;
+	//var quant = transitionFS.getValue(row,fieldOrderTempTable['quantity']+1);
 	if (quant == "" || !quant){
-	 	quant = transitionFS.getValue(row,fieldOrderTempTable['item_quantity']+1);
+	 	//quant = transitionFS.getValue(row,fieldOrderTempTable['item_quantity']+1);
+	 	quant = transitionFS.item_quantity;
 	}
-	var setIdex = fieldOrderTempTable['barcode_qty']+1;
-	var weightSet = transitionFS.getValue(row,fieldOrderTempTable['item_weight']+1)*1 < scopes.prefs.wtPrompt*1;
+	//var setIdex = fieldOrderTempTable['barcode_qty']+1;
+	//var weightSet = transitionFS.getValue(row,fieldOrderTempTable['item_weight']+1)*1 < scopes.prefs.wtPrompt*1;
+	var weightSet = transitionFS.item_weight*1 < scopes.prefs.wtPrompt*1;
 	var quantSet = quant*1 > scopes.prefs.qtyPrompt;
 	if (weightSet || quantSet) {
-		if (!forms.kiss_barcode_request){
+		transitionFS.barcode_qty = 1;
+		/**if (!forms.kiss_barcode_request){
 			transitionFS.setValue(row,setIdex,1);
 		} else {
 			forms.kiss_barcode_request.barcode_qty = 1;
-		}
+		}*/
 	} else {
-		if (!forms.kiss_barcode_request){
+		transitionFS.barcode_qty = quant;
+		/**if (!forms.kiss_barcode_request){
 			transitionFS.setValue(row,setIdex,quant);
 		} else {
 			forms.kiss_barcode_request.barcode_qty = quant;
-		}
+		}*/
 	}
 	setBarcodeLimits(row);
 }
@@ -985,25 +1187,27 @@ function setbarcodeQuantity(row){
  * @properties={typeid:24,uuid:"F666AC7A-2559-4A89-91B0-E83B9577EE54"}
  */
 function setBarcodeLimits(row){
+	transitionFS.rowIndex = row;
+	if (transitionFS.piecemark == ""){
+		var unique = transitionFS.material+transitionFS.grade+transitionFS.finish+transitionFS.sequence_number;
+	} else {
+		unique = transitionFS.piecemark+transitionFS.parent_piecemark+transitionFS.sheet_number+transitionFS.grade+transitionFS.finish+transitionFS.sequence_number;
+	}
+	if (scopes.jobs.importLabelCounts[unique]){
+		transitionFS.barcode_qty = scopes.jobs.importLabelCounts[unique];
+	}
 	var currentLabelCount = transitionFS.getValue(row,fieldOrderTempTable['barcode_qty']+1);
 	var itemsCount = transitionFS.getValue(row,fieldOrderTempTable['quantity']+1);
 	if (itemsCount == "" || !itemsCount){itemsCount = transitionFS.getValue(row,fieldOrderTempTable['item_quantity']+1)}
-	var itemsPerLabel =  Math.ceil(itemsCount/currentLabelCount);
-	var labelsFull = (itemsCount <= itemsPerLabel*currentLabelCount) ? itemsPerLabel*currentLabelCount : itemsPerLabel*(currentLabelCount-1); 
-	var lastLabelCount = itemsCount-labelsFull;
-	var labelWeight = itemsPerLabel*transitionFS.getValue(row,fieldOrderTempTable['item_weight']+1);
-	if (!forms.kiss_barcode_request){ // set array when not instantiated on a form
-		transitionFS.setValue(row,fieldOrderTempTable['set_bc_qty']+1,labelsFull);
-		transitionFS.setValue(row,fieldOrderTempTable['last_bc_qty']+1,lastLabelCount);
-		transitionFS.setValue(row,fieldOrderTempTable['total_label_qty']+1,itemsPerLabel);
-		transitionFS.setValue(row,fieldOrderTempTable['ext_wt_qty']+1,labelWeight);
-
-	} else {
-		forms.kiss_barcode_request.set_bc_qty = labelsFull;
-		forms.kiss_barcode_request.last_bc_qty = lastLabelCount;
-		forms.kiss_barcode_request.total_label_qty = itemsPerLabel;
-		forms.kiss_barcode_request.ext_wt_qty = labelWeight;
-	}
+	var bcNums = scopes.jobs.createBCnums(currentLabelCount,itemsCount,transitionFS.getValue(row,fieldOrderTempTable['item_weight']+1));
+	var itemsPerLabel = bcNums.per;
+	var labelsFull = bcNums.full; 
+	var lastLabelCount = bcNums.last;
+	var labelWeight = bcNums.totwt;
+	transitionFS.set_bc_qty = labelsFull;
+	transitionFS.last_bc_qty = lastLabelCount;
+	transitionFS.total_label_qty = itemsPerLabel;
+	transitionFS.ext_wt_qty = labelWeight;
 }
 /**
  * Remove or include minor piecemarks within retention Foundset
@@ -1013,26 +1217,18 @@ function setBarcodeLimits(row){
  *
  * @properties={typeid:24,uuid:"452F2967-093E-48AB-95D5-22E5695F9177"}
  */
-function applyMinors(sourceDb,destDb){
+function applyRemoveMinors(sourceDb){
 	var major = fieldOrderTempTable['parent_piecemark']+1;
 	var minor = fieldOrderTempTable['piecemark']+1;
-	var selectDb = null;
-	if (keepMinors){
-		selectDb = destDb;
-	} else {
-		selectDb = sourceDb;
-	}
+	var selectDb = sourceDb;
 	var selLength = selectDb.getMaxRowIndex();
 	for (var i1 = selLength; i1 > 0; i1--) {
 		if (selectDb.getValue(i1,major) && (selectDb.getValue(i1,major).toLowerCase() != selectDb.getValue(i1,minor).toLowerCase())) {
-			if (keepMinors) {
-				moveRow(i1, destDb, sourceDb);
-			} else {
-				moveRow(i1, sourceDb, destDb);
+			if (keepMinors == 0) {
+				deleteRow(i1, sourceDb);
 			}
 		}
 	}
-
 }
 /**
  * Update visual retention Foundset with import selections made on the form.
@@ -1041,16 +1237,22 @@ function applyMinors(sourceDb,destDb){
  * @AllowToRunInFind
  */
 function applyImportPreferences(){
+	//application.output('labels '+scopes.jobs.importLabelCounts);
 	applyResetExclusions();
 	applyShapeExcludes(transitionFS,transitionFSsink);
 	applyShapeSummary(transitionFS,transitionFSsumm);
 	// tossMinors keep weights
 	var minors = "Minors kept."
-	if (!keepMinors){
+	if (keepMinors == 0){
 		minors = "Minors discarded."
 	}
 	errorMessage = 'Exclude and summary selections set.'+minors;
 	importRecordCount = transitionFS.getMaxRowIndex();
+	scopes.jobs.importRecordsCheck();
+	forms.kiss_option_import.impDirty = false;
+	forms.kiss_option_import.elements.importButt.enabled = true;
+	//loadImportLabelCounts();
+	//application.updateUI();
 }
 /**
  * Handle changed data.

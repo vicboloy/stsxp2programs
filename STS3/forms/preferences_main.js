@@ -1,4 +1,9 @@
-
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"4C2FE0A8-BDB7-4E77-8B1F-A2F09B71D9E7"}
+ */
+var errorMessage = "";
 /**
  * Callback method for when form is shown.
  *
@@ -26,20 +31,22 @@ function onShow(firstShow, event) {
  */
 function onActionUpdatePrefs(event) {
 	// for globals, user_id = -1, tenant_id= main tenant, field_name = index, value_type, value_string
+	errorMessage = "Saving preferences.";
+	application.updateUI();
 	var prefs = scopes.prefs;
 	var fs = sts_prefs;
-	var user_id = -1;
+	user_id = -1;
 	var tenant = globals.secCurrentTenantID;
 	var variable = "";
 	var variableSetting = "";
 	var description = "Global Preference";
 	var saveRec = false;
 	var rec = null;
-	var updateCount = 0;
+	//var updateCount = 0;
 	for (var index in prefs){
 		variable = index;
 		variableSetting = prefs[index];
-		variableType = typeof(variableSetting);
+		var variableType = typeof(variableSetting);
 		var fieldType = typeof(prefs[index]);
 		variableSetting +="";
 		saveRec = false;
@@ -76,4 +83,6 @@ function onActionUpdatePrefs(event) {
 		//application.output(index+" = "+prefs[index]+" user_id: "+-1+" tenant_id "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
 	}
 	//application.output("update count "+updateCount);
+	errorMessage = "";
+	application.updateUI();
 }

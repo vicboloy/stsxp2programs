@@ -28,7 +28,8 @@ name:"portableType",
 size:"216,20",
 text:"Portabletype",
 typeid:4,
-uuid:"09D543A3-BA2C-4805-82FF-939F5D4CD9FB"
+uuid:"09D543A3-BA2C-4805-82FF-939F5D4CD9FB",
+valuelistID:"7CCAFE71-BEBB-4C35-86E9-66F710540763"
 },
 {
 dataProviderID:"scopes.prefs.idLblTxt1",
@@ -169,7 +170,8 @@ name:"dflIdFmt",
 size:"166,20",
 text:"Dflidfmt",
 typeid:4,
-uuid:"B579BEE1-8174-4D27-8797-CC6159B0F64F"
+uuid:"B579BEE1-8174-4D27-8797-CC6159B0F64F",
+valuelistID:"8037ABE5-4B5D-4A73-B82D-FCA45DA950BA"
 },
 {
 dataProviderID:"scopes.prefs.startLoadNum",

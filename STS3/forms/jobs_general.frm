@@ -493,11 +493,21 @@ tabSeq:16,
 text:"Ft Projectid",
 typeid:4,
 uuid:"EB449E28-4D75-492C-8E2A-67A266EABA35"
+},
+{
+horizontalAlignment:0,
+location:"672,367",
+onActionMethodID:"D63519B3-ACEA-4BC4-B350-44B2F6DC9273",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+text:"Close",
+typeid:7,
+uuid:"EB84BE05-31A5-4766-9E02-12CB9FF765E3"
 }
 ],
 name:"jobs_general",
 navigatorID:"-1",
-onLoadMethodID:"2ED04D21-3603-416A-BD06-3571A9A123DD",
+onLoadMethodID:"-1",
 onShowMethodID:"D3694EFE-4004-4583-A215-4C9582FF0ED8",
 showInMenu:true,
 size:"929,404",

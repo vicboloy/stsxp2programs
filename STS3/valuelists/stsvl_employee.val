@@ -1,10 +1,6 @@
 addEmptyValue:1,
-dataProviderID1:"employee_number",
-dataProviderID2:"employee_id",
 name:"stsvl_employee",
-relationName:"sts_employee_container",
 returnDataProviders:2,
 showDataProviders:1,
 typeid:34,
-uuid:"C89BD4D5-7770-43B5-8123-179B1905E330",
-valueListType:1
+uuid:"C89BD4D5-7770-43B5-8123-179B1905E330"

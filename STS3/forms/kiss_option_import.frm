@@ -137,7 +137,7 @@ imageMediaID:"7DE60661-FA20-4CC8-8F60-48A8518B377F",
 location:"804,3",
 mediaOptions:14,
 name:"homeButt",
-onActionMethodID:"8F8422B9-2B61-4F09-9761-3E69957359CC",
+onActionMethodID:"0F7CB54B-C3AC-4211-9A81-5E931253B58C",
 showClick:false,
 showFocus:false,
 size:"78,31",
@@ -167,15 +167,6 @@ text:"Release #:",
 transparent:true,
 typeid:7,
 uuid:"4AE33603-CECF-4137-9AA4-1C956463C3F3"
-},
-{
-horizontalAlignment:4,
-location:"0,78",
-size:"101,20",
-text:"Drawing Prefix:",
-transparent:true,
-typeid:7,
-uuid:"4EE69297-AF07-404A-8906-E9E423EF99F8"
 },
 {
 formIndex:14,
@@ -250,6 +241,7 @@ uuid:"76170BA5-6CF7-434F-81A6-A54D1415C792"
 {
 dataProviderID:"saveNotesInto",
 displayType:2,
+editable:false,
 location:"107,133",
 name:"jobSaveNote",
 selectOnEnter:true,
@@ -278,14 +270,6 @@ size:"220,20",
 tabSeq:-2,
 typeid:4,
 uuid:"897C1A3D-13C8-467B-8279-B5F565BD24E2"
-},
-{
-format:"|U",
-location:"107,78",
-name:"drawPref",
-tabSeq:2,
-typeid:4,
-uuid:"8E375864-B32A-45F8-9D70-CDB4D1F4999D"
 },
 {
 background:"#ff0000",
@@ -317,15 +301,6 @@ tabSeq:-2,
 text:"kg",
 typeid:4,
 uuid:"930FDC88-9CCC-4D8B-9947-BD3D1285F7CA"
-},
-{
-horizontalAlignment:4,
-location:"0,103",
-size:"101,20",
-text:"Drawing Suffix:",
-transparent:true,
-typeid:7,
-uuid:"9EC749E7-8A4E-4452-A57B-D3DEED39F100"
 },
 {
 location:"314,198",
@@ -435,14 +410,6 @@ typeid:7,
 uuid:"C289884F-5EDA-45BA-B0CF-B88D0BF4940A"
 },
 {
-format:"|U",
-location:"107,104",
-name:"drawSuff",
-tabSeq:3,
-typeid:4,
-uuid:"D6A5A7FF-58EA-4AF6-98B7-C3DEDA4B6B41"
-},
-{
 horizontalAlignment:4,
 location:"266,28",
 text:"Customer #:",
@@ -483,8 +450,8 @@ uuid:"FA247E24-CC3B-446A-BF3C-5E42799F232C"
 ],
 name:"kiss_option_import",
 navigatorID:"-1",
-onElementFocusGainedMethodID:"6160DF0D-B40D-428D-A490-312C43E14183",
-onElementFocusLostMethodID:"2E5A08F3-4F2D-49A6-AA9B-585FC6F102D9",
+onElementFocusGainedMethodID:"-1",
+onElementFocusLostMethodID:"-1",
 onHideMethodID:"F1E8F18E-430A-4F2F-BDE5-AD466B64DAD1",
 onShowMethodID:"281713FB-2C42-46EC-BCAF-4BFD22187C4C",
 showInMenu:true,

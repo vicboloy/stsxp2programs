@@ -13,17 +13,6 @@ function onShow(firstShow, event) {
 	window.setSize(application.getScreenWidth(),height);
 	return _super.onShow(firstShow, event)
 }
-
-/**
- * Callback method when form is (re)loaded.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"99DF1578-809B-4EC4-AC9F-418EF4434084"}
- */
-function onLoad(event) {
-}
-
 /**
  * Perform the element default action.
  *
@@ -32,6 +21,6 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"63F7E439-74CD-4D0C-B390-177D161770D0"}
  */
 function onActionHide(event) {
-	scopes.prefs.mainWindowFront();
-	scopes.prefs.stopWindowTrack();
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
 }

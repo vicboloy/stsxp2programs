@@ -154,30 +154,7 @@ function additionalSaveFunctions(){
  * @properties={typeid:24,uuid:"5E618682-B6B8-4203-93BC-918C9D00FDD2"}
  */
 function otherSelectionFunctions(){
-	//var record = foundset.getSelectedIndex();
 	loadRecordIntoForm()
-/**	vJobNumber= job_number;
-	globals.selectedCustomerID = customer_id;
-	vCustomerNumber = sts_customeruuid_to_field.customer_number;
-	vCustomerName = sts_customeruuid_to_field.name;
-	//if (vShipTo != ""){
-		vShipTo = ship_to;
-	//}
-	vCustomerPO = customer_po;
-	vJobCareOf = job_care_of;
-	vJobEfficiency = job_efficiency;
-	vProjectHours = job_hours;
-	vJobLocation = job_location;
-	vJobPlant = job_plant;
-	vJobStructure = job_structure;
-	vJobTitle = job_title;
-	vJobWeight = job_weight;
-	vLabelFormat = label_format;
-	vMetricJob = metric_job;
-	vPORelease = po_release;
-	vProjectYear = project_year;
-	vRFInterface = rf_interface;
-*/
 }
 /**
  * Handle changed data.
@@ -202,7 +179,6 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	} else {
 		return false;
 	}
-	
 }
 
 /**
@@ -336,18 +312,6 @@ function onActionHide(event) {
 	scopes.prefs.mainWindowFront();
 	scopes.prefs.stopWindowTrack();
 }
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"808AAD99-A247-420C-99BA-E069124EF97D"}
- */
-function onRefresh(event) {
-	application.updateUI();
-}
-
 /**
  * Perform the element default action.
  *
@@ -365,29 +329,6 @@ function onActionRecalcWeight(event) {
 	args.push(globals.secCurrentTenantID);
 	vJobWeight = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , -1)[0][0];
 }
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"B2B75CF3-020F-4AD9-90DF-B86C9DED6120"}
- */
-function onActionSave(event) {
-	// TODO Auto-generated method stub
-}
-
-/**
- * Callback method when form is (re)loaded.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"2ED04D21-3603-416A-BD06-3571A9A123DD"}
- */
-function onLoad(event) {
-	foundset = foundset.duplicateFoundSet();
-}
-
 /**
  * Callback method for when form is shown.
  *
@@ -421,6 +362,6 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"D63519B3-ACEA-4BC4-B350-44B2F6DC9273"}
  */
 function onActionClose(event) {
-	scopes.prefs.stopWindowTrack();
-	scopes.prefs.mainWindowFront();
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
 }

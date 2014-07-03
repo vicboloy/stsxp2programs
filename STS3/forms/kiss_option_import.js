@@ -202,6 +202,23 @@ var headerKissNames = [];
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	var empArray = [];
+	var empArrayID = [];
+	/** @type {JSFoundSet<db:/stsservoy/employee>} */
+	var empFS = databaseManager.getFoundSet('stsservoy','employee');
+	if (empFS.find()){
+		empFS.tenant_uuid = globals.secCurrentTenantID;
+		empFS.delete_flag = null;
+		var empCount = empFS.search();
+		if (empCount > 0){
+			for (var index = 1;index <= empCount;index++){
+				var rec = empFS.getRecord(index);
+				empArray.push(rec.employee_number);
+				empArrayID.push(rec.employee_id);
+			}
+		}
+	}
+	application.setValueListItems('stsvl_employee',empArray);
 	var window = controller.getWindow();
 	var height = window.getHeight();
 	window.setLocation(0, 0);

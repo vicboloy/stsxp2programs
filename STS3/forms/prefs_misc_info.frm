@@ -323,7 +323,8 @@ name:"stsInstalled",
 size:"140,20",
 text:"Stsinstalled",
 typeid:4,
-uuid:"B9BC21FA-6DD0-4368-A8BF-9AC49A60DA8C"
+uuid:"B9BC21FA-6DD0-4368-A8BF-9AC49A60DA8C",
+valuelistID:"10729A06-E2F2-4D0C-922D-5AF9E71F3590"
 },
 {
 horizontalAlignment:4,

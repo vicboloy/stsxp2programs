@@ -582,7 +582,7 @@ var ignoreBatchJobLoadQty = true;
  *
  * @properties={typeid:35,uuid:"E64B00BF-D811-4C8D-ABBA-82B2F9E83446"}
  */
-var portableType = "Symbol 38xx - Status Job";
+var portableType = "";
 /**
  * @type {String}
  *
@@ -969,6 +969,7 @@ var lRomacPassWorker = false;
 var foundPassword = false;
 // _________________________________________________________________________________________________
 /**
+ * moved to globals. scopes.globals.
  * @properties={typeid:24,uuid:"8F8422B9-2B61-4F09-9761-3E69957359CC"}
  */
 function mainWindowFront(){

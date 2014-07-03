@@ -1,0 +1,11 @@
+addEmptyValue:1,
+customValues:"Fabricator\r
+Galvanizer\r
+Fireproofer\r
+Painter\r
+Jobsite",
+name:"stsvl_sts_installed_at",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"10729A06-E2F2-4D0C-922D-5AF9E71F3590"

@@ -1,0 +1,10 @@
+addEmptyValue:1,
+customValues:"Both Reports\r
+Detail Report\r
+Prompt for Type\r
+Summary Report",
+name:"stsvl_rf_packing_list",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"50FF6632-C919-4D7A-9893-221C06FCFEC8"

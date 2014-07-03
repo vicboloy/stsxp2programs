@@ -111,7 +111,7 @@ var aStatusTypes = new Array;
  * @properties={typeid:35,uuid:"0A0B01AA-138B-4C3F-85E0-1EBE650867EE",variableType:-4}
  * @type aTrackWindows {Array} Windows lists
  */
-var aTrackWindows = new Array;
+var aTrackWindows = ["STS - Main"];
 /**
  * @properties={typeid:24,uuid:"E55D375F-2EA8-4D4E-8234-B7AF6A47619E"}
  */
@@ -209,6 +209,11 @@ function initLaborCodes(){
  * @properties={typeid:35,uuid:"DB46C8F5-C5AC-416D-B39E-626D3A727099",variableType:-4}
  */
 var aStatusCodes = [];
+/**
+ * Keep track of open windows for tracknig.
+ * @properties={typeid:35,uuid:"A025872B-C6F5-4D3C-A876-7EAF54B3A6D6",variableType:-4}
+ */
+var aOpenWindows = ["STS - Main Window"];
 /**
  * @properties={typeid:24,uuid:"445AB0E6-10DB-401A-8DDF-D685503FEAF4"}
  */
@@ -897,6 +902,25 @@ function doDialog(winTitle,message,buttonYes,buttonNo){
 	win.show('dialog');
 }
 /**
+ * @properties={typeid:24,uuid:"0F7CB54B-C3AC-4211-9A81-5E931253B58C"}
+ */
+function mainWindowFront(){
+	application.updateUI();
+	var windowx = application.getWindow();
+	if (windowx != null){
+		windowx.toFront();
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"17CF390E-9F2B-4248-BDA8-274828359D3C"}
+ */
+function stopWindowTrack(){
+	globals.setWindowClosed("");
+	var win = application.getActiveWindow();
+	win.hide();
+	return true
+}
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -905,19 +929,10 @@ function doDialog(winTitle,message,buttonYes,buttonNo){
  */
 function onActionCancelButton(event) {
 	// Generic close on Cancel
-	var win = application.getActiveWindow();
-	win.hide();
-}
-/**
- * TODO generated, please specify type and doc for the params
- * @param tableName
- *
- * @properties={typeid:24,uuid:"A6C4F80B-AE5D-45BB-A2FB-5BCC9DB19244"}
- */
-function saveColumnLocations(tableName){
-	
-	
-	
+	//var win = application.getActiveWindow();
+	globals.mainWindowFront();
+	globals.stopWindowTrack()
+	//win.hide();
 }
 /**
  * Perform the element default action.

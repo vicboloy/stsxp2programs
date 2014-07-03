@@ -4,15 +4,6 @@
 var mappedFormatArray = [];
 /**
  * TODO generated, please specify type and doc for the params
- * @param file
- *
- * @properties={typeid:24,uuid:"CEB68FE5-3762-496D-B815-88ADC962BE24"}
- *  /
-function readKissHeader(file){
-	
-}
-/**
- * TODO generated, please specify type and doc for the params
  *
  * @properties={typeid:24,uuid:"CEB68FE5-3762-496D-B815-88ADC962BE24"}
  * @AllowToRunInFind
@@ -44,12 +35,29 @@ function fileReceipt(file){
 				scopes.jobs.jobIDs.push(jobsFS.job_id);
 				jobsFS.getRecord(index2);
 			}
+			/** @type {JSFoundSet<db:/stsservoy/customers>} */
+			var custFS = databaseManager.getFoundSet('stsservoy','customers');
+			if (custFS.find()){
+				custFS.customer_id = scopes.jobs.customerIDs[0];
+				if (custFS.search()){
+					var rec = custFS.getRecord(1);
+					if (!rec.barcode_prefix || 
+							!rec.barcode_fixed_length || 
+							!rec.barcode_include_prefix || 
+							!rec.barcode_job_length ||
+							 rec.barcode_prefix.length != 2){
+						plugins.dialogs.showErrorDialog('Customer barcode incomplete.','Customer '+rec.customer_number+' barcode is incomplete.  Please review the barcode setup using the \'Edit Customer Information\' button under the Edit/Add Tab.');
+						return;
+					}
+				}
+			}
 			var win = application.createWindow("KISS Import", JSWindow.DIALOG);
 			win.title = "KISS Import";
 			win.show(forms.kiss_option_import);
 		} else {
 			application.output('job not found');
 			plugins.dialogs.showErrorDialog('Job does not exist.','Job Number '+jobNumber+' does not exist.  Please setup the job using the \'Edit Job Information\' Window under the Edit/Add Tab.');
+			return;
 			//show dialog for customers
 			}
 	} 
@@ -120,6 +128,6 @@ function onActionAddTenant(event) {
  * @properties={typeid:24,uuid:"14C4356A-ACE9-4C1C-BB23-03CE563F6DDF"}
  */
 function onActionHide(event) {
-	scopes.prefs.mainWindowFront();
-	scopes.prefs.stopWindowTrack();
+	globals.mainWindowFront();
+	globals.stopWindowTrack();
 }

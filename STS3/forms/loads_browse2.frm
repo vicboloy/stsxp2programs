@@ -43,7 +43,7 @@ uuid:"D2FDF4BD-C3D0-4752-91BD-23B3D1D1FDDC"
 ],
 name:"loads_browse2",
 namedFoundSet:"empty",
-onLoadMethodID:"99DF1578-809B-4EC4-AC9F-418EF4434084",
+onLoadMethodID:"-1",
 onShowMethodID:"15F3702A-AA2E-40FD-9C0D-F661E2829106",
 showInMenu:false,
 size:"1005,452",

@@ -24,7 +24,7 @@ typeid:7,
 uuid:"31AAEDB6-3C2F-4598-BA4B-3A05EE1454DC"
 },
 {
-location:"66,449",
+location:"66,452",
 name:"delButton",
 onActionMethodID:"802350B1-D095-4D37-BC3A-4E412FDAFEB1",
 onDoubleClickMethodID:"-1",
@@ -47,6 +47,7 @@ uuid:"7ADDC6A0-99E7-443F-BA91-20AA078E4BF8",
 visible:false
 },
 {
+anchors:15,
 items:[
 {
 containsFormID:"54F91E55-F0E6-4523-9747-4113D51BF3AE",
@@ -88,7 +89,7 @@ uuid:"B8CD76DC-AFB4-443B-8368-8788536B356D"
 location:"0,28",
 name:"tabs",
 printable:false,
-size:"602,416",
+size:"439,416",
 typeid:16,
 uuid:"825B3BC0-A018-4686-AC06-CA32A69A5E2C"
 },
@@ -121,7 +122,7 @@ navigatorID:"-1",
 onLoadMethodID:"-1",
 onShowMethodID:"1FC02317-CBF4-4ED9-A5EF-EF22CD4EB0E3",
 scrollbars:36,
-size:"604,479",
+size:"448,507",
 styleName:"sts_one",
 typeid:3,
 uuid:"EE9D7F11-257C-4193-ADC9-803B65C4698D"

@@ -192,6 +192,11 @@ var errorMessage = "";
  */
 var headerKissNames = [];
 /**
+ * Labels for the major piecemarks change in weight, so label limits need to be recomputed after import.
+ * @properties={typeid:35,uuid:"297519C9-14C5-46DB-9305-3D2EA27518E8",variableType:-4}
+ */
+var recomputeLabelArray = [];
+/**
  * Callback method for when form is shown.
  * Unique setup for the form.  Results are from a range of tables, so no initial datasource is truly applicable
  * Form holds values which do not need to be in retention KISS import file
@@ -287,7 +292,7 @@ function onShow(firstShow, event) {
 	importOption = "Use Sheet Number Matching";
 	scopes.jobs.loadTablePrefs('kiss_option_import');
 	//handle excludes by shape and summaries by piecemark TODO
-	applyImportPreferences();
+	//applyImportPreferences();
 
 }
 /**
@@ -569,29 +574,41 @@ function importTempTable(){
 	createKISSForm();
 }
 /**
+ * @properties={typeid:24,uuid:"536E53EC-DBBA-4831-93CA-897FF4253C42"}
+ */
+function recomputeLabelLimits(){
+	var length = recomputeLabelArray.length;
+	for (var index = 0;index < length;index++){
+		setBarcodeLimits(recomputeLabelArray[index]);
+	}
+}
+/**
  * Save detail row into label selections table
  * @properties={typeid:24,uuid:"66D84854-9E39-42E3-83A6-7F4AF0005288"}
  * @SuppressWarnings(wrongparameters)
  */
 function saveDetailRow(){
-	var length = sequenceArr.length;
+	var length = sequenceArr.length;//get total number of sequences for this major mark
 	if (length == 0) {
 		null;
 	}
 	var totalMM = 0;
-	if (length > 1){
+	if (length > 1){ //total counts for this mark
 		for (var dex=0;dex < length;dex++){totalMM = totalMM*1+sequenceArr[dex].cnt*1}
 	}
 	for (var index = 0;index < length;index++){
-		newSeqCount = sequenceArr[index].cnt;
+		//for each sequence, separate the counts
+		var newSeqCount = sequenceArr[index].cnt;
 		if (length > 1){
 			newSeqCount = Math.floor((newSeqCount/totalMM)*newRow[fieldOrderTempTable['item_quantity']]+.2);  
 			//sequence_quantity is main mark sequence. So minor sequence count is item_quantity*(seq_total/sequence_quantity)
 		}
-		newRow[fieldOrderTempTable['sequence_number']] = sequenceArr[index].seq;
+		newRow[fieldOrderTempTable['sequence_number']] = sequenceArr[index].seq; //set sequence and sequence_count for each iteration of newRow to be added to dataset
 		newRow[fieldOrderTempTable['quantity']] = newSeqCount;
 		var pMarkStringSeq = pMarkString+"_"+sequenceArr[index].seq;
 		if (pMarkStringSeq in pMarks) {
+			application.output('we get here in these iterations, or is this is never experienced');
+			// this is old when there were dupes in the data due to sequence.  leave as error check.
 			var row = pMarks[pMarkStringSeq];
 			transitionFS.rowIndex = row;
 			var col = fieldOrderTempTable['item_quantity'];//index into new row array,zero-based
@@ -612,16 +629,31 @@ function saveDetailRow(){
 		} else {
 			//if (!newRow[fieldOrderTempTable['sequence_number']]){newRow[fieldOrderTempTable['sequence_number']]=""}
 			transitionFS.addRow(newRow);
+			//application.output(pMark.cParent+"_"+sequenceArr[index].seq);
+			//application.output(newRow);
 			var latestIndex = transitionFS.getMaxRowIndex();
 			setbarcodeQuantity(latestIndex);
-			if (!(pMarkStringSeq in pMarks)) {
-				pMarks[pMarkStringSeq] = latestIndex;
-				if (pMark.cMark.toLowerCase() == pMark.cParent.toLowerCase()){
-					parentMarkIndex[pMark.cParent] = latestIndex;
+			//if (!(pMarkStringSeq in pMarks)) {
+			pMarks[pMarkStringSeq] = latestIndex;
+			if (pMark.cMark.toLowerCase() == pMark.cParent.toLowerCase()){
+				parentMarkIndex[pMark.cParent+"_"+sequenceArr[index].seq] = latestIndex;//keep location of parent piecemark for adding weights and associating minors
+				// do the same thing, tracking the last parent using form variable
+			} else { //minor mark encountered
+				//add weight to parent mark with sequence
+				//okay to set row index into transitionFS since this is the last call otherwise, restore it
+				if (parentMarkIndex[pMark.cParent+"_"+sequenceArr[index].seq]){
+					var parentW = parentMarkIndex[pMark.cParent+"_"+sequenceArr[index].seq]; //hold and check for seq
+					transitionFS.rowIndex = parentW;
+					var subAssemblyCount = Math.floor(newRow[fieldOrderTempTable['item_quantity']]/transitionFS.item_quantity);
+					var addWeight = newRow[fieldOrderTempTable['item_weight']];
+					//var addMult = newRow[fieldOrderTempTable['quantity']];
+					//if (addMult == ""){addMult = newRow[fieldOrderTempTable['item_quantity']];}
+					//application.output('    '+pMark.cParent+"_"+sequenceArr[index].seq+'add '+subAssemblyCount+' subs at'+addWeight+' = '+addWeight*newSeqCount+' to '+transitionFS.item_weight);
+					transitionFS.item_weight = transitionFS.item_weight*1+addWeight*subAssemblyCount;
+					if (recomputeLabelArray.indexOf(parentW) == -1){recomputeLabelArray.push(parentW)}//save parent for recomputer of label limits
+					//application.output('labels '+recomputeLabelArray);
 				}
 			}
-			//pMark.cSequence = "";
-			//pMark.cGrade = "";
 		}
 	}
 	newRow = null; // clear interim data
@@ -651,6 +683,8 @@ function newKRecord(lineArray){
  * @SuppressWarnings(wrongparameters)
  */
 function popKISSTable() {
+	recomputeLabelArray = [];
+	var lastParent = 0;
 	parentMarkIndex = [];
 	pMarkString = "";
 	pMarks = [];
@@ -670,9 +704,7 @@ function popKISSTable() {
 	currentSequenceQty = "";
 	newRow = null;
 	newRow = rowTemplate.concat();
-	//var sequenceArr = [];//keeps sequences for majors and later minors
 	var sequence = {seq : "", cnt :0}
-	//var lastLine = "";var currentLine = "";
 	for (var index = 0;index < lengthResults;index++){
 		lineArray = results[index];
 		lineType = lineArray[0];
@@ -689,27 +721,14 @@ function popKISSTable() {
 		 * if newKRecord, close out old record and clear settings
 		 */
 		if  (lineType == "*" && skippedFirst){
-			//if (exitSequence) {
-			/** pMark.cSheetNum = "";
-			pMark.cGrade = "";
-			pMark.cFinish = "";
-			pMark.cDescrip = "";
-			currentSequence = "";
-			currentSequenceQty = "";
-			*/
 			exitSequence = true ;
-			//}
 			continue;
 		}
-		/** deleted
-			if (lineType == "D"){detail = true;} else {continue}
-		} */
 		if (skippedFirst && lineType == "D") { // save detail indicating new line before processing detail
 			saveDetailRow();
 		} else {
 			skippedFirst = true;
 		}
-		//lastLine = currentLine;
 		for (var index2=1;index2 < lineArray.length;index2++){// insert each item into an array of mappedArray length
 			mappingIndex = lineType+","+index2;  //set mapping index into mapping array
 			if (scopes.jobs.mappedFormatArray[mappingIndex] == null){continue}  //skip null values
@@ -738,14 +757,6 @@ function popKISSTable() {
 					if (mappingField.search('grade') == 0){pMark.cGrade = lineFieldValue}
 					if (mappingField.search('material') == 0){pMark.cDescrip = lineFieldValue}
 					if (mappingField.search('sheet_number') == 0){pMark.cSheetNum = lineFieldValue}
-					/** deleted 
-					 * if (pMark.cMark && pMark.cParent && pMark.cMark.toLowerCase() != pMark.cParent.toLowerCase()){} 
-					 else {
-						pMark.cSheetNum = "";
-						currentSequence = "";
-						currentSequenceQty = "";
-					}
-					*/
 					if (mappingField.search('finish') == 0){pMark.cFinish = lineFieldValue}
 					pMarkString = pMark.cSheetNum+"_"+pMark.cParent+"_"+pMark.cMark+"_"+pMark.cFinish+"_"+pMark.cGrade;
 				}
@@ -763,34 +774,11 @@ function popKISSTable() {
 						sequence.cnt = 0;sequence.seq = "";
 					}
 				}
-				/** deleted
-				 * 
-				 * jjj can be a new unique identifier for piecemarks
-				* pMarkString = pMark.cSheetNum+"_"+pMark.cParent+"_"+pMark.cMark+"_"+pMark.cGrade+"_"+pMark.cFinish;
-				* */
-			}
-		}
-		/** deleted
-		 * if (lineType == "D"){
-			//lastLine = currentLine;
-			currentLine = lineType+pMark.cMark;
-		}*/
-		if (lineType == "W"){ //save sequence after processing line
-			if (pMark.cMark.toLowerCase() != pMark.cParent.toLowerCase()){
-				var row = parentMarkIndex[pMark.cParent];
-				var col = fieldOrderTempTable['item_weight'];
-				//var colT = col+1;
-				//var weight = transitionFS.getValue(row,colT); // foundset is 1-based, array is 0-based
-				var addWeight = newRow[col];
-				var addMult = newRow[fieldOrderTempTable['quantity']];
-				if (addMult != ""){addMult = newRow[fieldOrderTempTable['item_quantity']];}
-				transitionFS.rowIndex = row;
-				transitionFS.item_weight = transitionFS.item_weight*1+addWeight*addMult;
-				//transitionFS.setValue(row,colT,weight*1+addWeight*addMult);
 			}
 		}
 	}
 	saveDetailRow();
+	recomputeLabelLimits();
 	importRecordCount = transitionFS.getMaxRowIndex();
 	kissDatasource = transitionFS.createDataSource('kissImportManage',tempArray);
 	kissDatasink = transitionFSsink.createDataSource('kissImportSwap',tempArray);
@@ -1213,10 +1201,12 @@ function setBarcodeLimits(row){
 	if (scopes.jobs.importLabelCounts[unique]){
 		transitionFS.barcode_qty = scopes.jobs.importLabelCounts[unique];
 	}
-	var currentLabelCount = transitionFS.getValue(row,fieldOrderTempTable['barcode_qty']+1);
-	var itemsCount = transitionFS.getValue(row,fieldOrderTempTable['quantity']+1);
-	if (itemsCount == "" || !itemsCount){itemsCount = transitionFS.getValue(row,fieldOrderTempTable['item_quantity']+1)}
-	var bcNums = scopes.jobs.createBCnums(currentLabelCount,itemsCount,transitionFS.getValue(row,fieldOrderTempTable['item_weight']+1));
+	//var currentLabelCount = transitionFS.getValue(row,fieldOrderTempTable['barcode_qty']+1);
+	var currentLabelCount = transitionFS.barcode_qty;
+	//var itemsCount = transitionFS.getValue(row,fieldOrderTempTable['quantity']+1);
+	var itemsCount = transitionFS.quantity;
+	if (!itemsCount || itemsCount == ""){itemsCount = transitionFS.item_quantity}
+	var bcNums = scopes.jobs.createBCnums(currentLabelCount,itemsCount,transitionFS.item_weight);
 	var itemsPerLabel = bcNums.per;
 	var labelsFull = bcNums.full; 
 	var lastLabelCount = bcNums.last;

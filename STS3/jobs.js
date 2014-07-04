@@ -2710,7 +2710,6 @@ function importRecordChangeSheet(record,unique,sheetId){
 	//update piecemark
 	//var unique = scopes.jobs.uniquePiecemark(record);
 	var piecemarkId = dsPiecemarkArray[unique];
-	//var oldIndex = dsPiecemarkList.indexOf(unique);
 	dsPiecemarkList[unique]=null;//mark old piecemark index as BAD
 	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
 	var fs = databaseManager.getFoundSet('stsservoy','piecemarks');

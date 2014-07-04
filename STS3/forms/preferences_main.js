@@ -79,7 +79,7 @@ function onActionUpdatePrefs(event) {
 			}
 		}
 		
-		if (saveRec){databaseManager.saveData(rec);updateCount++;}
+		if (saveRec){databaseManager.saveData(rec)}
 		//application.output(index+" = "+prefs[index]+" user_id: "+-1+" tenant_id "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
 	}
 	//application.output("update count "+updateCount);

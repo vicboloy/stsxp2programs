@@ -1,8 +1,8 @@
 addEmptyValue:1,
-customValues:"\r
-Control #\r
+customValues:"<None>\r
+Control # \r
 Erection Dwg\r
-Description2",
+Description",
 name:"stsvl_saveNotesInto",
 returnDataProviders:1,
 showDataProviders:1,

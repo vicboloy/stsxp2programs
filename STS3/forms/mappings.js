@@ -25,6 +25,6 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"3D26E5E5-ABEE-4388-94B6-FF4CA6B2ED3B"}
  */
 function onActionHide(event) {
-	scopes.prefs.mainWindowFront();
-	scopes.prefs.stopWindowTrack();
+	scopes.globals.mainWindowFront();
+	scopes.globals.stopWindowTrack();
 }

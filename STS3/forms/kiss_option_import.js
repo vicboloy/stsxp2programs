@@ -47,6 +47,18 @@ var jobImportSum = "Summary ";
  */
 var importOption = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"017B73C2-F320-483A-BEDA-5F3E228DE281"}
+ */
+var importArea = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"FC28B761-E624-491F-B76D-25F1A3E886EB"}
+ */
+var importRouting = "";
+/**
  * Set to true to disable import button upon import options change.
  * @properties={typeid:35,uuid:"ADF593C4-4BB5-4A14-94F7-FC47CD9B8F57",variableType:-4}
  */
@@ -84,6 +96,11 @@ var summedMaxIndex = 0;
  * @properties={typeid:35,uuid:"3A5A2CBA-8872-4BA9-ABC5-2B6C160A42A4",variableType:-4}
  */
 var transitionFS = null;
+/**
+ * Foundset (array) Dataset for current records in the job tables to compare with incoming records.
+ * @properties={typeid:35,uuid:"51A17DDE-4E8F-433A-B644-FC5B48A16E48",variableType:-4}
+ */
+var sheetsFS = null;
 /**
  * Foundset (array) for holding discarded data from the Import KISS file
  * @properties={typeid:35,uuid:"FDD56E55-87FB-485C-83EB-40ED25A0DF96",variableType:-4}
@@ -167,6 +184,11 @@ var kissDatasink = null;
  */
 var kissDataSumm = null;
 /**
+ * Datasource of existing records in the database for sheet number comparison.
+ * @properties={typeid:35,uuid:"A394AAE1-453A-41CA-BD1D-D6DDB46E47D1",variableType:-4}
+ */
+var kissDataSheets = null;
+/**
  * Datasource for selecting Steel Shapes that will be discarded after import selections are
  * applied.
  * @properties={typeid:35,uuid:"5DD151D8-61AE-45D5-BA71-A0CDA8ACD91E",variableType:-4}
@@ -207,6 +229,18 @@ var recomputeLabelArray = [];
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	var enableDrawing = true;
+	if (scopes.globals.kissJobRf){
+		if ((scopes.globals.kissJobRf.search('FabSuite') != -1) ||
+			(scopes.globals.kissJobRf.search('Romac') != -1)) {
+				enableDrawing = false;
+			}
+	}
+	elements.drawPrfx.visible = enableDrawing;
+	elements.drawPrfx_label.visible = enableDrawing;
+	elements.drawSufx.visible = enableDrawing;
+	elements.drawSufx_label.visible = enableDrawing;
+
 	var empArray = [];
 	var empArrayID = [];
 	/** @type {JSFoundSet<db:/stsservoy/employee>} */
@@ -224,6 +258,21 @@ function onShow(firstShow, event) {
 		}
 	}
 	application.setValueListItems('stsvl_employee',empArray);
+	var jobRoutes = [];
+	/** @type {JSFoundSet<db:/stsservoy/routings>} */
+	var routes = databaseManager.getFoundSet('stsservoy','routings');
+	if (routes.find()){
+		routes.tenant_uuid = globals.secCurrentTenantID;
+		routes.delete_flag = null;
+		var routCount = routes.search();
+		if (routCount > 0){
+			for (index = 1;index <= routCount;index++){
+				rec = routes.getRecord(index);
+				jobRoutes.push(rec.route_code);
+			}
+		}
+	}
+	application.setValueListItems('stsvl_route_code_id',jobRoutes);
 	var window = controller.getWindow();
 	var height = window.getHeight();
 	window.setLocation(0, 0);
@@ -564,6 +613,18 @@ var notesContainCamber = false;
  */
 var employeeNumber = "";
 /**
+ * @type {String}
+ * Prefix for job number that is prepended for Job Name.
+ * @properties={typeid:35,uuid:"34499E40-5C25-4A3C-A4F7-0EDC10D5AB5F"}
+ */
+var drawPrfx = "";
+/** 
+ * @type {String}
+ * Suffix for job number that is appended for Job Name.
+ * @properties={typeid:35,uuid:"644F8F47-054F-4145-9778-0C50E8A8CFA0"}
+ */
+var drawSufx = "";
+/**
  * Initial processing of Import KISS file to a visual representation of the Foundset
  * @properties={typeid:24,uuid:"87B9ADB5-5C35-4208-90CF-6E3003F6B9F1"}
  * @AllowToRunInFind
@@ -755,7 +816,7 @@ function popKISSTable() {
 					if (mappingField.search('parent_piecemark') == 0){pMark.cParent = lineFieldValue}
 					if (mappingField.search('piecemark') == 0){pMark.cMark = lineFieldValue}
 					if (mappingField.search('grade') == 0){pMark.cGrade = lineFieldValue}
-					if (mappingField.search('material') == 0){pMark.cDescrip = lineFieldValue}
+					//if (mappingField.search('material') == 0){pMark.cDescrip = lineFieldValue}
 					if (mappingField.search('sheet_number') == 0){pMark.cSheetNum = lineFieldValue}
 					if (mappingField.search('finish') == 0){pMark.cFinish = lineFieldValue}
 					pMarkString = pMark.cSheetNum+"_"+pMark.cParent+"_"+pMark.cMark+"_"+pMark.cFinish+"_"+pMark.cGrade;
@@ -764,12 +825,12 @@ function popKISSTable() {
 					//exitSequence = false;
 					if (mappingField.search('sequence_number') == 0){
 						sequence.seq = lineFieldValue;
-						pMark.cSequence = lineFieldValue;
-						currentSequence = lineFieldValue;
+						//pMark.cSequence = lineFieldValue;
+						//currentSequence = lineFieldValue;
 					}
 					if (mappingField.search('quantity') == 0){
 						sequence.cnt = lineFieldValue;
-						currentSequenceQty = lineFieldValue;
+						//currentSequenceQty = lineFieldValue;
 						sequenceArr.push({seq:sequence.seq,cnt:sequence.cnt});
 						sequence.cnt = 0;sequence.seq = "";
 					}
@@ -783,6 +844,7 @@ function popKISSTable() {
 	kissDatasource = transitionFS.createDataSource('kissImportManage',tempArray);
 	kissDatasink = transitionFSsink.createDataSource('kissImportSwap',tempArray);
 	kissDataSumm = transitionFSsumm.createDataSource('kissImportSumm',tempArray);
+	kissDataSheets = sheetsFS.createDataSource('kissSheets',tempArray);
 }
 /**
  * @AllowToRunInFind
@@ -797,6 +859,7 @@ function defineKISSdataset() {
 	transitionFS = databaseManager.createEmptyDataSet();
 	transitionFSsink = databaseManager.createEmptyDataSet();
 	transitionFSsumm = databaseManager.createEmptyDataSet();
+	sheetsFS = databaseManager.createEmptyDataSet();
 	var fieldIndex = 0;
 	var item;
 	fieldOrderTempTable = [];
@@ -806,6 +869,7 @@ function defineKISSdataset() {
 		transitionFS.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
 		transitionFSsink.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
 		transitionFSsumm.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
+		sheetsFS.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
 		fieldOrderTempTable[columnNames[index]] = fieldIndex++; // so this is field index to temp table indexed by field_name
 	}
 	var field;
@@ -822,23 +886,20 @@ function defineKISSdataset() {
 		if (field == null) continue;
 		field = field.split(".")[1];
 		if (!(field in fieldOrderTempTable)){
+			var columnType = JSColumn.TEXT;
 			if (field.search(integers) != -1){
-				addSuccess = transitionFS.addColumn(field,fieldIndex+1,JSColumn.INTEGER);
-				addSuccess = transitionFSsink.addColumn(field,fieldIndex+1,JSColumn.INTEGER);
-				addSuccess = transitionFSsumm.addColumn(field,fieldIndex+1,JSColumn.INTEGER);
+				columnType = JSColumn.INTEGER;
 			} else if (field.search(numbers) != -1){
-				addSuccess = transitionFS.addColumn(field,fieldIndex+1,JSColumn.NUMBER);
-				addSuccess = transitionFSsink.addColumn(field,fieldIndex+1,JSColumn.NUMBER);
-				addSuccess = transitionFSsumm.addColumn(field,fieldIndex+1,JSColumn.NUMBER);
+				columnType = JSColumn.NUMBER;
 			} else if (field.search(booleans) != -1){
-				addSuccess = transitionFS.addColumn(field,fieldIndex+1,JSColumn.INTEGER);
-				addSuccess = transitionFSsink.addColumn(field,fieldIndex+1,JSColumn.INTEGER);
-				addSuccess = transitionFSsumm.addColumn(field,fieldIndex+1,JSColumn.INTEGER);
+				columnType = JSColumn.INTEGER;
 			} else {
-				addSuccess = transitionFS.addColumn(field,fieldIndex+1,JSColumn.TEXT);
-				addSuccess = transitionFSsink.addColumn(field,fieldIndex+1,JSColumn.TEXT);
-				addSuccess = transitionFSsumm.addColumn(field,fieldIndex+1,JSColumn.TEXT);
+				null;
 			}
+			transitionFS.addColumn(field,fieldIndex+1,columnType);
+			transitionFSsink.addColumn(field,fieldIndex+1,columnType);
+			transitionFSsumm.addColumn(field,fieldIndex+1,columnType);
+			sheetsFS.addColumn(field,fieldIndex+1,columnType);
 			fieldOrderTempTable[field] = fieldIndex++;
 			columnNames.push(field);
 		}

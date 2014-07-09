@@ -85,15 +85,27 @@ var vLoadNum = "";
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"78BC713E-4B8A-45E2-801E-49891FAD2CC8"}
+ */
+var vLotNum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"1A72DD60-1837-4DA4-8CD6-376ED2954110"}
+ */
+var vPkgNum = "";
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"D0E92AE7-3638-4EA0-AEB5-5BC5ED422FF9"}
  */
 var vLoadAll = "";
 /**
  * @type {String}
- *
+ * Load Release loads.load_release
  * @properties={typeid:35,uuid:"C11896CD-C9D7-4914-A36B-BF765C839C0E"}
  */
-var vLoadRef = "";
+var vLoadRel = "";
 /**
  * @type {String}
  *
@@ -102,10 +114,10 @@ var vLoadRef = "";
 var vPiecemark = "";
 /**
  * @type {String}
- *
+ * Piecemark Release idfiles.piece_release
  * @properties={typeid:35,uuid:"192C2B1A-6AEE-4526-B8C2-70F3FCEC10D1"}
  */
-var vPcmkRef = "";
+var vPcmkRel = "";
 /**
  * @type {String}
  *
@@ -114,10 +126,10 @@ var vPcmkRef = "";
 var vFabShop = "";
 /**
  * @type {String}
- *
+ * Job PO Release jobs.po_release 
  * @properties={typeid:35,uuid:"58FFBC46-C984-4747-B114-3D318C036CB2"}
  */
-var vJobRef = "";
+var vJobRel = "";
 /**
  * @type {String}
  *
@@ -233,21 +245,105 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	return status;
 }
 /**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param itemCSV
+ *
+ * @properties={typeid:24,uuid:"8A504DFD-C4AD-4AAF-AEAC-9E4F919BFC58"}
+ */
+function convertLoadToId(itemCSV){
+	var arrayN = itemCSV.split(",");
+	if (arrayN.length == 0){return}
+	/** @type {JSFoundSet<db:/stsservoy/loads>} */
+	var fs = databaseManager.getFoundSet('stsservoy','loads');
+	var idCSV = "";
+	for (var index = 0;index < arrayN.length;index++){
+		if (fs.find()){
+			fs.load_number = arrayN[index];
+			if (fs.search()){
+				var rec = fs.getRecord(1);
+				idCSV = idCSV + "," + rec.load_id;
+			}
+		}
+	}
+	if (idCSV == "") {return null}
+	idCSV.replace(",","");
+	return arrayToString(idCSV);
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param itemCSV
+ *
+ * @properties={typeid:24,uuid:"4D41C8CC-CF16-4800-8A6B-99C3C655010B"}
+ */
+function convertLotToId(itemCSV){
+	var arrayN = itemCSV.split(",");
+	if (arrayN.length == 0){return}
+	/** @type {JSFoundSet<db:/stsservoy/lots>} */
+	var fs = databaseManager.getFoundSet('stsservoy','lots');
+	var idCSV = "";
+	for (var index = 0;index < arrayN.length;index++){
+		if (fs.find()){
+			fs.lot_number = arrayN[index];
+			if (fs.search()){
+				var rec = fs.getRecord(1);
+				idCSV = idCSV + "," + rec.load_id;
+			}
+		}
+	}
+	if (idCSV == "") {return null}
+	idCSV.replace(",","");
+	return arrayToString(idCSV);
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param itemCSV
+ *
+ * @properties={typeid:24,uuid:"01F9CAF6-D67B-4E29-B587-56BD5B2C02F2"}
+ */
+function convertPkgToId(itemCSV){
+	var arrayN = itemCSV.split(",");
+	if (arrayN.length == 0){return}
+	/** @type {JSFoundSet<db:/stsservoy/lots>} */
+	var fs = databaseManager.getFoundSet('stsservoy','lots');
+	var idCSV = "";
+	for (var index = 0;index < arrayN.length;index++){
+		if (fs.find()){
+			fs.lot_number = arrayN[index];
+			if (fs.search()){
+				var rec = fs.getRecord(1);
+				idCSV = idCSV + "," + rec.load_id;
+			}
+		}
+	}
+	if (idCSV == "") {return null}
+	idCSV.replace(",","");
+	return arrayToString(idCSV);
+}
+/**
  * @properties={typeid:24,uuid:"7A941D9A-5D56-4B77-BC2C-165EC3F8DE8B"}
  */
 function collectCriteria(){
+	// feeds jobs.viewBTableAlt()
 	var area = arrayToString(vArea);
 	var batch = arrayToString(vBatch);
 	var cowCode = arrayToString(vCowCode);
 	var fabShop = arrayToString(vFabShop);
-	var jobRef = arrayToString(vJobRef);
+	var jobRel = arrayToString(vJobRel);
 	if (vLoadAll){
 		var loadAll = null;
 	} else {
 		loadAll = arrayToString(vLoadNum);
 	}
-	var loadRef = arrayToString(vLoadRef);
-	var pcmkRef = arrayToString(vPcmkRef);
+	var loadRel = convertLoadToId(vLoadRel);
+	var lotNum = convertLotToId(vLotNum);//ticket#7
+	var pkgNum = arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
+	var pcmkRel = arrayToString(vPcmkRel);
 	var pmark = arrayToString(vPiecemark);
 	var seqNum = arrayToString(vSeqNum);
 	var sheetNum = arrayToString(vSheetNum);
@@ -257,11 +353,12 @@ function collectCriteria(){
 		batch: batch,
 		cowcode: cowCode,
 		fabshop: fabShop,
-		jobref : jobRef,
 		loadall : loadAll,
-		loadref : loadRef,
-		pcmkref : pcmkRef,
+		loadrel : loadRel,
+		lotnum : lotNum,
+		pcmkrel : pcmkRel,
 		piecemark : pmark,
+		pkgnum : pkgNum,
 		seqnum : seqNum,
 		sheetnum : sheetNum,
 		sonum : soNum
@@ -274,8 +371,8 @@ function collectCriteria(){
  *
  * @properties={typeid:24,uuid:"3D134DB8-8264-4793-82B5-6F7ABED9EB1D"}
  */
-function arrayToString(stringN){
-	var arrayN = stringN.split(",");
+function arrayToString(itemCSV){
+	var arrayN = itemCSV.split(",");
 	var arrayStr = "(";
 	var comma = ",";
 	var length = arrayN.length;

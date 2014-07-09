@@ -35,6 +35,7 @@ function fileReceipt(file){
 				scopes.jobs.jobIDs.push(jobsFS.job_id);
 				jobsFS.getRecord(index2);
 			}
+			scopes.globals.kissJobRf = jobsFS.getRecord(1).rf_interface;//save rf interface to show/noshow buttons
 			/** @type {JSFoundSet<db:/stsservoy/customers>} */
 			var custFS = databaseManager.getFoundSet('stsservoy','customers');
 			if (custFS.find()){

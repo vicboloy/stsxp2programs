@@ -2,22 +2,30 @@ dataSource:"db:/stsservoy/jobs",
 extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
 items:[
 {
-dataProviderID:"vLoadRef",
+dataProviderID:"vLoadRel",
 location:"100,165",
-name:"frmLoadRef",
+name:"frmLoadRel",
 size:"73,20",
-tabSeq:7,
+tabSeq:6,
 typeid:4,
 uuid:"03ACA564-E61E-4F44-8FF0-E8F8296CF8A9"
 },
 {
-dataProviderID:"vPcmkRef",
+dataProviderID:"vPcmkRel",
 location:"100,215",
-name:"frmPcmkRef",
+name:"frmPcmkRel",
 size:"73,20",
-tabSeq:9,
+tabSeq:8,
 typeid:4,
 uuid:"06443811-DFD1-4D7E-9687-ADEB54EB2ABE"
+},
+{
+dataProviderID:"vLotNum",
+location:"100,266",
+name:"vLotNum",
+size:"73,20",
+typeid:4,
+uuid:"1768DBA7-EDA5-415A-9F48-5BCEA2549BE6"
 },
 {
 location:"267,399",
@@ -58,20 +66,11 @@ typeid:7,
 uuid:"3270C365-4EA7-4405-9117-B581FEBC91BD"
 },
 {
-dataProviderID:"vJobRef",
-location:"100,265",
-name:"frmJobRef",
-size:"73,20",
-tabSeq:11,
-typeid:4,
-uuid:"329F075B-3F27-4D04-9C2C-181ED4C4B6EE"
-},
-{
 dataProviderID:"vFabShop",
 location:"100,240",
 name:"frmFabShop",
 size:"73,20",
-tabSeq:10,
+tabSeq:9,
 typeid:4,
 uuid:"4417E4D3-8523-478B-8EE8-3EF197A763AD"
 },
@@ -104,12 +103,22 @@ uuid:"4D7F14CA-BD12-43ED-824F-37A0773C5844"
 },
 {
 horizontalAlignment:4,
-location:"15,315",
+location:"15,344",
 size:"80,20",
 text:"Batch:",
 transparent:true,
 typeid:7,
 uuid:"58DC25D0-3B31-4D3A-AF75-D9B5802B804F"
+},
+{
+horizontalAlignment:4,
+labelFor:"vLotNum",
+location:"15,266",
+size:"80,20",
+text:"Lot Number:",
+transparent:true,
+typeid:7,
+uuid:"5C8EED74-E9D3-4A7C-9965-8566F0CC8D15"
 },
 {
 enabled:false,
@@ -155,17 +164,17 @@ displaysTags:true,
 horizontalAlignment:4,
 location:"15,40",
 size:"80,20",
-text:"Job # %%scopes.jobs.jobsArray.length%%:",
+text:"Job #:",
 transparent:true,
 typeid:7,
 uuid:"64E2FB4C-04BB-4E83-B358-F3D97603F9EF"
 },
 {
 dataProviderID:"vBatch",
-location:"100,315",
+location:"100,344",
 name:"frmBatch",
 size:"73,20",
-tabSeq:13,
+tabSeq:11,
 typeid:4,
 uuid:"658BB30F-6E7A-45E3-9598-2B9D0C94FA56"
 },
@@ -183,16 +192,16 @@ dataProviderID:"vPiecemark",
 location:"100,190",
 name:"frmPiecemark",
 size:"73,20",
-tabSeq:8,
+tabSeq:7,
 typeid:4,
 uuid:"6A4F5D78-E3F2-46DC-8F75-F459571BC9DC"
 },
 {
 dataProviderID:"vArea",
-location:"100,290",
+location:"100,319",
 name:"frmArea",
 size:"73,20",
-tabSeq:12,
+tabSeq:10,
 typeid:4,
 uuid:"6E9D5736-3107-47C7-BF9B-DA8E7D427745"
 },
@@ -249,10 +258,10 @@ uuid:"91D0EEC6-D9C9-4A70-95C4-95E12BB2599C"
 },
 {
 dataProviderID:"vCowCode",
-location:"100,340",
+location:"100,369",
 name:"frmCowCode",
 size:"73,20",
-tabSeq:14,
+tabSeq:12,
 typeid:4,
 uuid:"AED8D63C-66D1-40D8-BF76-49608BD58158"
 },
@@ -269,25 +278,25 @@ dataProviderID:"vLoadAll",
 displayType:4,
 location:"178,140",
 name:"frmChkLoadNum",
-tabSeq:6,
+tabSeq:-2,
 text:"All Load Numbers",
 transparent:true,
 typeid:4,
 uuid:"B42B07B5-EDC7-45FD-B227-3FDE2A28025D"
 },
 {
+dataProviderID:"vPkgNum",
+location:"100,292",
+name:"vPkgNum",
+size:"73,20",
+typeid:4,
+uuid:"B52BA22C-8FCA-4136-9A5D-13D8AFD23048"
+},
+{
 height:438,
 partType:5,
 typeid:19,
 uuid:"BC7FF20C-62ED-468B-8C40-43557B382437"
-},
-{
-horizontalAlignment:4,
-location:"15,265",
-text:"Job Ref:",
-transparent:true,
-typeid:7,
-uuid:"BE0DA3F3-3B1C-426E-9ED0-35BA2AFBB7DC"
 },
 {
 dataProviderID:"vLabTotalWt",
@@ -326,7 +335,7 @@ uuid:"D10FB4D8-2E9A-48C0-8C19-CEFC1D80A143"
 },
 {
 horizontalAlignment:4,
-location:"15,340",
+location:"15,369",
 size:"80,20",
 text:"COW Code:",
 transparent:true,
@@ -378,7 +387,7 @@ uuid:"D8E5A0BC-AB77-4325-8B86-5180DFE5976E"
 },
 {
 horizontalAlignment:4,
-location:"15,290",
+location:"15,319",
 size:"80,20",
 text:"Area:",
 transparent:true,
@@ -389,7 +398,7 @@ uuid:"DC568CA6-7868-4A1E-812C-59457DB8FCCB"
 horizontalAlignment:4,
 location:"15,165",
 size:"80,20",
-text:"Load Ref:",
+text:"Load Rel:",
 transparent:true,
 typeid:7,
 uuid:"DF934AFF-C8DC-4AA1-8D77-702986C9156A"
@@ -417,10 +426,20 @@ uuid:"F54ADD1C-94B5-42E9-B8CB-F69A9273EA5F"
 {
 horizontalAlignment:4,
 location:"15,215",
-text:"Pc Ref:",
+text:"Pc Rel:",
 transparent:true,
 typeid:7,
 uuid:"F9B58C27-B31B-4E26-AE84-AFB0888B5BB1"
+},
+{
+horizontalAlignment:4,
+labelFor:"vPkgNum",
+location:"15,292",
+size:"80,20",
+text:"Pkg Number:",
+transparent:true,
+typeid:7,
+uuid:"FA29E26D-478F-40A0-9191-CA8681CB831F"
 }
 ],
 name:"loads_criteria",

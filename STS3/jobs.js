@@ -633,7 +633,7 @@ function readSummedMarks(){
 	if (dsSheets == null){return}
 	var length = dsSheets.getMaxRowIndex();
 	for (var index2 = 1;index2 <= length;index2++){
-		if (index2 == length-1 || length == 1){comma=""}
+		if (index2 == length || length == 1){comma=""}
 		dsSheets.rowIndex = index2;
 		textList = textList + "\'"+dsSheets.sheet_id+"\'"+comma;
 	}
@@ -940,7 +940,7 @@ function loadCurrentJobsRecords(){
 		var visited = [];
 		for (var index2 = 0; index2 < lengthPIL;index2++){
 			var idfileId = pcmkIdfileList[index2];
-			dsIdfiles.rowIndex = dsIdfileList.indexOf(idfileId);
+			dsIdfiles.rowIndex = dsIdfileList.indexOf(idfileId)+1;
 			var seqId = dsIdfiles.sequence_id;
 			var piecemkIndex = dsPiecemarks.piecemark_id+"_"+seqId;
 			if (visited.indexOf(piecemkIndex) != -1) {continue}
@@ -1396,6 +1396,9 @@ function createIdfileRecord(piecemarkId,sequence,barcodeId,quantity,remarks){
 		if (forms.kiss_option_import.saveNotesInto.search('Erection Dwg') != -1){
 			rec.erection_drawing = remarks;
 		}
+		if (forms.kiss_option_import.notesContainCamber){
+				rec.camber = camberInfo(remarks);//resolves ticket#5
+		}
 	}
 	rec.id_creation_date = new Date();
 	return rec.idfile_id;
@@ -1759,16 +1762,313 @@ function createBarCodeNextNumber(){
  * @properties={typeid:24,uuid:"BCCE02C0-1777-4531-885F-A15D1AB4B98F"}
  */
 function numbersUp(){
-	application.output("ZZY9 "+countUpNumbers("ZZY9"));
-	application.output("0000 "+countUpNumbers("0000"));
-	application.output("9999 "+countUpNumbers("9999"));
-	application.output("ZR00 "+countUpNumbers("ZR00"));
-	application.output("M901 "+countUpNumbers("M901"));
-	application.output("M998 "+countUpNumbers("M998"));
-	application.output("M999 "+countUpNumbers("M999"));
-	application.output("ZZY0 "+countUpNumbers("ZZY0"));
-	application.output("ZZY9 "+countUpNumbers("ZZY9"));
+	application.output("ZZY999 "+countUpNumbers("ZZY999"));
+	application.output("000000 "+countUpNumbers("000000"));
+	application.output("999999 "+countUpNumbers("999999"));
+	application.output("ZR0000 "+countUpNumbers("ZR0000"));
+	application.output("M90001 "+countUpNumbers("M90001"));
+	application.output("M99998 "+countUpNumbers("M99998"));
+	application.output("M99999 "+countUpNumbers("M99999"));
+	application.output("ZZY000 "+countUpNumbers("ZZY000"));
+	application.output("ZZY999 "+countUpNumbers("ZZY999"));
 
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param convertType
+ * @param decimal
+ * @param length
+ * @param returnType
+ *
+ * @properties={typeid:24,uuid:"3E377215-F898-4D37-90A5-1D2780ED8116"}
+ */
+function decToFrac(convertType, decimal, length, returnType){
+	/**
+	* convertType - type of conversion, inches or feet
+	* decimal  - decimal value passed to program
+	* length - length of return string
+	* returnType - if left blank or not passed to this function, return
+	*	the string equalvalent of the numeric
+	*	FEET - return the foot portion of the decimal
+	*	INCH - return the inch portion of the decimal
+	*	NUMERATOR - return the numerator
+	*	DENOMINATOR - return the denominator
+
+	* fraction - text version of decimal value
+
+	* pass a numeric value that will be converted to feet and inches and
+	*  this function will return the text version of that decimal value
+	*/
+	convertType = convertType.toUpperCase();
+	returnType = returnType.toUpperCase();
+	var fractionOut = "";
+	var feet = 0;
+	var base = 2;                           //denominator of fraction
+	var number = 0;
+	var fraction = 0;
+	var number2 = 0;
+	var number16 = 0;
+	var fraction2 = 0;
+	
+	number = Math.floor(decimal);
+	fraction = decimal - number;
+	switch( convertType ){
+		case 'INCHES':
+			if (fraction > 0){
+				while (base < 32){
+					number2 = Math.floor(fraction * base);
+					if (base == 16){
+						number16 = Math.floor(fraction * base + .5);//init16 = ROUND((FRAC * BASE),0)
+					}
+					fraction2 = (fraction * base) - number2;
+					if (fraction2 != 0){
+						base = base * 2;
+					} else {
+						return;//exit
+					}
+				}
+				if (base < 32){
+					fractionOut = number+" "+number2+"/"+base+"\"";
+				} else {
+					fractionOut = number+" "+number16+"/16\"";
+				}
+			} else {
+				if (number == 0){
+					fractionOut = "0\"";
+				} else {
+					fractionOut = number+"\"";
+				}
+			}
+			break;
+		case 'FEET':
+			break;
+	
+	default:
+		return "";
+	}
+	if (returnType == ""){
+		return 
+	} else {
+		switch( returnType ){
+		case 'FEET':
+			feet = feet + "    ";
+			return feet.substr(length);
+		case 'INCH':
+			number = number + "    ";
+			return number.substr(length);
+		case 'NUMERATOR':
+			break;
+		case 'DENOMINATOR':
+			break;
+		case 'FRACTION':
+			break;
+		case 'FRACSLASH':
+			break;
+		default:
+		}
+	}
+	/**
+	 * 	Init = INT(itemdec)                 && interger portion of data
+	FRAC = itemdec - INIT               && decimal portion of data
+
+	DO CASE
+		CASE convertype = "INCHES"
+
+			IF FRAC > 0
+				DO WHILE BASE < 32
+					init2 = INT(FRAC * BASE)
+					IF BASE = 16
+						init16 = ROUND((FRAC * BASE),0)
+					ENDIF
+					frac2 = (FRAC * BASE) - init2
+					IF frac2 <> 0
+						Base = BASE * 2
+					ELSE
+						EXIT
+					ENDIF
+				ENDDO
+
+				IF BASE < 32
+					itemdimen = ALLTRIM(STR(INIT)) + ' ' + ALLTRIM(STR(init2)) + '/' + ALLTRIM(STR(BASE)) + '"'
+				ELSE			&& if all else fails, return it in 1/16" fraction
+					itemdimen = ALLTRIM(STR(INIT)) + ' ' + ALLTRIM(STR(init16)) + '/16' + '"'
+				ENDIF
+
+			ELSE
+
+				IF EMPTY(INIT)
+					itemdimen = "0" + '"'
+				ELSE
+					itemdimen = ALLTRIM(STR(INIT)) + '"'
+				ENDIF
+
+			ENDIF
+
+
+
+
+
+		CASE convertype = "FEET"
+
+			IF INIT > 0
+				feet = INT( (INIT/12) )		&& whole feet
+				Init = INIT - (feet * 12)	&& inches
+			ELSE
+				feet = 0					&& zero feet
+				Init = 0					&& zero inches
+			ENDIF
+
+			IF FRAC > 0
+				DO WHILE BASE <= 32
+					init2 = INT(FRAC * BASE)
+					IF BASE = 16
+						init16 = ROUND((FRAC * BASE),0)
+					ENDIF
+					frac2 = (FRAC * BASE) - init2
+					IF frac2 <> 0
+						Base = BASE * 2
+					ELSE
+						EXIT
+					ENDIF
+				ENDDO
+
+				IF BASE <= 32			&& fraction within 32ths of an inch
+					itemdimen = ALLTRIM(STR(feet)) + "'-" + ALLTRIM(STR(INIT)) + ' ' + ALLTRIM(STR(init2)) + '/' + ALLTRIM(STR(BASE)) + '"'
+				ELSE					&& if all else fails, return it in 1/16" fraction
+					itemdimen = ALLTRIM(STR(feet)) + "'-" + ALLTRIM(STR(INIT)) + ' ' + ALLTRIM(STR(init16)) + '/16' + '"'
+				ENDIF (BASE <= 32			&& fraction within 32ths of an inch)
+
+			ELSE
+
+				IF EMPTY(INIT) AND EMPTY(feet)
+					itemdimen = "0" + "'"
+				ELSE
+					itemdimen = ALLTRIM(STR(feet)) + "'-" + ALLTRIM(STR(INIT)) + '"'
+				ENDIF
+
+			ENDIF
+
+	ENDCASE
+
+
+	IF EMPTY(creturntype)
+
+		itemdimen = PADR(itemdimen,nlength,' ')
+		RETURN (itemdimen)
+
+	ELSE
+
+		DO CASE
+			CASE creturntype = 'FEET'
+				RETURN (STR(feet,nlength))
+			CASE creturntype = 'INCH'
+				RETURN (STR(INIT,nlength))
+			CASE creturntype = 'NUMERATOR'
+				RETURN (STR(init2,nlength))
+			CASE creturntype = 'DENOMINATOR'
+				RETURN (IIF(init2 > 0, STR(BASE,nlength), STR(0,nlength)))
+			CASE creturntype = 'FRACTION'
+				IF BASE < 32
+					RETURN (IIF(init2 > 0, PADL(ALLTRIM(STR(init2)),2) + PADL(ALLTRIM(STR(BASE)),2), "0000"))
+				ELSE
+					RETURN (STR(init16,2)+'16')
+				ENDIF
+			CASE creturntype = 'FRACSLASH'
+				IF BASE < 32
+					RETURN (IIF(init2 > 0, ALLTRIM(STR(init2)) + '/' + ALLTRIM(STR(BASE)), "0000"))
+				ELSE
+					RETURN ( ALLTRIM(STR(init16,2)) + '/' + '16' )
+				ENDIF
+			OTHERWISE
+				RETURN ('0000')
+		ENDCASE
+
+	ENDIF
+	 */
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param camberNote
+ *
+ * @properties={typeid:24,uuid:"D7AD9A2B-4F7D-4542-9506-C125D0DA4916"}
+ */
+function camberInfo(camberNote){
+	// if there is more than one 'c=' statement, this will fail, can do last c= on a string position search first
+	var pattern = new RegExp("c *= *(.*)$","i");
+	var camber = camberNote.match(pattern);
+	if (camber){
+		camber = camber[1];
+		if (camber.search('/') != -1){
+			if (camber.search("\"") != -1){
+				camber = scopes.jobs.fracToDec(camber.trim());
+			} else {
+				camber = scopes.jobs.fracToDec(camber.trim()+"\"");
+			}
+		}
+	} else {
+		camber = 0;
+	}
+	
+	//scopes.jobs.fracToDec(camber);
+	//application.output('camber '+camber);
+	return camber;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param fraction
+ *
+ * @properties={typeid:24,uuid:"57A73A31-434A-4AAF-9AA7-CFF19DC3F9A0"}
+ */
+function fracToDec(fraction){
+	//(6'-3 1/2"), (0'-10 15/16"), (0 15/16"), (36 3/4"), (12'-4")
+	/** @type {String} */
+	fraction = fraction.trim();
+	var length = fraction.length;
+	var feet = 0;
+	var inches = 0;
+	var numerator = 0;
+	var denom = 0;
+	var decimal = 0;
+	var number = "";
+	for (var index = 0;index < length;index++){
+		var character = fraction[index];
+		switch( character ){
+			case '\'':
+				feet = number * 12;
+				number = "";
+				//character = "";
+				break;
+			case ' ':
+				inches = number;
+				number = "";
+			case '-':
+				//character = "";
+				break;
+			case '/':
+				numerator = number;
+				number = "";
+				break;
+			case '"':
+				if (numerator > 0){
+					denom = number;
+				} else {
+					inches = number;
+				}
+				number = "";
+				break;
+		default:
+				number = number + character;
+		}
+	}
+	if (numerator > 0 && denom > 0){decimal = numerator*1/denom*1}
+	
+	decimal = feet*1 + inches*1 + decimal*1;
+	
+	if (decimal < 0){decimal = -1} // -1 is an error
+	if (decimal == "NaN"){decimal = -1}//did not resolve to a number
+	return decimal;
 }
 /**
  * TODO generated, please specify type and doc for the params

@@ -1,0 +1,14 @@
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"A2E4E9B3-E2A3-4C0D-8CEA-23B3106F20E6"
+}
+],
+name:"cost_of_work",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"2EF9AE83-09AD-44D1-8B8B-173E307E81B1"

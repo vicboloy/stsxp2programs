@@ -22,6 +22,7 @@ uuid:"A8D24E17-F7AC-4767-B9C3-690950F9AC05"
 {
 anchors:3,
 borderType:"EmptyBorder,0,0,0,0",
+formIndex:1,
 horizontalAlignment:0,
 imageMediaID:"7DE60661-FA20-4CC8-8F60-48A8518B377F",
 location:"428,3",

@@ -963,7 +963,10 @@ function createKISSForm (){	// create table in form
 	checkForm.navigator = SM_DEFAULTS.NONE;
 	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
 	code = 'function onQtyVerify(last,current,event) {\
-		if (current*1<1){return false;}\
+		if (current*1<1||Math.floor(current)!=current){\
+		forms.kiss_option_import.errorMessage = "Label Quantity must be integer, and less than or equal to number of items. <Esc> to reset.";\
+		return false;\
+		}\
 		var quant = 0;\
 		if (quantity && current*1>quantity){return false;} else if (item_quantity && current*1>item_quantity*1){return false;}\
 		if (quantity&&quantity != ""){quant = quantity} else {quant = item_quantity}\

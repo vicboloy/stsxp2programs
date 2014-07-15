@@ -2,7 +2,7 @@ encapsulation:60,
 extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {
-dataProviderID:"windowListingData",
+dataProviderID:"scopes.globals.aTrackWindows",
 displayType:11,
 location:"5,5",
 size:"185,289",

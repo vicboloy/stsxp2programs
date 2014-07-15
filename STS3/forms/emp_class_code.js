@@ -161,3 +161,15 @@ function onDataChange(oldValue, newValue, event) {
 	return true
 }
 
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"75348F35-ED33-450C-B4F7-3FA566D5A6C0"}
+ */
+function onActionClose(event) {
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+}

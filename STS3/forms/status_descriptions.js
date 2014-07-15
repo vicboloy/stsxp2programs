@@ -235,3 +235,15 @@ function onEntryStatusCode(statusCode) {
 	return -1;
 }
 
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"9C86DD7A-7054-461D-837C-63849E991890"}
+ */
+function onActionClose(event) {
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+}

@@ -10,11 +10,12 @@ location:"0,0",
 onDataChangeMethodID:"7CF8C088-C3E4-4C8A-A67F-F6EE593511AF",
 placeholderText:"Company Name",
 size:"119,20",
+tabSeq:1,
 typeid:4,
 uuid:"31E8C7BB-64F7-46BC-83AF-03F9FEA0E471"
 },
 {
-height:379,
+height:358,
 partType:5,
 typeid:19,
 uuid:"7D070EAF-E70D-4945-97E9-13EFCD1A1C74"
@@ -42,8 +43,9 @@ uuid:"8C92490D-2749-4EE0-A068-BAB3D227E3D1"
 location:"5,19",
 name:"split",
 printable:false,
-size:"565,355",
+size:"565,334",
 tabOrientation:-2,
+tabSeq:-2,
 transparent:true,
 typeid:16,
 uuid:"E03C4C8B-F8CE-4C23-823F-FFDF4CA09621"

@@ -1004,7 +1004,25 @@ var rowBGColorOdd = '#EEEEFF';
  * @properties={typeid:35,uuid:"FB9F536B-7DAF-4194-9EEA-B5A8054E3A67"}
  */
 var rowBGColorSelected = '#FFFF80';
+/**
+ * @properties={typeid:24,uuid:"2B1E88D0-4689-428D-8D82-DE330FC85D97"}
+ */
+function getParentForm() {
 
+	/** @type {JSDataSet} */
+	var dataset = controller.getFormContext();
+	if (dataset.getMaxRowIndex() > 1) {
+		// form is in a tabpanel
+		var parentFormName = dataset.getValue(dataset.getMaxRowIndex()-1, 2)
+		return forms[parentFormName]
+	}
+	else {
+		if (globals.debugtesting){
+			//throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
+		}
+	}
+	return null;
+}
 /**
  * @param {Number} index row index
  * @param {Boolean} selected is the row selected
@@ -1053,17 +1071,20 @@ function setWindowOpened(windowName){
  * @param windowName
  *
  * @properties={typeid:24,uuid:"D0A287B8-0F23-4C9E-8821-023919515D46"}
+ * @AllowToRunInFind
  */
 function setWindowClosed(windowName){
 	var win = application.getActiveWindow();
 	var formName = win.title;
+	if (formName == null){return}
+	if (formName.search('STS') == 0){return}
 	var tempArray = new Array;
 	//tempArray = globals.aTrackWindows;
 	var tempLength = globals.aTrackWindows.length;
 	var windowName = "";
 	for (var index = 0; index < tempLength; index++){
 		windowName = globals.aTrackWindows[index];
-		if (windowName != formName){
+		if (formName.search(windowName) != 0){
 			tempArray.push(windowName);
 		}
 	}

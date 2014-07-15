@@ -16,7 +16,7 @@ function onLoadCreateRecord(event) {
 		controller.newRecord();
 	}
 	if (globals.employeesDividerLocation == 0.0) {
-		elements.tabs.dividerLocation = 310.0;
+		elements.tabs.dividerLocation = 250.0;
 	}
 }
 
@@ -44,6 +44,6 @@ function onTabChange(previousIndex, event) {
 function onLoadEmployees(event) {
 	controller.readOnly = true;
 	if (globals.employeesDividerLocation == 0.0) {
-		elements.tabs.dividerLocation = 310.0;
+		elements.tabs.dividerLocation = 270.0;
 	}
 }

@@ -47,7 +47,7 @@ uuid:"4F392ADC-FECB-423C-9BDD-240D57E1786B"
 },
 {
 location:"0,5",
-size:"339,20",
+size:"265,20",
 text:"Permissions for security key",
 transparent:true,
 typeid:7,
@@ -118,6 +118,7 @@ uuid:"C5928D72-A625-4602-B689-FD1EDA53247F"
 },
 {
 anchors:3,
+horizontalAlignment:0,
 location:"364,5",
 onActionMethodID:"5E85197C-4A42-4D56-B1EE-7C833A2AB724",
 onDoubleClickMethodID:"-1",

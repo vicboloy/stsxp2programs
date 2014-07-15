@@ -847,8 +847,8 @@ var foundPassword = false;
  * @properties={typeid:24,uuid:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E"}
  */
 function onActionFileOpenDialog(event,updateValue) {
-	application.setValueListItems('stsvl_get_printer_list',application.getPrinters());
-	/**
+	//application.setValueListItems('stsvl_get_printer_list',application.getPrinters());
+
 	var priorPath = scopes.prefs[updateValue];
 	if (priorPath == "" || priorPath == null){priorPath = "C:\\"}
 	var dirs = plugins.file.showDirectorySelectDialog();
@@ -857,9 +857,18 @@ function onActionFileOpenDialog(event,updateValue) {
 	if (dirs == null){return}
 	var path = dirs.getAbsolutePath();
 	var formName = event.getFormName();
-	scopes.prefs[updateValue] = path;*/
+	scopes.prefs[updateValue] = path;
 }
-
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param updateValue
+ *
+ * @properties={typeid:24,uuid:"FFF06255-B45A-457D-88BF-294263A595DE"}
+ */
+function onActionGetPrinters(event,updateValue) {
+	application.setValueListItems('stsvl_get_printer_list',application.getPrinters());
+}
 
 
 

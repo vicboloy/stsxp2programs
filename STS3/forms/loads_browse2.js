@@ -24,3 +24,20 @@ function onActionHide(event) {
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"9BB07BFE-2A7E-4FF1-B4B8-CB45896D9AE7"}
+ */
+function onRecordSelection(event) {
+	null;
+	var index = forms[event.getFormName()].controller.getSelectedIndex();
+	var rec = forms[event.getFormName()];
+	//var fs = databaseManager.getFoundSetCount('sts_piecemarks');
+	//fs.sts_piecemark.loadRecords();
+	//var fs = rec.piecemark_id.rr;
+	application.output('record select '+rec.id_serial_number);
+	//application.output('barcode id '+id_serial_number_id);
+	return _super.onRecordSelection(event)
+}

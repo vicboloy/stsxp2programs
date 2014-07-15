@@ -1071,7 +1071,8 @@ function viewBTableAlt(criteria){
 	 * dsPiecemarks,dsBarcodes,dsIdfiles,dsSequences,dsLots,dsSheets
 	 */
 	history.removeForm('loads_browse_tabless2');
-	solutionModel.removeForm('loads_browse_tabless2');	dsBrowse = null;
+	solutionModel.removeForm('loads_browse_tabless2');	
+	dsBrowse = null;
 	dsBrowse = databaseManager.createEmptyDataSet();
 	var win = application.createWindow('Browse Job', JSWindow.WINDOW);
 
@@ -1196,9 +1197,39 @@ function viewBTableAlt(criteria){
 		var status1 = browseFS.removeColumn(removeColumns[index]);
 		//application.output(" stat2 "+status1);
 	}
+	var uniqueBC = [];
+	var removeRows = [];
+	var uniqueBCount = [];
+	var rows = browseFS.getMaxRowIndex()
+	for (index=1;index <= rows;index++){
+		browseFS.rowIndex = index;//remove duplicate id_serial_number_id barcode ids
+		var bcID = browseFS.id_serial_number_id;
+		if (uniqueBC.indexOf(bcID) != -1) {
+			removeRows.push(index);
+			uniqueBCount[bcID]++;
+		} else {
+			uniqueBC.push(bcID);
+			uniqueBCount[bcID] = 1;
+		}
+	}
+	for (index = removeRows.length-1;index > -1;index--){
+		browseFS.removeRow(removeRows[index]);//delete marked row
+	}
+	for (index = 1;index <= browseFS.getMaxRowIndex();index++){
+		browseFS.rowIndex = index;
+		/** @type {Integer} */
+		var intQuant = Math.floor(uniqueBCount[browseFS.id_serial_number_id])+"";
+		browseFS.quantity = intQuant;
+	}
 	//swap piecemark_id and first columns
 	browseDatasource = browseFS.createDataSource('browsingAll',browseArray); 
-	var checkForm = solutionModel.newForm('loads_browse_tabless2',browseDatasource,'sts_one',false,500,600); 
+	var checkForm = solutionModel.newForm('loads_browse_tabless2',browseDatasource,'sts_one',false,500,600);
+	var code = 'function onRecordSelection(event){\
+			forms.loads_browse2.onRecordSelection(event);\
+		}\
+	';
+	
+	checkForm.onRecordSelection = checkForm.newMethod(code);
 	checkForm.navigator = SM_DEFAULTS.NONE;
 	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
 	//checkForm.namedFoundSet = JSForm.EMPTY_FOUNDSET; 
@@ -1221,6 +1252,7 @@ function viewBTableAlt(criteria){
 		last = checkForm.newField(columnName,JSField.TEXT_FIELD,offset,20,colLength,20);
 		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
 		last.name = columnName;
+		last.editable = false;
 	 	offset += colLength;		
 	}
 	last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;

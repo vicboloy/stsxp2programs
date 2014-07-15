@@ -36,6 +36,7 @@ valuelistID:"5D1B109F-52EE-4B38-B34F-823B59DAC432"
 name:"sts_nav_window",
 namedFoundSet:"empty",
 navigatorID:"-1",
+onRecordSelectionMethodID:"-1",
 showInMenu:false,
 size:"156,500",
 transparent:true,

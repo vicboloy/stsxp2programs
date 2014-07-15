@@ -11,7 +11,7 @@ function onLoadCreateRecord(event) {
 		controller.newRecord()
 	}
 	if (globals.customersDividerLocation == 0.0) {
-		elements.tabs.dividerLocation = 317.0;
+		elements.tabs.dividerLocation = 195.0;
 	}
 }
 

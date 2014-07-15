@@ -1,7 +1,7 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/addresses",
 joinType:1,
-name:"sts_addresses_listC",
+name:"sts_addresses_listc",
 primaryDataSource:"db:/stsservoy/addresses",
 typeid:22,
 uuid:"2128A241-CA17-428D-8589-B54AA9A7AB05"

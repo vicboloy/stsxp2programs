@@ -5,6 +5,8 @@ dataProviderID:"barcode_job_start",
 displayType:2,
 location:"181,120",
 name:"barcode_job_start",
+onActionMethodID:"-1",
+onDataChangeMethodID:"B3DFB0DE-C8E8-46A0-B6E0-D4D0402AAC01",
 size:"140,20",
 text:"Barcode Job Start",
 typeid:4,
@@ -39,7 +41,8 @@ size:"144,20",
 text:"Starting at Position",
 transparent:true,
 typeid:7,
-uuid:"48A2B1F8-DF61-43A8-99A8-AD9AD81964CA"
+uuid:"48A2B1F8-DF61-43A8-99A8-AD9AD81964CA",
+visible:false
 },
 {
 labelFor:"barcode_job_length",
@@ -121,7 +124,7 @@ typeid:7,
 uuid:"AF80E5BB-F315-420D-84FF-31CE64AA5FE5"
 },
 {
-height:300,
+height:223,
 partType:5,
 typeid:19,
 uuid:"C5022516-9DC0-4794-82EC-0AC8839B12BB"
@@ -148,7 +151,8 @@ size:"35,20",
 text:"Barcode Fixed Length",
 typeid:4,
 uuid:"F348AB46-61DE-4EE6-B507-83321A345461",
-valuelistID:"935C93DD-F276-4F38-BE0F-13AD946D0F7F"
+valuelistID:"935C93DD-F276-4F38-BE0F-13AD946D0F7F",
+visible:false
 }
 ],
 name:"customer_barcode",

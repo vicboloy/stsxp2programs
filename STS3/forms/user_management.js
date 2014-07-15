@@ -23,3 +23,15 @@ function onHide(event) {
 	globals.setWindowClosed();
 	return _super.onHide(event)
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"AA944071-CA23-4099-8DF6-19DD86CEF6C7"}
+ */
+function onActionClose(event) {
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+}

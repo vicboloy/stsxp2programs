@@ -24,3 +24,14 @@ function startEditing(event) {
 	forms.app_permiss_detail.controller.loadRecords(foundset);
 	forms.app_permiss_detail.showDialog(event);
 }
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"62A39563-B392-4E1D-B920-C8E3F51133D5"}
+ */
+function onActionClose(event) {
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+}

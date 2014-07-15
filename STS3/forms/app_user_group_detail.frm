@@ -8,6 +8,7 @@ displayType:1,
 location:"5,80",
 name:"description",
 size:"140,67",
+tabSeq:2,
 text:"Ddescription",
 typeid:4,
 uuid:"17A464FD-23F8-4FF4-B89D-FF27C9E1DCB1"
@@ -31,6 +32,7 @@ location:"174,30",
 name:"groupKeys",
 onDataChangeMethodID:"3C69A3EB-71D3-4671-B49F-4036E52915AD",
 size:"170,117",
+tabSeq:3,
 typeid:4,
 uuid:"2008671E-7B6F-47F6-A6B7-91A9FBE977D7",
 valuelistID:"1A81A359-EC9A-48C6-ADB5-B92AF56F7351"
@@ -66,6 +68,7 @@ dataProviderID:"group_name",
 location:"5,30",
 name:"group_name",
 size:"140,20",
+tabSeq:1,
 typeid:4,
 uuid:"F72BC99C-206F-44B2-BF3A-4FFE1B7D563E"
 }

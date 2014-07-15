@@ -409,7 +409,11 @@ function onActionClear(event) {
 		var name = index;
 		if (name == 'validate'){continue}
 		if (name.search('v') == 0){
-			forms.loads_criteria[index] = null;
+			if ((typeof forms.loads_criteria[index]) == "number"){
+				forms.loads_criteria[index] = 0
+			} else {
+				forms.loads_criteria[index] = "";
+			}
 		}
 	}
 	jobFound = false;

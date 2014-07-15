@@ -273,6 +273,32 @@ function saveRecordFromForm(){
 	ft_projectid = vFTProjectID;
 	tenant_uuid = globals.secCurrentTenantID;
 	databaseManager.saveData(rec);
+	editStatus(false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param status
+ *
+ * @properties={typeid:24,uuid:"D7DE5D8F-6F83-4FBF-9610-B378EA5EB029"}
+ */
+function onActionEdit(event){
+	editStatus(true);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param status
+ *
+ * @properties={typeid:24,uuid:"AB6E37A9-B1D6-4AE8-A167-A0C0480DCD99"}
+ */
+function editStatus(status){
+	
+	elements.addButton.visible = !status;
+	elements.cancelButton.visible = status;
+	elements.saveButton.visible = status;
+	elements.deleteButton.visible = !status;
+	elements.editButton.visible = !status;
+	elements.tablessX.enabled = !status;
+	
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -362,6 +388,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"D63519B3-ACEA-4BC4-B350-44B2F6DC9273"}
  */
 function onActionClose(event) {
+	editStatus(false);
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
 }

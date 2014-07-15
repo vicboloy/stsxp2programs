@@ -158,3 +158,15 @@ function onDataChange(oldValue, newValue, event) {
 	globals.newRecordKey = "";
 	return true
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"0776FE40-F23B-4ECA-9DB8-009284BFA9E6"}
+ */
+function onActionClose(event) {
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+}

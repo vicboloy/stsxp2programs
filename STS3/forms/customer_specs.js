@@ -155,3 +155,16 @@ function onActionSaveEdit(event){
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"1623BD20-C0C0-4D96-96A9-AE32748D8F23"}
+ */
+function onActionClose(event) {
+	onActionCancelEdit(event);
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+}

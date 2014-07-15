@@ -94,3 +94,15 @@ function delRecord(event) {
 function onRenderDelButton(event) {
 	elements.delButton.text = 'Delete '+employee_lastname+", "+employee_firstname;
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"AE427593-ABE1-4D76-AE72-7AAFF8E12156"}
+ */
+function onActionClose(event) {
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+}

@@ -62,7 +62,7 @@ function onActionClickCustomer(event) {
  * @properties={typeid:24,uuid:"B0C80879-16DA-4098-8801-18C1D7F24E96"}
  */
 function onActionClickEmployee(event) {
-	onActionClickMainButton(event,"Employees",'employees',50,50,880,490,false);
+	onActionClickMainButton(event,"Employees",'employees',50,50,920,505,false);
 }
 
 /**
@@ -72,7 +72,7 @@ function onActionClickEmployee(event) {
  * @properties={typeid:24,uuid:"AE5DFB87-E846-4DFB-9C25-E57140EC29C3"}
  */
 function onActionClickCarrier(event) {
-	onActionClickMainButton(event,"Carriers",'carriers',50, 50, 775, 535,false);
+	onActionClickMainButton(event,"Carriers",'carriers',50, 50, 620, 500,false);
 }
 
 /**
@@ -121,7 +121,7 @@ function onActionClickEP(event) {
  * @properties={typeid:24,uuid:"B5B3AFA8-95D7-49CD-AB3E-256306625504"}
  */
 function onActionClickSC(event) {
-	onActionClickMainButton(event,"Status Codes",'status_descriptions',50,50,750,595,false);
+	onActionClickMainButton(event,"Status Codes",'status_descriptions',50,50,745,515,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -162,7 +162,7 @@ function onActionClickKISS(event) {
  * @properties={typeid:24,uuid:"F0E82BB1-3030-4DD4-973C-75E91FBA179A"}
  */
 function onActionRoutings(event) {
-	onActionClickMainButton(event,"Routings",'routing_codes',50,50,610,485,false);
+	onActionClickMainButton(event,"Routings",'routing_codes',50,50,630,435,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -180,7 +180,7 @@ function onActionJobs(event) {
  * @properties={typeid:24,uuid:"62683739-AB1C-4C81-9DD8-C03DD2959842"}
  */
 function onActionUserManage(event) {
-	onActionClickMainButton(event,"User Management",'user_management',50,50,960,450,false);
+	onActionClickMainButton(event,"User Management",'user_management',50,50,750,330,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -189,7 +189,7 @@ function onActionUserManage(event) {
  * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
  */
 function onActionTenants(event) {
-	onActionClickMainButton(event,"Divisions",'tenants',50,50,890,410,false);
+	onActionClickMainButton(event,"Divisions",'tenants',50,50,890,418,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -198,7 +198,7 @@ function onActionTenants(event) {
  * @properties={typeid:24,uuid:"3CD18375-D0A0-466D-A181-6D585BEE8E70"}
  */
 function onActionTenantGroups(event) {
-	onActionClickMainButton(event,"Department and Division Management",'members',50,50,355,300,false);
+	onActionClickMainButton(event,"Department and Division Management",'members',50,50,370,315,false);
 }
 
 /**
@@ -218,7 +218,7 @@ function onActionUserss(event) {
  * @properties={typeid:24,uuid:"5426D223-B48C-4FF8-B12D-AAE9F4FDD1FA"}
  */
 function onActionPermissions(event) {
-	onActionClickMainButton(event,"Application Permissions",'app_permissions',50,50,640,480,false);
+	onActionClickMainButton(event,"Application Permissions",'app_permissions',50,50,640,500,false);
 }
 
 /**
@@ -306,7 +306,7 @@ function getParentForm() {
 	}
 	else {
 		if (globals.debugtesting){
-			throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
+			//throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
 		}
 	}
 	return null;
@@ -316,30 +316,34 @@ function getParentForm() {
  * @param windowName
  *
  * @properties={typeid:24,uuid:"C6231BA9-FA7B-469D-91C5-C22E34A6B477"}
+ * @AllowToRunInFind
  */
 function addWindowList(windowName){
 	var length = globals.aTrackWindows.length;
 	for (var i=0;i<length;i++){
-		if (globals.aTrackWindows[i] == windowName) {return}
+		if (globals.aTrackWindows[i].search(windowName) == 0) {return}
 	}
 	globals.aTrackWindows.push(windowName);
 	application.setValueListItems('stsvl_nav_windows',globals.aTrackWindows);
 }
 /**
- * TODO generated, please specify type and doc for the params
  *
  * @properties={typeid:24,uuid:"29F2DCD5-FF81-47D9-B83B-8D0064EB5A43"}
  * @AllowToRunInFind
  */
 function focusWindow(){
+	var windowArray = globals.aTrackWindows;
+	/** @type {String} */
 	var windowName = elements.windows.getSelectedElements()[0];
 	if (windowName == null){return}
+	if (windowName == " "){return}
 	if (windowName.search('STS') == 0){return}//cannot bring main to front, so ignore
 	var windowx = application.getWindow(windowName);
 	windowx.toFront();
 }
 /**
  * @properties={typeid:24,uuid:"F136BFBF-4BE1-48EC-87FE-5C11DFC2727D"}
+ * @AllowToRunInFind
  */
 function removeWindowTrack(){
 	var win = application.getActiveWindow();
@@ -351,7 +355,7 @@ function removeWindowTrack(){
 	var windowName = "";
 	for (var index = 0; index < tempLength; index++){
 		windowName = globals.aTrackWindows[index];
-		if (windowName != formName){
+		if (formName.search(windowName) != 0){
 			tempArray.push(windowName);
 		}
 	}

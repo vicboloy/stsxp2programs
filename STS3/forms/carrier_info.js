@@ -79,3 +79,15 @@ function onActionSaveEditCarrier(event){
 		databaseManager.saveData(foundset);
 		databaseManager.setAutoSave(true);
 	}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"745C0B19-A344-48E6-A10A-C46A89182EC6"}
+ */
+function onActionClose(event) {
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+}

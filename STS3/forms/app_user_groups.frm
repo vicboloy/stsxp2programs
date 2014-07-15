@@ -26,6 +26,7 @@ name:"split",
 printable:false,
 size:"403,240",
 tabOrientation:-3,
+tabSeq:-2,
 transparent:true,
 typeid:16,
 uuid:"12C9C971-ED18-49A7-8445-51658A7BA1B2"

@@ -28,7 +28,8 @@ function addNewAddress(event) {
 	var employeeUUID = forms.employees_lst.employee_id;
 	var customerUUID = forms.customers_lst.customer_id;
 	var form = application.getActiveWindow();
-	foundset.newRecord();
+	var rec = _super.newRecord(event,null,true,true);
+	//foundset.newRecord();
 	if (form.title == "Employees"){
 		foundset.customer_id = employeeUUID;
 	}
@@ -80,31 +81,23 @@ function onDataChangeZipCode(oldValue, newValue, event) {
  * @AllowToRunInFind
  */
 function onAddressTypeChange(oldValue, newValue, event) {
-	var ds = application.getValueListItems('address_types').getColumnAsArray(2);
-	if(ds.indexOf(newValue) == -1) {
-		/**@type {JSFoundSet<db:/stsservoy/valuelists>} */
-		var fs = databaseManager.getFoundSet("db:/stsservoy/valuelists");
-		fs.newRecord();
-		fs.value1 = newValue;
-		fs.creation_date = new Date;
-		fs.value2 = null;
-		fs.valuelist_name = "address_types";
-		fs.value_id = application.getValueListArray('address_types').length + 1;
-		fs.tenant_uuid = globals.secCurrentTenantID;
-	}
-	//TODO Address should have only one in each Address Type
-	//var fs = databaseManager.getFoundSet('db:/stsservoy/addresses')
-	/** var fs = databaseManager.getFoundSet('db:/stsservoy/customers');
+	//TODO Address should have only one in each Address Type, per Job
+	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
+	var fs = databaseManager.getFoundSet('stsservoy','addresses');
 	if(fs.find()){
-		fs.customer_id = globals.selectedCustomerID;
-		sts_cust_to_address.address_id = address_id;
+		fs.customer_id = customer_id;
+		fs.tenant_uuid = globals.secCurrentTenantID;
+		fs.address_type = address_type;
 		var count = fs.search();
 		if (count > 0) {
 			controller.deleteRecord();
-			controller.setSelectedIndex(globals.selectedAddressIndex);
+			globals.selectedAddressIndex = controller.getSelectedIndex();
+			controller.setSelectedIndex(2);
+			onActionCancelEditAddress(event);
 		}
 	}
-	**/
+	//forms.addresses.controller.loadRecords(fs);
+	//forms.addresses.controller.loadAllRecords();
  	return true
 }
 
@@ -122,7 +115,7 @@ function onRenderDeleteAddressButton(event) {
 			elements.deleteButton.text = "Delete \'"+addyType+"\'";
 			elements.deleteButton.visible = true;
 		} else {
-			elements.deleteButton.visible = false;
+			//elements.deleteButton.visible = false;
 		}
 	}
 }
@@ -167,13 +160,22 @@ function onActionEditAddress(event) {
  * @properties={typeid:24,uuid:"ED0E61C4-70AF-43D4-949A-4632C8344733"}
  */
 function onEditAddress(event,editStatus){
+	//controller.enabled = status;
 	editAddressFlag = editStatus;
 	elements.deleteButton.visible = !editStatus;
 	elements.addAddressButton.visible = !editStatus;
 	elements.cancelButton.visible = editStatus;
 	elements.saveButton.visible = editStatus;
 	elements.editButton.visible = !editStatus;
-	controller.readOnly = !editStatus;
+	elements.tabless.enabled = !editStatus;
+	elements.address_type.enabled = editStatus;
+	elements.address_type.editable = editStatus;
+	elements.address_type.readOnly = !editStatus;
+	elements.line1.editable = editStatus;
+	elements.line2.editable = editStatus;
+	elements.city.editable = editStatus;
+	elements.state.editable = editStatus;
+	elements.zip_postal_code.editable = editStatus;
 }
 
 /**
@@ -184,7 +186,6 @@ function onEditAddress(event,editStatus){
  */
 function onActionSaveEditAddress(event) {
 	onEditAddress(event,false);
-	foundset.tenant_uuid = globals.secCurrentTenantID;
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
 }
@@ -199,4 +200,65 @@ function onActionCancelEditAddress(event) {
 	onEditAddress(event,false);
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
+}
+
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"2E4D57B4-E6C1-4A99-AF34-6B12A4F2BE23"}
+ */
+function onRecordSelection(event) {
+	application.output('test')
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"24D5F6D8-B068-4741-8454-B8460E276AAD"}
+ */
+function onActionClose(event) {
+	onActionCancelEditAddress(event);
+	globals.setWindowClosed(event.getFormName());
+	globals.mainWindowFront();
+}
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"58D23BAB-196E-45BC-9D0D-1390DA9370E1"}
+ * @AllowToRunInFind
+ */
+function onShow(firstShow, event) {
+	onEditAddress(event,false);
+	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
+	var fs = databaseManager.getFoundSet('stsservoy','addresses');
+	var employeeUUID = forms.employees_lst.employee_id;
+	var customerUUID = forms.customers_lst.customer_id;
+	var form = application.getActiveWindow();
+	if (form.title == "Employees"){
+		var currentID = employeeUUID;
+	}
+	if (form.title == "Customers"){
+		currentID = customerUUID;
+	}
+	var tempArray = [];
+	if (fs.find()){
+		fs.tenant_uuid = globals.secCurrentTenantID;
+		fs.customer_id = currentID;
+		var count = fs.search();
+		for (var index = 1;index <= count;index++){
+			var rec = fs.getRecord(index);
+			tempArray.push(rec.address_type);
+		}
+		
+	}
+	application.setValueListItems('stsvl_address_types',tempArray);
+
 }

@@ -3,6 +3,7 @@ encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
 items:[
 {
+anchors:15,
 items:[
 {
 containsFormID:"289F2202-C351-4AE9-854A-6BDC235FCDB3",
@@ -25,7 +26,7 @@ location:"0,5",
 name:"split",
 onChangeMethodID:"5439B6EE-D2FE-4164-9A77-3923DC176DE2",
 printable:false,
-size:"845,576",
+size:"645,576",
 tabOrientation:-2,
 transparent:true,
 typeid:16,
@@ -44,7 +45,7 @@ onHideMethodID:"E21EE873-34C3-488D-8F27-F113B59EAEDE",
 onShowMethodID:"A1B2FEC9-34A6-46A3-A972-5DE0B0C609B9",
 scrollbars:4,
 showInMenu:true,
-size:"850,550",
+size:"654,591",
 styleName:"sts_one",
 typeid:3,
 uuid:"84368131-E698-4DFB-84DE-370FB7D98D24"

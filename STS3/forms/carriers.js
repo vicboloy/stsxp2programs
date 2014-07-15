@@ -11,7 +11,7 @@
 			controller.newRecord()
 		}
 		if (globals.carriersDividerLocation == 0.0) {
-			elements.split.dividerLocation = 300.0;
+			elements.split.dividerLocation = 175.0;
 		}
 	}
 

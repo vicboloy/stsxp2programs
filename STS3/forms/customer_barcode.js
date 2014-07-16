@@ -1,6 +1,8 @@
 /**
  * Perform the element default action.
  *
+ * @param oldValue
+ * @param newValue
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"B3DFB0DE-C8E8-46A0-B6E0-D4D0402AAC01"}

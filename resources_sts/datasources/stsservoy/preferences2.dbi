@@ -54,6 +54,14 @@ length:36,
 name:"tenant_id"
 },
 {
+allowNull:true,
+creationOrderIndex:10,
+dataType:12,
+flags:4,
+length:36,
+name:"tenant_uuid"
+},
+{
 allowNull:false,
 creationOrderIndex:2,
 dataType:4,

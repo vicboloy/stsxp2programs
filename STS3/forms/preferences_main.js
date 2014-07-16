@@ -30,7 +30,7 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onActionUpdatePrefs(event) {
-	// for globals, user_id = -1, tenant_id= main tenant, field_name = index, value_type, value_string
+	// for globals, user_id = -1, tenant_uuid= main tenant, field_name = index, value_type, value_string
 	errorMessage = "Saving preferences.";
 	application.updateUI();
 	var prefs = scopes.prefs;
@@ -52,7 +52,7 @@ function onActionUpdatePrefs(event) {
 		saveRec = false;
 		if (fs.find()){
 			fs.user_id = -1;
-			fs.tenant_id = tenant;
+			fs.tenant_uuid = tenant;
 			fs.field_name = variable;
 			if (fs.search() > 0){
 				rec = fs.getRecord(1);
@@ -70,7 +70,7 @@ function onActionUpdatePrefs(event) {
 				var recNum = fs.newRecord();
 				rec = fs.getRecord(recNum);
 				rec.user_id = user_id;
-				rec.tenant_id = tenant;
+				rec.tenant_uuid = tenant;
 				rec.field_name = variable;
 				rec.field_value = variableSetting;
 				rec.field_type = variableType;
@@ -80,7 +80,7 @@ function onActionUpdatePrefs(event) {
 		}
 		
 		if (saveRec){databaseManager.saveData(rec)}
-		//application.output(index+" = "+prefs[index]+" user_id: "+-1+" tenant_id "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
+		//application.output(index+" = "+prefs[index]+" user_id: "+-1+" tenant_uuid "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
 	}
 	//application.output("update count "+updateCount);
 	errorMessage = "";

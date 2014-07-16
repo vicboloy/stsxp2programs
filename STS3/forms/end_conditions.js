@@ -110,7 +110,7 @@ function onActionCancelEdit(event) {
  * @properties={typeid:24,uuid:"2CD566F5-14CB-4CC4-9AAC-E158AA9E3B99"}
  */
 function onActionSaveEdit(event) {
-	end_prep_edit_date = new Date;
+	edit_date = new Date;
 	onEdit(event,false);
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);

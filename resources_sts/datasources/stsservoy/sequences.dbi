@@ -53,6 +53,12 @@ name:"sequence_number"
 },
 {
 allowNull:true,
+creationOrderIndex:8,
+dataType:4,
+name:"sequence_quantity"
+},
+{
+allowNull:true,
 creationOrderIndex:6,
 dataType:12,
 flags:4,

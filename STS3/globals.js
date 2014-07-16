@@ -958,7 +958,7 @@ function onStartLoadPrefs(){
 	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
 	if (fs.find()){
 		fs.user_id = -1;
-		fs.tenant_id = globals.secCurrentTenantID;
+		fs.tenant_uuid = globals.secCurrentTenantID;
 		var recIndex = 1;
 		var recCount = fs.search();
 		recCount = databaseManager.getFoundSetCount(fs);

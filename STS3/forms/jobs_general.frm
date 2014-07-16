@@ -441,9 +441,9 @@ uuid:"CA6A6910-0134-4EA1-8534-3F031E023523",
 visible:false
 },
 {
-labelFor:"labe_format",
+labelFor:"label_format",
 location:"315,241",
-name:"labe_format_label",
+name:"label_format_label",
 size:"205,20",
 text:"Default Bar Code Label Format #",
 transparent:true,

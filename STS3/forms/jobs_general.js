@@ -213,7 +213,7 @@ function addOnActionDelete(){
 }
 /**
  * TODO generated, please specify type and doc for the params
- * @param fs
+ * @param rec
  *
  * @properties={typeid:24,uuid:"A523191B-CF6C-4E0B-AB3F-F52161CDEB04"}
  */
@@ -245,7 +245,7 @@ function loadRecordIntoForm(rec){
 }
 /**
  * TODO generated, please specify type and doc for the params
- * @param fs
+ * 
  *
  * @properties={typeid:24,uuid:"1FB02E0B-65E9-4B9C-A3A9-0C31834C2101"}
  */
@@ -277,7 +277,7 @@ function saveRecordFromForm(){
 }
 /**
  * TODO generated, please specify type and doc for the params
- * @param status
+ * @param event
  *
  * @properties={typeid:24,uuid:"D7DE5D8F-6F83-4FBF-9610-B378EA5EB029"}
  */

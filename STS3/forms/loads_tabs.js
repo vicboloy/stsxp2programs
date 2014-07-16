@@ -4,8 +4,6 @@
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @returns {Boolean}
- *
  * @properties={typeid:24,uuid:"CDF05C92-0C43-4374-B061-85022694CCCA"}
  */
 function onHide(event) {

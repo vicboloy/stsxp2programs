@@ -231,7 +231,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 			vCustNum = rec.sts_job_to_customer2.customer_number;
 			vCustomerName = rec.sts_job_to_customer2.name;
 			scopes.jobs.browseJobID = rec.job_id;
-			status = true;
+			var status = true;
 			vLabIDNums = 0;//idfile count
 			vLabTotPieces = 0;//totalpieces
 			vLabTotalWt = 0;//totalweight
@@ -367,7 +367,7 @@ function collectCriteria(){
 }
 /**
  * TODO generated, please specify type and doc for the params
- * @param arrayN
+ * @param itemCSV
  *
  * @properties={typeid:24,uuid:"3D134DB8-8264-4793-82B5-6F7ABED9EB1D"}
  */
@@ -380,7 +380,7 @@ function arrayToString(itemCSV){
 		if (index == length-1){comma = ""}
 		arrayStr = arrayStr+"\'"+arrayN[index]+"\'"+comma;
 	}
-	var arrayStr = arrayStr+")";
+	arrayStr = arrayStr+")";
 	if (arrayStr == "(\'\')"){arrayStr = null}
 	return arrayStr;
 }
@@ -439,7 +439,7 @@ function onGetInformation(event) {
 		and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL \
 		inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL \
 		inner join sequences on idfiles.sequence_id = sequences.sequence_id and sequences.delete_flag IS NULL';
-	var queryIdfiles =  'select count(*) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '+
+	queryIdfiles =  'select count(*) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '+
 	' and sheets.job_id = ? AND sheets.tenant_uuid = ? AND sheets.delete_flag IS null '+
 	' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id AND idfiles.delete_flag IS null '+
 	' inner join sequences on sequences.sequence_id = idfiles.sequence_id inner join '+

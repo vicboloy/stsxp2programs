@@ -74,7 +74,7 @@ name:"tabless",
 printable:false,
 size:"288,407",
 tabOrientation:-1,
-tabSeq:-2,
+tabSeq:13,
 transparent:true,
 typeid:16,
 uuid:"22C8E893-098B-4997-A201-D1DFBC404C4B"

@@ -11,6 +11,14 @@ name:"mapping_id"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:13,
+dataType:93,
+name:"edit_date"
+},
+{
+allowNull:true,
 compatibleColumnTypes:"[[12,2147483647,0]]",
 creationOrderIndex:6,
 dataType:12,

@@ -43,7 +43,7 @@ typeid:7,
 uuid:"5890123B-354E-49BF-9BD7-173BF186C07F"
 },
 {
-dataProviderID:"uom",
+dataProviderID:"uom_code",
 location:"144,21",
 name:"uom",
 size:"71,20",

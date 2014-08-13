@@ -35,7 +35,10 @@ function getQuery(){
  * @properties={typeid:24,uuid:"64859050-196D-4F03-A116-1F13CB60FEAC"}
  */
 function onShow(firstShow, event) {
-	onActionRefresh(event);
+	if (foundset.getSize() == 0 || forms.cost_of_work.jobchangeM){
+		onActionRefresh(event);
+		forms.cost_of_work.jobchangeM = false;
+	}
 	scopes.jobs.loadTablePrefs('cost_of_work_int');
 	return _super.onShow(firstShow, event)
 }

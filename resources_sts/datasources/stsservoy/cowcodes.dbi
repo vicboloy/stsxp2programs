@@ -60,6 +60,13 @@ name:"uom"
 },
 {
 allowNull:true,
+creationOrderIndex:9,
+dataType:12,
+length:15,
+name:"uom_code"
+},
+{
+allowNull:true,
 compatibleColumnTypes:"[[8,17,17]]",
 creationOrderIndex:4,
 dataType:8,

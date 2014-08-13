@@ -196,7 +196,7 @@ uuid:"817DBCCE-32DA-4FD1-A663-71A7CC17A561",
 valuelistID:"552AEBC0-C912-4295-8C19-BF37F518CBEA"
 },
 {
-dataProviderID:"sts_cowcode_cowcode_xref.uom",
+dataProviderID:"sts_cowcode_cowcode_xref.uom_code",
 editable:false,
 location:"184,130",
 size:"73,20",

@@ -1,8 +1,9 @@
-dataSource:"db:/stsservoy/piecemarks",
+dataSource:"db:/stsservoy/idfiles",
 encapsulation:60,
 items:[
 {
 anchors:11,
+dataProviderID:"st2_idfiles_to_piecemarks.freeField",
 editable:false,
 location:"744,20",
 name:"length_char",
@@ -24,7 +25,7 @@ uuid:"0EA2EC5E-FAFA-44AC-BCC4-7BC5E1E9173F"
 },
 {
 anchors:11,
-dataProviderID:"st2_piecemarks_to_sheets.st2_sheets_to_jobs.st2_jobs_to_customers.customer_number",
+dataProviderID:"st2_idfiles_to_piecemarks.sts_piecemarks_to_sheets.st2_sheets_to_jobs.sts_job_to_customer.customer_number",
 editable:false,
 location:"31,20",
 name:"customer_number",
@@ -46,6 +47,7 @@ uuid:"21F81206-A206-4587-9DF4-3C430E6D6955"
 },
 {
 anchors:11,
+dataProviderID:"st2_idfiles_to_piecemarks.sts_piecemark_cowxref.sts_cowxref_cowcode.cow_code",
 editable:false,
 location:"412,20",
 name:"your_code",
@@ -56,7 +58,7 @@ uuid:"2462AEBB-9EF4-4C4B-9DB0-8F1DC37042F2"
 },
 {
 anchors:11,
-dataProviderID:"cost_of_work_code",
+dataProviderID:"st2_idfiles_to_piecemarks.cost_of_work_code",
 editable:false,
 location:"183,20",
 name:"cost_of_work_code",
@@ -78,7 +80,7 @@ uuid:"2C5D268F-EAC6-4A51-B9AA-9A4EBC169240"
 },
 {
 anchors:11,
-dataProviderID:"material",
+dataProviderID:"st2_idfiles_to_piecemarks.material",
 editable:false,
 location:"318,20",
 name:"material",
@@ -94,7 +96,7 @@ location:"744,0",
 mnemonic:"",
 name:"length_char_label",
 size:"66,20",
-text:"xLength-char",
+text:"Length-char",
 transparent:true,
 typeid:7,
 uuid:"3C958543-C98C-4450-A778-DC376742922B"
@@ -112,7 +114,10 @@ uuid:"4037D7BE-0CDE-4EAD-B50D-BB43FD938C03"
 },
 {
 anchors:11,
+dataProviderID:"st2_idfiles_to_piecemarks.sts_piecemark_cowxref.uom_dollar",
 editable:false,
+format:"#.0000",
+horizontalAlignment:4,
 location:"677,20",
 name:"dollar_uom",
 size:"66,20",
@@ -133,7 +138,7 @@ uuid:"456A94AB-D310-49C3-987F-4E93FFE6F381"
 },
 {
 anchors:11,
-dataProviderID:"cost_each",
+dataProviderID:"st2_idfiles_to_piecemarks.cost_each",
 editable:false,
 location:"619,20",
 name:"cost_each",
@@ -155,7 +160,7 @@ uuid:"5CF9DB45-67CC-45C2-9DE1-C5FBD061C67F"
 },
 {
 anchors:11,
-dataProviderID:"st2_piecemarks_to_sheets.st2_sheets_to_jobs.customer_po",
+dataProviderID:"st2_idfiles_to_piecemarks.st2_piecemarks_to_sheets.st2_sheets_to_jobs.customer_po",
 editable:false,
 location:"104,20",
 name:"customer_po",
@@ -171,7 +176,7 @@ location:"677,0",
 mnemonic:"",
 name:"dollar_uom_label",
 size:"66,20",
-text:"x$/UOM",
+text:"$/UOM",
 transparent:true,
 typeid:7,
 uuid:"5EB9694E-C580-4ECE-89C5-C5CEBBA312E8"
@@ -189,7 +194,7 @@ uuid:"6564E1B4-4EDB-4700-B6C1-0546572946E8"
 },
 {
 anchors:11,
-dataProviderID:"cost_of_work_quantity",
+dataProviderID:"st2_idfiles_to_piecemarks.cost_of_work_quantity",
 editable:false,
 location:"806,20",
 name:"cost_of_work_quantity",
@@ -205,14 +210,14 @@ location:"412,0",
 mnemonic:"",
 name:"your_code_label",
 size:"66,20",
-text:"xYour Code",
+text:"Your Code",
 transparent:true,
 typeid:7,
 uuid:"7AA1F43D-AD56-4EAA-BA46-99FFB21808FA"
 },
 {
 anchors:11,
-dataProviderID:"piecemark",
+dataProviderID:"st2_idfiles_to_piecemarks.piecemark",
 editable:false,
 location:"251,20",
 name:"piecemark",
@@ -255,7 +260,7 @@ uuid:"B572E5B9-9206-435C-9166-746CCA03B7C3"
 },
 {
 anchors:11,
-dataProviderID:"piecemark_unit_of_measure",
+dataProviderID:"st2_idfiles_to_piecemarks.piecemark_unit_of_measure",
 editable:false,
 location:"373,20",
 name:"piecemark_unit_of_measure",
@@ -304,7 +309,7 @@ uuid:"D7F3459C-AEA9-4C73-BC08-3C989A0F5A0D"
 },
 {
 anchors:11,
-dataProviderID:"item_width",
+dataProviderID:"st2_idfiles_to_piecemarks.item_width",
 editable:false,
 location:"478,20",
 name:"item_width",
@@ -315,7 +320,7 @@ uuid:"DB181440-18F5-4B4B-B462-ED34153E88F2"
 },
 {
 anchors:11,
-dataProviderID:"item_length",
+dataProviderID:"st2_idfiles_to_piecemarks.item_length",
 editable:false,
 location:"520,20",
 name:"item_length",
@@ -326,7 +331,7 @@ uuid:"E42DDEDA-0108-40AF-B1EF-BA8A808C7F71"
 },
 {
 anchors:11,
-dataProviderID:"item_weight",
+dataProviderID:"st2_idfiles_to_piecemarks.item_weight",
 editable:false,
 location:"566,20",
 name:"item_weight",

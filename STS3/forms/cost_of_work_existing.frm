@@ -1,4 +1,4 @@
-dataSource:"db:/stsservoy/piecemarks",
+dataSource:"db:/stsservoy/idfiles",
 encapsulation:60,
 extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
 items:[
@@ -59,7 +59,7 @@ items:[
 {
 containsFormID:"E0E3BEF4-BDB6-4707-992F-9C52A0C2CE78",
 location:"5,35",
-relationName:"sts_piecemark",
+relationName:"sts_idfiles",
 text:"cost_of_work_existlist",
 typeid:15,
 uuid:"ABB75DB3-C3BB-4FD3-82BC-4668FEBE7709"

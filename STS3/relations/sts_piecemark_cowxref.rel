@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/cow_xref",
+items:[
+{foreignColumnName:"cust_cow_code",primaryDataProviderID:"cost_of_work_code",typeid:23,uuid:"367D6900-81C3-4F66-9457-5E461AA8AE46"}
+],
+joinType:1,
+name:"sts_piecemark_cowxref",
+primaryDataSource:"db:/stsservoy/piecemarks",
+typeid:22,
+uuid:"9C7655AB-FC30-4433-BB3A-42C6B9207D9C"

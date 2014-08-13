@@ -24,12 +24,13 @@ var vShowDetail = 0;
  * @properties={typeid:24,uuid:"1ACDDE9F-EA2B-480B-86CB-BA1A20CEADCC"}
  */
 function onActionMarked(event) {
+	var custCowToFormula = [];
 	var count = foundset.getSize();
 	var cowUnset = [];
 	for (var index = count;index > 0;index--){
 		controller.setSelectedIndex(index);
-		cowUnset[index]=freeCheck;
-		if (cowUnset[index]) {cowUnset.push(piecemark_id)}
+		//cowUnset[index]=freeCheck;
+		if (freeCheck == 1 && cowUnset.indexOf(piecemark_id) == -1) {cowUnset.push(piecemark_id)}
 	}
 	controller.setSelectedIndex(index);
 	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
@@ -41,6 +42,7 @@ function onActionMarked(event) {
 	var fs = null;
 	fs = databaseManager.getFoundSet(m);
 	var fsUpdater = databaseManager.getFoundSetUpdater(fs);
+	// update cowcode for each piecemark, returning code, cost each, uom, uom dollars, work quantity
 	fsUpdater.setColumn('cost_of_work_code',null);
 	fsUpdater.setColumn('cost_each',null);
 	fsUpdater.setColumn('piecemark_unit_of_measure',null);
@@ -65,27 +67,46 @@ function onActionCalcCost(event) {
 	var lastIndex = controller.getSelectedIndex();
 	var count = foundset.getSize();
 	if (skipShipped){
-		//get list of piecemarks by checking idfiles.id_status
+		//get list of idfile_id's by checking idfiles.id_status
 		for (var index = 1;index <= count;index++){
 			controller.setSelectedIndex(index);
-			var idfileFS = sts_piecemarks_to_idfiles;
-			var idfileCount = idfileFS.getSize();
-			var unshipped = true;
-			for (var index2 = 1;index2 <= idfileCount;index2++){
-				var idRec = idfileFS.getRecord(index2);
-				if (idRec.id_status.toUpperCase().search('SHIP') != -1){
-					unshipped = false;
-					break; //is at least one idfile status is not 
-				}
+			if (id_status.toUpperCase().search('SHIP') != -1){
+				shippedMarks.push(idfile_id);
 			}
-			if (!unshipped){shippedMarks.push(piecemark_id)}
 		}
 	}
 	// Collect piecemark_id for all piecemarks to set
+	var custCowToFormula = [];
 	for (var index = 1;index <= count;index++){
 		if (skipCostsExisting && cost_each == 0){continue}
 		if (skipShipped && shippedMarks.length > 0 && shippedMarks.indexOf(piecemark_id) == -1){continue}
-		calcCows(true);
+		controller.setSelectedIndex(index);
+		var cow = st2_idfiles_to_piecemarks.cost_of_work_code;
+		if (custCowToFormula.indexOf(cow+'value') == -1){
+			var valueFormula = st2_idfiles_to_piecemarks.sts_piecemark_cowxref.sts_cowxref_cowcode.sts_cowcode_uomtype.uom_to_get_value;
+			var weightFormula = st2_idfiles_to_piecemarks.sts_piecemark_cowxref.sts_cowxref_cowcode.sts_cowcode_uomtype.uom_to_get_wt;
+			custCowToFormula[cow+'weight'] = weightFormula;
+			custCowToFormula[cow+'value'] = valueFormula;
+			custCowToFormula[cow+'money'] = st2_idfiles_to_piecemarks.sts_piecemark_cowxref.uom_dollar;
+		}
+		var cowMoney = custCowToFormula[cow+'money'];
+		var formHalves = custCowToFormula[cow+'value'].split("=");
+		var uom = formHalves[0].trim().split("/")[1];
+		var formula = formHalves[1].trim();
+		//application.output('material '+st2_idfiles_to_piecemarks.material+' cow '+cow+' uom '+uom+' formulas '+formula);
+		st2_idfiles_to_piecemarks.piecemark_unit_of_measure = uom;
+		st2_idfiles_to_piecemarks.piecemark_uom_dollars = cowMoney;
+		st2_idfiles_to_piecemarks.cost_each; // is this item's cost
+		st2_idfiles_to_piecemarks.cost_of_work_quantity; // is the weight divided by UOM
+		var length = st2_idfiles_to_piecemarks.item_length;
+		var width = st2_idfiles_to_piecemarks.item_width;
+		var weight = st2_idfiles_to_piecemarks.item_weight;
+		var quantity = 1; //resolve this later
+		var uomFormula = scopes.jobs.convertUomToFormula(formula,cowMoney,quantity,length,width,weight)
+		var costEach = eval(uomFormula);
+		st2_idfiles_to_piecemarks.cost_each = costEach;
+		st2_idfiles_to_piecemarks.cost_of_work_quantity = (cowMoney == 0) ? 0 : costEach/cowMoney;
+		//application.output(eval(uomFormula));
 	}
 	controller.setSelectedIndex(lastIndex);
 }
@@ -102,6 +123,9 @@ function calcCows(){
 		fsUpdater.setColumn('piecemark_uom_dollars',null);
 		fsUpdater.setColumn('cost_of_work_quantity',null);
 	 */
+		var width = wdthin/12;
+		var length = lgthin/12;
+		var sqft = width * length		// calculate the squate feet of the item
 }
 /**
  * Perform the element default action.
@@ -124,6 +148,7 @@ function onActionRefresh(event) {
 		controller.setSelectedIndex(index);
 		freeCheck = 0;
 	}
+	//var localCode = "";
 	databaseManager.revertEditedRecords(foundset);
 	var result = null;
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
@@ -143,8 +168,34 @@ function onActionRefresh(event) {
 			.add(m.columns.delete_flag.isNull)
 			.add(m.columns.cost_of_work_code.not.isNull)
 		);
+
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
+	var tempPcmksArray = [];
+	var tempResult = databaseManager.getDataSetByQuery(m,-1);
+	for (var index = 1;index <= count;index++){
+		tempResult.rowIndex = index;
+		tempPcmksArray.push(tempResult.piecemark_id);
+	}
+	i.result.add(i.columns.idfile_id);
+	i.where.add(i.columns.piecemark_id.isin(m));
+	var rezz = databaseManager.getDataSetByQuery(i,-1);
+	
 	result = databaseManager.getDataSetByQuery(m,-1);
-	foundset.loadRecords(result);
+	foundset.loadRecords(rezz);
+	count = foundset.getSize();
+	var calced = [];
+	for (index = 1;index <= count;index++){
+		var record = foundset.getRecord(index);
+		var length = record.st2_idfiles_to_piecemarks.item_length;
+		//var impLength = "";
+		if (calced.indexOf(length) == -1){
+			calced[length] = scopes.jobs.decToFeet(length);
+		}
+		if (length != 0) {
+			record.st2_idfiles_to_piecemarks.freeField = calced[length];
+		}
+	}
 	scopes.jobs.loadTablePrefs('cost_of_work_existing');
 }
 
@@ -157,8 +208,9 @@ function onActionRefresh(event) {
  * @properties={typeid:24,uuid:"0286DA98-9CFD-4826-9A7F-8D5FB12D9924"}
  */
 function onShow(firstShow, event) {
-	//if (firstShow){
+	if (foundset.getSize() == 0 || forms.cost_of_work.jobChangeE){
+		forms.cost_of_work.jobChangeE = false;
 		onActionRefresh(event);
-	//}
+	}
 	return _super.onShow(firstShow, event)
 }

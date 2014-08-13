@@ -558,6 +558,12 @@ var columnNames = [];
  * @properties={typeid:35,uuid:"7826196D-0789-4084-B1EC-5153563973A7",variableType:-4}
  */
 var tempArray = [];
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"A6F20E76-93E5-4B8F-938C-35395EC61592"}
+ */
+var testDropdown = "";
 ///**
 // * 
 // * @properties={typeid:35,uuid:"38A1EB8A-9B74-401D-BB63-B4FADA77D93B",variableType:-4}
@@ -864,12 +870,18 @@ function defineKISSdataset() {
 	var item;
 	fieldOrderTempTable = [];
 	// using column names to filter content.  'hide' ensures the data doesn't show
-	columnNames = ['select_hidebool','summ_hidetext','set_bc_qty','last_bc_qty','barcode_qty','total_label_qty','ext_wt_qty','import_status'];
+	columnNames = ['select_hidebool','summ_hidetext','set_bc_qty','last_bc_qty','barcode_qty','total_label_qty','ext_wt_qty','import_status','action'];
 	for(index=0;index < columnNames.length;index++){  // insert administrative columns
-		transitionFS.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
-		transitionFSsink.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
-		transitionFSsumm.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
-		sheetsFS.addColumn(columnNames[index],fieldIndex+1,JSColumn.TEXT);
+		if (columnNames[index].search('qty') != -1){
+			//application.output('xxxxxxxxxxxxxxxxxxxxxxxx integer '+columnNames[index]);
+			var colType = JSColumn.INTEGER;
+		} else {
+			colType = JSColumn.TEXT;
+		}
+		transitionFS.addColumn(columnNames[index],fieldIndex+1,colType);
+		transitionFSsink.addColumn(columnNames[index],fieldIndex+1,colType);
+		transitionFSsumm.addColumn(columnNames[index],fieldIndex+1,colType);
+		sheetsFS.addColumn(columnNames[index],fieldIndex+1,colType);
 		fieldOrderTempTable[columnNames[index]] = fieldIndex++; // so this is field index to temp table indexed by field_name
 	}
 	var field;
@@ -940,6 +952,7 @@ function createKISSForm (){	// create table in form
 		var stat=forms.kiss_option_import.jobImportExc+forms.kiss_option_import.jobImportSum;\
 		var rec=event.getRecord();\
 		var rend=event.getRenderable();\
+		var hidebool=rec&&rec.select_hidebool==1;\
 		var discard=rec && (stat.search(" "+rec.material.split(" ")[0]+" ") != -1);\
 		var wght=rec && (scopes.prefs.wtPrompt*1 > 0)&&(rec.item_weight*1 > 0)&&(rec.item_weight*1 < scopes.prefs.wtPrompt*1)&&(rec.item_quantity*1 > 1*1);\
 		if (rec){\
@@ -947,6 +960,7 @@ function createKISSForm (){	// create table in form
 		}\
 		if (!discard && (rend.bgcolor=="#ff0000")){rend.bgcolor="#f3f5f7"}\
 		if (quant < 2){rend.enabled=false;}\
+		if (rend.getName()=="action"){rend.enabled=true}\
 		if (discard){rend.bgcolor="cyan"}\
 		if (rec&&rec.last_bc_qty&& (rend.getName()=="last_bc_qty")&&(rec.last_bc_qty<0)){rend.bgcolor="red"}\
 		if (rec && rend.getName()=="barcode_qty"){\
@@ -956,6 +970,8 @@ function createKISSForm (){	// create table in form
 			if (quant*1 <= scopes.prefs.qtyPrompt*1 && quant*1!=rec.barcode_qty*1){itemChng=true}\
 			if (itemChng){rend.bgcolor="yellow"}\
 		}\
+		if (rec && rec.select_hidebool == 1&&rend.getName()!="action"){rend.enabled=false}\
+		if (hidebool){rend.bgcolor="yellow"}\
 	}');	
 	var code1 = 'function mySortFunction(){\
 		forms.kiss_option_import.sortIndex(arguments[0]);\
@@ -982,11 +998,10 @@ function createKISSForm (){	// create table in form
 		if (sequence_quantity && current*1>sequence_quantity){return false;} else if (item_quantity && current*1>item_quantity*1){return false;}\
 		if (sequence_quantity&&sequence_quantity != ""){quant = sequence_quantity} else {quant = item_quantity}\
 		var bcNums = scopes.jobs.createBCnums(current,quant,item_weight);\
-		set_bc_qty = bcNums.full;\
-		last_bc_qty = bcNums.last;\
+		set_bc_qty = Math.floor(bcNums.full);\
+		last_bc_qty = Math.floor(bcNums.last);\
 		total_label_qty = bcNums.per;\
 		ext_wt_qty = bcNums.totwt;\
-		select_hidebool = true;\
 		if (last_bc_qty<0){return false}\
 		if (piecemark == ""){\
 		  var unique = material+grade+finish+sequence_number;\
@@ -1019,10 +1034,13 @@ function createKISSForm (){	// create table in form
 			last = checkForm.newField(columnNames[index],JSField.TEXT_FIELD,offset,20,0,20);//joejoewas 1
 		} else if (columnNames[index].search(booleans) != -1){
 			last = checkForm.newField(columnNames[index],JSField.CHECKS,offset,20,60,20);
+		} else if (columnNames[index].search('action') != -1){
+			last = checkForm.newField(columnNames[index],JSField.COMBOBOX,offset,20,60,20);
+			last.valuelist = solutionModel.getValueList('stsvl_import_actions');
 		} else if (columnNames[index]){
 			last = checkForm.newField(columnNames[index],JSField.TEXT_FIELD,offset,20,60,20);
 			if (columnNames[index].search('qty') != -1){
-				last.format = '|#';
+				//last.format = '#';
 			}
 		} else {
 			continue
@@ -1032,12 +1050,16 @@ function createKISSForm (){	// create table in form
 			last.onDataChange = checkForm.getMethod('onQtyVerify');
 			last.tabSeq = 0;
 		}
+		if (columnNames[index].search('action') != -1){
+			//last.onDataChange = checkForm.getMethod('onQtyVerify');
+			last.tabSeq = 1;
+		}
 		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
 	 	last.name=columnNames[index];
 	 	offset += 80;
-		if (columnNames[index].search('(barcode_qty)') == -1){
+		if (columnNames[index].search('(barcode_qty|action)') == -1){
 			last.editable = false;
-		}	
+		}
 	}
 	last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
 
@@ -1117,6 +1139,49 @@ function applyShapeExcludes(sourceDb,destDb){
 			moveRow(i1, sourceDb, destDb);
 		}
 	}	
+}
+/**
+ * Move all rows from sheetsFS into transitionFS
+ * @param sheetsDb
+ * @param importDb
+ *
+ * @properties={typeid:24,uuid:"AAC8D5CA-4252-4ACA-A0B9-0009778C00BD"}
+ */
+function applySheetUpdates(sheetsDb,importDb){
+	var sheetLength = sheetsDb.getMaxRowIndex();
+	for (var index = 1;index <= sheetLength;index++){
+		moveRow(index,sheetsDb,importDb);
+	}
+	errorMessage = 'Adding existing records to import review table.';
+}
+/**
+ * Keeping this simple. Only select_hidebool is == 1 when these are added.
+ * May need another select, but this is easier right now. Remove all of those rows select_hidebool == 1
+ * @param importDb
+ *
+ * @properties={typeid:24,uuid:"4C03606B-7317-42E5-868C-63292B0B954E"}
+ */
+function applySheetUpdatesRemove(importDb){
+	var importLength = importDb.getMaxRowIndex();
+	for (var index = importLength;index > 0;index--){
+		importDb.rowIndex = index;
+		if (importDb.select_hidebool == 1){
+			deleteRow(index,importDb);
+		}
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param importDb
+ *
+ * @properties={typeid:24,uuid:"F982408D-96A3-4912-84AC-5DF0A2A3FA99"}
+ */
+function clearSheetUpdates(importDb){
+	applySheetUpdatesRemove(importDb);
+	var length = importDb.getMaxRowIndex();
+	for (var index = 1; index < length;index++){
+		deleteRow(index,importDb);
+	}
 }
 /**
  *
@@ -1209,7 +1274,9 @@ function applyShapeSummary(sourceDb,destDb){
 				summedArray[summaryItem+"idx"] = transitionFS.getMaxRowIndex();
 				setbarcodeQuantity(transitionFS.getMaxRowIndex());
 				forms.kiss_barcode_request.controller.recordIndex = summedArray[summaryItem+"idx"];
-				forms.kiss_barcode_request.item_quantity = itemCount;
+				if (forms.kiss_barcode_request.item_quantity){
+					forms.kiss_barcode_request.item_quantity = itemCount;
+				}
 				//add new row and add count to row item
 			}
 			summedRemoval.push(i1);
@@ -1323,6 +1390,7 @@ function applyImportPreferences(){
 	applyResetExclusions();
 	applyShapeExcludes(transitionFS,transitionFSsink);
 	applyShapeSummary(transitionFS,transitionFSsumm);
+	applySheetUpdatesRemove(transitionFS);
 	// tossMinors keep weights
 	var minors = "Minors kept."
 	if (keepMinors == 0){
@@ -1333,6 +1401,12 @@ function applyImportPreferences(){
 	scopes.jobs.importRecordsCheck();
 	forms.kiss_option_import.impDirty = false;
 	forms.kiss_option_import.elements.importButt.enabled = true;
+	if (importOption.search('Sheet') != -1){
+		if (sheetsFS.getMaxRowIndex() == 0){
+			scopes.jobs.loadCurrentJobsRecords();
+		}
+		applySheetUpdates(sheetsFS,transitionFS);//add piecemarks from database not in the import file
+	}
 	//loadImportLabelCounts();
 	//application.updateUI();
 }

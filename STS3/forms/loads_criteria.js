@@ -253,6 +253,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"8A504DFD-C4AD-4AAF-AEAC-9E4F919BFC58"}
  */
 function convertLoadToId(itemCSV){
+	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
 	/** @type {JSFoundSet<db:/stsservoy/loads>} */
@@ -280,6 +281,7 @@ function convertLoadToId(itemCSV){
  * @properties={typeid:24,uuid:"4D41C8CC-CF16-4800-8A6B-99C3C655010B"}
  */
 function convertLotToId(itemCSV){
+	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
 	/** @type {JSFoundSet<db:/stsservoy/lots>} */
@@ -307,6 +309,7 @@ function convertLotToId(itemCSV){
  * @properties={typeid:24,uuid:"01F9CAF6-D67B-4E29-B587-56BD5B2C02F2"}
  */
 function convertPkgToId(itemCSV){
+	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
 	/** @type {JSFoundSet<db:/stsservoy/lots>} */
@@ -340,7 +343,9 @@ function collectCriteria(){
 	} else {
 		loadAll = arrayToString(vLoadNum);
 	}
+	application.output('vLoadRel '+vLoadRel);
 	var loadRel = convertLoadToId(vLoadRel);
+	application.output('loadRel '+loadRel);
 	var lotNum = convertLotToId(vLotNum);//ticket#7
 	var pkgNum = arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
 	var pcmkRel = arrayToString(vPcmkRel);

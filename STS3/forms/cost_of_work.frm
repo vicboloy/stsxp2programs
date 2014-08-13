@@ -96,6 +96,7 @@ uuid:"FE9B9522-8AC3-4DE2-97BB-48EA560159F3"
 ],
 name:"cost_of_work",
 onHideMethodID:"0C8E248C-5C45-4D9F-8A25-00233B2FA859",
+onShowMethodID:"A0F3DDD6-9707-4057-9E29-7CFD2E51B3D4",
 showInMenu:true,
 size:"698,480",
 styleName:"sts_one",

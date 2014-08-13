@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/uom_types",
+items:[
+{foreignColumnName:"uom_code",primaryDataProviderID:"uom_code",typeid:23,uuid:"B49F462F-7FFC-485C-B897-F4CC03E9AB0A"}
+],
+joinType:1,
+name:"sts_cowcode_uomtype",
+primaryDataSource:"db:/stsservoy/cowcodes",
+typeid:22,
+uuid:"3784F6AF-8091-4A49-8597-4805E5D6E96E"

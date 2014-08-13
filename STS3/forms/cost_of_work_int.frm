@@ -58,11 +58,11 @@ typeid:7,
 uuid:"85BD050C-6163-472D-B531-8F0D4D9F72BA"
 },
 {
-dataProviderID:"uom",
+dataProviderID:"uom_code",
 displayType:2,
 editable:false,
 location:"346,79",
-size:"72,20",
+size:"91,20",
 tabSeq:3,
 typeid:4,
 uuid:"87A273B5-7A8B-421F-B68B-FFE1554EB4D6",

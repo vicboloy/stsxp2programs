@@ -1,0 +1,13 @@
+addEmptyValue:1,
+customValues:"PCMK_CREATE\r
+PCMK_DELETE\r
+BAR_REPRINT\r
+BAR_RECODE\r
+QUANTITY_ADD\r
+QUANTITY_DEL\r
+LOSE_PCMK_HISTORY",
+name:"stsvl_import_actions",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"7150E433-6D91-4FE9-A4A5-85ECB6B82415"

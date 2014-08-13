@@ -87,7 +87,6 @@ function onDataChangeJob(oldValue, newValue, event) {
 	if (fs.find()){
 		fs.job_number = vJobNumber;
 		if (fs.search()){
-			//fs.job_id = newValue;
 			vCustomerName = fs.sts_job_to_customer.name;
 			vCustomerNumber = fs.sts_job_to_customer.customer_number;
 			vPONumber = fs.customer_po;
@@ -103,6 +102,12 @@ function onDataChangeJob(oldValue, newValue, event) {
 			if (foundset.getSize() == 0){
 				clearForm();
 			}
+			var maxTabs = forms.cost_of_work.elements.tabless.getMaxTabIndex();
+			for (var index = 1;index <= maxTabs;index++){
+				forms.cost_of_work.elements.tabless.setTabEnabledAt(index,true);
+			}
+			forms.cost_of_work.jobChangeE = true;
+			forms.cost_of_work.jobchangeM = true;
 		}
 	}
 	return true
@@ -166,10 +171,12 @@ function onDataChangeCustCow(oldValue,newValue,event){
  */
 function onShow(firstShow, event) {
 	clearForm();
-	globals.vJobIDXref = "";//clear jobID for this screen
-	vJobNumber = "";vCustomerNumber = "";vCustomerName = "";
-	foundset.removeFoundSetFilterParam('job_cowxref');
-	foundset.addFoundSetFilterParam('job_id','=','','job_cowxref');
+	if (firstShow){
+		globals.vJobIDXref = "";//clear jobID for this screen
+		vJobNumber = "";vCustomerNumber = "";vCustomerName = "";
+		foundset.removeFoundSetFilterParam('job_cowxref');
+		foundset.addFoundSetFilterParam('job_id','=','','job_cowxref');
+	}
 	var cows = [];
 	/** @type {JSFoundSet<db:/stsservoy/cowcodes>} */
 	var fs = databaseManager.getFoundSet('stsservoy','cowcodes');

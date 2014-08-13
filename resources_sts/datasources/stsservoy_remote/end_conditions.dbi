@@ -15,6 +15,12 @@ name:"delete_flag"
 },
 {
 allowNull:true,
+creationOrderIndex:8,
+dataType:93,
+name:"edit_date"
+},
+{
+allowNull:true,
 creationOrderIndex:4,
 dataType:93,
 name:"end_condition_edit_date"

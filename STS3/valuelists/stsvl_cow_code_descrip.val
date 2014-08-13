@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"cow_description",
+dataProviderID2:"cowcode_id",
+name:"stsvl_cow_code_descrip",
+relationName:"sts_cowcode_cowcode_xref",
+returnDataProviders:3,
+showDataProviders:1,
+typeid:34,
+uuid:"552AEBC0-C912-4295-8C19-BF37F518CBEA",
+valueListType:1

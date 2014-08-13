@@ -329,12 +329,6 @@ name:"qc_final_test"
 },
 {
 allowNull:true,
-creationOrderIndex:47,
-dataType:-7,
-name:"qc_finat_test"
-},
-{
-allowNull:true,
 creationOrderIndex:22,
 dataType:12,
 length:40,

@@ -1,5 +1,11 @@
 columns:[
 {
+allowNull:true,
+creationOrderIndex:13,
+dataType:93,
+name:"edit_date"
+},
+{
 allowNull:false,
 creationOrderIndex:0,
 dataType:12,

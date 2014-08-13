@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"cust_cow_code",
+name:"stsvl_cowxref_codes_by_job",
+relationName:"sts_jobid_cowxref",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"54D04921-FE42-4E35-AE90-DAB9AD7C0C11",
+valueListType:1

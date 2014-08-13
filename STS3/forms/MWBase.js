@@ -98,6 +98,15 @@ function onActionClickUOM(event) {
  * TODO generated, please specify type and doc for the params
  * @param event
  *
+ * @properties={typeid:24,uuid:"9BFE2D4E-D359-4CAD-A84F-F94DC119456F"}
+ */
+function onActionClickCOW(event) {
+	onActionClickMainButton(event,"Cost of Work",'cost_of_work',50,50,700,600,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
  * @properties={typeid:24,uuid:"23EBA98D-FA40-4997-9BC9-730473CF4B54"}
  */
 function onActionClickMapping(event) {

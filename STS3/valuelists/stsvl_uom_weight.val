@@ -1,0 +1,12 @@
+addEmptyValue:1,
+customValues:"None\r
+#/LF = Qty * (Length/12) * Weight Each\r
+#/SQFT = (Qty * Weight Each )/((Length/12) * (Width/12))\r
+#/EA = Qty * Weight Each\r
+#/100 = (Qty * Weight Each)/100\r
+#/TON = (Qty * Weight Each)/2000",
+name:"stsvl_uom_weight",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"EB438F51-A5B5-4A84-B49A-697C16271729"

@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/cowcodes",
+joinType:1,
+name:"sts_cowcodes",
+primaryDataSource:"db:/stsservoy/cowcodes",
+typeid:22,
+uuid:"58F77888-E42F-4A35-8810-E77EF647C53E"

@@ -30,9 +30,15 @@ name:"carrier_number"
 },
 {
 allowNull:true,
-creationOrderIndex:29,
+creationOrderIndex:28,
 dataType:4,
 name:"delete_flag"
+},
+{
+allowNull:true,
+creationOrderIndex:30,
+dataType:93,
+name:"edit_date"
 },
 {
 allowNull:true,
@@ -76,12 +82,6 @@ name:"load_comment"
 },
 {
 allowNull:true,
-creationOrderIndex:27,
-dataType:93,
-name:"load_edit_date"
-},
-{
-allowNull:true,
 creationOrderIndex:2,
 dataType:12,
 length:20,
@@ -103,7 +103,7 @@ name:"load_release"
 },
 {
 allowNull:true,
-creationOrderIndex:28,
+creationOrderIndex:27,
 dataType:4,
 name:"logic_flag"
 },
@@ -186,7 +186,7 @@ name:"shipped_weight"
 },
 {
 allowNull:true,
-creationOrderIndex:30,
+creationOrderIndex:29,
 dataType:12,
 length:36,
 name:"tenant_uuid"

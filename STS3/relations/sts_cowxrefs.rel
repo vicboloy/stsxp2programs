@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/cow_xref",
+joinType:1,
+name:"sts_cowxrefs",
+primaryDataSource:"db:/stsservoy/cow_xref",
+typeid:22,
+uuid:"EFB6CC7C-0D95-4628-9040-96CB2089ADEC"

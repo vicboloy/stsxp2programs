@@ -16,6 +16,12 @@
 //------------------ Public Variables from STS ---------------------------------------
 //Version-----------------------------------------------------------------------------
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"5CBFD046-1730-4762-8AF1-DD0BFE1A397E"}
+ */
+var vJobIDXref = "";
+/**
  * @properties={typeid:35,uuid:"FE89CF50-1B43-46F8-A8DD-250A8C617C79",variableType:-4}
  */
 var change_to_remote = false;

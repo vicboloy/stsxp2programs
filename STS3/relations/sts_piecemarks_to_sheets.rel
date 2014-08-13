@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/sheets",
+items:[
+{foreignColumnName:"sheet_id",primaryDataProviderID:"sheet_id",typeid:23,uuid:"46D5F300-0932-499F-B035-557D5440A909"}
+],
+joinType:1,
+name:"sts_piecemarks_to_sheets",
+primaryDataSource:"db:/stsservoy/piecemarks",
+typeid:22,
+uuid:"06C1E97F-E746-484C-B2C2-F1869AA3FA59"

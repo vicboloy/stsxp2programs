@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/cowcodes",
+items:[
+{foreignColumnName:"cowcode_id",primaryDataProviderID:"cowcode_id",typeid:23,uuid:"8A7FC6C0-35EF-4AC2-AEAB-5EAE97C94F42"}
+],
+joinType:1,
+name:"sts_cowcode_cowcode_xref",
+primaryDataSource:"db:/stsservoy/cow_xref",
+typeid:22,
+uuid:"2E2B0C25-3810-4F89-B002-49D2AA39B29A"

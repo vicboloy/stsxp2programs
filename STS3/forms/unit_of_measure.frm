@@ -88,12 +88,15 @@ uuid:"4FACA4E9-D402-4E80-B499-150CFD801495"
 },
 {
 dataProviderID:"uom_to_get_wt",
+displayType:2,
+editable:false,
 location:"422,200",
 name:"uom_to_get_wt",
-size:"193,20",
+size:"138,20",
 text:"Uom To Get Wt",
 typeid:4,
-uuid:"71F86F87-17FA-459A-AA14-0819FC62E2EE"
+uuid:"71F86F87-17FA-459A-AA14-0819FC62E2EE",
+valuelistID:"EB438F51-A5B5-4A84-B49A-697C16271729"
 },
 {
 labelFor:"uom_to_get_wt",
@@ -141,12 +144,15 @@ visible:false
 },
 {
 dataProviderID:"uom_to_get_value",
+displayType:2,
+editable:false,
 location:"422,145",
 name:"uom_to_get_value",
-size:"193,20",
+size:"138,20",
 text:"Uom To Get Value",
 typeid:4,
-uuid:"D3A1BACD-63B9-4165-A85F-B1F76922D75B"
+uuid:"D3A1BACD-63B9-4165-A85F-B1F76922D75B",
+valuelistID:"78D869CC-4C5E-462F-B91C-893737B295FA"
 },
 {
 dataProviderID:"uom_code",
@@ -154,7 +160,7 @@ displayType:10,
 location:"422,35",
 name:"uom_code",
 onDataChangeMethodID:"E76BFEA2-E89F-4F46-B86C-021B8EC86E2F",
-size:"140,20",
+size:"72,20",
 text:"Uom Code",
 typeid:4,
 uuid:"D50BD8EB-3F3A-4BE2-A156-7355CF06502A"

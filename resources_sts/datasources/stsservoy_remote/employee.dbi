@@ -6,6 +6,12 @@ dataType:4,
 name:"delete_flag"
 },
 {
+allowNull:true,
+creationOrderIndex:24,
+dataType:93,
+name:"edit_date"
+},
+{
 allowNull:false,
 autoEnterSubType:3,
 autoEnterType:2,

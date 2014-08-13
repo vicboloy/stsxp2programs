@@ -56,7 +56,7 @@ typeid:7,
 uuid:"18A7B569-C824-40A4-A430-7573A154F097"
 },
 {
-location:"246,201",
+location:"246,188",
 mediaOptions:14,
 name:"endconditions",
 onActionMethodID:"994929DE-14ED-4426-A743-D0A7169117EA",
@@ -110,7 +110,7 @@ uuid:"23545A76-7BFB-4AB3-8896-D74DE40860C8"
 },
 {
 fontType:"Arial,0,12",
-location:"246,257",
+location:"246,250",
 mediaOptions:14,
 onActionMethodID:"C61C110C-151B-4C9D-B0AB-FA32D9401D16",
 onDoubleClickMethodID:"-1",
@@ -155,7 +155,7 @@ typeid:7,
 uuid:"47C6E8A5-446A-4788-A4E2-6B905CC13510"
 },
 {
-location:"246,89",
+location:"246,64",
 mediaOptions:14,
 name:"uomcodes",
 onActionMethodID:"BFF5857C-588C-4703-B859-CF9A5A1BF8B9",
@@ -196,7 +196,7 @@ typeid:7,
 uuid:"660D7AF9-A8AA-40B5-B987-EC99A8F366D9"
 },
 {
-location:"246,145",
+location:"246,126",
 mediaOptions:14,
 name:"routingcodes",
 onActionMethodID:"F0E82BB1-3030-4DD4-973C-75E91FBA179A",
@@ -329,6 +329,19 @@ typeid:7,
 uuid:"93017A64-48AA-4C8F-8639-C888A23CCDB5"
 },
 {
+location:"246,33",
+mediaOptions:14,
+name:"uomcodesc",
+onActionMethodID:"9BFE2D4E-D359-4CAD-A84F-F94DC119456F",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+printSliding:3,
+size:"177,23",
+text:"Edit Category Codes",
+typeid:7,
+uuid:"95687890-045A-41E1-B8A2-67874D46A6EA"
+},
+{
 fontType:"Arial,0,12",
 formIndex:8,
 location:"25,150",
@@ -454,7 +467,7 @@ typeid:7,
 uuid:"B56756D6-9D51-4761-9036-5D38B6F94C41"
 },
 {
-location:"246,117",
+location:"246,95",
 mediaOptions:14,
 name:"statuscodes",
 onActionMethodID:"B5B3AFA8-95D7-49CD-AB3E-256306625504",
@@ -465,34 +478,6 @@ size:"177,23",
 text:"Edit Status Codes",
 typeid:7,
 uuid:"B69DA3C7-7F93-4B79-9A7F-1CA4D666208E"
-},
-{
-fontType:"Arial,0,12",
-formIndex:5,
-location:"265,61",
-onActionMethodID:"027567CC-C0C7-43F6-8F87-7A8878ED6B55",
-onDoubleClickMethodID:"-1",
-onRightClickMethodID:"-1",
-showClick:false,
-size:"149,23",
-text:"Edit Customer Category Codes",
-transparent:true,
-typeid:7,
-uuid:"B84DDF8D-BE6F-4B20-A2BB-614ABFEB9CE7"
-},
-{
-fontType:"Arial,0,12",
-formIndex:5,
-location:"265,33",
-onActionMethodID:"-1",
-onDoubleClickMethodID:"-1",
-onRightClickMethodID:"-1",
-showClick:false,
-size:"149,23",
-text:"Edit Category Codes",
-transparent:true,
-typeid:7,
-uuid:"BB994140-724E-43CC-8EE3-5C1A87B91573"
 },
 {
 fontType:"Arial,0,12",
@@ -524,7 +509,7 @@ uuid:"C0DBD936-C0E1-4A83-8D1E-C5B06AC7C07A"
 },
 {
 fontType:"Arial,0,12",
-location:"246,173",
+location:"246,157",
 mediaOptions:14,
 onActionMethodID:"C61C110C-151B-4C9D-B0AB-FA32D9401D16",
 onDoubleClickMethodID:"-1",
@@ -584,7 +569,7 @@ uuid:"DB68B48F-1411-47E6-A9FF-01B9CF35DA7C"
 },
 {
 fontType:"Arial,0,12",
-location:"246,229",
+location:"246,219",
 mediaOptions:14,
 onActionMethodID:"C61C110C-151B-4C9D-B0AB-FA32D9401D16",
 onDoubleClickMethodID:"-1",
@@ -624,7 +609,7 @@ uuid:"FA738F22-212A-4FB6-B927-31EE7BC03185"
 },
 {
 fontType:"Arial,0,12",
-location:"246,285",
+location:"246,281",
 mediaOptions:14,
 onActionMethodID:"C61C110C-151B-4C9D-B0AB-FA32D9401D16",
 onDoubleClickMethodID:"-1",

@@ -988,7 +988,7 @@ function loadBTable(){
  * @properties={typeid:24,uuid:"6F0DC9D2-F762-48DB-8986-1B959B8F4C8B"}
  */
 function loadTablePrefs(formx){
-	if (formx == ""){
+	if (!formx || formx == ""){
 		var formx = controller.getName();
 	}
 	var formy = forms[formx].elements.tabless.getTabFormNameAt(1);

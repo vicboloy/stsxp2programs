@@ -9,7 +9,7 @@ onActionMethodID:"F8DA2C40-ECF1-4137-9F4E-1778F13040AE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 tabSeq:-2,
-text:"Exit",
+text:"Close",
 typeid:7,
 uuid:"6F4C6935-1E63-439A-A720-FD90133F5F39"
 },

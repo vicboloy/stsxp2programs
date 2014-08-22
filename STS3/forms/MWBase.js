@@ -141,6 +141,15 @@ function onActionClickSC(event) {
 function onActionClickViewLoads(event) {
 	onActionClickMainButton(event,"View Loads",'loads_tabs',50,50,750,595,false);
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"07737279-0F0A-4070-AB7F-0641608439AF"}
+ */
+function onActionClickDeleteRecords(event) {
+	onActionClickMainButton(event,"Delete Records",'delete_records_tabs',50,50,750,595,false);
+}
 
 /**
  * TODO generated, please specify type and doc for the params

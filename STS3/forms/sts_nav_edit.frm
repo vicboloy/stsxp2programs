@@ -45,7 +45,7 @@ uuid:"18377E63-6F79-496D-973B-D5DE234187D1"
 },
 {
 formIndex:3,
-location:"10,38",
+location:"5,38",
 name:"jobs",
 onActionMethodID:"CE4DD060-E710-49BA-9DAB-0760EE82DF4B",
 onDoubleClickMethodID:"-1",
@@ -93,20 +93,6 @@ size:"177,23",
 text:"Preferences",
 typeid:7,
 uuid:"2199C8CE-AB75-4DD9-87F4-DAFA310F3381"
-},
-{
-fontType:"Arial,0,12",
-formIndex:9,
-location:"504,33",
-onActionMethodID:"-1",
-onDoubleClickMethodID:"-1",
-onRightClickMethodID:"-1",
-showClick:false,
-size:"179,23",
-text:"Active Database",
-transparent:true,
-typeid:7,
-uuid:"23545A76-7BFB-4AB3-8896-D74DE40860C8"
 },
 {
 fontType:"Arial,0,12",
@@ -238,7 +224,7 @@ uuid:"6CCB0F02-E901-4F9B-BD61-BDF700D0C543"
 },
 {
 formIndex:6,
-location:"25,374",
+location:"10,374",
 name:"carriers",
 onActionMethodID:"AE5DFB87-E846-4DFB-9C25-E57140EC29C3",
 onDoubleClickMethodID:"-1",
@@ -247,6 +233,17 @@ size:"189,23",
 text:"Edit Carrier Information",
 typeid:7,
 uuid:"771F1DC0-32BB-47FF-92E9-9590902E6914"
+},
+{
+formIndex:10,
+location:"473,26",
+onActionMethodID:"07737279-0F0A-4070-AB7F-0641608439AF",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"177,23",
+text:"Active Database",
+typeid:7,
+uuid:"7C1263B6-E26B-4060-9972-F83AEEBE7A04"
 },
 {
 fontType:"Arial,0,12",
@@ -305,7 +302,7 @@ typeid:7,
 uuid:"8912581C-E11D-4BB3-A93B-A137B6702569"
 },
 {
-location:"25,430",
+location:"10,430",
 mediaOptions:14,
 onActionMethodID:"C61C110C-151B-4C9D-B0AB-FA32D9401D16",
 onDoubleClickMethodID:"-1",
@@ -318,7 +315,7 @@ uuid:"8CA2DAC9-DF42-4D35-BF89-95D61D0C5ECD"
 },
 {
 formIndex:7,
-location:"25,402",
+location:"10,402",
 name:"employees",
 onActionMethodID:"B0C80879-16DA-4098-8801-18C1D7F24E96",
 onDoubleClickMethodID:"-1",
@@ -367,7 +364,7 @@ uuid:"96176829-8987-457F-9954-CFE7F5BB56DE"
 },
 {
 formIndex:5,
-location:"25,346",
+location:"10,346",
 name:"customers",
 onActionMethodID:"027567CC-C0C7-43F6-8F87-7A8878ED6B55",
 onDoubleClickMethodID:"-1",

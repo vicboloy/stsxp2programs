@@ -1,11 +1,8 @@
 addEmptyValue:1,
-customValues:"PCMK_CREATE\r
-PCMK_DELETE\r
-BAR_REPRINT\r
-BAR_RECODE\r
-QUANTITY_ADD\r
-QUANTITY_DEL\r
-LOSE_PCMK_HISTORY",
+customValues:"-ignore-\r
+CREATE\r
+UPDATE\r
+DELETE",
 name:"stsvl_import_actions",
 returnDataProviders:1,
 showDataProviders:1,

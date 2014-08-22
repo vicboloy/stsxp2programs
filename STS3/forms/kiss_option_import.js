@@ -953,7 +953,7 @@ function createKISSForm (){	// create table in form
 		var rec=event.getRecord();\
 		var rend=event.getRenderable();\
 		var hidebool=rec&&rec.select_hidebool==1;\
-		var discard=rec && (stat.search(" "+rec.material.split(" ")[0]+" ") != -1);\
+		var discard=rec && rec.material && (stat.search(" "+rec.material.split(" ")[0]+" ") != -1);\
 		var wght=rec && (scopes.prefs.wtPrompt*1 > 0)&&(rec.item_weight*1 > 0)&&(rec.item_weight*1 < scopes.prefs.wtPrompt*1)&&(rec.item_quantity*1 > 1*1);\
 		if (rec){\
 			if (rec.sequence_quantity != "") {var quant = rec.sequence_quantity} else {quant = rec.item_quantity}\
@@ -1148,8 +1148,10 @@ function applyShapeExcludes(sourceDb,destDb){
  * @properties={typeid:24,uuid:"AAC8D5CA-4252-4ACA-A0B9-0009778C00BD"}
  */
 function applySheetUpdates(sheetsDb,importDb){
+	application.output('inside applysheetupdates');
+listDataset(sheetsDb);
 	var sheetLength = sheetsDb.getMaxRowIndex();
-	for (var index = 1;index <= sheetLength;index++){
+	for (var index = sheetLength;index > 0;index--){
 		moveRow(index,sheetsDb,importDb);
 	}
 	errorMessage = 'Adding existing records to import review table.';
@@ -1179,7 +1181,7 @@ function applySheetUpdatesRemove(importDb){
 function clearSheetUpdates(importDb){
 	applySheetUpdatesRemove(importDb);
 	var length = importDb.getMaxRowIndex();
-	for (var index = 1; index < length;index++){
+	for (var index = length; index > 0 ;index--){
 		deleteRow(index,importDb);
 	}
 }
@@ -1380,12 +1382,38 @@ function applyRemoveMinors(sourceDb){
 	}
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param db
+ *
+ * @properties={typeid:24,uuid:"1630C59E-8B33-4E7C-8FC5-2B5DD9FE37E1"}
+ */
+function listDataset(db){
+	var length = db.getMaxRowIndex();
+	for (var index = 1;index <= length;index++){
+		db.rowIndex = index;
+		var text = "";
+		for (var index2=1;index2 <= db.getMaxColumnIndex();index2++){
+			var colName = db.getColumnName(index2);
+			text = text + db[colName] + ", ";
+		}
+		application.output(text);
+		if (db.material == ""){
+			application.output('empty row');
+		}
+	}
+	application.output('-----------------');
+}
+/**
  * Update visual retention Foundset with import selections made on the form.
  * No records will be created. Still verification of job import criteria.
  * @properties={typeid:24,uuid:"9656ACD0-4E9A-4481-9798-27C2981D6AE4"}
  * @AllowToRunInFind
  */
 function applyImportPreferences(){
+	var appendToData2 = importOption.search('Append') != -1;
+	//if (scopes.jobs.appendedToData){
+	//	scopes.jobs.importAmendQuantApply(false);
+	//}		
 	//application.output('labels '+scopes.jobs.importLabelCounts);
 	applyResetExclusions();
 	applyShapeExcludes(transitionFS,transitionFSsink);
@@ -1403,12 +1431,16 @@ function applyImportPreferences(){
 	forms.kiss_option_import.elements.importButt.enabled = true;
 	if (importOption.search('Sheet') != -1){
 		if (sheetsFS.getMaxRowIndex() == 0){
+application.output('before create sheetsFS');
+listDataset(sheetsFS);
 			scopes.jobs.loadCurrentJobsRecords();
+listDataset(sheetsFS);
 		}
 		applySheetUpdates(sheetsFS,transitionFS);//add piecemarks from database not in the import file
 	}
-	//loadImportLabelCounts();
-	//application.updateUI();
+	//if (appendToData2){
+	//	scopes.jobs.importAmendQuantApply(true);
+	//}
 }
 /**
  * Handle changed data.
@@ -1420,11 +1452,29 @@ function applyImportPreferences(){
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"62E376E7-8123-4D24-9B07-C1CD1F7C86CA"}
+ * @AllowToRunInFind
  */
 function onDataChange(oldValue, newValue, event) {
-	application.output(oldValue+" "+newValue);
-	application.output("options "+importOption)
-	return true
+	forms.kiss_option_import.elements.importButt.enabled = false;
+	scopes.jobs.appendToData = (newValue.search('Append') != -1);
+	//application.output('jobid '+scopes.jobs.jobIDs[0]);
+	//scopes.jobs.appendQuantityToIdfile = [];
+	var quantities = scopes.jobs.appendQuantityToIdfile;
+	if (quantities == null){
+		scopes.jobs.readIdfiles();
+		if (scopes.jobs.dsIdfiles){
+			application.output('true');
+		} else {
+			application.output('false');
+			var jobID = scopes.jobs.jobIDs[0];
+			scopes.jobs.jobUnderCustomer = jobID;
+			scopes.jobs.readPieceTables();	
+		}
+		if (!scopes.jobs.importAmendQuantities()){
+			scopes.jobs.importAmendQuantities();
+		}
+	}
+	return true;
 }
 
 /**

@@ -257,9 +257,30 @@ var countsBCandID = null;
  */
 var createRecordsArray = [];
 /**
+ * Status on databaseManager saves.
+ * @properties={typeid:35,uuid:"33C4B5E5-BA06-4F8A-949F-5BD3844BE1EC",variableType:-4}
+ */
+var saveStat = true;
+/**
  * @properties={typeid:35,uuid:"679573FF-6ACA-4FE3-B107-EA66D08E30FE",variableType:-4}
  */
 var usedFields = [];
+/**
+ * Boolean to set import data append to existing data or not.
+ * @properties={typeid:35,uuid:"95280E62-200B-4F04-B3AD-1D78BD22144B",variableType:-4}
+ */
+var appendToData = false;
+/**
+ * Boolean to indicate quantities have been appended to transitionFS table.
+ * @properties={typeid:35,uuid:"24136611-2D30-4D0D-BA0D-9F748F98A1DE",variableType:-4}
+ */
+var appendedToData = false;
+/**
+ * Array of idfiles, unique by uniquePiecemark+SequenceNumber+LotNumber.
+ * appendQuantityToIdfile[uniqueIdfile] = existing_item_count
+ * @properties={typeid:35,uuid:"D036DA77-7DB2-4903-8F64-DAC1E37F61DF",variableType:-4}
+ */
+var appendQuantityToIdfile = null;
 /**
  * @type {String}
  *
@@ -317,6 +338,13 @@ var keepMinors = forms.kiss_option_import.keepMinors;
  * @properties={typeid:35,uuid:"2E65EA10-17FD-43E5-9FBC-63ACAE67D007",variableType:-4}
  */
 var weightPerID = scopes.prefs.wtPrompt;
+/**
+ * GUI and import update times tracker
+ * @type Number}
+ *
+ * @properties={typeid:35,uuid:"B786E458-70A1-4A23-81DF-FD0A4BEE086B",variableType:-4}
+ */
+var timeIn,timeOut;
 /**
  * @properties={typeid:35,uuid:"56431830-8634-4400-8776-5593CA0F6B6C",variableType:-4}
  */
@@ -504,9 +532,10 @@ function readLots(){
 	var length = dsSequences.getMaxRowIndex();
 	if (length == 0){return}
 	var textList = "("; var comma = ",";
-	for (var index2 = 0;index2 < length;index2++){
-		if (index2 == length-1){comma=""}
-		textList = textList + "\'"+dsSequenceList[index2]+"\'"+comma;
+	var index2 = 1;
+	for (var sequence in dsSequenceArray){
+		if (index2++ == length){comma=""}
+		textList = textList + "\'"+dsSequenceArray[sequence]+"\'"+comma;
 	}
 	textList += ")";
 	var maxReturnedRows = -1;
@@ -628,7 +657,6 @@ function readIdfiles(){
 	dsIdfiles = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
 	var rows = dsIdfiles.getMaxRowIndex();
 	// unique is piecemark_id, barcodeCount, sequence_id, lot_id
-	///dsIdfileList.push('blank');
 	for (var index = 1;index <= rows;index++){
 		dsIdfiles.rowIndex = index;
 		dsIdfileList[dsIdfiles.idfile_id] = index;// index into dsIdfiles
@@ -668,7 +696,7 @@ function readIdfiles(){
 		}
 		dsIdfileListByPm[dsIdfiles.piecemark_id].push(dsIdfiles.idfile_id);
 	}
-	application.output("idfiles "+dsIdfileList.length);
+	application.output("idfiles "+dsIdfiles.getMaxRowIndex());
 }
 /**
  * @properties={typeid:24,uuid:"52527FC9-05AE-4ADE-9BB0-3023FB80591D"}
@@ -707,7 +735,7 @@ function readSummedMarks(){
 		var unique = uniquePiecemark(dsTossed)
 		dsTossedArray[unique] = dsTossed.piecemark_id;
 	}
-	application.output("summarized "+dsTossedList.length);
+	application.output("summarized "+dsTossed.getMaxRowIndex());
 }
 /**
  * @properties={typeid:24,uuid:"0270F289-5EB9-4BF9-9E88-8823DC00E8EB"}
@@ -892,6 +920,7 @@ function createSummedMarks(sourceDb){
 			rec.delete_flag = 11; // 1+1 is summarization record
 			rec.edit_date = new Date();
 			dsPiecemarkArray[unique] = rec.piecemark_id;
+			createRecordsArray.push(rec);
 		}
 	}
 }
@@ -982,115 +1011,70 @@ function loadPiecemarks(pcmkId){
  * @properties={typeid:24,uuid:"03642EF1-4D23-423D-973C-B7F3DBF03703"}
  */
 function loadCurrentJobsRecords(){
-	//var sheets = forms.kiss_option_import.sheetsFS;
 	var incoming = forms.kiss_option_import.transitionFS;
-	//for (var indexy = 1;indexy <= incoming.getMaxRowIndex();indexy++ ){
-	//	incoming.rowIndex = indexy;
-	//	application.output('sequence '+incoming.sequence_number);
-	//}
-	/*
-	 * piecemarks: piecemark, parent_piecemark, sheet_number, grade, finish
-	 * sheets: sheet_number
-	 * idfiles: piecemark_id, id_serial_number_id, sequence_id, idfile count is number for that piecemark, then to each bc
-	 * sequence_number, lot_number, barcode_count 
-	 * Has this barcode been printed? 
-	 */
-	/** var importPcmks = [];
-	var length = incoming.getMaxRowIndex();
-	for (var index = 1;index <= length;index++){
-		incoming.rowIndex = index;
-		importPcmks.push(uniquePiecemark(incoming));
-	} // get import marks to compare to database, save those that do not match
-	var incoming = forms.kiss_option_import.transitionFSsink;
-	var length = incoming.getMaxRowIndex();
-	for (var index = 1;index <= length;index++){
-		incoming.rowIndex = index;
-		importPcmks.push(uniquePiecemark(incoming));
-	} // get import marks to compare to database, save those that do not match		
-	//var incoming = forms.kiss_option_import.transitionFSsink;
-	incoming = forms.kiss_option_import.transitionFSsumm;
-	length = incoming.getMaxRowIndex();
-	for (index = 1;index <= length;index++){
-		incoming.rowIndex = index;
-		importPcmks.push(uniquePiecemark(incoming));
-	} */// get import marks to compare to database, save those that do not match	
 	var lengthI = (!dsIdfiles) ? 0 : dsIdfiles.getMaxRowIndex();
 	var visited = [];
 	incoming = forms.kiss_option_import.transitionFS;
-	var inSeqNum, inLotNum, dbSeqNum, dbLotNum, inPiecemarkId, dbPiecemarkId, dbMaterial;
+	var inSeqId, inLotId, dbSeqId, dbLotId, inPiecemarkId, dbPiecemarkId, dbPiecemark, dbSummed, inSummed, inPiecemark;
 	for (index = 1;index<=lengthI;index++){
+		application.output('checking '+index);
 		 // This must be by piecemark, sequence_number, lot_number
 		dsIdfiles.rowIndex = index; // access indexed records with dsPiecemarks
 		//var idfileId = uniqueIdfileIdDb(dsPiecemarks);
 		var uniqueIdfileId = dsIdfiles.piecemark_id+dsIdfiles.sequence_id+dsIdfiles.lot_id;
 		if (visited.indexOf(uniqueIdfileId) != -1){continue}
-		dsSequences.rowIndex = dsSequenceList[dsIdfiles.sequence_id];
-		dbSeqNum = dsSequences.sequence_number;
-		dsLots.rowIndex = dsLotList[dsIdfiles.lot_id];
-		dbLotNum = dsLots.lot_number;
+		dbSeqId = dsIdfiles.sequence_id;
+		dbLotId = dsIdfiles.lot_id;
 		dbPiecemarkId = dsIdfiles.piecemark_id;
 		dsPiecemarks.rowIndex = dsPiecemarkList[dbPiecemarkId];
-		dbMaterial = dsPiecemarks.material;
-		var dbPiecemark = dsPiecemarks.piecemark;
-		var summed = (dbPiecemark == "");
-		if (visited.indexOf(dbMaterial+'xxx') != -1){continue}
-		//visited.push(uniqueIdfileId);
-		//visited.push(dbMaterial);
+		dbPiecemark = dsPiecemarks.piecemark;
+		application.output('     DATABASE '+dbPiecemarkId+' '+' Seq '+dbSeqId+' Lot '+dbLotId);
+
+		dbSummed = (dbPiecemark == "");
+		if (dbSummed){
+			if (visited.indexOf(dbPiecemarkId) != -1){continue}
+		} else {
+			if (visited.indexOf(dsIdfiles.piecemark_id+dsIdfiles.sequence_id+dsIdfiles.lot_id) != -1){continue}
+		}
 		var found = false;
-		//var summed = false;
-		//application.output('DB      '+dbPiecemark+' '+dbMaterial+' '+dbPiecemarkId+' Seq '+dbSeqNum+' Lot '+dbLotNum);
 		var length2 = incoming.getMaxRowIndex();
 		for (var index2 = 1;index2 <= length2;index2++){
+			application.output('unmatched '+ index2);
 			incoming.rowIndex = index2;
-			if (summed && (incoming.piecemark != "")) {continue}
-			if (summed && visited.indexOf(incoming.material+'xxx') != -1){continue}
-			dsPiecemarks.rowIndex = dsPiecemarkList[dsPiecemarkArray[uniquePiecemark(incoming)]];
-			//if (summed){
-			//	application.output(' in pcmk '+incoming.material+' >>> '+dbMaterial);
-			//} else {
-			//	application.output(' in pcmk '+uniquePiecemark(incoming)+' >>> '+dsPiecemarks.piecemark);
-			//}
-			inPiecemarkId = dsPiecemarks.piecemark_id;
-			if (!summed && (dbPiecemarkId != inPiecemarkId)){continue}
-			inSeqNum = incoming.sequence_number;
-			inLotNum = incoming.lot_number;
-			//application.output('     incoming '+incoming.piecemark+' '+inPiecemarkId+' Seq '+inSeqNum+' Lot '+inLotNum);
-			if (summed){
-				found = (dbMaterial == incoming.material);
+			inSummed = incoming.piecemark == ""; // summarized record?
+			if (dbSummed != inSummed){continue} // match both incoming and db records, either both summarized or both not, continue
+			if (inSummed && visited.indexOf(dbPiecemarkId) != -1){found = true;break} // summarized and already included this idfile in search, so true, break
+			application.output(uniquePiecemark(incoming));
+			inPiecemarkId = dsPiecemarkArray[uniquePiecemark(incoming)]; // get unique piecemark from incoming record then into piecemarkArray for piecemark_id
+			application.output (dbPiecemark +' = '+inPiecemark);
+			//dsPiecemarks.rowIndex = dsPiecemarkList[dsPiecemarkArray[]]; // return summed or unsummed piecemark_id
+			//inPiecemarkId = dsPiecemarks.piecemark_id;
+			//if (!summed && (dbPiecemarkId != inPiecemarkId)){continue}
+			if (dbPiecemarkId != inPiecemarkId){continue} // does not match by piecemark_id, so continue
+			application.output('This code is never REACHED');
+			inSeqId = dsSequenceArray["_"+incoming.sequence_number]; // get complete matching criteria for normal piecemark
+			inLotId = dsLotArray["_"+incoming.lot_number];
+			inPiecemark = incoming.piecemark;
+			application.output('     incoming '+inPiecemarkId+' Seq '+inSeqId+' Lot '+inLotId);
+			if (inSummed){
+				found = (dbPiecemarkId == inPiecemarkId); //(dbMaterial == incoming.material);
+				visited.push(dbPiecemarkId);
 			} else {
-				found = (dbPiecemarkId == inPiecemarkId) && (dbSeqNum == inSeqNum) && (dbLotNum == inLotNum);
+				found = (dbPiecemarkId == inPiecemarkId) && (dbSeqId == inSeqId) && (dbLotId == inLotId);
+				visited.push(inPiecemarkId+inSeqId+inLotId);
 			}
-			if (found){
-				if (summed){
-					visited.push(dbMaterial+'xxx');		
-				} else {
-					visited.push(uniqueIdfileId);
-				}
-				//application.output('     MATCHED '+inPiecemarkId+' Seq '+inSeqNum+' Lot '+inLotNum);
-				//null;
-				break;
-			}
+			if (found){break}
 		}
-		//visited.push(uniqueIdfile);
 		if (!found) {
-			if (summed){
-				if (visited.indexOf(dbMaterial+'xxx') != -1){continue}
-				visited.push(dbMaterial+'xxx');
+			if (inSummed){
+				visited.push(dbPiecemarkId);
 			} else {
-				if (visited.indexOf(uniqueIdfileId) != -1){continue}
-				visited.push(uniqueIdfileId);
+				visited.push(dbPiecemarkId+dbSeqNum+dbLotNum);
 			}
-			//application.output('     unmatched DB'+dsIdfiles.piecemark_id+' Seq '+dbSeqNum+' Lot '+dbLotNum);
+			application.output('     unmatched DB'+dsIdfiles.piecemark_id+' Seq '+dbSeqId+' Lot '+dbLotId);
 			loadBlindIntoImportTable(dsIdfiles);
 		}
 	}
-		/**var uniquePcmk = uniquePiecemark(dsPiecemarks);
-		if (importPcmks.indexOf(uniquePcmk) == -1){
-			loadBlindIntoImportTable(dsPiecemarks);
-			missingPcmks.push(uniquePcmk);
-			//application.output(uniquePcmk);
-		}*/
-	//null;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1165,14 +1149,14 @@ function loadBlindIntoImportTable(record){
 	if (sheetNum){
 		sheetNum = sheetNum.split('_')[1];
 	}
-	application.output('sheetNumber ' +sheetNum+' '+dsPiecemarks.sheet_id+' '+dsSheetArray);
+	//application.output('sheetNumber ' +sheetNum+' '+dsPiecemarks.sheet_id+' '+dsSheetArray);
 	for (var index = 1;index <= columns;index++){
 		var columnName = sheets.getColumnName(index);
 		if (columnName.search('sequence_number') != -1 ) {nullRow2.push(seqNum);continue}
 		if (columnName.search('sequence_quantity') != -1) {nullRow2.push(record.original_qty);continue}
 		if (columnName.search('select_hidebool') != -1) {nullRow2.push(1);continue}
 		if (columnName.search('import_status') != -1) {nullRow2.push("delPM");continue}
-		if (columnName.search('action') != -1) {nullRow2.push("PCMK_DELETE");continue}
+		if (columnName.search('action') != -1) {nullRow2.push("DELETE");continue}
 		if (columnName.search('sheet_number') != -1) {nullRow2.push(sheetNum);continue}
 		if (pcmkRec[columnName]){nullRow2.push(pcmkRec[columnName]);continue}
 		nullRow2.push(null);
@@ -1289,6 +1273,214 @@ function saveTablePrefs(event){
 	forms[formx].errorMessage = "Column ordering SAVED.";
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param criteria
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"291002AB-CA66-478B-9A31-02A35914B265"}
+ */
+function viewBTableToForm(criteria,formName){
+	var formNameTable = formName+'_table';
+	/**
+	 * create dataset
+	 * load dataset
+	 * create columns
+	 * dsPiecemarks,dsBarcodes,dsIdfiles,dsSequences,dsLots,dsSheets
+	 */
+	//history.removeForm(formName);
+	//solutionModel.removeForm(formName);	
+	dsBrowse = null;
+	dsBrowse = databaseManager.createEmptyDataSet();
+	//var win = application.createWindow('Browse Job', JSWindow.WINDOW);
+
+	//win.setInitialBounds(10, 10, 800, 700);
+	//win.title = 'Browse Job';
+	//win.show('loads_browse2');
+	var maxReturnedRows = -1;
+	var args = [];
+	args.push(scopes.jobs.browseJobID);
+/** deleted
+	var query = 'select random()*1000000 AS "browsing_id",* from piecemarks p inner join sheets s on p.sheet_id = s.sheet_id '+
+	' and s.job_id = ? AND s.delete_flag IS null '+
+	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag IS null '+
+	' inner join sequences ss on ss.sequence_id = i.sequence_id inner join '+
+	' id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ';
+	*/
+	/**
+	 * Left join for records  which may not exist.  inner join for necessary records.
+	 */
+	var query = 'select random()*1000000 AS "browsing_id",* from piecemarks p '+
+	' inner join sheets s on p.sheet_id = s.sheet_id SHT '+
+	' and s.job_id = ? AND s.delete_flag IS null PCMK '+
+	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag IS null SONUM FABS AREA PCRL LDN COW LOT PKG'+
+	' inner join sequences ss on ss.sequence_id = i.sequence_id SEQN ' +
+	' inner join id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ' +
+	' left join loads l on l.load_id = i.current_load_id LDRR';
+	//  PCMK SHT SEQN SONUM LDN LDR PCRL FABS JOBR AREA BTCH COW (LOT) (PKG)
+	if (criteria.piecemark){
+		query = query.replace('PCMK'," AND p.piecemark IN "+criteria.piecemark);
+	} else {
+		query = query.replace('PCMK','');
+	}
+	if (criteria.sheetnum){
+		query = query.replace('SHT'," AND s.sheet_number IN "+criteria.sheetnum);
+	} else {
+		query = query.replace('SHT','');
+	}
+	if (criteria.seqnum){
+		query = query.replace('SEQN'," AND ss.sequence_number IN "+criteria.seqnum);
+	} else {
+		query = query.replace('SEQN','');
+	}
+	if (criteria.sonum){
+		query = query.replace('SONUM'," AND i.shop_order IN "+criteria.sonum);
+	} else {
+		query = query.replace('SONUM','');
+	}
+	if (criteria.batch){
+		query = query.replace('BTCH'," AND i.id_batch IN "+criteria.batch);
+	} else {
+		query = query.replace('BTCH','');
+	}
+	if (criteria.area){
+		query = query.replace('AREA'," AND i.id_area IN "+criteria.area);
+	} else {
+		query = query.replace('AREA','');
+	}
+	if (criteria.cow){
+		query = query.replace('COW'," AND p.piecemark_cow_code IN "+criteria.cow);// cost_of_work_code (10) ticket#6
+	} else {
+		query = query.replace('COW','');
+	}
+	if (criteria.lotnum){
+		query = query.replace('LOT'," AND i.lot_id IN "+criteria.lotnum);//ticket#7
+	} else {
+		query = query.replace('LOT','');
+	}
+	if (criteria.pkgnum){
+		query = query.replace('PKG'," AND i.ft_pkgid IN "+criteria.pkgnum);//ticket#7
+	} else {
+		query = query.replace('PKG','');
+	}
+	if (criteria.fabshop){
+		query = query.replace('FABS'," AND i.id_fabrication_shop IN "+criteria.fabshop);
+	} else {
+		query = query.replace('FABS','');
+	}
+	if (criteria.pcmkrel){
+		query = query.replace('PCRL'," AND i.piece_release IN "+criteria.pcmkrel);
+	} else {
+		query = query.replace('PCRL','');
+	}
+	if (criteria.loadrel){
+		query = query.replace('LDRR'," AND l.load_release IN "+criteria.loadrel);
+	} else {
+		query = query.replace('LDRR','');
+	}
+	if (criteria.loadall){//need number to id current_load_id
+		query = query.replace('LDN'," AND i.current_load_id IN "+criteria.loadall);
+	} else {
+		query = query.replace('LDN','');
+	}
+	//xx application.output(query)
+	var browseFS = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
+	//application.output("query size "+browseFS.getMaxRowIndex());
+	
+	//forms.loads_browse2.elements.tabless.removeAllTabs();
+	var browseIndex = 0;
+	browseArray = [];
+	var columnNames = []; var index = 0;
+	nullRow = [];
+	var cols = browseFS.getMaxColumnIndex();
+	var last = ""; 
+	var offset = 0;
+	var colLength = 0;
+	var fieldIndex = 0;
+	var removeColumns = [];
+	//removeColumns.push('piecemark_id'); // input string of piecemark_id error, Error Setting form foundset, for input string
+	for (index = 1;index <= cols;index++){
+		var columnName = browseFS.getColumnName(index);
+		if (columnName == null){continue}
+		if (columnNames.indexOf(columnName) != -1){
+			removeColumns.push(index);
+			continue}
+		columnNames[fieldIndex] = columnName;
+		dsBrowse.addColumn(columnName,fieldIndex+1,JSColumn.TEXT);
+		browseArray.push(JSColumn.TEXT);
+		nullRow.push(null); // prep blank row for table entry
+		fieldIndex++;
+	}
+	for (index=removeColumns.length-1;index > -1;index--){
+		//var status = dsBrowse.removeColumn(removeColumns[index]);
+		var status1 = browseFS.removeColumn(removeColumns[index]);
+		//application.output(" stat2 "+status1);
+	}
+	var uniqueBC = [];
+	var removeRows = [];
+	var uniqueBCount = [];
+	var rows = browseFS.getMaxRowIndex()
+	for (index=1;index <= rows;index++){
+		browseFS.rowIndex = index;//remove duplicate id_serial_number_id barcode ids
+		var bcID = browseFS.id_serial_number_id;
+		if (uniqueBC.indexOf(bcID) != -1) {
+			removeRows.push(index);
+			uniqueBCount[bcID]++;
+		} else {
+			uniqueBC.push(bcID);
+			uniqueBCount[bcID] = 1;
+		}
+	}
+	for (index = removeRows.length-1;index > -1;index--){
+		browseFS.removeRow(removeRows[index]);//delete marked row
+	}
+	for (index = 1;index <= browseFS.getMaxRowIndex();index++){
+		browseFS.rowIndex = index;
+		/** @type {Integer} */
+		var intQuant = Math.floor(uniqueBCount[browseFS.id_serial_number_id]).toFixed();
+		browseFS.sequence_quantity = intQuant;
+	}
+	//swap piecemark_id and first columns
+	browseDatasource = browseFS.createDataSource('browsingAll',browseArray); 
+	var checkForm = solutionModel.newForm(formNameTable,browseDatasource,'sts_one',false,500,600);
+	var code = 'function onRecordSelection(event){\
+			forms.loads_browse2.onRecordSelection(event);\
+		}\
+	';
+	
+	checkForm.onRecordSelection = checkForm.newMethod(code);
+	checkForm.navigator = SM_DEFAULTS.NONE;
+	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
+	//checkForm.namedFoundSet = JSForm.EMPTY_FOUNDSET; 
+	//checkForm.dataSource = 'mem:browsingAll'; //
+	//checkForm.scrollbars = SM_SCROLLBAR.HORIZONTAL_SCROLLBAR_NEVER;
+	for (index = 0;index < columnNames.length;index++){
+		columnName = columnNames[index];
+		if (columnName == "browsing_id"){
+			colLength = 0;
+		} else {
+			colLength = columnName.length * 8;
+		}
+	 	last = checkForm.newLabel(columnName,offset,0,colLength,20)
+		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+	 	if (index == columnName.length -1){
+	 		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
+	 	}
+	 	last.labelFor=columnNames[index];
+	 	last.toolTipText = last.labelFor;
+		last = checkForm.newField(columnName,JSField.TEXT_FIELD,offset,20,colLength,20);
+		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+		last.name = columnName;
+		last.editable = false;
+	 	offset += colLength;		
+	}
+	last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
+
+	
+	var status = forms[formName].elements.tabless.addTab(formNameTable);
+	application.output('add tab to delete jobs '+status);
+	//loadTablePrefs('loads_browse2');
+}
+/**
  * @properties={typeid:24,uuid:"0920030A-EFA9-4626-BDF7-5D62D4C8D963"}
  * @SuppressWarnings(wrongparameters)
  */
@@ -1394,7 +1586,7 @@ function viewBTableAlt(criteria){
 	} else {
 		query = query.replace('LDN','');
 	}
-	application.output(query)
+	//xx application.output(query)
 	var browseFS = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
 	application.output("query size "+browseFS.getMaxRowIndex());
 	
@@ -1627,6 +1819,9 @@ function existsJobNumber(jobNumber){
 	}
 }
 /**
+ * Create idfile for piecemark
+ * Uniqueness is piecemark_id, sequence_id, lot_id, except for summmarized piecemarks, which is just piecemark_id.
+ * A "" sequence is a summarized piecemark.
  * 
  * @param piecemarkId Piecemark_id into piecemark table
  * @param sequence Sequence number either the sequence_id or sequence_number. Number retrieved from earlier lookup table.
@@ -1637,7 +1832,7 @@ function existsJobNumber(jobNumber){
  * @properties={typeid:24,uuid:"A2125947-31D2-4027-B244-E012A6567B59"}
  * @AllowToRunInFind
  */
-function createIdfileRecord(piecemarkId,sequence,barcodeId,quantity,remarks){
+function createIdfileRecord(piecemarkId,sequence,lot,barcodeId,quantity,remarks){
 	/** @type {JSDataSet<db:/stsservoy/idfiles>} */
 	var fs = databaseManager.getFoundSet('stsservoy','idfiles');
 	//application.output(sequence+' sequence ');
@@ -1666,17 +1861,15 @@ function createIdfileRecord(piecemarkId,sequence,barcodeId,quantity,remarks){
 		}
 	}
 	rec.id_creation_date = new Date();
-	scopes.jobs.createRecordsArray.push(rec);
+	createRecordsArray.push(rec);
 	return rec.idfile_id;
 }
 /**
  * @properties={typeid:24,uuid:"99F219A7-590A-438C-AF6F-044016213A3E"}
  */
-function createIdfiles(newFS){
+function unusedcreateIdfiles(newFS){
 	dsDiffIdfiles = [];
-	var timeIn = new Date().getTime();
-	var timeLast = timeIn;
-	scopes.globals.stsMessages = "Creating Idfiles.";application.updateUI();
+	importSaveAndStatus('Creating idfiles.');
 	var progress = false;
 	if (newFS == null){
 		var retainFS = forms.kiss_option_import.transitionFS;
@@ -1687,12 +1880,7 @@ function createIdfiles(newFS){
 	var rows = retainFS.getMaxRowIndex();
 	scopes.globals.importRecordCount = rows;
 	for (var index = 0;index < rows;index++){
-		var timeNow = new Date().getTime();
-		if (timeNow-timeLast > 1000){
-			timeLast = timeNow;
-			databaseManager.saveData();
-			scopes.globals.stsMessages = "Creating Idfile "+index+" of "+rows;application.updateUI();
-		}
+		importSaveAndStatus("Creating Idfile "+index+" of "+rows);
 		retainFS.rowIndex = index+1;
 		if (retainFS.lot){
 			var lot = dsLotArray[retainFS.lot];
@@ -1728,9 +1916,6 @@ function createIdfiles(newFS){
 			//determine idfiles to add, and if the current idfiles haven't been modified
 		}
 		
-		
-		
-		
 		if (dsIdfileArray[uniqueIdfile] != null){
 			if (progress) {scopes.globals.stsMessages = "Idfile exists";application.updateUI();}
 			var totalCodes = 0;
@@ -1754,7 +1939,7 @@ function createIdfiles(newFS){
 				}
 			}
 		} else {
-			application.output("create Idfile(s) "+retainFS.piecemark);
+			//xx application.output("create Idfile(s) "+retainFS.piecemark);
 			for (var i2=0;i2 < retainFS.barcode_qty;i2++){ // number of barcodes
 				var barcodeId = createValidBarcode();
 				itemsPerBarcode = retainFS.total_label_qty;
@@ -1762,15 +1947,13 @@ function createIdfiles(newFS){
 					itemsPerBarcode = retainFS.last_bc_qty;
 				}
 				for (var i3=0;i3 < itemsPerBarcode;i3++){
-					application.output("new Idfile: barcode"+i2+" label serial "+i3);
+					//xx application.output("new Idfile: barcode"+i2+" label serial "+i3);
 					//continue
-					var idfileIdNew = createIdfileRecord(piecemarkId,retainFS.sequence_number,barcodeId,retainFS.item_quantity,retainFS.remarks);
+					//var idfileIdNew = create IdfileRecord(piecemarkId,retainFS.sequence_number,barcodeId,retainFS.item_quantity,retainFS.remarks);
 				}
 			}
 		}
 	}
-	var timeOut=new Date().getTime()-timeIn;
-	application.output("create idfiles time ms "+timeOut);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1805,7 +1988,7 @@ function createPiecemark(fsRec,unique){
 	dsPiecemarkArray[unique] = rec.piecemark_id;
 	insertedPiecemarks.push(rec.piecemark_id);
 	dsIdfileListByPm[rec.piecemark_id] = [];
-	scopes.jobs.createRecordsArray.push(rec);
+	createRecordsArray.push(rec);
 }
 /**
  * @properties={typeid:24,uuid:"C5510BFA-2477-4BF9-95BD-1C54BAAC370E"}
@@ -1813,21 +1996,19 @@ function createPiecemark(fsRec,unique){
  */
 function createPiecemarks(){
 	dsDiffPiecemarks = [];
-	databaseManager.saveData();
-	scopes.globals.stsMessages = "Creating piecemarks.";application.updateUI();
+	importSaveAndStatus('Creating piecemarks.');
 	var retainFS = forms.kiss_option_import.transitionFS;
 	// tenantuuid, piecemark, grade, sequence, lot
 	var jobID = scopes.jobs.jobUnderCustomer;
 	var rows = forms.kiss_option_import.transitionFS.getMaxRowIndex();
 	scopes.globals.importRecordCount = rows;
-	//databaseManager.setAutoSave(false);
 	for (var index = 0;index < rows;index++){
 		retainFS.rowIndex = index+1;
 		////var unique = retainFS.piecemark+","+retainFS.parent_piecemark+","+dsSheetArray["_"+retainFS.sheet_number]+","+retainFS.grade+","+retainFS.finish;
 		////	unique = retainFS.material+","+retainFS.grade+","+retainFS.finish; 
 		var unique = uniquePiecemark(retainFS);
 		if (dsPiecemarkArray[unique] != null){
-			application.output('piecemark '+unique+" exists.");
+			//xx application.output('piecemark '+unique+" exists.");
 			/**
 			 * check for count of idfiles that have piecemark_id, sequence_id, Lot_id and count equal to record
 			 * count is an aggregate of idfile counts
@@ -1893,7 +2074,6 @@ function createSheet(sheetNumber){
  * @properties={typeid:24,uuid:"C69E27A8-6A48-41A4-965E-203DC14DEC4A"}
  */
 function createSheets(){
-	databaseManager.saveData()
 	scopes.globals.stsMessages = "Creating sheets.";application.updateUI();
 	var newItems = [];
 	//var rows = dsBrowse.getMaxRowIndex();
@@ -1910,7 +2090,6 @@ function createSheets(){
 		}
 	}
 	var length = newItems.length;
-	//databaseManager.setAutoSave(false);
 	for (index = 0;index < length;index++){
 		if (dsSheetArray["_"+newItems[index]] != null){
 			application.output("do not create sheeet "+newItems[index]);
@@ -1937,18 +2116,72 @@ function createSequenceNumber(sequenceNumber){
 	rec.job_id = scopes.jobs.jobUnderCustomer;
 	rec.tenant_uuid = scopes.globals.secCurrentTenantID;
 	dsSequenceArray["_"+sequenceNumber] = rec.sequence_id;
+	createRecordsArray.push(rec);
 	//dsSequenceList[rec.sequence_id] = newItems[index];
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param lotNumber
+ * @param sequence
+ *
+ * @properties={typeid:24,uuid:"90F9B755-75C6-4673-BE5D-4F6DC6DC9512"}
+ */
+function createLotNumber(sequence,lotNumber){
+	/** @type {JSDataSet<db:/stsservoy/lots>} */
+	var fs = databaseManager.getFoundSet('stsservoy','lots');
+	var recIndex = fs.newRecord();
+	var rec = fs.getRecord(recIndex);
+	rec.lot = lotNumber;
+	if (sequence.length != 36){
+		sequence = dsSequenceArray[sequence];
+	}
+	rec.sequence_id = sequence;
+	rec.tenant_uuid = scopes.globals.secCurrentTenantID;
+	dsLotArray["_"+lotNumber] = rec.lot_id;
+	createRecordsArray.push(rec);
+}
+/**
+ * @properties={typeid:24,uuid:"234B6EE5-1FBC-4C47-8303-B9A8D35A968F"}
+ */
+function createLotNumbers(){
+	importSaveAndStatus('Creating lots.');
+	var newItems = [];
+	var retainFS = forms.kiss_option_import.transitionFS;
+	var rows = forms.kiss_option_import.transitionFS.getMaxRowIndex();
+	for (var index = 0;index < rows;index++){
+		retainFS.rowIndex = index+1;
+		var seq_num = "_"+retainFS.sequence_number;
+		var lot_num = "_"+retainFS.lot_number;
+		if (!retainFS.lot_number){
+			lot_num = "_";
+		}
+		if (!newItems[seq_num]){
+			newItems[seq_num] = [];
+		}
+		if (newItems[seq_num].indexOf(lot_num) == -1){
+			newItems[seq_num].push(lot_num);
+		}
+	}
+	for (var sequence in newItems){
+		for (var lot = 0;lot < newItems[sequence].length;lot++){
+			if (dsLotArray[newItems[sequence][lot]]){
+				importSaveAndStatus('Lot exists '+newItems[sequence][lot]);
+				continue
+			}
+			importSaveAndStatus('Create sequence: '+sequence+', lot: '+newItems[sequence][lot]);
+			createLotNumber(sequence,newItems[sequence][lot]);
+		}
+		//dsLotList[rec.lot_id] = newItems[sequence][lot];
+	}
+
 }
 /**
  * @properties={typeid:24,uuid:"EC33F91A-05F5-41A5-831C-857B708912DD"}
  */
 function createSequenceNumbers(){
-	databaseManager.saveData()
-	scopes.globals.stsMessages = "Creating sequences.";application.updateUI();
+	importSaveAndStatus('Creating sequences.');
 	var newItems = [];
-	//var rows = dsBrowse.getMaxRowIndex();
 	var retainFS = forms.kiss_option_import.transitionFS;
-	//var jobID = scopes.jobs.jobUnderCustomer;
 	var rows = forms.kiss_option_import.transitionFS.getMaxRowIndex();
 	scopes.globals.importRecordCount = length;
 	var insertCount = 0;//how many lines to insert with this barcode
@@ -1960,12 +2193,12 @@ function createSequenceNumbers(){
 		}
 	}
 	var length = newItems.length;
-	//databaseManager.setAutoSave(false);
 	for (index = 0;index < length;index++){
 		if (dsSequenceArray["_"+newItems[index]] != null){
-			scopes.globals.stsMessages = "do not create sequence "+newItems[index];
-			continue}
-			scopes.globals.stsMessages = "create sequence "+newItems[index];
+			importSaveAndStatus('Sequence exists '+newItems[index]);
+			continue
+		}
+		importSaveAndStatus('Create sequence '+newItems[index]);
 		createSequenceNumber(newItems[index]);
 		//dsSequenceList[rec.sequence_id] = newItems[index];
 	}
@@ -2633,6 +2866,62 @@ function createBCnums(qtyBarcodes,qtyPcmk,weight){
 	return calc;
 }
 /**
+ * @properties={typeid:24,uuid:"38EE56CF-ABB3-4749-B105-34EB010EA0BD"}
+ */
+function importAmendQuantities(){
+	/**
+	 * Idfiles are individual. Go through idfiles, saving by uniquePiecemark+SeqNum+LotNum
+	 * Upon import, then these numbers are added to each line.
+	 */
+	scopes.jobs.appendQuantityToIdfile = [];
+	var amendList = scopes.jobs.appendQuantityToIdfile;
+	//readPieceTables();
+	//var importFS = forms.kiss_option_import.transitionFS;
+	if (!dsIdfiles){return}
+	var length = dsIdfiles.getMaxRowIndex();
+	for (var index = 1;index <= length;index++){
+		dsIdfiles.rowIndex = index;
+		var pcmkId = dsIdfiles.piecemark_id;
+		var seqId = dsIdfiles.sequence_id;
+		var lotId = dsIdfiles.lot_id;
+		dsPiecemarks.rowIndex = dsPiecemarkList[pcmkId];
+		var uniqPcmk = uniquePiecemark(dsPiecemarks);
+		dsSequences.rowIndex = dsSequenceList[seqId];
+		var seqNum = dsSequences.sequence_number;
+		dsLots.rowIndex = dsLotList[lotId];
+		var lotNum = dsLots.lot_number;
+		
+		var idfile = uniqPcmk+seqNum+lotNum;
+		if (!amendList[idfile]){
+			amendList[idfile] = 0.0;
+		}
+		amendList[idfile] = amendList[idfile] + 1.0;
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"647A9868-0110-48C4-818E-6914856E28E6"}
+ */
+function importAmendQuantApply(apply){
+	var transitionFS = forms.kiss_option_import.transitionFS;
+	var length = transitionFS.getMaxRowIndex();
+	for (var index = 1;index <= length;index++){
+		transitionFS.rowIndex = index;
+		var uniqPcmk = scopes.jobs.uniquePiecemark(transitionFS);
+		var seqNum = transitionFS.sequence_number;
+		var lotNum = transitionFS.lot_number;
+		if (!lotNum) {lotNum = 'undefined'}
+		var idfile = uniqPcmk+seqNum+lotNum;
+		if (!scopes.jobs.appendQuantityToIdfile[idfile]){continue} // idfile not in db
+		var mult = (apply) ? 1.0 : -1.0; // subtract or add to import table quantities
+		if (transitionFS.sequence_quantity == ""){
+			transitionFS.item_quantity = transitionFS.item_quantity*1 + scopes.jobs.appendQuantityToIdfile[idfile]*mult;
+		} else {
+			transitionFS.sequence_quantity = transitionFS.sequence_quantity*1 + scopes.jobs.appendQuantityToIdfile[idfile]*mult;
+		}
+	}
+	scopes.jobs.appendedToData = apply;
+}
+/**
  * @properties={typeid:24,uuid:"7C32E63D-9AD0-473F-B146-705DE8B3E68C"}
  * @AllowToRunInFind
  */
@@ -2694,7 +2983,6 @@ function saveBarCodeSerial(){
  * @AllowToRunInFind
  */
 function createBarCode(notSample){
-	//if (barcodePrefix != )
 	var padZeroes = "00000000000000000000000000000";
 	if (notSample){//total length = 10
 		var barcode_include_prefix = "Exclude Prefix";//"Include Prefix";//
@@ -2734,7 +3022,6 @@ function createBarCode(notSample){
 	serial = serial.slice(serial.length-serialLength,serial.length);
 
 	var barcode = barcodePrefix+serial;
-	//application.output(barcode+" serial length "+serialLength+" begin "+begStr+" end "+endStr);
 	return barcode;
 }
 /**
@@ -2886,13 +3173,9 @@ function idHeaders(){
 			}
 		}
 		index++;		
-		//var fs9 = sts_mapping;
-		//application.output('mapping lines: '+fs9.getSize());	
 	}
 
 	return index;
-
-
 }
 /**
  * @AllowToRunInFind
@@ -2990,6 +3273,8 @@ function createValidBarcode(){
 	var barRec = barsFS.getRecord(recIndex);
 	barRec.id_serial_number = createBarCodeNextNumber(); 
 	barRec.tenant_uuid = scopes.globals.secCurrentTenantID;
+	//createRecordsArray.push(barRec);
+	databaseManager.saveData(barRec);
 	return barRec.id_serial_number_id;
 }
 /**
@@ -3008,8 +3293,6 @@ function insertAggregPcmk(table){
 	var length = table.getMaxRowIndex();
 	var sheetID = "";
 	for (var index = 0;index < length;index++){
-		//if (table[index].parent_piecemark == ""){continue}
-		//if (table[index].sheet_number != ""){
 			if (sheetFS.find()){
 				sheetFS.job_id = scopes.jobs.jobIDs[0];
 				sheetFS.sheet_number = table[index].sheet_number;
@@ -3025,10 +3308,7 @@ function insertAggregPcmk(table){
 					databaseManager.saveData(newRec);
 				}
 			}
-		//}
 		if (pieceFS.find()){
-			//pieceFS.material = table[index].material;
-			//pieceFS.grade = table[index].grade;
 			pieceFS.piecemark = table[index].piecemark;
 			pieceFS.parent_piecemark = table[index].parent_piecemark;
 			pieceFS.sheet_id = sheetID;
@@ -3059,7 +3339,7 @@ function insertAggregPcmk(table){
 /**
  * @properties={typeid:24,uuid:"F12A2069-9AAD-4175-8B7D-ED09B211A5E0"}
  */
-function insertPiecemarks(){
+function unsuedinsertPiecemarks(){
 	insertAggregPcmk(forms.kiss_option_import.transitionFS);
 	insertAggregPcmk(forms.kiss_option_import.transitionFSsumm);
 }
@@ -3073,7 +3353,9 @@ function insertPiecemarks(){
  * @properties={typeid:24,uuid:"D5A0CE07-4B2C-47F0-B85C-FF5216B90229"}
  * @AllowToRunInFind
  */
-function insertIdFile(row, barcount,piecemarkId,seqId) { 
+
+function unusedinsertIdFile(row, barcount,piecemarkId,seqId) {
+	
 	/*
 	 * use jobId, tenantId,
 	 * create piecemark with major and minor, 
@@ -3094,41 +3376,38 @@ function insertIdFile(row, barcount,piecemarkId,seqId) {
 	var totalQty = retainFS[row].item_quantity;
 	var barcodeID = createValidBarcode();
 	for (var index = 1;index <= barcount;index++){
-
-		/*
-		if (idsFS.find()){
-			idsFS.sequence_id = seqId;
-			idsFS.piecemark_id = piecemarkId;
-			//idsFS.id_serial_number_id = barcodeId;
-			var count = idsFS.search();
-			if (count*1 < totalQty*1){//the total quantity is all that we are after with a unique barcode for this quantity
-		*/
-				application.output("row:"+row+" bar:"+barcodeID+" "+barcount+":"+index+" >> "+retainFS.getRowAsArray(row+1));					
-				var newIndex = idsFS.newRecord();
-				var newRec = idsFS.getRecord(newIndex);
-				newRec.id_serial_number_id = barcodeID;
-				newRec.tenant_uuid = scopes.globals.secCurrentTenantID;
-				newRec.piecemark_id = piecemarkId;
-				newRec.sequence_id = seqId;
-				newRec.original_quantity = retainFS[row].item_quantity;
-				newRec.shipped_quantity = retainFS[row].sequence_quantity*1;  //sequence quantity versus original quantity
-		/*
-			}
-		}
-		*/
+		application.output("row:"+row+" bar:"+barcodeID+" "+barcount+":"+index+" >> "+retainFS.getRowAsArray(row+1));					
+		var newIndex = idsFS.newRecord();
+		var newRec = idsFS.getRecord(newIndex);
+		newRec.id_serial_number_id = barcodeID;
+		newRec.tenant_uuid = scopes.globals.secCurrentTenantID;
+		newRec.piecemark_id = piecemarkId;
+		newRec.sequence_id = seqId;
+		newRec.original_quantity = retainFS[row].item_quantity;
+		newRec.shipped_quantity = retainFS[row].sequence_quantity*1;  //sequence quantity versus original quantity
 	}
-
 }
 /**
  * @properties={typeid:24,uuid:"5796C81D-F2E2-479E-8B71-616BC5ED206B"}
  */
 function deleteLotsJob(){
-	var dsLotList = scopes.jobs.dsLotList;
-	application.output('Lots to delete '+dsLotList.length);
+	if (!dsLots){return}
+	var tempCodes = [];
+	for (var index2 = 1;index2 <= dsLots.getMaxRowIndex();index2++){
+		dsLots.rowIndex = index2;
+		tempCodes.push(dsLots.lot_id);
+	}	
+
+	var count2 = 0;
+	/** @type {JSFoundSet<db:/stsservoy/lots>} */
+	var fs = databaseManager.getFoundSet('stsservoy','lots');
+	fs.loadRecords(databaseManager.convertToDataSet(tempCodes));
+	var count = fs.getSize();
+	deleteFoundSet(fs);
+	application.output('Lots to delete '+fs.getSize());
 	dsLots = null;
 	dsLotList = [];
 	dsLotArray = [];
-	//deleteFoundSet(fs);
 }
 /**
  * @properties={typeid:24,uuid:"EA8A5666-7188-44FA-BD6A-DFC4ABC5C383"}
@@ -3146,7 +3425,6 @@ function deleteSequencesJob(jobID){
 		if (fs.search() > 0){
 			count2 = fs.getSize();
 			deleteFoundSet(fs);
-			//fs.deleteAllRecords();
 		}
 	}
 	application.output("Sequences to delete "+count2);
@@ -3181,7 +3459,6 @@ function deleteBarcodesJob(){
 	fs.loadRecords(databaseManager.convertToDataSet(tempCodes));
 	var count = fs.getSize();
 	deleteFoundSet(fs);
-	//fs.deleteAllRecords();
 	application.output('Barcodes to delete '+dsBarcodeList.length+" fssize "+count);
 	dsBarcodes = null;
 	dsBarcodeList = [];
@@ -3198,7 +3475,6 @@ function deleteIdfilesJob(){
 	fs.loadRecords(databaseManager.convertToDataSet(dsIdfileList));
 	var count = fs.getSize();
 	deleteFoundSet(fs);
-	//fs.deleteAllRecords();
 	application.output('Idfiles to delete '+dsIdfileList.length);
 	dsIdfiles = null;
 	dsIdfileList = [];
@@ -3248,7 +3524,6 @@ function deleteImportBatch(){
  * @properties={typeid:24,uuid:"6A51C543-4175-4FE3-8AC5-1D074349A1E4"}
  */
 function deletePiecemarksJob(){
-	//var dsPiecemarkList = scopes.jobs.dsPiecemarkList;
 	scopes.globals.tempArray = [];
 	for (var index in dsPiecemarkList){
 		scopes.globals.tempArray.push(index);
@@ -3262,7 +3537,6 @@ function deletePiecemarksJob(){
 	fs.loadRecords(databaseManager.convertToDataSet(scopes.globals.tempArray));
 	count = fs.getSize();
 	deleteFoundSet(fs);
-	//fs.deleteAllRecords();
 	application.output('Piecemarks to delete '+count);
 	dsPiecemarks = null;
 	dsPiecemarkList = [];
@@ -3354,85 +3628,96 @@ function deleteIdfiles(){
  */
 function deletePiecemarks(){
 	// clear piecemarksToDelete afterward
+	//return;
 	var index = 0;
 	var lots = [];
 	var barcodes = [];
-	var transactions = [];
+	var sequences = [];
+	var piecemarks = [];
+	var idfiles = [];
+	var deleteDate = new Date();
+
 	var piecemarkRec = null;
 	if (scopes.jobs.piecemarksToDelete.length == 0){return}
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q =  databaseManager.createSelect("db:/stsservoy/idfiles");
 	q.result.add(q.columns.piecemark_id);
-	q.result.add(q.columns.delete_flag);
-	q.result.add(q.columns.lprint);
-	q.result.add(q.columns.deleted_date);
 	q.result.add(q.columns.lot_id);
-	q.result.add(q.columns.edit_date);
-	q.where.add(q.columns.piecemark_id.isin(scopes.jobs.piecemarksToDelete));
+	q.result.add(q.columns.sequence_id);
+	q.result.add(q.columns.tenant_uuid);
+	q.result.add(q.columns.id_serial_number_id);
+	q.where.add(q.and
+		.add(q.not(q.columns.delete_flag.isNull))
+		.add(q.columns.piecemark_id.isin(piecemarksToDelete))
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	);
 	var resultI = databaseManager.getFoundSet(q);
 	var length = resultI.getSize();
 	for (index = 1;index <= length;index++){
 		var idfileRec = resultI.getRecord(index);
-		// skip, do later for whole job if (idfileRec.lot_id) {lots.push(idfileRec.lot_id)}
+		if (idfileRec.lot_id) {lots.push(idfileRec.lot_id)}
 		if (idfileRec.id_serial_number_id) {barcodes.push(idfileRec.id_serial_number_id)}
-		if (idfileRec.transaction_id){transactions.push(idfileRec.transaction_id)}
-	}
+		if (idfileRec.sequence_id){sequences.push(idfileRec.sequence_id)}
+		if (idfileRec.piecemark_id){piecemarks.push(idfileRec.piecemark_id)}
+		if (idfileRec.idfile_id){idfiles.push(idfileRec.idfile_id)}
+	} // interim list of possible deletes in each array.  Verify they are not referenced by other piecemarks/idfiles before deletion
 	
-	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
-	var p =  databaseManager.createSelect("db:/stsservoy/piecemarks");
-	p.result.add(p.columns.piecemark_id);
-	p.result.add(p.columns.delete_flag);
-	p.result.add(p.columns.edit_date);
-	p.where.add(p.columns.piecemark_id.isin(scopes.jobs.piecemarksToDelete));
-	var resultP = databaseManager.getFoundSet(p);
-	
-	if (barcodes.length > 0){
-		/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
-		p =  databaseManager.createSelect("db:/stsservoy/id_serial_numbers");
-		p.result.add(p.columns.id_serial_number_id);
+	if (piecemarks.length > 0){
+		/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+		var p =  databaseManager.createSelect("db:/stsservoy/piecemarks");
+		// piecemarks array are piecemarks that appear in the delete list of deleted idfiles
+		p.result.add(p.columns.piecemark_id);
 		p.result.add(p.columns.delete_flag);
 		p.result.add(p.columns.edit_date);
-		p.where.add(p.columns.id_serial_number_id.isin(barcodes));
-		var resultB = databaseManager.getFoundSet(p);
+		p.where.add(p.columns.piecemark_id.isin(piecemarks));
+		var resultP = databaseManager.getFoundSet(p);
+		application.output('deleting piecemarks '+piecemarks);
+		var delPmarks = databaseManager.getFoundSetUpdater(resultP);
+		if (delPmarks){
+			delPmarks.setColumn('delete_flag',99);
+			//delPmarks.setColumn('deleted_date',deleteDate);
+			delPmarks.setColumn('edit_date',deleteDate);
+			delPmarks.performUpdate();
+		}
 	}
 	
-	if (transactions.length > 0){
-		/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-		var t = databaseManager.createSelect("db:/stsservoy/transactions");
-		t.result.add(t.columns.trans_id);
-		t.result.add(t.columns.delete_flag);
-		t.result.add(t.columns.edit_date);
-		t.where.add(t.columns.trans_id.isin(transactions));
-		var resultT = databaseManager.getFoundSet(t);
-	}
-	
-	application.output('deleting piecemearks '+piecemarksToDelete);
-	var deleteDate = new Date();
-	//var status = true;
-	//if (status){return}
-	var delIdfiles = databaseManager.getFoundSetUpdater(resultI);
-	if (delIdfiles){
-		delIdfiles.setColumn('delete_flag',99);
-		delIdfiles.setColumn('deleted_date',deleteDate);
-		delIdfiles.setColumn('edit_date',deleteDate);
-		delIdfiles.performUpdate();
-	}
-	var delPcmks = databaseManager.getFoundSetUpdater(resultP);
-	if (delPcmks){
-		delPcmks.setColumn('delete_flag',99);
-		delPcmks.setColumn('edit_date',deleteDate);
-		delPcmks.performUpdate();
-	}
-	var delBarcodes = databaseManager.getFoundSetUpdater(resultB);
-	if (delBarcodes){
-		delBarcodes.setColumn('delete_flag',99);
-		delBarcodes.setColumn('edit_date',deleteDate);
-		delBarcodes.performUpdate();
-	}
-	var delTrans = databaseManager.getFoundSetUpdater(resultT);
-	if (delTrans){
-		delTrans.setColumn('delete_flag',99);
-		delTrans.setColumn('edit_date',deleteDate);
+	if (barcodes.length > 0){
+		// are the barcodes used by surviving idfiles
+		var barcodesDelete = [];
+		var barcodesActive = [];
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		databaseManager.createSelect("db:/stsservoy/idfiles");
+		q.result.add(q.columns.id_serial_number_id);
+		q.where.add(q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.id_serial_number_id.isin(barcodes))
+		); // this is a list of active barcodes in the barcodes delete list
+		resultI = databaseManager.getFoundSet(q);
+		length = resultI.getSize();
+		for (index = 1;index <= length;index++){
+			barcodesActive.push(resultI.getRecord(index));
+		}
+		while (barcodes.length > 0){
+			var barcode = barcodes.pop();
+			if (barcodesActive.indexOf(barcode) == -1){
+				barcodesDelete.push(barcode);
+			}
+		}
+		if (barcodesDelete.length > 0){
+			/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
+			b =  databaseManager.createSelect("db:/stsservoy/id_serial_numbers");
+			b.result.add(p.columns.id_serial_number_id);
+			b.result.add(p.columns.delete_flag);
+			b.result.add(p.columns.edit_date);
+			b.where.add(p.columns.id_serial_number_id.isin(barcodesDelete));
+			var resultB = databaseManager.getFoundSet(b);
+			var delBarcodes = databaseManager.getFoundSetUpdater(resultB);
+			if (delBarcodes){
+				delBarcodes.setColumn('delete_flag',99);
+				delBarcodes.setColumn('edit_date',deleteDate);
+				delBarcodes.performUpdate();
+			}
+		}
 	}
 	scopes.jobs.piecemarksToDelete = [];
 }
@@ -3452,7 +3737,6 @@ function deleteSheetsJob(jobID){
 	fs.loadRecords(databaseManager.convertToDataSet(scopes.globals.tempArray));
 	count = fs.getSize();
 	deleteFoundSet(fs);
-	//fs.deleteAllRecords();
 	application.output('Sheets to delete '+count);
 	dsSheets = null;
 	dsSheetList = [];
@@ -3466,7 +3750,6 @@ function deleteSheetsJob(jobID){
  * @properties={typeid:24,uuid:"C5614E6F-A1DB-4B7D-96A8-78E147A13D74"}
  */
 function removeFromList(srcArray,dstArray){
-	//var srcLength = srcArray.length;
 	var dstLength = dstArray.length;
 	var tempArray = [];
 	for (var index = 0;index < dstLength;index++){
@@ -3491,10 +3774,9 @@ function importRecordPiecemarkExist(record,correct){
 	//record.select_hidebool = 1;//is the import record in the sheet already?
 	// May exist, now how many items?  That is resolved within the idfile check. Beyond the scope of piecemark.
 	var unique = uniquePiecemark(record);
-	//var dbCount = dsPiecemarkArray
 	if (correct){
-		if (record.action.search('PCMK_DELETE') != -1){
-			//application.output('delete piecemarks '+piecemarksToDelete);
+		if (record.action.search('DELETE') != -1){
+			if (null) {return true} // disable delete for after processing
 			var idlistPm = importRecordAllIdfiles(record);
 			var idlistPmlength = idlistPm.length;
 			for (var index = 0;index < idlistPmlength;index++){
@@ -3510,24 +3792,30 @@ function importRecordPiecemarkExist(record,correct){
 			}
 			return false;// should not exist after piecemark deleted, idfiles will be flagged too, don't worry the idfiles
 		}
-		if (record.action.search('PCMK_CREATE') != -1){
-			//record.select_hidebool = 0;
-			createPiecemark(record,unique);	
+		if (record.action.search('CREATE') != -1){
+			if (!dsPiecemarkArray[unique]){
+				application.output('create piecemark '+unique);
+				createPiecemark(record,unique);
+			}
 			return true;
 		}
 		return true;
 	}
 	if (dsPiecemarkArray[uniqueSummedPiecemark(record)] != null){
-		//record.select_hidebool = 0;
 		record.action = "";
+		if (forms.kiss_option_import.importOption.search('Overwrite') != -1){
+			record.action = "CREATE";
+		}
 		return ",*summedPM*";
 	} else if (dsPiecemarkArray[unique] != null){
-		//record.select_hidebool = 0;
 		record.action = "";
+		if (forms.kiss_option_import.importOption.search('Overwrite') != -1){
+			record.action = "CREATE";
+		}
 		return "";
 	} else {
 		if (!record.select_hidebool || record.select_hidebool == 0){
-			record.action = "PCMK_CREATE";
+			record.action = "CREATE";
 		} else {
 			record.action = "";
 		}
@@ -3554,6 +3842,20 @@ function uniqueIdfile(record){
 	return record.piecemark_id+","+record.sequence_id+","+record.lot_id;
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param tableRec
+ *
+ * @properties={typeid:24,uuid:"3FCBE18D-7F26-4E5D-A036-6F86DE9043B5"}
+ */
+function uniqueIdfileIdFromImp(tableRec){
+	var uniqPcmk = scopes.jobs.uniquePiecemark(tableRec);
+	var seqNum = tableRec.sequence_number;
+	var lotNum = tableRec.lot_number;
+	if (!lotNum) {lotNum = 'undefined'}
+	var idfile = uniqPcmk+seqNum+lotNum;
+	return idfile;
+}
+/**
  * Return unique piecemark for both minor, parent and summarized piecemarks
  * @param record
  *
@@ -3565,14 +3867,9 @@ function uniquePiecemark(record){
 	if (record.piecemark == ""){
 		unique = record.material+","+record.grade+","+record.finish
 	} else {
-		//if (record.sheet_number)
 		var sheetNum = dsSheetArrayRev[record.sheet_id]+"";
 		if (sheetNum.search('undefined') != -1) {sheetNum = "_"+record.sheet_number}
-		//var sheetNum = (dsSheetArray["_"+record.sheet_number].search( ?  : record.sheet_id;
 		unique = record.piecemark+","+record.parent_piecemark+","+sheetNum+","+record.grade+","+record.finish;
-		//if (unique.search('undefined') != -1){
-		//unique = record.piecemark+","+record.parent_piecemark+","+record.sheet_id+","+record.grade+","+record.finish;
-		//}
 	}
 	return unique;
 }
@@ -3613,7 +3910,7 @@ function importRecordAllIdfiles(importRec){
  *
  * @properties={typeid:24,uuid:"0170114F-60F3-4B2A-9F15-F5CB495768C8"}
  */
-function importRecordChangeIdfileCount(record,count){
+function unusedimportRecordChangeIdfileCount(record,count){
 	/**
 	 * pre-process barcode counts and set new barcode labels to last value if job exists
 	 * 
@@ -3634,7 +3931,6 @@ function importRecordChangeIdfileCount(record,count){
 	var sequence = [];
 	var barcodes = [];//push of id_serial_number_id
 	var barcodeIdfiles = [];//list of idfiles for a barcode_id
-	//var labelsNeeded = record.barcode_qty;
 	var quantityEach = record.total_label_qty;
 	var uniquePm = uniquePiecemark(record);
 	var piecemarkId = dsPiecemarkArray[uniquePm];
@@ -3645,7 +3941,6 @@ function importRecordChangeIdfileCount(record,count){
 		dsIdfiles.rowIndex = dsIdfileList.indexOf(idfileId)+1;
 		var barcodeId = dsIdfiles.id_serial_number_id;
 		if (barcodes.indexOf(barcodeId) == -1){barcodes.push(barcodeId)}
-		//var piecemarkId = dsPiecemarkArray[uniquePm].piecemark_id;
 		if (!sequence[idfileId]){sequence[idfileId] = [];}
 		if (!sequence[idfileId][barcodeId]){sequence[idfileId][barcodeId]=0}
 		sequence[idfileId][barcodeId] +=1;
@@ -3653,7 +3948,6 @@ function importRecordChangeIdfileCount(record,count){
 		barcodeIdfiles[barcodeId].push(idfileId);
 	}
 	var shortest = "";
-	//if (null){return}
 	if (count > 0) {
 		/**
 		 * add idfile and then add it to the correct barcode group
@@ -3668,7 +3962,7 @@ function importRecordChangeIdfileCount(record,count){
 			if (deletedBarcodes.indexOf(barcodeId) != -1) {continue}
 			if (barcodeIdfiles[barcodeId].length < quantityEach){
 				//insert new idfile to barcode_id, piecemarkId, 
-				var idfileIdNew = createIdfileRecord(piecemarkId,record.sequence_number,barcodeId,record.item_quantity);	//joe check for proper quantity creation, might not be item_quantity, rather quantityEach
+				//var idfileIdNew = create IdfileRecord(piecemarkId,record.sequence_number,barcodeId,record.item_quantity);	//joe check for proper quantity creation, might not be item_quantity, rather quantityEach
 				insertedIdfiles.push(idfileIdNew);
 				barcodeIdfiles[barcodeId].push(idfileIdNew);
 				count -= 1;
@@ -3680,7 +3974,7 @@ function importRecordChangeIdfileCount(record,count){
 			for (index = 0;index < quantityEach;index++){
 				if (count == 0){break}
 				count -= 1;
-				idfileIdNew = createIdfileRecord(piecemarkId,record.sequence_number,barcodeNewId,record.item_quantity);
+				// idfileIdNew = create IdfileRecord(piecemarkId,record.sequence_number,barcodeNewId,record.item_quantity);
 				insertedIdfiles.push(idfileIdNew);
 			}
 		}
@@ -3724,7 +4018,6 @@ function importRecordChangeIdfileCount(record,count){
 		
 	}
 	application.output('barcodes '+barcodes.length+' pm '+uniquePm);
-	null;
 }
 /**
  * @AllowToRunInFind
@@ -3790,7 +4083,6 @@ function dbRecCounts(record){
 	tDbIdFiles = dsIdfileListByPm[pcmkId];
 	if (!tDbIdFiles){tDbIdFiles = []}
 	c.dbIdfiles = [];
-	//var dbIdfilePrinted = [];
 	 
 	for (index = 0; index < tDbIdFiles.length;index++){ // get idfiles that are for this sequence and lot
 		dsIdfiles.rowIndex = dsIdfileList[tDbIdFiles[index]];
@@ -3820,7 +4112,7 @@ function dbRecCounts(record){
 	var count = c.dbLabelCount - c.inLabelCount;
 	if (count > 0){c.bcDel = count} // DB has more barcode labels than needed
 	if (count < 0){c.bcAdd = -count} // DB needs more labels
-	var count = c.dbItemCnt - c.inItemCnt;
+	count = c.dbItemCnt - c.inItemCnt;
 	if (count > 0){c.idfileDel = count} // DB has too many idfiles than needed
 	if (count < 0){c.idfileAdd = -count} // DB file needs more idfiles for this pm
 	dbRecBCList(record);
@@ -3837,15 +4129,14 @@ function dbRecCounts(record){
 function importRecordCheckIdfileCount(record,correct,newPiecemark){
 	// How many idfiles for the piecemark 
 	// How many barcodes for each prospective idfile
-	//var recSheetId = dsSheetArray["_"+record.sheet_number]; // this is sheet, same for lot, sequence
 	// printed idfiles cannot be changed
-	var id="";var bc="";//idfile, barcode messages
+	var bc="";//idfile, barcode messages
 	var nums = dbRecCounts(record);
 	var uniquePm = uniquePiecemark(record);
 	var pcmkId = dsPiecemarkArray[uniquePm];
-	var inLabelQntEa = record.total_label_qty;
-	var inLabelQntEaLast = record.last_bc_qty;  //if (record.last_bc_qty != 0 && index == inBcCount-1){
-	var dbLabelQntEa = 0;
+	//var inLabelQntEa = record.total_label_qty;
+	//var inLabelQntEaLast = record.last_bc_qty;  //if (record.last_bc_qty != 0 && index == inBcCount-1){
+	//var dbLabelQntEa = 0;
 	/**
 	 * from the piecemark, get the barcode count and idfile count per barcode
 	 * Holds barcode count, indexed by id_serial_number_id.   
@@ -3905,13 +4196,13 @@ function importRecordCheckIdfileCount(record,correct,newPiecemark){
 		inBcQntEa.push(tBcQntEa);
 	}
 	
-	application.output(record.material+" "+inBcCount+':'+dbBcCount+' in bc Qnt Ea '+inBcQntEa+' db bc Qnt Ea '+dbBcQntEa);
+	//application.output(record.material+" "+inBcCount+':'+dbBcCount+' in bc Qnt Ea '+inBcQntEa+' db bc Qnt Ea '+dbBcQntEa);
 	/**
 	 * Actions:  Incoming connections are the TO_BE state, the database is the AS_IS state.  Changes are to the AS_IS state
 	 *   - added as a valuelist stsvl_import_actions
 	 *   - bc incorrect item quants, incorrect max quants, 
 	 * PCMK_CREATE - create new piecemark
-	 * PCMK_DELETE - delete piecemark, code = 99. Code = 11 means unused or placeholder for non-actionable piecemarks, ie summarized records
+	 * DELETE - delete piecemark, code = 99. Code = 11 means unused or placeholder for non-actionable piecemarks, ie summarized records
 	 * BAR_REPRINT - override barcodes that have been printed and redistribute
 	 * BAR_ASSIGN - redo barcodes if the barcode count does not match, ie barcode1=15,bc2=15,bc3=3
 	 * QUANT_ADD - create missing idfiles, and get barcodes, new barcodes if the existing idfiles have a barcode
@@ -3942,6 +4233,9 @@ function importRecordCheckIdfileCount(record,correct,newPiecemark){
 		}
 	}
 	if (!correct){
+		if (record.action == ""){
+			record.action == 'UPDATE';
+		}
 		return bc;
 	}
 	//----------------------------------------------------------------------------------------------------------------
@@ -3949,24 +4243,37 @@ function importRecordCheckIdfileCount(record,correct,newPiecemark){
 	// how many idfiles are there? adjust number of idfiles according to barcode settings
 	// if any idfiles in a barcode are changed, do not change
 	application.output(nums);
+	if (scopes.jobs.appendToData && appendQuantityToIdfile && appendQuantityToIdfile[uniqueIdfileIdFromImp(record)]){ // append incoming quantity if already
+		if (appendQuantityToIdfile[uniqueIdfileIdFromImp(record)]){
+			nums.idfileAdd = nums.idfileAdd + appendQuantityToIdfile[uniqueIdfileIdFromImp(record)]*1;
+			if (scopes.jobs.importAppendAddBarcode){
+				nums.bcAdd = nums.bcAdd + record.barcode_qty*1;
+				nums.inLabelCount = nums.inLabelCount*2;
+			} else {
+				nums.inLabelQntEa = nums.inLabelQntEa*2;
+			}
+		}
+	}
 	var edited = (nums.bcAdd != 0) || (nums.bcDel != 0) || (nums.idfileAdd != 0) || (nums.idfileDel != 0);
 	if (edited){
 		var action = record.action;
 		application.output('actions '+action);
 		var orphanIdfileList = [];
 
-		if (nums.bcAdd > 0){
-			while (nums.bcAdd > 0){  // add barcodes
+		var createNumberBarcodes = nums.bcAdd;
+		if (createNumberBarcodes > 0){
+			while (createNumberBarcodes > 0){  // add barcodes
 				var newBcId = createValidBarcode();
 				nums.bcCodes.push(newBcId);
 				dsBarcodeList[newBcId] = []; // update listing of idfles 
 				nums.bcIdfiles[newBcId] = [];
 				nums.dbIdfiles.push(newBcId);
-				nums.bcAdd--;
+				createNumberBarcodes--;
 			}		
 		}
-		if (nums.bcDel > 0){
-			while (nums.bcDel > 0){ // delete barcodes, keep list of idfiles on each deleted barcode
+		var deleteNumberBarcodes = nums.bcDel;
+		if (deleteNumberBarcodes > 0){
+			while (deleteNumberBarcodes > 0){ // delete barcodes, keep list of idfiles on each deleted barcode
 				var bcCode = nums.bcCodes.pop();
 				barcodesToDelete.push(bcCode);
 				var barIdlist5 = nums.bcIdfiles[bcCode];
@@ -3974,40 +4281,54 @@ function importRecordCheckIdfileCount(record,correct,newPiecemark){
 				for (var index5 = 0;index5 < length5;index5++){
 					orphanIdfileList.push(barIdlist5[index5]);
 				}
-				nums.bcDel--;
+				deleteNumberBarcodes--;
 				nums.bcIdfiles[bcCode] = null; // barcode no longer in use
 			}
 		}
 		if (nums.idfileAdd > 0){  // include orphans first, and then new idfiles to orphan list, not yet allocated to barcode
 			var createNumberIdfiles2 = (orphanIdfileList.length >= nums.idfileAdd) ? 0 : nums.idfileAdd - orphanIdfileList.length;
 			while (createNumberIdfiles2 > 0){
-				//for (index = 0;index < orphanIdfileList.length;index++){
-				//	nums.dbIdfiles.push(orphanIdfileList.pop())
-				//}
-				var newIdfileId = createIdfileRecord(pcmkId,record.sequence_number,'FFFFFFFF-0000-0000-0000-DDDDDDDDDDDD',inItemQty,record.remarks)
-				orphanIdfileList.push(newIdfileId);
+				// get free barcode
+				bcCode = 'FFFFFFFF-0000-0000-0000-DDDDDDDDDDDD';
+				for (index = 0;index < nums.bcCodes.length;index++){
+					var barCode = nums.bcCodes[index];
+					var barIdlist = nums.bcIdfiles[barCode];
+					if (barIdlist.length < nums.inLabelQntEa){
+						bcCode = barCode;
+						break;
+					}
+				}
+				var newIdfileId = createIdfileRecord(pcmkId,(record.piecemark == "")?"":record.sequence_number,record.lot_number,bcCode,inItemQty,record.remarks)
+				//orphanIdfileList.push(newIdfileId);
+				nums.bcIdfiles[barCode].push(newIdfileId);
 				nums.dbIdfiles.push(newIdfileId);
 				createNumberIdfiles2--;
 			}
 		}
 		if (nums.idfileDel > 0){
 			var deleteNumberIdfiles = (orphanIdfileList.length >= nums.idfileDel) ? 0 : nums.idfileDel - orphanIdfileList.length;
-			while (deleteNumberIdfiles > 0){
-				var length7 = nums.bcCodes.length;
-				var index7 = 0;
+			var index7;
+			for (index7 = 0;index7 < nums.bcCodes.length;index7++){
 				var barId7 = nums.bcCodes[index7];
 				var barId7list = nums.bcIdfiles[barId7];
-				var barId7listLength = barId7list.length;
-				if (barId7listLength > nums.inLabelQntEa){
+				while (barId7list.length > nums.inLabelQntEa && deleteNumberIdfiles > 0){ // remove orphans from each barcode to barcode max quant
 					orphanIdfileList.push(barId7list.pop());
-				} else {
-					index7++
+					deleteNumberIdfiles--;
 				}
-				deleteNumberIdfiles--;
+				if (deleteNumberIdfiles == 0){break}
+			}
+			while (deleteNumberIdfiles != 0){
+				barId7 = nums.bcCodes.pop(); // All barcodes are maxed. Pop each barcode and put idfiles onto orphan list
+				barcodesToDelete.push(barId7);
+				barId7list = nums.bcIdfiles[barId7];
+				while (barId7list.length > 0 && deleteNumberIdfiles > 0){ // remove orphans from each barcode to barcode max quant
+					orphanIdfileList.push(barId7list.pop());
+					deleteNumberIdfiles--;
+				}
 			}
 		}
 		// finish out remaining barcodes with orphan idfiles so that the db will match the input file
-		var text = nums.inLabelCount;
+		/** var text = nums.inLabelCount;
 		for (index = 0;index < nums.bcCodes.length;index++){
 			barId = nums.bcCodes[index];
 			barList = nums.bcIdfiles[barId];
@@ -4019,7 +4340,9 @@ function importRecordCheckIdfileCount(record,correct,newPiecemark){
 			}
 			text = text+' '+index+':['+barList.length+'('+nums.inLabelQntEa+')]';
 		}
-		application.output('> > > > > > barcode results: '+text);
+		*/
+		//xx application.output('> > > > > > barcode results: '+text);
+		/**
 		var idfileListing = []; // get list of all idfiles in the barcodes for the pm to update the id_serial_number_id
 		for (index = 0;index < nums.bcCodes.length;index++){
 			barId = nums.bcCodes[index];
@@ -4028,14 +4351,15 @@ function importRecordCheckIdfileCount(record,correct,newPiecemark){
 				idfileListing.push(barList[index2]);
 			}
 		}
-	
-		if (scopes.jobs.createRecordsArray){
-			for (index=0;index < scopes.jobs.createRecordsArray.length;index++){
-				databaseManager.saveData(scopes.jobs.createRecordsArray[index]);
-			}
+		*/
+		/**
+		if (record.action){
+			var loseHist = (record.action.search('LOSE') != -1);
+		} else {
+			loseHist = false;
 		}
 		scopes.jobs.createRecordsArray = [];
-		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		/ * * @type {QBSelect<db:/stsservoy/idfiles>} * /
 		var q = databaseManager.createSelect("db:/stsservoy/idfiles");
 		q.result.add(q.columns.idfile_id);
 		q.result.add(q.columns.id_serial_number_id);
@@ -4053,293 +4377,47 @@ function importRecordCheckIdfileCount(record,correct,newPiecemark){
 				);
 		}
 		var dsIdListForPmDyn2 = databaseManager.getFoundSet(q); //unique to this record by sheet and lot (dbIdfiles)
-		//var updater = databaseManager.getFoundSetUpdater(dsIdListForPmDyn2);
 
-		length = nums.bcCodes.length;
+		var length = nums.bcCodes.length;
 		for (index = 0;index < length;index++){
 			barId = nums.bcCodes[index];
 			barList = nums.bcIdfiles[barId];
-			length2 = barList.length;
+			var length2 = barList.length;
 			for (index2 = 0;index2 < length2;index2++){
 				var barIdfile = barList[index2];
-				var select = dsIdListForPmDyn2.selectRecord(barIdfile);
+				dsIdListForPmDyn2.selectRecord(barIdfile);
 				var idRec = dsIdListForPmDyn2.getSelectedRecord();
+				//xx application.output('idfileID '+barIdfile+' serialId '+barId)
 				idRec.id_serial_number_id = barId;
-				application.output('idfileID '+barIdfile+' serialId '+barId)
 			}
 		}
-		for (index = 0;index < orphanIdfileList.length;index++){
+		*/
+		while (orphanIdfileList.length != 0){
 			idfilesToDelete.push(orphanIdfileList.pop());
 		}
-		//for (var item in countsBCandID){
-		//	application.output(' nums '+item+' : '+countsBCandID[item]);
-		//}
-		//application.output('orphans '+orphanIdfileList);
-	}
-	
-	if (true){return}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//inBcCount; //max barcodes
-	//how many active barcodes
-	//total picemark items
-	//total items per barcode
-	//is idfile printed or overridden
-	// dbIdfiles = []; idfiles for this import line
-	// dbIdfilePrinted = []; which idfile has been printed
-	// selectedBC = current barcode to sync with import data and selections
-	
-	var bcCodes = []; // barcodes for this record
-	var bcDirty = []; // barcode can be changed if not in this list, dirty is printed and perhaps touched by transactions
-	var numberAddBCs = 0;
-	var numberDelBCs = 0;
-	//var bcIds = []; // barcode id for bcCodes and bcIds
-	var idCount = dbIdfiles.length;
-	dbLabelQntEa = 0;
-	for (index = 0;index < idCount;index++){ // get barcodes for this pm idfiles
-		dsIdfiles.rowIndex = dsIdfileList[dbIdfiles[index]];
-		thisBarcodeId = dsIdfiles.id_serial_number_id;
-		if (bcCodes.indexOf(thisBarcodeId) == -1){
-			bcCodes.push(thisBarcodeId);
-			var maxIdCnt = dsBarcodeList[thisBarcodeId].length;
-			if (maxIdCnt > dbLabelQntEa){
-				dbLabelQntEa = maxIdCnt;
-			}
-		}
-		if (dsIdfiles.lprint == 1){
-			if (!bcDirty[thisBarcodeId] == -1){bcDirty[thisBarcodeId] = 1}
-		}
-		//if (bcIds.indexOf(thisBarcodeId) != -1){
-		//	bcIds[index] = thisBarcodeId;
-		//}
-	}
-	if (!record.barcode_qty || record.barcode_qty == "") {return}
-	if (bcCount != 0){
-		/**
-		 * check barcode, if one idfile is printed and not overridden, they all are. 
-		 * check barcode, if one idfile is printed and not lose history, next barcode.
-		 * if no more barcode, then add barcode.
-		 * if barcode full, then next barcode.
-		 * if barcode overfull, then hold idfile in list for barcode not full.
-		 * 
-		 */
-		// if barcodes are overfull and dirty, then skip unless override is set to reprint barcodes
-		// if barcode are overfull and clean, then redistribute
-		// if barcode are 
-		/**
-		 * two groups clean and dirty by barcode
-		 * get smallest barcode for piecemark
-		 * delete idfiles if they are clean or overridden
-		 * add idfiles only to clean barcodes
-		 * 
-		 */
-		
-		application.output('bcs '+bcCodes+' bccodes '+bcCodes.length+' dirty '+bcDirty)
-		var loseHist = record.action.search('LOSE') != -1; 
-		if (diffItemQty < 0){
-			var selBarcode = "";
-			while (diffItemQty < 0){//lose this item qty of idfiles
-				for (index = 0;index < bcCodes.length;index++){
-					if (bcCodes[index] ==""){continue}
-					if (!loseHist && bcDirty[bcCodes[index]]){continue}
-					if (selBarcode == "") {selBarcode = bcCodes[index]}
-					if (dsBarcodeList[selBarcode].length > dsBarcodeList[bcCodes[index]]){
-						selBarcode = bcCodes[index];
-						bcCodes[index] = "";//remove from selectable
-					}
-				}
-				if (selBarcode == ""){application.output('not enough barcodes to delete items.');break}
-				var barList = dsBarcodeList[selBarcode];
-				var length = barList.length;
-				for (index = 0;index < length;index++){
-					if (diffItemQty == 0) {break}
-					idfilesToDelete.push(barList[index]);
-					diffItemQty = diffItemQty + 1;
-				}
-				application.output('diffItemQty '+diffItemQty);
-			}
-		}
-	if (diffItemQty > 0 ) {//add diffItemQty idfiles bcCount = inBcCount - dbBcCount;
-			var selBarcodeId = "";
-			while (diffItemQty > 0){//ADD this item qty of idfiles
-				for (index = 0;index < bcCodes.length;index++){
-					if (bcCodes[index] ==""){continue}
-					if (bcDirty[bcCodes[index]] != null){continue}  // add no new idfiles to existing, dirty codes
-					if (selBarcodeId == "") {selBarcodeId = bcCodes[index]}
-					if (dsBarcodeList[selBarcodeId].length > dsBarcodeList[bcCodes[index]]){
-						selBarcodeId = bcCodes[index];
-						bcCodes[index] = "";//remove from selectable
-					}
-				}
-				if (selBarcodeId == "" || bcCodes.length == 0){
-					selBarcodeId = createValidBarcode();
-					dsBarcodeList[selBarcodeId] = [];
-				}
-				var barList = dsBarcodeList[selBarcodeId];
-				while (barList.length != inLabelQntEa && diffItemQty != 0){
-					// remarks from one of the existing idfiles
-					var newIdfile = createIdfileRecord(pcmkId,record.sequence_number,selBarcodeId,inItemQty,record.remarks);
-					dsIdfileListByPm[pcmkId].push(newIdfile);
-					diffItemQty = diffItemQty - 1;
-					barList.push(newIdfile);
-				}
-				application.output('diffItemQty '+diffItemQty);
-			}
-		}
-
-	}
-	/** ***********************************************************************************************************************
-	 *  balance out the idfiles in each barcode 
-	 *  do not change barcodes which have been printed or have not been marked as redo
-	 *  foreach barcode, check to ensure the idfiles are unprinted, 
-	 *  up to the level of the barcode max qty
-	 *  bcCodes[index] for barcodes this pm, bcDirty[index] for printed barcodes
-	 *  dsBarcodeList[barcodeID] for idfiles list for barcodeID/id_serial_number_id
-	 *  dbIdfiles[index] list of idfiles for this pm, not by barcode
-	 */
-	var redist = record.action.search('BAR_UPDATE') != -1;
-	loseHist = record.action.search('LOSE') != -1;
-		
-	length = bcCodes.length;
-	inItemQty = (record.sequence_quantity == "") ? record.item_quantity : record.sequence_quantity;
-	dbItemQty = (!dsIdfileListByPm[pcmkId]) ? 0 : dsIdfileListByPm[pcmkId].length;
-	inLabelQntEa = record.total_label_qty;
-	inLabelQntEaLast = record.last_bc_qty;  //if (record.last_bc_qty != 0 && index == inBcCount-1){
-	//dbLabelQntEa = 0;
-	var createNumberIdfiles = 0;
-	if (inItemQty-dbItemQty > 0){// table is short this many idfiles, so create 
-		createNumberIdfiles = inItemQty-dbItemQty;
-	}
-	var orphanIdfiles = [];
-
-	while (createNumberIdfiles > 0){
-		var newIdfileId = createIdfileRecord(pcmkId,record.sequence,'FFFFFFFF-0000-0000-0000-DDDDDDDDDDDD',inItemQty,record.remarks)
-		orphanIdfiles.push(newIdfileId);
-		dbIdfiles.push(newIdfileId);
-		createNumberIdfiles = createNumberIdfiles - 1;
 	}
 	/**
-	 * if incoming number of barcodes is less, then delete one barcode and push idfiles onto orphan
-	 * put orphans on each remaining barcode until complete
-	 * if icoming number of barcodes is more, then add barcode
-	 * go through each barcode if more then orphan.  if less then put on orphans
+	 * check barcode, if one idfile is printed and not overridden, they all are. 
+	 * check barcode, if one idfile is printed and not lose history, next barcode.
+	 * if no more barcode, then add barcode.
+	 * if barcode full, then next barcode.
+	 * if barcode overfull, then hold idfile in list for barcode not full.
+	 * if barcodes are overfull and dirty, then skip unless override is set to reprint barcodes
+	 *  if barcode are overfull and clean, then redistribute
+	 *  two groups clean and dirty by barcode
+	 *  get smallest barcode for piecemar
+	 *  delete idfiles if they are clean or overridden
+	 *  add idfiles only to clean barcodes
+	 *  balance out the idfiles in each barcode
+	 *  do not change barcodes which have been printed or have not been marked as redo
+	 *  bcCodes[index] for barcodes this pm, bcDirty[index] for printed barcodes
+	 *  dsBarcodeList[barcodeID] for idfiles list for barcodeID/id_serial_number_id
+	 *   dbIdfiles[index] list of idfiles for this pm, not by barcode
+	 *   if incoming number of barcodes is less, then delete one barcode and push idfiles onto orphan
+	 *   put orphans on each remaining barcode until complete
+	 *   if incoming number of barcodes is more, then add barcode
+	 *   go through each barcode if more then orphan.  if less then put on orphans
 	 */
-	var numberOfBcDiff = bcCodes.length - record.barcode_qty;
-	while (numberOfBcDiff > 0){  // remove barcodes
-		var poppedBarId = bcCodes.pop();
-		var idList = dsBarcodeList[poppedBarId];
-		for (index = 0;index < idList.length;index++){
-			orphanIdfiles.push(idList.pop());
-		}
-		numberOfBcDiff = numberOfBcDiff - 1;
-	}
-	while (numberOfBcDiff < 0){  // add barcodes
-		var newBcId = createValidBarcode();
-		bcCodes.push(newBcId);
-		dsBarcodeList[newBcId] = [];
-		numberOfBcDiff = numberOfBcDiff + 1;
-	}
-	var labelDiff = dbLabelQntEa - inLabelQntEa;
-	length = bcCodes.length;
-	var length2 = bcCodes.length;
-	if (labelDiff > 0){ // remove excess idfiles from barcodeid, idfiles are fine for those that stay,moved idfiles must change
-		for (index = 0; index < length2;index++){
-			var barId = bcCodes[index];
-			if (!redist && bcDirty[barId]){continue} // don't redistribute and dirty continue
-			var barIdList = dsBarcodeList[bcCodes[index]];  // list of idfiles for barcode
-			while (barIdList.length > inLabelQntEa){
-				orphanIdfiles.push(barIdList.pop());  // remove idfile from barcode
-			}
-			while (orphanIdfiles.length > 0 && barIdList.length < inLabelQntEa){
-				barIdList.push(orphanIdfiles.pop());
-			}
-			index++;  // move to next barcode
-		}
-	}
-	if (labelDiff < 0) {
-		index = 0;
-		length2 = bcCodes.length;
-		while (index < length2){
-			var barId = bcCodes[index];
-			if (!redist && bcDirty[barId]){continue} // don't redistribute and dirty continue
-			if (orphanIdfiles.length == 0) {
-				for (index2 = bcCodes.length-1;index2 >= 0;index2--){
-					var srcBarlist = dsBarcodeList[bcCodes[index2]];
-					if (srcBarlist.length > 0){
-						while (srcBarlist.length != 0){
-							orphanIdfiles.push(srcBarlist.pop());
-						}
-					}
-				}
-			}
-			barIdList = dsBarcodeList[bcCodes[index]];  // list of idfiles for barcode
-			while(barIdList.length < inLabelQntEa && orphanIdfiles.length > 0){
-				barIdList.push(orphanIdfiles.pop());
-			}
-			if (barIdList.length == inLabelQntEa){
-				index++; // might not fill entire label with current orphans
-			}
-		}
-	}
-	databaseManager.saveData();
-	// Save new barcodeid to idfiles
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
-	var q = databaseManager.createSelect("db:/stsservoy/idfiles");
-	q.result.add(q.columns.idfile_id);
-	q.result.add(q.columns.id_serial_number_id);
-	q.result.add(q.columns.original_quantity);
-	q.result.add(q.columns.lprint);
-	if (loseHist){
-		q.where.add(q.and
-			 .add(q.columns.idfile_id.isin(dbIdfiles))
-			 .add(q.columns.delete_flag.isNull)
-			 .add(q.columns.lprint.eq(0)));
-	} else {
-		q.where.add(q.and
-			.add(q.columns.idfile_id.isin(dbIdfiles))
-			.add(q.columns.delete_flag.isNull)
-			);
-	}
-	var dsIdListForPmDyn = databaseManager.getFoundSet(q); //unique to this record by sheet and lot (dbIdfiles)
-
-	length2 = bcCodes.length;
-	if (numberOfBcDiff != 0 || labelDiff != 0){
-		for (index = 0;index < length2;index++){
-			barId = bcCodes[index];
-			barIdList = dsBarcodeList[bcCodes[index]];
-			var length3 = barIdList.length;
-			for (var index2 = 0;index2 < length3;index2++){
-				var chgIdfile = barIdList[index2];
-				dsIdListForPmDyn.selectRecord(chgIdfile);
-				var idfileRec = dsIdListForPmDyn.getSelectedRecord();
-				if (!idfileRec){
-					null;
-				}
-				idfileRec.id_serial_number_id = barId;
-			}
-		}
-	}
-	//var qtyBarcodes = record.barcode_qty;
-	//var qtyItemsPcmk = record.sequence_quantity;//sequence quantity
-	//var qtyItemsPcmk = (record.sequence_quantity == "") ? record.item_quantity : record.sequence_quantity;
-	//if (qtyItemsPcmk == ""){qtyItemsPcmk = record.item_quantity}//sequence quantity used first
-	//var codeNums = scopes.jobs.createBCnums(record.barcode_qty,qtyItemsPcmk,record.item_weight);
-	//var qtyPerBarcode = codeNums.per;
-	//var qtyLastIdfile = codeNums.last;
-
-	//var length = dsIdfileArray[uniqueIdfile].length;//now check barcode count for idfiles under this record/piecemark
-
-	//importRecordChangeIdfileCount(record,idDiff);// not enough idfiles for piecemarks, must be equal
-
 }
 /**
  * @properties={typeid:24,uuid:"EEE5479C-487A-463E-B9BE-DE52A4626A9E"}
@@ -4355,7 +4433,7 @@ function importRecordCheckSequence(record){
  *
  * @properties={typeid:24,uuid:"F9DCEE8F-A17D-430C-8866-BA4893E6D268"}
  */
-function importRecordCheckSheets(record){
+function unusedimportRecordCheckSheets(record){
 	if (dsSheetArray["_"+record.sheet_number] == null){
 		createSheet(record.sheet_number);
 	}
@@ -4367,7 +4445,7 @@ function importRecordCheckSheets(record){
  *
  * @properties={typeid:24,uuid:"920D10D5-E973-4BE6-9AF9-A19B50BC621C"}
  */
-function importRecordCheckSheet(record,correct){
+function unusedimportRecordCheckSheet(record,correct){
 	if (record.piecemark == "") {return ""}//no sheetnumber for summarized records
 	var recSheetId = dsSheetArray["_"+record.sheet_number];//match to this sheet_id
 	
@@ -4444,6 +4522,7 @@ function importRecordsCheck(){
 		status = importRecordPiecemarkExist(record,false); // return blank upon success; it's a status
 		if (record.select_hidebool){
 			status = status+",delPM";
+			record.action = "DELETE";
 		}
 		retainFS.import_status += status;
 		//if (status.search('noPM') != -1){
@@ -4452,6 +4531,25 @@ function importRecordsCheck(){
 		}
 		if (retainFS.import_status != ""){
 			retainFS.import_status = utils.stringRight(retainFS.import_status, retainFS.import_status.length-1);
+			//application.output(' idfile entry '+uniqueIdfileIdFromImp(retainFS));
+			if (retainFS.import_status.search('BC') != -1){
+				record.action = "UPDATE";
+			}
+			if (retainFS.import_status.search('QTY') != -1){ // +QTY is implied, since it is a qualifier for the search method, left it out
+				record.action = "CREATE";
+			}
+			if (retainFS.import_status.search('-QTY') != -1){
+				record.action = "DELETE";
+			}
+		}
+		if (forms.kiss_option_import.importOption.search('Append') != - 1 && appendQuantityToIdfile[uniqueIdfileIdFromImp(retainFS)]){
+			var appendQuant = appendQuantityToIdfile[uniqueIdfileIdFromImp(retainFS)];
+			record.action = "CREATE";
+			if (retainFS.import_status == ""){
+				retainFS.import_status = "+APP"+appendQuant;
+			} else {
+				retainFS.import_status = "+APP"+appendQuant+","+retainFS.import_status;
+			}
 		}
 	}
 }
@@ -4459,29 +4557,24 @@ function importRecordsCheck(){
  * @properties={typeid:24,uuid:"7151B6F4-4020-4235-96A4-23D7E120A974"}
  */
 function importRecords_append(){
-	
+	var append = true;
+	importRecords_sheet();
 }
 /**
  * @properties={typeid:24,uuid:"C1F04FD4-C30C-4FDA-8C8F-E2148BD8BE31"}
  */
 function importRecords_overwrite(){
+	importSaveAndStatus('Overwrite - Deleting current job information.')
 	importRecordsDelete();
-	createSequenceNumbers();
-	createSheets();
-	createPiecemarks();
-	createSummedMarks(forms.kiss_option_import.transitionFSsumm);
-	databaseManager.setAutoSave(true);
-	databaseManager.setAutoSave(false);
-	createIdfiles(null);
-	databaseManager.setAutoSave(true);
-	forms.kiss_option_import.clearSheetUpdates(forms.kiss_option_import.sheetsFS);
+	var append = false;
+	importSaveAndStatus('Overwrite - New Data . . .');
+	importRecords_sheet();
 }
 /**
  * @properties={typeid:24,uuid:"011150DC-20FC-44C0-B2EB-09220E02CEE9"}
  * @AllowToRunInFind
  */
 function importRecords_sheet(){
-	//returnhere
 	var jobID = scopes.jobs.jobIDs[0];
 	scopes.jobs.jobUnderCustomer = jobID;
 	insertedBarcodes = []; insertedIdfiles = []; insertedPiecemarks = [];
@@ -4489,35 +4582,45 @@ function importRecords_sheet(){
 	idfilesToDelete = [];
 	//insertedSequences = []; deletedSequences = [];
 	readPieceTables(); // existing records
-	createSequenceNumbers();
 	createSheets();//make sure sheets exist before import
-	//loadCurrentJobsRecords();
-	//if (true){return}
+	importSaveAndStatus('Saving Sheets');
+	createSequenceNumbers();
+	importSaveAndStatus('Saving Sequences');
+	createLotNumbers();
+	importSaveAndStatus('Saving Lots');
+
 	var retainFS = forms.kiss_option_import.transitionFS;
-	/// ** @type {JSFoundSet<db:/stsservoy/piecemarks>} * /
 	var rows = retainFS.getMaxRowIndex();
-	databaseManager.setAutoSave(false);
 	for (var index = 0;index < rows;index++){
+		importSaveAndStatus('Processing piecemarks line '+index);
 		retainFS.rowIndex = index+1;
-		//if (!retainFS.select_hidebool) {continue}
-		retainFS.import_status = "";
+		if (!retainFS.action || retainFS.action == ""){continue}
 		var record = retainFS;
-		//importRecordCheckSheets(record);
-		//importRecordCheckSequence(record);
-		var exists = importRecordPiecemarkExist(record,true);
+		importRecordPiecemarkExist(record,true);
+	}
+	readPiecemarks();
+	for (index = 0;index < rows;index++){
+		importSaveAndStatus('Processing idfiles line '+index);
+		retainFS.rowIndex = index+1;
+		if (!retainFS.action || retainFS.action == ""){continue}
+		retainFS.import_status = "";
+		record = retainFS;
+		exists = importRecordPiecemarkExist(record,true);
 		if (exists) {
 			importRecordCheckIdfileCount(record,true);
 		}
 	}
-	databaseManager.setAutoSave(true);
-	deletePiecemarks();
+	createSummedMarks(forms.kiss_option_import.transitionFSsumm);
+	importSaveAndStatus('Summed file stubs created.');
 	deleteIdfiles(); // delete marked Idfiles, along with transaction and barcodes
+	deletePiecemarks();
 	deleteImportBatch();
 }
 /**
  * @properties={typeid:24,uuid:"9D848588-A588-4F00-8EB2-1E3D9A385777"}
  */
 function importRecordsDelete(){
+	importSaveAndStatus('Begin overwrite of data.');
 	var jobID = scopes.jobs.jobIDs[0];
 	scopes.jobs.jobUnderCustomer = jobID;
 	/*
@@ -4530,11 +4633,17 @@ function importRecordsDelete(){
 	 */
 	readPieceTables(); // existing records
 	deleteLotsJob();
+	importSaveAndStatus('Delete Lots');
 	deleteSequencesJob(jobID);
+	importSaveAndStatus('Delete Sequences');
 	deleteBarcodesJob();
+	importSaveAndStatus('Delete Barcodes');
 	deleteIdfilesJob();
+	importSaveAndStatus('Delete Idfiles');
 	deletePiecemarksJob();
+	importSaveAndStatus('Delete Piecemarks');
 	deleteSheetsJob(jobID);
+	importSaveAndStatus('Delete Sheets');
 }
 /**
  * @properties={typeid:24,uuid:"BCD308C1-D704-4BF1-9B26-6B2402E58C9C"}
@@ -4545,17 +4654,17 @@ function importRecordsAlt(){
 	var win = application.createWindow("STS Message", JSWindow.DIALOG);
 	win.setInitialBounds(10, 10, 460, 110);
 	win.title = "STS Message";
-	//win.show('messagesWarnings');
+	win.show('messagesWarnings');
 	
 	var jobID = scopes.jobs.jobIDs[0];
 	scopes.jobs.jobUnderCustomer = jobID;
-	readPieceTables(); // existing records
+	//readPieceTables(); // existing records
 	barcodePrefix = "";
 	barcodeLast = 0;
 	var timeIn, timeOut;
-	databaseManager.setAutoSave(true);
+	var statusSave = databaseManager.saveData(); //  clean save
 	databaseManager.setAutoSave(false);
-	///////////forms.kiss_option_import.controller.enabled = false;
+	importSaveAndStatus('Start (save:'+statusSave+')'+forms.kiss_option_import.importOption);
 	timeIn = new Date().getTime();
 	if (importOpt.search('Overwrite') != -1) {
 		importRecords_overwrite();
@@ -4566,32 +4675,56 @@ function importRecordsAlt(){
 	} else {
 		return;
 	}
-	///////////forms.kiss_option_import.controller.enabled = true;
 	win.hide();
-	win.destroy();	
-	scopes.globals.stsMessages = "Records imported";application.updateUI();
-	forms.kiss_option_import.controller.enabled = true;
+	win.destroy();
+	importSaveAndStatus('Records imported');
+	//forms.kiss_option_import.controller.enabled = true;
 	saveBarCodeSerial();
-	scopes.globals.stsMessages = "Autosave enabled";application.updateUI();
+	importSaveAndStatus('Save remaining records.');
 	databaseManager.setAutoSave(true);
 	timeOut = new Date().getTime()-timeIn;
+	importSaveAndStatus('Total import time ms '+timeOut);
 	application.output('total import time ms '+timeOut);
 	win.hide();
 	win.destroy();
-	scopes.jobs.importRecordsCheck();
+	//scopes.jobs.importRecordsCheck();
+	forms.kiss_option_import.onHide(null);
 }
-
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param message
+ *
+ * @properties={typeid:24,uuid:"99C38E1E-7B95-45DB-B7D0-6159795027B0"}
+ */
+function importSaveAndStatus(message){
+	timeOut = new Date().getTime();
+	if (timeOut - timeIn < 600){return}
+	scopes.globals.stsMessages = message;
+	application.output(message);
+	application.updateUI();
+	if (createRecordsArray && createRecordsArray.length > 0){
+		timeIn = timeOut;
+		while (createRecordsArray.length != 0){
+			var record = createRecordsArray.pop();
+			//xx  application.output(record);
+			saveStat = databaseManager.saveData(record);
+			if (!saveStat){
+				application.output('not saved '+record);
+			}
+		}
+	}
+}
 /**
  * @properties={typeid:24,uuid:"905EDD6A-24B2-4341-82E2-3000B6D6AD42"}
  * @AllowToRunInFind
  */
-function importRecords(){
+function unusedimportRecords(){
 	var win = application.createWindow("STS Message", JSWindow.DIALOG);
 	win.setInitialBounds(10, 10, 460, 110);
 	win.title = "STS Message";
 	win.show('messagesWarnings');
 	scopes.globals.stsMessages = "Creating piecemark entries.";
-	insertPiecemarks();
+	unusedinsertPiecemarks();
 	var retainFS = forms.kiss_option_import.transitionFS;
 	importJobNumber = forms.kiss_option_import.jobNumber;
 	var length = forms.kiss_option_import.transitionFS.getMaxRowIndex();
@@ -4669,7 +4802,7 @@ function importRecords(){
 			insertCount = itemsPerCode;
 			// last barcode quantity might be less than items per barcode
 			if (index2 == barcodeCount && itemsShorted*1 != 0){insertCount = itemsShorted;}
-			insertIdFile(index,insertCount,piecemarkId,seqID);
+			unusedinsertIdFile(index,insertCount,piecemarkId,seqID);
 		}
 	}
 	/*

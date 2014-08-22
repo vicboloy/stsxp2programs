@@ -11,6 +11,7 @@ var mappedFormatArray = [];
 function fileReceipt(file){
 	if (file == null){return}
 	scopes.jobs.readKissTextFile(file);
+	scopes.jobs.appendQuantityToIdfile = null; // zero out append values array list
 	//establish error-free or dialog with errors, correct column count, mapping, 
 	var headerLine = [];
 	for (var index=0;index<40;index++){
@@ -70,6 +71,7 @@ function fileReceipt(file){
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
 function getKissFile(event){
+	scopes.jobs.appendQuantityToIdfile = null;
 	var success = history.removeForm('kiss_barcode_request');
 	if (success){
 		var success2 = solutionModel.removeForm('kiss_barcode_request');

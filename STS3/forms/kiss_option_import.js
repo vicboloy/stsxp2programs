@@ -1126,8 +1126,12 @@ function applyShapeExcludes(sourceDb,destDb){
 	var major = fieldOrderTempTable['parent_piecemark']+1;
 	var minor = fieldOrderTempTable['piecemark']+1;
 	for (i1 = srcLength; i1 > 0; i1--) {
+		//if (sourceDb.getValue(i1,fieldOrderTempTable['select_hidebool']+1) == 1) {continue}
 		errorMessage = "Exclude record "+i1+" processed.";
-		var minorRecord = (keepMinors == 0) && (sourceDb.getValue(i1,major).toLowerCase() != sourceDb.getValue(i1,minor).toLowerCase());
+		var majorPm = sourceDb.getValue(i1,major);
+		var minorPm = sourceDb.getValue(i1,minor);
+		if (!majorPm){continue}
+		var minorRecord = (keepMinors == 0) && (majorPm.toLowerCase() != minorPm.toLowerCase());
 		var material = sourceDb.getValue(i1, descrip);
 		if (!material){continue}
 		shape = material.split(" ")[0];
@@ -1193,12 +1197,16 @@ function applyResetExclusions(){
 	errorMessage = "Removing summary records.";
 	var majIdex = fieldOrderTempTable['parent_piecemark']+1;
 	var minIdex = fieldOrderTempTable['piecemark']+1;
+	var selectIdex = fieldOrderTempTable['select_hidebool']+1;
 	var length = transitionFS.getMaxRowIndex()
 	for (var i1=length;i1>0;i1--){
 		transitionFS.rowIndex = i1+1;
 		if (transitionFS.getValue(i1,majIdex)=="" && transitionFS.getValue(i1,minIdex)==""){
 			transitionFS.removeRow(i1);
 			errorMessage = "Removing "+i1+" summary records.";
+		}
+		if (transitionFS.getValue(i1,selectIdex)==1){
+			transitionFS.removeRow(i1);
 		}
 	}
 	length = transitionFSsink.getMaxRowIndex();
@@ -1410,11 +1418,10 @@ function listDataset(db){
  * @AllowToRunInFind
  */
 function applyImportPreferences(){
+	//scopes.jobs.warningsYes();
+	//scopes.jobs.warningsMessage('Apply import preferences.');
+	elements.applyButt.enabled = false;
 	var appendToData2 = importOption.search('Append') != -1;
-	//if (scopes.jobs.appendedToData){
-	//	scopes.jobs.importAmendQuantApply(false);
-	//}		
-	//application.output('labels '+scopes.jobs.importLabelCounts);
 	applyResetExclusions();
 	applyShapeExcludes(transitionFS,transitionFSsink);
 	applyShapeSummary(transitionFS,transitionFSsumm);
@@ -1426,21 +1433,19 @@ function applyImportPreferences(){
 	}
 	errorMessage = 'Exclude and summary selections set.'+minors;
 	importRecordCount = transitionFS.getMaxRowIndex();
+	//scopes.jobs.warningsMessage('Import records check.');
 	scopes.jobs.importRecordsCheck();
 	forms.kiss_option_import.impDirty = false;
 	forms.kiss_option_import.elements.importButt.enabled = true;
 	if (importOption.search('Sheet') != -1){
 		if (sheetsFS.getMaxRowIndex() == 0){
-application.output('before create sheetsFS');
-listDataset(sheetsFS);
+			//scopes.jobs.warningsMessage('Begin load existing DB records.');
 			scopes.jobs.loadCurrentJobsRecords();
-listDataset(sheetsFS);
 		}
 		applySheetUpdates(sheetsFS,transitionFS);//add piecemarks from database not in the import file
 	}
-	//if (appendToData2){
-	//	scopes.jobs.importAmendQuantApply(true);
-	//}
+	//scopes.jobs.warningsX();
+	elements.applyButt.enabled = true;
 }
 /**
  * Handle changed data.

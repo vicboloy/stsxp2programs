@@ -71,7 +71,7 @@ function fileReceipt(file){
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
 function getKissFile(event){
-	scopes.jobs.appendQuantityToIdfile = null;
+	scopes.jobs.appendQuantityToIdfile = null; //import append data
 	var success = history.removeForm('kiss_barcode_request');
 	if (success){
 		var success2 = solutionModel.removeForm('kiss_barcode_request');

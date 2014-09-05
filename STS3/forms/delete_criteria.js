@@ -269,6 +269,12 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 			status = false;
 		}
 	}
+	var formName = 'delete_piecemark_info';
+	if (forms[formName]){
+		forms[formName].elements.tabless.removeAllTabs();
+		var success = history.removeForm(formName+"_table");
+		var success2 = solutionModel.removeForm(formName+"_table");
+	}
 	browseInfoEnable();
 	return status;
 }
@@ -363,7 +369,7 @@ function convertPkgToId(itemCSV){
 /**
  * @properties={typeid:24,uuid:"86087C50-E905-4A7C-A726-3DB659540029"}
  */
-function collectCriteria(){
+function collectCriteria(formName){
 	// feeds jobs.viewBTableAlt()
 	var area = arrayToString(vArea);
 	var batch = arrayToString(vBatch);
@@ -400,7 +406,9 @@ function collectCriteria(){
 		sheetnum : sheetNum,
 		sonum : soNum
 	}
-	scopes.jobs.viewBTableToForm(criteria,'delete_piecemark_info');
+	var success = history.removeForm(formName+"_table");
+	var success2 = solutionModel.removeForm(formName+"_table");
+	scopes.jobs.viewBTableToForm(criteria,formName);
 }
 
 /**
@@ -445,6 +453,7 @@ function browseInfoEnable(){
  */
 function onActionClear(event) {
 	var formName = event.getFormName();
+	var formNameTable = formName+'_table';
 	application.output(event);
 	for(var index in forms[formName]){
 		var name = index;
@@ -453,11 +462,18 @@ function onActionClear(event) {
 			if ((typeof forms[formName][index]) == "number"){
 				forms[formName][index] = 0
 			} else {
+				application.output(name+" "+typeof forms[formName][index]);
 				forms[formName][index] = "";
 			}
 		}
 	}
 	jobFound = false;
+//		if (forms.delete_piecemark_info){
+	forms.delete_piecemark_info.elements.tabless.removeAllTabs();
+	var formNameTable = "delete_piecemark_info_table";
+	var success = history.removeForm(formNameTable);
+	var success2 = solutionModel.removeForm(formNameTable);
+//		}
 	browseInfoEnable();
 }
 
@@ -501,8 +517,35 @@ function onGetInformation(event) {
 	vLabIDNums = databaseManager.getDataSetByQuery('stsservoy', queryBarcodes, args , maxReturnedRows)[0][0];
 	vLabTotPieces = databaseManager.getDataSetByQuery('stsservoy', queryIdfiles, args , maxReturnedRows)[0][0];
 	vLabTotalWt = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , maxReturnedRows)[0][0];
+	if (!vLabTotalWt) {vLabTotalWt = 0;}
 	if (vLabTotPieces != 0){
 		elements.buttBrowse.enabled = true;
 	}
+	
+	collectCriteria('delete_piecemark_info');
 }
 
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"3DAECF38-C686-4432-A939-6C97466A4A28"}
+ */
+function onActionDeleteWindow(event) {
+	var height = controller.getWindow().getHeight();
+	var width = controller.getWindow().getWidth();
+	var xOrigin = controller.getWindow().getX();
+	var yOrigin = controller.getWindow().getY();
+	var win = application.createWindow("Job Piecemark Deletion", JSWindow.MODAL_DIALOG);
+	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
+	win.title = "Job Piecemark Deletion";
+
+	win.show(forms.delete_record_actual);
+	return true;
+	//collectCriteria('delete_piecemark_combo');
+	//forms.delete_pcmk_combo.elements.split.
+	//controller.show(win);
+	//return true;
+}

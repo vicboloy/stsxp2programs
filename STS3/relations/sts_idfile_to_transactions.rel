@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/transactions",
+items:[
+{foreignColumnName:"idfile_id",primaryDataProviderID:"scopes.jobs.transactionIdfileId",typeid:23,uuid:"CB7F4EFB-211D-4221-BE22-EE0843810431"}
+],
+joinType:1,
+name:"sts_idfile_to_transactions",
+primaryDataSource:"db:/stsservoy/transactions",
+typeid:22,
+uuid:"B2CADAB5-9D8F-48E1-9FB4-1BEC915D1CA0"

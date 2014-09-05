@@ -229,6 +229,7 @@ var recomputeLabelArray = [];
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	elements.applyButt.enabled = true;
 	var enableDrawing = true;
 	if (scopes.globals.kissJobRf){
 		if ((scopes.globals.kissJobRf.search('FabSuite') != -1) ||
@@ -1421,6 +1422,10 @@ function applyImportPreferences(){
 	//scopes.jobs.warningsYes();
 	//scopes.jobs.warningsMessage('Apply import preferences.');
 	elements.applyButt.enabled = false;
+	elements.importButt.enabled = false;
+	elements.importButt.bgcolor = '#f0f0f0';
+	//application.updateUI();
+	//application.output('color '+elements.importButt.bgcolor);
 	var appendToData2 = importOption.search('Append') != -1;
 	applyResetExclusions();
 	applyShapeExcludes(transitionFS,transitionFSsink);
@@ -1436,7 +1441,6 @@ function applyImportPreferences(){
 	//scopes.jobs.warningsMessage('Import records check.');
 	scopes.jobs.importRecordsCheck();
 	forms.kiss_option_import.impDirty = false;
-	forms.kiss_option_import.elements.importButt.enabled = true;
 	if (importOption.search('Sheet') != -1){
 		if (sheetsFS.getMaxRowIndex() == 0){
 			//scopes.jobs.warningsMessage('Begin load existing DB records.');
@@ -1446,6 +1450,8 @@ function applyImportPreferences(){
 	}
 	//scopes.jobs.warningsX();
 	elements.applyButt.enabled = true;
+	elements.importButt.bgcolor = 'green';
+	elements.importButt.enabled = true;
 }
 /**
  * Handle changed data.
@@ -1475,7 +1481,7 @@ function onDataChange(oldValue, newValue, event) {
 			scopes.jobs.jobUnderCustomer = jobID;
 			scopes.jobs.readPieceTables();	
 		}
-		if (!scopes.jobs.importAmendQuantities()){
+		if (!scopes.jobs.appendQuantityToIdfile){
 			scopes.jobs.importAmendQuantities();
 		}
 	}

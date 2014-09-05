@@ -1,0 +1,37 @@
+dataSource:"db:/stsservoy/idfiles",
+extendsID:"9834A48B-5176-47A6-A205-B3E6D53AE73D",
+items:[
+{
+extendsID:"4928A2BA-2F1E-4951-ADBF-37E8B1BCDD67",
+onActionMethodID:"BE8F0471-C806-499B-8D2E-177695E7B4C8",
+typeid:7,
+uuid:"1C365A36-A63C-444F-BC59-54D601F31861"
+},
+{
+extendsID:"C7E8A24A-0F63-419C-8248-9A6C5B5AB4DE",
+items:[
+{
+containsFormID:"7A915350-5F17-4C63-8F6F-3626CC5B7EC0",
+extendsID:"BBD5F69E-41CF-4A2C-8FB5-82EC9F576C5C",
+location:"116,32",
+text:"ID & Piecemark Info",
+typeid:15,
+uuid:"85F5C311-3734-4052-91DB-0E12909D2687"
+},
+{
+containsFormID:"D42BCB02-00A6-4235-8BEB-2546FF37593E",
+extendsID:"F1556AEC-00F0-4387-8DFD-6033BE3CBB82",
+text:"Piecemark Combo",
+typeid:15,
+uuid:"C502011C-7AB1-4D3C-85AA-B553C38AAF8F"
+}
+],
+typeid:16,
+uuid:"5085C0B2-A140-4035-9C78-BBCEAC22B901"
+}
+],
+name:"delete_record_actual",
+onShowMethodID:"10165E5B-19D4-4AEB-A67A-45FA10277C2B",
+styleName:"sts_one",
+typeid:3,
+uuid:"D2162F00-7EE6-49B7-915C-E84449B98C01"

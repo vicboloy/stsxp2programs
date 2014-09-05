@@ -1,0 +1,14 @@
+dataSource:"db:/stsservoy/idfiles",
+extendsID:"DAE74AF3-27A9-4DF3-8774-098F9824F3C0",
+items:[
+{
+extendsID:"A3D4B7DF-E17B-4B1E-AB13-34DE0FD6E96E",
+typeid:7,
+uuid:"B80F4A2B-B444-4D45-A7F0-6BC8BCE32B00",
+visible:false
+}
+],
+name:"delete_pcmk_over",
+styleName:"sts_one",
+typeid:3,
+uuid:"7A915350-5F17-4C63-8F6F-3626CC5B7EC0"

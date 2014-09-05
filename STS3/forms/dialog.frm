@@ -17,6 +17,7 @@ uuid:"351F9A41-0CDD-46FD-9BC9-EC8A5CC28CF4"
 },
 {
 dataProviderID:"scopes.globals.dialogButtonYes",
+horizontalAlignment:0,
 location:"19,53",
 name:"yes",
 onActionMethodID:"3CE9BBAA-04DA-498B-93E1-371EBCA7861E",
@@ -29,6 +30,7 @@ uuid:"8FD9B859-CE55-4035-A34F-D3394FD2D6FA"
 },
 {
 dataProviderID:"scopes.globals.dialogButtonNo",
+horizontalAlignment:0,
 location:"234,53",
 name:"no",
 onActionMethodID:"08692DE9-A9EE-46FB-BEC0-02207AD52611",

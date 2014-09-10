@@ -908,6 +908,15 @@ function doDialog(winTitle,message,buttonYes,buttonNo){
 	win.show('dialog');
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param s
+ *
+ * @properties={typeid:24,uuid:"8C60BFB7-E653-4F70-BBF2-05337CF0959B"}
+ */
+function capitalize(s){
+    return s.toLowerCase().replace( /\b./g, function(a){ return a.toUpperCase(); } );
+}
+/**
  * @properties={typeid:24,uuid:"0F7CB54B-C3AC-4211-9A81-5E931253B58C"}
  */
 function mainWindowFront(){
@@ -924,7 +933,7 @@ function stopWindowTrack(){
 	globals.setWindowClosed("");
 	var win = application.getActiveWindow();
 	win.hide();
-	return true
+	return true;
 }
 /**
  * Perform the element default action.

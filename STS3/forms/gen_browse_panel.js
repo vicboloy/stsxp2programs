@@ -39,7 +39,7 @@ function onRecordSelection(event) {
 	//var fs = databaseManager.getFoundSetCount('sts_piecemarks');
 	//fs.sts_piecemark.loadRecords();
 	//var fs = rec.piecemark_id.rr;
-	application.output('record select '+rec.id_serial_number);
+	///application.output('record select '+rec.id_serial_number);
 	//application.output('barcode id '+id_serial_number_id);
 	return _super.onRecordSelection(event)
 }

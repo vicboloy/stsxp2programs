@@ -53,7 +53,7 @@ function onActionClearAll(event) {
  *
  * @properties={typeid:24,uuid:"6588863C-C211-45FD-B32C-4FFCA0CA9711"}
  */
-function onActionDeleteSelected(event) {
+function onActionDeleteSelected(event,formName) {
 	globals.doDialog("Delete Selected Records","Delete the Selected Records?","Delete","Cancel");
 	if (globals.dialogResponse != "yes"){
 		application.output('delete cancelled');
@@ -66,7 +66,9 @@ function onActionDeleteSelected(event) {
 		return;
 	}
     application.output('continued with deletion');
-	var formName = event.getFormName();
+    if (formName == null){
+    	var formName = event.getFormName();
+    }
 	var fs = forms[formName+'_table'].foundset;
 	var omitList = [];
 	var i = 1;
@@ -74,7 +76,9 @@ function onActionDeleteSelected(event) {
 		var rec = fs.getRecord(i++);
 		if (rec.selection == 0){continue}
 		var idfileId = rec.idfile_id;
-		scopes.jobs.idfilesToDelete.push(idfileId);
+		if (scopes.jobs.idfilesToDelete.indexOf(idfileId+"") == -1){
+			scopes.jobs.idfilesToDelete.push(idfileId+"");
+		}
 		omitList.push(i-1); //selection is array, which is zero-based, records are one-based
 		//application.output('id '+idfileId+' index '+i);
 	}

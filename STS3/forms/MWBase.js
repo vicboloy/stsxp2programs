@@ -150,6 +150,24 @@ function onActionClickViewLoads(event) {
 function onActionClickDeleteRecords(event) {
 	onActionClickMainButton(event,"Delete Records",'delete_records_tabs',50,50,750,595,false);
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"D5C82166-64DE-47A8-81FA-2D5650D833F4"}
+ */
+function onActionClickRecallDeletes(event) {
+	onActionClickMainButton(event,"Recall Records",'recall_records_tabs',50,50,750,595,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"2741B877-A129-4000-AF67-AABDE93623BF"}
+ */
+function onActionClickRemoveRecords(event) {
+	onActionClickMainButton(event,"Remove Deleted Records",'remove_deletes_tabs',50,50,750,595,false);
+}
 
 /**
  * TODO generated, please specify type and doc for the params
@@ -353,6 +371,14 @@ function focusWindow(){
 	var windowArray = globals.aTrackWindows;
 	/** @type {String} */
 	var windowName = elements.windows.getSelectedElements()[0];
+	//elements.windows.
+	/** UNUSED for (var p in elements.windows){
+		if (typeof elements.windows[p] == "function"){
+			application.output('elements.windows '+p);
+		} else {
+			application.output(p);
+		}
+	}*/
 	if (windowName == null){return}
 	if (windowName == " "){return}
 	if (windowName.search('STS') == 0){return}//cannot bring main to front, so ignore

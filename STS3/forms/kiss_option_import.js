@@ -341,8 +341,8 @@ function onShow(firstShow, event) {
 	}
 	importOption = "Use Sheet Number Matching";
 	scopes.jobs.loadTablePrefs('kiss_option_import');
-	//handle excludes by shape and summaries by piecemark TODO
-	//applyImportPreferences();
+	//handle excludes by shape and summaries by piecemark
+	applyImportPreferences();
 
 }
 /**

@@ -4,7 +4,7 @@ items:[
 anchors:6,
 horizontalAlignment:0,
 location:"428,478",
-onActionMethodID:"F8DA2C40-ECF1-4137-9F4E-1778F13040AE",
+onActionMethodID:"BFCC70F7-A3B1-4B88-AA95-F205E34AACA6",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 tabSeq:-2,
@@ -14,6 +14,7 @@ uuid:"4928A2BA-2F1E-4951-ADBF-37E8B1BCDD67"
 },
 {
 anchors:15,
+formIndex:1,
 items:[
 {
 containsFormID:"BA0661EF-BB47-4EC5-BC28-E4BB464FCB6F",
@@ -49,7 +50,6 @@ uuid:"DA30CFB4-40E3-4E86-9211-82FF5556765C"
 {
 anchors:3,
 borderType:"EmptyBorder,0,0,0,0",
-formIndex:1,
 horizontalAlignment:0,
 imageMediaID:"7DE60661-FA20-4CC8-8F60-48A8518B377F",
 location:"428,3",

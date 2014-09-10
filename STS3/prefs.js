@@ -5,6 +5,12 @@
  */
 var barcodeLength = 10;
 /**
+ * @type {Number}
+ * Default table column width
+ * @properties={typeid:35,uuid:"FBDB080B-6D19-4E26-9EA7-D73608837283",variableType:4}
+ */
+var defaultColumnWidth = 110;
+/**
  * @type {String}
  *
  *

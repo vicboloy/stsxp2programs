@@ -2,7 +2,7 @@ encapsulation:60,
 extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
 items:[
 {
-height:480,
+height:453,
 partType:5,
 typeid:19,
 uuid:"3E4B72F8-63D3-45E6-BB1E-DD1C3351D10D"
@@ -12,7 +12,7 @@ anchors:15,
 location:"5,5",
 name:"split",
 printable:false,
-size:"630,445",
+size:"630,418",
 tabOrientation:-3,
 transparent:true,
 typeid:16,
@@ -21,7 +21,7 @@ uuid:"51191EB6-5514-497E-91CC-7CE8F82CA59E"
 {
 anchors:12,
 horizontalAlignment:0,
-location:"5,455",
+location:"5,428",
 onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

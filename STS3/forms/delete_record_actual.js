@@ -12,14 +12,13 @@ function onActionClose(event) {
 	var form = event.getFormName();
 	
 	var win = application.getActiveWindow();
-	application.output(form+' '+win.getName());
-	win = application.getWindow(win.getName());
-	forms.delete_record_actual.controller.getWindow().hide();
-	//win.hide();
-	win.destroy();
-	var success = history.removeForm('delete_pcmk_combo_table');
-	var success2 = solutionModel.removeForm('delete_pcmk_combo_table');
-	//win.hide();
+	//application.output(form+' '+win.getName());
+	//win = application.getWindow(win.getName());
+	//forms.delete_record_actual.controller.getWindow().hide();
+	//forms[form].elements.tabs.removeAllTabs();
+	win.hide();
+	//win.destroy();
+	//scopes.jobs.removeFormHist('delete_pcmk_combo_table');
 }
 
 /**
@@ -32,8 +31,9 @@ function onActionClose(event) {
  */
 function onShow(firstShow, event) {
 	var formNameTable = 'delete_pcmk_combo_table';
-	var success = history.removeForm(formNameTable);
-	var success2 = solutionModel.removeForm(formNameTable);
+	scopes.jobs.removeFormHist(formNameTable);
+	//var success = history.removeForm(formNameTable);
+	//var success2 = solutionModel.removeForm(formNameTable);
 	forms.delete_criteria.collectCriteria('delete_pcmk_combo');
 	forms.delete_pcmk_combo.elements.split.setRightForm('delete_pcmk_transaction','sts_idfile_to_transactions');
 	var top = forms.delete_pcmk_combo.elements.split.getRightForm().controller.getName();

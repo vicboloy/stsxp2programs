@@ -192,45 +192,6 @@ function onShow(firstShow, event) {
 	application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
 	return _super.onShow(firstShow, event)
 }
-
-/**
- * TODO generated, please specify type and doc for the params
- * @param oldValue
- * @param newValue
- * @param event
- *
- * @properties={typeid:24,uuid:"B413014E-5E28-428A-8BBD-692F6E2A7710"}
- */
-function onDataChangeCustomerNumber(oldValue, newValue, event) {
-	globals.lookupItem = newValue;
-	var fs = sts_customernum_to_name;
-	var status = true;
-	if (fs.getSize() >0){
-		globals.lookupItem2 = newValue;
-		vCustomerName = sts_check_custnum.name;
-		vCustomerID = sts_check_custnum.customer_id;
-		var fs2 = fs.sts_customers_to_jobs;
-		fs2.sort('job_number asc');
-		if (fs2.getSize() >0){
-			scopes.jobs.jobsArray = [];
-			for (var index = 1;index < fs2.getSize();index++){
-				var rec = fs2.getRecord(index);
-				scopes.jobs.jobsArray.push(rec.job_number);
-			}
-		} else {
-			vJobNum = "";
-			vJobName = "No Jobs For This Customer";
-			scopes.jobs.jobUnderCustomer = "";
-		}
-		application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
-		status = true;
-	} else {
-		status = false;
-	}
-	browseInfoEnable();
-	return status;	
-}
-
 /**
  * Handle changed data.
  *
@@ -272,8 +233,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	var formName = 'delete_piecemark_info';
 	if (forms[formName]){
 		forms[formName].elements.tabless.removeAllTabs();
-		var success = history.removeForm(formName+"_table");
-		var success2 = solutionModel.removeForm(formName+"_table");
+		scopes.jobs.removeFormHist(formName+"_table");
 	}
 	browseInfoEnable();
 	return status;
@@ -381,9 +341,9 @@ function collectCriteria(formName){
 	} else {
 		loadAll = arrayToString(vLoadNum);
 	}
-	application.output('vLoadRel '+vLoadRel);
+	//application.output('vLoadRel '+vLoadRel);
 	var loadRel = convertLoadToId(vLoadRel);
-	application.output('loadRel '+loadRel);
+	//application.output('loadRel '+loadRel);
 	var lotNum = convertLotToId(vLotNum);//ticket#7
 	var pkgNum = arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
 	var pcmkRel = arrayToString(vPcmkRel);
@@ -406,8 +366,7 @@ function collectCriteria(formName){
 		sheetnum : sheetNum,
 		sonum : soNum
 	}
-	var success = history.removeForm(formName+"_table");
-	var success2 = solutionModel.removeForm(formName+"_table");
+	scopes.jobs.removeFormHist(formName+"_table");
 	scopes.jobs.viewBTableToForm(criteria,formName);
 }
 
@@ -451,10 +410,14 @@ function browseInfoEnable(){
  * @properties={typeid:24,uuid:"24AD80C5-DC06-4258-9587-54CFAAF778EE"}
  * @AllowToRunInFind
  */
-function onActionClear(event) {
-	var formName = event.getFormName();
-	var formNameTable = formName+'_table';
-	application.output(event);
+function onActionClear(event,formName) {
+	if (formName == null){
+		var formName = event.getFormName();
+	}
+	var formPrefix = event.getFormName().split("_")[0];
+	var formNameTable = formPrefix+'_piecemark_info_table';
+	var formName = formPrefix+"_criteria";
+	//application.output(event);
 	for(var index in forms[formName]){
 		var name = index;
 		if (name == 'validate'){continue}
@@ -462,70 +425,16 @@ function onActionClear(event) {
 			if ((typeof forms[formName][index]) == "number"){
 				forms[formName][index] = 0
 			} else {
-				application.output(name+" "+typeof forms[formName][index]);
+				//application.output(name+" "+typeof forms[formName][index]);
 				forms[formName][index] = "";
 			}
 		}
 	}
 	jobFound = false;
-//		if (forms.delete_piecemark_info){
 	forms.delete_piecemark_info.elements.tabless.removeAllTabs();
-	var formNameTable = "delete_piecemark_info_table";
-	var success = history.removeForm(formNameTable);
-	var success2 = solutionModel.removeForm(formNameTable);
-//		}
+	scopes.jobs.removeFormHist(formNameTable);
 	browseInfoEnable();
 }
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"E00DC544-46CE-4685-BC78-596AB741318A"}
- */
-function onGetInformation(event) {
-	if (!jobFound) {return}
-	//scopes.jobs.loadCountsJobId = job_id;
-	var queryWeight =  'select sum(item_weight*item_quantity) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '
-		+ ' and sheets.delete_flag IS NULL'
-		+ ' and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL and piecemarks.piecemark = piecemarks.parent_piecemark '
-		+ ' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL'
-	var queryIdfiles =  'select count(*) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id \
-		and sheets.delete_flag IS NULL \
-		and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL \
-		inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL \
-		inner join sequences on idfiles.sequence_id = sequences.sequence_id and sequences.delete_flag IS NULL';
-	queryIdfiles =  'select count(*) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '+
-	' and sheets.job_id = ? AND sheets.tenant_uuid = ? AND sheets.delete_flag IS null '+
-	' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id AND idfiles.delete_flag IS null '+
-	' inner join sequences on sequences.sequence_id = idfiles.sequence_id inner join '+
-	' id_serial_numbers on id_serial_numbers.id_serial_number_id = idfiles.id_serial_number_id ';
-	var queryBarcodes = 'select count (distinct id_serial_number) id_serial_number from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id \
-		and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL \
-		inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL \
-		inner join id_serial_numbers on id_serial_numbers.id_serial_number_id = idfiles.id_serial_number_id';
-	var queryPiecemarks = 'SELECT count(*) FROM piecemarks INNER JOIN sheets ON piecemarks.sheet_id = sheets.sheet_id ' + 
-		' AND sheets.delete_flag IS NULL ' + 
-		' AND sheets.job_id = ? AND sheets.tenant_uuid = ? AND piecemarks.delete_flag IS NULL';
-	var maxReturnedRows = -1;
-	var args = [];
-	args.push(vJobID.toString());
-	args.push(globals.secCurrentTenantID);
-	//var args = [job_id,globals.secCurrentTenantID];
-	vLabNumPcmks = databaseManager.getDataSetByQuery('stsservoy', queryPiecemarks, args , maxReturnedRows)[0][0];
-	vLabIDNums = databaseManager.getDataSetByQuery('stsservoy', queryBarcodes, args , maxReturnedRows)[0][0];
-	vLabTotPieces = databaseManager.getDataSetByQuery('stsservoy', queryIdfiles, args , maxReturnedRows)[0][0];
-	vLabTotalWt = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , maxReturnedRows)[0][0];
-	if (!vLabTotalWt) {vLabTotalWt = 0;}
-	if (vLabTotPieces != 0){
-		elements.buttBrowse.enabled = true;
-	}
-	
-	collectCriteria('delete_piecemark_info');
-}
-
-
 /**
  * Perform the element default action.
  *
@@ -543,7 +452,8 @@ function onActionDeleteWindow(event) {
 	win.title = "Job Piecemark Deletion";
 
 	win.show(forms.delete_record_actual);
-	return true;
+	scopes.jobs.removeFormHist('delete_pcmk_combo_table');
+	//return true;
 	//collectCriteria('delete_piecemark_combo');
 	//forms.delete_pcmk_combo.elements.split.
 	//controller.show(win);

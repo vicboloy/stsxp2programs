@@ -1,6 +1,6 @@
 /**
 * @type abcPrinterList {Array} Array containing units of measure
- *
+ * small change
  * @properties={typeid:35,uuid:"4E21A316-7E58-4E95-86A4-2D8FAEEDF8F3",variableType:-4}
  */
 var abcPrinterList = new Array;
@@ -341,19 +341,21 @@ var weightPerID = scopes.prefs.wtPrompt;
  * GUI and import update times tracker
  * @type Number}
  *
- * @properties={typeid:35,uuid:"F1112A52-5ED2-4A77-94D4-17C6431A088C",variableType:-4}
+ * @properties={typeid:35,uuid:"7294EC86-7843-44FF-AABE-1DA2FDDD2BB5",variableType:-4}
  */
 var timeIn;
 /**
+ * GUI and import update times tracker
  * @type {String}
  *
- * @properties={typeid:35,uuid:"87D514EE-75E9-4545-B3CE-8A04C8B00D20"}
+ * @properties={typeid:35,uuid:"0D715106-7CBF-490F-8DB0-81FEB8C2C09C"}
  */
 var timeOut;
 /**
+ * GUI and import update times tracker
  * @type {String}
  *
- * @properties={typeid:35,uuid:"24FE59E6-7420-463B-AE3D-FAAE8D7EB8C2"}
+ * @properties={typeid:35,uuid:"EAE8F0AA-FA7F-4071-9E34-A72436E8CB9F"}
  */
 var timeUpdate;
 /**

@@ -11,7 +11,6 @@ abcPrinterList.push("Pinnacle");
 abcPrinterList.push("Prodigy Plus");
 abcPrinterList.push("TEC B-400");
 abcPrinterList.push("Zebra");
-
 /**
  * @type aLabelType {Array} aLabelType Array containing units of measure
 *
@@ -342,9 +341,21 @@ var weightPerID = scopes.prefs.wtPrompt;
  * GUI and import update times tracker
  * @type Number}
  *
- * @properties={typeid:35,uuid:"6F03CC6D-F86B-4589-8A94-9CB27AC33E8C",variableType:-4}
+ * @properties={typeid:35,uuid:"F1112A52-5ED2-4A77-94D4-17C6431A088C",variableType:-4}
  */
-var timeIn,timeOut,timeUpdate;
+var timeIn;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"87D514EE-75E9-4545-B3CE-8A04C8B00D20"}
+ */
+var timeOut;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"24FE59E6-7420-463B-AE3D-FAAE8D7EB8C2"}
+ */
+var timeUpdate;
 /**
  * @properties={typeid:35,uuid:"56431830-8634-4400-8776-5593CA0F6B6C",variableType:-4}
  */

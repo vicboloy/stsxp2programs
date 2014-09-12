@@ -367,6 +367,7 @@ function collectCriteria(formName){
 		sonum : soNum
 	}
 	scopes.jobs.removeFormHist(formName+"_table");
+	scopes.jobs.browseJobID = vJobID;
 	scopes.jobs.viewBTableToForm(criteria,formName);
 }
 

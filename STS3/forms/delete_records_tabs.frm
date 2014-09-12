@@ -14,7 +14,6 @@ uuid:"4928A2BA-2F1E-4951-ADBF-37E8B1BCDD67"
 },
 {
 anchors:15,
-formIndex:1,
 items:[
 {
 containsFormID:"BA0661EF-BB47-4EC5-BC28-E4BB464FCB6F",
@@ -50,6 +49,7 @@ uuid:"DA30CFB4-40E3-4E86-9211-82FF5556765C"
 {
 anchors:3,
 borderType:"EmptyBorder,0,0,0,0",
+formIndex:1,
 horizontalAlignment:0,
 imageMediaID:"7DE60661-FA20-4CC8-8F60-48A8518B377F",
 location:"428,3",

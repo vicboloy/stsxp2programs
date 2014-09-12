@@ -56,16 +56,16 @@ function onActionClearAll(event) {
 function onActionDeleteSelected(event,formName) {
 	globals.doDialog("Delete Selected Records","Delete the Selected Records?","Delete","Cancel");
 	if (globals.dialogResponse != "yes"){
-		application.output('delete cancelled');
+		//application.output('delete cancelled');
 		return;
 	}
-	application.output('ask second question');
+	//application.output('ask second question');
 	globals.doDialog("Delete Selected Records","This is a permanent delete. Continue with deletion?","Cancel","Delete");
 	if (globals.dialogResponse == "yes"){
-		application.output('delete aborted');
+		//application.output('delete aborted');
 		return;
 	}
-    application.output('continued with deletion');
+    //application.output('continued with deletion');
     if (formName == null){
     	var formName = event.getFormName();
     }
@@ -106,7 +106,7 @@ function onActionSceenToggle(event) {
 		scopes.prefs.screenWidth = 0;
 		scopes.prefs.screenHeight = 0;
 	}
-	var window = controller.getWindow();
+	var window = application.getActiveWindow();
 	if (scopes.prefs.screenFull == false){
 		scopes.prefs.screenHeight = window.getHeight();
 		scopes.prefs.screenWidth = window.getWidth();

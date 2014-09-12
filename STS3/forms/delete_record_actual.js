@@ -30,15 +30,19 @@ function onActionClose(event) {
  * @properties={typeid:24,uuid:"10165E5B-19D4-4AEB-A67A-45FA10277C2B"}
  */
 function onShow(firstShow, event) {
-	var formNameTable = 'delete_pcmk_combo_table';
+	var formPrefix = event.getFormName().split("_")[0];
+	var formNameTable = formPrefix+'_pcmk_combo_table';
+	var formCombo = formPrefix+'_pcmk_combo';
+	var formOverview = formPrefix+'_pcmk_over';
+	var formCriteria = formPrefix+'_criteria';
 	scopes.jobs.removeFormHist(formNameTable);
 	//var success = history.removeForm(formNameTable);
 	//var success2 = solutionModel.removeForm(formNameTable);
-	forms.delete_criteria.collectCriteria('delete_pcmk_combo');
-	forms.delete_pcmk_combo.elements.split.setRightForm('delete_pcmk_transaction','sts_idfile_to_transactions');
-	var top = forms.delete_pcmk_combo.elements.split.getRightForm().controller.getName();
-	var bot = forms.delete_pcmk_combo.elements.split.getLeftForm().controller.getName();
-	forms.delete_pcmk_over.elements.tabless.addTab(formNameTable);
+	forms[formCriteria].collectCriteria(formCombo);
+	forms[formCombo].elements.split.setRightForm(formPrefix+'_pcmk_transaction','sts_idfile_to_transactions');
+	var top = forms[formCombo].elements.split.getRightForm().controller.getName();
+	var bot = forms[formCombo].elements.split.getLeftForm().controller.getName();
+	forms[formOverview].elements.tabless.addTab(formNameTable);
 	scopes.jobs.loadTablePrefs(top);
 	scopes.jobs.loadTablePrefs(bot);
 }

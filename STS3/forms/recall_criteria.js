@@ -167,6 +167,7 @@ var jobFound = false;
  * @properties={typeid:24,uuid:"4A4879B5-5968-4331-9C3D-B08C19E4437E"}
  */
 function onDataChangeJobNumber(oldValue, newValue, event) {
+	var action = event.getFormName().split("_")[0];
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var fs = sts_jobs.duplicateFoundSet();
 	fs.loadAllRecords();
@@ -217,4 +218,5 @@ function onActionDeleteWindow(event) {
 	win.title = "Job Piecemark Recall";
 
 	win.show(forms.recall_record_actual);
-	scopes.jobs.removeFormHist('recall_pcmk_combo_table');}
+	scopes.jobs.removeFormHist('recall_pcmk_combo_table');
+}

@@ -826,6 +826,7 @@ var tempArray = [];
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
+	application.output('okay, here');
 	databaseManager.nullColumnValidatorEnabled = false;
 	var success = false;
 	current_db = "stsservoy";
@@ -854,7 +855,7 @@ function onSolutionOpen() {
 	application.output('assoc master '+secCurrentAssociationMasterID+' assoc '+secCurrentAssociationID+' tenant '+secCurrentTenantID);
 	var tenantID = sec_current_user.tenant_uuid;
 	secCurrentTenantIDs = secGetTenantIDs(secCurrentAssociationMasterID);
-	//secSetCurrentTenant(tenantID);
+	secSetCurrentTenant(tenantID);
 	getTablesFilters(tenantID);
 	var appType = application.getApplicationType();
 	//application.output(appType+"app type"); //2 is smart client

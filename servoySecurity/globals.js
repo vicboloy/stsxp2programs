@@ -527,6 +527,7 @@ function secDeleteUser(userID){
  * @properties={typeid:24,uuid:"560E2591-06E2-4976-9A4A-BD25FDF2E2E6"}
  */
 function secInitialStart(){
+	application.output('initial start');
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var users = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USERS);
 	users.loadAllRecords();
@@ -535,6 +536,11 @@ function secInitialStart(){
 	var tenants = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_TENANTS);
 	tenants.loadAllRecords();
 	var tenantCount = tenants.getSize();
+	application.output('tenant count '+tenantCount);
+	if (tenantCount < 2){
+		forms.secLoginExample.companyName.visible = false;
+		forms.secLoginExample.companyNameLabel.visible = false;
+	}
 	/** @type {JSFoundSet<db:/stsservoy/associations>} */
 	var associations = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_ASSOCIATIONS);
 	associations.loadAllRecords();
@@ -832,7 +838,15 @@ function secGetUserID2(userName, tenantID) {
 	}
 	return null;														//	could not get user
 }
-
+/**
+ * @properties={typeid:24,uuid:"E5A874B4-5284-482B-AE8C-9A7B8CBAA168"}
+ */
+function getTenantCount(){
+	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
+	var fs = databaseManager.getFoundSet('stsservoy','tenant_list');
+	fs.loadAllRecords();
+	return fs.getSize() > 1;
+}
 /**
  * @AllowToRunInFind
  * 
@@ -935,8 +949,19 @@ function secGetTenantID(companyName){
  *
  * @properties={typeid:24,uuid:"34672C20-8C8D-487B-8B7E-E4B24B08847B"}
  */
-function secGetTenantID2(userName){
-	var companyName = "";
+function secGetTenantID2(userName,companyName){
+	null;
+	var tenantID = null;
+	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
+	var company = databaseManager.getFoundSet('stsservoy','tenant_list');
+	if (company.find()){
+		company.company_name = companyName;
+		if (company.search()){
+			tenantID = company.tenant_uuid;
+		} else {
+			return false;
+		}
+	}
 	/** @type {JSFoundSet<db:/stsservoy/users>} */																	
 	var users;														//	the tenants foundset
 	if(!userName){													//	validate input...	
@@ -944,19 +969,34 @@ function secGetTenantID2(userName){
 	}
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);//	get a tenant foundset
 	//users.loadRecords();
-	application.output('Users '+users);
 	if(users.find()){													//	search the tenant foundset...
 		users.user_name = userName;								//	search by tenant name	
+		if (companyName != ""){
+			users.tenant_uuid = tenantID;
+		}
 		var count = users.search();
+		application.output('Users '+count);
 		if(count){
 			if (count > 1){
 				if (!companyName){
-					application.output(count+' users named '+userName);
+					application.output(count+' users namedx '+userName);
 					return null; 
 				}
-				globals.secTenantArray = globals.secGetTenantIDs(assocID);
+				/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
+				var tenants = databaseManager.getFoundSet('stsservoy','tenant_list');
+				if (tenants.find()){
+					tenants.company_name = companyName;
+					if (tenants.search() == 1){
+						var rec = tenants.getRecord(1);
+						return rec.tenant_uuid;
+					}
+				} else {
+					return null;
+				}
+				//globals.secTenantArray = globals.secGetTenantIDs(assocID);
+			} else {
+				return users.tenant_uuid;									//	return the ID
 			}
-			return users.tenant_uuid;									//	return the ID
 		}
 	}
 	return null;														//	could not find tenant
@@ -1030,11 +1070,11 @@ function secGetAssociationID(assocName){
 	if(!assocName){													//	validate input...	
 		return null;													//	must provide a copmany name
 	}
-	if (assocName.lastIndexOf("-") == -1){
-		compareTo = null
-	} else {
+	//if (assocName.lastIndexOf("-") == -1){
+	//	compareTo = null
+	//} else {
 		compareTo = secCurrentTenantID;
-	}
+	//}
 	associations = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);//	get an association foundset
 	if(associations.find()){													//	search the association foundset...
 		if (compareTo == null){

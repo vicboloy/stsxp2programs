@@ -58,7 +58,7 @@ function onActionUpdateGroup(event) {
  * @properties={typeid:24,uuid:"AAA6E7E0-FD63-4AC4-BB01-645B730ED523"}
  */
 function onLoad(event) {
-	elements.split.dividerLocation = 190.0;
+	//elements.split.dividerLocation = 190.0;
 }
 
 /**

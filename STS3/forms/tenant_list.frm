@@ -8,7 +8,8 @@ location:"126,0",
 size:"29,22",
 transparent:true,
 typeid:7,
-uuid:"012E0C5B-7E23-40A8-8BB8-780A2209546E"
+uuid:"012E0C5B-7E23-40A8-8BB8-780A2209546E",
+visible:false
 },
 {
 anchors:11,
@@ -40,7 +41,8 @@ tabSeq:-2,
 text:"X",
 typeid:7,
 uuid:"81A1AC63-5793-4115-9733-F64B1A5AC79E",
-verticalAlignment:0
+verticalAlignment:0,
+visible:false
 },
 {
 anchors:11,

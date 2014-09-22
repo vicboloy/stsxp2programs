@@ -9,6 +9,7 @@ uuid:"0B627A33-952D-4107-80C4-A75FE9CFA861"
 },
 {
 location:"15,214",
+name:"ButtonSTSLogonManagement",
 onActionMethodID:"0BD62770-5A9E-45E0-85B0-3DB856E01950",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -32,6 +33,7 @@ uuid:"269447BA-E929-44DB-AF22-1BE7D0D5B522"
 },
 {
 location:"15,146",
+name:"ButtonDivisionAndDepartmentManagement",
 onActionMethodID:"3CD18375-D0A0-466D-A181-6D585BEE8E70",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -55,6 +57,7 @@ uuid:"87190193-57A8-4EA2-8CD9-A33B4B4D2CDC"
 },
 {
 location:"15,180",
+name:"ButtonApplicationPermissions",
 onActionMethodID:"5426D223-B48C-4FF8-B12D-AAE9F4FDD1FA",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

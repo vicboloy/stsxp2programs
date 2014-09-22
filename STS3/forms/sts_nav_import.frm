@@ -132,6 +132,7 @@ uuid:"4E006D5F-074E-42F0-9D68-8C9440523320"
 {
 horizontalAlignment:2,
 location:"28,23",
+name:"ButtonIdentifyMapping",
 onActionMethodID:"23EBA98D-FA40-4997-9BC9-730473CF4B54",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -216,6 +217,7 @@ uuid:"68F83A59-1737-417D-8714-D915D74E8349"
 formIndex:9,
 horizontalAlignment:2,
 location:"45,216",
+name:"ButtonKISSImport",
 onActionMethodID:"B8CDDC2F-291F-4E1D-A46D-C1A9BF684248",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

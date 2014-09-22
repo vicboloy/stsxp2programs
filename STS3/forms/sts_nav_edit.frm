@@ -32,7 +32,7 @@ uuid:"18377E63-6F79-496D-973B-D5DE234187D1"
 {
 formIndex:3,
 location:"5,38",
-name:"jobs",
+name:"ButtonEditJobInformation",
 onActionMethodID:"CE4DD060-E710-49BA-9DAB-0760EE82DF4B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -44,7 +44,7 @@ uuid:"18A7B569-C824-40A4-A430-7573A154F097"
 {
 location:"246,188",
 mediaOptions:14,
-name:"endconditions",
+name:"ButtonEditEndConditions",
 onActionMethodID:"994929DE-14ED-4426-A743-D0A7169117EA",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -71,7 +71,7 @@ uuid:"1A7B2E9F-71CE-4B6F-B709-EC9C8923584F"
 {
 formIndex:8,
 location:"473,369",
-name:"preferences",
+name:"ButtonPreferences",
 onActionMethodID:"CCC7C093-1A7B-4EC7-A8E7-1E0A2B0DC5ED",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -115,6 +115,7 @@ uuid:"35F2CAFE-7E5E-4790-B355-B36C64F51824"
 {
 formIndex:11,
 location:"473,288",
+name:"ButtonRemoveDeletedRecords",
 onActionMethodID:"2741B877-A129-4000-AF67-AABDE93623BF",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -140,7 +141,7 @@ uuid:"47C6E8A5-446A-4788-A4E2-6B905CC13510"
 {
 location:"246,64",
 mediaOptions:14,
-name:"uomcodes",
+name:"ButtonUnitsOfMeasuresCodes",
 onActionMethodID:"BFF5857C-588C-4703-B859-CF9A5A1BF8B9",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -181,7 +182,7 @@ uuid:"660D7AF9-A8AA-40B5-B987-EC99A8F366D9"
 {
 location:"246,126",
 mediaOptions:14,
-name:"routingcodes",
+name:"ButtonEditRoutingCodes",
 onActionMethodID:"F0E82BB1-3030-4DD4-973C-75E91FBA179A",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -222,7 +223,7 @@ uuid:"6CCB0F02-E901-4F9B-BD61-BDF700D0C543"
 {
 formIndex:6,
 location:"10,374",
-name:"carriers",
+name:"ButtonEditCarrierInformation",
 onActionMethodID:"AE5DFB87-E846-4DFB-9C25-E57140EC29C3",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -234,6 +235,7 @@ uuid:"771F1DC0-32BB-47FF-92E9-9590902E6914"
 {
 formIndex:10,
 location:"473,26",
+name:"ButtonActiveRecordDeletes",
 onActionMethodID:"07737279-0F0A-4070-AB7F-0641608439AF",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -287,6 +289,7 @@ uuid:"8912581C-E11D-4BB3-A93B-A137B6702569"
 {
 location:"10,430",
 mediaOptions:14,
+name:"ButtonEditEmployeeClassInfo",
 onActionMethodID:"C61C110C-151B-4C9D-B0AB-FA32D9401D16",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -299,7 +302,7 @@ uuid:"8CA2DAC9-DF42-4D35-BF89-95D61D0C5ECD"
 {
 formIndex:7,
 location:"10,402",
-name:"employees",
+name:"ButtonEditEmployeeInformation",
 onActionMethodID:"B0C80879-16DA-4098-8801-18C1D7F24E96",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -311,7 +314,7 @@ uuid:"93017A64-48AA-4C8F-8639-C888A23CCDB5"
 {
 location:"246,33",
 mediaOptions:14,
-name:"uomcodesc",
+name:"ButtonEditCategoryCodes",
 onActionMethodID:"9BFE2D4E-D359-4CAD-A84F-F94DC119456F",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -348,7 +351,7 @@ uuid:"96176829-8987-457F-9954-CFE7F5BB56DE"
 {
 formIndex:5,
 location:"10,346",
-name:"customers",
+name:"ButtonEditCustomerInformation",
 onActionMethodID:"027567CC-C0C7-43F6-8F87-7A8878ED6B55",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -374,7 +377,7 @@ uuid:"9995F820-0729-48E8-B64B-19C785133D0D"
 {
 location:"473,397",
 mediaOptions:14,
-name:"usermanagement",
+name:"ButtonUserManagement",
 onActionMethodID:"62683739-AB1C-4C81-9DD8-C03DD2959842",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -449,7 +452,7 @@ uuid:"B56756D6-9D51-4761-9036-5D38B6F94C41"
 {
 location:"246,95",
 mediaOptions:14,
-name:"statuscodes",
+name:"ButtonEditStatusCodes",
 onActionMethodID:"B5B3AFA8-95D7-49CD-AB3E-256306625504",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -490,6 +493,7 @@ uuid:"C0DBD936-C0E1-4A83-8D1E-C5B06AC7C07A"
 {
 formIndex:12,
 location:"473,56",
+name:"ButtonRecallDeletedRecords",
 onActionMethodID:"D5C82166-64DE-47A8-81FA-2D5650D833F4",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

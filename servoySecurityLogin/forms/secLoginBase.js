@@ -14,6 +14,12 @@ var AUTH_METHOD_GET_TENANT_ID = 'secGetTenantID2';
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"8F6F53A1-8F7C-409F-A4E7-CDFB705F13E9"}
+ */
+var AUTH_GET_TENANT_COUNT = 'getTenantCount';
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"DF880749-5DB3-4618-81D6-FC42EF550249"}
  */
 var AUTH_METHOD_GET_ASSOC_ID = 'secGetAssocID';
@@ -72,13 +78,13 @@ var userName = null;
 function login(){
 
 	var tenantID, userID;
-	errorMessage = null;
-	if(companyName == "NEW"){
+	//errorMessage = null;
+	/*if(companyName == "NEW"){
 		security.authenticate('createNewRecord','secInitialStart',[])
 		errorMessage = 'New company record created. User:'+companyName+' Password: password';
 		companyName = "";
 		return false;
-	}
+	}*/
 	/*
 	if(!companyName){
 		errorMessage = 'Please specify a company name';
@@ -94,26 +100,29 @@ function login(){
 		return false;
 	}
 	application.output('before tenantid');
-	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[userName]);
+	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[userName,companyName]);
 	application.output('after tenantid'+tenantID+' ID ');
-	application.output('tenant id again');
-	if (tenantID){application.output('if')}
 	if(tenantID){
-		application.output('inside tenantID');
+		//application.output('inside tenantID');
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
 		application.output('user ID '+userID+' tenantID '+tenantID);
 		if(userID){
-			application.output('passCheck '+userID+' '+password);
+			//application.output('passCheck '+userID+' '+password);
 			var passCheck = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_PASSWORD,[userID, password]);
 			if (!passCheck && (password == tenantID)){passCheck = true}//TODO REMOVE
-			application.output('passcheck '+passCheck+' '+password+' '+tenantID);
+			//application.output('passcheck '+passCheck+' '+password+' '+tenantID);
 			if(passCheck && security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 				return true;
 			}
 		}
 	}
-	application.output('user id '+userID);
-	errorMessage = 'Login Failed';
+	//application.output('user id '+userID);
+	var message = "Login Failed";
+	//application.output('message '+message+' text '+errorMessage+'xx');
+	if (errorMessage == message){
+		message = message +"!";
+	}
+	errorMessage = message;
 	return null;
 }
 
@@ -125,5 +134,10 @@ function login(){
  * @properties={typeid:24,uuid:"A3E09D87-2EED-4CA4-8E02-C5014E5AA356"}
  */
 function onLoad(event) {
-	application.JSWindow.title = "STS Login";
+	var win = application.getActiveWindow();
+	win.title = "STS Loginx";
+	var showCompany = security.authenticate(AUTH_SOLUTION,AUTH_GET_TENANT_COUNT,[]);
+	application.output('company count '+showCompany);
+	elements.companyName.visible = showCompany;
+	elements.companyNameLabel.visible = showCompany;
 }

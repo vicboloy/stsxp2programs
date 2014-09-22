@@ -14,3 +14,21 @@ function assocListRecord(index){
 function assocListCount(){
 	return foundset.getSize();
 }
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ * @param {Number} location
+ * @param {Boolean} changeSelection
+ *
+ * @properties={typeid:24,uuid:"5FA94E54-432C-481E-B00B-77F8A66C8A97"}
+ */
+function newRecord(event, location, changeSelection) {
+	/** @type {JSFoundset<db:/stsservoy/tenant_list} */
+	var newRec = _super.newRecord(event, location, changeSelection);
+	//newRec.tenant_group_uuid = globals.secCurrentAssociationMasterID;
+	newRec.delete_flag = 0;
+	newRec.edit_date = new Date();
+	return newRec;
+	//return _super.newRecord(event, location, changeSelection)
+}

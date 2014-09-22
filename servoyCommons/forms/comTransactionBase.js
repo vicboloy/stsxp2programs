@@ -158,6 +158,12 @@ function lastRecord(event) {
  * @properties={typeid:24,uuid:"23DF4B40-3BF9-4277-A9FB-EEDA7CBCD90C"}
  */
 function deleteRecord(event, index, stopEdit) {
+	globals.doDialog("Delete Selected Record","This is a permanent delete. Continue with deletion?","Cancel","Delete");
+	if (globals.dialogResponse == "yes"){
+		//application.output('delete aborted');
+		return;
+	}
+
 	if(_super.deleteRecord(event, index)){									//	pass control to super for delete
 		if(!(stopEdit instanceof Boolean)||stopEdit)						//	default to close transaction if not specified
 			stopEditing(event);												//	close in-mem transaction

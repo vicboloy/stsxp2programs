@@ -25,12 +25,12 @@ function onDataChangeAssociationName(oldValue, newValue, event) {
 function validateAssociationName(oldValue){
 	errorMessage = null;													//	reset the error message
 	if(!association_name){														//	company name must be non-null;
-		errorMessage = 'Please provide a new group name'						//	TODO: i18n HERE
+		errorMessage = 'Please provide a new Division name'						//	TODO: i18n HERE
 		return false;														//	failed validation
 	}
 	var id = globals.secGetAssociationID(association_name);					// check association ID
 	if(id && id != association_uuid){												//	It should be unique
-		errorMessage = 'Association name is already in use';					//	TODO: i18n HERE
+		errorMessage = 'Division name is already in use';					//	TODO: i18n HERE
 		association_name = oldValue;										//	replace in-use with prior entry
 		return false;														//	failed validation
 	}

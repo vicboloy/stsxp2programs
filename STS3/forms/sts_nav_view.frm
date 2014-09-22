@@ -208,6 +208,7 @@ uuid:"F8AC0690-2FAE-4F3A-BD76-FAE1A05BCE14"
 {
 formIndex:9,
 location:"33,33",
+name:"ButtonViewLoadInformation",
 onActionMethodID:"81C230BD-F337-45A5-9638-883D435E9B82",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

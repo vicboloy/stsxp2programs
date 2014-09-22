@@ -1,0 +1,15 @@
+dataSource:"db:/stsservoy/transactions",
+extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
+items:[
+{
+height:320,
+partType:5,
+typeid:19,
+uuid:"8701AB3E-3B55-4651-B0A5-622FDB7892FD"
+}
+],
+name:"mini_me",
+size:"240,480",
+styleName:"sts_one",
+typeid:3,
+uuid:"ABCCD11E-2A25-49CA-9A3A-3055D281B135"

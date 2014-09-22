@@ -1,5 +1,13 @@
 dataSource:"db:/stsservoy/users",
 extendsID:"BB1B2F7E-C46C-4524-95B5-1F69B94CF939",
+items:[
+{
+extendsID:"95B8F41A-FAE2-4E5B-AAD0-66CA59B27A57",
+format:"|U",
+typeid:4,
+uuid:"77DA2419-6CB1-4F72-96BA-A9EA8C540D10"
+}
+],
 name:"user_management_detail",
 navigatorID:"-1",
 styleName:"sts_one",

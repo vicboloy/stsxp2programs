@@ -5580,11 +5580,12 @@ function warningsMessage(message){
 	if (timeOut - timeIn < 4000){return}
 	if (message == scopes.globals.stsMessages){message = message + " x"}
 	scopes.globals.stsMessages = message;
-	//application.output(message+eval(timeOut - timeIn));
+	if (application.isInDeveloper()){
+		application.output(message+eval(timeOut - timeIn))
+	}
 	application.updateUI();
 	timeIn = timeOut;
-	if (timeOut-timeUpdate < 60000){return}
-	if ((createRecordsArray && createRecordsArray.length > 0) || createRecordsArray.length > 100){
+	if ((timeOut-timeUpdate > 60000) || (createRecordsArray && createRecordsArray.length > 0) || createRecordsArray.length > 100){
 		timeUpdate = timeOut;
 		while (createRecordsArray.length != 0){
 			var record = createRecordsArray.shift();
@@ -5614,6 +5615,8 @@ function warningsX(){
 	var win = scopes.jobs.warnWindow;
 	win.hide();
 	win.destroy();
+	var skip = true;
+	if (skip) {return}
 }/**
  * @properties={typeid:24,uuid:"905EDD6A-24B2-4341-82E2-3000B6D6AD42"}
  * @AllowToRunInFind

@@ -32,3 +32,4 @@ function newRecord(event, location, changeSelection) {
 	return newRec;
 	//return _super.newRecord(event, location, changeSelection)
 }
+

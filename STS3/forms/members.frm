@@ -17,7 +17,7 @@ items:[
 {
 containsFormID:"8B09D889-B2FF-4ED0-81E5-5A559CB16EFD",
 location:"5,60",
-text:"member_list_detail",
+text:"associations",
 typeid:15,
 uuid:"8F5107F7-4671-43B0-BEEF-EF0F1C9176E4"
 }

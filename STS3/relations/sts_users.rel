@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/users",
+joinType:1,
+name:"sts_users",
+primaryDataSource:"db:/stsservoy/users",
+typeid:22,
+uuid:"07D253D7-6894-420F-ABCB-CB184A076005"

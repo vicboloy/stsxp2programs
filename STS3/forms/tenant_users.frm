@@ -2,7 +2,7 @@ dataSource:"db:/stsservoy/users",
 extendsID:"66E5E134-B5C4-43B3-B810-281E2BFF03C1",
 items:[
 {
-height:352,
+height:79,
 partType:5,
 typeid:19,
 uuid:"19056D8E-4784-46D2-BAC5-0A51E9EA28B0"
@@ -70,6 +70,7 @@ uuid:"CDA0702D-F067-4D0A-A32D-D2164739FB3A"
 {
 anchors:11,
 dataProviderID:"sts_user_to_assoc.association_name",
+editable:false,
 location:"71,43",
 name:"assocName",
 size:"52,20",
@@ -103,6 +104,7 @@ uuid:"F352CBD8-63E7-4BA7-93DA-803EBC0A7F9C"
 {
 anchors:11,
 dataProviderID:"user_name",
+format:"|U",
 location:"20,43",
 name:"userName",
 size:"52,20",

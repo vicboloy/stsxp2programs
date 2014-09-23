@@ -49,21 +49,6 @@ function newRecord(event, location, changeSelection) {
 function onLoad(event) {
 	elements.split.dividerLocation = 180.0;
 }
-
-/**
- * Handle hide window.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @returns {Boolean}
- *
- * @properties={typeid:24,uuid:"01C62A29-3975-4D84-BCDE-63A90B96FE00"}
- */
-function onHide(event) {
-	globals.setWindowClosed("");
-	return _super.onHide(event)
-}
-
 /**
  * Perform the element default action.
  *

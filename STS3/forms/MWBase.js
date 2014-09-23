@@ -225,7 +225,7 @@ function onActionUserManage(event) {
  * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
  */
 function onActionTenants(event) {
-	onActionClickMainButton(event,"Divisions",'tenants',50,50,890,418,false);
+	onActionClickMainButton(event,"Divisions",'tenants',50,50,890,410,false);
 }
 /**
  * TODO generated, please specify type and doc for the params

@@ -52,7 +52,7 @@ typeid:4,
 uuid:"8C5485CA-DC89-4203-BDE7-F4A5EF674C4C"
 },
 {
-height:243,
+height:129,
 partType:5,
 typeid:19,
 uuid:"ABB948A9-8566-4B02-9F2A-417C7AE5AA8A"
@@ -106,9 +106,9 @@ typeid:7,
 uuid:"F5E2AD72-0181-4AF5-9C2A-ACC584F3BC8D"
 }
 ],
-name:"member_list_detail",
-namedFoundSet:"separate",
+name:"associations",
 navigatorID:"-1",
+onRecordSelectionMethodID:"B4DA9FD0-0287-4BA4-A6DD-21B9321AE891",
 scrollbars:32,
 showInMenu:false,
 size:"188,243",

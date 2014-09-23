@@ -99,9 +99,9 @@ function login(){
 		errorMessage = 'Please specify a password';
 		return false;
 	}
-	application.output('before tenantid');
+	//application.output('before tenantid');
 	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[userName,companyName]);
-	application.output('after tenantid'+tenantID+' ID ');
+	//application.output('after tenantid'+tenantID+' ID ');
 	if(tenantID){
 		//application.output('inside tenantID');
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);

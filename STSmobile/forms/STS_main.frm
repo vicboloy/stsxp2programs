@@ -1,0 +1,16 @@
+dataSource:"db:/stsservoy/transactions",
+encapsulation:60,
+extendsID:"72E0B299-FCCD-4C42-8A48-15F726CE17F1",
+items:[
+{
+extendsID:"A4842B95-DD5A-40B3-8202-9B70F65AECF7",
+height:320,
+typeid:19,
+uuid:"9FF5CC5B-9F7C-46D2-A442-3900BA5F046E"
+}
+],
+name:"STS_main",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"B596C7FF-84CF-4300-BC25-C568F81F7429"

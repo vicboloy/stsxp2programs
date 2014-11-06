@@ -112,6 +112,8 @@ function login(){
 			if (!passCheck && (password == tenantID)){passCheck = true}//TODO REMOVE
 			//application.output('passcheck '+passCheck+' '+password+' '+tenantID);
 			if(passCheck && security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
+				globals.secCurrentUserID = userID;
+				globals.secCurrentUserName = userName;
 				return true;
 			}
 		}

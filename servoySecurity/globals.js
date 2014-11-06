@@ -167,6 +167,18 @@ var secCurrentAssociationMasterID = "";
  */
 var secCurrentUserID = null;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C169FCC3-B230-40D7-A2FB-A32AF24A934C"}
+ */
+var secCurrentUserName = "";
+/**
+ * @properties={typeid:35,uuid:"3A39B918-BBC8-4B32-8E28-C8A9D7940DA3",variableType:-4}
+ */
+var secSession = {
+	login : ""	
+}
+/**
  * @type {Array}
  * 
  * @properties={typeid:35,uuid:"BF845CC4-3FA1-40F4-AD43-70BB21DF9DDC",variableType:-4}
@@ -556,6 +568,21 @@ function secInitialStart(){
 	application.output('users: '+userCount+' tenants:' +tenantCount+' associations: '+associationCount);
 }
 /**
+ * @properties={typeid:24,uuid:"CDD97263-D36B-491A-ABAA-A0D9EFC101FB"}
+ */
+function secLogger(message){
+	// This is login independent of application.
+	/** @type {JSFoundSet<db:/stsservoy/rf_transactions>} */
+	var log = databaseManager.getFoundSet('stsservoy','rf_transactions');
+	log.newRecord();
+	log.transaction_date = new Date();
+	log.rf_program = "LOGIN";
+	log.rf_client = application.getIPAddress()+' '+security.getClientID();
+	log.rf_comm_data = message;
+	
+	databaseManager.saveData(log);
+}
+/**
  * Logs in the specified user
  * @param {Number} userID the id of the user
  * @properties={typeid:24,uuid:"AF48473F-8602-42CB-B8E7-7AB6D383C925"}
@@ -565,18 +592,21 @@ function secLogin(userID){
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var users;															//	The users foundset
 	
-	if(!userID){														//	validate input
+	if(!userID){ //	validate input
+		scopes.globals.secLogger('No such user ID '+userID);
 		return false;
 	}
 	if (userID == "NEW"){
-		globals.secInitialStart();
+		///globals.secInitialStart();
 	}
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a users foundset
 	//security.createGroup(SEC_ADMINISTRATORS);							//	Create the group (This may not be necessary)
 	if(users.loadRecords(userID) && users.is_account_active){ 			//	load user record, check if active account
 		users.last_login = new Date();									//	reset last login date & login user
+		secLogger('User '+userID+' login.');
 		return security.login(users.user_name,users.user_id,[SEC_ADMINISTRATORS]);
 	}
+	if (users.is_account_active){scopes.globals.secLogger('User '+users.user_name+' is inactive.')}
 	return null;  //added to return some value JOE
 }
 
@@ -836,6 +866,7 @@ function secGetUserID2(userName, tenantID) {
 			return users.user_id;										//	return the ID
 		}
 	}
+	scopes.globals.secLogger('UserName '+userName+' invalid.');
 	return null;														//	could not get user
 }
 /**
@@ -959,6 +990,7 @@ function secGetTenantID2(userName,companyName){
 		if (company.search()){
 			tenantID = company.tenant_uuid;
 		} else {
+			scopes.globals.secLogger('No such company '+companyName+' for login'+userName+'.');
 			return false;
 		}
 	}
@@ -973,6 +1005,10 @@ function secGetTenantID2(userName,companyName){
 		users.user_name = userName;								//	search by tenant name	
 		if (companyName != ""){
 			users.tenant_uuid = tenantID;
+		} else {
+			scopes.globals.secLogger('Company '+companyName+" doesn't have a user "+userName);
+			null;
+			
 		}
 		var count = users.search();
 		application.output('Users '+count);
@@ -995,10 +1031,12 @@ function secGetTenantID2(userName,companyName){
 				}
 				//globals.secTenantArray = globals.secGetTenantIDs(assocID);
 			} else {
+				globals.secCurrentAssociationID = users.association_uuid;
 				return users.tenant_uuid;									//	return the ID
 			}
 		}
 	}
+	scopes.globals.secLogger('Company '+companyName+' not found.');
 	return null;														//	could not find tenant
 }
 

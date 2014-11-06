@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/sequences",
+items:[
+{foreignColumnName:"sequence_id",primaryDataProviderID:"sequence_id",typeid:23,uuid:"96C21A84-F37E-4C2A-BD8E-D337B861FC36"}
+],
+joinType:1,
+name:"sts_idfile_to_seq",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"FE07113E-64AA-4E67-B724-803294491AC9"

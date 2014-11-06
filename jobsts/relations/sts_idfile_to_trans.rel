@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/transactions",
+items:[
+{foreignColumnName:"idfile_id",primaryDataProviderID:"idfile_id",typeid:23,uuid:"EF81355F-AB99-4E1E-BFF3-B6384B102DC1"}
+],
+joinType:1,
+name:"sts_idfile_to_trans",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"A649DB9F-420A-46CD-A32D-C5CC60E2CC11"

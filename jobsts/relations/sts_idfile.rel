@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/idfiles",
+joinType:1,
+name:"sts_idfile",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"39A676D6-09BB-4570-AF4D-44E2C3AEBD37"

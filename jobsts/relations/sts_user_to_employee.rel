@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/employee",
+items:[
+{foreignColumnName:"employee_id",primaryDataProviderID:"scopes.globals.mobLoggedEmployeeId",typeid:23,uuid:"6B592857-47A6-415B-88EE-9C442A7C20FC"},
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.tenantIDmobile",typeid:23,uuid:"E49928BF-D10E-48FE-8BC8-B0632825908C"}
+],
+joinType:1,
+name:"sts_user_to_employee",
+primaryDataSource:"db:/stsservoy/users",
+typeid:22,
+uuid:"72F6C085-B87F-4A8A-8560-90014CF64906"

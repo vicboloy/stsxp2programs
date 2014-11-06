@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/lots",
+items:[
+{foreignColumnName:"lot_id",primaryDataProviderID:"lot_id",typeid:23,uuid:"0195C3DE-E7C5-435E-847E-1895236D1754"}
+],
+joinType:1,
+name:"sts_idfile_to_lot",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"C2AE919B-C4B9-44EC-B7B2-4B7256022F60"

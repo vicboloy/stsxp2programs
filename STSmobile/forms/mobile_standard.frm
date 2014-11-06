@@ -9,6 +9,17 @@ typeid:7,
 uuid:"0A55CD08-0F35-467D-BF1A-9CE850550C5D"
 },
 {
+dataProviderID:"scopes.globals.errorMessageMobile",
+foreground:"#ff0000",
+formIndex:2,
+location:"0,0",
+name:"messageArea",
+size:"240,20",
+transparent:true,
+typeid:7,
+uuid:"0BF82B79-5B6D-48C8-B6A6-83E0D0E241E9"
+},
+{
 background:"#80ff00",
 horizontalAlignment:4,
 location:"160,300",

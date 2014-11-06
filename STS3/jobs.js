@@ -1527,6 +1527,12 @@ function onGetInformation(event,flaggedDeleted) {
  * @AllowToRunInFind
  */
 function saveTablePrefs(event){
+	var win = application.createWindow("Column Order", JSWindow.MODAL_DIALOG);
+	win.setInitialBounds(10, 10, 555, 485);
+	win.title = "This is the column settings window.";
+	globals.modalResponse = "";
+	win.show(forms.gen_table_order);
+	//if (globals.modalResponse == "Cancel"){return}
 	warningsYes();
 	//application.output(event);
 	//application.updateUI();

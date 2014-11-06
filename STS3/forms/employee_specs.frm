@@ -72,6 +72,7 @@ items:[
 containsFormID:"BB1B2F7E-C46C-4524-95B5-1F69B94CF939",
 location:"462,75",
 name:"Login_Details",
+relationName:"sts_employee_to_userid",
 text:"Account",
 typeid:15,
 uuid:"1954C50B-5025-4EA1-AB5E-F2ED31E29EF9"

@@ -21,6 +21,7 @@ var windowList = "";
 function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
 	//application.output(windowTitle);
 	var formNameNew = formName;
+	scopes.globals.logger(true,windowTitle+' started.');
 	if (multiWindow){
 		windowTitle = windowTitle+"_";
 		formNameNew = formNameNew+"_";
@@ -234,7 +235,16 @@ function onActionTenants(event) {
  * @properties={typeid:24,uuid:"3CD18375-D0A0-466D-A181-6D585BEE8E70"}
  */
 function onActionTenantGroups(event) {
-	onActionClickMainButton(event,"Department and Division Management",'members',50,50,370,315,false);
+	onActionClickMainButton(event,"Department and Division Management",'members',50,50,750,350,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"AF952016-58E9-4E89-8F5F-857177470611"}
+ */
+function onActionViewLog(event) {
+	onActionClickMainButton(event,"RF Transaction Log",'view_log',50,50,370,315,false);
 }
 
 /**
@@ -392,6 +402,7 @@ function focusWindow(){
 function removeWindowTrack(){
 	var win = application.getActiveWindow();
 	var formName = win.title;
+	scopes.globals.logger(true,formName+' closed.');
 	//var formName = controller.getName();
 	var tempArray = new Array;
 	//tempArray = globals.aTrackWindows;

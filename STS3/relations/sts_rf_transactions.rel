@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/rf_transactions",
+joinType:1,
+name:"sts_rf_transactions",
+primaryDataSource:"db:/stsservoy/rf_transactions",
+typeid:22,
+uuid:"34A7DF23-EDA7-4021-A1B2-295D0DF2F459"

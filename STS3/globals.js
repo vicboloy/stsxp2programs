@@ -16,6 +16,14 @@
 //------------------ Public Variables from STS ---------------------------------------
 //Version-----------------------------------------------------------------------------
 /**
+ * @properties={typeid:35,uuid:"BDF33A45-AB00-4C21-9381-BCC5748760D0",variableType:-4}
+ */
+var categoryTmp1 = [];
+/**
+ * @properties={typeid:35,uuid:"08F451D2-F32E-4550-B890-61832FF2B032",variableType:-4}
+ */
+var categoryTmp2 = [];
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"5CBFD046-1730-4762-8AF1-DD0BFE1A397E"}
@@ -849,6 +857,7 @@ function onSolutionOpen() {
 	secSetCurrentApplication(secGetApplicationID(APPLICATION_NAME));
 	secCurrentUserID = security.getUserUID();
 	secCurrentTenantID = sec_current_user.tenant_uuid;
+	scopes.globals.mobTenantId = secCurrentTenantID
 	secCurrentAssociationID = secGetAssociationID(secCurrentTenantID);
 	secCurrentAssociationMasterID = secGetCurrentMasterAssociation(secCurrentTenantID);
 	secSetCurrentApplication(17); // 17 is already STS, could be anything
@@ -863,6 +872,10 @@ function onSolutionOpen() {
 		var texts = plugins.file.readFile('c:\\STS.txt');
 		application.output(texts);
 	}
+	getLoggedEmployee(secCurrentUserID);
+	session.tenant_uuid = secCurrentTenantID;
+	session.sessionId = application.getIPAddress()+' '+security.getClientID();
+	session.program = "STS Desktop";
 	onStartLoadPrefs();	
 }
 
@@ -933,6 +946,8 @@ function mainWindowFront(){
 function stopWindowTrack(){
 	globals.setWindowClosed("");
 	var win = application.getActiveWindow();
+	var winName = win.title;
+	scopes.globals.logger(true,winName+' closed.');
 	win.hide();
 	return true;
 }
@@ -1024,19 +1039,21 @@ var rowBGColorSelected = '#FFFF80';
  * @properties={typeid:24,uuid:"2B1E88D0-4689-428D-8D82-DE330FC85D97"}
  */
 function getParentForm() {
-
+	null;
+	var win = application.getActiveWindow();
 	/** @type {JSDataSet} */
-	var dataset = controller.getFormContext();
-	if (dataset.getMaxRowIndex() > 1) {
+	var dataset = win.controller.getFormContext();
+	//if (dataset.getMaxRowIndex() > 1) {
 		// form is in a tabpanel
-		var parentFormName = dataset.getValue(dataset.getMaxRowIndex()-1, 2)
-		return forms[parentFormName]
-	}
+		var parentFormName = dataset.getValue(1, 2);
+		return parentFormName;
+	//}
+	/**
 	else {
 		if (globals.debugtesting){
 			//throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
 		}
-	}
+	}*/
 	return null;
 }
 /**

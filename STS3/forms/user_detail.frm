@@ -20,7 +20,8 @@ size:"80,20",
 text:"Name Last:",
 transparent:true,
 typeid:7,
-uuid:"28B928FB-83DE-41DA-90CE-864DB293A305"
+uuid:"28B928FB-83DE-41DA-90CE-864DB293A305",
+visible:false
 },
 {
 dataProviderID:"name_last",
@@ -30,7 +31,8 @@ size:"140,20",
 tabSeq:2,
 text:"Name Last",
 typeid:4,
-uuid:"2D036CD4-E0FF-4282-AEF1-594EB8CDAC66"
+uuid:"2D036CD4-E0FF-4282-AEF1-594EB8CDAC66",
+visible:false
 },
 {
 horizontalAlignment:4,
@@ -105,14 +107,19 @@ typeid:7,
 uuid:"8E0B1338-3416-4AA9-B624-AC329197A42D"
 },
 {
-dataProviderID:"user_name",
+dataProviderID:"userName",
+displayType:2,
+editable:false,
 location:"117,125",
 name:"user_name",
+onActionMethodID:"-1",
+onDataChangeMethodID:"D3234A60-6684-4BD8-98F7-70CAA325B738",
 size:"140,20",
 tabSeq:3,
 text:"User Name",
 typeid:4,
-uuid:"95B8F41A-FAE2-4E5B-AAD0-66CA59B27A57"
+uuid:"95B8F41A-FAE2-4E5B-AAD0-66CA59B27A57",
+valuelistID:"542EE01E-3CED-4E90-A652-92EA099A6EDE"
 },
 {
 height:237,
@@ -147,7 +154,7 @@ labelFor:"name_first",
 location:"27,65",
 name:"name_first_label",
 size:"80,20",
-text:"Name First:",
+text:"Description:",
 transparent:true,
 typeid:7,
 uuid:"E9633899-3B5A-4484-8A95-6B7456FC277A"
@@ -174,6 +181,8 @@ uuid:"F682705A-5366-4A63-99C4-AACA656A8E92"
 }
 ],
 name:"user_detail",
+onRecordSelectionMethodID:"3EE95260-0591-4998-94B5-17D7815153C6",
+onShowMethodID:"06E3910A-C5EC-4843-9923-EBED24550D19",
 size:"341,209",
 styleName:"sts_one",
 transparent:true,

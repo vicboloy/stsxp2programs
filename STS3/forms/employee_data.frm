@@ -33,7 +33,7 @@ uuid:"0B3FB992-EF9A-44D9-84F1-0E3E34AD2680"
 {
 dataProviderID:"employee_ssn",
 format:"###-##-####",
-location:"315,40",
+location:"315,70",
 name:"employee_ssn",
 size:"140,20",
 tabSeq:11,
@@ -53,7 +53,7 @@ uuid:"1D89D6F8-72F2-451B-9DAE-EFCC68F2C9C2"
 },
 {
 labelFor:"employee_ssn",
-location:"255,40",
+location:"255,70",
 name:"employee_ssn_label",
 size:"50,20",
 text:"SSN",
@@ -105,6 +105,16 @@ typeid:4,
 uuid:"45FEA83F-4C4F-4FED-ABF8-ECD4D1F12470"
 },
 {
+dataProviderID:"employee_rf_logging",
+displayType:4,
+location:"305,35",
+size:"87,20",
+text:"Logging",
+transparent:true,
+typeid:4,
+uuid:"50A0F75B-CE23-4BFD-93F4-9A72A7FBB60D"
+},
+{
 dataProviderID:"employee_firstname",
 location:"105,40",
 name:"employee_firstname",
@@ -148,7 +158,7 @@ uuid:"6BF1D663-ED2E-416A-93F8-570A59AA8664"
 dataProviderID:"employee_dob",
 displayType:5,
 format:"MM/dd/yyyy",
-location:"315,65",
+location:"315,100",
 name:"employee_dob",
 size:"140,20",
 tabSeq:12,
@@ -254,7 +264,7 @@ uuid:"E7E27455-3517-461F-9587-76944820F3B0"
 },
 {
 labelFor:"employee_dob",
-location:"255,65",
+location:"255,100",
 name:"employee_dob_label",
 size:"50,20",
 text:"D.O.B.",

@@ -65,6 +65,17 @@ uuid:"37F29778-F2FF-43F9-BCF0-16E8FBEF985D"
 },
 {
 anchors:11,
+labelFor:"rf_client",
+location:"998,0",
+name:"rf_client_label",
+size:"80,20",
+text:"Rf Client",
+transparent:true,
+typeid:7,
+uuid:"38C0CD13-9DE1-4053-AF7E-C4082A0BCE59"
+},
+{
+anchors:11,
 dataProviderID:"status_location",
 location:"414,20",
 name:"status_location",
@@ -142,6 +153,15 @@ text:"Job Number",
 transparent:true,
 typeid:7,
 uuid:"8D3B87F0-D551-4A13-896C-70D314C604B7"
+},
+{
+anchors:11,
+dataProviderID:"rf_client",
+location:"998,20",
+name:"rf_client",
+transparent:true,
+typeid:7,
+uuid:"A5263E6B-1AC5-45E1-9445-A78E08E8543E"
 },
 {
 anchors:11,
@@ -253,7 +273,7 @@ name:"sts_nav_log",
 navigatorID:"-1",
 onShowMethodID:"DDB299FC-B22B-4363-897B-9AA470816369",
 scrollbars:32,
-size:"998,165",
+size:"1082,66",
 styleName:"sts_one",
 typeid:3,
 uuid:"7EDC2B9D-2CEB-478C-8ED2-84C2DB2C28C3",

@@ -53,7 +53,7 @@ uuid:"7BE84ED0-F46C-4B4E-914F-CDA1D30EDC47"
 {
 horizontalAlignment:0,
 location:"66,1",
-onActionMethodID:"5E85197C-4A42-4D56-B1EE-7C833A2AB724",
+onActionMethodID:"C05B33D2-8DB3-4F9A-9817-88889B1E20AB",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 tabSeq:-2,

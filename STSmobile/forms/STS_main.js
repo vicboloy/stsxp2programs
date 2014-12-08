@@ -7,9 +7,13 @@
 function changeWindow(event,winName){
 	var currWin = application.getActiveWindow();
 	switch(winName)	{
-		case 'transactions':
-		currWin.show('rf_transactions');
-		break;
+		case 'Transactions':
+			globals.session.program = 'Transactions';
+			currWin.show('rf_transactions');
+			break;
+		case 'Exit':
+			globals.exitMobileClient();
+			break;
 	default:
 	}
 }
@@ -48,4 +52,17 @@ function onActionTemp(event) {
 			fs.message_num = error[0];
 			fs.message_text = error[1];
 		}
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"824C2A08-2991-4BD2-9F8A-91F540D8D914"}
+ */
+function onActionMainMenu(event) {
+	controller.getSelectedIndex();
+	application.output('elements '+elements.mainMenu.getSelectedElements());
+	changeWindow(event,elements.mainMenu.getSelectedElements()[0]);
 }

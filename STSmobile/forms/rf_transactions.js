@@ -1,6 +1,12 @@
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"025F1B47-E30F-46A9-A910-C565912A113F",variableType:-4}
+ */
+var stayField = false;
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"8B33F61A-576C-4EDE-91F5-EA95EA420181"}
  */
 var statusCode = "";
@@ -62,16 +68,25 @@ function setTabSequence(sequence){
  * @properties={typeid:24,uuid:"F6D06FDF-2291-4430-8649-ECE5DA9CADB8"}
  */
 function onDataChangeBarcode(oldValue, newValue, event) {
+	var scannedID = newValue;
+	stayField = (scannedID != "EXIT");
+	application.output('stay field '+stayField);
+	globals.session.userEntry = scannedID;
 	//var k = globals.onErrorDisplayReturn;
 	//globals.onErrorDisplayReturn = scopes.globals.errorDialog2();
 	//if (!(k instanceof Continuation)){
 	//	null;
 	//}
 	//application.output('barcode change');
-	var barcodeId = scopes.globals.checkBarcode(newValue);
+	elements.location.enabled = true;
+	elements.status.enabled = true;
+	elements.worker.enabled = true;
+	var barcodeId = scopes.globals.checkBarcode(scannedID);
 	if (!barcodeId){
-		scopes.globals.errorDialogMobile('701');
-		return false;
+		currentID = "";
+		globals.errorDialogMobile('701');
+		elements.current.requestFocus();
+		return true;
 	}
 	/**
 	 * job number
@@ -84,18 +99,19 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 	 * Locn Wt
 	 * Locn Pcs
 	 */
-	scopes.globals.mobIdSerialId = newValue;
+	scopes.globals.mobIdSerialId = scannedID;
 	//scopes.globals.mobBarcodePrev = scopes.globals.mobBarcode;
-	scopes.globals.mobBarcode = newValue;
+	scopes.globals.mobBarcode = scannedID;
 	//scopes.globals.mobStatus = statusCode;
 	scopes.globals.mobLocation = statusLocation;
 	scopes.globals.mobWorkers = statusWorker;
-	currentID = scopes.globals.mobBarcode;
-	lastID = newValue;
+	//currentID = scopes.globals.mobBarcode;
+	lastID = scannedID;
 	
 	
 	controller.loadRecords(scopes.globals.rfGetBarcodeIdfiles(barcodeId)); // mob.idfiles
-	globals.saveScanTransaction(currentID,statusCode,statusLocation);
+	globals.saveScanTransaction(scannedID,statusCode,statusLocation);
+	currentID = '';
 	//scopes.globals.rfIdLength = scopes.globals.decToFeet(item_length);
 	//scopes.globals.mobIdfiles = scopes.globals.rfaIdfiles;
 	scopes.globals.rfGetMobIdfile(scopes.globals.mob.idfiles[0]);
@@ -121,13 +137,42 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 	var testraz = scopes.globals.rfGetLocationWeight(statusLocation);
 	*/
 	currentID = "";
-	//controller.focusField('');
+	elements.current.requestFocus();
 	return true;
 }
-
+/**
+ * @properties={typeid:24,uuid:"95F94418-73E7-44C7-A483-3B31F88A4D30"}
+ */
+function resetStatusCode(){
+	statusCode = "";
+}
+/**
+ * @properties={typeid:24,uuid:"DF1AC269-3F74-40A2-B479-EF43D0DB62FE"}
+ */
+function resetWorkerCode(){
+	statusWorker = "";
+}
 /**
  * reset location weight, location pieces, piecemark pieces, total pieces
  * reset oldid status, 
  * check for id in file, and id in bom
  * 
  */
+
+ /**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"9E2A54E4-2F94-4384-A84B-98B424FA308D"}
+ * @AllowToRunInFind
+ */
+function onShowForm(event) {
+	//foundset = databaseManager.getFoundSet('stsservoy','idfiles');
+	null;
+	if (foundset.find()){
+		delete_flag = 19;
+		foundset.search();
+	}
+	null;
+}

@@ -141,6 +141,12 @@ var mobLoggedEmployeeId = "";
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"765BFD85-611F-4EC5-B429-0EFEBC1D83B4"}
+ */
+var mobMenu = "";
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"039BADC5-71DA-4088-A041-6536CF7A1936"}
  */
 var mobBarcodePrev = "";
@@ -254,6 +260,25 @@ function workersList(){
 	}
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param inArray
+ *
+ * @properties={typeid:24,uuid:"78E838E7-DEE0-44A3-9E99-2466517823A6"}
+ */
+function arrayToList(inArray){
+	var aLength = inArray.length;
+	var outList = "(";
+	for (var index = 0;index < aLength;index++){
+		outList = outList + "'"+inArray[index];
+		if (index == aLength-1){
+			outList = outList + "')";
+		} else {
+			outList = outList + "',";
+		}
+	}
+	return outList;
+}
+/**
  * Handle changed data.
  *
  * @param {String} oldValue old value
@@ -350,6 +375,16 @@ function rfGetBarcodeIdfiles(barcodeID){
  * TODO generated, please specify type and doc for the params
  * @param sLocation
  *
+ * @properties={typeid:24,uuid:"0D08F424-DA61-4C00-86C9-AE0A0BD67BF0"}
+ */
+function rfLocationChange(sLocation){
+	globals.session.statusLocation = sLocation;
+	globals.logger(false,'');
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param sLocation
+ *
  * @properties={typeid:24,uuid:"16DE7027-0DC8-431E-A069-957B93FC6904"}
  */
 function rfGetLocationStats(sLocation){
@@ -441,6 +476,22 @@ function rfGetLocationStats(sLocation){
 		index++;
 	}
 	scopes.globals.mob.location.weight = totWeight;
+}
+/**
+ * @properties={typeid:24,uuid:"4D0121B5-F814-4A00-9F89-079AB74C60A1"}
+ */
+function rfSelectFabPlant(){
+	
+}
+/**
+ * @properties={typeid:24,uuid:"C23097C7-0091-41B2-8224-026404DC4274"}
+ */
+function getMenuList(){
+	var progList = new Array;
+	progList.push('Transactions');
+	progList.push('Exit');
+	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
+	application.setValueListItems('rfProgramList',progList);
 }
 /**
  * @properties={typeid:24,uuid:"1D7946B6-714D-496A-BEAC-C434A61EAC91"}
@@ -567,6 +618,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation, sStatus){
  * @properties={typeid:24,uuid:"26985B1F-17E8-4514-8F2A-6FF5FFBAA236"}
  */
 function rfGetStatusChange(oldValue, newValue, event) {
+	globals.session.userEntry = newValue;
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var q = databaseManager.createSelect('db:/stsservoy/status_description');
 	q.result.add(q.columns.status_code);
@@ -577,8 +629,33 @@ function rfGetStatusChange(oldValue, newValue, event) {
 		.add(q.columns.status_code.eq(newValue))
 	);
 	var resultQ = databaseManager.getFoundSet(q);
-	if (resultQ == 0){return false}
+	if (resultQ == 0){
+		errorDialogMobile('401');
+		var formName = event.getFormName();
+		forms[formName].elements.status.requestFocus();
+		forms[formName].resetStatusCode();
+		return true;
+	}
+	globals.mob.status =  newValue;
+	globals.logger(false,'Status OK');
 	return true
+}
+/**
+ * Handle focus lost event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D4DB847F-AB68-451C-B4FE-9E20C9EA487F"}
+ */
+function onFocusLost(event) {
+	var formName = event.getFormName();
+	var elName = event.getElementName();
+	var entry = event.getSource().getDataProviderID();
+	var variable = forms[formName];
+	var value = variable[entry];
+	if (value == ""){
+		forms[formName].elements[elName].requestFocus();		
+	}
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -615,6 +692,8 @@ function rfGetTransactionLast(idfileId){
  */
 function rfGetWorker(oldValue, workers, event){
 	if (workers == ""){return true}
+	globals.session.userEntry = workers;
+	var message = "";
 	var workerList = workers.split('.');
 	/** @type {QBSelect<db:/stsservoy/employee>} */
 	var q = databaseManager.createSelect('db:/stsservoy/employee');
@@ -633,8 +712,15 @@ function rfGetWorker(oldValue, workers, event){
 		workerArray.push(rec.employee_number)
 	}
 	for (index = 0;index < workerList.length;index++){
-		if (workerArray.indexOf(workerList[index]) == -1){return false}
+		if (workerArray.indexOf(workerList[index]) == -1){
+			errorDialogMobile('150');
+			var formName = event.getFormName();
+			forms[formName].elements.worker.requestFocus();
+			forms[formName].resetWorkerCode();
+			return true;
+		}
 	}
+	globals.logger(false,message);
 	return true;
 }
 /**
@@ -656,6 +742,7 @@ function saveScanTransaction(sBC, sStatus, sLocation){
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() != 0){
 		scopes.globals.errorDialogMobile('403');
+		forms['rf_transactions'].elements.current.requestFocus();
 		return false;
 	}
 	//worker_id,worker2_id,worker3_id,worker4_id,worker5_id, tenant_uuid, employee_id,fabshop_id (guids)
@@ -680,12 +767,12 @@ function saveScanTransaction(sBC, sStatus, sLocation){
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var newFS = databaseManager.getFoundSet('db:/stsservoy/transactions');
 	var recordsToSave = [];
-	for (index = 0;index < mobIdfiles.length;index++){
+	for (index = 0;index < mob.idfiles.length;index++){
 		var newRec = newFS.newRecord();
-		newFS.status = mobStatus;
+		newFS.status = sStatus;
 		newFS.fabrication_shop = null;///////////////////////TEXT
 		newFS.employee_id = globals.mobLoggedEmployeeId;//UUID
-		newFS.idfile_id = mobIdfiles[index];
+		newFS.idfile_id = mob.idfiles[index];
 		newFS.location = sLocation;
 		newFS.transaction_date = date;
 		newFS.tenant_uuid = globals.mobTenantId;
@@ -707,6 +794,7 @@ function saveScanTransaction(sBC, sStatus, sLocation){
 	}
 	//var batchSet = databaseManager.getFoundSetUpdater(resultQ);
 	//batchSet.setColumn(name,value)
+	return true;
 }
 /**
  * @AllowToRunInFind
@@ -717,18 +805,21 @@ function saveScanTransaction(sBC, sStatus, sLocation){
  */
 function workerIdList(workerArray){
 	var workerIds = [];
-	/** @type {JSFoundSet<db:/stsservoy/employee>} */
-	var fs = databaseManager.getFoundSet('db:/stsservoy/employee');
-	if (fs.find()){
-		fs.delete_flag = null;
-		fs.employee_number = workerArray;
-		fs.tenant_uuid = globals.tenantIDmobile;
-		var count = fs.search();
-		for (var index = 1;index <= count;index++){
-			var rec = fs.getRecord(index);
-			var newId = rec.employee_id+"";
-			workerIds[rec.employee_username] = newId;
-		}
+	/** @type {QBSelect<db:/stsservoy/employee>} */
+	var q = databaseManager.createSelect('db:/stsservoy/employee');
+	q.result.add(q.columns.employee_number);
+	q.result.add(q.columns.employee_id);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.employee_active_flag.eq(1))
+		.add(q.columns.employee_number.isin(workerArray))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	for (var index = 1;index <= resultQ.getSize();index++){
+		var rec = resultQ.getRecord(index);
+		workerIds[rec.employee_number] = rec.employee_id;
 	}
 	return workerIds;
 }
@@ -776,13 +867,14 @@ function errorDialog(errorNum){
 function errorDialogMobile(errorNum){
 	/** @type {JSFoundSet<db:/stsservoy/messages>} */
 	var fs = databaseManager.getFoundSet('db:/stsservoy/messages');
-	var errorMessage = "Unidentfied error. Contact technical support.";
+	var errorMessage = "Unidentified error. Contact technical support.";
 	if (fs.find()){
 		fs.message_num = errorNum;
 		if (fs.search()){
 			errorMessage = fs.message_text;
 		}
 	}
+	scopes.globals.logger(false,errorMessage);
 	scopes.globals.DIALOGS.setDialogHeight(150);
 	scopes.globals.DIALOGS.setDialogWidth(150);
 	scopes.globals.DIALOGS.showErrorDialog('Error '+errorNum,errorMessage,'OK');
@@ -801,7 +893,7 @@ function loggerTable(formName){
  * @properties={typeid:24,uuid:"B1694AD4-23FA-4933-9C10-331E7165C95C"}
  */
 function logger(capture,message){
-	if (!(capture || session.capture)){return}
+	if (!(capture || globals.session.capture)){return}
 	/** @type {JSFoundSet<db:/stsservoy/rf_transactions>} */
 	var fs = databaseManager.getFoundSet('db:/stsservoy/rf_transactions');
 	fs.newRecord();
@@ -821,3 +913,4 @@ function logger(capture,message){
 	
 	databaseManager.saveData(fs);
 }
+

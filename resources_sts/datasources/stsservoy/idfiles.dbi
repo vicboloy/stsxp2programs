@@ -356,6 +356,7 @@ name:"receive_quantity"
 allowNull:true,
 creationOrderIndex:24,
 dataType:12,
+flags:4,
 length:36,
 name:"received_load_id"
 },
@@ -396,6 +397,7 @@ name:"sequence_id"
 allowNull:true,
 creationOrderIndex:25,
 dataType:12,
+flags:4,
 length:36,
 name:"ship_load_id"
 },

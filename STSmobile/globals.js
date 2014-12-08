@@ -36,6 +36,8 @@ function onSolutionOpen(){
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.tenant_uuid = globals.secCurrentTenantID;
 	globals.logger(true,'STS Mobile opened.');
+	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
+	globals.getMenuList();
 	null;
 }
 /**

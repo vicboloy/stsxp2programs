@@ -36,6 +36,8 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"5DA8ABA3-8E21-440F-BB5F-237D1A689CE9"}
  */
 function onHide(event) {
-	scopes.globals.onErrorDisplayReturn();
+	if (application.getSolutionName() == 'STSmobile'){
+		scopes.globals.onErrorDisplayReturn();
+	}
 	return true
 }

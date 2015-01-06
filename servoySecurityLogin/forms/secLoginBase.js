@@ -142,4 +142,13 @@ function onLoad(event) {
 	application.output('company count '+showCompany);
 	elements.companyName.visible = showCompany;
 	elements.companyNameLabel.visible = showCompany;
+	var width = win.getWidth();
+	if (width <= 320){
+		forms.secLoginExample.hideLogo();
+	}
+	if (showCompany){
+		elements.companyName.requestFocus();
+	} else {
+		elements.userName.requestFocus();
+	}
 }

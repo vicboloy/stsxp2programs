@@ -91,6 +91,14 @@ name:"detail_minutes"
 },
 {
 allowNull:true,
+creationOrderIndex:51,
+dataType:12,
+flags:4,
+length:36,
+name:"e_route_code_id"
+},
+{
+allowNull:true,
 autoEnterSubType:3,
 autoEnterType:1,
 creationOrderIndex:46,

@@ -1,4 +1,10 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"9598FC8E-1AD4-4CFB-9FA8-268369D74016"}
+ */
+var statusId = "";
+/**
  * @properties={typeid:24,uuid:"0DB64EC0-13B7-49D6-93FA-FA6B2C780503"}
  * @AllowToRunInFind
  */
@@ -22,6 +28,10 @@ function onSolutionOpen(){
 	globals.mobTenantId = globals.secCurrentTenantID;
 	globals.secCurrentAssociationID = globals.secGetAssociationID(secCurrentTenantID);
 	globals.mobAssocId = globals.secCurrentAssociationID;
+	globals.getAssociation(mobAssocId); //aMobAssocs[assocID];
+	globals.getMappings();
+	globals.rfGetFabshopCodes();
+	//application.setValueListItems('stsvlg_status_codes',globals.session.statusCodes);
 	globals.secCurrentUserName = security.getUserName();
 	//secSetCurrentApplication(17); // 17 is already STS, could be anything
 	secSetCurrentTenant(secCurrentTenantID);
@@ -38,22 +48,13 @@ function onSolutionOpen(){
 	globals.logger(true,'STS Mobile opened.');
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
 	globals.getMenuList();
+	globals.onStartLoadPrefs();
+	globals.rfFunctionKeys("Main");
+	//globals.functionKeyDescrip[0] = " ";
+	// see: http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html for more info
+	// add a job that runs every 20 minutes after the hour (0,20,40)
+	//plugins.scheduler.addCronJob('20mins', '0 0/20 * * * ?', method)
+	// add a job that runs every day at 23:30 between now and 5 days from now
 	null;
-}
-/**
- * @properties={typeid:24,uuid:"3316A630-8C62-43FA-B62D-13B0A3F2EEC5"}
- */
-function exitMobileClient(){
-	application.exit();
-}
-/**
- * TODO generated, please specify type and doc for the params
- * @param elName
- *
- * @properties={typeid:24,uuid:"B2E71CCF-182A-4357-88DA-BF2547ED47C5"}
- */
-function showElement(elName,sequence){
-	forms.rf_transactions.elements[elName].enabled = true;
-	//forms.rf_transactions.setTabSequence(sequence);
 }
 

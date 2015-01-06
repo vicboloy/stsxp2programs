@@ -17,6 +17,15 @@ var tenantIDmobile = "";
  */
 var divisionIDmobile = "";
 /**
+ * @properties={typeid:35,uuid:"DA5EF721-0D66-413E-9A75-6AC4111C23BA",variableType:-4}
+ */
+var aMobAssocs = [];
+/**
+ * index by [status+location] is the process number (string) but is a number
+ * @properties={typeid:35,uuid:"81DE74EE-A452-4C16-9DB2-DC142A5ACAA0",variableType:-4}
+ */
+var aMobIdProcess = []; // all part of an array for status and route
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"D0D5DFE6-D22E-4D0C-9748-796372078ECF"}
@@ -29,9 +38,46 @@ var cronJob = "";
  */
 var errorMessageMobile = "";
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"14DD78C6-BFE4-4207-99BB-E0BCA44D5757",variableType:4}
+ */
+var hideEmptyColumns = 1;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"DEC3993C-4DE3-462F-8AEC-E6D5C5A82E31"}
+ */
+var winTrackProvider = "";
+/**
  * @properties={typeid:35,uuid:"C0EE1CDE-58D4-4F9E-9C67-23BED8013D6E",variableType:-4}
  */
 var workerList = [];
+/**
+ * mappings object, these are 1:1 mappings and reverse mappings
+ * assocs = assocs[association_uuid] = association_name
+ * fabShops = 
+ * @properties={typeid:35,uuid:"C68F9A1B-9EBB-4312-87E5-0F31C9C09514",variableType:-4}
+ */
+var m = {
+	assocs : [],
+	fabShops : [],
+	routes : []
+}
+/**
+ * listings object, lists related to 
+ * routeLegs = routeLegs[route_name.TXT] = (status_description_id.UUID...)
+ * tenantAssocs = tenantAssocs[index] = (association_UUID...)
+ * @properties={typeid:35,uuid:"126B2E5A-C055-42B7-9C4F-77820427FF5B",variableType:-4}
+ */
+var l = {
+	routes : [],
+	routeLegs : [],
+	routeDefault : [],
+	assocs : [],
+	fabShops : [],
+	statusCodes : []
+}
 /**
  * @properties={typeid:35,uuid:"FFB1B7D8-FC6F-44DC-9F01-BD65585867B0",variableType:-4}
  */
@@ -44,6 +90,10 @@ var mob = {
 	id : {total : 0, complete : 0},
 	status : ""
 }
+/**
+ * @properties={typeid:35,uuid:"E415F389-94A4-4145-A583-1EA9D88A6E7F",variableType:-4}
+ */
+var mobFabShops = [];
 /**
  * @properties={typeid:35,uuid:"C58B338D-9E1E-4F8A-BFFD-2498BDA3BFC4",variableType:-4}
  */
@@ -67,6 +117,10 @@ var mobRepIdfile = "";
  */
 var mobRepTransaction = "";
 /**
+ * @properties={typeid:35,uuid:"B1C06BAE-CF57-4068-817F-778B8C2822EF",variableType:-4}
+ */
+var mobRouteOrder = [];
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"C39D6A71-733F-4467-9535-16BE2DFDADA5"}
@@ -75,9 +129,27 @@ var mobBarcode = "";
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"529F5787-8C81-424E-89C4-E0309B89092D"}
+ */
+var mobAssoc = "";
+/**
+ * @properties={typeid:35,uuid:"9002ABC4-750B-4051-8FC6-6B876D594F1B",variableType:-4}
+ */
+var mobAssocs = [];
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"EAA4F8C1-0622-4DE5-93E5-57056D110F37"}
  */
 var mobAssocId = "";
+/**
+ * @properties={typeid:35,uuid:"53D729D1-C436-40AC-8000-A5AD12AC3611",variableType:-4}
+ */
+var mobAssocIds = [];
+/**
+ * @properties={typeid:35,uuid:"AA2B90EC-BC51-4220-8A6D-E670A05982A0",variableType:-4}
+ */
+var mobAssocMap = [];
 /**
  * @type {String}
  *
@@ -147,6 +219,18 @@ var mobMenu = "";
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"D460E7D2-7532-44DF-9E9A-4EAE20ACD403"}
+ */
+var mobMenuProvider = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C1C53066-0DB6-4CC5-828A-2DCFA4282293"}
+ */
+var mobProg = "";
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"039BADC5-71DA-4088-A041-6536CF7A1936"}
  */
 var mobBarcodePrev = "";
@@ -170,6 +254,7 @@ var session = {
 	fabShop : "",
 	program : "",
 	statusCode : "",
+	statusCodes : [],
 	statusLocation : "",
 	userEntry : "",
 	client : ""
@@ -182,6 +267,194 @@ var onErrorDisplayReturn = null;
  * @properties={typeid:35,uuid:"26C6DB38-D4DA-457C-9D99-A7A3F7DF7F1A",variableType:-4}
  */
 var fsBarcodeIdfiles = null;
+/**
+ * @properties={typeid:35,uuid:"6A020A7B-171A-4584-8390-2ABACD8036DB",variableType:-4}
+ */
+var functionKeyDescrip = [];
+/**
+ * @properties={typeid:35,uuid:"1B2251F3-8C0A-4653-949C-32C1F236D21F",variableType:-4}
+ */
+var functionKeyDescripB = [];
+/**
+ * 
+ * @type {String}
+ * 
+ * @properties={typeid:35,uuid:"1B5629B5-22AA-49B3-97FC-DEEF20D79B2B"}
+ */
+var functionKeyProvider = "";
+/**
+ * @properties={typeid:35,uuid:"F53B9690-F997-4E9E-BF76-3A957B7B53DE",variableType:-4}
+ */
+var functionKeyProcedure = [];
+/**
+ * @properties={typeid:24,uuid:"739123F9-8C1E-4AAC-819B-81074033078C"}
+ * @AllowToRunInFind
+ */
+function getAssociation(assocID){
+	if (aMobAssocs.length == 0){
+		/** @type {JSFoundSet<db:/stsservoy/associations>} */
+		var e = databaseManager.getFoundSet('db:/stsservoy/associations');
+		if (e.find()){
+			e.tenant_uuid = globals.secCurrentTenantID;
+			if (e.search()){
+				var count = e.getSize();
+				for (var index = 1;index <= count;index++){
+					var rec = e.getRecord(index);
+					aMobAssocs[rec.association_uuid] = rec.association_name;
+					aMobAssocs[rec.association_name] = rec.association_uuid;
+				}
+			}
+		}
+	}
+	mobAssoc = aMobAssocs[assocID];
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param status
+ * @param fabShop
+ *
+ * @properties={typeid:24,uuid:"595068C7-7C9B-4B9A-8CFC-99616DB4D127"}
+ */
+function getFabricationShopID(status,fabShop){
+	//fabricationShop is status and association/division
+	
+}
+/**
+ * @properties={typeid:24,uuid:"700EEFCA-804B-4594-8015-C30920C40101"}
+ */
+function getMappings(){
+	getAssociations();
+	getStatusDescriptions();
+	getRoutes();
+	getRouteLegs();
+}
+/**
+ * @properties={typeid:24,uuid:"69456D2F-A197-41E5-8FCA-E7187F1BEE40"}
+ */
+function getAssociations(){
+	globals.l.assocs = [];
+	globals.m.assocs = [];
+	/** @type {QBSelect<db:/stsservoy/associations>} */
+	var q = databaseManager.createSelect('db:/stsservoy/associations');
+	q.result.add(q.columns.association_uuid);
+	q.result.add(q.columns.association_name);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	for (var index = 1;index <= resultQ.getSize();index++){
+		var record = resultQ.getRecord(index);
+		var assocId = record.association_uuid+"";
+		var assocName = record.association_name;
+		if (globals.l.assocs.indexOf(assocName) == -1){
+			globals.l.assocs.push(assocName);
+		}
+		globals.m.assocs[assocId] = assocName;
+		globals.m.assocs[assocName] = assocId;
+	}
+}
+/**
+ * fabShop[status_description.status_descripton_id.UUID]
+ 		= status_description.fabrication_shop_id.UUID+ status_description.status_code.TXT (1:1)
+	fabShop[status_description.status_description_id.UUID] 
+		= associations.association_id.UUID + status_description.status_code.TXT (1:1)
+	fabShop[status_description.status_description_id.UUID]
+		= associations.association_name.TXT + status_description.status_code.TXT (1:1)
+ * @properties={typeid:24,uuid:"FC6366B2-8042-43E3-92DF-F48F1E7CB40E"}
+ */
+function getStatusDescriptions(){
+	globals.l.fabShops = [];
+	globals.l.statusCodes = [];
+	globals.l.routeDefault = [];
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var q = databaseManager.createSelect('db:/stsservoy/status_description');
+	q.result.add(q.columns.status_description_id);
+	q.result.add(q.columns.association_id);
+	q.result.add(q.columns.status_code);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	for (var index = 1;index <= resultQ.getSize();index++){
+		var record = resultQ.getRecord(index);
+		var descripId = record.status_description_id+"";
+		var assocId = record.association_id+"";
+		var status = record.status_code;
+		var assocName = globals.m.assocs[assocId];
+		var shopOrg = assocId+", "+status;
+		var shopName = assocName+", "+status;
+		if (globals.l.fabShops.indexOf(shopName) == -1){ // get list of all text fabShop names
+			globals.l.fabShops.push(shopName);
+		}
+		if (globals.l.statusCodes.indexOf(status) == -1){ // get list of all org status codes
+			globals.l.statusCodes.push(status);
+		}
+		// description_id.UUID -> shop name -> shop org reference -> description_id.UUID
+		globals.m.fabShops[descripId] = shopName;
+		globals.m.fabShops[shopName] = shopOrg;
+		globals.m.fabShops[shopOrg] = descripId;
+		globals.l.routeDefault.push(descripId);//set default route order STS process
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"D5ABDB15-3BD5-41CB-B397-C857BE3E1978"}
+ */
+function getRoutes(){
+	globals.m.routes = [];
+	globals.l.routes = [];
+	/** @type {QBSelect<db:/stsservoy/routings>} */
+	var q = databaseManager.createSelect('db:/stsservoy/routings');
+	q.result.add(q.columns.routing_id);
+	q.result.add(q.columns.route_code);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	for (var index = 1;index <= resultQ.getSize();index++){
+		var record = resultQ.getRecord(index);
+		var routeId = record.routing_id+"";
+		var routeName = record.route_code;
+		if (globals.l.routes.indexOf(routeId) == -1){
+			globals.l.routes.push(routeId);
+		}
+		globals.m.routes[routeId] = routeName;
+		globals.m.routes[routeName] = routeId;
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"63DA5B76-7110-4020-BE63-F2E47ADD0CA3"}
+ */
+function getRouteLegs(){
+	globals.l.routeLegs = [];
+	/** @type {QBSelect<db:/stsservoy/route_detail>} */
+	var q = databaseManager.createSelect('db:/stsservoy/route_detail');
+	q.result.add(q.columns.route_detail_id);
+	q.result.add(q.columns.e_route_code_id);
+	q.result.add(q.columns.status_description_id);
+	q.result.add(q.columns.route_order);
+	q.sort.add(q.columns.route_order);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	for (var index = 1;index <= resultQ.getSize();index++){
+		var record = resultQ.getRecord(index);
+		var routeLeg = record.status_description_id+"";
+		var routeId = record.e_route_code_id; // use for lookups for piecemark route code
+		if (!globals.l.routeLegs[routeId]){
+			globals.l.routeLegs[routeId] = [];
+		}
+		globals.l.routeLegs[routeId].push(routeLeg);
+	}
+}
 /**
  * @AllowToRunInFind
  * 
@@ -310,6 +583,12 @@ function checkBarcode(barcode) {
 	return null;
 }
 /**
+ * @properties={typeid:24,uuid:"3B8ADC8D-EA3A-43FA-8C9F-68ADB7D1E627"}
+ */
+function noOperation(){
+	application.output('this is an empty op.');
+}
+/**
  * TODO generated, please specify type and doc for the params
  * @param event
  *
@@ -340,7 +619,158 @@ function onActionScreenToggle(event) {
 	//forms[event.getFormName()].controller.loadRecords();
 	
 }
-
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param newStatus
+ *
+ * @properties={typeid:24,uuid:"AAA5AF42-178D-4359-960C-A5926092ADEC"}
+ */
+function rfCheckIdStatus(newStatus){
+	var repIdfile = globals.mob.idfile;
+	var routePcmk = globals.mob.piecemark
+	var lastStatus = repIdfile.status_description_id;
+	if (lastStatus+"" == newStatus+""){return false}
+	var checkLegs = [];
+	if (globals.mob.piecemark.status_description_id == null) {
+		checkLegs = globals.l.routeDefault;
+	} else {
+		checkLegs = globals.l.routeLegs[globals.mob.piecemark.status_description_id];
+	}
+	if (lastStatus == null){
+		if (checkLegs.indexOf(newStatus+"") != 0){
+			return false;
+		} else {
+			return true;
+		}
+	}
+	var lastCode = checkLegs.indexOf(lastStatus+"");
+	var nextCode = checkLegs.indexOf(newStatus+"");
+	if (lastCode*1 <= nextCode*1){
+		return true;
+	} else {
+		return false;
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param winName
+ *
+ * @properties={typeid:24,uuid:"27EE31BD-22A3-498C-BB9F-9FEA3FD08E43"}
+ */
+function rfChangeWindow(event,winName){
+	var currWin = application.getActiveWindow();
+	switch(winName)	{
+		case 'Transactions':
+			globals.session.program = 'Transactions';
+			currWin.show('rf_transactions');
+			break;
+		case 'Exit':
+			globals.rfExitMobileClient();
+			break;
+	default:
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"D0DA619C-1A75-492A-9C70-DEA26DC77D95"}
+ */
+function rfDetermineScanStatus(){
+	/**
+	 * if barcode in sequence and if additional status may be added to transactions
+	 */
+	
+}
+/**
+ * @properties={typeid:24,uuid:"236511BF-949D-4A92-B2CB-C99AB2F5676E"}
+ */
+function rfExitMobileClient(){
+	application.exit();
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param screen
+ *
+ * @properties={typeid:24,uuid:"A062386A-92A3-416F-B8E7-F8DCD639BAEE"}
+ */
+function rfFunctionKeys(screen){
+	globals.mobProg = screen;
+	for (var index=1;index < 11;index++){
+		plugins.window.createShortcut('F'+index,globals.noOperation);
+		functionKeyProcedure[index] = 'globals.noOperation';
+	}
+	plugins.window.createShortcut('F1','globals.showHelp');
+	plugins.window.createShortcut('F10','globals.showExecLogout');
+	functionKeyProcedure[10] = 'globals.showExecLogout';
+	functionKeyDescrip = ['','F1 - Help','F2 - ','F3 - ','F4 - ','F5 - ','F6 - ','F7 - ','F8 - ','F9 - ','F10 - Exit'];
+	functionKeyDescrip[2] = 'F2 - Switch Plants'
+	//functionKeyProcedure[2] = '';
+	//functionKeyProcedure[3] = '';
+	//functionKeyProcedure[8] = '';
+	//functionKeyProcedure[9] = '';
+	switch( screen )
+	{
+		case 'Main':
+			globals.mobForm = "STS_main";
+			break;
+		case 'Transactions':
+			globals.mobForm = "rf_transactions";
+			functionKeyDescrip[3] = 'F3 - List History'
+			functionKeyDescrip[8] = 'F8 - Remove Status'
+			functionKeyDescrip[9] = 'F9 - Inspection Doc'
+			break;
+		default:
+			
+	}
+	//functionKeyProvider = -1;
+	functionKeyProvider = "";
+	var funcList = [];
+	for (index = 0;index < 11;index++){
+		funcList.push(functionKeyDescrip[index])
+	}
+	application.setValueListItems('vl_HelpMenu',funcList);
+	/**var space = "";
+	if (functionKeyDescripB[0] == functionKeyDescrip[0]){space = ""}
+	for (var index = 0;index < 11;index++){
+		globals.functionKeyDescripB[index] = functionKeyDescrip[index]+space;
+	}
+	application.setValueListItems('vl_HelpMenu',functionKeyDescripB);
+	*
+	*/
+	//application.output('fkeys '+functionKeyDescrip);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param status
+ * @param location
+ *
+ * @properties={typeid:24,uuid:"74DC69EE-86E1-44F1-92C8-E5FC50700ABD"}
+ */
+function rfGetStatusProcessNumber(status,fabShopName){
+	var fabShop = fabShopName+', '+status;
+	if (aMobIdProcess.length == 0){
+		var fabShopId = aMobAssocs[fabShop];
+		/** @type {QBSelect<db:/stsservoy/status_description>} */
+		var q = databaseManager.createSelect('db:/stsservoy/status_description');
+		q.result.add(q.columns.status_description_id);
+		q.result.add(q.columns.status_code);
+		q.result.add(q.columns.status_sequence);
+		q.result.add(q.columns.association_id);
+		q.where.add(
+			q.and
+				.add(q.columns.delete_flag.isNull)
+				.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+			);
+		var resultQ = databaseManager.getFoundSet(q);
+		for (var index = 1;index < resultQ.getSize();index++){
+			var record = resultQ.getRecord(index);
+			if (record.association_id == "" || record.association_id == null){
+				aMobIdProcess[record.status_code] = record.status_sequence;
+			} else {
+				aMobIdProcess[aMobAssocs[record.association_id]+', '+record.status_code] = record.status_sequence;
+			}
+		}
+	}
+	return aMobIdProcess[fabShop];
+}
 /**
  * TODO generated, please specify type and doc for the params
  * @param barcodeID
@@ -380,6 +810,48 @@ function rfGetBarcodeIdfiles(barcodeID){
 function rfLocationChange(sLocation){
 	globals.session.statusLocation = sLocation;
 	globals.logger(false,'');
+}
+/**
+ * @properties={typeid:24,uuid:"C22351B5-E96D-4B6E-9440-FB3FA4849FEE"}
+ */
+function rfGetFabshopCodes(){
+	var allCodes = globals.l.fabShops;
+	var currentAssoc = globals.m.assocs[globals.mobAssocId];
+	var currentCodes = [];
+	for (var index = 0;index < allCodes.length;index++){
+		var codes = allCodes[index].split(',');
+		var codeStatus = codes[1];
+		codeStatus = codeStatus.trim();
+		if (codes[0] == currentAssoc){
+			if (currentCodes.indexOf(codeStatus) == -1){
+				currentCodes.push(codeStatus);
+			}
+		}
+	}
+	application.setValueListItems('stsvlg_status_codes',currentCodes);
+	return;
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var q = databaseManager.createSelect('db:/stsservoy/status_description');
+	q.result.add(q.columns.status_description_id);
+	q.result.add(q.columns.status_code);
+	q.result.add(q.columns.status_description_id);
+	//q.result.distinct = true;
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.status_description_id.eq(globals.mobAssocId))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	for (var index = 1;index <= resultQ.getSize();index++){
+		var record = resultQ.getRecord(index);
+		session.statusCodes.push(record.status_code);
+		var fabricationShopId = record.status_description_id+"";
+		var fabShop = fabricationShopId+", "+record.status_code;
+		var fabShopId = record.status_description_id+"";
+		globals.mobAssocMap[fabShop] = fabShopId;
+		globals.mobAssocMap[fabShopId] = fabShop;
+	}
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -488,10 +960,28 @@ function rfSelectFabPlant(){
  */
 function getMenuList(){
 	var progList = new Array;
-	progList.push('Transactions');
+	progList.push('Transactions ');
 	progList.push('Exit');
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
 	application.setValueListItems('rfProgramList',progList);
+}
+/**
+ * Returns an array with 'FabShopName, StatusWord' from a valueListArray from getValueListArray function
+ * @param valuelistArray
+ *
+ * @properties={typeid:24,uuid:"2D2DAEC0-AB88-4992-B269-2F840F006B22"}
+ */
+function getStatusCodes(valuelistArray){
+	mobFabShops = [];
+	var aStatusCodes = [];
+	for (var index in valuelistArray){
+		var fabParts = index.split(",");
+		var fabShop = globals.aMobAssocs[fabParts[0]]+', '+fabParts[1];
+		aStatusCodes.push(fabShop);
+		mobFabShops[index] = fabShop;
+		mobFabShops[fabShop] = index;
+	}
+	return aStatusCodes;
 }
 /**
  * @properties={typeid:24,uuid:"1D7946B6-714D-496A-BEAC-C434A61EAC91"}
@@ -509,6 +999,7 @@ function rfGetMobIdfile(idfileId){
 	q.result.add(q.columns.id_serial_number_id);
 	q.result.add(q.columns.original_quantity);
 	q.result.add(q.columns.tenant_uuid);
+	q.result.add(q.columns.status_description_id);
 	q.where.add(
 	q.and
 		.add(q.columns.delete_flag.isNull)
@@ -543,6 +1034,7 @@ function rfGetMobPiecemark(piecemarkId){
 	q.result.add(q.columns.cost_of_work_code);
 	q.result.add(q.columns.cost_of_work_quantity);
 	q.result.add(q.columns.description);
+	q.result.add(q.columns.e_route_code_id);
 	q.where.add(
 	q.and
 		.add(q.columns.delete_flag.isNull)
@@ -560,7 +1052,7 @@ function rfGetMobPiecemark(piecemarkId){
  *
  * @properties={typeid:24,uuid:"B8DB4ECB-760C-42B9-93C7-35926263EB67"}
  */
-function rfGetPiecesScanned(piecemarkId, sLocation, sStatus){
+function rfGetPiecesScanned(piecemarkId, sLocation, statusId){
 	// get total idfiles of piecemark
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
@@ -588,14 +1080,14 @@ function rfGetPiecesScanned(piecemarkId, sLocation, sStatus){
 	var r = databaseManager.createSelect('db:/stsservoy/transactions');
 	r.result.add(r.columns.trans_id);
 	r.result.add(r.columns.location);
-	r.result.add(r.columns.status);
+	r.result.add(r.columns.status_description_id);
 	//r.result.distinct = true;
 	r.where.add(
 	r.and
 		.add(r.columns.delete_flag.isNull)
 		.add(r.columns.idfile_id.isin(idfileList))
 		.add(r.columns.location.eq(sLocation))
-		.add(r.columns.status.eq(sStatus))
+		.add(r.columns.status_description_id.eq(statusId))
 	);
 	var resultR = databaseManager.getFoundSet(r);
 	var index = 1;
@@ -618,6 +1110,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation, sStatus){
  * @properties={typeid:24,uuid:"26985B1F-17E8-4514-8F2A-6FF5FFBAA236"}
  */
 function rfGetStatusChange(oldValue, newValue, event) {
+	plugins.scheduler.removeJob('updateField')
 	globals.session.userEntry = newValue;
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var q = databaseManager.createSelect('db:/stsservoy/status_description');
@@ -638,6 +1131,7 @@ function rfGetStatusChange(oldValue, newValue, event) {
 	}
 	globals.mob.status =  newValue;
 	globals.logger(false,'Status OK');
+	scopes.globals.statusId = globals.m.fabShops[mobAssocId+', '+newValue];
 	return true
 }
 /**
@@ -658,6 +1152,35 @@ function onFocusLost(event) {
 	}
 }
 /**
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"CEF23824-1370-4B5C-BD72-0064F9989EE5"}
+ */
+function onStartLoadPrefs(){
+	//var prefs = scopes.prefs;
+	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
+	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
+	if (fs.find()){
+		fs.user_id = -1;
+		fs.tenant_uuid = globals.secCurrentTenantID;
+		var recIndex = 1;
+		var recCount = fs.search();
+		recCount = databaseManager.getFoundSetCount(fs);
+		var record = null;
+		while (recCount > 0 && recIndex < recCount){
+			//while (recCount > 0 && recIndex <= recCount){
+			record = fs.getRecord(recIndex);
+			if (record.field_type == "boolean"){
+				scopes.prefs[record.field_name] = record.field_value == "true" ? true : false;
+			} else {
+				scopes.prefs[record.field_name] = record.field_value;
+			}
+			recIndex++;
+		}
+
+	}
+}
+/**
  * TODO generated, please specify type and doc for the params
  * @param idfileId
  *
@@ -665,6 +1188,9 @@ function onFocusLost(event) {
  */
 function rfGetTransactionLast(idfileId){
 	mob.transaction = {};
+	var lastTransaction = idfileId.status_description_id;
+	if (lastTransaction == null){return}
+	
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
 	q.result.add(q.columns.location);
@@ -675,12 +1201,14 @@ function rfGetTransactionLast(idfileId){
 	q.and
 		.add(q.columns.delete_flag.isNull)
 		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
-		.add(q.columns.idfile_id.eq(idfileId))
+		.add(q.columns.association_id.eq(lastTransaction))
 	);
+//		.add(q.columns.idfile_id.eq(idfileId))
 	var resultQ = databaseManager.getFoundSet(q);
 	var index = resultQ.getSize();
 	mob.transaction = {};
-	if (index > 1){mob.transaction = resultQ.getRecord(2)}
+	//if (index > 1){mob.transaction = resultQ.getRecord(2)}
+	if (index >= 1) {mob.transaction = resultQ.getRecord(1)}
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -724,10 +1252,51 @@ function rfGetWorker(oldValue, workers, event){
 	return true;
 }
 /**
+ * Create array of route in an ordered array
+ * Use raw route_id to get route list
+ * route list is the detail on the route_id
+ * on scan is the route valid, or what must precede the scan
+ * return the missing preceeding scan or echo the status
+ * so route must compare last scan to current scan to route.
+ * @properties={typeid:24,uuid:"B4B154A8-C6FA-43D8-97BD-C999F915A2CE"}
+ */
+function rfRouteOrder(){
+	aStatusCodes = application.getValueListArray('stsvl_status_codes');
+	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
+	aRouteCodes = [];
+	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
+	
+	/** @type {QBSelect<db:/stsservoy/route_detail>} */
+	var q = databaseManager.createSelect('db:/stsservoy/route_detail');
+	q.result.add(q.columns.e_route_code_id);
+	q.result.add(q.columns.status_description_id);
+	q.result.add(q.columns.route_order);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.idfile_id.isin(globals.mob.idfiles))
+		.add(q.columns.status.eq(sStatus))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	
+	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
+	var fs = sts_route_status_codes;
+	if (fs != null) {
+		for(var index=1;index<=fs.getSize();index++){
+			var record = fs.getRecord(index);
+			var code = record.status_code;
+			aRouteCodes.push(code);
+			aStatusCodes = removeElementFromArray(aStatusCodes,code);
+		}
+	}
+
+}
+/**
  * @properties={typeid:24,uuid:"D48C150B-3D61-4633-9505-DE38F1F6991B"}
  */
-function saveScanTransaction(sBC, sStatus, sLocation){
-	if (sStatus == ""){return}
+function rfSaveScanTransaction(sBC, statusId, sLocation){
+	if (statusId == ""){return}
 	application.output('save scan transaction');
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
@@ -737,7 +1306,7 @@ function saveScanTransaction(sBC, sStatus, sLocation){
 		.add(q.columns.delete_flag.isNull)
 		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
 		.add(q.columns.idfile_id.isin(globals.mob.idfiles))
-		.add(q.columns.status.eq(sStatus))
+		.add(q.columns.status_description_id.eq(statusId))
 	);
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() != 0){
@@ -763,38 +1332,92 @@ function saveScanTransaction(sBC, sStatus, sLocation){
 	//globals.workerList;
 	//globals.mobIdSerialId;
 	//globals.mobIdfiles;
-	var transIdfiles = [];
-	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-	var newFS = databaseManager.getFoundSet('db:/stsservoy/transactions');
 	var recordsToSave = [];
-	for (index = 0;index < mob.idfiles.length;index++){
-		var newRec = newFS.newRecord();
-		newFS.status = sStatus;
-		newFS.fabrication_shop = null;///////////////////////TEXT
-		newFS.employee_id = globals.mobLoggedEmployeeId;//UUID
-		newFS.idfile_id = mob.idfiles[index];
-		newFS.location = sLocation;
-		newFS.transaction_date = date;
-		newFS.tenant_uuid = globals.mobTenantId;
-		for (index = 0;index < currentWorkers.length;index++ ){
-			switch (index){
-				case 0: newFS.worker_id = currentWorkers[index];break;
-				case 1: newFS.worker2_id = currentWorkers[index];break;
-				case 2: newFS.worker3_id = currentWorkers[index];break;
-				case 3: newFS.worker4_id = currentWorkers[index];break;
-				case 4: newFS.worker5_id = currentWorkers[index];break;
-				default:
+	if (globals.rfCheckIdStatus(statusId)){
+		var transIdfiles = [];
+		/** @type {JSFoundSet<db:/stsservoy/transactions>} */
+		var newFS = databaseManager.getFoundSet('db:/stsservoy/transactions');
+		for (index = 0;index < mob.idfiles.length;index++){
+			var newRecNum = newFS.newRecord();
+			var newRec = newFS.getRecord(newRecNum);
+			newFS.status_description_id = statusId;
+			newFS.id_location = sLocation; // location is fabShop
+			newFS.employee_id = globals.mobLoggedEmployeeId;//UUID
+			newFS.idfile_id = mob.idfiles[index];
+			newFS.location = sLocation;
+			newFS.transaction_date = date;
+			newFS.tenant_uuid = globals.mobTenantId;
+			for (index = 0;index < currentWorkers.length;index++ ){
+				switch (index){
+					case 0: newFS.worker_id = currentWorkers[index];break;
+					case 1: newFS.worker2_id = currentWorkers[index];break;
+					case 2: newFS.worker3_id = currentWorkers[index];break;
+					case 3: newFS.worker4_id = currentWorkers[index];break;
+					case 4: newFS.worker5_id = currentWorkers[index];break;
+					default:
+				}
+			}
+			recordsToSave.push(newRec);
+		}
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+		q.result.add(q.columns.idfile_id);
+		q.result.add(q.columns.id_location);
+		q.result.add(q.columns.status_description_id);
+		q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+			.add(q.columns.idfile_id.isin(globals.mob.idfiles))
+		);
+		var resultQ = databaseManager.getFoundSet(q);
+		if (resultQ.getSize() > 0){
+			for (index = 1;index <= resultQ.getSize();index++){
+				var record = resultQ.getRecord(index);
+				record.id_location = sLocation;
+				record.status_description_id = statusId;
+				recordsToSave.push(record);
 			}
 		}
-		recordsToSave.push(newRec);
+		for (index = 0;index < recordsToSave.length;index++){
+			var rec = recordsToSave.pop();
+			databaseManager.saveData(rec);
+		}
+		return true;
 	}
-	for (index = 0;index < recordsToSave.length;index++){
-		var rec = newFS.getRecord(recordsToSave.pop());
-		databaseManager.saveData(rec);
-	}
+	null; null;
+
 	//var batchSet = databaseManager.getFoundSetUpdater(resultQ);
 	//batchSet.setColumn(name,value)
-	return true;
+	return false;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param formName
+ * @param elementName
+ *
+ * @properties={typeid:24,uuid:"D664A936-2F58-4388-A670-225F32740CAF"}
+ */
+function setFocus(){
+	var formName = globals.setFocusFormName;
+	var elementName = globals.setFocusElementName;
+	forms[formName].elements[elementName];
+}
+/**
+ * @properties={typeid:24,uuid:"5EF80351-5BA6-414C-98AB-EFDB31AD4CAA"}
+ */
+function showHelp(){
+	functionKeyProvider = -1;
+	functionKeyProvider = null;
+	var win = application.getActiveWindow();
+	win.show('rf_help');
+}
+/**
+ * @properties={typeid:24,uuid:"CF92CA29-7654-497B-9D1E-EABE3FAA08A6"}
+ */
+function showMain(){
+	var win = application.getActiveWindow();
+	win.show('STS_main');
 }
 /**
  * @AllowToRunInFind
@@ -845,13 +1468,15 @@ function formParent(){
 function errorDialog(errorNum){
 	var conted = new Continuation();
 	var win = application.createWindow("Error "+errorNum, JSWindow.MODAL_DIALOG);
-	var win = application.getActiveWindow();
+	if (application.getSolutionName() == 'STSmobile'){
+		var win = application.getActiveWindow();
+	}
 	//var winX = win.getX()+5;
 	//var winY = win.getY()+5;
 	//var winXwidth = win.getWidth()-10;
 	//var winYwidth = win.getHeight()-10;
 	//win.setInitialBounds(winX, winY, winXwidth, winYwidth);
-	win.title = "Error "+errorNum+" error "+errorNum+" error "+errorNum+" error "+errorNum+" error "+errorNum;
+	win.title = "Error "+errorNum;
 	win.show('dialogErrorMessage');
 	return conted;
 	//controller.show(win);
@@ -865,6 +1490,7 @@ function errorDialog(errorNum){
  * @AllowToRunInFind
  */
 function errorDialogMobile(errorNum){
+	errorNum = errorNum+"";
 	/** @type {JSFoundSet<db:/stsservoy/messages>} */
 	var fs = databaseManager.getFoundSet('db:/stsservoy/messages');
 	var errorMessage = "Unidentified error. Contact technical support.";
@@ -913,4 +1539,61 @@ function logger(capture,message){
 	
 	databaseManager.saveData(fs);
 }
+/**
+ * @properties={typeid:24,uuid:"A54C5C7A-4CB9-47DC-9782-3A5A35DD8B60"}
+ */
+function showExecLogout(){
+	var win = application.getActiveWindow();
+	var formName = win.controller.getName();
+	if (formName == "STS_main"){
+		security.logout('STSmobile');
+		return;
+	}
+	if (formName == "rf_help"){
+		win.show(globals.mobForm);
+		//win.hide();
+		return;
+	}
+	win.show('STS_main');
+	rfFunctionKeys('Main');
+}
 
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D5858A57-8078-44A2-8DD2-E6078946ED31"}
+ */
+function onActionHelp(event) {
+	var form = event.getFormName();
+	var elName = forms[form].elements.menu.getSelectedElements()[0];
+	var funcIndex = functionKeyDescrip.indexOf(elName);
+	var progEx = functionKeyProcedure[funcIndex]+'()';
+	eval(progEx);
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"138D6C44-7A06-4841-B9A7-409FF1B186A0"}
+ */
+function onActionMainMenu(event) {
+	var progList = application.getValueListArray('rfProgramList');
+	var form = event.getFormName();
+	var elName = forms[form].elements.mainMenu.getSelectedElements()[0];
+	var elIndex = progList.indexOf(elName);
+	if (elName[elName.length-1] == " ") {
+		elName = elName.slice(0,elName.length-1);
+	} else {
+		elName = elName+' ';
+	}
+	progList[elIndex] = elName;
+	var prog = forms[form].elements.mainMenu.getSelectedElements()[0].trim();
+	rfFunctionKeys(prog);
+	rfChangeWindow(event,prog);
+	globals.mobProg = prog;
+	application.setValueListItems('rfProgramList',progList);
+}

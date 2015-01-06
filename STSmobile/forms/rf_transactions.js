@@ -46,7 +46,6 @@ var lastID = "";
  * @properties={typeid:24,uuid:"D5D84404-C6EC-4EB8-984D-E594A43EAAF9"}
  */
 function onDataChangeLocation(oldValue, newValue, event) {
-	//globals.showElement('worker',2);
 	return true
 }
 /**
@@ -107,18 +106,22 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 	scopes.globals.mobWorkers = statusWorker;
 	//currentID = scopes.globals.mobBarcode;
 	lastID = scannedID;
-	
-	
+	var currentFabShopId = globals.m.fabShops[globals.secCurrentAssociationID+", "+statusCode];
+	//globals.secCurrentAssociationID; statusCode; globals.aMobAssocs[globals.secCurrentAssociationID];
 	controller.loadRecords(scopes.globals.rfGetBarcodeIdfiles(barcodeId)); // mob.idfiles
-	globals.saveScanTransaction(scannedID,statusCode,statusLocation);
-	currentID = '';
-	//scopes.globals.rfIdLength = scopes.globals.decToFeet(item_length);
-	//scopes.globals.mobIdfiles = scopes.globals.rfaIdfiles;
 	scopes.globals.rfGetMobIdfile(scopes.globals.mob.idfiles[0]);
 	scopes.globals.rfGetMobPiecemark(scopes.globals.mob.idfile.piecemark_id);
+	var status = globals.rfSaveScanTransaction(scannedID,globals.statusId,statusLocation);
+	currentID = '';
+	if (!status){return}
+	//scopes.globals.rfIdLength = scopes.globals.decToFeet(item_length);
+	//scopes.globals.mobIdfiles = scopes.globals.rfaIdfiles;
+	//var status = globals.rfCheckIdStatus(statusCode,statusLocation);
+	//scopes.globals.mobIdfiles[0]
 	scopes.globals.rfGetTransactionLast(scopes.globals.mob.idfiles[0]);
+	//scopes.globals.mob.idfile.
 	scopes.globals.rfGetLocationStats(scopes.globals.mobLocation);
-	scopes.globals.rfGetPiecesScanned(scopes.globals.mob.piecemark.piecemark_id, scopes.globals.mobLocation, scopes.globals.mobStatus);
+	scopes.globals.rfGetPiecesScanned(scopes.globals.mob.piecemark.piecemark_id, scopes.globals.mobLocation, globals.statusId);
 	scopes.globals.mobPreviousLocation = scopes.globals.mob.transaction.location;
 	scopes.globals.mobPreviousStatus = scopes.globals.mob.transaction.status;
 	scopes.globals.mobLocationPieces = scopes.globals.mob.location.pieces;
@@ -169,10 +172,28 @@ function resetWorkerCode(){
  */
 function onShowForm(event) {
 	//foundset = databaseManager.getFoundSet('stsservoy','idfiles');
+	globals.mobForm = "rf_transactions";
+	globals.mobProg = "Transactions";
 	null;
 	if (foundset.find()){
 		delete_flag = 19;
 		foundset.search();
 	}
 	null;
+	//elements.status.requestFocus();
+	elements.location.requestFocus();
+	application.sleep(300);
+	elements.status.requestFocus();
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"CAF3DDFA-DD2E-4F15-ABC2-80593443C9E2"}
+ */
+function onActionKeys(event) {
+	application.output('key pressed '+event.getType());
+	// TODO Auto-generated method stub
 }

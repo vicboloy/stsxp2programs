@@ -1,22 +1,4 @@
-/**
- * TODO generated, please specify type and doc for the params
- * @param winName
- *
- * @properties={typeid:24,uuid:"773F765F-1143-442A-9EC7-A9C53D44164C"}
- */
-function changeWindow(event,winName){
-	var currWin = application.getActiveWindow();
-	switch(winName)	{
-		case 'Transactions':
-			globals.session.program = 'Transactions';
-			currWin.show('rf_transactions');
-			break;
-		case 'Exit':
-			globals.exitMobileClient();
-			break;
-	default:
-	}
-}
+
 /**
  * Callback method when form is (re)loaded.
  *
@@ -54,15 +36,16 @@ function onActionTemp(event) {
 		}
 }
 
+
 /**
- * Perform the element default action.
+ * Callback method for when form is shown.
  *
+ * @param {Boolean} firstShow form is shown first time after load
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"824C2A08-2991-4BD2-9F8A-91F540D8D914"}
+ * @properties={typeid:24,uuid:"B48A3328-0E53-428C-979D-FE0FA2E98598"}
  */
-function onActionMainMenu(event) {
-	controller.getSelectedIndex();
-	application.output('elements '+elements.mainMenu.getSelectedElements());
-	changeWindow(event,elements.mainMenu.getSelectedElements()[0]);
+function onShow(firstShow, event) {
+	globals.mobForm = "STS_main";
+	globals.mobProg = "Main";
 }

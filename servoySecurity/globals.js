@@ -981,6 +981,7 @@ function secGetTenantID(companyName){
  * @properties={typeid:24,uuid:"34672C20-8C8D-487B-8B7E-E4B24B08847B"}
  */
 function secGetTenantID2(userName,companyName){
+
 	null;
 	var tenantID = null;
 	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */

@@ -5,7 +5,7 @@
  * @properties={typeid:24,uuid:"086C6FA2-5A14-49BD-8479-782A9738321A"}
  */
 function onActionScreenToggle(event) {
-	forms.delete_pcmk_combo.onActionSceenToggle(event);
+	forms.delete_pcmk_combo.onActionScreenToggle(event);
 }
 /**
  * TODO generated, please specify type and doc for the params

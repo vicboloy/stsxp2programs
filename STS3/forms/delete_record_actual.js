@@ -40,8 +40,9 @@ function onShow(firstShow, event) {
 	//var success2 = solutionModel.removeForm(formNameTable);
 	forms[formCriteria].collectCriteria(formCombo);
 	forms[formCombo].elements.split.setRightForm(formPrefix+'_pcmk_transaction','sts_idfile_to_transactions');
-	var top = forms[formCombo].elements.split.getRightForm().controller.getName();
-	var bot = forms[formCombo].elements.split.getLeftForm().controller.getName();
+	scopes.jobs.hideEmptyColumns(event,1);
+	var bot = forms[formCombo].elements.split.getRightForm().controller.getName();
+	var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
 	forms[formOverview].elements.tabless.addTab(formNameTable);
 	scopes.jobs.loadTablePrefs(top);
 	scopes.jobs.loadTablePrefs(bot);

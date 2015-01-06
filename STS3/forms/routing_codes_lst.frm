@@ -9,6 +9,7 @@ null,
 dataSource:"db:/stsservoy/routings",
 encapsulation:60,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
+initialSort:"route_code asc",
 items:[
 {
 anchors:11,

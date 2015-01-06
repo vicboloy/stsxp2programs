@@ -43,7 +43,7 @@ items:[
 containsFormID:"E0EA52C4-C8B6-4C18-8DFD-A281A388D877",
 location:"334,35",
 name:"Print",
-text:"loads_print",
+text:"Loads Print",
 typeid:15,
 uuid:"4C682278-F51D-47D6-9AFC-425CD95E2D59"
 },
@@ -51,7 +51,7 @@ uuid:"4C682278-F51D-47D6-9AFC-425CD95E2D59"
 containsFormID:"5C290A0E-1C68-4456-9264-677606987220",
 location:"210,35",
 name:"View_Summary_Info",
-text:"loads_summary_info",
+text:"Load Summary Info",
 typeid:15,
 uuid:"D56F9949-9E9E-4A9F-97D9-E5A3465C18CA"
 },
@@ -59,7 +59,7 @@ uuid:"D56F9949-9E9E-4A9F-97D9-E5A3465C18CA"
 containsFormID:"C62B01DE-47E1-4CA8-9F7C-BF4299FD7D19",
 location:"5,35",
 name:"View_Load_Criteria",
-text:"loads_criteria",
+text:"Load Criteria",
 typeid:15,
 uuid:"E2A0EA9D-329A-471F-8634-0F737971A06E"
 },
@@ -67,7 +67,7 @@ uuid:"E2A0EA9D-329A-471F-8634-0F737971A06E"
 containsFormID:"DAF8C9D7-E9AD-4EA3-9BAD-7480746A877E",
 location:"86,35",
 name:"Piecemark_Info",
-text:"loads_piecemark_info",
+text:"Loads Piecemark Info",
 typeid:15,
 uuid:"EC5AF20F-F943-4FAF-ADC9-C2F9A31B47BF"
 }

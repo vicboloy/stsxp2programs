@@ -1,5 +1,8 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/routings",
+items:[
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.secCurrentTenantID",typeid:23,uuid:"EAFDC613-F0B7-416B-A48B-F347D8431593"}
+],
 joinType:1,
 name:"sts_routing_codes_container",
 primaryDataSource:"db:/stsservoy/routings",

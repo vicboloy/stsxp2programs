@@ -6,7 +6,7 @@
  * @properties={typeid:24,uuid:"20322A68-9260-4BF4-97BC-D1E38ECA4E90"}
  */
 function onActionScreenToggle(event) {
-	forms.delete_pcmk_combo.onActionSceenToggle(event);
+	forms.delete_pcmk_combo.onActionScreenToggle(event);
 }
 
 /**

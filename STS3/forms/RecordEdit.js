@@ -35,6 +35,7 @@ function onActionAdd(event,recordKeyID){
 	selectedIndex = controller.getSelectedIndex();
 	onEdit(event,true);
 	foundset.newRecord();
+	tenant_uuid = globals.secCurrentTenantID;
 	globals.newRecordKey = eval(recordKeyID);
 	additionalActionAddFunctions();
 }
@@ -58,8 +59,8 @@ function onActionAddForm(event){
  */
 function onActionDelete(event) {
 	var itemDescription;
-	var itemDescr = "Remove "+itemDescription;
-	globals.doDialog(itemDescr,"Delete this Class?","Delete","Cancel");
+	var itemDescr = "Remove ";
+	globals.doDialog(itemDescr,"Delete?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
 		addOnActionDelete();
 		controller.deleteRecord();
@@ -74,18 +75,16 @@ function onActionDelete(event) {
  * @properties={typeid:24,uuid:"0D273E9E-ECB7-4362-9492-21A6DACDA13D"}
  */
 function onRecordSelection(event,buttonTextSrc) {
-	var form = getParentForm();
-	var text = form[buttonTextSrc];
-	if (text == null){
-			form.elements['deleteButton'].text = "Delete";
-		} else {
-			form.elements['deleteButton'].text = "Delete \'"+text+"\'";
-		}
-	form.addOtherChangeFunctions(); //Run change functions to update comboboxen
-	form.otherSelectionFunctions();
+	//var text = form[buttonTextSrc];
+	//if (text == null){
+	//		form.elements['deleteButton'].text = "Delete";
+	//	} else {
+	//		form.elements['deleteButton'].text = "Delete \'"+text+"\'";
+	//	}
 	//elements.deleteButton.text = 'Delete';
 	//forms.status_descriptions.currentStatusCode = code;
 	//selectedIndex = getSelectedIndex();
+	//return true;
 }
 /**
  * Perform the element default action.
@@ -112,6 +111,8 @@ function onActionEdit(event) {
  * @properties={typeid:24,uuid:"2CA6B5AA-5E72-412F-9002-67AB9698B7E9"}
  */
 function onEdit(event,editStatus){
+	if (codesAvail != undefined){codesAvail = null}
+	if (codesSelect != undefined){codesSelect = null}
 	editFlag = editStatus;
 	controller.readOnly = !editStatus;
 	elements.addButton.visible = !editStatus;
@@ -119,6 +120,9 @@ function onEdit(event,editStatus){
 	elements.cancelButton.visible = editStatus;
 	elements.editButton.visible = !editStatus;
 	elements.deleteButton.visible = !editStatus;
+	elements.orderProcess.visible = editStatus;
+	elements.orderDown.visible = editStatus;
+	elements.orderUp.visible = editStatus;
 	elements.tablessX.enabled = !editStatus;
 }
 /**
@@ -226,6 +230,7 @@ function onDataChange(oldValue, newValue, event, recordUniq, recordKeyID) {
  */
 function onShow(firstShow, event) {
 	// disable form on entry. Must hit edit
+	controller.setSelectedIndex(controller.getSelectedIndex());
 	if (firstShow) {
 		//controller.recreateUI();	
 		onEdit(event,false);
@@ -245,7 +250,7 @@ function getParentForm() {
 		return forms[parentFormName]
 	}
 	else {
-		throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
+		//throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
 	}
 }
 /**
@@ -257,7 +262,7 @@ function getParentForm() {
  * @properties={typeid:24,uuid:"2884B6C8-F0D4-4EB9-8833-76D9526872D4"}
  */
 function addElementToArray(array,element){
-	element = element.replace(/ /g,"");
+	varvchkElement = element.replace(/ /g,"");
 	/** @type {Array} [newArray] */
 	var newArray = new Array;
 	newArray = array;

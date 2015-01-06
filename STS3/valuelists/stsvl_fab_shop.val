@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"association_name",
+dataProviderID2:"association_uuid",
+name:"stsvl_fab_shop",
+relationName:"st2_tenantid_associations",
+returnDataProviders:2,
+showDataProviders:1,
+typeid:34,
+uuid:"7F393B0E-5AE4-41EE-877E-180358CB31F4",
+valueListType:1

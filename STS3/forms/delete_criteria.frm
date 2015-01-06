@@ -120,6 +120,14 @@ typeid:7,
 uuid:"386A923E-2D96-456D-BF91-E7A5922EEADA"
 },
 {
+customProperties:"methods:{
+onActionMethodID:{
+arguments:[
+null,
+\"'Job Piecemark Deletion'\"
+]
+}
+}",
 enabled:false,
 horizontalAlignment:0,
 location:"172,399",

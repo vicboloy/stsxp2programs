@@ -11,3 +11,16 @@ function onShow(firstShow, event) {
 	elements.split.dividerLocation = 0.75;
 	return _super.onShow(firstShow, event)
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"37F5FBBB-4F5A-4F3C-A488-A0EF4FAB6668"}
+ */
+function onActionBrowseExit(event) {
+	var win = application.getActiveWindow();
+	win.destroy();
+	// TODO Auto-generated method stub
+}

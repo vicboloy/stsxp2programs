@@ -1596,6 +1596,35 @@ function saveTablePrefs(event){
 }
 /**
  * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"CA56F8D0-EBCA-4851-B1B3-95C2805AD2DA"}
+ */
+function viewBTableThrowSplit(event,winTitle){
+	var formName = event.getFormName();
+	application.output('formname '+formName);
+	var height = forms[formName].controller.getWindow().getHeight();
+	var width = forms[formName].controller.getWindow().getWidth();
+	var xOrigin = forms[formName].controller.getWindow().getX();
+	var yOrigin = forms[formName].controller.getWindow().getY();
+	var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
+	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
+	win.title = winTitle;
+	var showForm = '';
+	switch( formName )
+	{
+		case 'loads_criteria':
+			showForm = 'loads_browse';
+		case 'delete_criteria':
+			showForm = 'delete_record_actual';
+	default:
+	}
+	scopes.jobs.removeFormHist(formName+'_table');
+	win.show(forms[showForm]);
+	
+}
+/**
+ * TODO generated, please specify type and doc for the params
  * @param criteria
  * @param formName
  *
@@ -1604,7 +1633,8 @@ function saveTablePrefs(event){
  */
 function viewBTableToForm(criteria,formName){
 	var formNameTable = formName+'_table';
-	removeFormHist(formNameTable);
+	//removeFormHist(formNameTable);
+	//null;//stop here check for delete_piecemark_info
 	if (forms[formNameTable]){
 		application.output(forms[formNameTable]);
 	}
@@ -1637,6 +1667,7 @@ function viewBTableToForm(criteria,formName){
 	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag IS null SONUM FABS AREA PCRL LDN COW LOT PKG'+
 	' inner join sequences ss on ss.sequence_id = i.sequence_id SEQN ' +
 	' inner join id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ' +
+	' left join status_description sd on sd.status_description_id = i.status_description_id ' +
 	' left join loads l on l.load_id = i.current_load_id LDRR';
 	if (formName.search(/(recall|remove)/) != -1){
 		query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",* from piecemarks p '+
@@ -1778,6 +1809,7 @@ function viewBTableToForm(criteria,formName){
 	}
 	//swap piecemark_id and first columns
 	browseDatasource = browseFS.createDataSource(formName+'_browse',browseArray); 
+	//scopes.jobs.removeFormHist(formNameTable);
 	var checkForm = solutionModel.newForm(formNameTable,browseDatasource,'sts_one',false,500,600);
 	var code = 'function onRecordSelection(event){\
 			scopes.jobs.onRecordSelectIdfile(event);\
@@ -1824,7 +1856,6 @@ function viewBTableToForm(criteria,formName){
 		status = forms[formName].elements.tabless.addTab(formNameTable);
 	}
 	if (!status){
-		
 		status = forms[formName].elements.split.setLeftForm(formNameTable);
 		//forms.delete_pcmk_combo.elements.split.setLeftForm(formNameTable);
 	}
@@ -3523,6 +3554,63 @@ function loadKissMapping(){
 	return needsMap.length == 0;
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param table
+ *
+ * @properties={typeid:24,uuid:"0B6983DE-9208-499A-AFD2-76A33B879DCB"}
+ */
+function hideEmptyColumns(event,table){
+	var formName = event.getFormName();
+	var prefix = formName.split('_')[0];
+	var hideEm = (globals.hideEmptyColumns == 1);
+	application.output(prefix+' form name '+formName+' loads_pcmk_combo');
+	//forms.loads_pcmk_combo.elements.split.getRightForm().elements.checklist_line.visible
+	if (prefix == 'loads'){
+		forms['loads_pcmk_combo'].elements.split.getLeftForm().elements.Selection.visible = false;
+	}
+	
+	var formEls = forms[prefix+'_pcmk_combo'].elements.split.getLeftForm().elements;
+	var browse = databaseManager.getFoundSet(forms[prefix+'_pcmk_combo'].elements.split.getLeftForm().controller.getDataSource());
+	var browseSet = forms[prefix+'_pcmk_combo'].elements.split.getLeftForm().foundset;
+	//var disableList = ['checklist','uuid'];
+	//for (var tab = 0;tab < 2;tab++){
+	if (table != 0){
+		var formRt = forms[prefix+'_pcmk_combo'].elements.split.getRightForm();
+		if (formRt == null){return}
+		browse = databaseManager.getFoundSet(forms[prefix+'_pcmk_combo'].elements.split.getRightForm().controller.getDataSource());			
+		browseSet = forms[prefix+'_pcmk_combo'].elements.split.getRightForm().foundset;
+		formEls = forms[prefix+'_pcmk_combo'].elements.split.getRightForm().elements;
+		browseSet.sort('transaction_date desc');
+	}
+	var recCount = databaseManager.getFoundSetCount(browseSet);
+	//var formName = forms.loads_pcmk_combo.elements.split.getLeftForm().getName();
+	//var fs = forms[prefix+'_pcmk_combo_table'].foundset;
+	var fs = browseSet;
+	//browseSet = forms.loads_pcmk_combo.elements.split.getRightForm().foundset;
+	var recCount = databaseManager.getFoundSetCount(browseSet);
+	application.output('set size transaction '+recCount);
+	var maxCount = recCount;
+	if (recCount > 100) {maxCount = 100}
+	for (var item in formEls){
+		var empty = true;
+		var dataProvider = formEls[item].getDataProviderID();
+		for (var index = 1;index <= maxCount;index++){
+			var rec = fs.getRecord(index);
+			if (!hideEm){
+				empty = false;
+				break;
+			}
+			var value = fs.getDataProviderValue(dataProvider);
+			if (value != undefined && (value != "" && value != null)){
+				empty = false;
+				break;
+			}
+		}
+		formEls[item].visible = !empty;
+	}
+}
+/**
  * @AllowToRunInFind
  *
  * @properties={typeid:24,uuid:"8F81FA19-1380-4635-8F1D-16C3D6AAD275"}
@@ -3584,6 +3672,7 @@ function idHeaders(){
  * @AllowToRunInFind
  */
 function onRecordSelectIdfile(event){
+	var prefix = event.getFormName().split("_")[0];
 	var index = forms[event.getFormName()].controller.getSelectedIndex();
 	var rec = forms[event.getFormName()];
 	//var fs = databaseManager.getFoundSetCount('sts_piecemarks');
@@ -3592,7 +3681,9 @@ function onRecordSelectIdfile(event){
 	scopes.jobs.transactionIdfileId = rec.idfile_id;
 	application.output('idfileid '+scopes.jobs.transactionIdfileId);
 	application.output('record select '+rec.id_serial_number);
-	forms.gen_browse_trans.controller.loadRecords();
+	//forms.gen_browse_trans.controller.loadRecords();
+	forms[prefix+'_pcmk_transaction'].controller.loadRecords();
+	hideEmptyColumns(event,1);
 	//application.output('barcode id '+id_serial_number_id);
 	//return _super.onRecordSelection(event);
 }
@@ -4513,9 +4604,10 @@ function removeFromList(srcArray,dstArray){
  * @properties={typeid:24,uuid:"4FE55909-73F9-4F37-8413-79AF14AE5FCC"}
  */
 function removeFormHist(formName){
+	//application.getActiveWindow().
 	var statHis = history.removeForm(formName);
 	var statMod = solutionModel.removeForm(formName);
-	//application.output(formName+' history remove: '+statHis+' solution model remove form: '+statMod);
+	application.output(formName+' history remove: '+statHis+' solution model remove form: '+statMod);
 }
 /**
  * TODO generated, please specify type and doc for the params

@@ -69,6 +69,7 @@ uuid:"BC9719FB-CE1E-4351-8DE0-A8168DEE3F14"
 }
 ],
 name:"delete_pcmk_combo",
+onHideMethodID:"64119CDE-CFFE-42E3-BB4D-85A4A7FE31E7",
 styleName:"sts_one",
 typeid:3,
 uuid:"D42BCB02-00A6-4235-8BEB-2546FF37593E"

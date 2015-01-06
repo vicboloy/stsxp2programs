@@ -20,7 +20,7 @@ uuid:"EA42B19B-90B5-4775-80E6-94F50F89154F"
 },
 {
 anchors:7,
-dataProviderID:"windowList",
+dataProviderID:"scopes.globals.winTrackProvider",
 displayType:11,
 location:"5,28",
 name:"windows",

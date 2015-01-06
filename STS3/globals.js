@@ -215,6 +215,7 @@ function initLaborCodes(){
 	//fs.loadRecords();
 	for (var index = 1;index <= fs.getSize();index++){
 		fs.setSelectedIndex(index);
+		if (fs.tenant_uuid != globals.secCurrentTenantID){continue}
 		aLaborCodes.push(fs.labor_code);
 	}
 	application.setValueListItems('stsvl_labor_code',aLaborCodes);
@@ -239,7 +240,10 @@ function initStatusCodes(){
 	fs.loadAllRecords();
 	for (var index = 1;index <= fs.getSize();index++){
 		fs.setSelectedIndex(index);
-		aStatusCodes.push(fs.status_code);
+		if (fs.tenant_uuid != globals.secCurrentTenantID){continue}
+		if (aStatusCodes.indexOf(fs.status_code) == -1){
+			aStatusCodes.push(fs.status_code);
+		}
 	}
 	application.setValueListItems('stsvl_status_code',aStatusCodes);
 }
@@ -876,6 +880,7 @@ function onSolutionOpen() {
 	session.tenant_uuid = secCurrentTenantID;
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.program = "STS Desktop";
+	globals.getAssociation(secCurrentAssociationID);
 	onStartLoadPrefs();	
 }
 
@@ -983,7 +988,7 @@ function onActionFileOpenDialog(event,updateValue) {
  *
  * @properties={typeid:24,uuid:"A6F4FD9B-D10C-4BFD-9ADB-89DAA8CBDCD7"}
  */
-function onStartLoadPrefs(){
+function unusedonStartLoadPrefs(){
 	//var prefs = scopes.prefs;
 	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
 	var fs = databaseManager.getFoundSet('stsservoy','preferences2');

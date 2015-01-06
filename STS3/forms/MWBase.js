@@ -378,21 +378,26 @@ function addWindowList(windowName){
  * @AllowToRunInFind
  */
 function focusWindow(){
+	//var winList = application.getValueListArray('stvl_nav_windows');
 	var windowArray = globals.aTrackWindows;
 	/** @type {String} */
 	var windowName = elements.windows.getSelectedElements()[0];
-	//elements.windows.
-	/** UNUSED for (var p in elements.windows){
-		if (typeof elements.windows[p] == "function"){
-			application.output('elements.windows '+p);
-		} else {
-			application.output(p);
-		}
-	}*/
+	//var winNameSearch = windowName.trim();
+	//var winIndex = windowArray.indexOf(windowName.trim());
 	if (windowName == null){return}
 	if (windowName == " "){return}
 	if (windowName.search('STS') == 0){return}//cannot bring main to front, so ignore
-	var windowx = application.getWindow(windowName);
+	var windowx = application.getWindow(windowName.trim());
+	//if (windowName[windowName.length-1] == " "){
+	//	windowName = windowName.slice(0,windowName.length-1);
+	//} else {
+	//	windowName = windowName+' ';
+	//}
+	//windowArray[winIndex] = windowName;
+	///** @type windowArray {Array} */
+	//application.setValueListItems('stvl_nav_windows',windowArray);
+	globals.winTrackProvider = " ";
+	globals.winTrackProvider = "";
 	windowx.toFront();
 }
 /**
@@ -416,4 +421,7 @@ function removeWindowTrack(){
 	}
 	globals.aTrackWindows = tempArray;
 	application.setValueListItems('stsvl_nav_windows',tempArray);
+	globals.winTrackProvider = " ";
+	globals.winTrackProvider = "";
+
 }

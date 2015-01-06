@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/status_description",
+items:[
+{foreignColumnName:"status_description_id",primaryDataProviderID:"status_description_id",typeid:23,uuid:"820035E0-F44A-4D15-A09E-44C590B432A8"}
+],
+joinType:1,
+name:"sts_transactions_to_status_description",
+primaryDataSource:"db:/stsservoy/transactions",
+typeid:22,
+uuid:"7F91D670-1B98-4843-AC1C-D12317EB4CA9"

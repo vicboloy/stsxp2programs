@@ -8,5 +8,21 @@
  * @properties={typeid:24,uuid:"DBCAA96E-A13B-49F3-9DB9-BC2B9572A5F3"}
  */
 function onShow(firstShow, event) {
+	var formPrefix = event.getFormName().split("_")[0];
+	formPrefix = 'loads_browse';
+	var formNameTable = formPrefix+'_table';
+	var formStatus = formPrefix+'_stats_table';
+	//var formOverview = formPrefix+'_over';
+	//var formCriteria = formPrefix+'_criteria';
+	scopes.jobs.removeFormHist(formNameTable);
+	//var success = history.removeForm(formNameTable);
+	//var success2 = solutionModel.removeForm(formNameTable);
+	//forms[formCriteria].collectCriteria(formCombo);
+	forms[formPrefix].elements.split.setRightForm(formPrefix+'_pcmk_transaction','sts_idfile_to_transactions');
+	var top = forms[formPrefix].elements.split.getRightForm().controller.getName();
+	var bot = forms[formPrefix].elements.split.getLeftForm().controller.getName();
+	//forms[formCombo].elements.tabless.addTab(formNameTable);
+	scopes.jobs.loadTablePrefs(top);
+	scopes.jobs.loadTablePrefs(bot);
 	return _super.onShow(firstShow, event)
 }

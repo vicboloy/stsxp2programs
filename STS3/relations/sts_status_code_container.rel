@@ -1,6 +1,9 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/status_description",
-initialSort:"status_sequence asc, status_code asc",
+initialSort:"status_sequence asc, sts_status_description_to_associations.association_name asc",
+items:[
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.secCurrentTenantID",typeid:23,uuid:"E2B979E0-F796-48EA-A56C-B8F7CD9DBB90"}
+],
 joinType:1,
 name:"sts_status_code_container",
 primaryDataSource:"db:/stsservoy/status_description",

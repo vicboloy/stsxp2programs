@@ -368,7 +368,31 @@ function collectCriteria(){
 		sheetnum : sheetNum,
 		sonum : soNum
 	}
-	scopes.jobs.viewBTableAlt(criteria);
+	//scopes.jobs.viewBTableAlt(criteria);
+	var formName = 'loads_pcmk_combo';
+	scopes.jobs.viewBTableToForm(criteria,formName);
+	onActionShowWindow();
+}
+/**
+ * @properties={typeid:24,uuid:"5497D571-E5BA-4996-AB84-4C60EC27F459"}
+ */
+function onActionShowWindow(){
+	//scopes.jobs.viewBTableThrowSplit(event,winTitle);
+	//return;
+	//var formName = event.getFormName();
+	var winTitle = 'Browse Loads';
+	var formName = 'loads_pcmk_combo';
+	application.output('formname '+formName);
+	var height = controller.getWindow().getHeight();
+	var width = controller.getWindow().getWidth();
+	var xOrigin = controller.getWindow().getX();
+	var yOrigin = controller.getWindow().getY();
+	var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
+	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
+	win.title = winTitle;
+
+	win.show(forms[formName]);
+	scopes.jobs.removeFormHist(formName+'_table');
 }
 /**
  * TODO generated, please specify type and doc for the params

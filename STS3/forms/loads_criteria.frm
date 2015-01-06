@@ -440,6 +440,16 @@ typeid:7,
 uuid:"F9B58C27-B31B-4E26-AE84-AFB0888B5BB1"
 },
 {
+dataProviderID:"scopes.globals.hideEmptyColumns",
+displayType:4,
+location:"323,375",
+size:"169,20",
+text:"Hide Empty Columns",
+transparent:true,
+typeid:4,
+uuid:"F9CD6633-1B49-4375-AC73-7E296FFD591C"
+},
+{
 horizontalAlignment:4,
 labelFor:"vPkgNum",
 location:"15,292",

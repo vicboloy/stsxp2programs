@@ -35,7 +35,7 @@ uuid:"1F97DCF5-C0EC-4F7A-ABEB-162DAB555A49",
 valuelistID:"6E2BFA71-8980-4CBF-8F3A-38F93EA6794F"
 },
 {
-location:"187,97",
+location:"187,102",
 size:"368,20",
 text:"Select a code and then right-click to move to Select or deSelect.",
 transparent:true,
@@ -69,7 +69,7 @@ typeid:7,
 uuid:"3E5FDF79-F0F3-4186-A969-418FA2630333"
 },
 {
-location:"385,127",
+location:"372,127",
 size:"146,20",
 text:"Selected Status Codes",
 transparent:true,
@@ -81,7 +81,6 @@ items:[
 {
 containsFormID:"4EAD9B4A-1EA5-408B-BA7B-E09203E72E62",
 location:"10,75",
-relationName:"sts_routing_codes_container",
 text:"routing_codes_lst",
 typeid:15,
 uuid:"2A87BAB8-58EE-4005-8412-54CEFFD8DA66"
@@ -118,7 +117,7 @@ null,
 }
 }",
 enabled:false,
-location:"560,144",
+location:"555,144",
 name:"orderUp",
 onActionMethodID:"2454B75A-0C1B-4C08-847D-3EC92DF8DF03",
 onDoubleClickMethodID:"-1",
@@ -149,6 +148,7 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"10,10",
 name:"addButton",
 onActionMethodID:"1C48C95D-A375-495D-9D45-70364F986DDB",
@@ -167,7 +167,7 @@ uuid:"6D028F78-2CB4-484D-A074-B8A3504DFBF1"
 },
 {
 horizontalAlignment:0,
-location:"253,417",
+location:"236,416",
 name:"saveButton",
 onActionMethodID:"1F45CB1F-7119-4FFE-AFDE-B311BBCB3DC9",
 onDoubleClickMethodID:"-1",
@@ -180,7 +180,7 @@ visible:false
 },
 {
 horizontalAlignment:0,
-location:"397,417",
+location:"412,417",
 name:"cancelButton",
 onActionMethodID:"C9F5DFA1-D2EA-414C-87B3-A158BD655AB1",
 onDoubleClickMethodID:"-1",
@@ -221,7 +221,7 @@ null,
 }
 }",
 enabled:false,
-location:"560,169",
+location:"555,169",
 name:"orderDown",
 onActionMethodID:"2454B75A-0C1B-4C08-847D-3EC92DF8DF03",
 onDoubleClickMethodID:"-1",
@@ -263,9 +263,28 @@ typeid:4,
 uuid:"E8CDE8FA-6EB9-4DA2-ABD4-B592E4EC9D2A"
 },
 {
+customProperties:"methods:{
+onActionMethodID:{
+arguments:[
+null,
+\"'stsvl_route_status_selected'\"
+]
+}
+}",
+location:"547,194",
+name:"orderProcess",
+onActionMethodID:"C0AA9949-83EF-4DE7-ADE0-D7095BD075E2",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"101,20",
+text:"ProcessID",
+typeid:7,
+uuid:"F883F3ED-879A-4D72-9DCB-48EA4815AA59"
+},
+{
 dataProviderID:"codesSelect",
 displayType:11,
-location:"385,144",
+location:"372,144",
 name:"selectedCodes",
 onActionMethodID:"-1",
 onDataChangeMethodID:"-1",
@@ -279,6 +298,7 @@ valuelistID:"10D3DCDA-BA13-438A-BF13-C22D734E8E65"
 name:"routing_codes",
 navigatorID:"-1",
 onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
+onRecordSelectionMethodID:"174A28ED-90C3-408E-A0C0-F555186AD4C8",
 onShowMethodID:"01A10811-600F-47BB-9936-2B301CB8668A",
 size:"653,0",
 styleName:"sts_one",

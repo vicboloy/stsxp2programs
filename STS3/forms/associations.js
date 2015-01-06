@@ -29,6 +29,7 @@ function newRecord(event, location, changeSelection) {
 	//newRec.tenant_group_uuid = globals.secCurrentAssociationMasterID;
 	newRec.delete_flag = 0;
 	newRec.edit_date = new Date();
+	newRec.tenant_uuid = globals.secCurrentTenantID;
 	return newRec;
 	//return _super.newRecord(event, location, changeSelection)
 }

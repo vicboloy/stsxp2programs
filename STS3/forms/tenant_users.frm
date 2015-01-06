@@ -84,7 +84,7 @@ location:"71,23",
 mnemonic:"",
 name:"assocNameLabel",
 size:"52,20",
-text:"Current Logons",
+text:"Divsion",
 transparent:true,
 typeid:7,
 uuid:"EE93A0FE-0727-41A3-85AC-DE91263CE68A"

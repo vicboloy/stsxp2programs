@@ -432,7 +432,9 @@ function onActionClear(event,formName) {
 		}
 	}
 	jobFound = false;
-	forms.delete_piecemark_info.elements.tabless.removeAllTabs();
+	if (forms.delete_piecemark_info){
+		forms.delete_piecemark_info.elements.tabless.removeAllTabs();
+	}
 	scopes.jobs.removeFormHist(formNameTable);
 	browseInfoEnable();
 }
@@ -443,17 +445,22 @@ function onActionClear(event,formName) {
  *
  * @properties={typeid:24,uuid:"3DAECF38-C686-4432-A939-6C97466A4A28"}
  */
-function onActionDeleteWindow(event) {
+function onActionDeleteWindow(event,winTitle) {
+	//scopes.jobs.viewBTableThrowSplit(event,winTitle);
+	//return;
+	//var formName = event.getFormName();
+	var formName = 'delete_pcmk_combo';
+	application.output('formname '+formName);
 	var height = controller.getWindow().getHeight();
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
 	var yOrigin = controller.getWindow().getY();
-	var win = application.createWindow("Job Piecemark Deletion", JSWindow.MODAL_DIALOG);
+	var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
 	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
-	win.title = "Job Piecemark Deletion";
+	win.title = winTitle;
 
 	win.show(forms.delete_record_actual);
-	scopes.jobs.removeFormHist('delete_pcmk_combo_table');
+	scopes.jobs.removeFormHist(formName+'_table');
 	//return true;
 	//collectCriteria('delete_piecemark_combo');
 	//forms.delete_pcmk_combo.elements.split.

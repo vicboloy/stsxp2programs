@@ -16,18 +16,21 @@ function onShow(firstShow, event) {
 	//var success2 = solutionModel.removeForm(formNameTable);
 	//forms[formCriteria].collectCriteria(formCombo);
 	forms[formCombo].elements.split.setRightForm(formPrefix+'_pcmk_transaction','sts_idfile_to_transactions');
-	hideColumns(event,0);
+	//hideColumns(event,0);
 	var bot = forms[formCombo].elements.split.getRightForm().controller.getName();
 	var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
 	//forms[formOverview].elements.tabless.addTab(formNameTable); // add tab to main window to see subset of this table
-	scopes.jobs.loadTablePrefs(top);
-	scopes.jobs.loadTablePrefs(bot);
+	scopes.jobs.tableHideFieldsReset()
+	scopes.jobs.findEmptyColumns(event,0)
+	scopes.jobs.findEmptyColumns(event,1)
+	scopes.jobs.tablePrefsLoad(top);
+	scopes.jobs.tablePrefsLoad(bot);
 	return _super.onShow(firstShow, event)
 }
 /**
  * @properties={typeid:24,uuid:"E7D2E8E8-BB75-4884-BCCD-29C75A86A030"}
  */
-function hideColumns(event,table){
+function unusedhideColumns(event,table){
 	var formName = event.getFormName();
 	application.output('form name '+formName+' loads_pcmk_combo');
 	//forms.loads_pcmk_combo.elements.split.getRightForm().elements.checklist_line.visible

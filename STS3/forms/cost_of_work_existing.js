@@ -196,7 +196,7 @@ function onActionRefresh(event) {
 			record.st2_idfiles_to_piecemarks.freeField = calced[length];
 		}
 	}
-	scopes.jobs.loadTablePrefs('cost_of_work_existing');
+	scopes.jobs.tablePrefsLoad('cost_of_work_existing');
 }
 
 /**

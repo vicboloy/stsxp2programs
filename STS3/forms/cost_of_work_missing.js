@@ -39,7 +39,7 @@ function onShow(firstShow, event) {
 		onActionRefresh(event);
 		forms.cost_of_work.jobchangeM = false;
 	}
-	scopes.jobs.loadTablePrefs('cost_of_work_int');
+	scopes.jobs.tablePrefsLoad('cost_of_work_int');
 	return _super.onShow(firstShow, event)
 }
 /**

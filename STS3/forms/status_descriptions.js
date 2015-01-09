@@ -38,7 +38,6 @@ function onShowStatusDescr(firstShow, event) {
 		elements.deleteButton.visible = false;
 		elements.editButton.visible = false;
 	}
-	//elements.deleteButton.text = 'Delete class \''+status_code+'\'';
 }
 
 /**
@@ -143,12 +142,12 @@ function onEdit(event,editStatus){
  * @properties={typeid:24,uuid:"63DF1572-0114-4457-A490-415629F7DD57"}
  */
 function onActionCancelEdit(event) {
+	databaseManager.revertEditedRecords(foundset);
 	onEdit(event,false);
 	if (globals.newRecordKey != null){
 		controller.deleteRecord();
 		globals.newRecordKey = null
 	}
-	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
 

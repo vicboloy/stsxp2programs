@@ -371,6 +371,9 @@ function collectCriteria(){
 	//scopes.jobs.viewBTableAlt(criteria);
 	var formName = 'loads_pcmk_combo';
 	scopes.jobs.viewBTableToForm(criteria,formName);
+//application.output('before prefs load xyz');
+//	scopes.jobs.tablePrefsLoad(formName);
+//application.output('after prefs load xyz');
 	onActionShowWindow();
 }
 /**

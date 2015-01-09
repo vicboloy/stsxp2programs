@@ -5,6 +5,32 @@
  */
 var colPosition = 0;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"60A29708-5609-4403-BD60-1F658B37F614"}
+ */
+var currentTableName = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"2051E0CC-104A-4845-AC87-025D4188FB1A"}
+ */
+var selAvailable = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"D0509056-83AC-45F6-9444-EF7B6ED3FF6E"}
+ */
+var selSelected = "";
+/**
+ * @properties={typeid:35,uuid:"5C9883A7-7387-4DF3-9C21-EDE295FC675D",variableType:-4}
+ */
+var resetAvailable = [];
+/**
+ * @properties={typeid:35,uuid:"CAA0CD5E-DE77-48C1-91D8-676D69B29180",variableType:-4}
+ */
+var resetSelected = [];
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -15,12 +41,22 @@ function onActionAvail(event) {
 	setElements('avail');
 }
 /**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"29DD7012-09E3-4941-9291-0AA3F81A6150"}
+ */
+function onActionReset(event){
+	application.setValueListItems('stsvl_catTemp1',resetAvailable);
+	application.setValueListItems('stsvl_catTemp2',resetSelected);
+}
+/**
  * @param event
  *
  * @properties={typeid:24,uuid:"D90C533A-3EAF-49BC-8A04-165F123AF7F1"}
  */
 function onActionSelect(event) {
-	application.output('selection');
+	//application.output('selection');
 	setElements('select');
 }
 /**
@@ -29,16 +65,44 @@ function onActionSelect(event) {
  * @properties={typeid:24,uuid:"5DA7B96D-0F70-4215-92AE-9FF9A853D29C"}
  */
 function setElements(side){
-	var avail = true;
-	if (side == 'select'){avail = false}
-	elements.buttAdd.enabled = avail;
-	elements.buttAddAll.enabled = avail;
-	elements.buttHide.enabled = !avail;
-	elements.buttHideAll.enabled = !avail;
-	elements.buttFirst.enabled = !avail;
-	elements.buttLast.enabled = !avail;
-	elements.buttSet.enabled = !avail;
-	elements.setPos.enabled = !avail;
+	var avail = (side == 'avail');
+	elements.buttAdd.visible = avail;
+	elements.buttAddAll.visible = avail;
+	elements.buttHide.visible = !avail;
+	elements.buttHideAll.visible = !avail;
+	elements.buttFirst.visible = !avail;
+	elements.buttLast.visible = !avail;
+	elements.buttSet.visible = !avail;
+	elements.buttUp.visible = !avail;
+	elements.buttDown.visible = !avail;
+	elements.setPos.visible = !avail;
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param tableName
+ *
+ * @properties={typeid:24,uuid:"F6F30370-7F30-4622-8A08-98A160EF9AAC"}
+ */
+function tablePrefsColumnsToHide(tableName){
+	globals.a.tempHiddenColumns[tableName] = [];
+	/** @type {JSDataSet<db:/stsservoy/preferences2>} */
+	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
+	if (prefsFS.find()) {
+		prefsFS.user_id = -1;
+		prefsFS.form_name = tableName;
+		prefsFS.tenant_uuid = globals.secCurrentTenantID;
+		if (prefsFS.search()){
+			for (var index = 1;index <= prefsFS.getSize();index++){
+				var rec = prefsFS.getRecord(index);
+				var columnSpec = rec.field_value.split(",");
+				if (columnSpec[3] == 0){
+					globals.a.tempHiddenColumns[tableName].push(rec.field_name);
+				}
+			}
+		}
+	}
 }
 /**
  * Callback method for when form is shown.
@@ -49,66 +113,66 @@ function setElements(side){
  * @properties={typeid:24,uuid:"5FD76D7C-005E-44EA-B200-F2F6F8ECDA9A"}
  */
 function onShow(firstShow, event) {
-	var formx = event.getFormName();
-	
 	var win = application.getActiveWindow();
-	if (win.getParent() != null){
-		formx = win.getParent().controller.getName();
+	if (firstShow){
+		var formx = win.controller.getName();
 	} else {
-		formx = win.controller.getName();
+		formx = win.getParent().controller.getName();
 	}
+	var colAvail = [];
+	var colShow = [];
+	//application.setValueListItems('stsvl_catTemp1',colAvail);
+	//application.setValueListItems('stsvl_catTemp2',colShow);
 	
 	var formsInUse = [];
 	var formy = null;
 	if (forms[formx].elements.tabless){
-		var formy = forms[formx].elements.tabless.getTabFormNameAt(1);
+		formy = forms[formx].elements.tabless.getTabFormNameAt(1);
 		formsInUse.push(formy);
 	}
 	if (forms[formx].elements.split){
-		var formCombo = event.getFormName().split("_")[0]+'_pcmk_combo';
-		var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
-		var bot = forms[formCombo].elements.split.getRightForm().controller.getName();
+		//var formCombo = event.getFormName().split("_")[0]+'_pcmk_combo';
+		var top = forms[formx].elements.split.getLeftForm().controller.getName();
+		var bot = forms[formx].elements.split.getRightForm().controller.getName();
 		formsInUse.push(top);
 		formsInUse.push(bot);
 	}
 	if (formsInUse.length == 0){
 		return;
 	}
-	var colAvail = [];
-	var colShow = [];
-	var nameToPosY = [];
-	var nameToPosX = [];
 	while (formsInUse.length > 0){
+		colAvail = [];
+		colShow = [];
+		var nameToPosY = [];
+		var nameToPosX = [];
 		formy = formsInUse.pop();
+		//scopes.globals.a.tempHiddenColumns[formy] = [];
+		//tablePrefsColumnsToHide(formy);
+		currentTableName = formy;
 		var elems = forms[formy].elements;
 		var lastY = 0;
 		var lastX = 0;
 		var posX = 0;
 		var posY = 0;
-		for (var index = 0;index < elems.length;index++){
-			var visible = elems[index].isVisible();
-			posY = "0000"+elems[index].getLocationY();
-			posY = utils.stringRight(posY, 7);
-			posX = "0000"+elems[index].getLocationX();
-			posX = utils.stringRight(posX,7);
+		colAvail = scopes.globals.a.tempHiddenColumns[formy].sort();
+		
+		for (var index in elems){
 			var name = elems[index].getName();
-			if (lastY != posY){
-				nameToPosY.push(posY+"|"+name);
-				lastY = posY;
-			}
-			if (lastX != posX){
+			var visible = elems[index].isVisible();
+			posX = "000000000"+elems[index].getLocationX();
+			posX = utils.stringRight(posX,9);
+			if (scopes.globals.a.tempHiddenColumns[formy].indexOf(name) == -1 && lastX != posX){
 				nameToPosX.push(posX+"|"+name);
 				lastX = posX;
 			}
-			if (!visible){
+			if (scopes.globals.a.tempHiddenColumns[formy].indexOf(name) != -1 &&
+					colAvail.indexOf(name) == -1){
 				colAvail.push(name);
 			}
 		}
 	}
 	nameToPosX.sort();
-	nameToPosY.sort();
 	var sortedOrder = [];
-	//var colOrder = [];
 	colAvail.sort();
 	if (nameToPosX.length > 3){
 		sortedOrder = nameToPosX;
@@ -122,6 +186,8 @@ function onShow(firstShow, event) {
 	//colShow.sort();
 	application.setValueListItems('stsvl_catTemp1',colAvail);
 	application.setValueListItems('stsvl_catTemp2',colShow);
+	resetAvailable = application.getValueListArray('stsvl_catTemp1');
+	resetSelected = application.getValueListArray('stsvl_catTemp2');
 }
 
 /**
@@ -148,17 +214,33 @@ function onActionShow(event) {
 	var avail = application.getValueListArray('stsvl_catTemp1');
 	var select = application.getValueListArray('stsvl_catTemp2');
 	var items = elements.available.getSelectedElements();
-	for (var index = items.length-1;index >=0 ;index--){
-		var item = items[index];
-		select.unshift(item);
-		avail[avail.indexOf(item)] = "";
+	//application.output('items selected '+items);
+	var availLength = avail.length;
+	for (var index = 0; index < availLength;index++){
+		var item = avail.shift();
+		if (items.indexOf(item) == -1){
+			avail.push(item);
+		} else {
+			select.unshift(item);
+		}
 	}
-	index = 0;
-	var length = avail.length;
-	while (index < length){
-		item = avail.shift();
-		if (item != ""){avail.unshift(item)}
-		index++;
+	application.setValueListItems('stsvl_catTemp1',avail);
+	application.setValueListItems('stsvl_catTemp2',select);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"8FDF63D3-09CE-4214-A303-731E0EE65E16"}
+ */
+function onActionShowAll(event){
+	var avail = application.getValueListArray('stsvl_catTemp1');
+	var select = application.getValueListArray('stsvl_catTemp2');
+	//var items = elements.available.getSelectedElements();
+	var availLength = avail.length;
+	for (var index =0; index < availLength;index++){
+		var item = avail.shift();
+		select.push(item);
 	}
 	application.setValueListItems('stsvl_catTemp1',avail);
 	application.setValueListItems('stsvl_catTemp2',select);
@@ -173,17 +255,14 @@ function onActionHide(event) {
 	var avail = application.getValueListArray('stsvl_catTemp1');
 	var select = application.getValueListArray('stsvl_catTemp2');
 	var items = elements.selected.getSelectedElements();
-	for (var index = 0;index < items.length;index++){
-		var item = items[index];
-		avail.unshift(item);
-		select[select.indexOf(item)] = "";
-	}
-	index = 0;
-	var length = select.length;
-	while (index < length){
-		item = select.shift();
-		if (item != ""){select.unshift(item)}
-		index++;
+	var selectLength = select.length;
+	for (var index = 0;index < selectLength;index++){
+		var item = select.shift();
+		if (items.indexOf(item) == -1){
+			select.push(item);
+		} else {
+			avail.push(item);
+		}
 	}
 	avail.sort();
 	application.setValueListItems('stsvl_catTemp1',avail);
@@ -200,7 +279,9 @@ function onActionHideAll(event) {
 	var select = application.getValueListArray('stsvl_catTemp2');
 	for (var index = 0;index < select.length;index++){
 		var item = select[index];
-		avail.push(item);
+		if (avail.indexOf(item) == -1){
+			avail.push(item);
+		}
 	}
 	avail.sort();
 	application.setValueListItems('stsvl_catTemp1',avail);
@@ -341,4 +422,66 @@ function onActionMoveDown(event){
 		}
 	}
 	application.setValueListItems('stsvl_catTemp2',newSelect);
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"264969BB-D50E-4488-914B-58FA1DE31BA7"}
+ */
+function onActionApply(event) {
+	// well, this isn't really a save.  We reorder the elements and close window.  Save is performed later
+	var showArray = application.getValueListArray('stsvl_catTemp2'); // show and order, the rest are hidden
+	var hideArray = application.getValueListArray('stsvl_catTemp1'); // items to hide, put them last
+	var form = currentTableName;
+	var jsForm = solutionModel.getForm(form);
+	var jsField = null;
+	globals.a.tempHiddenColumns[form] = [];
+	var doneArray = [];
+	var elems = forms[form].elements;
+	//application.output(showArray);
+	var tempEmpty = globals.a.tempHiddenEmpty;
+	for (var item in elems){
+		if (hideArray.indexOf(item) == -1){
+			if (showArray.indexOf(item) == -1){
+				showArray.push(item);
+				doneArray.push(item);
+			}
+		}
+	}
+	//application.output('missing items from avail/select '+doneArray);
+	var posX = 0;
+	for (var index = 0;index < showArray.length;index++){
+		var name = showArray[index];
+		doneArray.push(name);
+		if (!elems[name]){continue}
+		//if (elems[name] == ""){continue}
+		elems[name].visible = true;
+		jsField = jsForm.getField(name);
+		jsField.x = posX;
+		//elems[name].setLocation(elems[name].getLocationX(),posX);
+		//application.output(name+' '+posX);
+		posX = posX+elems[name].getWidth();
+		if (tempEmpty.indexOf(name) != -1){
+			elems[name].visible = false;
+		}
+	}
+	for (index = 0;index < hideArray.length;index++){
+		var name = hideArray[index];
+		doneArray.push(name);
+		if (!elems[name]){continue}
+		elems[name].visible = false;
+		jsField = jsForm.getField(name);
+		jsField.x = posX;
+		//elems[name].setLocation(elems[name].getLocationX(),posX);
+		//application.output('hiding '+name+' '+posX);
+		posX = posX+elems[name].getWidth();
+	}
+	controller.recreateUI();
+	//application.updateUI();
+	globals.a.tempHiddenColumns[form] = [];
+	for (index = 0;index < hideArray.length;index++){
+		globals.a.tempHiddenColumns[form].push(hideArray[index]);
+	}
 }

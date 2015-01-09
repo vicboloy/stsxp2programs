@@ -92,7 +92,7 @@ function newRecord(event, location, changeSelection) {
  */
 function onShow(firstShow, event) {
 	editStatus(false);
-	scopes.jobs.loadTablePrefs('cost_of_work_int');
+	scopes.jobs.tablePrefsLoad('cost_of_work_int');
 	return _super.onShow(firstShow, event)
 }
 

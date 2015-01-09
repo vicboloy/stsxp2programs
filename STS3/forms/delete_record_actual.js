@@ -44,6 +44,6 @@ function onShow(firstShow, event) {
 	var bot = forms[formCombo].elements.split.getRightForm().controller.getName();
 	var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
 	forms[formOverview].elements.tabless.addTab(formNameTable);
-	scopes.jobs.loadTablePrefs(top);
-	scopes.jobs.loadTablePrefs(bot);
+	scopes.jobs.tablePrefsLoad(top);
+	scopes.jobs.tablePrefsLoad(bot);
 }

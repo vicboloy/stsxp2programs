@@ -23,7 +23,7 @@ function onActionClose(event) {
 function onShow(firstShow, event) {
 	//forms.sts_nav_default.elements.tabless.visible = false;
 	var formx = event.getFormName();
-	scopes.jobs.loadTablePrefs(formx)
+	scopes.jobs.tablePrefsLoad(formx)
 	var newDate = Date.now();
 	newDate = newDate + 1000*60*24;
 	newDate = new Date(newDate);

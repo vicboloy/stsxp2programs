@@ -22,7 +22,7 @@ function onShow(firstShow, event) {
 	var top = forms[formPrefix].elements.split.getRightForm().controller.getName();
 	var bot = forms[formPrefix].elements.split.getLeftForm().controller.getName();
 	//forms[formCombo].elements.tabless.addTab(formNameTable);
-	scopes.jobs.loadTablePrefs(top);
-	scopes.jobs.loadTablePrefs(bot);
+	scopes.jobs.tablePrefsLoad(top);
+	scopes.jobs.tablePrefsLoad(bot);
 	return _super.onShow(firstShow, event)
 }

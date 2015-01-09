@@ -197,7 +197,7 @@ function onShow(firstShow, event) {
 	vUomCodeSpecific = (scopes.prefs.lCowCustSpc == 1);
 	elements.uomCodesSpecific.visible = vUomCodeSpecific;
 	elements.uom_value.editable = vUomCodeSpecific;
-	scopes.jobs.loadTablePrefs('cost_of_work_category');
+	scopes.jobs.tablePrefsLoad('cost_of_work_category');
 	return _super.onShow(firstShow, event)
 }
 /**

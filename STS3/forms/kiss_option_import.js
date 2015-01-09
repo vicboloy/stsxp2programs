@@ -340,7 +340,7 @@ function onShow(firstShow, event) {
 		elements.keep_minors.enabled = true;
 	}
 	importOption = "Use Sheet Number Matching";
-	scopes.jobs.loadTablePrefs('kiss_option_import');
+	scopes.jobs.tablePrefsLoad('kiss_option_import');
 	//handle excludes by shape and summaries by piecemark
 	applyImportPreferences();
 

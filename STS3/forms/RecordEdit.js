@@ -75,6 +75,11 @@ function onActionDelete(event) {
  * @properties={typeid:24,uuid:"0D273E9E-ECB7-4362-9492-21A6DACDA13D"}
  */
 function onRecordSelection(event,buttonTextSrc) {
+	var form = event.getFormName();
+	var parent = getParentForm();
+	if (parent == null){return}
+	parent.addOtherChangeFunctions();
+	
 	//var text = form[buttonTextSrc];
 	//if (text == null){
 	//		form.elements['deleteButton'].text = "Delete";

@@ -345,6 +345,11 @@ var weightPerID = scopes.prefs.wtPrompt;
  */
 var timeIn;
 /**
+ * temporary hold table for which columns to hide when saving preferences
+ * @properties={typeid:35,uuid:"A8D7FCB2-C9D3-483D-8EBB-54E06CFAF5DA",variableType:-4}
+ */
+var tempTableColumnsHide = [];
+/**
  * GUI and import update times tracker
  * @type {String}
  *
@@ -1366,11 +1371,38 @@ function loadBTable(){
 	//			insert sheets for each piecemarks, many-to-one
 }
 /**
+ * @properties={typeid:24,uuid:"8691EA68-B1E1-4815-A878-AD60BDC0B929"}
+ */
+function tableHideFieldsReset(){
+	//globals.a.tempHiddenColumns = [];
+	globals.a.tempHiddenEmpty = [];
+}
+/**
+ * Hide elements if element is in hide colum list and 
+ * @param fieldName
+ *
+ * @properties={typeid:24,uuid:"27A3F6A8-2E09-4502-84FA-13F501015E86"}
+ */
+function tableHideField(fieldName,formName){
+	var hideColumnList = globals.a.tempHiddenColumns[formName];
+	var hideEmptyList = globals.a.tempHiddenEmpty;
+	var hideEmptyColumnFlag = (globals.hideEmptyColumns == 1);
+	var hideColumn = (hideColumnList.indexOf(fieldName) != -1);
+	var hideEmpty = (hideEmptyList.indexOf(fieldName) != -1) && hideEmptyColumnFlag;
+	var hide = !(hideColumn || hideEmpty);
+	/**if (fieldName == 'bom_source_file'){
+		application.output('hide columns: '+hideColumnList.length+' '+hideColumnList);
+		application.output('hide emty list: '+hideEmptyList.length+' '+hideEmptyList);
+	application.output('field: '+fieldName+' hidecolumn: '+hideColumn+' hideemtpyindex: '+hideEmptyList.indexOf(fieldName)+' hideempty: '+hideEmpty+' globalhide: '+globals.hideEmptyColumns+' hidden: '+!hide);
+	}*/
+	return hide;
+}
+/**
  * @AllowToRunInFind
  *
  * @properties={typeid:24,uuid:"6F0DC9D2-F762-48DB-8986-1B959B8F4C8B"}
  */
-function loadTablePrefs(formx){
+function tablePrefsLoad(formx){
 	if (!formx || formx == ""){
 		var formx = controller.getName();
 	}
@@ -1379,27 +1411,39 @@ function loadTablePrefs(formx){
 	} else {
 		formy = formx; // already adjudicated as a table form
 	}
+	globals.a.tempHiddenColumns[formy] = [];
 	var elems = forms[formy].elements;
 	/** @type {JSDataSet<db:/stsservoy/preferences2>} */
 	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-	for (var index = 0;index < elems.length;index++){
+	for (var index in elems){
 		var colName = elems[index].getName();
-		var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth();
+		var vis = (elems[index].isVisible()) ? 1 : 0;
+		var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+vis;
 		if (prefsFS.find()) {
 			prefsFS.user_id = -1;
 			prefsFS.form_name = formy;
 			prefsFS.field_name = colName;
+			prefsFS.tenant_uuid = globals.secCurrentTenantID;
 			var index2 = prefsFS.search();
 			if (index2 > 0) {
+				var sets = prefsFS.field_value.split(",");
 				if (prefsFS.field_value != colDims){
 					//application.output('field '+colName+" dims "+colDims+" prefs "+prefsFS.field_value);
-					var sets = prefsFS.field_value.split(",");
 					elems[index].setLocation(sets[0],sets[1]);
 					elems[index].setSize(sets[2],elems[index].getHeight());
+					/**if (sets[3]){
+						application.output('entering visible '+sets[3]);
+						//elems[index].visible = (sets[3] == 1);
+					}*/
+				}
+				if (sets[3] && sets[3] == 0 && globals.a.tempHiddenColumns[formy].indexOf(colName) == -1){
+					globals.a.tempHiddenColumns[formy].push(colName);
 				}
 			}
 		}
+		elems[index].visible = tableHideField(colName,formy);
 	}
+	//application.output('hiding '+globals.a.tempHiddenColumns.length);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1526,7 +1570,7 @@ function onGetInformation(event,flaggedDeleted) {
  * @properties={typeid:24,uuid:"14DEEB4E-751E-49C1-9413-A3019516DB6D"}
  * @AllowToRunInFind
  */
-function saveTablePrefs(event){
+function tablePrefsSave(event){
 	var win = application.createWindow("Column Order", JSWindow.MODAL_DIALOG);
 	win.setInitialBounds(10, 10, 555, 485);
 	win.title = "This is the column settings window.";
@@ -1560,21 +1604,29 @@ function saveTablePrefs(event){
 		var elems = forms[formy].elements;
 		/** @type {JSDataSet<db:/stsservoy/preferences2>} */
 		var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-		for (var index = 0;index < elems.length;index++){
+		for (var index in elems){
 			warningsMessage('Saving column settings');
 			var colName = elems[index].getName();
-			var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth();
+			if (colName == ""){continue}//sometimes a blank entry after array and value list manip
+			//application.output('colname -'+colName+'- form form '+formy+' '+scopes.globals.a.tempHiddenColumns);
+			var visible = (scopes.globals.a.tempHiddenColumns[formy].indexOf(colName) != -1) ? 0 : 1;
+			var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+visible;
 			//var colDims = elems[index].getLocationX()+","+0+",110";
 			if (prefsFS.find()) {
 				prefsFS.user_id = -1;
 				prefsFS.form_name = formy;
 				prefsFS.field_name = colName;
+				prefsFS.tenant_uuid = globals.secCurrentTenantID;
 				//prefsFS.value_material = rec.shape;
 				var index2 = prefsFS.search();
 				if (index2 > 0) {
+					var maxIndex = prefsFS.getSize();
+					var rec = prefsFS.getRecord(1);
 					if (prefsFS.field_value != colDims){
-						prefsFS.field_value = colDims;
-						databaseManager.saveData(prefsFS);
+						rec.field_value = colDims;
+						rec.edit_date = new Date();
+						status = databaseManager.saveData(rec);
+						//application.output('save status change '+status);
 					}
 				} else {
 					var newDex = prefsFS.newRecord();
@@ -1585,12 +1637,14 @@ function saveTablePrefs(event){
 					newRec.field_name = colName;
 					//newRec.value_material = rec.shape;
 					newRec.field_value = colDims;
-					databaseManager.saveData(newRec);
+					newRec.edit_date = new Date();
+					var status = databaseManager.saveData(newRec);
+					//application.output('save status '+status);
 				}
 			}
 		}
 		forms[formx].errorMessage = "Column ordering SAVED.";
-		warningsMessage('Column odering SAVED.');
+		warningsMessage('Column ordering SAVED.');
 		warningsX();
 	}
 }
@@ -1860,7 +1914,7 @@ function viewBTableToForm(criteria,formName){
 		//forms.delete_pcmk_combo.elements.split.setLeftForm(formNameTable);
 	}
 	//application.output('add tab to delete jobs '+status);
-	//loadTablePrefs('loads_browse2');
+	//tablePrefsLoad('loads_browse2');
 }
 /**
  * @properties={typeid:24,uuid:"0920030A-EFA9-4626-BDF7-5D62D4C8D963"}
@@ -2068,7 +2122,7 @@ function viewBTableAlt(criteria){
 	//history.removeForm('loads_browse_tabless2');
 	//removeFormHist('loads_browse_tabless2')
 	forms.loads_browse2.elements.tabless.addTab('loads_browse_tabless2');
-	loadTablePrefs('loads_browse2');
+	tablePrefsLoad('loads_browse2');
 }
 /**
  * @properties={typeid:24,uuid:"1C92C447-A951-426E-A713-8495A7DE92BA"}
@@ -2138,7 +2192,7 @@ function buildBTable(){
 	 	offset += colLength;		
 	}
 	forms.loads_browse.elements.tabless.addTab('loads_browse_tab');
-	loadTablePrefs('loads_browse');
+	tablePrefsLoad('loads_browse');
 }
 /**
  * @properties={typeid:24,uuid:"45A2608F-DF18-4BAE-B137-44FD41D23A77"}
@@ -3560,27 +3614,32 @@ function loadKissMapping(){
  *
  * @properties={typeid:24,uuid:"0B6983DE-9208-499A-AFD2-76A33B879DCB"}
  */
-function hideEmptyColumns(event,table){
+function findEmptyColumns(event,table){
+	//globals.a.tempHiddenEmpty = [];
+	var altForm = (table == 1);
 	var formName = event.getFormName();
 	var prefix = formName.split('_')[0];
 	var hideEm = (globals.hideEmptyColumns == 1);
-	application.output(prefix+' form name '+formName+' loads_pcmk_combo');
+	//application.output(prefix+' form name '+formName+' loads_pcmk_combo');
 	//forms.loads_pcmk_combo.elements.split.getRightForm().elements.checklist_line.visible
 	if (prefix == 'loads'){
-		forms['loads_pcmk_combo'].elements.split.getLeftForm().elements.Selection.visible = false;
+		var form = 'loads_pcmk_combo'
+		forms[form].elements.split.getLeftForm().elements.Selection.visible = false;
 	}
-	
-	var formEls = forms[prefix+'_pcmk_combo'].elements.split.getLeftForm().elements;
-	var browse = databaseManager.getFoundSet(forms[prefix+'_pcmk_combo'].elements.split.getLeftForm().controller.getDataSource());
-	var browseSet = forms[prefix+'_pcmk_combo'].elements.split.getLeftForm().foundset;
+	form = prefix+'_pcmk_combo';
+	var formEls = forms[form].elements.split.getLeftForm().elements;
+	var browse = databaseManager.getFoundSet(forms[form].elements.split.getLeftForm().controller.getDataSource());
+	var browseSet = forms[form].elements.split.getLeftForm().foundset;
+	var formTable = forms[form].elements.split.getLeftForm().controller.getName();
 	//var disableList = ['checklist','uuid'];
 	//for (var tab = 0;tab < 2;tab++){
 	if (table != 0){
-		var formRt = forms[prefix+'_pcmk_combo'].elements.split.getRightForm();
+		var formRt = forms[form].elements.split.getRightForm();
 		if (formRt == null){return}
-		browse = databaseManager.getFoundSet(forms[prefix+'_pcmk_combo'].elements.split.getRightForm().controller.getDataSource());			
-		browseSet = forms[prefix+'_pcmk_combo'].elements.split.getRightForm().foundset;
-		formEls = forms[prefix+'_pcmk_combo'].elements.split.getRightForm().elements;
+		browse = databaseManager.getFoundSet(forms[form].elements.split.getRightForm().controller.getDataSource());			
+		browseSet = forms[form].elements.split.getRightForm().foundset;
+		formTable = forms[form].elements.split.getRightForm().controller.getName();
+		formEls = forms[form].elements.split.getRightForm().elements;
 		browseSet.sort('transaction_date desc');
 	}
 	var recCount = databaseManager.getFoundSetCount(browseSet);
@@ -3590,12 +3649,17 @@ function hideEmptyColumns(event,table){
 	//browseSet = forms.loads_pcmk_combo.elements.split.getRightForm().foundset;
 	var recCount = databaseManager.getFoundSetCount(browseSet);
 	application.output('set size transaction '+recCount);
-	var maxCount = recCount;
-	if (recCount > 100) {maxCount = 100}
+	var maxCount = (recCount > 100) ?  Math.floor(recCount*.10) : recCount;
 	for (var item in formEls){
 		var empty = true;
 		var dataProvider = formEls[item].getDataProviderID();
+//application.output('form '+formTable+' '+globals.a.tempHiddenColumns);
 		for (var index = 1;index <= maxCount;index++){
+			if (globals.a.tempHiddenColumns[formTable] &&
+					globals.a.tempHiddenColumns[formTable].indexOf(item) != -1){
+				empty = true;
+				break;
+			}
 			var rec = fs.getRecord(index);
 			if (!hideEm){
 				empty = false;
@@ -3607,8 +3671,19 @@ function hideEmptyColumns(event,table){
 				break;
 			}
 		}
-		formEls[item].visible = !empty;
+		if (empty && !altForm){
+			globals.a.tempHiddenEmpty.push(item);
+		}
+		if (altForm){
+			formEls[item].visible = !empty;
+		}
+		//formEls[item].visible = !empty;
+		if (globals.a.tempHiddenColumns[formTable] && 
+				globals.a.tempHiddenColumns[formTable].indexOf(item) != -1){
+			formEls[item].visible = false;
+		}
 	}
+	//application.output('empty fields ' + globals.a.tempHiddenEmpty);
 }
 /**
  * @AllowToRunInFind
@@ -3683,7 +3758,7 @@ function onRecordSelectIdfile(event){
 	application.output('record select '+rec.id_serial_number);
 	//forms.gen_browse_trans.controller.loadRecords();
 	forms[prefix+'_pcmk_transaction'].controller.loadRecords();
-	hideEmptyColumns(event,1);
+	findEmptyColumns(event,1);
 	//application.output('barcode id '+id_serial_number_id);
 	//return _super.onRecordSelection(event);
 }

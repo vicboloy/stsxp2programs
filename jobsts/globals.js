@@ -65,6 +65,20 @@ var m = {
 	routes : []
 }
 /**
+ * Array objects
+ * @properties={typeid:35,uuid:"AFC22E50-8649-46FB-957E-1DB85814FEC8",variableType:-4}
+ */
+var a = {
+	tempHiddenColumns : [],
+	tempHiddenEmpty : []
+}
+/**
+ * @properties={typeid:35,uuid:"B3F2E391-6553-4FC7-A627-3D1D815F9984",variableType:-4}
+ */
+var flag = {
+	hideEmptyColumns : 1
+}
+/**
  * listings object, lists related to 
  * routeLegs = routeLegs[route_name.TXT] = (status_description_id.UUID...)
  * tenantAssocs = tenantAssocs[index] = (association_UUID...)
@@ -1457,7 +1471,7 @@ function formParent(){
 	if (dataset.getMaxRowIndex() > 1) 
 	{
 		// form is in a tabpanel
-		var parentFormName = dataset.getValue(1,2)
+		var parentFormName = dataset.getValue(dataset.getMaxRowIndex()-1,2)
 		return parentFormName;
 	}
 	return null;

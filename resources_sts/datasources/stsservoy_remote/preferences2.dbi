@@ -42,13 +42,6 @@ length:40,
 name:"form_name"
 },
 {
-allowNull:true,
-creationOrderIndex:1,
-dataType:12,
-length:36,
-name:"tenant_id"
-},
-{
 allowNull:false,
 creationOrderIndex:10,
 dataType:12,

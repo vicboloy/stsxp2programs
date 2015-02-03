@@ -29,6 +29,13 @@ name:"edit_date"
 },
 {
 allowNull:true,
+creationOrderIndex:12,
+dataType:12,
+length:36,
+name:"employee_id"
+},
+{
+allowNull:true,
 creationOrderIndex:3,
 dataType:4,
 name:"is_account_active"

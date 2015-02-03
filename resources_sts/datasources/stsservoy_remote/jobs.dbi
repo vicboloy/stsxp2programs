@@ -1,5 +1,12 @@
 columns:[
 {
+allowNull:true,
+creationOrderIndex:27,
+dataType:12,
+length:36,
+name:"association_id"
+},
+{
 allowNull:false,
 creationOrderIndex:0,
 dataType:12,

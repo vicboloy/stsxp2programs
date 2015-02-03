@@ -126,6 +126,12 @@ name:"employee_otherphone4"
 },
 {
 allowNull:true,
+creationOrderIndex:26,
+dataType:4,
+name:"employee_rf_logging"
+},
+{
+allowNull:true,
 creationOrderIndex:19,
 dataType:4,
 name:"employee_save_rftransaction"
@@ -142,6 +148,12 @@ allowNull:true,
 creationOrderIndex:17,
 dataType:93,
 name:"employee_terminationdate"
+},
+{
+allowNull:true,
+creationOrderIndex:25,
+dataType:4,
+name:"employee_userid"
 },
 {
 allowNull:true,

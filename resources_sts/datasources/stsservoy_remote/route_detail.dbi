@@ -54,6 +54,13 @@ name:"status_code"
 },
 {
 allowNull:true,
+creationOrderIndex:9,
+dataType:12,
+length:36,
+name:"status_description_id"
+},
+{
+allowNull:true,
 creationOrderIndex:7,
 dataType:12,
 length:36,

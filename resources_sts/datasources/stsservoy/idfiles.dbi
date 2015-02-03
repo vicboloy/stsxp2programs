@@ -88,14 +88,6 @@ name:"fabrication_invoice"
 },
 {
 allowNull:true,
-creationOrderIndex:60,
-dataType:12,
-flags:4,
-length:36,
-name:"fabrication_shop_id"
-},
-{
-allowNull:true,
 creationOrderIndex:33,
 dataType:4,
 name:"ft_assinid"
@@ -412,7 +404,7 @@ name:"shop_order"
 },
 {
 allowNull:true,
-creationOrderIndex:61,
+creationOrderIndex:60,
 dataType:12,
 flags:4,
 length:36,

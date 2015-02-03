@@ -29,22 +29,28 @@ function onSolutionOpen(){
 	globals.secCurrentAssociationID = globals.secGetAssociationID(secCurrentTenantID);
 	globals.mobAssocId = globals.secCurrentAssociationID;
 	globals.getAssociation(mobAssocId); //aMobAssocs[assocID];
-	globals.getMappings();
-	globals.rfGetFabshopCodes();
+	///globals.rfGetStationCodes();
 	//application.setValueListItems('stsvlg_status_codes',globals.session.statusCodes);
-	globals.secCurrentUserName = security.getUserName();
 	//secSetCurrentApplication(17); // 17 is already STS, could be anything
+	
+	globals.getMappings();
+	globals.secCurrentUserName = security.getUserName();
 	secSetCurrentTenant(secCurrentTenantID);
 	//getTablesFilters(secCurrentTenantID);
-	application.setValueListItems('stsvlg_location',globals.locationList());
-	globals.workersList();
+	//globals.workersList();
 	globals.mobLoggedEmployeeId = globals.getLoggedEmployee(secCurrentUserID);
 	//application.setValueListItems('stsvlg_workers',globals.workersList())
 	// set session id varibles
 	scopes.globals.getLoggedEmployee(secCurrentUserID);
 	session.program = "STS Mobile";
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
-	session.tenant_uuid = globals.secCurrentTenantID;
+	session.tenant_uuid = sec_current_user.tenant_uuid;
+	session.associationId = globals.secGetAssociationID(session.tenant_uuid);
+	session.association = m.assocs[session.associationId];
+	session.login = security.getUserName();
+	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association
+	//application.output()
+	application.setValueListItems('stsvlg_status_codes',globals.m.statusCodesDiv[session.associationId]); // status codes for this association
 	globals.logger(true,'STS Mobile opened.');
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
 	globals.getMenuList();

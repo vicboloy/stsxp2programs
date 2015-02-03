@@ -105,7 +105,6 @@ var DIALOGS = new function() {
 	 * @return {String}
 	 */
 	function showDialog(_sFormName, _sDlgType, _aArguments, _sIconStyle) {
-
 		/** @type {Object} */
 		var _aArgs = Array.prototype.slice.call(_aArguments),
 			_nWidthPadding = 22,
@@ -113,7 +112,6 @@ var DIALOGS = new function() {
 		var _sUniqueName = _aArgs[8] || utils.stringReplace(application.getUUID().toString(), "-", "");
 
 		if (_aArgs[0] instanceof RuntimeForm) _aArgs[0] = _aArgs[0].controller.getName()
-
 		if (_sDlgType == 'FIMD') {
 			var win_name = "W_" + _sUniqueName;//tp
 			dialogWindow = application.createWindow(win_name, JSWindow.MODAL_DIALOG);//tp
@@ -141,6 +139,7 @@ var DIALOGS = new function() {
 
 				// Need to add 22 pixels to the width with the original (built-in) servoy stylesheet or else you get scrollbars. You may want to adjust this value when you use a custom (override) stylesheet
 				dialogWindow.setSize(_nWidth + _nWidthPadding, _nHeight);
+				dialogWindow.controller.focusField('btn_1',false);
 				dialogWindow.show(form);
 				terminateCurrentMethodExecution();
 			} else {

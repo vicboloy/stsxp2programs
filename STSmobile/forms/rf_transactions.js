@@ -5,6 +5,10 @@
  */
 var stayField = false;
 /**
+ * @properties={typeid:35,uuid:"E7A9A131-D518-4A4B-94E4-29D68B642849",variableType:-4}
+ */
+var tabOrder = [];
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"8B33F61A-576C-4EDE-91F5-EA95EA420181"}
@@ -46,18 +50,43 @@ var lastID = "";
  * @properties={typeid:24,uuid:"D5D84404-C6EC-4EB8-984D-E594A43EAAF9"}
  */
 function onDataChangeLocation(oldValue, newValue, event) {
-	return true
+	newValue = newValue.toUpperCase();
+	statusLocation = statusLocation.toUpperCase();
+	var statArray = application.getValueListArray('stsvlg_location');
+	var newLoc = false;
+	if (statArray.indexOf(statusLocation) == -1){
+		statArray.push(statusLocation);
+		newLoc = true;
+	}
+	if (newLoc){
+		statArray.sort();
+		application.setValueListItems('stsvlg_location',statArray);
+	}
+	return true;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param sequence
  *
  * @properties={typeid:24,uuid:"76D17832-D7CF-4DDE-96B9-94BA39C5EC8C"}
  */
-function setTabSequence(sequence){
-	null;
+function tabSeqRestore(){
+	return;
+	var restore = [];
+	if (controller.getTabSequence().length != 1) return
+	for (var index = 0;index < tabOrder.length;index++){
+		restore.push(elements[tabOrder[index]]);
+	}
+	controller.setTabSequence(restore);
 }
-
+/**
+ * @properties={typeid:24,uuid:"74288612-41CD-4356-A42C-B9F029E97B79"}
+ */
+function tabSeqRemove(){
+	application.output(controller.getTabSequence())
+	//if (controller.getTabSequence().length == 1){return}
+	controller.setTabSequence([elements.current]);
+	application.updateUI();
+}
 /**
  * TODO generated, please specify type and doc for the params
  * @param oldValue
@@ -67,78 +96,85 @@ function setTabSequence(sequence){
  * @properties={typeid:24,uuid:"F6D06FDF-2291-4430-8649-ECE5DA9CADB8"}
  */
 function onDataChangeBarcode(oldValue, newValue, event) {
+	elements.current.requestFocus();
 	var scannedID = newValue;
 	stayField = (scannedID != "EXIT");
-	application.output('stay field '+stayField);
+	//application.output('stay field '+stayField);
 	globals.session.userEntry = scannedID;
-	//var k = globals.onErrorDisplayReturn;
-	//globals.onErrorDisplayReturn = scopes.globals.errorDialog2();
-	//if (!(k instanceof Continuation)){
-	//	null;
-	//}
-	//application.output('barcode change');
 	elements.location.enabled = true;
 	elements.status.enabled = true;
 	elements.worker.enabled = true;
-	var barcodeId = scopes.globals.checkBarcode(scannedID);
+	var barcodeId = globals.checkBarcode(scannedID);
 	if (!barcodeId){
 		currentID = "";
+		//globals.rfErrorShow('Barcode does not exist');
 		globals.errorDialogMobile('701');
+		globals.logger(true,'Barcode does not exist.');
+		return true;
+	}
+	currentID = "";
+	elements.current.requestFocus();
+	foundset.clear();
+	globals.mob.barcode = scannedID;
+	globals.mob.barcodeId = barcodeId;
+	globals.mobIdSerialId = globals.mob.barcodeId; // setup global variable for division relation
+	globals.mob.locationArea = statusLocation;
+	globals.mob.workers = statusWorker;
+	lastID = scannedID;
+
+	globals.rfGetBarcodeIdfiles()
+	if (!globals.barcodeAttached()){
+		application.output('ERROR: Database inconsistent with barcode');//errortypeneeded
+		globals.errorDialogMobile('6002');
+		globals.logger(true,'No idfiles for this barcode.');
+		currentID = "";
+		globals.mobPreviousLocation = "";
+		globals.mobPreviousStatus = "";
+		globals.mobLocationPieces = 0;
+		globals.mobLocationWeight = 0;
+		globals.mobItemPieces = "";
 		elements.current.requestFocus();
 		return true;
 	}
-	/**
-	 * job number
-	 * sequence number
-	 * previous status
-	 * previous location
-	 * PcsW/Status
-	 * item weight
-	 * item length
-	 * Locn Wt
-	 * Locn Pcs
-	 */
-	scopes.globals.mobIdSerialId = scannedID;
-	//scopes.globals.mobBarcodePrev = scopes.globals.mobBarcode;
-	scopes.globals.mobBarcode = scannedID;
-	//scopes.globals.mobStatus = statusCode;
-	scopes.globals.mobLocation = statusLocation;
-	scopes.globals.mobWorkers = statusWorker;
-	//currentID = scopes.globals.mobBarcode;
-	lastID = scannedID;
-	var currentFabShopId = globals.m.fabShops[globals.secCurrentAssociationID+", "+statusCode];
-	//globals.secCurrentAssociationID; statusCode; globals.aMobAssocs[globals.secCurrentAssociationID];
-	controller.loadRecords(scopes.globals.rfGetBarcodeIdfiles(barcodeId)); // mob.idfiles
-	scopes.globals.rfGetMobIdfile(scopes.globals.mob.idfiles[0]);
-	scopes.globals.rfGetMobPiecemark(scopes.globals.mob.idfile.piecemark_id);
-	var status = globals.rfSaveScanTransaction(scannedID,globals.statusId,statusLocation);
+	
+	if (!globals.barcodePlant()){
+		globals.errorDialogMobile('6001');
+		globals.logger(true,'Piecemark is in the wrong plant.');
+		return true;
+	}
+	if (!globals.barcodePercentage()){ // stubbed
+		globals.errorDialog('-1');
+		return true;
+	}
+	// Load up the idfiles
+	controller.loadRecords(databaseManager.convertToDataSet(globals.mob.idfiles)); // mob.idfiles
+	// Get representative idfile record 1 of n
+	globals.rfGetMobIdfile();
+	globals.rfGetMobPiecemark(); // Get piecemark record
+	var onHold = globals.barcodeOnHold(); //first check 1/29/2015 pp 
+	if (onHold){
+		globals.errorDialogMobile('1050');
+		globals.logger(true,'Idfile reports item on hold.');
+		return true;
+	}
+	var bundle = globals.barcodeIsBundle(); //stubbed
+	var routeOK = globals.rfCheckRouteOrder(); // route checks out 
+	var shipStat = globals.barcodeShip(); 
+	var status = globals.rfSaveScanTransaction(globals.mob.barcode,globals.session.stationId,globals.mob.locationArea);
 	currentID = '';
-	if (!status){return}
+	//if (!status){return}
 	//scopes.globals.rfIdLength = scopes.globals.decToFeet(item_length);
 	//scopes.globals.mobIdfiles = scopes.globals.rfaIdfiles;
 	//var status = globals.rfCheckIdStatus(statusCode,statusLocation);
-	//scopes.globals.mobIdfiles[0]
-	scopes.globals.rfGetTransactionLast(scopes.globals.mob.idfiles[0]);
-	//scopes.globals.mob.idfile.
-	scopes.globals.rfGetLocationStats(scopes.globals.mobLocation);
-	scopes.globals.rfGetPiecesScanned(scopes.globals.mob.piecemark.piecemark_id, scopes.globals.mobLocation, globals.statusId);
-	scopes.globals.mobPreviousLocation = scopes.globals.mob.transaction.location;
-	scopes.globals.mobPreviousStatus = scopes.globals.mob.transaction.status;
-	scopes.globals.mobLocationPieces = scopes.globals.mob.location.pieces;
-	scopes.globals.mobLocationWeight = scopes.globals.mob.location.weight;
-	scopes.globals.mobItemPieces = scopes.globals.mob.id.complete+" / "+scopes.globals.mob.id.total;
+	globals.rfGetTransactionLast(globals.mob.idfiles[0]);
+	globals.rfGetLocationStats(globals.mob.locationArea);
+	globals.rfGetPiecesScanned(globals.mob.piecemark.piecemark_id, globals.mob.locationArea, globals.statusId);
+	globals.mobPreviousLocation = globals.mob.locationPrev;
+	globals.mobPreviousStatus = globals.mob.statusPrev;
+	globals.mobLocationPieces = globals.mob.locationValues.pieces;
+	globals.mobLocationWeight = globals.mob.locationValues.weight;
+	globals.mobItemPieces = globals.mob.idValues.complete+" / "+scopes.globals.mob.idValues.total;
 	null;
-	/**
-	scopes.globals.rfGetIdfileDetails(scopes.globals.mobIdfiles[0]);
-	application.output(scopes.globals.mobIdfiles);
-	//globals.errorMessageMobile = "";
-	//var rec = scopes.globals.fsBarcodeIdfiles.getRecord(1);
-	forms.rf_transaction_list.controller.loadRecords(scopes.globals.mobIdfiles);
-	forms.rf_transaction_list.controller.setSelectedIndex(1);
-	var piecemarkId = scopes.globals.rfIdfileRec.piecemarkId;
-	scopes.globals.rfStatCount = scopes.globals.rfGetCountPieces(statusLocation,statusCode,piecemarkId);
-	var testraz = scopes.globals.rfGetLocationWeight(statusLocation);
-	*/
 	currentID = "";
 	elements.current.requestFocus();
 	return true;
@@ -154,6 +190,14 @@ function resetStatusCode(){
  */
 function resetWorkerCode(){
 	statusWorker = "";
+}
+/**
+ * @properties={typeid:24,uuid:"73EAFE1C-F5E1-4001-8B5D-D49A13D6EE52"}
+ */
+function setTransShop(){
+	elements.transShop.text = "Transactions "+globals.session.association;
+	//controller.focusField('status',true);
+	elements.status.requestFocus();
 }
 /**
  * reset location weight, location pieces, piecemark pieces, total pieces
@@ -172,8 +216,10 @@ function resetWorkerCode(){
  */
 function onShowForm(event) {
 	//foundset = databaseManager.getFoundSet('stsservoy','idfiles');
+	tabOrder = controller.getTabSequence();
 	globals.mobForm = "rf_transactions";
 	globals.mobProg = "Transactions";
+	setTransShop();
 	null;
 	if (foundset.find()){
 		delete_flag = 19;
@@ -181,8 +227,8 @@ function onShowForm(event) {
 	}
 	null;
 	//elements.status.requestFocus();
-	elements.location.requestFocus();
-	application.sleep(300);
+	//elements.location.requestFocus();
+	//application.sleep(300);
 	elements.status.requestFocus();
 }
 

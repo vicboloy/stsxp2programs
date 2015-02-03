@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/idfiles",
+items:[
+{foreignColumnName:"id_serial_number_id",primaryDataProviderID:"scopes.globals.mobIdSerialId",typeid:23,uuid:"25315CB6-8F29-4985-BC73-E381082BF892"}
+],
+joinType:1,
+name:"barcode_to_idfile",
+primaryDataSource:"db:/stsservoy/piecemarks",
+typeid:22,
+uuid:"8510107B-1BE4-40F7-90C5-9E33FA390C7F"

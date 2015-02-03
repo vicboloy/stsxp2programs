@@ -7,6 +7,12 @@ uuid:"B5CECA28-BCEA-47B5-920B-33210FF161EC"
 },
 {
 mimeType:"image/png",
+name:"dialogs_icon_error0.png",
+typeid:37,
+uuid:"9BD5DF14-22EF-4828-8E62-48F73F83C3E5"
+},
+{
+mimeType:"image/png",
 name:"dialogs_icon_generic.png",
 typeid:37,
 uuid:"BB0AC14A-7E27-49F2-BD54-D7492788580F"

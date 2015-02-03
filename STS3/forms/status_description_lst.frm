@@ -48,6 +48,8 @@ uuid:"1B9FF1E9-A36B-463E-85CA-923AB7F3BAF7"
 {
 anchors:11,
 dataProviderID:"status_sequence",
+format:"#|",
+horizontalAlignment:4,
 location:"0,20",
 name:"status_sequence",
 size:"71,20",
@@ -67,6 +69,7 @@ uuid:"BCA1855A-49BE-46C0-AA83-24D8004DF59B"
 }
 ],
 name:"status_description_lst",
+navigatorID:"-1",
 onNewRecordCmdMethodID:"0",
 onRecordSelectionMethodID:"514DDB1A-4603-4296-9EDC-E58AC014716D",
 size:"191,404",

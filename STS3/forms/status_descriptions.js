@@ -5,6 +5,24 @@
  */
 var currentStatusCode = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"64C46743-8F1F-44AC-8BD7-ACF54012C6FB"}
+ */
+var tempStation = "";
+/**
+ * @properties={typeid:35,uuid:"2E1CE3BC-2DE8-457D-846F-BAF72A686FF1",variableType:-4}
+ */
+var newRec = null;
+/**
+ * @properties={typeid:35,uuid:"8D3300BE-FCAE-4F2D-88D7-BBA478F18F04",variableType:-4}
+ */
+var availFabCodes = [];
+/**
+ * @properties={typeid:35,uuid:"CC70AA10-EE42-441A-A526-A362A9B221AF",variableType:-4}
+ */
+var localStations = [];
+/**
  * TODO generated, please specify type and doc for the params
  * @param firstShow
  * @param event
@@ -13,10 +31,11 @@ var currentStatusCode = "";
  * @AllowToRunInFind
  */
 function onShowStatusDescr(firstShow, event) {
+	controller.loadRecords(sts_status_code_container);
 	//var dataset = controller.getFormContext().getValue(1,2);
 	//application.output('employee class list form parent on show '+dataset);
 	globals.initLaborCodes();
-	globals.initStatusCodes();
+	//globals.initStatusCodes();
 	var assocs = []; //assocs.push(''); no blank fabshops
 	for (var index in globals.aMobAssocs){
 		assocs.push(globals.aMobAssocs[index]);
@@ -38,6 +57,7 @@ function onShowStatusDescr(firstShow, event) {
 		elements.deleteButton.visible = false;
 		elements.editButton.visible = false;
 	}
+	getStatusList();
 }
 
 /**
@@ -51,9 +71,11 @@ function onActionAdd(event){
 	selectedIndex = controller.getSelectedIndex();
 	databaseManager.setAutoSave(false);
 	onEdit(event,true);
-	controller.newRecord();
-	globals.newRecordKey = status_description_id;
-	tenant_uuid = globals.secCurrentTenantID;
+	var created = foundset.newRecord();
+	newRec = foundset.getRecord(1);
+	application.output('created record '+created);
+	globals.newRecordKey = newRec.status_description_id;
+	newRec.tenant_uuid = globals.secCurrentTenantID;
 	//elements.deleteButton.visible = true;
 	//elements.editButton.visible = true;
 }
@@ -69,23 +91,23 @@ function onActionDelete(event,itemDescription) {
 	var itemDescr = "Remove "+itemDescription;
 	globals.doDialog(itemDescr,"Delete?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
-			controller.deleteRecord();
-		}
-
+		//controller.deleteRecord();
+		var index = controller.getSelectedIndex();
+		//application.output('index '+index);
+		delete_flag = 99;
+		edit_date = new Date();
+		databaseManager.saveData(foundset.getRecord(controller.getSelectedIndex()));
+		//controller.loadRecords();
+		//forms.status_description_lst.controller.loadRecords();
+		//foundset.loadRecords();
+		//forms.status_description_lst.sts_status_code_container;
+		//forms.status_description_lst.foundset.loadRecords();
+		//application.updateUI();
+		//if (index == 1){index = 2}else{index = 1}
+		//controller.setSelectedIndex(index);
+	}
 }
 
-/**
- * Handle record selected.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- *
- * @properties={typeid:24,uuid:"119085D9-B7D7-4FD9-AFFA-9F82FC9CBAA1"}
- */
-function onRecordSelection(event) {
-	//elements.deleteButton.text = 'Delete class \''+status_code+'\'';
-	elements.deleteButton.text = 'Delete';
-}
 
 /**
  * Perform the element default action.
@@ -144,7 +166,7 @@ function onEdit(event,editStatus){
 function onActionCancelEdit(event) {
 	databaseManager.revertEditedRecords(foundset);
 	onEdit(event,false);
-	if (globals.newRecordKey != null){
+	if (false && globals.newRecordKey != null){
 		controller.deleteRecord();
 		globals.newRecordKey = null
 	}
@@ -221,7 +243,8 @@ function onDataChangeStatus(oldValue, newValue, event) {
 		return false;
 	}
 	newValue = newValue.toUpperCase();
-	var status = onActionCheckStatusFabShop(event);
+	changeToStation(event);
+	/**var status = onActionCheckStatusFabShop(event);
 	if (!status){
 		return false;
 	}
@@ -239,7 +262,7 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	index = onEntryStatusCode(newValue);
 	if (index != -1){
 		status_type = globals.aStatusTypes[index];
-	}
+	}*/
 	return true
 }
 
@@ -365,7 +388,15 @@ function onDataChangeFabShop(oldValue, newValue, event) {
 	if (newValue == "" || newValue == null){
 		return false;
 	}
-	return onActionCheckStatusFabShop(event);
+	changeToStation(event);
+	getStatusList();
+	return true;
+	var checkStatus = onActionCheckStatusFabShop(event);
+	if (checkStatus){
+		var arrayS = globals.m.statusCodesDiv[newValue];
+		application.setValueListItems('stsvl_status_code',arrayS);
+	}
+	return checkStatus;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -375,4 +406,129 @@ function onDataChangeFabShop(oldValue, newValue, event) {
  */
 function setFormIndex(index){
 	controller.setSelectedIndex(index);
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"73B009AA-A779-41AC-ACA9-DCB166901B9F"}
+ */
+function onDataChangeEndFor(oldValue, newValue, event) {
+	end_for_status = (newValue == "") ? null :  globals.m.stations[association_id+" , "+status_code];
+	return true
+}
+/**
+ * Change to record matching associaton_id and status_code
+ * @properties={typeid:24,uuid:"380C1DAC-D120-4014-9BFD-CDBB59AA3EDB"}
+ */
+function changeToStation(event){
+	//if (association_id == null && status_code == null){return}
+	var thisStationId = association_id+", "+status_code;
+	var currIndex = controller.getSelectedIndex();
+	application.output('currently '+currIndex);
+	if (localStations.indexOf(thisStationId) != -1){
+		var stationId = association_id;
+		var statusCode = status_code;
+		if (newRec) {
+			controller.deleteRecord();
+			newRec = null;
+		}
+		for (var index = 1;index <= foundset.getSize();index++){
+			if (currIndex == index){continue}
+			forms.status_description_lst.controller.setSelectedIndex(index);
+			//if (!rec == newRec){continue}
+			application.output(association_id +"=="+ stationId +","+ status_code +"=="+ statusCode)
+			if (association_id == stationId && status_code == statusCode){
+				databaseManager.revertEditedRecords(foundset);
+				break
+			}
+		}
+	}
+	return true;
+}
+/**
+ * also get local list of stations
+ * @properties={typeid:24,uuid:"5E21AD0F-0903-4586-9F55-0429698316FE"}
+ */
+function getStatusList(){
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var q = databaseManager.createSelect('db:/stsservoy/status_description');
+	q.result.add(q.columns.status_description_id);
+	q.result.add(q.columns.association_id);
+	q.result.add(q.columns.status_code);
+	//q.result.add(q.columns.status_sequence);
+	q.sort.add(q.columns.status_sequence.asc);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	var statusArray = [];
+	localStations = [];
+	for (var index = 1;index <= resultQ.getSize();index++){
+		var rec = resultQ.getRecord(index)
+		if (rec.association_id == association_id){
+			statusArray.push(rec.status_code); // localize selections to current associationId
+		}
+		var assocId = rec.association_id;
+		var statStatus = rec.status_code;
+		var stationId = assocId+", "+statStatus;
+		localStations.push(stationId);
+	}
+	application.setValueListItems('stsvl_status_code',statusArray);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"115F40D6-82D8-49F6-AF54-9CDED48265C2"}
+ */
+function getRecollectStatusDescription(event){
+	tempStation = association_id+", "+status_code;
+	var eventName = event.getElementName();
+	application.output('element name '+eventName);
+	switch( eventName ) {
+	case "editButton" : {
+		
+	}
+	case "cancelButton" : {
+		
+	}
+	case "addButton" : {
+		
+	}
+	case "editButton" : {
+		
+	}
+	case "saveButton" : {
+		
+	}
+	case "closeButton" : {
+		
+	}
+	default:
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"EF143EBF-716E-44EB-B30F-8809EF600534"}
+ */
+function addOtherChangeFunctions(){
+	return true;
+}
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ * @param {String} buttonTextSrc
+ *
+ * @properties={typeid:24,uuid:"C1C28BCB-C5AA-4EE3-90DF-23AC5D30A993"}
+ */
+function onRecordSelection(event, buttonTextSrc) {
+	return _super.onRecordSelection(event, buttonTextSrc)
 }

@@ -436,7 +436,7 @@ function onActionApply(event) {
 	var hideArray = application.getValueListArray('stsvl_catTemp1'); // items to hide, put them last
 	var form = currentTableName;
 	var jsForm = solutionModel.getForm(form);
-	var jsField = null;
+	//var jsField = null;
 	globals.a.tempHiddenColumns[form] = [];
 	var doneArray = [];
 	var elems = forms[form].elements;
@@ -445,12 +445,12 @@ function onActionApply(event) {
 	for (var item in elems){
 		if (hideArray.indexOf(item) == -1){
 			if (showArray.indexOf(item) == -1){
-				showArray.push(item);
+				//showArray.push(item);
 				doneArray.push(item);
 			}
 		}
 	}
-	//application.output('missing items from avail/select '+doneArray);
+	application.output('missing items from avail/select '+doneArray);
 	var posX = 0;
 	for (var index = 0;index < showArray.length;index++){
 		var name = showArray[index];
@@ -458,15 +458,16 @@ function onActionApply(event) {
 		if (!elems[name]){continue}
 		//if (elems[name] == ""){continue}
 		elems[name].visible = true;
-		jsField = jsForm.getField(name);
+		var lastPos = elems[name].getLocationX();
+		var jsField = jsForm.getField(name);
 		jsField.x = posX;
-		//elems[name].setLocation(elems[name].getLocationX(),posX);
-		//application.output(name+' '+posX);
+		//elems[name].setLocation(posX,elems[name].getLocationY());
 		posX = posX+elems[name].getWidth();
 		if (tempEmpty.indexOf(name) != -1){
 			elems[name].visible = false;
 		}
 	}
+
 	for (index = 0;index < hideArray.length;index++){
 		var name = hideArray[index];
 		doneArray.push(name);
@@ -474,12 +475,10 @@ function onActionApply(event) {
 		elems[name].visible = false;
 		jsField = jsForm.getField(name);
 		jsField.x = posX;
-		//elems[name].setLocation(elems[name].getLocationX(),posX);
-		//application.output('hiding '+name+' '+posX);
+		//elems[name].setLocation(posX,elems[name].getLocationY());
 		posX = posX+elems[name].getWidth();
 	}
-	controller.recreateUI();
-	//application.updateUI();
+	forms[form].controller.recreateUI();
 	globals.a.tempHiddenColumns[form] = [];
 	for (index = 0;index < hideArray.length;index++){
 		globals.a.tempHiddenColumns[form].push(hideArray[index]);

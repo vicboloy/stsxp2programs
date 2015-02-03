@@ -1577,10 +1577,10 @@ function tablePrefsSave(event){
 	globals.modalResponse = "";
 	win.show(forms.gen_table_order);
 	//if (globals.modalResponse == "Cancel"){return}
+	var formx = event.getFormName();
 	warningsYes();
 	//application.output(event);
 	//application.updateUI();
-	var formx = event.getFormName();
 	forms[formx].errorMessage = "Saving table column order.";
 	application.updateUI();
 	var formsInUse = [];

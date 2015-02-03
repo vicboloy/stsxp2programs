@@ -89,7 +89,7 @@ function onRecordSelection(event,buttonTextSrc) {
 	//elements.deleteButton.text = 'Delete';
 	//forms.status_descriptions.currentStatusCode = code;
 	//selectedIndex = getSelectedIndex();
-	//return true;
+	return true;
 }
 /**
  * Perform the element default action.

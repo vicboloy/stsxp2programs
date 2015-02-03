@@ -10,5 +10,8 @@
 function onRecordSelection(event, buttonTextSrc) {
 	//forms.status_descriptions.onShow(false,event);
 	forms.status_descriptions.setFormIndex(controller.getSelectedIndex());
+	var one = forms.status_descriptions.foundset.getSize();
+	var two = forms.status_description_lst.foundset.getSize();
+	application.output(one+' '+two);
 	//forms.status_descriptions.controller.setSelectedIndex(controller.getSelectedIndex());
 }

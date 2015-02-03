@@ -241,6 +241,7 @@ function initStatusCodes(){
 	for (var index = 1;index <= fs.getSize();index++){
 		fs.setSelectedIndex(index);
 		if (fs.tenant_uuid != globals.secCurrentTenantID){continue}
+		if (fs.association_id != globals.secCurrentAssociationID){continue}
 		if (aStatusCodes.indexOf(fs.status_code) == -1){
 			aStatusCodes.push(fs.status_code);
 		}
@@ -882,6 +883,8 @@ function onSolutionOpen() {
 	session.program = "STS Desktop";
 	globals.getAssociation(secCurrentAssociationID);
 	onStartLoadPrefs();	
+	globals.getMappings();
+	application.setValueListItems('stsvl_fab_shop',l.assocs);
 }
 
 /**

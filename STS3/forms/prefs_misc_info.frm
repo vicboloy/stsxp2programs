@@ -2,12 +2,16 @@ extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
 items:[
 {
 dataProviderID:"scopes.prefs.dflRouteCode",
+displayType:10,
 location:"225,355",
 name:"dflRouteCode",
+onFocusGainedMethodID:"2F3A54F1-F377-4FB7-901D-970BC2836044",
+printable:false,
 size:"105,20",
 text:"Dflroutecode",
 typeid:4,
-uuid:"015948BF-81A7-450E-9481-0DC0E421A091"
+uuid:"015948BF-81A7-450E-9481-0DC0E421A091",
+valuelistID:"6D4D3C0E-FF4F-4FB4-B0D9-8D6B711A6984"
 },
 {
 dataProviderID:"scopes.prefs.smallMadeInFont",

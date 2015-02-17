@@ -160,6 +160,12 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 	var bundle = globals.barcodeIsBundle(); //stubbed
 	var routeOK = globals.rfCheckRouteOrder(); // route checks out 
 	var shipStat = globals.barcodeShip(); 
+	if (globals.rfTimed() && globals.mob.timedError != ""){
+		globals.errorDialogMobile(globals.mob.timedError);
+		globals.logger(true,'Timed status error'+globals.mob.timedError);
+		return true;
+	}
+	
 	var status = globals.rfSaveScanTransaction(globals.mob.barcode,globals.session.stationId,globals.mob.locationArea);
 	currentID = '';
 	//if (!status){return}

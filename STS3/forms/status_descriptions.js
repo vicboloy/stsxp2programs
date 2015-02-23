@@ -408,21 +408,6 @@ function setFormIndex(index){
 	controller.setSelectedIndex(index);
 }
 /**
- * Handle changed data.
- *
- * @param {String} oldValue old value
- * @param {String} newValue new value
- * @param {JSEvent} event the event that triggered the action
- *
- * @returns {Boolean}
- *
- * @properties={typeid:24,uuid:"73B009AA-A779-41AC-ACA9-DCB166901B9F"}
- */
-function onDataChangeEndFor(oldValue, newValue, event) {
-	end_for_status = (newValue == "") ? null :  globals.m.stations[association_id+" , "+status_code];
-	return true
-}
-/**
  * Change to record matching associaton_id and status_code
  * @properties={typeid:24,uuid:"380C1DAC-D120-4014-9BFD-CDBB59AA3EDB"}
  */
@@ -470,10 +455,12 @@ function getStatusList(){
 	);
 	var resultQ = databaseManager.getFoundSet(q);
 	var statusArray = [];
+	var stationArrayId = [];
 	localStations = [];
 	for (var index = 1;index <= resultQ.getSize();index++){
 		var rec = resultQ.getRecord(index)
 		if (rec.association_id == association_id){
+			stationArrayId.push(rec.status_description_id);
 			statusArray.push(rec.status_code); // localize selections to current associationId
 		}
 		var assocId = rec.association_id;
@@ -482,6 +469,7 @@ function getStatusList(){
 		localStations.push(stationId);
 	}
 	application.setValueListItems('stsvl_status_code',statusArray);
+	application.setValueListItems('stsvl_station_codes',statusArray,stationArrayId);
 }
 /**
  * TODO generated, please specify type and doc for the params

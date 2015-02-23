@@ -204,7 +204,7 @@ tabSeq:8,
 text:"Req Xfer Status",
 typeid:4,
 uuid:"7826535B-C869-4BCA-B5A6-3C4D2727DA73",
-valuelistID:"23486681-EB49-4DB3-9720-0D8BDC65914E"
+valuelistID:"4196E8E5-1962-42BB-B088-DF922EC3D281"
 },
 {
 customProperties:"",
@@ -323,7 +323,6 @@ uuid:"B3793BC4-DBC9-4515-8461-AA99BA304388"
 },
 {
 dataProviderID:"status_code",
-displayType:10,
 format:"|U",
 location:"344,40",
 name:"status_code",
@@ -430,14 +429,14 @@ displayType:2,
 editable:false,
 location:"363,181",
 name:"end_for_status",
-onDataChangeMethodID:"73B009AA-A779-41AC-ACA9-DCB166901B9F",
+onDataChangeMethodID:"-1",
 placeholderText:" -EMPTY-",
 size:"140,20",
 tabSeq:7,
 text:"End For Status",
 typeid:4,
 uuid:"E2549BB3-80BE-4D35-94EE-E53E2662047A",
-valuelistID:"23486681-EB49-4DB3-9720-0D8BDC65914E"
+valuelistID:"4196E8E5-1962-42BB-B088-DF922EC3D281"
 },
 {
 dataProviderID:"labor_code_department",

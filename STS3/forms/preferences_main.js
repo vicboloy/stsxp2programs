@@ -69,7 +69,11 @@ function onActionUpdatePrefs(event) {
 			} else {
 				var recNum = fs.newRecord();
 				rec = fs.getRecord(recNum);
-				rec.user_id = user_id;
+				if (!user_id) {
+					rec.user_id = -1;
+				} else {
+					rec.user_id = user_id;
+				}
 				rec.tenant_uuid = tenant;
 				rec.field_name = variable;
 				rec.field_value = variableSetting;

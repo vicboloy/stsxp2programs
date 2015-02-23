@@ -6,6 +6,7 @@ items:[
 anchors:6,
 horizontalAlignment:0,
 location:"795,133",
+name:"closeButt",
 onActionMethodID:"F3F815E5-1968-4D40-85AB-CEE01C3AC82D",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

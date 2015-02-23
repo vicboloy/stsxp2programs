@@ -72,6 +72,7 @@ function startEditing(event) {
 	controller.enabled = true;
 	editState(true);
 	forms.tenant_users.controller.enabled = false;
+	forms.tenants.controller.enabled = false;
 	return _super.startEditing(event)
 }
 
@@ -86,6 +87,7 @@ function stopEditing(event) {
 	controller.enabled = false;
 	editState(false);
 	forms.tenant_users.controller.enabled = true;
+	forms.tenants.controller.enabled = false;
 	return _super.stopEditing(event)
 }
 

@@ -1098,6 +1098,27 @@ function secDeleteTenant(tenantName){
  * @AllowToRunInFind
  * 
  * TODO generated, please specify type and doc for the params
+ * @param usernum
+ *
+ * @properties={typeid:24,uuid:"3D622E0A-C148-4D26-AE4C-61929955DC67"}
+ */
+function getAssociationID2(usernum){
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	var users;
+	if (usernum == null){return null}
+	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);
+	if (users.find()){
+		users.user_id = usernum
+		if (users.search()){
+			return users.association_uuid;
+		}
+	}
+	return null;
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
  * @param {String} [assocName]
  *
  * @properties={typeid:24,uuid:"04BA1A04-95CA-49F8-B077-57CAA6B79423"}
@@ -1116,8 +1137,8 @@ function secGetAssociationID(assocName){
 	//}
 	associations = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);//	get an association foundset
 	if(associations.find()){													//	search the association foundset...
+		associations.association_name = assocName;								//	search by association name	
 		if (compareTo == null){
-			associations.association_name = assocName;								//	search by association name	
 			associations.tenant_group_uuid = compareTo;
 		} else {
 			associations.tenant_uuid = compareTo;

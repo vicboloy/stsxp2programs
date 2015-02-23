@@ -1659,11 +1659,13 @@ function onFocusLost(event) {
  */
 function onStartLoadPrefs(){
 	//var prefs = scopes.prefs;
+	//if (!scopes.prefs){scopes.prefs = {}}
 	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
 	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
 	if (fs.find()){
 		fs.user_id = -1;
 		fs.tenant_uuid = globals.secCurrentTenantID;
+		fs.form_name = '^=';
 		var recIndex = 1;
 		var recCount = fs.search();
 		recCount = databaseManager.getFoundSetCount(fs);
@@ -1984,8 +1986,8 @@ function rfTransCode(){
 	 * FABRICATOR FAB
 	 */
 	var activity = rfActivity(); // returns activity related to formName
-	//var installedAt = scopes.prefs2.stsInstalled;
-	var installedAt = 'FABRICATOR'; // JOEJOEJOE 20150217
+	var installedAt = scopes.prefs.stsInstalled.toUpperCase();
+	//var installedAt = 'FABRICATOR'; // JOEJOEJOE 20150217
 	var action = "";
 	switch (activity) {
 		case 'S': action = "SH"; break;

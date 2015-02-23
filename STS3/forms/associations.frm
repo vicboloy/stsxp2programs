@@ -16,7 +16,7 @@ uuid:"14776049-8536-4068-879B-4CA1AC65995A"
 dataProviderID:"association_name",
 format:"|U",
 location:"0,44",
-onDataChangeMethodID:"7CF8C088-C3E4-4C8A-A67F-F6EE593511AF",
+onDataChangeMethodID:"E5DE0617-7A12-4660-BCE7-52FBF6BCA1A8",
 size:"183,20",
 tabSeq:-2,
 typeid:4,
@@ -60,6 +60,7 @@ uuid:"ABB948A9-8566-4B02-9F2A-417C7AE5AA8A"
 {
 anchors:11,
 dataProviderID:"association_name",
+editable:false,
 location:"25,86",
 name:"company_name",
 size:"140,20",

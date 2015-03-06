@@ -185,6 +185,27 @@ var secSession = {
  */
 var secTenantArray = [""];
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"73D45388-0F8A-4A73-8180-DF410838B567"}
+ */
+var html = '<html> \
+	<head> \
+	<script type="text/javascript" charset="utf-8" src="\\\Storage Card\\\EnterpriseBrowser\\rho\\\apps\\\public\\\api\\\ebapi-modules.js"></script> \
+	<script type="text/javascript"> \
+	function exitB() { \
+		plugins.WebClientUtils.executeClientSideJS("application.quit();") \
+	} \
+	\
+	</script> \
+	</head> \
+	<body> \
+	<button type="button" onClick="exitB()">Exit</button> \
+	</body> \
+	</html>';
+//<script type="text/javascript" charset="utf-8" src="\\\Storage Card\\\EnterpriseBrowser\\rho\\\apps\\\public\\\re1\\\elements.js"></script> \
+
+/**
  * @properties={typeid:35,uuid:"84E03118-BE96-4341-A73F-68682F6CC32D",variableType:-4}
  */
 var secTenantArraySearch = [""];

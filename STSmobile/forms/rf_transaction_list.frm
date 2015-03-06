@@ -58,7 +58,7 @@ typeid:7,
 uuid:"3FB745C7-C33A-4A18-87E7-002277C438F1"
 },
 {
-height:148,
+height:174,
 partType:5,
 typeid:19,
 uuid:"47A93B07-7EF6-449B-BF24-3F81558A90CB"
@@ -182,7 +182,7 @@ name:"rf_transaction_list",
 navigatorID:"-1",
 onShowMethodID:"-1",
 showInMenu:true,
-size:"170,219",
+size:"226,174",
 styleName:"sts_one",
 typeid:3,
 uuid:"0125012B-3A8B-46D1-8456-20B1F29B7B0A"

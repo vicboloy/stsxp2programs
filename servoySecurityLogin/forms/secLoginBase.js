@@ -114,6 +114,20 @@ function login(){
 			if(passCheck && security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 				globals.secCurrentUserID = userID;
 				globals.secCurrentUserName = userName;
+				var date = new Date();//<YYYY>-<MM>-<DD>T<HH>-<MM>-<SS> synchronize mobile computer date with server time
+				var days = date.getDate()+"";
+				if (days.length == 1) {days = "0"+days}
+				var month = date.getMonth()+1+"";
+				if (month.length == 1) {month = "0"+month}
+				var hours = date.getHours()+"";
+				if (hours.length == 1) {hours = "0"+hours}
+				var minutes = date.getMinutes()+"";
+				if (minutes.length == 1) {minutes = "0"+minutes}
+				var seconds = date.getSeconds()+"";
+				if (seconds.length == 0) {seconds = "0"+seconds}
+				var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"'";
+				application.output('date '+mobileDate);
+				plugins.WebClientUtils.executeClientSideJS(mobileDate);
 				return true;
 			}
 		}
@@ -127,7 +141,15 @@ function login(){
 	errorMessage = message;
 	return null;
 }
-
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param msg
+ *
+ * @properties={typeid:24,uuid:"13DDA005-3E30-4B2E-A7C2-BC804DDB6D8F"}
+ */
+function callError(msg){
+	errorMessage = msg;
+}
 /**
  * Callback method when form is (re)loaded.
  *
@@ -137,7 +159,7 @@ function login(){
  */
 function onLoad(event) {
 	var win = application.getActiveWindow();
-	win.title = "STS Loginx";
+	win.title = "STS Login_";
 	var showCompany = security.authenticate(AUTH_SOLUTION,AUTH_GET_TENANT_COUNT,[]);
 	application.output('company count '+showCompany);
 	elements.companyName.visible = showCompany;
@@ -151,4 +173,25 @@ function onLoad(event) {
 	} else {
 		elements.userName.requestFocus();
 	}
+
+	var msg = "inside load";
+	///var callback = plugins.WebClientUtils.generateCallbackScript(callError, [msg, 'argN'], true);
+	///var script = 'function myFunction(arg1, argN){' + callback + '}';
+	///var markup = '<html><head><script type="text/javascript">' + script + '</script></head></html>'
+	
 }
+/**
+ * @properties={typeid:24,uuid:"D46012B8-F198-4734-8D17-E5D53672CB98"}
+ */
+function exitBrowser(){
+	//var jsToExecute = "alert('Hello World: Called From Servoy Method!');";
+	//debugText = jsToExecute;
+	var jsToExecute = "application.quit();";
+	plugins.WebClientUtils.executeClientSideJS(jsToExecute);
+}
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"4E30A6E1-0F9E-45A7-BE39-6A406BB053F3"}
+ */
+var debugText = "";

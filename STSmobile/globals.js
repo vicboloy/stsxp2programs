@@ -34,23 +34,23 @@ function onSolutionOpen(){
 	//secSetCurrentApplication(17); // 17 is already STS, could be anything
 	
 	globals.getMappings();
-	globals.secCurrentUserName = security.getUserName();
+	///globals.secCurrentUserName = security.getUserName();
 	secSetCurrentTenant(secCurrentTenantID);
 	//getTablesFilters(secCurrentTenantID);
 	//globals.workersList();
-	globals.mobLoggedEmployeeId = globals.getLoggedEmployee(secCurrentUserID);
+	//globals.mobLoggedEmployeeId = globals.getLoggedEmployee(secCurrentUserID);
 	//application.setValueListItems('stsvlg_workers',globals.workersList())
 	// set session id varibles
-	scopes.globals.getLoggedEmployee(secCurrentUserID);
+	///scopes.globals.getLoggedEmployee(secCurrentUserID);
 	session.program = "STS Mobile";
+	session.login = security.getUserName();
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.tenant_uuid = sec_current_user.tenant_uuid;
-	session.associationId = globals.secGetAssociationID(session.tenant_uuid);
+	session.associationId = globals.secGetAssocID(session.login);//check for use of secGetAssociationID
 	if (session.associationId == null){
 		session.associationId = secGetAssocID(secCurrentUserName);
 	}
 	session.association = m.assocs[session.associationId];
-	session.login = security.getUserName();
 	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association
 	//application.output()
 	application.setValueListItems('stsvlg_status_codes',globals.m.statusCodesDiv[session.associationId]); // status codes for this association

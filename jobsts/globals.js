@@ -235,11 +235,15 @@ var mobIdfiles = [];
  */
 var mobIdSerialId = "";
 /**
+ * @properties={typeid:35,uuid:"17D9CCBB-1139-45F6-BDAA-7E5C8334B52A",variableType:-4}
+ */
+var mobRepIdfile = {};
+/**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"17D9CCBB-1139-45F6-BDAA-7E5C8334B52A"}
+ * @properties={typeid:35,uuid:"240D9589-3E4A-43D9-BDE1-B2F0BE77A91D"}
  */
-var mobRepIdfile = "";
+var mobRepIdfileId = "";
 /**
  * @type {String}
  *
@@ -397,7 +401,10 @@ var session = {
 	userEntry : "",
 	workerList : [],
 	executeFuncs : [],
-	client : ""
+	client : "",
+	errorForm : null,  // this is for error window control
+	errorElement : null,
+	errorElementAlt : null
 }
 /**
  * @properties={typeid:35,uuid:"6225E06A-DBBF-40D2-8DA6-BAD038CECB04",variableType:-4}
@@ -630,6 +637,7 @@ function formVerifyStatus(){
  * @properties={typeid:24,uuid:"D4132049-A5B7-41D6-A94D-3FCDA0662B3E"}
  */
 function rfF2(formName){
+	//var win = forms.rf_help;
 	var formName = application.getActiveWindow().controller.getName();
 	globals.mobDisableForm(true);
 	// More than one association?
@@ -646,6 +654,18 @@ function rfF2(formName){
 	forms[formName].elements.elDivisionChg.visible = true;
 	forms[formName].elements.elDivisionChg.enabled = true;
 	application.setValueListItems('rfDivisionList',assocNames);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"CBC34BCA-57A6-4FC7-8758-6A0EED302D1E"}
+ */
+function rfF3(formName){
+	var formName = application.getActiveWindow().controller.getName();
+	var vis = (forms[formName].elements.tablessHistory.visible == true);
+	forms[formName].elements.tablessHistory.visible = !vis;
+	forms[formName].elements.tablessHistory.enabled = !vis;
 }
 /**
  * @properties={typeid:24,uuid:"8FD4F0A8-6EB3-4DF9-A497-54CED9E73075"}
@@ -976,6 +996,15 @@ function noOperation(){
  * TODO generated, please specify type and doc for the params
  * @param event
  *
+ * @properties={typeid:24,uuid:"89367D1A-9BEC-4053-8EFB-EC113512237F"}
+ */
+function noOperationEvent(event){
+	application.output('this is an empty op.'+event);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
  * @properties={typeid:24,uuid:"B5F3140A-92DF-4C0D-A4A0-985F31F6573E"}
  */
 function onActionScreenToggle(event) {
@@ -1028,13 +1057,15 @@ function rfCheckRouteOrder(){
 	var stationId = session.stationId;
 	var allowMoreCodes = (l.routesAddLegs.indexOf(routeId) != -1);
 	var allowMultiScan = (l.stationsMultiScan.indexOf(stationId) != -1);
+	var stationScanned = (mob.transactionList.indexOf(stationId) != -1);
 	var stationLastId = mob.idfile.status_description_id;
 	if (routeId != null) {
 		checkLegs = l.routeLegs[routeId];
 	}
 	// route legs are checked with status_description_id.UUID
 	// Do not update same station twice unless allowMultiScan true
-	var writeTransRecord = (!allowMultiScan && stationLastId+"" == stationId+"") ||	(routeId == null);
+	///var writeTransRecord = (!allowMultiScan && stationLastId+"" == stationId+"") ||	(routeId == null);
+	var writeTransRecord = (!allowMultiScan && stationScanned) || (!stationScanned) ||	(routeId == null);
 	// ok in route
 	// Enforce routing on transaction. For the route, is current preceeded by previousRoute by previousRoute
 	// actual transactions: mob.transactionList[index]=(status_description_id...)
@@ -1119,17 +1150,23 @@ function rfDelayFunction(funcName){
  */
 function rfFunctionKeys(screen){
 	globals.mobProg = screen;
-	for (var index=1;index < 11;index++){
-		plugins.window.createShortcut('F'+index,globals.noOperation);
+	for (var index=0;index < 13;index++){
+		if (index > 0 && index < 11){
+			plugins.window.createShortcut('F'+index,globals.noOperation);
+		}
 		functionKeyProcedure[index] = 'globals.noOperation';
 	}
 	plugins.window.createShortcut('F1','globals.showHelp');
 	plugins.window.createShortcut('F10','globals.showExecLogout');
 	functionKeyProcedure[10] = 'globals.showExecLogout';
-	functionKeyDescrip = ['','F1 - Help','F2 - ','F3 - ','F4 - ','F5 - ','F6 - ','F7 - ','F8 - ','F9 - ','F10 - Exit'];
-	functionKeyDescrip[2] = 'F2 - Switch Plants'
+	functionKeyDescrip = ['Help Selection or use FKey','F1 - Help','F2 - ','F3 - ','F4 - ','F5 - ','F6 - ','F7 - ','F8 - ','F9 - ','F10 - Exit','11','12'];
+	functionKeyDescrip[2] = 'F2 - Switch Plants';
 	functionKeyProcedure[2] = 'globals.rfF2';
 	plugins.window.createShortcut('F2','globals.rfF2');
+	functionKeyDescrip[11] = 'xxx Logout';
+	functionKeyProcedure[11] = 'globals.rfLogout';
+	functionKeyDescrip[12] = 'xxx Return to OS';
+	functionKeyProcedure[12] = 'globals.rfExitBrowser';
 	//functionKeyProcedure[3] = '';
 	//functionKeyProcedure[8] = '';
 	//functionKeyProcedure[9] = '';
@@ -1138,9 +1175,11 @@ function rfFunctionKeys(screen){
 		case 'Main':
 			globals.mobForm = "STS_main";
 			break;
-		case 'Transactions':
+		case 'rf_transactions':
 			globals.mobForm = "rf_transactions";
 			functionKeyDescrip[3] = 'F3 - List History'
+			functionKeyProcedure[3] = 'globals.rfF3';
+			plugins.window.createShortcut('F3','globals.rfF3');
 			functionKeyDescrip[8] = 'F8 - Remove Status'
 			functionKeyDescrip[9] = 'F9 - Inspection Doc'
 			break;
@@ -1150,19 +1189,10 @@ function rfFunctionKeys(screen){
 	//functionKeyProvider = -1;
 	functionKeyProvider = "";
 	var funcList = [];
-	for (index = 0;index < 11;index++){
+	for (index = 0;index < functionKeyDescrip.length;index++){
 		funcList.push(functionKeyDescrip[index])
 	}
 	application.setValueListItems('vl_HelpMenu',funcList);
-	/**var space = "";
-	if (functionKeyDescripB[0] == functionKeyDescrip[0]){space = ""}
-	for (var index = 0;index < 11;index++){
-		globals.functionKeyDescripB[index] = functionKeyDescrip[index]+space;
-	}
-	application.setValueListItems('vl_HelpMenu',functionKeyDescripB);
-	*
-	*/
-	//application.output('fkeys '+functionKeyDescrip);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1357,7 +1387,12 @@ function rfGetLocationStats(sLocation){
 	}
 	mob.locationValues.weight = totWeight;
 }
-
+/**
+ * @properties={typeid:24,uuid:"4D8A0286-EDA2-44A3-A0B4-5A90967FEEA5"}
+ */
+function rfErrorVisible(formName){
+	return forms[formName].elements.errorWindow.visible == true;
+}
 /**
  * TODO generated, please specify type and doc for the params
  * @param message
@@ -1371,9 +1406,10 @@ function rfErrorShow(message){
 	
 	forms[formName].elements.errorWindow.enabled = true;
 	forms[formName].elements.errorWindow.visible = true;
+	forms[formName].elements.errorWindow.transparent = false;
 	forms[formName].elements.errorWindow.putClientProperty('text',message);
 	forms[formName].elements.errorWindow.requestFocus();
-	forms[formName].controller.focusField('errorWindow',false)
+	forms[formName].controller.focusField('errorWindow',false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1382,12 +1418,79 @@ function rfErrorShow(message){
  * @properties={typeid:24,uuid:"376C6315-A576-4572-AD5F-9208DDF1E543"}
  */
 function rfErrorHide(event) {
-	var formName = application.getActiveWindow().controller.getName();
+	//var formName = application.getActiveWindow().controller.getName();
+	var formName = session.errorForm;
+	var elName = session.errorElement;
+	if (session.errorElementAlt != null){
+		elName = session.errorElementAlt;
+	}
 	globals.mobDisableForm(false);
 	forms[formName].elements.errorWindow.visible = false;
 	forms[formName].elements.errorWindow.enabled = false;
-	forms[formName].controller.focusField('status',false);
-	forms[formName].elements['current'].requestFocus();
+	forms[formName].elements.errorWindow.transparent = true;
+	forms[formName].controller.focusField(elName,false);
+	//forms[formName].elements[elName].requestFocus();
+	if (session.errorForm != null && session.errorElement != null){
+		//application.output(' focus request set');
+		//forms[session.errorForm].elements[session.errorElement].requestFocus();
+		//forms.rf_transactions.elements.current.requestFocus();
+		forms[formName].controller.focusField(elName,true);
+		session.errorForm = null;
+		session.errorElement = null;
+		session.errorElementAlt = null;
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event {Event}
+ *
+ * @properties={typeid:24,uuid:"6FC164A9-4B95-4767-9C50-525B8C81B063"}
+ */
+function rfEmptyStayField(event){
+	var formName = event.getFormName();
+	var elName = event.getElementName();
+	var entry = event.getSource().getDataProviderID();
+	var variable = forms[formName];
+	var value = variable[entry];
+	if (value == "" && forms[formName].elements.errorWindow.visible == false){
+		forms[formName].elements[elName].requestFocus();		
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param elName
+ *
+ * @properties={typeid:24,uuid:"6F4AA703-5DF9-4FD2-8256-7562899F5F37"}
+ */
+function rfEmptyNextField(event,elName){
+	var formName = event.getFormName();
+	//var elName = event.getElementName();
+	forms[formName].controller.focusField(elName,true);
+	forms[formName].elements[elName].selectAll();
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"9F12D05A-CD94-451C-B0D6-C2BBC656849C"}
+ */
+function rfSetCurrentFocus(event){
+	var formName = event.getFormName();
+	var elName = event.getElementName();
+	if (forms[formName].elements.errorWindow.visible == true){
+		forms[formName].controller.focusField('errorWindow',false);
+		return;
+	}
+	session.errorForm = formName;
+	session.errorElement = elName;
+	var provider = forms[formName].controller.getDataProviderValue(elName);
+	if (!provider){return}
+	var variable = forms[formName];
+	var value = variable[provider];
+	if (value == ""){
+		variable[provider] = " ";
+	}
 }
 /**
  * @properties={typeid:24,uuid:"C23097C7-0091-41B2-8224-026404DC4274"}
@@ -1423,6 +1526,7 @@ function getStatusCodes(valuelistArray){
 function rfGetMobIdfile(){
 	var idfile = mob.idfile;
 	mobRepIdfile = mobIdfiles[0];
+	mobRepIdfileId = "";
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
 	q.result.add(q.columns.piecemark_id);
@@ -1442,6 +1546,7 @@ function rfGetMobIdfile(){
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() > 0){
 		mob.idfile = resultQ.getRecord(1);
+		mobRepIdfileId = mob.idfile.idfile_id;
 	}
 	return (resultQ.getSize() > 0);
 }
@@ -1501,7 +1606,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation, statusId){
 	while (maxIndex < resultQ.getSize()){
 		var rec = resultQ.getRecord(maxIndex);
 		if (idfileList.indexOf(rec.idfile_id) == -1){idfileList.push(rec.idfile_id)}
-		maxIndex++;
+		maxIndex = resultQ.getSize();
 	}
 	mob.idValues.total = maxIndex;
 	
@@ -1546,8 +1651,8 @@ function xxxonDataChangeBarcode(oldValue, newValue, event){
 	var barcodeId = globals.checkBarcode(scannedID);
 	if (!barcodeId){
 		currentID = "";
-		globals.errorDialogMobile('701');
-		form.elements.current.requestFocus();
+		errorDialogMobile(event,'701');
+		//form.elements.current.requestFocus();
 		return true;
 	}
 	/**
@@ -1573,14 +1678,14 @@ function xxxonDataChangeBarcode(oldValue, newValue, event){
 	//globals.secCurrentAssociationID; statusCode; globals.aMobAssocs[globals.secCurrentAssociationID];
 	if (!globals.rfGetBarcodeIdfiles()){
 		application.output('ERROR: Database inconsistent with barcode');
-		globals.errorDialogMobile('701');
+		errorDialogMobile(event,'701','current');
 		currentID = "";
 		globals.mobPreviousLocation = "";
 		globals.mobPreviousStatus = "";
 		globals.mobLocationPieces = 0;
 		globals.mobLocationWeight = 0;
 		globals.mobItemPieces = "";
-		elements.current.requestFocus();
+		///elements.current.requestFocus();
 		return true;
 	}
 	form.controller.loadRecords(databaseManager.convertToDataSet(globals.mob.idfiles)); // mob.idfiles
@@ -1622,9 +1727,9 @@ function rfGetStatusChange(oldValue, newValue, event) {
 	plugins.scheduler.removeJob('updateField')
 	session.userEntry = newValue;
 	if (m.statusCodesDiv[session.associationId].indexOf(newValue) == -1){
-		//errorDialogMobile('401');
+		errorDialogMobile(event,'401','status');
 		var formName = event.getFormName();
-		forms[formName].elements.status.requestFocus();
+		//forms[formName].elements.status.requestFocus();
 		forms[formName].resetStatusCode();
 		return true;
 	}
@@ -1633,6 +1738,10 @@ function rfGetStatusChange(oldValue, newValue, event) {
 	logger(false,'Status OK');
 	//scopes.globals.statusId = m.stations[mobAssocId+', '+newValue];
 	session.stationId = m.stations[session.associationId+', '+mob.statusCode];
+	//var xxx = forms.rf_transactions.controller.getTabSequence();
+	//application.output('tabs '+xxx);
+	globals.rfEmptyNextField(event,'location');
+	//forms.rf_transactions.controller.focusField('location',true);
 	return true;
 }
 /**
@@ -1651,6 +1760,20 @@ function onFocusLost(event) {
 	if (value == ""){
 		forms[formName].elements[elName].requestFocus();		
 	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"91F45752-C164-4AEB-ACDD-12D9E8AFC20A"}
+ */
+function onFocusClear(event) {
+	var formName = event.getFormName();
+	var elName = event.getElementName();
+	var entry = event.getSource().getDataProviderID();
+	var variable = forms[formName];
+	var value = variable[entry];
+	value = "";
 }
 /**
  * @AllowToRunInFind
@@ -1775,21 +1898,26 @@ function rfGetTransactions(){
  * @properties={typeid:24,uuid:"F9C47BF5-F1BE-46D1-82FF-C80A0246CBEF"}
  */
 function rfGetWorker(oldValue, workers, event){
-	if (workers == ""){return true}
+	if (workers == ""){
+		forms.rf_transactions.controller.focusField('current',true);
+		return true
+	}
 	session.userEntry = workers;
 	var message = "";
 	var workersArray = workers.split('.');
 
 	for (index = 0;index < workersArray.length;index++){
 		if (session.workerList.indexOf(workersArray[index]) == -1){
-			errorDialogMobile('150');
+			errorDialogMobile(event,'150','worker');
 			var formName = event.getFormName();
-			forms[formName].elements.worker.requestFocus();
+			//forms[formName].elements.worker.requestFocus();
 			forms[formName].resetWorkerCode();
 			return true;
 		}
 	}
 	globals.logger(false,message);
+	//forms.rf_transactions.controller.focusField('current',true);
+	globals.rfEmptyNextField(event,'current');
 	return true;
 }
 /**
@@ -2084,8 +2212,8 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	// status out of order, then false
 	// if okay for other stations, then true
 	
-	///rfGetTransactionLast(globals.mob.idfile);
-	//var routeOK = rfCheckRouteOrder(statusId);
+	rfGetTransactionLast(globals.mob.idfile);
+	var routeOK = rfCheckRouteOrder(statusId);
 	//application.output('save scan transaction');
 	globals.logger(true,'Save scan transaction operation.');
 	//worker_id,worker2_id,worker3_id,worker4_id,worker5_id, tenant_uuid, employee_id,fabshop_id (guids)
@@ -2105,62 +2233,6 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	var newFS = databaseManager.getFoundSet('db:/stsservoy/transactions');
 	logger(true, 'Updating ' + mob.idfiles.length + ' idfiles');
 	//var newRecordCreated = false;
-	var newRec = null;
-	for (index = 0; index < mob.idfiles.length; index++) {
-		application.output('inside saving idfiles');
-		if (rfTransIsTimed()){
-			newRec = rfSetIdfileTimedStatus(mob.idfiles[index]);
-			if (newRec == null){
-				globals.logger(true,'rfIsTimed rec is null');
-			} else {
-				globals.logger(true,'rfIsTimed rec is found');
-			}
-		} 
-		if (newRec != null){//only update timed transaction records
-			globals.logger(true,'status trans rec found. updating');
-			newRec.transaction_duration = mob.timedDuration;
-			newRec.transaction_end = mob.timedEnd;
-		} else {
-			globals.logger(true,'newRec created for status '+mob.statusCode);
-			var newRecNum = newFS.newRecord();
-			if (newRecNum == -1){
-				globals.logger(true,'Creating new Record for transactions failed.');
-			}
-			newRec = newFS.getRecord(newRecNum);
-			newRec.status_description_id = session.stationId;
-			//newFS.id_location = sLocation; // location is fabShop
-			newRec.employee_id = globals.mobLoggedEmployeeId;//UUID
-			newRec.idfile_id = mob.idfiles[index];
-			newRec.location = mob.locationArea;
-			newRec.transaction_date = new Date();//date;//mob.timedBegin;
-			newRec.transaction_start = date;//mob.timedBegin;
-			newRec.tenant_uuid = session.tenant_uuid;
-			newRec.trans_status = mob.statusCode;
-			newRec.trans_code = rfTransCode();
-			for (var index2 = 0; index2 < currentWorkers.length; index2++) {
-				switch (index2) {
-				case 0:
-					newRec.worker_id = currentWorkers[index2];
-					break;
-				case 1:
-					newRec.worker2_id = currentWorkers[index2];
-					break;
-				case 2:
-					newRec.worker3_id = currentWorkers[index2];
-					break;
-				case 3:
-					newRec.worker4_id = currentWorkers[index2];
-					break;
-				case 4:
-					newRec.worker5_id = currentWorkers[index2];
-					break;
-				default:
-				}
-			}
-		}
-		recordsToSave.push(newRec);
-	}
-	globals.logger(true,'Saving '+recordsToSave.length+' trans records');
 	// status code already captured for this piece?
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
@@ -2174,18 +2246,76 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	);
 	var resultQ = databaseManager.getFoundSet(q);
 	var resultSize = resultQ.getSize();
-	while (recordsToSave.length > 0){ // always save transactions
+	if (resultSize != 0 && !rfScanAgainOk()) {
+		errorDialogMobile('rf_transactions.current','403','current');
+		logger(true, 'Status code has already been captured.');
+		//forms['rf_transactions'].elements.current.requestFocus();
+		return false;
+	}
+	var newRec = null;
+	for (index = 0; index < mob.idfiles.length; index++) {
+		//application.output('inside saving idfiles');
+		if (rfTransIsTimed()){
+			newRec = rfSetIdfileTimedStatus(mob.idfiles[index]);
+			if (newRec == null){
+				globals.logger(true,'rfIsTimed rec is null');
+			} else {
+				globals.logger(true,'rfIsTimed rec is found');
+			}
+		} 
+		if (newRec != null){//only update timed transaction records
+			globals.logger(true,'status trans rec found. updating');
+			newRec.transaction_duration = mob.timedDuration;
+			newRec.transaction_end = mob.timedEnd;
+		} else {
+			if (routeOK){
+				globals.logger(true,'newRec created for status '+mob.statusCode);
+				var newRecNum = newFS.newRecord();
+				if (newRecNum == -1){
+					globals.logger(true,'Creating new Record for transactions failed.');
+				}
+				newRec = newFS.getRecord(newRecNum);
+				newRec.status_description_id = session.stationId;
+				//newFS.id_location = sLocation; // location is fabShop
+				newRec.employee_id = globals.mobLoggedEmployeeId;//UUID
+				newRec.idfile_id = mob.idfiles[index];
+				newRec.location = mob.locationArea;
+				newRec.transaction_date = new Date();//date;//mob.timedBegin;
+				newRec.transaction_start = date;//mob.timedBegin;
+				newRec.tenant_uuid = session.tenant_uuid;
+				newRec.trans_status = mob.statusCode;
+				newRec.trans_code = rfTransCode();
+				for (var index2 = 0; index2 < currentWorkers.length; index2++) {
+					switch (index2) {
+					case 0:
+						newRec.worker_id = currentWorkers[index2];
+						break;
+					case 1:
+						newRec.worker2_id = currentWorkers[index2];
+						break;
+					case 2:
+						newRec.worker3_id = currentWorkers[index2];
+						break;
+					case 3:
+						newRec.worker4_id = currentWorkers[index2];
+						break;
+					case 4:
+						newRec.worker5_id = currentWorkers[index2];
+						break;
+					default:
+					}
+				}
+			}
+		}
+		recordsToSave.push(newRec);
+	}
+	globals.logger(true,'Saving '+recordsToSave.length+' trans records');
+	while (recordsToSave.length > 0){ // always save 'good' transactions 3/4/2015 pp all user entries are saved
 		var rec = recordsToSave.pop();
 		var status = databaseManager.saveData(rec);
 		if (!status){
 			globals.logger(true,'save of record failed');
 		}
-	}
-	if (resultSize != 0 && !rfScanAgainOk()) {
-		scopes.globals.errorDialogMobile('403');
-		logger(true, 'Status code has already been captured.');
-		forms['rf_transactions'].elements.current.requestFocus();
-		return false;
 	}
 	if (routeOK){
 		if (rfCheckStatusIdfileMax()){
@@ -2250,10 +2380,17 @@ function setFocus(){
  * @properties={typeid:24,uuid:"5EF80351-5BA6-414C-98AB-EFDB31AD4CAA"}
  */
 function showHelp(){
+	var winName = application.getActiveWindow();
+	var formName = winName.controller.getName();
 	functionKeyProvider = -1;
 	functionKeyProvider = null;
-	var win = application.getActiveWindow();
-	win.show('rf_help');
+	var vis = (forms[formName].elements.elHelp.visible);
+	forms[formName].elements.elHelp.visible = !vis;
+	forms[formName].elements.elHelp.enabled = !vis;
+	if (vis){return}
+	rfFunctionKeys(formName);
+	//var win = application.getActiveWindow();
+	//win.show('rf_help');
 }
 /**
  * @properties={typeid:24,uuid:"CF92CA29-7654-497B-9D1E-EABE3FAA08A6"}
@@ -2355,12 +2492,24 @@ function errorDialog(errorNum){
 }
 /**
  * TODO generated, please specify type and doc for the params
+ * @param event {Event}
  * @param errorNum
  *
  * @properties={typeid:24,uuid:"E5021DE9-0377-478B-8AE2-CC18B4F90260"}
  * @AllowToRunInFind
  */
-function errorDialogMobile(errorNum){
+function errorDialogMobile(event,errorNum,returnField){
+	if (typeof event === 'string') {
+		var resetItem = event.split('.');
+		session.errorForm = resetItem[0];
+		session.errorElement = resetItem[1];
+	} else {
+		session.errorForm = event.getFormName();
+		session.errorElement = event.getElementName();
+	}
+	//if (returnField && returnField){
+	session.errorElementAlt = returnField;
+	//}
 	errorNum = errorNum+"";
 	/** @type {JSFoundSet<db:/stsservoy/messages>} */
 	var fs = databaseManager.getFoundSet('db:/stsservoy/messages');
@@ -2418,19 +2567,32 @@ function logger(capture,message){
 function showExecLogout(){
 	var win = application.getActiveWindow();
 	var formName = win.controller.getName();
+	logger(true,'Exiting form '+formName);
 	if (formName == "STS_main"){
 		security.logout('STSmobile');
 		return;
 	}
-	if (formName == "rf_help"){
-		win.show(globals.mobForm);
+	if (formName == "rf_transactions"){
+		win.show('STS_main');
 		//win.hide();
 		return;
 	}
 	win.show('STS_main');
 	rfFunctionKeys('Main');
 }
-
+/**
+ * @properties={typeid:24,uuid:"16CA9F21-FA73-4D11-B7A8-DF1231429DBE"}
+ */
+function rfLogout(){
+	security.logout('STSmobile');
+}
+/**
+ * @properties={typeid:24,uuid:"07CE6DD4-F0D6-4AC1-9158-6F650E187E75"}
+ */
+function rfExitBrowser(){
+	var jsToExecute = "application.quit();";
+	plugins.WebClientUtils.executeClientSideJS(jsToExecute);
+}
 /**
  * Perform the element default action.
  *
@@ -2440,9 +2602,14 @@ function showExecLogout(){
  */
 function onActionHelp(event) {
 	var form = event.getFormName();
-	var elName = forms[form].elements.menu.getSelectedElements()[0];
-	var funcIndex = functionKeyDescrip.indexOf(elName);
+	var elName = event.getElementName();
+	var actionName = functionKeyProvider;
+	var funcIndex = functionKeyDescrip.indexOf(actionName);
 	var progEx = functionKeyProcedure[funcIndex]+'()';
+	forms[form].elements[elName].visible = false;
+	forms[form].elements[elName].enabled = false;
+	functionKeyProvider = "";
+	if (actionName == ""){return}
 	eval(progEx);
 }
 

@@ -36,3 +36,20 @@ function onDataChange(oldValue, newValue, event) {
 	elements.password.requestFocus();
 	return true
 }
+
+/**
+ * Handle focus lost event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"6B40CF4D-076D-4DAF-88F8-DE5A7F55A38A"}
+ */
+function onFocusLost(event) {
+	var elName = event.getElementName();
+	var formName = event.getFormName();
+	var prov = forms[formName].elements[elName].getDataProviderID();
+	var val = controller.getDataProviderValue(prov);
+	if (val == "" || val == null){
+		forms[formName].elements[elName].requestFocus();
+	}
+}

@@ -46,6 +46,9 @@ function onSolutionOpen(){
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.tenant_uuid = sec_current_user.tenant_uuid;
 	session.associationId = globals.secGetAssociationID(session.tenant_uuid);
+	if (session.associationId == null){
+		session.associationId = secGetAssocID(secCurrentUserName);
+	}
 	session.association = m.assocs[session.associationId];
 	session.login = security.getUserName();
 	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association

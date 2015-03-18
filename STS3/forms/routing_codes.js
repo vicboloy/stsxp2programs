@@ -95,42 +95,9 @@ function onShowLoadData(firstShow, event) {
 	if (firstShow) {
 		onEdit(event,false);
 	}
-	addOtherChangeFunctions();
-	if (true == false){
-	var fabShopsList = application.getValueListArray('stsvl_status_codes');
-	aStatusCodes = globals.getStatusCodes(application.getValueListArray('stsvl_status_codes'));
-	//application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
-	aRouteCodes = [];
-	//application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true); application.updateUI();
-	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
-	var fs = sts_route_status_codes;
-	if (fs != null) {
-		for(var index=1;index<=fs.getSize();index++){
-			var record = fs.getRecord(index);
-			//var fabShopsList = globals.mobFabShops;
-			var fabShopId = record.status_description_id;
-
-			
-			var fabShopAndStatus = null;
-			for (fabShopAndStatus in fabShopsList){
-				if (fabShopsList[fabShopAndStatus]+"" == fabShopId+""){break}
-			}
-			var fsAndS = fabShopAndStatus.split(',');
-			var routeItem = globals.aMobAssocs[fsAndS[0]]+", "+fsAndS[1];
-
-			if (aRouteCodes.indexOf(routeItem) == -1){
-				aRouteCodes.push(routeItem);
-				aStatusCodes = removeElementFromArray(aStatusCodes,routeItem);
-			}
-		}
-	}
-	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
-	onActionOrderByProcess(event,'stsvl_route_status_avail');
-	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
-	}
+	setRouteCodesLists();
 	elements.orderUp.enabled = false;
 	elements.orderDown.enabled = false;
-
 }
 /**
  * @properties={typeid:24,uuid:"FA9BA21D-6B8A-45D9-9468-FFC8F13645FF"}
@@ -290,7 +257,7 @@ function additionalActionAddFunctions(){
 /**
  * @properties={typeid:24,uuid:"59830BC0-4CBF-4733-A15B-119A2150F088"}
  */
-function addOtherChangeFunctions(){
+function setRouteCodesLists(){
 	var fabShopsList = application.getValueListArray('stsvl_status_codes');
 	//application.output(fabShopsList);
 	aStatusCodes = globals.getStatusCodes(application.getValueListArray('stsvl_status_codes'));
@@ -313,7 +280,7 @@ function addOtherChangeFunctions(){
 			}
 			var fsAndS = fabShopAndStatus.split(',');
 			var routeItem = globals.aMobAssocs[fsAndS[0]]+", "+fsAndS[1];
-
+application.output('route item '+routeItem+" "+record.status_code);
 			if (aRouteCodes.indexOf(routeItem) == -1){
 				aRouteCodes.push(routeItem);
 				aStatusCodes = removeElementFromArray(aStatusCodes,routeItem);
@@ -322,28 +289,6 @@ function addOtherChangeFunctions(){
 	}
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
 	onActionOrderByProcess(null,'stsvl_route_status_avail');
-	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
-return;
-	aStatusCodes = globals.getStatusCodes(application.getValueListArray('stsvl_status_codes'));
-	//application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
-	aRouteCodes = [];
-	//application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
-	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
-	var fs = sts_route_status_codes;
-	if (fs != null) {
-		for(var index=1;index<=fs.getSize();index++){
-			var record = fs.getRecord(index);
-			var fabShopId = record.status_description_id;
-			var fabShopName = sts_status_code_container.sts_status_description_to_associations.association_name;
-			var statusWord = sts_status_code_container.status_code;
-			var fabShop = fabShopName+', '+statusWord;
-			if (aRouteCodes.indexOf(fabShop) == -1){
-				aRouteCodes.push(fabShop);
-				aStatusCodes = removeElementFromArray(aStatusCodes,fabShop);
-			}
-		}
-	}
-	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
 }
 /**
@@ -478,9 +423,10 @@ function onActionClose(event) {
  *
  * @properties={typeid:24,uuid:"174A28ED-90C3-408E-A0C0-F555186AD4C8"}
  */
-function onRecordSelection(event, buttonTextSrc) {
-	controller.setSelectedIndex(controller.getSelectedIndex());
-	return _super.onRecordSelection(event, buttonTextSrc)
+function onRecordSelection(event) {
+	//forms.routing_codes.controller.setSelectedIndex(forms.routing_codes_lst.controller.getSelectedIndex());
+	forms.routing_codes.setRouteCodesLists();
+	return _super.onRecordSelection(event);
 }
 
 /**
@@ -537,4 +483,15 @@ function onActionOrderByProcessAvailx(event) {
 		}
 	}
 	application.setValueListItems('stsvl_route_status_avail',newSelect);
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"93B16432-EF20-477C-B4D9-28C85C2B2894"}
+ */
+function onActionSaveEdit(event) {
+	additionalSaveFunctions();
+	return _super.onActionSaveEdit(event)
 }

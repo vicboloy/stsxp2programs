@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"address_type",
+dataProviderID2:"address_id",
+name:"stsvl2_custAddresses",
+relationName:"st2_jobs_to_customers.sts_cust_to_address",
+returnDataProviders:2,
+showDataProviders:1,
+typeid:34,
+uuid:"EB32DD89-6D84-4D8D-9EFF-FFDD2AE816FB",
+valueListType:1

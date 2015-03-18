@@ -20,8 +20,6 @@ function onShow(firstShow, event) {
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
-	} else {
-		elements.deleteButton.text = 'Delete End Condition \''+end_prep+'\'';
 	}
 }
 
@@ -59,7 +57,7 @@ function onActionDelete(event) {
  * @properties={typeid:24,uuid:"C7BBBE77-1B45-4874-BCF4-C79131018700"}
  */
 function onRecordSelectionEP(event) {
-	elements.deleteButton.text = 'Delete UOM \''+end_prep+'\'';
+	null;
 }
 
 /**

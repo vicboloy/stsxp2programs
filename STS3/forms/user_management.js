@@ -35,3 +35,16 @@ function onActionClose(event) {
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"23C234C1-325A-4265-A4D4-AD643F6284DA"}
+ */
+function onActionEdit(event) {
+	elements.editButton.enabled = false;
+	elements.saveButton.enabled = true;
+	_super.startEditing(event);
+}

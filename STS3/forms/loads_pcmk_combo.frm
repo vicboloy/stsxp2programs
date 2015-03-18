@@ -8,6 +8,16 @@ typeid:19,
 uuid:"1C7E2E4B-2D69-4A98-A8DF-2F856B9A736E"
 },
 {
+anchors:12,
+location:"168,436",
+onActionMethodID:"F63CDE5B-1EB8-4BE1-A3E2-4B32404A519A",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+text:"Refresh",
+typeid:7,
+uuid:"4B34C0FD-DCEB-4F03-AD65-11063A200C80"
+},
+{
 extendsID:"51191EB6-5514-497E-91CC-7CE8F82CA59E",
 location:"5,5",
 size:"632,428",

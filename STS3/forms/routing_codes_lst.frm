@@ -31,8 +31,10 @@ uuid:"611A1CD3-38F3-437D-8262-E9D45CB75284"
 {
 anchors:11,
 dataProviderID:"route_code",
+editable:false,
 location:"0,20",
 name:"route_code",
+onActionMethodID:"ECCDB59C-72BA-408D-97F4-25182A3B669D",
 size:"140,20",
 text:"Route Code",
 typeid:4,

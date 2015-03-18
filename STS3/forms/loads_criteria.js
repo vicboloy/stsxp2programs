@@ -164,6 +164,7 @@ function onShow(firstShow, event) {
 	scopes.jobs.getJobsList();
 	scopes.jobs.getCustomersList();
 	application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
+	onActionClear(event);
 	return _super.onShow(firstShow, event)
 }
 /**
@@ -236,12 +237,12 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 			vLabTotPieces = 0;//totalpieces
 			vLabTotalWt = 0;//totalweight
 			vLabNumPcmks = 0;//total piecemarks
+			browseInfoEnable();
 		} else {
 			jobFound = false;
 			status = false;
 		}
 	}
-	browseInfoEnable();
 	return status;
 }
 /**
@@ -332,7 +333,7 @@ function convertPkgToId(itemCSV){
  * @properties={typeid:24,uuid:"7A941D9A-5D56-4B77-BC2C-165EC3F8DE8B"}
  */
 function collectCriteria(){
-	// feeds jobs.viewBTableAlt()
+	// feeds jobs.viewBTableToForm()
 	var area = arrayToString(vArea);
 	var batch = arrayToString(vBatch);
 	var cowCode = arrayToString(vCowCode);
@@ -368,7 +369,7 @@ function collectCriteria(){
 		sheetnum : sheetNum,
 		sonum : soNum
 	}
-	//scopes.jobs.viewBTableAlt(criteria);
+	//scopes.jobs.xxxviewBTableAlt(criteria);
 	var formName = 'loads_pcmk_combo';
 	scopes.jobs.viewBTableToForm(criteria,formName);
 //application.output('before prefs load xyz');
@@ -380,7 +381,7 @@ function collectCriteria(){
  * @properties={typeid:24,uuid:"5497D571-E5BA-4996-AB84-4C60EC27F459"}
  */
 function onActionShowWindow(){
-	//scopes.jobs.viewBTableThrowSplit(event,winTitle);
+	//scopes.jobs.xxxviewBTableThrowSplit(event,winTitle);
 	//return;
 	//var formName = event.getFormName();
 	var winTitle = 'Browse Loads';

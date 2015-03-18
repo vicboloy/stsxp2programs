@@ -49,7 +49,6 @@ uuid:"B93DE7B1-9450-49E3-8287-2E95A0777949"
 }
 ],
 name:"jobs_tabs",
-namedFoundSet:"empty",
 navigatorID:"-1",
 onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
 onLoadMethodID:"-1",

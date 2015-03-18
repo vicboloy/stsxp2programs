@@ -3,6 +3,7 @@ extendsID:"2FE2D88B-0E43-4246-8AEE-1BBF9C7D9D31",
 items:[
 {
 anchors:3,
+horizontalAlignment:0,
 location:"273,300",
 onActionMethodID:"ABA4AA63-0883-4C06-80C0-DB8D8701B463",
 onDoubleClickMethodID:"-1",

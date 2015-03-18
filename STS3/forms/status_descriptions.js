@@ -184,18 +184,18 @@ function onActionCancelEdit(event) {
 function onActionSaveEdit(event) {
 	null;
 	if (association_id == "" || association_id == null){
-		globals.errorDialogMobile(-1);
-		elements.fab_shop.requestFocus();
+		globals.errorDialogMobile(event,'-1',"");
+		//elements.fab_shop.requestFocus();
 		return;
 	}
 	if (status_code == "" || status_code == null){
-		globals.errorDialogMobile(401);
-		elements.status_code.requestFocus();
+		globals.errorDialogMobile(event,'401',"");
+		//elements.status_code.requestFocus();
 		return;
 	}
 	if (status_sequence == "" || status_sequence == null){
-		globals.errorDialogMobile(-1);
-		elements.status_sequence.requestFocus();
+		globals.errorDialogMobile(event,'-1',"");
+		//elements.status_sequence.requestFocus();
 		return
 	}
 	onEdit(event,false);

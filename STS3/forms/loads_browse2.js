@@ -32,6 +32,7 @@ function onActionHide(event) {
  */
 function onRecordSelection(event) {
 	null;
+	application.output('select form name '+event.getFormName());
 	var index = forms[event.getFormName()].controller.getSelectedIndex();
 	var rec = forms[event.getFormName()];
 	//var fs = databaseManager.getFoundSetCount('sts_piecemarks');

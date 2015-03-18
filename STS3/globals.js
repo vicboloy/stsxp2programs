@@ -1172,6 +1172,7 @@ function getTablesFilters(tenantID) {
 		//if (tableColumn == null){continue}
 		//databaseManager.addTableFilterParam(SEC_SERVER,tableName,'delete_flag','!=',0,'enableDelete');
 	}
+	databaseManager.addTableFilterParam(SEC_SERVER,null,'delete_flag',"^||!=",99,'deletedRecords');
 	// Filter associations table for all present
 	//databaseManager.addTableFilterParam(SEC_SERVER,'associations','tenant_group_uuid','=',secCurrentAssociationMasterID,'associationFilter');
 	// Enable filter of all deleted records.

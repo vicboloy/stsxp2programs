@@ -22,7 +22,7 @@ function onShow(firstShow, event) {
 	//forms[formOverview].elements.tabless.addTab(formNameTable); // add tab to main window to see subset of this table
 	scopes.jobs.tableHideFieldsReset()
 	scopes.jobs.findEmptyColumns(event,0)
-	scopes.jobs.findEmptyColumns(event,1)
+	//scopes.jobs.findEmptyColumns(event,1)
 	scopes.jobs.tablePrefsLoad(top);
 	scopes.jobs.tablePrefsLoad(bot);
 	return _super.onShow(firstShow, event)
@@ -50,7 +50,7 @@ function unusedhideColumns(event,table){
 	var maxCount = recCount;
 	if (recCount > 100) {maxCount = 100}
 	for (var item in formEls){
-		if (scopes.globals.hideEmptyColumns == 1){
+		if (scopes.globals.hideEmptyColumns == 1 && recCount > 0){//don't hide columns if there is no data
 			var empty = true;
 			for (var index = 1;index < maxCount;index++){
 				var rec = fs.getRecord(index);
@@ -191,3 +191,41 @@ function onHide(event) {
 	return _super.onHide(event)
 }
 
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F63CDE5B-1EB8-4BE1-A3E2-4B32404A519A"}
+ */
+function onActionRefreshTable(event) {
+	var formName = event.getFormName();
+	application.output('checking'+event);
+	var args = [];
+	args.push(scopes.jobs.browseJobID);
+	//var fs = databaseManager.getFoundSet(forms.loads_pcmk_combo_table.controller.getDataSource());
+	scopes.jobs.browseFS = databaseManager.getDataSetByQuery('stsservoy', scopes.jobs.dsQuery, args , -1);
+	scopes.jobs.viewBTableRemoveColumnArray();
+	scopes.jobs.viewBTableRemoveRows();
+	scopes.jobs.browseDatasource = scopes.jobs.browseFS.createDataSource('loads_pcmk_combo_browse',scopes.jobs.browseArray);
+
+	
+	//scopes.jobs.browseDatasource = scopes.jobs.dsBrowse.createDataSource('browsing',scopes.jobs.browseArray);
+	
+	//////scopes.jobs.viewBrowseTableRefresh();
+	//changed browseFS to dynamically created global.  does it work?
+	// almost there ... 
+	//scopes.jobs.browseDatasource = browseFS.createDataSource(formName+'_browse',scopes.jobs.browseArray);
+	//scopes.jobs.browseDatasource = scopes.jobs.dsBrowse.createDataSource('browsing',scopes.jobs.browseArray);
+	//
+	//scopes.jobs.browseDatasource = scopes.jobs.dsBrowse.createDataSource('loads_pcmk_combo_browse',scopes.jobs.browseArray);
+	//scopes.jobs.browseDatasource = browseFS.createDataSource('browsingAll')
+	//application.updateUI();
+	//forms.loads_pcmk_combo_table.controller.recreateUI();
+	
+	//forms.loads_pcmk_combo_table.browseFS.createDataSource();
+	//return;
+	//globals.dsBrowse.createDataSource();
+	null;
+}

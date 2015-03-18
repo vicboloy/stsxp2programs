@@ -169,7 +169,7 @@ uuid:"6D028F78-2CB4-484D-A074-B8A3504DFBF1"
 horizontalAlignment:0,
 location:"236,416",
 name:"saveButton",
-onActionMethodID:"1F45CB1F-7119-4FFE-AFDE-B311BBCB3DC9",
+onActionMethodID:"93B16432-EF20-477C-B4D9-28C85C2B2894",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,20",

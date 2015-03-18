@@ -330,7 +330,7 @@ function convertPkgToId(itemCSV){
  * @properties={typeid:24,uuid:"86087C50-E905-4A7C-A726-3DB659540029"}
  */
 function collectCriteria(formName){
-	// feeds jobs.viewBTableAlt()
+	// feeds jobs.viewBTableToForm()
 	var area = arrayToString(vArea);
 	var batch = arrayToString(vBatch);
 	var cowCode = arrayToString(vCowCode);
@@ -394,12 +394,14 @@ function arrayToString(itemCSV){
 /**
  * @properties={typeid:24,uuid:"C475BEBD-83D4-4676-828B-D6C8AB673616"}
  */
-function browseInfoEnable(){
-	if (jobFound){
+function browseInfoEnable(altEnable){
+	if (jobFound || altEnable){
 		elements.buttInfo.enabled = true;
 	} else {
-		elements.buttBrowse.enabled = false;
-		elements.buttInfo.enabled = false;		
+		if (!altEnable){
+			elements.buttBrowse.enabled = false;
+			elements.buttInfo.enabled = false;	
+		}
 	}
 }
 
@@ -446,7 +448,7 @@ function onActionClear(event,formName) {
  * @properties={typeid:24,uuid:"3DAECF38-C686-4432-A939-6C97466A4A28"}
  */
 function onActionDeleteWindow(event,winTitle) {
-	//scopes.jobs.viewBTableThrowSplit(event,winTitle);
+	//scopes.jobs.xxxviewBTableThrowSplit(event,winTitle);
 	//return;
 	//var formName = event.getFormName();
 	var formName = 'delete_pcmk_combo';

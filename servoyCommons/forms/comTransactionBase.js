@@ -22,7 +22,8 @@ function startEditing(event) {
  */
 function stopEditing(event) {
 
-	databaseManager.rollbackEditedRecords();								//	Rollback edits											
+	//databaseManager.rollbackEditedRecords();								//	Rollback edits			
+	databaseManager.revertEditedRecords();								
 	databaseManager.setAutoSave(true);										//	Close in-memory transaction
 	updateUI(event);														//	MVC: update the view based on the model
 	return true;
@@ -165,6 +166,7 @@ function deleteRecord(event, index, stopEdit) {
 	}
 
 	if(_super.deleteRecord(event, index)){									//	pass control to super for delete
+		foundset.loadRecords();
 		if(!(stopEdit instanceof Boolean)||stopEdit)						//	default to close transaction if not specified
 			stopEditing(event);												//	close in-mem transaction
 		return true;														//	delete was successfull

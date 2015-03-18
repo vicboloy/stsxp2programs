@@ -31,6 +31,7 @@ typeid:7,
 uuid:"2D6EC990-13DB-4A57-9B32-8C3F1C0B5F36"
 },
 {
+horizontalAlignment:0,
 location:"5,5",
 onActionMethodID:"5FA94E54-432C-481E-B00B-77F8A66C8A97",
 onDoubleClickMethodID:"-1",

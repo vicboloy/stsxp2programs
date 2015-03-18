@@ -66,6 +66,7 @@ uuid:"3478F1D4-55E9-4C0D-A7EC-E4F0A0D1E030"
 },
 {
 location:"262,175",
+name:"updateButton",
 onActionMethodID:"07B224C1-B513-4869-BD4A-60BCF4E94ECA",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -128,6 +129,7 @@ typeid:19,
 uuid:"C8957F46-1AC6-40EF-BAB9-84B86D525ED5"
 },
 {
+borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"last_login",
 editable:false,
 location:"117,35",
@@ -143,6 +145,7 @@ uuid:"CB00ED87-3D74-4F8C-B134-FB51CE1B085B"
 dataProviderID:"userPassword",
 displayType:6,
 location:"117,150",
+name:"userPass",
 size:"140,20",
 tabSeq:4,
 typeid:4,
@@ -173,6 +176,7 @@ uuid:"EE993F01-E42F-4D30-ADE0-D052859D42FA"
 dataProviderID:"passwordConfirm",
 displayType:6,
 location:"117,175",
+name:"userPassConf",
 onDataChangeMethodID:"-1",
 size:"140,20",
 tabSeq:5,

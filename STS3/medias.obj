@@ -186,6 +186,12 @@ typeid:37,
 uuid:"5D8CE978-E683-493B-A484-4B3A5FD0554B"
 },
 {
+mimeType:"image/gif",
+name:"STSButton.gif",
+typeid:37,
+uuid:"A25DFA97-318C-4AAE-8777-98A1806BAC4D"
+},
+{
 mimeType:"image/png",
 name:"up.png",
 typeid:37,

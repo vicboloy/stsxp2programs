@@ -674,6 +674,7 @@ function rfF2done(){
 	var formName = application.getActiveWindow().controller.getName();
 	sessionAssoc();
 	sessionSetCodes();
+	session.associationId = m.assocs[rfF2Division];
 	globals.mobDisableForm(false);
 	forms[formName].elements.elDivisionChg.visible = false;
 	forms[formName].elements.elDivisionChg.enabled = false;
@@ -923,11 +924,29 @@ function barcodePlant(){
 	//idfile - piecemark - sheets - jobs 
 	//var jobId = scopes.jobsts.sts_idfile_to_pcmks.sts_pcmks_to_sheet.job_id;
 	//application.output('job id ' + jobId);
+	//check routing to ensure that although the wrong plant, it is scannable in the selected plant
+	// get route and look for selected station for this scan
 	var serialAssocId = barcode_to_idfile.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.association_id;
-	if (serialAssocId+"" != globals.session.associationId+""){
-		application.output('wrong association ' + serialAssocId+' not '+globals.session.associationId);
-		application.output(application.getUUID())
-		return false;
+	//var serialAssocId = barcode_to_idfile.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.association_id;
+	if (serialAssocId+"" != globals.session.associationId+""){//"FAA9BDE5-6B66-4930-981C-5AF0004EE1A4" != "BF00BA53-8D07-4A70-B835-24D5BD5DAB91"
+	// does route 'FAA9BDE5-6B66-4930-981C-5AF0004EE1A4, <status_code>' exist?
+		var newStationId = m.stations[globals.session.associationId+", "+mob.statusCode];
+		if (typeof newStationId == undefined){return false}// returns "24949E1E-9467-4835-B292-E1BC6D10EC22"
+		// check the route legs to ensure this is in the route, or error
+		var routeId = mob.piecemark.e_route_code_id;
+		var checkLegs = null;
+		if (routeId != null) {
+			checkLegs = l.routeLegs[routeId];
+		}
+		if (checkLegs == null){return false}
+		var routedStation = (checkLegs.indexOf(newStationId) != -1); 
+		if (!routedStation){//We have a temporary station change enforced by route
+			application.output('wrong association ' + serialAssocId+' not '+globals.session.associationId);
+			//application.output(application.getUUID())
+			return false;
+		} else {
+			session.stationId = newStationId;
+		}
 	}
 	return true;
 }
@@ -1044,7 +1063,6 @@ function rfCheckStatusIdfileMax(){
 }
 /**
  * Should update idfiles or not?
- * @param newStatus
  *
  * @properties={typeid:24,uuid:"AAA5AF42-178D-4359-960C-A5926092ADEC"}
  */
@@ -1053,36 +1071,65 @@ function rfCheckRouteOrder(){
 	// ok to overwrite
 	var repIdfile = mob.idfile;
 	var checkLegs = [];
-	var routeId = mob.piecemark.e_route_code_id;
-	var stationId = session.stationId;
-	var allowMoreCodes = (l.routesAddLegs.indexOf(routeId) != -1);
-	var allowMultiScan = (l.stationsMultiScan.indexOf(stationId) != -1);
+	var routeId = mob.piecemark.e_route_code_id+"";
+	var stationId = session.stationId+"";
+	var allowMoreCodes = (l.routesAddLegs.indexOf(routeId) != -1);//list of routes that allow more codes
+	var allowMultiScan = (l.stationsMultiScan.indexOf(stationId) != -1);//list of stations that allow multiscan
+	/**if (m.stationsTimedEnds[stationId]){//if it is a timed station, then allow it to be multiscan too
+		allowMultiScan = (allowMultiScan || (l.stationsMultiScan.indexOf(m.stationsTimedEnds[stationId]+"") != -1));
+	}*/
 	var stationScanned = (mob.transactionList.indexOf(stationId) != -1);
-	var stationLastId = mob.idfile.status_description_id;
+	//var stationLastId = mob.idfile.status_description_id+"";
 	if (routeId != null) {
 		checkLegs = l.routeLegs[routeId];
 	}
 	// route legs are checked with status_description_id.UUID
-	// Do not update same station twice unless allowMultiScan true
 	///var writeTransRecord = (!allowMultiScan && stationLastId+"" == stationId+"") ||	(routeId == null);
-	var writeTransRecord = (!allowMultiScan && stationScanned) || (!stationScanned) ||	(routeId == null);
+	var allowInRoute = (checkLegs.indexOf(session.stationId) != -1);
+	/**if (m.stationsTimedEnds[stationId]){//if it is a timed end station, then allow it in the route too
+		allowInRoute = (checkLegs.indexOf(m.stationsTimedEnds[stationId]+"") != -1);//implicit route membership for timed status
+	}*/
+	if (!allowInRoute){
+		var missing = "("+m.stations[session.stationId]+")";
+		errorDialogMobile('rf_transactions.current','431','current',missing);// 431 This Routing Code Does Not Allow This Status.
+		return false;
+	}
+	//var writeTransRecord = (allowMultiScan && stationScanned) || (!stationScanned) ||	(routeId == null);
+	////var writeTransRecord = (allowMultiScan && stationScanned) || (!stationScanned) ||	(routeId == null);
 	// ok in route
 	// Enforce routing on transaction. For the route, is current preceeded by previousRoute by previousRoute
 	// actual transactions: mob.transactionList[index]=(status_description_id...)
 	// route transactions: checkLegs[index]=(status_description_id...)
 	var routingOk = true;
-	if (routeId){
+	var routeSkip = (checkLegs.indexOf(session.stationId) == -1);
+	var missing = "";
+	if (routeId && !routeSkip){
 		//var index = (allowMoreCodes) ? checkLegs.indexOf(session.stationId) : checkLegs.length-1;
+		/**
+		 * from  list of stations scanned
+		 * get index in established route of scanned station
+		 * skip if route is not in legs and allowmorecodes
+		 */
 		var stationsDone = mob.transactionList;
 		var targetIndex = checkLegs.indexOf(session.stationId);
 		var index = 0;
-		while (routingOk && index <= targetIndex){
+		//while (routingOk && index < targetIndex){
+
+		while (index < targetIndex){
 			var routeLeg = checkLegs[index];
-			routingOk = (stationsDone.indexOf(routeLeg) != -1);
+			routingOk = (routingOk && stationsDone.indexOf(routeLeg) != -1);
+			if (stationsDone.indexOf(routeLeg) == -1){
+				missing = missing + m.stations[routeLeg].split(",")[1];
+			}
 			index++;
 		}
 	}
-	return writeTransRecord && routingOk;
+	if (!routingOk){
+		application.output('Routing not ok');
+		errorDialogMobile('rf_transactions.current','405','current',missing);//405 
+	}
+	//return writeTransRecord && routingOk;
+	return routingOk;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1160,9 +1207,6 @@ function rfFunctionKeys(screen){
 	plugins.window.createShortcut('F10','globals.showExecLogout');
 	functionKeyProcedure[10] = 'globals.showExecLogout';
 	functionKeyDescrip = ['Help Selection or use FKey','F1 - Help','F2 - ','F3 - ','F4 - ','F5 - ','F6 - ','F7 - ','F8 - ','F9 - ','F10 - Exit','11','12'];
-	functionKeyDescrip[2] = 'F2 - Switch Plants';
-	functionKeyProcedure[2] = 'globals.rfF2';
-	plugins.window.createShortcut('F2','globals.rfF2');
 	functionKeyDescrip[11] = 'xxx Logout';
 	functionKeyProcedure[11] = 'globals.rfLogout';
 	functionKeyDescrip[12] = 'xxx Return to OS';
@@ -1177,6 +1221,9 @@ function rfFunctionKeys(screen){
 			break;
 		case 'rf_transactions':
 			globals.mobForm = "rf_transactions";
+			functionKeyDescrip[2] = 'F2 - Switch Plants';
+			functionKeyProcedure[2] = 'globals.rfF2';
+			plugins.window.createShortcut('F2','globals.rfF2');
 			functionKeyDescrip[3] = 'F3 - List History'
 			functionKeyProcedure[3] = 'globals.rfF3';
 			plugins.window.createShortcut('F3','globals.rfF3');
@@ -1727,21 +1774,15 @@ function rfGetStatusChange(oldValue, newValue, event) {
 	plugins.scheduler.removeJob('updateField')
 	session.userEntry = newValue;
 	if (m.statusCodesDiv[session.associationId].indexOf(newValue) == -1){
-		errorDialogMobile(event,'401','status');
+		errorDialogMobile(event,'401','status');//401: This is not a valid status code
 		var formName = event.getFormName();
-		//forms[formName].elements.status.requestFocus();
 		forms[formName].resetStatusCode();
 		return true;
 	}
 	mob.statusCode = newValue;
-	//globals.mob.status =  newValue;
 	logger(false,'Status OK');
-	//scopes.globals.statusId = m.stations[mobAssocId+', '+newValue];
 	session.stationId = m.stations[session.associationId+', '+mob.statusCode];
-	//var xxx = forms.rf_transactions.controller.getTabSequence();
-	//application.output('tabs '+xxx);
 	globals.rfEmptyNextField(event,'location');
-	//forms.rf_transactions.controller.focusField('location',true);
 	return true;
 }
 /**
@@ -1835,14 +1876,15 @@ function mobDisableForm(disable){
  *
  * @properties={typeid:24,uuid:"CC9C12D0-7375-4622-96E0-91FDE9C1F935"}
  */
-function rfGetTransactionLast(idfileId){
+function rfGetTransactionList(idfileId){
 	//mob.transaction = {};  ///////////////////////// STOO
-	var lastStation = mob.idfile.status_description_id;
-	if (lastStation == null){return}
+	//var lastStation = mob.idfile.status_description_id;
+	mob.transactionList = [];
+	//if (lastStation == null){return}
 	// description_id.UUID -> stationName.TXT+status.TXT -> stationOrg.UUID+status.TXT -> description_id.UUID
-	var lastStationTxt = m.stations[lastStation].split(",")[1];
-	mob.statusPrev = lastStationTxt.trim();
-	mob.locationPrev = mob.idfile.id_location;
+	//var lastStationTxt = m.stations[lastStation].split(",")[1];
+	//mob.statusPrev = lastStationTxt.trim();
+	//mob.locationPrev = mob.idfile.id_location;
 
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
@@ -1858,11 +1900,10 @@ function rfGetTransactionLast(idfileId){
 		.add(q.columns.idfile_id.eq(mob.idfile.idfile_id))
 	);
 	var resultQ = databaseManager.getFoundSet(q);
-	
-	mob.transactionList = [];
-	for (var index = 1;index < mob.transactionList.length;index++){
+	application.output('DEBUG idfile transaction count '+resultQ.getSize());
+	for (var index = 1;index <= resultQ.getSize();index++){
 		var rec = resultQ.getRecord(index);
-		mob.transactionList.push(rec.status_description_id);
+		mob.transactionList.push(rec.status_description_id+"");
 	}
 }
 /**
@@ -2212,8 +2253,8 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	// status out of order, then false
 	// if okay for other stations, then true
 	
-	rfGetTransactionLast(globals.mob.idfile);
-	var routeOK = rfCheckRouteOrder(statusId);
+	//rfGetTransactionList(globals.mob.idfile);
+	//var routeOK = rfCheckRouteOrder(statusId);
 	//application.output('save scan transaction');
 	globals.logger(true,'Save scan transaction operation.');
 	//worker_id,worker2_id,worker3_id,worker4_id,worker5_id, tenant_uuid, employee_id,fabshop_id (guids)
@@ -2265,49 +2306,54 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 		} 
 		if (newRec != null){//only update timed transaction records
 			globals.logger(true,'status trans rec found. updating');
-			newRec.transaction_duration = mob.timedDuration;
 			newRec.transaction_end = mob.timedEnd;
-		} else {
-			if (routeOK){
-				globals.logger(true,'newRec created for status '+mob.statusCode);
-				var newRecNum = newFS.newRecord();
-				if (newRecNum == -1){
-					globals.logger(true,'Creating new Record for transactions failed.');
-				}
-				newRec = newFS.getRecord(newRecNum);
-				newRec.status_description_id = session.stationId;
-				//newFS.id_location = sLocation; // location is fabShop
-				newRec.employee_id = globals.mobLoggedEmployeeId;//UUID
-				newRec.idfile_id = mob.idfiles[index];
-				newRec.location = mob.locationArea;
-				newRec.transaction_date = new Date();//date;//mob.timedBegin;
-				newRec.transaction_start = date;//mob.timedBegin;
-				newRec.tenant_uuid = session.tenant_uuid;
-				newRec.trans_status = mob.statusCode;
-				newRec.trans_code = rfTransCode();
-				for (var index2 = 0; index2 < currentWorkers.length; index2++) {
-					switch (index2) {
-					case 0:
-						newRec.worker_id = currentWorkers[index2];
-						break;
-					case 1:
-						newRec.worker2_id = currentWorkers[index2];
-						break;
-					case 2:
-						newRec.worker3_id = currentWorkers[index2];
-						break;
-					case 3:
-						newRec.worker4_id = currentWorkers[index2];
-						break;
-					case 4:
-						newRec.worker5_id = currentWorkers[index2];
-						break;
-					default:
-					}
+			recordsToSave.push(newRec);
+		} //else {
+		if (routeOK){
+			globals.logger(true,'newRec created for status '+mob.statusCode);
+			var newRecNum = newFS.newRecord();
+			if (newRecNum == -1){
+				globals.logger(true,'Creating new Record for transactions failed.');
+			}
+			var newRecB = newFS.getRecord(newRecNum);
+			newRecB.status_description_id = session.stationId;
+			//newFS.id_location = sLocation; // location is fabShop
+			newRecB.employee_id = globals.mobLoggedEmployeeId;//UUID
+			newRecB.idfile_id = mob.idfiles[index];
+			newRecB.location = mob.locationArea;
+			newRecB.transaction_date = new Date();//date;//mob.timedBegin;
+			newRecB.transaction_start = date;//mob.timedBegin;
+			newRecB.tenant_uuid = session.tenant_uuid;
+			newRecB.trans_status = mob.statusCode;
+			newRecB.trans_code = rfTransCode();
+			if (mob.timedEnd != ""){
+				newRecB.transaction_end = mob.timedEnd;
+				newRecB.transaction_duration = mob.timedDuration;
+			}
+			for (var index2 = 0; index2 < currentWorkers.length; index2++) {
+				switch (index2) {
+				case 0:
+					newRecB.worker_id = currentWorkers[index2];
+					break;
+				case 1:
+					newRecB.worker2_id = currentWorkers[index2];
+					break;
+				case 2:
+					newRecB.worker3_id = currentWorkers[index2];
+					break;
+				case 3:
+					newRecB.worker4_id = currentWorkers[index2];
+					break;
+				case 4:
+					newRecB.worker5_id = currentWorkers[index2];
+					break;
+				default:
 				}
 			}
+			recordsToSave.push(newRecB);
 		}
-		recordsToSave.push(newRec);
+		//}
+		//recordsToSave.push(newRec);
 	}
 	globals.logger(true,'Saving '+recordsToSave.length+' trans records');
 	while (recordsToSave.length > 0){ // always save 'good' transactions 3/4/2015 pp all user entries are saved
@@ -2333,9 +2379,18 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			var resultQ = databaseManager.getFoundSet(q);
 			logger(true,'Updating '+resultQ.getSize()+' idfiles.');
 			if (resultQ.getSize() > 0){
+				// set previous status and location
 				index = 1;
+				// Get previous status and location
+				var record = resultQ.getRecord(1);
+				if (!record.status_description_id){
+					mob.statusPrev = "";
+				} else {
+					mob.statusPrev = m.stations[record.status_description_id].split(',')[1];
+				}
+				mob.locationPrev = (!record.id_location) ? "" : record.id_location;
 				while (index <= resultQ.getSize()){
-					var record = resultQ.getRecord(index);
+					record = resultQ.getRecord(index);
 					record.id_location = sLocation;
 					record.status_description_id = statusId;
 					recordsToSave.push(record);
@@ -2343,7 +2398,8 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 				}
 			}
 		} else {
-			globals.logger(true,'Status earlier in route. Idfile not updated.');
+			//logger(true, 'Status code has already been captured.');
+			logger(true,'Status earlier in route. Idfile not updated.');
 		}
 		while (recordsToSave.length > 0){
 			var rec = recordsToSave.pop();
@@ -2408,7 +2464,7 @@ function showMain(){
  */
 function textWrap(message, length){
 	var formatted = '<html>';
-	length = 30;
+	length = 25;
 	var messLength = message.length;
 	if (messLength < length){return message}
 	var index = (message.length > length) ? length : message.length-1;
@@ -2498,7 +2554,8 @@ function errorDialog(errorNum){
  * @properties={typeid:24,uuid:"E5021DE9-0377-478B-8AE2-CC18B4F90260"}
  * @AllowToRunInFind
  */
-function errorDialogMobile(event,errorNum,returnField){
+function errorDialogMobile(event,errorNum,returnField,additionalMsg){
+	if (typeof additionalMsg === 'undefined') {additionalMsg = ''}
 	if (typeof event === 'string') {
 		var resetItem = event.split('.');
 		session.errorForm = resetItem[0];
@@ -2520,6 +2577,7 @@ function errorDialogMobile(event,errorNum,returnField){
 			errorMessage = fs.message_text;
 		}
 	}
+	errorMessage = errorMessage + " " + additionalMsg;
 	globals.rfErrorShow(errorMessage);
 	scopes.globals.logger(false,errorMessage);
 	//scopes.globals.DIALOGS.setDialogHeight(150);

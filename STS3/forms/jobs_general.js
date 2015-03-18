@@ -122,12 +122,15 @@ var vMetricJob = 0;
  * @properties={typeid:24,uuid:"04253830-4047-45C7-A36D-3AC5571821AB"}
  */
 function additionalActionAddFunctions(){
-	loadResetForm()
+	return;
+	//loadResetForm()
 }
 /**
  * @properties={typeid:24,uuid:"9D0A98CD-B5D1-42C3-983C-CA2E41B490BB"}
  */
 function additionalSaveFunctions(){
+	return;
+	/**
 	//var index = foundset.newRecord();
 	globals.lookupItem = vJobNumber;
 	var fsJobN = sts_check_jobnum;
@@ -138,7 +141,7 @@ function additionalSaveFunctions(){
 	
 	var fs = sts_job_to_loads;
 	if (fs == null){
-		/** @type {JSFoundSet<db:/stsservoy/loads>} */
+		/ * * @type {JSFoundSet<db:/stsservoy/loads>} * /
 		fs = sts_job_to_loads.newRecord();
 	}
 	if (fs.getSize() == 0){
@@ -149,6 +152,7 @@ function additionalSaveFunctions(){
 	}
 	databaseManager.saveData(fsJobN);
 	databaseManager.saveData(fs);
+	*/
 }
 /**
  * @properties={typeid:24,uuid:"5E618682-B6B8-4203-93BC-918C9D00FDD2"}
@@ -165,20 +169,36 @@ function otherSelectionFunctions(){
  *
  * @returns {Boolean}
  *
- * @private
- *
  * @properties={typeid:24,uuid:"8EBEE04A-FA43-4EEC-877D-FA9A69BD3182"}
+ * @AllowToRunInFind
  */
 function onDataChangeCustomerNumber(oldValue, newValue, event) {
-	globals.lookupItem = newValue;
-	var fs = sts_customernum_to_name;
-	if (fs.getSize() >0){
-		globals.lookupItem2 = newValue;
-		vCustomerName = sts_check_custnum.name;
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var fs = databaseManager.getFoundSet('stsservoy','jobs');
+	if (fs.find()){
+		//application.output('inside cust number change');
+		fs.customer_id = newValue;
+		if (job_number != null){
+			fs.job_number = job_number;
+		}
+		var count = fs.search();
+		if (count > 0 && job_number != null){
+			/**
+			 * count >= 1 and customer_id already filled, show record, delete if newRecord
+			 * count == 1 and customer_id empty, return true and set focus to customer
+			 * search will only return 1 or 0
+			 */
+			if (newRecord != null) {//record exists
+				controller.deleteRecord();
+				newRecord = null;
+			}
+			onActionCancelEdit(event);
+			var rec = fs.getRecord(1);
+			foundset.selectRecord(rec.job_id);
+		}
 		return true;
-	} else {
-		return false;
 	}
+	return true;
 }
 
 /**
@@ -191,20 +211,39 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"177EE23C-05E3-4131-A6C1-586D259F1790"}
+ * @AllowToRunInFind
  */
 function onDataChangeJobNum(oldValue, newValue, event) {
-	globals.lookupItem = newValue;
-	var fs = sts_check_jobnum;
-	if (fs.getSize() > 0){
-		var rec = fs.getRecord(1);
-		loadRecordIntoForm(rec);
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var fs = databaseManager.getFoundSet('stsservoy','jobs');
+	if (fs.find()){
+		fs.job_number = newValue;
+		if (customer_id != null){
+			fs.customer_id = customer_id;
+		}
+		var count = fs.search();
+		if (count > 0 && customer_id != null){
+			/**
+			 * count >= 1 and customer_id already filled, show record, delete if newRecord
+			 * count == 1 and customer_id empty, return true and set focus to customer
+			 * search will only return 1 or 0
+			 */
+			if (newRecord != null) {//record exists
+				controller.deleteRecord();
+				newRecord = null;
+			}
+			onActionCancelEdit(event);
+			var rec = fs.getRecord(1);
+			foundset.selectRecord(rec.job_id);
+		}
+		return true;
 	}
-	return true
+	return true;
 }
 /**
  * @properties={typeid:24,uuid:"5D580134-54DE-4F13-8876-35934F93A382"}
  */
-function addOnActionDelete(){
+function addOnActionDelete2(){
 	globals.lookupItem = job_id;
 	var fs = sts_check_loadnum;
 	if (fs.getSize() == 1){
@@ -218,6 +257,7 @@ function addOnActionDelete(){
  * @properties={typeid:24,uuid:"A523191B-CF6C-4E0B-AB3F-F52161CDEB04"}
  */
 function loadRecordIntoForm(rec){
+	return;
 	vJobNumber= job_number;
 	globals.selectedCustomerID = customer_id;
 	vCustomerNumber = sts_customeruuid_to_field.customer_number;
@@ -250,10 +290,10 @@ function loadRecordIntoForm(rec){
  * @properties={typeid:24,uuid:"1FB02E0B-65E9-4B9C-A3A9-0C31834C2101"}
  */
 function saveRecordFromForm(){
-	var index = controller.getSelectedIndex();
+	return;
+	/**var index = controller.getSelectedIndex();
 	var rec = foundset.getRecord(index);
 	job_number = vJobNumber;
-	globals.lookupItem2 = vCustomerNumber;
 	customer_id = sts_check_custnum.customer_id;
 	customer_po = vCustomerPO;
 	job_care_of =  vJobCareOf;
@@ -264,26 +304,14 @@ function saveRecordFromForm(){
 	job_structure = vJobStructure;
 	job_title = vJobTitle;
 	job_weight = vJobWeight;
-	label_format = vLabelFormat;
-	metric_job = vMetricJob;
 	po_release = vPORelease;
 	project_year = vProjectYear;
-	rf_interface = vRFInterface;
-	ship_to = vShipTo;
 	ft_projectid = vFTProjectID;
-	tenant_uuid = globals.secCurrentTenantID;
+	
 	databaseManager.saveData(rec);
-	editStatus(false);
+	editStatus(false);*/
 }
-/**
- * TODO generated, please specify type and doc for the params
- * @param event
- *
- * @properties={typeid:24,uuid:"D7DE5D8F-6F83-4FBF-9610-B378EA5EB029"}
- */
-function onActionEdit(event){
-	editStatus(true);
-}
+
 /**
  * TODO generated, please specify type and doc for the params
  * @param status
@@ -292,12 +320,8 @@ function onActionEdit(event){
  */
 function editStatus(status){
 	
-	elements.addButton.visible = !status;
-	elements.cancelButton.visible = status;
-	elements.saveButton.visible = status;
-	elements.deleteButton.visible = !status;
-	elements.editButton.visible = !status;
-	elements.tablessX.enabled = !status;
+
+	
 	
 }
 /**
@@ -353,7 +377,7 @@ function onActionRecalcWeight(event) {
 	var args = [];
 	args.push(job_id.toString());
 	args.push(globals.secCurrentTenantID);
-	vJobWeight = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , -1)[0][0];
+	job_weight = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , -1)[0][0];
 }
 /**
  * Callback method for when form is shown.
@@ -380,15 +404,53 @@ function onShow(firstShow, event) {
 	return _super.onShow(firstShow, event)
 }
 
+
+
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ * @param {String} buttonTextSrc
+ *
+ * @properties={typeid:24,uuid:"96D0E7FA-8490-4C31-95D5-2F1E3514219D"}
+ */
+function onRecordSelection(event, buttonTextSrc) {
+	//vJobNumber = job_number;
+	
+	//application.updateUI();
+	//return _super.onRecordSelection(event, buttonTextSrc)
+}
+
 /**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"D63519B3-ACEA-4BC4-B350-44B2F6DC9273"}
+ * @properties={typeid:24,uuid:"3C12D307-E1E3-4FF5-8808-C2C2A01DC5F6"}
  */
-function onActionClose(event) {
-	editStatus(false);
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+function onActionSaveEdit(event) {
+	globals.lookupItem2 = vCustomerNumber;
+	label_format = vLabelFormat;
+	metric_job = vMetricJob;
+	rf_interface = vRFInterface;
+	ship_to = vShipTo;
+	//globals.lookupItem = vJobNumber;
+	//var fsJobN = sts_check_jobnum;
+	//if (fsJobN.getSize() == 0){
+	///	fsJobN.newRecord();
+	//}
+	//saveRecordFromForm(fsJobN);
+	
+	//var fs = sts_job_to_loads;
+	//if (fs == null){
+	//	/** @type {JSFoundSet<db:/stsservoy/loads>} */
+	//	fs = sts_job_to_loads.newRecord();
+	//}
+	//if (fs.getSize() == 0){
+	//	fs.newRecord();
+	//	fs.job_id = job_id;
+	//	//always have first load record as empty record
+	//	fs.load_number = "";
+	//}
+	return _super.onActionSaveEdit(event)
 }

@@ -2,6 +2,12 @@ dataSource:"db:/stsservoy/users",
 extendsID:"BB1B2F7E-C46C-4524-95B5-1F69B94CF939",
 items:[
 {
+extendsID:"E9633899-3B5A-4484-8A95-6B7456FC277A",
+text:"User's Name:",
+typeid:7,
+uuid:"51F9ED6D-CADB-4D07-9FE5-B7E56FDBE2E7"
+},
+{
 extendsID:"95B8F41A-FAE2-4E5B-AAD0-66CA59B27A57",
 format:"|U",
 typeid:4,

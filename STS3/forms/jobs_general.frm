@@ -1,9 +1,10 @@
 dataSource:"db:/stsservoy/jobs",
 encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
+initialSort:"st2_jobs_to_customers.customer_number asc, job_number asc",
 items:[
 {
-dataProviderID:"vJobCareOf",
+dataProviderID:"job_care_of",
 location:"315,141",
 name:"job_care_of",
 size:"140,20",
@@ -37,7 +38,7 @@ typeid:7,
 uuid:"09EA75A8-C0BF-473D-B980-CB26100A8B41"
 },
 {
-dataProviderID:"vProjectYear",
+dataProviderID:"project_year",
 format:"####",
 location:"715,200",
 name:"project_year",
@@ -58,7 +59,7 @@ typeid:7,
 uuid:"1ABD2389-E9A6-4D1B-B01C-6D6C8CE53BEE"
 },
 {
-dataProviderID:"vJobPlant",
+dataProviderID:"job_plant",
 location:"715,150",
 name:"job_plant",
 size:"140,20",
@@ -68,7 +69,7 @@ typeid:4,
 uuid:"1DDCA71F-4A4A-4D8B-8438-4E48497C1D63"
 },
 {
-dataProviderID:"vPORelease",
+dataProviderID:"po_release",
 location:"315,191",
 name:"po_release",
 size:"140,20",
@@ -78,7 +79,7 @@ typeid:4,
 uuid:"26960263-D7F4-4552-8FDD-A0705CF0A490"
 },
 {
-dataProviderID:"vCustomerPO",
+dataProviderID:"customer_po",
 location:"315,166",
 name:"customer_po",
 size:"140,20",
@@ -88,7 +89,7 @@ typeid:4,
 uuid:"27A105D5-8F43-455D-A1F2-DA6AEC9B51CA"
 },
 {
-dataProviderID:"vJobLocation",
+dataProviderID:"job_location",
 location:"315,116",
 name:"job_location",
 size:"140,20",
@@ -108,7 +109,7 @@ typeid:7,
 uuid:"308598D7-2CA3-4CD1-A674-70DB951831BE"
 },
 {
-dataProviderID:"vLabelFormat",
+dataProviderID:"label_format",
 displayType:2,
 location:"315,261",
 name:"label_format",
@@ -130,7 +131,7 @@ typeid:7,
 uuid:"47F6BBFC-8B84-4088-B23C-5DAD32DA9701"
 },
 {
-dataProviderID:"vCustomerName",
+dataProviderID:"sts_job_to_customer.name",
 editable:false,
 location:"460,41",
 name:"name",
@@ -142,7 +143,7 @@ typeid:4,
 uuid:"4CC28AF6-78AE-4AF7-A2A6-8E1A7780E331"
 },
 {
-dataProviderID:"vJobStructure",
+dataProviderID:"job_structure",
 location:"315,91",
 name:"job_structure",
 size:"140,20",
@@ -152,7 +153,7 @@ typeid:4,
 uuid:"510EB579-D384-4C13-AB85-77D0B88CC4D1"
 },
 {
-dataProviderID:"vJobWeight",
+dataProviderID:"job_weight",
 editable:false,
 location:"762,75",
 name:"job_weight",
@@ -164,7 +165,7 @@ typeid:4,
 uuid:"529FE8FF-E26F-4DFC-BD66-CBFF2D2DF280"
 },
 {
-dataProviderID:"vShipTo",
+dataProviderID:"ship_to",
 displayType:2,
 editable:false,
 location:"715,175",
@@ -174,11 +175,11 @@ tabSeq:12,
 text:"Ship To",
 typeid:4,
 uuid:"56B6552D-E6F1-4B2F-9BEA-1F5EDF576F9E",
-valuelistID:"F620E06E-885F-45E8-8FFE-F3DA001E558F"
+valuelistID:"EB32DD89-6D84-4D8D-9EFF-FFDD2AE816FB"
 },
 {
 customProperties:"",
-dataProviderID:"vJobNumber",
+dataProviderID:"job_number",
 displayType:10,
 format:"|U",
 location:"315,15",
@@ -270,13 +271,14 @@ typeid:7,
 uuid:"7E739804-67C3-4D0F-853B-6D4332C7D6EE"
 },
 {
-dataProviderID:"vMetricJob",
+dataProviderID:"metric_job",
 displayType:4,
 location:"566,100",
 name:"metric_job",
 size:"231,20",
 tabSeq:-2,
 text:"Metric Job (Weights & Dimensions)",
+transparent:true,
 typeid:4,
 uuid:"7F93364F-D1A0-4478-B601-187B00767F04"
 },
@@ -296,7 +298,6 @@ items:[
 {
 containsFormID:"628FBF67-6BF2-4701-A2E2-ED86DA4F447B",
 location:"15,76",
-relationName:"sts_jobs_container",
 text:"jobs_lst",
 typeid:15,
 uuid:"F8DF6623-B08A-4B60-B76C-1DFB5BB31AF7"
@@ -319,7 +320,7 @@ typeid:19,
 uuid:"93ADB670-CF9B-426C-B7CA-7D69B266BECA"
 },
 {
-dataProviderID:"vJobTitle",
+dataProviderID:"job_title",
 location:"315,66",
 name:"job_title",
 size:"140,20",
@@ -358,21 +359,22 @@ typeid:7,
 uuid:"AA2BD6B6-D89F-44DC-BE25-F1AB25CC340C"
 },
 {
-dataProviderID:"vCustomerNumber",
+dataProviderID:"customer_id",
 displayType:10,
 format:"|U",
 location:"315,41",
 name:"customer_number",
+onActionMethodID:"-1",
 onDataChangeMethodID:"8EBEE04A-FA43-4EEC-877D-FA9A69BD3182",
 size:"140,20",
 tabSeq:2,
 text:"Customer Number",
 typeid:4,
 uuid:"B2D40E0B-C294-48E1-8022-764C33B81A3C",
-valuelistID:"B53B74FF-081E-462E-BDBA-40249F200298"
+valuelistID:"C1598D67-519B-4DCB-865E-97EFC34DCF53"
 },
 {
-dataProviderID:"vProjectHours",
+dataProviderID:"job_hours",
 location:"715,225",
 name:"job_hours",
 size:"140,20",
@@ -395,18 +397,11 @@ uuid:"C2FF632C-7C43-43A6-9888-D944013C8BA8",
 visible:false
 },
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"true\"
-]
-}
-}",
+customProperties:"",
 horizontalAlignment:0,
 location:"587,367",
 name:"editButton",
-onActionMethodID:"D7DE5D8F-6F83-4FBF-9610-B378EA5EB029",
+onActionMethodID:"5A03D84F-63FE-439C-908A-54F4839CD8F2",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 tabSeq:-2,
@@ -415,7 +410,7 @@ typeid:7,
 uuid:"C53B6308-18F3-45DD-A5F8-1B45F2995AA0"
 },
 {
-dataProviderID:"vRFInterface",
+dataProviderID:"rf_interface",
 displayType:2,
 editable:false,
 location:"315,216",
@@ -431,7 +426,7 @@ valuelistID:"A77777B7-95F6-460F-8023-FC73A2BAC602"
 horizontalAlignment:0,
 location:"396,367",
 name:"saveButton",
-onActionMethodID:"1FB02E0B-65E9-4B9C-A3A9-0C31834C2101",
+onActionMethodID:"99A66AB2-1E7B-4867-9711-C57528428608",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 tabSeq:-2,
@@ -451,7 +446,7 @@ typeid:7,
 uuid:"DA6D7C7D-9282-429F-96D0-B3B367FFA8D7"
 },
 {
-dataProviderID:"vJobEfficiency",
+dataProviderID:"job_efficiency",
 location:"715,255",
 name:"job_efficiency",
 size:"140,20",
@@ -484,7 +479,7 @@ typeid:7,
 uuid:"E87326BA-D4D9-4165-85DD-BBA408912C5D"
 },
 {
-dataProviderID:"vFTProjectID",
+dataProviderID:"ft_projectid",
 format:"|#",
 location:"715,285",
 name:"ft_projectid",
@@ -498,7 +493,7 @@ uuid:"EB449E28-4D75-492C-8E2A-67A266EABA35"
 anchors:3,
 horizontalAlignment:0,
 location:"822,367",
-onActionMethodID:"D63519B3-ACEA-4BC4-B350-44B2F6DC9273",
+onActionMethodID:"70C1DAF1-E603-4AAF-8930-0E480CB7ABCA",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 text:"Close",
@@ -509,6 +504,7 @@ uuid:"EB84BE05-31A5-4766-9E02-12CB9FF765E3"
 name:"jobs_general",
 navigatorID:"-1",
 onLoadMethodID:"-1",
+onRecordSelectionMethodID:"96D0E7FA-8490-4C31-95D5-2F1E3514219D",
 onShowMethodID:"D3694EFE-4004-4583-A215-4C9582FF0ED8",
 showInMenu:true,
 size:"929,404",

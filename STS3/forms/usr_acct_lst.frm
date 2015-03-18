@@ -13,19 +13,8 @@ uuid:"0E3B066F-988D-436A-B920-6A1FFB8B5C19"
 },
 {
 anchors:11,
-labelFor:"name_last",
-location:"130,0",
-name:"name_last_label",
-size:"89,20",
-text:"Name Last",
-transparent:true,
-typeid:7,
-uuid:"32556CC2-CF34-4CFC-87DA-FF837751037B"
-},
-{
-anchors:11,
 dataProviderID:"name_first",
-location:"218,20",
+location:"130,20",
 name:"name_first",
 size:"100,20",
 text:"Name First",
@@ -34,43 +23,35 @@ uuid:"32E5A5B3-5C81-4592-B3F7-135384CED889"
 },
 {
 anchors:11,
-dataProviderID:"name_last",
-location:"130,20",
-name:"name_last",
-size:"89,20",
-text:"Name Last",
-typeid:4,
-uuid:"3DC8E4DD-4647-41DF-9AFD-C8A4FE7239E3"
-},
-{
-anchors:11,
 labelFor:"name_first",
-location:"218,0",
+location:"130,0",
 name:"name_first_label",
 size:"100,20",
-text:"Name First",
+text:"Full Name",
 transparent:true,
 typeid:7,
 uuid:"6496C1F2-D822-4C6D-985D-76C5C6A37D92"
 },
 {
 dataProviderID:"tenant_uuid",
-location:"418,20",
+location:"330,20",
 name:"tenant_uuid",
 size:"99,20",
 text:"Tenant Uuid",
 typeid:4,
-uuid:"65303B5B-C3CF-4D9E-AC6B-A59CF6A26921"
+uuid:"65303B5B-C3CF-4D9E-AC6B-A59CF6A26921",
+visible:false
 },
 {
 labelFor:"tenant_uuid",
-location:"418,0",
+location:"330,0",
 name:"tenant_uuid_label",
 size:"99,20",
 text:"Tenant Uuid",
 transparent:true,
 typeid:7,
-uuid:"70DDA6D3-CC4C-4C41-B4A9-4D9B0462CB70"
+uuid:"70DDA6D3-CC4C-4C41-B4A9-4D9B0462CB70",
+visible:false
 },
 {
 anchors:11,
@@ -84,7 +65,7 @@ typeid:7,
 uuid:"790C7D03-3A56-4666-85CB-1B42541F1505"
 },
 {
-height:228,
+height:56,
 partType:5,
 typeid:19,
 uuid:"88FA756B-1C3E-467F-B8A1-599BAD6D6FDD"
@@ -102,7 +83,7 @@ uuid:"8AA4A740-0474-4AC8-ADF2-71CB7A1D24CB"
 },
 {
 dataProviderID:"secx_users_to_tenantlist.company_name",
-location:"317,20",
+location:"229,20",
 name:"company_name",
 size:"102,20",
 text:"Company Name",
@@ -113,7 +94,7 @@ uuid:"A19D56AF-CA7C-4B26-8349-F85F7D96A0B5"
 fontType:"Arial,0,8",
 horizontalAlignment:0,
 labelFor:"delete_rec",
-location:"516,0",
+location:"428,0",
 size:"23,20",
 text:"Del",
 transparent:true,
@@ -132,16 +113,16 @@ uuid:"BF32A037-3719-4892-9894-37C2EEC30613"
 },
 {
 labelFor:"company_name",
-location:"317,0",
+location:"229,0",
 name:"company_name_label",
 size:"102,20",
-text:"Company Name",
+text:"Divsion",
 transparent:true,
 typeid:7,
 uuid:"DDCD4059-0075-4A05-A393-FDAF122048A4"
 },
 {
-location:"516,20",
+location:"428,20",
 name:"delete_rec",
 onActionMethodID:"23DF4B40-3BF9-4277-A9FB-EEDA7CBCD90C",
 onDoubleClickMethodID:"-1",
@@ -153,7 +134,7 @@ uuid:"F0F5A1FD-D5F4-4AE8-9794-9119B391F9C0"
 }
 ],
 name:"usr_acct_lst",
-size:"544,228",
+size:"454,228",
 styleName:"sts_one",
 typeid:3,
 uuid:"75DFEFBE-D100-4082-8005-E5C62B4BC2BC",

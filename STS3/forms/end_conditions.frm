@@ -31,7 +31,7 @@ uuid:"432AA974-B949-4896-ABDD-9F05C688A0EC"
 {
 dataProviderID:"end_prep_description",
 displayType:10,
-location:"449,70",
+location:"480,70",
 name:"end_prep_description",
 size:"140,20",
 text:"End Prep Description",
@@ -64,21 +64,23 @@ typeid:7,
 uuid:"73BFC717-A3E1-4B8F-BBA9-8210EBC1370A"
 },
 {
+horizontalAlignment:4,
 labelFor:"end_prep_description",
-location:"359,70",
+location:"337,70",
 name:"end_prep_description_label",
-size:"80,20",
-text:"End Prep Description",
+size:"138,20",
+text:"End Prep Description:",
 transparent:true,
 typeid:7,
 uuid:"79A7E3A2-75CC-4B6A-80AC-026146F24990"
 },
 {
+horizontalAlignment:4,
 labelFor:"end_prep",
-location:"359,40",
+location:"402,40",
 name:"end_prep_label",
-size:"80,20",
-text:"End Prep",
+size:"73,20",
+text:"End Prep:",
 transparent:true,
 typeid:7,
 uuid:"835A5838-205B-4A45-A79E-72BCA48414F9"
@@ -118,7 +120,7 @@ visible:false
 {
 dataProviderID:"end_prep",
 displayType:10,
-location:"449,40",
+location:"480,40",
 name:"end_prep",
 onDataChangeMethodID:"CF0DAAF4-CED6-447C-8442-F3F050C78726",
 size:"140,20",

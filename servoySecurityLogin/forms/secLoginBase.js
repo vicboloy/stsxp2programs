@@ -114,20 +114,22 @@ function login(){
 			if(passCheck && security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 				globals.secCurrentUserID = userID;
 				globals.secCurrentUserName = userName;
-				var date = new Date();//<YYYY>-<MM>-<DD>T<HH>-<MM>-<SS> synchronize mobile computer date with server time
-				var days = date.getDate()+"";
-				if (days.length == 1) {days = "0"+days}
-				var month = date.getMonth()+1+"";
-				if (month.length == 1) {month = "0"+month}
-				var hours = date.getHours()+"";
-				if (hours.length == 1) {hours = "0"+hours}
-				var minutes = date.getMinutes()+"";
-				if (minutes.length == 1) {minutes = "0"+minutes}
-				var seconds = date.getSeconds()+"";
-				if (seconds.length == 0) {seconds = "0"+seconds}
-				var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"'";
-				application.output('date '+mobileDate);
-				plugins.WebClientUtils.executeClientSideJS(mobileDate);
+				if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+					var date = new Date();//<YYYY>-<MM>-<DD>T<HH>-<MM>-<SS> synchronize mobile computer date with server time
+					var days = date.getDate()+"";
+					if (days.length == 1) {days = "0"+days}
+					var month = date.getMonth()+1+"";
+					if (month.length == 1) {month = "0"+month}
+					var hours = date.getHours()+"";
+					if (hours.length == 1) {hours = "0"+hours}
+					var minutes = date.getMinutes()+"";
+					if (minutes.length == 1) {minutes = "0"+minutes}
+					var seconds = date.getSeconds()+"";
+					if (seconds.length == 0) {seconds = "0"+seconds}
+					var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"'";
+					application.output('date '+mobileDate);
+					plugins.WebClientUtils.executeClientSideJS(mobileDate);
+				}
 				return true;
 			}
 		}

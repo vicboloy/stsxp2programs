@@ -84,6 +84,10 @@ var deletedPiecemarks = [];
  */
 var browseTable = [];
 /**
+ * @properties={typeid:35,uuid:"9BA511C5-BBC0-4854-A2CC-B9EE4396446A",variableType:-4}
+ */
+var browseFS = null;
+/**
  * @properties={typeid:35,uuid:"288F5458-B8B4-4571-B4DD-8377CE856783",variableType:-4}
  */
 var browseFieldOrder = [];
@@ -103,6 +107,10 @@ var fsBrowse = null;
  * @properties={typeid:35,uuid:"21E07FB4-9806-44F4-B42D-DFC7172427EB",variableType:-4}
  */
 var browseArray = [];
+/**
+ * @properties={typeid:35,uuid:"33233339-7813-4B0C-BB40-1CC5E50D95FF",variableType:-4}
+ */
+var dsQuery = [];
 /**
  * @properties={typeid:35,uuid:"E6FF48A0-2A3F-4E63-87E3-845825030B68",variableType:-4}
  */
@@ -546,6 +554,14 @@ var customerName = "";
  */
 var columnNames = forms.kiss_option_import.columnNames; // columnNames indexed into array
 /**
+ * @properties={typeid:35,uuid:"ABC9E86F-0C84-4FFC-A70A-19E888A421F8",variableType:-4}
+ */
+var columnNames2 = []; // columnNames for browsing sql-based forms
+/**
+ * @properties={typeid:35,uuid:"1D1DC7BD-66CD-442D-BE61-BB6305AEE98C",variableType:-4}
+ */
+var removeColumns = [];
+/**
  * Keep separate count for job load information browsing.
  * @type {String}
  * @properties={typeid:35,uuid:"F4DAEC4A-73A1-490F-AE39-D8E9CFFF5DDA"}
@@ -975,15 +991,15 @@ function readAsIsTable(){
 /**
  * @properties={typeid:24,uuid:"9A549511-92BB-4AE0-8389-6D2EBBEF238E"}
  */
-function readBTable(){
+function xxxreadBTable(){
 	//history.removeForm('loads_browse_tab');
 	//solutionModel.removeForm('loads_browse_tab');
 	removeFormHist('loads_browse_tab')
 	var jobID = scopes.jobs.jobUnderCustomer;
 	readPieceTables();
 	if (!jobID || jobID == ""){return}
-	buildBTable();
-	loadBTable();
+	xxxbuildBTable();
+	xxxloadBTable();
 	null;
 }
 /**
@@ -1344,7 +1360,7 @@ function loadBlindIntoImportTable(record){
 /**
  * @properties={typeid:24,uuid:"D910BAEA-3615-490B-B018-23B1A4519E11"}
  */
-function loadBTable(){
+function xxxloadBTable(){
 	// start with sheets
 	var index = 0; var name = "";
 	if (dsIdfiles == null){return}
@@ -1654,7 +1670,7 @@ function tablePrefsSave(event){
  *
  * @properties={typeid:24,uuid:"CA56F8D0-EBCA-4851-B1B3-95C2805AD2DA"}
  */
-function viewBTableThrowSplit(event,winTitle){
+function xxxviewBTableThrowSplit(event,winTitle){
 	var formName = event.getFormName();
 	application.output('formname '+formName);
 	var height = forms[formName].controller.getWindow().getHeight();
@@ -1678,60 +1694,73 @@ function viewBTableThrowSplit(event,winTitle){
 	
 }
 /**
- * TODO generated, please specify type and doc for the params
- * @param criteria
+  * @param criteria
  * @param formName
  *
  * @properties={typeid:24,uuid:"291002AB-CA66-478B-9A31-02A35914B265"}
  * @AllowToRunInFind
  */
 function viewBTableToForm(criteria,formName){
-	var formNameTable = formName+'_table';
-	//removeFormHist(formNameTable);
-	//null;//stop here check for delete_piecemark_info
-	if (forms[formNameTable]){
-		application.output(forms[formNameTable]);
-	}
-	//var success = history.removeForm(formNameTable);
-	//var success2 = solutionModel.removeForm(formNameTable);	
 	/**
 	 * create dataset
 	 * load dataset
 	 * create columns
 	 * dsPiecemarks,dsBarcodes,dsIdfiles,dsSequences,dsLots,dsSheets
 	 */
-	//history.removeForm(formName);
-	//solutionModel.removeForm(formName);	
-	dsBrowse = null;
-	dsBrowse = databaseManager.createEmptyDataSet();
-	//var win = application.createWindow('Browse Job', JSWindow.WINDOW);
-
-	//win.setInitialBounds(10, 10, 800, 700);
-	//win.title = 'Browse Job';
-	//win.show('loads_browse2');
+	dsQuery = viewBTableSQL(criteria,formName);
 	var maxReturnedRows = -1;
 	var args = [];
 	args.push(scopes.jobs.browseJobID);
+	/** @type  {JSDataSet} */
+	browseFS = databaseManager.getDataSetByQuery('stsservoy', dsQuery, args , maxReturnedRows);
+	viewBTableRemoveColumns();//dsBrowse and browseFS
+	viewBTableRemoveRows();//browseFS
+	///browseDatasource = browseFS.createDataSource(formName+'_browse',browseArray);
+	browseDatasource = browseFS.createDataSource(formName+'_browse',dsBrowse);
+	///application.output('datasource form '+formName+"_browse");
+	viewBTableCreateForm(formName);
+	tablePrefsLoad(formName)
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param criteria
+ *
+ * @properties={typeid:24,uuid:"5A86864F-9E7D-4360-B2ED-A560C169623F"}
+ */
+function viewBTableSQL(criteria,formName){
 	/**
 	 * Left join for records  which may not exist.  inner join for necessary records.
 	 */
-	var query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",* from piecemarks p '+
+	query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",* from piecemarks p '+
+	' right join routings rt on rt.routing_id = p.e_route_code_id '+
 	' inner join sheets s on p.sheet_id = s.sheet_id SHT '+
 	' and s.job_id = ? AND s.delete_flag IS null PCMK '+
-	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag IS null SONUM FABS AREA PCRL LDN COW LOT PKG'+
+	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag FLAG SONUM FABS AREA PCRL LDN COW LOT PKG'+
 	' inner join sequences ss on ss.sequence_id = i.sequence_id SEQN ' +
 	' inner join id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ' +
 	' left join status_description sd on sd.status_description_id = i.status_description_id ' +
-	' left join loads l on l.load_id = i.current_load_id LDRR';
-	if (formName.search(/(recall|remove)/) != -1){
-		query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",* from piecemarks p '+
+	' left join loads l on l.load_id = i.current_load_id LDRR '+
+	' order by p.parent_piecemark, p.piecemark';
+	
+	if (formName.search(/(recall|remove)/) == -1){
+		query = query.replace('FLAG',"IS null");
+	} else {
+		query = query.replace('FLAG','= 99');
+	}
+		/**query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",* from piecemarks p '+
+		' right join routings rt on rt.routing_id = p.e_route_code_id '+
 		' inner join sheets s on p.sheet_id = s.sheet_id SHT '+
 		' and s.job_id = ? PCMK '+
 		' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag = 99 SONUM FABS AREA PCRL LDN COW LOT PKG'+
 		' inner join sequences ss on ss.sequence_id = i.sequence_id SEQN ' +
 		' inner join id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ' +
-		' left join loads l on l.load_id = i.current_load_id LDRR';	}
-	//  PCMK SHT SEQN SONUM LDN LDR PCRL FABS JOBR AREA BTCH COW (LOT) (PKG)
+		' left join status_description sd on sd.status_description_id = i.status_description_id ' +
+		' left join loads l on l.load_id = i.current_load_id LDRR'+
+		' order by p.parent_piecemark, p.piecemark';	
+	}*/
+	//  FLAG PCMK SHT SEQN SONUM LDN LDR PCRL FABS JOBR AREA BTCH COW (LOT) (PKG)
 	if (criteria.piecemark){
 		query = query.replace('PCMK'," AND p.piecemark IN "+criteria.piecemark);
 	} else {
@@ -1797,31 +1826,37 @@ function viewBTableToForm(criteria,formName){
 	} else {
 		query = query.replace('LDN','');
 	}
-	//application.output(query)
-	var browseFS = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
-	//application.output("query size "+browseFS.getMaxRowIndex());
-	
-	//forms.loads_browse2.elements.tabless.removeAllTabs();
-	var browseIndex = 0;
+	//application.output('sql here');
+	return query;
+}
+/**
+ * @properties={typeid:24,uuid:"D24C1FF9-3120-488F-8A7E-FEE2E8A48D82"}
+ */
+function viewBTableRemoveColumnArray(){
+	for (index=removeColumns.length-1;index > -1;index--){
+		browseFS.removeColumn(removeColumns[index]);
+	}	
+}
+/**
+ * @properties={typeid:24,uuid:"28B0AC58-327F-49AD-8C12-D4A87EF0E894"}
+ */
+function viewBTableRemoveColumns(){
+	columnNames2 = []; var index = 0; var fieldIndex = 0; removeColumns = [];
+
+	columnNames2.push('Selection');//Want this one first
 	browseArray = [];
-	var columnNames = []; var index = 0;
-	columnNames.push('Selection');//Want this one first
 	nullRow = [];
 	var cols = browseFS.getMaxColumnIndex();
-	var last = ""; 
-	var offset = 0;
-	var colLength = 0;
-	var fieldIndex = 0;
-	var removeColumns = [];
-	//removeColumns.push('piecemark_id'); // input string of piecemark_id error, Error Setting form foundset, for input string
+	dsBrowse = null;
+	dsBrowse = databaseManager.createEmptyDataSet();
 	for (index = 1;index <= cols;index++){
 		var columnName = browseFS.getColumnName(index);
 		if (columnName == null){continue}
 		//application.output(' column for delete table '+columnName);
-		if (columnNames.indexOf(columnName) != -1){
+		if (columnNames2.indexOf(columnName) != -1){
 			removeColumns.push(index);
 			continue}
-		columnNames[fieldIndex] = columnName;
+		columnNames2[fieldIndex] = columnName;
 		if (columnName == "Selection"){
 			dsBrowse.addColumn(columnName,fieldIndex+1,JSColumn.INTEGER);
 			browseArray.push(JSColumn.INTEGER);
@@ -1833,10 +1868,13 @@ function viewBTableToForm(criteria,formName){
 		fieldIndex++;
 	}
 	for (index=removeColumns.length-1;index > -1;index--){
-		//var status = dsBrowse.removeColumn(removeColumns[index]);
-		var status1 = browseFS.removeColumn(removeColumns[index]);
-		//application.output(" stat2 "+status1);
+		browseFS.removeColumn(removeColumns[index]);
 	}
+}
+/**
+ * @properties={typeid:24,uuid:"CA416456-63D1-4201-8A14-AA2BE558094B"}
+ */
+function viewBTableRemoveRows(){
 	var uniqueBC = [];
 	var removeRows = [];
 	var uniqueBCount = [];
@@ -1861,23 +1899,26 @@ function viewBTableToForm(criteria,formName){
 		var intQuant = Math.floor(uniqueBCount[browseFS.id_serial_number_id]).toFixed();
 		browseFS.sequence_quantity = intQuant;
 	}
-	//swap piecemark_id and first columns
-	browseDatasource = browseFS.createDataSource(formName+'_browse',browseArray); 
-	//scopes.jobs.removeFormHist(formNameTable);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"8A450FAC-741E-4BF2-A98F-92790F073662"}
+ */
+function viewBTableCreateForm(formName){
+	var formNameTable = formName+'_table';
 	var checkForm = solutionModel.newForm(formNameTable,browseDatasource,'sts_one',false,500,600);
-	var code = 'function onRecordSelection(event){\
-			scopes.jobs.onRecordSelectIdfile(event);\
-		}\
-	';
+	var code = 'function onRecordSelection(event){scopes.jobs.onRecordSelectIdfile(event);}';
 	
 	checkForm.onRecordSelection = checkForm.newMethod(code);
 	checkForm.navigator = SM_DEFAULTS.NONE;
 	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
-	//checkForm.namedFoundSet = JSForm.EMPTY_FOUNDSET; 
-	//checkForm.dataSource = 'mem:browsingAll'; //
-	//checkForm.scrollbars = SM_SCROLLBAR.HORIZONTAL_SCROLLBAR_NEVER;
-	for (index = 0;index < columnNames.length;index++){
-		columnName = columnNames[index];
+	var last = ""; 
+	var offset = 0;
+	var colLength = 0;
+	for (index = 0;index < columnNames2.length;index++){
+		var columnName = columnNames2[index];
 		if (columnName == "browsing_id"){
 			colLength = 0;
 		} else {
@@ -1888,7 +1929,8 @@ function viewBTableToForm(criteria,formName){
 	 	if (index == columnName.length -1){
 	 		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
 	 	}
-	 	last.labelFor=columnNames[index];
+	 	last.labelFor=columnNames2[index];
+	 	last.dataProviderID = columnNames2[index];
 	 	last.toolTipText = last.labelFor;
 	 	if (columnName == "Selection"){
 			last = checkForm.newField(columnName,JSField.CHECKS,offset,20,colLength,20);
@@ -1910,17 +1952,22 @@ function viewBTableToForm(criteria,formName){
 		status = forms[formName].elements.tabless.addTab(formNameTable);
 	}
 	if (!status){
-		status = forms[formName].elements.split.setLeftForm(formNameTable);
-		//forms.delete_pcmk_combo.elements.split.setLeftForm(formNameTable);
+		status = forms[formName].elements.split.setLeftForm(formNameTable);		//forms.delete_pcmk_combo.elements.split.setLeftForm(formNameTable);
 	}
-	//application.output('add tab to delete jobs '+status);
-	//tablePrefsLoad('loads_browse2');
+}
+/**
+ * @properties={typeid:24,uuid:"D8DA5987-3E63-41C0-B087-CF2207E337BB"}
+ */
+function viewBrowseTableRefresh(){
+	var args = [];
+	args.push(browseJobID); 
+	browseDatasource = scopes.jobs.browseSF.getDataSetByQuery('stsservoy', dsQuery, args , -1); 
 }
 /**
  * @properties={typeid:24,uuid:"0920030A-EFA9-4626-BDF7-5D62D4C8D963"}
  * @SuppressWarnings(wrongparameters)
  */
-function viewBTableAlt(criteria){
+function xxxviewBTableAlt(criteria){
 	/**
 	 * create dataset
 	 * load dataset
@@ -1931,6 +1978,7 @@ function viewBTableAlt(criteria){
 	//history.removeForm('loads_browse_tabless2');
 	//solutionModel.removeForm('loads_browse_tabless2');	
 	dsBrowse = null;
+	dsQuery = null;
 	dsBrowse = databaseManager.createEmptyDataSet();
 	var win = application.createWindow('Browse Job', JSWindow.WINDOW);
 
@@ -1940,92 +1988,98 @@ function viewBTableAlt(criteria){
 	var maxReturnedRows = -1;
 	var args = [];
 	args.push(scopes.jobs.browseJobID);
-/** deleted
-	var query = 'select random()*1000000 AS "browsing_id",* from piecemarks p inner join sheets s on p.sheet_id = s.sheet_id '+
-	' and s.job_id = ? AND s.delete_flag IS null '+
-	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag IS null '+
-	' inner join sequences ss on ss.sequence_id = i.sequence_id inner join '+
-	' id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ';
-	*/
+		/** deleted
+		select random()*1000000 AS "browsing_id",* from piecemarks p 
+		right join routings rt on rt.routing_id = p.e_route_code_id 
+		inner join sheets s on p.sheet_id = s.sheet_id 
+		and s.job_id = 'CC79B01C-9EE8-43FA-8859-E464E7213D1B' AND s.delete_flag IS null 
+		inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag IS null 
+		inner join sequences ss on ss.sequence_id = i.sequence_id  
+		inner join lots lt on lt.lot_id = i.lot_id 
+		inner join id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id  
+		left join loads l on l.load_id = i.current_load_id 
+		order by p.parent_piecemark, p.piecemark
+		*/
 	/**
 	 * Left join for records  which may not exist.  inner join for necessary records.
 	 */
-	var query = 'select random()*1000000 AS "browsing_id",* from piecemarks p '+
+	dsQuery = 'select random()*1000000 AS "browsing_id",* from piecemarks p '+
+	' right join routings rt on p.e_route_code_id = rt.routing_id '+
 	' inner join sheets s on p.sheet_id = s.sheet_id SHT '+
 	' and s.job_id = ? AND s.delete_flag IS null PCMK '+
 	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag IS null SONUM FABS AREA PCRL LDN COW LOT PKG'+
 	' inner join sequences ss on ss.sequence_id = i.sequence_id SEQN ' +
 	' inner join lots lt on lt.lot_id = i.lot_id ' +
 	' inner join id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ' +
-	' left join loads l on l.load_id = i.current_load_id LDRR';
+	' left join loads l on l.load_id = i.current_load_id LDRR ';
 	//  PCMK SHT SEQN SONUM LDN LDR PCRL FABS JOBR AREA BTCH COW (LOT) (PKG)
 	if (criteria.piecemark){
-		query = query.replace('PCMK'," AND p.piecemark IN "+criteria.piecemark);
+		dsQuery = dsQuery.replace('PCMK'," AND p.piecemark IN "+criteria.piecemark);
 	} else {
-		query = query.replace('PCMK','');
+		dsQuery = dsQuery.replace('PCMK','');
 	}
 	if (criteria.sheetnum){
-		query = query.replace('SHT'," AND s.sheet_number IN "+criteria.sheetnum);
+		dsQuery = dsQuery.replace('SHT'," AND s.sheet_number IN "+criteria.sheetnum);
 	} else {
-		query = query.replace('SHT','');
+		dsQuery = dsQuery.replace('SHT','');
 	}
 	if (criteria.seqnum){
-		query = query.replace('SEQN'," AND ss.sequence_number IN "+criteria.seqnum);
+		dsQuery = dsQuery.replace('SEQN'," AND ss.sequence_number IN "+criteria.seqnum);
 	} else {
-		query = query.replace('SEQN','');
+		dsQuery = dsQuery.replace('SEQN','');
 	}
 	if (criteria.sonum){
-		query = query.replace('SONUM'," AND i.shop_order IN "+criteria.sonum);
+		dsQuery = dsQuery.replace('SONUM'," AND i.shop_order IN "+criteria.sonum);
 	} else {
-		query = query.replace('SONUM','');
+		dsQuery = dsQuery.replace('SONUM','');
 	}
 	if (criteria.batch){
-		query = query.replace('BTCH'," AND i.id_batch IN "+criteria.batch);
+		dsQuery = dsQuery.replace('BTCH'," AND i.id_batch IN "+criteria.batch);
 	} else {
-		query = query.replace('BTCH','');
+		dsQuery = dsQuery.replace('BTCH','');
 	}
 	if (criteria.area){
-		query = query.replace('AREA'," AND i.id_area IN "+criteria.area);
+		dsQuery = dsQuery.replace('AREA'," AND i.id_area IN "+criteria.area);
 	} else {
-		query = query.replace('AREA','');
+		dsQuery = dsQuery.replace('AREA','');
 	}
 	if (criteria.cow){
-		query = query.replace('COW'," AND p.piecemark_cow_code IN "+criteria.cow);// cost_of_work_code (10) ticket#6
+		dsQuery = dsQuery.replace('COW'," AND p.piecemark_cow_code IN "+criteria.cow);// cost_of_work_code (10) ticket#6
 	} else {
-		query = query.replace('COW','');
+		dsQuery = dsQuery.replace('COW','');
 	}
 	if (criteria.lotnum){
-		query = query.replace('LOT'," AND i.lot_id IN "+criteria.lotnum);//ticket#7
+		dsQuery = dsQuery.replace('LOT'," AND i.lot_id IN "+criteria.lotnum);//ticket#7
 	} else {
-		query = query.replace('LOT','');
+		dsQuery = dsQuery.replace('LOT','');
 	}
 	if (criteria.pkgnum){
-		query = query.replace('PKG'," AND i.ft_pkgid IN "+criteria.pkgnum);//ticket#7
+		dsQuery = dsQuery.replace('PKG'," AND i.ft_pkgid IN "+criteria.pkgnum);//ticket#7
 	} else {
-		query = query.replace('PKG','');
+		dsQuery = dsQuery.replace('PKG','');
 	}
 	if (criteria.fabshop){
-		query = query.replace('FABS'," AND i.id_fabrication_shop IN "+criteria.fabshop);
+		dsQuery = dsQuery.replace('FABS'," AND i.id_fabrication_shop IN "+criteria.fabshop);
 	} else {
-		query = query.replace('FABS','');
+		dsQuery = dsQuery.replace('FABS','');
 	}
 	if (criteria.pcmkrel){
-		query = query.replace('PCRL'," AND i.piece_release IN "+criteria.pcmkrel);
+		dsQuery = dsQuery.replace('PCRL'," AND i.piece_release IN "+criteria.pcmkrel);
 	} else {
-		query = query.replace('PCRL','');
+		dsQuery = dsQuery.replace('PCRL','');
 	}
 	if (criteria.loadrel){
-		query = query.replace('LDRR'," AND l.load_release IN "+criteria.loadrel);
+		dsQuery = dsQuery.replace('LDRR'," AND l.load_release IN "+criteria.loadrel);
 	} else {
-		query = query.replace('LDRR','');
+		dsQuery = dsQuery.replace('LDRR','');
 	}
 	if (criteria.loadall){//need number to id current_load_id
-		query = query.replace('LDN'," AND i.current_load_id IN "+criteria.loadall);
+		dsQuery = dsQuery.replace('LDN'," AND i.current_load_id IN "+criteria.loadall);
 	} else {
-		query = query.replace('LDN','');
+		dsQuery = dsQuery.replace('LDN','');
 	}
-	//xx application.output(query)
-	var browseFS = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
+	application.output(dsQuery)
+	browseFS = databaseManager.getDataSetByQuery('stsservoy', dsQuery, args , maxReturnedRows);
 	//application.output("query size "+browseFS.getMaxRowIndex());
 	
 	forms.loads_browse2.elements.tabless.removeAllTabs();
@@ -2094,6 +2148,7 @@ function viewBTableAlt(criteria){
 	checkForm.onRecordSelection = checkForm.newMethod(code);
 	checkForm.navigator = SM_DEFAULTS.NONE;
 	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
+	//checkForm.dataSource = browseDatasource;
 	//checkForm.namedFoundSet = JSForm.EMPTY_FOUNDSET; 
 	//checkForm.dataSource = 'mem:browsingAll'; //
 	//checkForm.scrollbars = SM_SCROLLBAR.HORIZONTAL_SCROLLBAR_NEVER;
@@ -2127,7 +2182,7 @@ function viewBTableAlt(criteria){
 /**
  * @properties={typeid:24,uuid:"1C92C447-A951-426E-A713-8495A7DE92BA"}
  */
-function buildBTable(){
+function xxxbuildBTable(){
 	/*
 	 * create dataset
 	 * load dataset
@@ -3615,6 +3670,7 @@ function loadKissMapping(){
  * @properties={typeid:24,uuid:"0B6983DE-9208-499A-AFD2-76A33B879DCB"}
  */
 function findEmptyColumns(event,table){
+	//if (true != false){return}
 	//globals.a.tempHiddenEmpty = [];
 	var altForm = (table == 1);
 	var formName = event.getFormName();
@@ -3648,10 +3704,12 @@ function findEmptyColumns(event,table){
 	var fs = browseSet;
 	//browseSet = forms.loads_pcmk_combo.elements.split.getRightForm().foundset;
 	var recCount = databaseManager.getFoundSetCount(browseSet);
-	application.output('set size transaction '+recCount);
+	application.output('record set size transaction '+recCount);
+	//hideEm = (hideEm && (recCount > 1) && (table != 0));
+	//application.output('DEBUG hiding '+hideEm);
 	var maxCount = (recCount > 100) ?  Math.floor(recCount*.10) : recCount;
 	for (var item in formEls){
-		var empty = true;
+		var empty = true && (recCount <2);
 		var dataProvider = formEls[item].getDataProviderID();
 //application.output('form '+formTable+' '+globals.a.tempHiddenColumns);
 		for (var index = 1;index <= maxCount;index++){

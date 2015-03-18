@@ -1,6 +1,7 @@
 dataSource:"db:/stsservoy/jobs",
 encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
+initialSort:"st2_jobs_to_customers.customer_number asc, job_number asc",
 items:[
 {
 anchors:11,
@@ -51,7 +52,7 @@ uuid:"E4890FF4-A10F-4BA1-A3F3-9A8E4F7301A3"
 ],
 name:"jobs_lst",
 navigatorID:"-1",
-onRecordSelectionMethodID:"91A975E0-20A3-43A6-AC2F-C0F0FF970E1E",
+onRecordSelectionMethodID:"0D273E9E-ECB7-4362-9492-21A6DACDA13D",
 scrollbars:32,
 size:"137,350",
 styleName:"sts_one",

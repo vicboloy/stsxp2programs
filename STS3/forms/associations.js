@@ -27,9 +27,9 @@ function newRecord(event, location, changeSelection) {
 	/** @type {JSFoundset<db:/stsservoy/tenant_list} */
 	var newRec = _super.newRecord(event, location, changeSelection);
 	//newRec.tenant_group_uuid = globals.secCurrentAssociationMasterID;
-	newRec.delete_flag = 0;
-	newRec.edit_date = new Date();
-	newRec.tenant_uuid = globals.secCurrentTenantID;
+	delete_flag = 0;
+	edit_date = new Date();
+	tenant_uuid = globals.secCurrentTenantID;
 	return newRec;
 	//return _super.newRecord(event, location, changeSelection)
 }

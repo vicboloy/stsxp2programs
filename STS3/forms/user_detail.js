@@ -16,6 +16,10 @@ var userName = "";
 function onShow(firstShow, event) {
 	// show usernames with null employee_id in users table and current employee_id
 	userName = user_name;
+	if (user_password != null && user_password != ""){
+		elements.userPass.placeholderText = "********";
+		elements.userPassConf.placeholderText = "********";
+	}
 	var usableIDs = [];
 	usableIDs.push(null);
 	usableIDs.push(globals.secCurrentUserID);

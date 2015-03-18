@@ -13,7 +13,7 @@ var winderList = "";
  */
 function onActionMenu(event,tabName){
 	//application.output(tabName);
-	replaceTabIcon(tabName);
+	//replaceTabIcon(tabName);
 	switch (tabName){
 		case 'edit':
 			elements.split.setLeftForm(forms.sts_nav_edit,null);
@@ -33,6 +33,7 @@ function onActionMenu(event,tabName){
 		default:
 			elements.split.setLeftForm(forms.sts_nav_default,null);
 	}
+	replaceTabIcon(tabName);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -41,47 +42,49 @@ function onActionMenu(event,tabName){
  * @properties={typeid:24,uuid:"1866A7CB-D2A5-4FD5-92FA-ECC35CA24587"}
  */
 function replaceTabIcon(tabName){
-	elements.iFirstL.imageURL = "media:///sts_tab_start_txc.gif";
-	elements.iOne.imageURL = "media:///sts_tab_top_txc.gif";
-	elements.iTwo.imageURL = "media:///sts_tab_top_txc.gif";
-	elements.iThree.imageURL = "media:///sts_tab_top_txc.gif";
-	elements.iFour.imageURL = "media:///sts_tab_top_txc.gif";
-	elements.iFive.imageURL = "media:///sts_tab_top_txc.gif";
-	elements.iHome.imageURL = "media:///sts_text_txc.gif";
-	elements.iEndR.imageURL = "media:///sts_tab_end_txc.gif";
-	elements.iOneTwo.imageURL = "media:///sts_tab_mid_txc.gif";
-	elements.iTwoThree.imageURL = "media:///sts_tab_mid_txc.gif";
-	elements.iThreeFour.imageURL = "media:///sts_tab_mid_txc.gif";
-	elements.iFourFive.imageURL = "media:///sts_tab_mid_txc.gif";
+	var colorSelect = '#b7bcbf';
+	var colorUnSelect = '#e5e5e5';
+	var white = '#ffffff';
+	var black = '#000000'
+	elements.home.bgcolor = colorUnSelect;
+	elements.imports.bgcolor = colorUnSelect;
+	elements.labels.bgcolor = colorUnSelect;
+	elements.reports.bgcolor = colorUnSelect;
+	elements.view.bgcolor = colorUnSelect;
+	elements.edit.bgcolor = colorUnSelect;
+	
+	/**elements.home.fgcolor = black;
+	elements.imports.fgcolor = black;
+	elements.labels.fgcolor = black;
+	elements.reports.fgcolor = black;
+	elements.view.fgcolor = black;
+	elements.edit.fgcolor = black;*/
 	switch (tabName){
 	case 'edit':
-	elements.iOneTwo.imageURL = "media:///sts_tab_mid_txcA.gif";
-	elements.iTwo.imageURL = "media:///sts_tab_top_txcA.gif";
-	elements.iTwoThree.imageURL = "media:///sts_tab_mid_txcB.gif";
+		//elements.edit.fgcolor = white;
+		elements.edit.bgcolor = colorSelect;
 		break;
 	case 'import':
-	elements.iFirstL.imageURL = "media:///sts_tab_start_txcA.gif";
-	elements.iOne.imageURL = "media:///sts_tab_top_txcA.gif";
-	elements.iOneTwo.imageURL = "media:///sts_tab_mid_txcB.gif";
-
+		//elements.imports.fgcolor = white;
+		elements.imports.bgcolor = colorSelect;
 		break;
 	case 'view':
-	elements.iTwoThree.imageURL = "media:///sts_tab_mid_txcA.gif";
-	elements.iThree.imageURL = "media:///sts_tab_top_txcA.gif";
-	elements.iThreeFour.imageURL = "media:///sts_tab_mid_txcB.gif";
+		//elements.view.fgcolor = white;
+		elements.view.bgcolor = colorSelect;
 		break;
 	case 'reports':
-	elements.iThreeFour.imageURL = "media:///sts_tab_mid_txcA.gif";
-	elements.iFour.imageURL = "media:///sts_tab_top_txcA.gif";
-	elements.iFourFive.imageURL = "media:///sts_tab_mid_txcB.gif";
+		//elements.reports.fgcolor = white;
+		elements.reports.bgcolor = colorSelect;
 		break;
 	case 'labels':
-	elements.iFourFive.imageURL = "media:///sts_tab_mid_txcA.gif";
-	elements.iFive.imageURL = "media:///sts_tab_top_txcA.gif";
-	elements.iEndR.imageURL = "media:///sts_tab_end_txcA.gif";
+		//elements.labels.fgcolor = white;
+		elements.labels.bgcolor = colorSelect;
 		break
 	default:
-	elements.iHome.imageURL = "media:///sts_text_txcA.gif";
+		//elements.home.fgcolor = white;
+		elements.home.bgcolor = colorSelect;
+		//elements.home.text = elements.home.text.fontcolor('#ffffff');
+
 }
 
 }
@@ -101,7 +104,7 @@ function onLoadMain(event) {
 	elements.split.rightFormMinSize = 40;
 	elements.split.dividerLocation = 0.80;
 	application.output('current tenant '+globals.secCurrentTenantID);
-	replaceTabIcon('');
+	//replaceTabIcon('');
 
 }
 

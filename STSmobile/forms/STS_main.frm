@@ -4,8 +4,8 @@ extendsID:"72E0B299-FCCD-4C42-8A48-15F726CE17F1",
 items:[
 {
 formIndex:4,
-location:"21,0",
-size:"159,20",
+location:"0,0",
+size:"188,20",
 text:"Main STS Menu Selection",
 transparent:true,
 typeid:7,
@@ -28,6 +28,12 @@ extendsID:"9F957B83-7142-4DB5-BEF2-9BF35E20052B",
 formIndex:2,
 typeid:4,
 uuid:"83549217-B6E7-4528-803C-1CF8CBFAC287"
+},
+{
+extendsID:"E082B205-F6E9-4457-9D80-4E59FA43A491",
+fontType:"Courier New,1,14",
+typeid:7,
+uuid:"9CF96803-C2D1-4CE1-BC68-31E89AF32AA3"
 },
 {
 dataProviderID:"scopes.globals.mobMenuProvider",

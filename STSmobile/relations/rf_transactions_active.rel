@@ -1,0 +1,10 @@
+allowParentDeleteWhenHavingRelatedRecords:false,
+foreignDataSource:"db:/stsservoy/transactions",
+items:[
+{foreignColumnName:"delete_flag",primaryDataProviderID:"LITERAL:0",typeid:23,uuid:"7055CA80-1629-4334-8B53-2938D8CA46A1"}
+],
+joinType:1,
+name:"rf_transactions_active",
+primaryDataSource:"db:/stsservoy/transactions",
+typeid:22,
+uuid:"4CB3E20D-273B-4D6B-B008-2F9E596B4636"

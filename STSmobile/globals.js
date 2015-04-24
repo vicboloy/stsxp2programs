@@ -46,11 +46,15 @@ function onSolutionOpen(){
 	session.login = security.getUserName();
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.tenant_uuid = sec_current_user.tenant_uuid;
+	session.loginId = sec_current_user.user_id;
+	session.loginUserNum = sec_current_user.user_name;
+	session.loginUser = sec_current_user.name_first;
 	session.associationId = globals.secGetAssocID(session.login);//check for use of secGetAssociationID
 	if (session.associationId == null){
 		session.associationId = secGetAssocID(secCurrentUserName);
 	}
 	session.association = m.assocs[session.associationId];
+	getLoggedEmployee(session.loginId);
 	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association
 	//application.output()
 	application.setValueListItems('stsvlg_status_codes',globals.m.statusCodesDiv[session.associationId]); // status codes for this association
@@ -64,6 +68,8 @@ function onSolutionOpen(){
 	// add a job that runs every 20 minutes after the hour (0,20,40)
 	//plugins.scheduler.addCronJob('20mins', '0 0/20 * * * ?', method)
 	// add a job that runs every day at 23:30 between now and 5 days from now
+	globals.DIALOGS.setDialogWidth(200);
+	globals.DIALOGS.setDialogHeight(200);
 	null;
 }
 

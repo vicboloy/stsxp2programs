@@ -135,3 +135,8 @@ form.detail field.pk { /*Style for Fields having a StyleClass "pk" on a form hav
 tabpanel.detail { /*StyleClass for a tabpanel in which a detail form is displayed*/
 	border: 3px solid #FFF;	
 }
+label.dialogs_message { font: 12pt 'Courier New'', Arial, 'Lucida Grande', Helvetica, sans-serif; }
+label.dialogs_icon_generic { background-image: url('media:///dialogs_icon_generic.png'); }
+label.dialogs_icon_info { background-image: url('media:///dialogs_icon_info.png'); }
+label.dialogs_icon_warning { background-image: url('media:///dialogs_icon_warning.png'); }
+label.dialogs_icon_error { background-image: url('media:///dialogs_icon_error0.png'); }

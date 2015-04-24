@@ -1,9 +1,10 @@
-allowCreationRelatedRecords:true,
+allowParentDeleteWhenHavingRelatedRecords:false,
 foreignDataSource:"db:/stsservoy/transactions",
+initialSort:"transaction_start desc",
 items:[
-{foreignColumnName:"idfile_id",primaryDataProviderID:"scopes.globals.mobRepIdfileId",typeid:23,uuid:"2549C324-802F-49E5-B8E3-C227AB6BCB20"}
+{foreignColumnName:"delete_flag",operator:256,primaryDataProviderID:"scopes.globals.SEC_ZERO",typeid:23,uuid:"2549C324-802F-49E5-B8E3-C227AB6BCB20"},
+{foreignColumnName:"idfile_id",primaryDataProviderID:"scopes.globals.mobRepIdfileId",typeid:23,uuid:"99FF40B4-2867-4C1C-8C1D-679DC86D23C0"}
 ],
-joinType:1,
 name:"rf_idfile_to_transaction",
 primaryDataSource:"db:/stsservoy/transactions",
 typeid:22,

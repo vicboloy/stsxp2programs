@@ -13,6 +13,7 @@ name:"job_id"
 allowNull:true,
 creationOrderIndex:27,
 dataType:12,
+flags:4,
 length:36,
 name:"association_id"
 },

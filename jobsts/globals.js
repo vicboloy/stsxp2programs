@@ -126,6 +126,7 @@ var m = {
 	statusCodesDiv : [],	// status codes are by division, and must verify
 	stationsTimed : [], // stationsTimed[status_description_id.UUID] = stationStatusToEndTiming.UUID
 	stationsTimedEnds : [], // stationsTimed[stationStatusToEndTiming.UUID] = status_description_id.UUID
+	statusToProcess : [], // status_code.TXT to process_code.TXT
 	locations : [],		// locations are by division, so only provide those in the division, but don't verify
 	workerList : [],
 	endItem : null
@@ -145,11 +146,45 @@ var flag = {
 	hideEmptyColumns : 1
 }
 /**
+ * @properties={typeid:35,uuid:"F0EF60BB-FDE7-443E-8BD3-56B84B8F551D",variableType:-4}
+ */
+var flagF8 = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"7AB0A51E-6B8F-4761-83C2-7F5DDF9A7FBD"}
+ */
+var f8ReversalText = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"EFE1E7B2-B6F2-4157-94DF-5279FC56245F"}
+ */
+var f8ReversalColor = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"0B27D291-DAAF-4BB1-AF68-FD398CE0EF23"}
+ */
+var flagFunction = null;
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"720544CD-94D6-4976-B305-7513C83A7E7A",variableType:4}
  */
 var flagDELETED = 99;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"3D29A740-08D8-4B36-8DA7-270252599543",variableType:4}
+ */
+var flagACTIVE = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"C324D937-CC01-4971-9154-226385C1A852",variableType:4}
+ */
+var flagSUMMED = 11;
 /**
  * @type {Number}
  *
@@ -192,7 +227,13 @@ var l = {
 var mob = {
 	barcode : "", 		// barcode id.TXT
 	barcodeId : "", 	// barcode_id_id.UUID
+	bundleFS : null,	// bundle query returned from barcodeIsBundle
+	bundleTransFS : null, // bundle transactions
+	bundleId : "",		// bundle id currently active
+	bundleCnt : 0,		// count of idfiles in a bundle
+	bundleWeight : 0.0,	// weight of items in a bundle
 	idfiles : [], 		// idfile_id list
+	idfilesFS : null, 	// idfiles foundset
 	idfile : {}, 		// idfile object, representative of idfiles
 	piecemark : {}, 	// piecemark object 
 	transaction : {}, 	// transaction_object
@@ -202,9 +243,12 @@ var mob = {
 	locationPrev : "",	// previous user enterred location.TXT
 	locationValues : {pieces : 0, weight : 0}, // total values added for location
 	idValues : {total : 0, complete : 0},
+	statusRemove : "", // status on a reversal
 	status : "",
 	statusCode : "", 	// status_code text
 	statusPrev : "", 	// previous status code.TXT for this barcode
+	station : "", // current station for status
+	stationPrev : "", // process station previous to current station
 	workers : "",   		//workers xx.yy.zz from user input
 	timedStatus : false, 	// this is a timed status
 	timedBegStat : "", 	// start status
@@ -212,9 +256,20 @@ var mob = {
 	timedBegin : "",	// start status time
 	timedEnd : "",		// end status time
 	timedDuration : "", // end-begin time duration in seconds
+	timedTotalMin : 0.0, // total time for timed transactions
 	timedError : "", 	// error raised during timed evaluation
 	timedTargetRec : null, // target rec, used for exact field start
 	endItem : null
+}
+/**
+ * @properties={typeid:35,uuid:"156699CD-41A6-4A0A-80BB-F1DC66692C4B",variableType:-4}
+ */
+var processCodes = {
+	all : ['None','Fab Raw Received','Fab Receive','Fab Rel2Fab','Fab Cut','Fab Beam Line','Fab Blasted','Fab Drilled','Fab Layout','Fab Fitup','Fab Welded','Fab 1stInspect','Fab 2ndInspect','Fab 3rdInspect','Fab 4thInspect','Fab Inspected','Fab Fabricated','Fab Paint','Fab Bundled','Fab Move','Fab Transfer','Fab Loading','Fab Loaded','Fab LoadVerify','Fab Ship','Galvanizer Received','Galvanizer Shipped','Galvan LoadVerify','Painter Received','Painter Shipped','Paint LoadVerify','FireProofer Received','FireProofer Shipped','FireProof LoadVerify','Other Received','Other Shipped','Other LoadVerify','Jobsite Received','Jobsite Shipped','Jobsite LoadVerify','Jobsite Inspected','Jobsite Painted','Jobsite Field Work','Jobsite Move','Jobsite Issued','Jobsite Erected'],
+	shipping : ['Fab Transfer','Fab Loading','Fab Loaded','Fab LoadVerify','Fab Ship','Galvanizer Shipped','Galvan LoadVerify','Painter Shipped','Paint LoadVerify','FireProofer Shipped','FireProof LoadVerify','Other Shipped','Other LoadVerify','Jobsite Shipped','Jobsite LoadVerify'],
+	receiving : ['Fab Raw Received','Fab Receive','Galvanizer Received','Painter Received','FireProofer Received','Other Received','Jobsite Received'],
+	transactions : ['Fab Rel2Fab','Fab Cut','Fab Beam Line','Fab Blasted','Fab Drilled','Fab Layout','Fab Fitup','Fab Welded','Fab Fabricated','Fab Paint','Fab Bundled','Fab Move','Jobsite Painted','Jobsite Field Work','Jobsite Move','Jobsite Issued','Jobsite Erected'],
+	inspections : ['Fab 1stInspect','Fab 2ndInspect','Fab 3rdInspect','Fab 4thInspect','Fab Inspected','Jobsite Inspected']
 }
 /**
  * @properties={typeid:35,uuid:"931CE413-8017-4A46-96D6-14D1874745B6",variableType:-4}
@@ -387,11 +442,21 @@ var rfF2Division = "";
 var session = {
 	capture : false,
 	jobNumber : "",
+	jobId : "",
 	association : "",
 	associationId : "",
+	bundlePrefix : "",
 	tenant_uuid : "",
 	worker : "",
-	login : "",
+	login : "", // user login
+	loginUser : "",//user full name/description
+	loginId : 0,
+	loginUserNum : "", // user login number
+	logging : 0,
+	rfLogging : 0,
+	fullName : "",
+	employeeNum : "",
+	employeeId : null,
 	sessionId : "",
 	station : "",
 	program : "",
@@ -404,8 +469,12 @@ var session = {
 	client : "",
 	errorForm : null,  // this is for error window control
 	errorElement : null,
-	errorElementAlt : null
+	errorElementAlt : null,
+	errorReport : false,
+	errorShow : false,
+	endItem : 0
 }
+// errorReport use this to indicate not necessary to report an error on empty input from function 20150416
 /**
  * @properties={typeid:35,uuid:"6225E06A-DBBF-40D2-8DA6-BAD038CECB04",variableType:-4}
  */
@@ -553,6 +622,7 @@ function getStatusDescriptions(){
 	m.stationSeq = [];
 	m.stationsTimed = [];
 	m.stationsTimedEnds = [];
+	m.statusToProcess = [];
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var q = databaseManager.createSelect('db:/stsservoy/status_description');
 	q.result.add(q.columns.status_description_id);
@@ -599,6 +669,7 @@ function getStatusDescriptions(){
 				l.stationsMultiScan.push(descripId);
 			}
 		}
+		m.statusToProcess[status] = record.status_type;
 	}
 }
 /**
@@ -636,8 +707,11 @@ function formVerifyStatus(){
 /**
  * @properties={typeid:24,uuid:"D4132049-A5B7-41D6-A94D-3FCDA0662B3E"}
  */
-function rfF2(formName){
-	//var win = forms.rf_help;
+function rfF2SwitchPlants(){
+	var thisFunction = thisFuncName(arguments.callee.toString());
+	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	if (thisFunction == flagFunction){return}
+	flagFunction = thisFunction;
 	var formName = application.getActiveWindow().controller.getName();
 	globals.mobDisableForm(true);
 	// More than one association?
@@ -656,16 +730,265 @@ function rfF2(formName){
 	application.setValueListItems('rfDivisionList',assocNames);
 }
 /**
+ * @properties={typeid:24,uuid:"36AE54B4-7F0A-427C-A53E-035DE07E8012"}
+ */
+function accessLevel(){
+	/**
+	 * Is this action permitted to the user by 
+	 * company, division, job, piecemark, transaction
+	 * edit, view, create, delete, 
+	 * employee, logins, 
+	 */
+	
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"8227BD97-38DF-4DB0-BF53-B7C13C1FC096"}
+ */
+function rfF8Reversal(){
+	/**
+	 * reverse last record in transaction for scanned barcode
+	 * only employees with same association may reverse the scan
+	 * is there a reversal capability in the employee record
+	 */
+	var formName = application.getActiveWindow().controller.getName();
+	if (mob.statusCode == ""){return}
+	var thisFunction = thisFuncName(arguments.callee.toString());
+	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	var inProgress = (thisFunction == flagFunction); // toggle function
+	flagFunction = (inProgress) ? null : thisFunction;
+	//forms[formName].elements.transShop.transparent = false;
+	//forms[formName].elements.transShop.background = "Yellow";
+	//application.output('form-----'+formName+ ' '+forms[formName].elements.transShop.bgcolor);
+	//var win = application.createWindow('F8',JSWindow.MODAL_DIALOG);
+	//globals.mobDisableForm(false);
+	//functionKeyProcedure[8] = 'globals.rfF8done';
+	//plugins.window.createShortcut('F8',functionKeyProcedure[8]);
+	flagF8 = (flagFunction != null);
+	if (flagF8){
+		f8ReversalText = forms[formName].elements.transShop.text;
+		//f8ReversalColor = forms[formName].elements.transShop.background;
+		forms[formName].elements.transShop.bgcolor = 'Yellow';
+		forms[formName].elements.transShop.text = "Status Reversal "+session.association;
+		forms[formName].controller.focusField('current',false);
+	} else {
+		forms[formName].controller.focusField('status',false);
+		forms[formName].elements.transShop.text = f8ReversalText;
+	}
+	forms[formName].elements.status.enabled = !flagF8;
+	forms[formName].elements.worker.enabled = !flagF8;
+	forms[formName].elements.transShop.transparent = !flagF8;
+}
+/**
+ * @properties={typeid:24,uuid:"C4F226A5-076F-4243-8B89-ED0533A855DB"}
+ */
+function xxxUnusedrfF8done(){
+	var win = application.getWindow();
+	var formName = win.controller.getName();
+	forms[formName].elements.transShop.text = f8ReversalText;
+	//forms[formName].elements.transShop.background = '#f0f0f0';
+	//application.output('----'+formName+' '+f8ReversalText);
+	functionKeyProcedure[8] = 'globals.rfF8Reversal';
+	plugins.window.createShortcut('F8',functionKeyProcedure[8]);
+	flagF8 = false;
+	forms[formName].elements.status.enabled = true;
+	forms[formName].elements.worker.enabled = true;
+}
+/**
+ * @properties={typeid:24,uuid:"7EEC836A-4FFC-4842-A0B6-8E99E066519D"}
+ */
+function rfF8ReversalTransaction(){
+	/**
+	 * get list of transaction for the representative idfileid
+	 * if start transaction, then look for END station and bail
+	 * if end transaction, then look for START station and bail
+	 * 
+	 * remove ENDED transaction if trailer_labor_percent = 0
+	 * edit ENDED transaction trailer_labor_quantity=0 and trailer_labor_percent=0, when trailer_labor_percent = 100
+	 * collect all transaction records with that status
+	 * flag=10 for those status transactions, meaning '1' on to '0' off, DE prefixed
+	 * reset idfile status_description_id upon transaction delete when greatest status deleted
+	 */
+	rfGetTransactions();
+	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
+	var transactions = mob.transactions;
+	var transList = [];
+	var edit = false;
+	var status = mob.statusCode;
+	var stationId = session.stationId;
+	application.output('station id '+stationId);
+	var transStart = ""; var transEnd = "";
+	var fTransStart = (m.stationsTimed[stationId] != undefined);
+	if (fTransStart){transStart = stationId;transEnd = m.stationsTimed[stationId];}
+	var fTransEnd = (m.stationsTimedEnds[stationId] != undefined);
+	if (fTransEnd){transStart = m.stationsTimedEnds[stationId];transEnd = stationId;}
+	var foundIndex = 0;
+	var errorNum = 0;
+	var errorMsg = '';
+	if (fTransStart){
+		application.output('trans start status '+status);
+	}
+	if (fTransEnd){
+		application.output('trans end status '+status);
+	}
+	// start with just status, and report if there is a status not in this division
+	var rec = null;
+	for (var index = 1; index <= transactions.getSize(); index++){
+		rec = transactions.getRecord(index);
+		application.output(index+' REC '+rec.status_description_id+' start '+transStart+' end '+transEnd);
+		if (fTransStart && rec.status_description_id+"" == transEnd+""){
+			errorNum = 412; // this is a delete for a start transaction, but the latest is an end
+			errorMsg = '';
+			break;
+		}
+		if (fTransEnd && rec.status_description_id+"" == transStart+""){
+			errorNum = 413; // this is a delete for an end transaction, but the latest is a start
+			errorMsg = '';
+			break;
+		}
+		var recStatus = m.stations[rec.status_description_id].split(", ")[1];
+		application.output(' remove '+status+' rec status '+recStatus);
+		if (status == recStatus){
+			if (rec.status_description_id+"" == stationId+""){
+				foundIndex = index;
+				break;
+			} else {
+				errorNum = 410; // status found but different division
+				errorMsg = ' Wrong Division.';
+				break;
+			}
+		}
+	} 
+	application.output('idfiles '+mob.idfiles);
+	if (errorNum != 0){
+		// raise error button
+		application.output('error reversal '+errorNum);
+		errorDialogMobile('rf_transactions.current',errorNum,'current',errorMsg);
+		return null;
+	}
+	if (foundIndex == 0){
+		// status not found error
+		errorDialogMobile('rf_transactions.current',409,'current',null);
+		application.output('error reversal status not found');
+		return null;
+	}
+	// should be at least one idfile and one transaction record
+	var transTime = rec.transaction_date;
+	var tenantId = rec.tenant_uuid;
+	application.output('reversal of record '+rec);
+	//if (true){return transactions;}
+	var transactionsFS = rfUpdateableTransactions(transTime);
+	var tranRevDate = new Date();
+	var workerId = session.employeeId;
+	var formName = application.getActiveWindow().controller.getName();
+	var worker = forms[formName].statusWorker;
+	if (worker != "" && worker != null){
+		worker = worker.split('.')[0];
+		workerId = getLoggedEmployeeId(worker);
+	}
+	var removeStatus = 'DE'+status;
+	application.output(worker+' id '+workerId+' tranrevdate '+tranRevDate+' '+removeStatus+' location ')
+	var fsUpdater = databaseManager.getFoundSetUpdater(transactionsFS);
+	var fTimed = (fTransStart || fTransEnd);
+	if (fTransEnd){ // error message with end timed labor percentage = 100
+		var fResetTimed = (rec.trailer_labor_percentage >= 100);
+		if (fResetTimed){
+			fsUpdater.setColumn('trailer_labor_percentage',0);
+			fsUpdater.setColumn('trailer_labor_quantity',0);
+			fsUpdater.performUpdate(); //411 100% complete Removed From the STOP Status Code.
+			errorDialogMobile('rf_transactions.current',411,'current',null);
+			return null;
+		}
+	}
+	fsUpdater.setColumn('trans_status',removeStatus);
+	fsUpdater.setColumn('trans_reversal_date',tranRevDate);
+	fsUpdater.setColumn('trans_reversal_worker',workerId);
+	fsUpdater.setColumn('delete_flag',10);
+	fsUpdater.performUpdate();
+	fsUpdater = null;
+	
+	// update all idfiles with those transactions
+	var maxStatus = "";
+	var idfilesFS = rfUpdateableIdfiles(mob.idfiles);
+	if (idfilesFS != null){
+		maxStatus = rfValidLastMaxStatus(mob.idfiles[0]);
+	}
+	var rec = idfilesFS.getRecord(1);
+	var currentStatus = rec.status_description_id;
+	var currentLocation = rec.location;
+	var formName = application.getActiveWindow().controller.getName();
+	var statusLocation = forms[formName].statusLocation;
+	application.output('location '+statusLocation);
+	if ((currentStatus != maxStatus) || (currentLocation != statusLocation)){
+		var fsUpdaterIds = databaseManager.getFoundSetUpdater(idfilesFS);
+		if (currentStatus != maxStatus){
+			fsUpdaterIds.setColumn('status_description_id',maxStatus);
+		}
+		if (currentLocation != statusLocation){
+			fsUpdaterIds.setColumn('id_location',statusLocation);
+		}
+		fsUpdaterIds.performUpdate();
+		fsUpdaterIds = null;
+	}
+	return null;
+}
+/**
+ * @properties={typeid:24,uuid:"09B2552B-094C-46F8-BF8A-E71D1359F39A"}
+ */
+function rfF8ReversalPrep(){
+	/** 
+	 * get list of transactions for the representative idfileId
+	 * select status name of last transaction
+	 * update button
+	 */
+	var transactions = rfLatestTransaction(mobRepIdfileId);
+	var transSize = transactions.getSize();
+	var removal = (transSize != 0);
+	if (!removal){return}
+	var rec = transactions.getRecord(1);
+	if (transSize > 1){
+		var recPrev = transactions.getRecord(2);
+		mob.stationPrev = recPrev.status_description_id;
+		mob.statusPrev = recPrev.trans_status;
+	} else {
+		mob.stationPrev = "";
+		mob.statusPrev = "";
+	}
+	//var date = rec.transaction_start;
+	//var stat = rec.trans_status;
+	//mob.statusRemove = stat;
+	var id = mob.barcode;
+}
+/**
  * TODO generated, please specify type and doc for the params
  * @param formName
  *
  * @properties={typeid:24,uuid:"CBC34BCA-57A6-4FC7-8758-6A0EED302D1E"}
  */
-function rfF3(formName){
-	var formName = application.getActiveWindow().controller.getName();
-	var vis = (forms[formName].elements.tablessHistory.visible == true);
-	forms[formName].elements.tablessHistory.visible = !vis;
-	forms[formName].elements.tablessHistory.enabled = !vis;
+function rfF3(){
+	application.output(flagFunction);
+	//flagFunction = null;
+	var thisFunction = thisFuncName(arguments.callee.toString());
+	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	var inProgress = (thisFunction == flagFunction); // toggle function
+	flagFunction = (inProgress) ? null : thisFunction;
+	var win = application.getWindow('Transaction List');
+	if (!win){
+		win = application.createWindow('Transaction List',JSWindow.MODAL_DIALOG);
+		win.setLocation(0,0);
+		win.setSize(240,300);
+		win.show('rf_list_trans');
+	} else {
+		if (win.isVisible()){
+			//flagFunction = false;
+			win.hide();
+			onReturnFromFunction();
+		} else {
+			win.show('rf_list_trans');
+		}
+	}
 }
 /**
  * @properties={typeid:24,uuid:"8FD4F0A8-6EB3-4DF9-A497-54CED9E73075"}
@@ -679,6 +1002,11 @@ function rfF2done(){
 	forms[formName].elements.elDivisionChg.visible = false;
 	forms[formName].elements.elDivisionChg.enabled = false;
 	forms[formName].setTransShop();
+	var f2Status = rfStatusCheck(mob.statusCode);
+	if (f2Status == null){
+		forms[formName].statusCode = "";
+	}
+	flagFunction = null;
 }
 /**
  * @properties={typeid:24,uuid:"FC6E1F7D-8B10-40CB-BF2F-A3426230795B"}
@@ -689,6 +1017,8 @@ function rfAppliesToWindow(){
 		case 'rf_transactions':
 			
 			formVerifyStatus();
+			break;
+		case 'rf_bundles':
 			break;
 		default:
 			break;
@@ -769,26 +1099,37 @@ function getLoggedEmployee(userId){
 	var e = databaseManager.getFoundSet('db:/stsservoy/employee');
 	if (e.find()){
 		e.employee_userid = userId;
-		e.tenant_uuid = tenantIDmobile;
+		e.tenant_uuid = session.tenant_uuid;
 		if (e.search()){
-			var record = e.getRecord(1);
-			var userId_uuid = e.employee_username;
-			/** @type {JSFoundSet<db:/stsservoy/users>} */
-			var f = databaseManager.getFoundSet('db:/stsservoy/users');
-			if (f.find()){
-				f.user_id = e.employee_userid;
-				f.tenant_uuid = e.tenant_uuid;
-				if (f.search()){
-					session.login = f.user_name;
-				}
-			} else {
-				session.login = e.employee_userid;
-			}
-			session.capture = e.employee_rf_logging;
-			return record.employee_id;
+			var rec = e.getRecord(1);
+			session.fullName = e.employee_firstname+" "+e.employee_lastname;
+			session.employeeId = e.employee_id;
+			session.employeeNum = e.employee_number;
+
 		}
 	}
 	return null;
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param userNum
+ *
+ * @properties={typeid:24,uuid:"BC63FCC9-A76E-45D3-9938-AD21BC2AA2A7"}
+ */
+function getLoggedEmployeeId(userNum){
+	/** @type {JSFoundSet<db:/stsservoy/employee>} */
+	var e = databaseManager.getFoundSet('db:/stsservoy/employee');
+	if (e.find()){
+		e.employee_number = userNum;
+		e.tenant_uuid = session.tenant_uuid;
+		if (e.search()){
+			var rec = e.getRecord(1);
+			return e.employee_id;;
+		}
+	}
+	return null;	
 }
 /**
  * @properties={typeid:24,uuid:"9B25006C-CD80-4F3D-9987-C58C24C47CB8"}
@@ -906,6 +1247,8 @@ function checkBarcode(barcode) {
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() == 1){
 		var rec = resultQ.getRecord(1);
+		mob.barcodeId = rec.id_serial_number_id;
+		mobIdSerialId = rec.id_serial_number_id; // setup global relation for barcode uuid
 		return rec.id_serial_number_id;
 	}
 	
@@ -962,8 +1305,26 @@ function barcodePercentage(){
 /**
  * @properties={typeid:24,uuid:"9AEC15DA-ED62-4C71-B98E-06B11C83FE75"}
  */
-function barcodeIsBundle(){
-	return false;
+function barcodeIsBundle(bundleId){
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.bundle_id);
+	q.result.add(q.columns.id_location);
+	q.result.add(q.columns.piecemark_id);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.bundle_id.eq(bundleId))
+		);
+	var resultQ = databaseManager.getFoundSet(q);
+	var size = resultQ.getSize();
+	mob.bundleFS = resultQ;
+	if (size == 0){
+		return false; 
+	}
+	return true;
 }
 /**
  * @properties={typeid:24,uuid:"FE02DF5C-B741-4312-A1B7-DEC334AE6F9F"}
@@ -1089,8 +1450,8 @@ function rfCheckRouteOrder(){
 	/**if (m.stationsTimedEnds[stationId]){//if it is a timed end station, then allow it in the route too
 		allowInRoute = (checkLegs.indexOf(m.stationsTimedEnds[stationId]+"") != -1);//implicit route membership for timed status
 	}*/
-	if (!allowInRoute){
-		var missing = "("+m.stations[session.stationId]+")";
+	if (!allowInRoute && !allowMoreCodes){
+		missing = "("+m.stations[session.stationId]+")";
 		errorDialogMobile('rf_transactions.current','431','current',missing);// 431 This Routing Code Does Not Allow This Status.
 		return false;
 	}
@@ -1102,7 +1463,7 @@ function rfCheckRouteOrder(){
 	// route transactions: checkLegs[index]=(status_description_id...)
 	var routingOk = true;
 	var routeSkip = (checkLegs.indexOf(session.stationId) == -1);
-	var missing = "";
+	missing = "";
 	if (routeId && !routeSkip){
 		//var index = (allowMoreCodes) ? checkLegs.indexOf(session.stationId) : checkLegs.length-1;
 		/**
@@ -1124,10 +1485,6 @@ function rfCheckRouteOrder(){
 			index++;
 		}
 	}
-	if (!routingOk){
-		application.output('Routing not ok');
-		errorDialogMobile('rf_transactions.current','405','current',missing);//405 
-	}
 	//return writeTransRecord && routingOk;
 	return routingOk;
 }
@@ -1140,15 +1497,19 @@ function rfCheckRouteOrder(){
 function rfChangeWindow(event,winName){
 	var currWin = application.getActiveWindow();
 	switch(winName)	{
-		case 'Transactions':
-			session.program = 'Transactions';
-			currWin.show('rf_transactions');
-			break;
-		case 'Exit':
-			//globals.rfExitMobileClient();
-			showExecLogout();
-			application.output('exiting');
-			break;
+	case 'Build Bundles':
+		session.program = 'Build Bundles';
+		currWin.show('rf_bundles');
+		break;
+	case 'Transactions':
+		session.program = 'Transactions';
+		currWin.show('rf_transactions');
+		break;
+	case 'Exit':
+		//globals.rfExitMobileClient();
+		showExecLogout();
+		application.output('exiting');
+		break;
 	default:
 	}
 }
@@ -1197,6 +1558,8 @@ function rfDelayFunction(funcName){
  */
 function rfFunctionKeys(screen){
 	globals.mobProg = screen;
+	var dex = 0;
+	var fKey = "";
 	for (var index=0;index < 13;index++){
 		if (index > 0 && index < 11){
 			plugins.window.createShortcut('F'+index,globals.noOperation);
@@ -1207,10 +1570,12 @@ function rfFunctionKeys(screen){
 	plugins.window.createShortcut('F10','globals.showExecLogout');
 	functionKeyProcedure[10] = 'globals.showExecLogout';
 	functionKeyDescrip = ['Help Selection or use FKey','F1 - Help','F2 - ','F3 - ','F4 - ','F5 - ','F6 - ','F7 - ','F8 - ','F9 - ','F10 - Exit','11','12'];
-	functionKeyDescrip[11] = 'xxx Logout';
-	functionKeyProcedure[11] = 'globals.rfLogout';
-	functionKeyDescrip[12] = 'xxx Return to OS';
-	functionKeyProcedure[12] = 'globals.rfExitBrowser';
+	dex = 11;
+	functionKeyDescrip[dex] = 'xxx Logout';
+	functionKeyProcedure[dex] = 'globals.rfLogout';
+	dex = 12;
+	functionKeyDescrip[dex] = 'xxx Return to OS';
+	functionKeyProcedure[dex] = 'globals.rfExitBrowser';
 	//functionKeyProcedure[3] = '';
 	//functionKeyProcedure[8] = '';
 	//functionKeyProcedure[9] = '';
@@ -1220,15 +1585,46 @@ function rfFunctionKeys(screen){
 			globals.mobForm = "STS_main";
 			break;
 		case 'rf_transactions':
+		case 'Transactions':
 			globals.mobForm = "rf_transactions";
-			functionKeyDescrip[2] = 'F2 - Switch Plants';
-			functionKeyProcedure[2] = 'globals.rfF2';
-			plugins.window.createShortcut('F2','globals.rfF2');
-			functionKeyDescrip[3] = 'F3 - List History'
-			functionKeyProcedure[3] = 'globals.rfF3';
-			plugins.window.createShortcut('F3','globals.rfF3');
-			functionKeyDescrip[8] = 'F8 - Remove Status'
-			functionKeyDescrip[9] = 'F9 - Inspection Doc'
+			dex = 2;
+			functionKeyDescrip[dex] = 'F2 - Switch Plants';
+			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
+			plugins.window.createShortcut('F2',functionKeyProcedure[dex]);
+			dex = 3;
+			functionKeyDescrip[dex] = 'F3 - List History'
+			functionKeyProcedure[dex] = 'globals.rfF3';
+			plugins.window.createShortcut('F3',functionKeyProcedure[dex]);
+			dex = 8;
+			functionKeyDescrip[dex] = 'F8 - Remove Status'
+			functionKeyProcedure[dex] = 'globals.rfF8Reversal';
+			plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
+			dex = 9;
+			functionKeyDescrip[dex] = 'F9 - Inspection Doc'
+			break;
+		case 'rf_bundles':
+		case 'Build Bundles':
+			globals.mobForm = "rf_bundles";
+			dex = 2;
+			functionKeyDescrip[dex] = 'F2 - Switch Plants';
+			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
+			plugins.window.createShortcut('F2',functionKeyProcedure[dex]);
+			dex = 4;
+			functionKeyDescrip[dex] = 'F4 - Clear Bundle Pieces';
+			functionKeyProcedure[dex] = 'globals.rfF4BundleClear';
+			plugins.window.createShortcut('F4',functionKeyProcedure[dex]);
+			dex = 5;
+			functionKeyDescrip[dex] = 'F5 - Print Bndl Labels';
+			//functionKeyProcedure[dex] = 'globals.rfF5BundlePrint';
+			plugins.window.createShortcut('F5',functionKeyProcedure[dex]);
+			dex = 6;
+			functionKeyDescrip[dex] = 'F6 - Print Bundle List';
+			//functionKeyProcedure[dex] = 'globals.rfF6BundlePrintList';
+			plugins.window.createShortcut('F6',functionKeyProcedure[dex]);
+			dex = 8;
+			functionKeyDescrip[dex] = 'F8 - Remove From Bundle';
+			functionKeyProcedure[dex] = 'globals.rfF8BundleRemoveFrom';
+			plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
 			break;
 		default:
 			
@@ -1237,7 +1633,9 @@ function rfFunctionKeys(screen){
 	functionKeyProvider = "";
 	var funcList = [];
 	for (index = 0;index < functionKeyDescrip.length;index++){
-		funcList.push(functionKeyDescrip[index])
+		if (functionKeyDescrip[index].length != 5){
+			funcList.push(functionKeyDescrip[index]);
+		}
 	}
 	application.setValueListItems('vl_HelpMenu',funcList);
 }
@@ -1296,6 +1694,7 @@ function rfGetBarcodeIdfiles(){
 			.add(q.columns.id_serial_number_id.eq(mob.barcodeId))
 		);
 	var resultQ = databaseManager.getFoundSet(q);
+	mob.idfilesFS = resultQ;
 	scopes.globals.fsBarcodeIdfiles = resultQ;
 	var idfileIdList = [];
 	var index = 1;
@@ -1465,8 +1864,10 @@ function rfErrorShow(message){
  * @properties={typeid:24,uuid:"376C6315-A576-4572-AD5F-9208DDF1E543"}
  */
 function rfErrorHide(event) {
-	//var formName = application.getActiveWindow().controller.getName();
 	var formName = session.errorForm;
+	if (!formName){
+		formName = application.getActiveWindow().controller.getName(); // 20150402 in case this is called outside current window
+	}
 	var elName = session.errorElement;
 	if (session.errorElementAlt != null){
 		elName = session.errorElementAlt;
@@ -1486,6 +1887,7 @@ function rfErrorHide(event) {
 		session.errorElement = null;
 		session.errorElementAlt = null;
 	}
+	session.errorShow = false;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1493,7 +1895,8 @@ function rfErrorHide(event) {
  *
  * @properties={typeid:24,uuid:"6FC164A9-4B95-4767-9C50-525B8C81B063"}
  */
-function rfEmptyStayField(event){
+function onEmptyStayField(event){
+	if (flagF8){return}
 	var formName = event.getFormName();
 	var elName = event.getElementName();
 	var entry = event.getSource().getDataProviderID();
@@ -1522,7 +1925,7 @@ function rfEmptyNextField(event,elName){
  *
  * @properties={typeid:24,uuid:"9F12D05A-CD94-451C-B0D6-C2BBC656849C"}
  */
-function rfSetCurrentFocus(event){
+function onSetCurrentFocus(event){
 	var formName = event.getFormName();
 	var elName = event.getElementName();
 	if (forms[formName].elements.errorWindow.visible == true){
@@ -1545,6 +1948,7 @@ function rfSetCurrentFocus(event){
 function getMenuList(){
 	var progList = new Array;
 	progList.push('Transactions ');
+	progList.push('Build Bundles');
 	progList.push('Exit');
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
 	application.setValueListItems('rfProgramList',progList);
@@ -1684,9 +2088,9 @@ function rfGetPiecesScanned(piecemarkId, sLocation, statusId){
  * @param oldValue
  * @param newValue
  * @param event
- * @properties={typeid:24,uuid:"6BC89657-3F7E-42EE-88B4-21420F8D196A"}
+ * @properties={typeid:24,uuid:"F2B54073-E690-4AE1-9E9B-9141E1CCE321"}
  */
-function xxxonDataChangeBarcode(oldValue, newValue, event){
+function xxxUnused2onDataChangeBarcode(oldValue, newValue, event){
 	var scannedID = newValue;
 	var form = forms[event.getFormName()];
 	stayField = (scannedID != "EXIT");
@@ -1770,17 +2174,40 @@ function xxxonDataChangeBarcode(oldValue, newValue, event){
  *
  * @properties={typeid:24,uuid:"26985B1F-17E8-4514-8F2A-6FF5FFBAA236"}
  */
-function rfGetStatusChange(oldValue, newValue, event) {
-	plugins.scheduler.removeJob('updateField')
+function onDataChangeStatus(oldValue, newValue, event) {
+	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	session.userEntry = newValue;
-	if (m.statusCodesDiv[session.associationId].indexOf(newValue) == -1){
+	//plugins.scheduler.removeJob('updateField')
+	var formName = application.getActiveWindow().controller.getName();
+	/**if (flagF8){
+		//var formName = event.getFormName();
+		forms[formName].statusCode = "";
+		return true;
+	}*/ // 20150402 for errors originating from input fields
+	var statusCheck = rfStatusCheck(newValue);
+	if (statusCheck == null){
 		errorDialogMobile(event,'401','status');//401: This is not a valid status code
-		var formName = event.getFormName();
-		forms[formName].resetStatusCode();
+		//var formName = event.getFormName();
+		onFocusClear(event);
+		//forms[formName].resetStatusCode();
 		return true;
 	}
+	var permitted = [];
+	switch (formName){
+		case 'rf_transactions':
+			permitted = processCodes.transactions;
+			break;
+		case 'rf_bundles':
+			permitted = ['Fab Bundled'];
+			if (permitted.indexOf(m.statusToProcess[newValue]) == -1){
+				errorDialogMobile(event,'404','status');//404 This Is Not A Valid Status Code For This Screen / Operation.
+				onFocusClear(event);
+				return true;	
+			}
+			break;
+		default:
+	}
 	mob.statusCode = newValue;
-	logger(false,'Status OK');
 	session.stationId = m.stations[session.associationId+', '+mob.statusCode];
 	globals.rfEmptyNextField(event,'location');
 	return true;
@@ -1793,6 +2220,7 @@ function rfGetStatusChange(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"D4DB847F-AB68-451C-B4FE-9E20C9EA487F"}
  */
 function onFocusLost(event) {
+	if (session.errorShow){return}//don't show next field if error button active
 	var formName = event.getFormName();
 	var elName = event.getElementName();
 	var entry = event.getSource().getDataProviderID();
@@ -1809,12 +2237,15 @@ function onFocusLost(event) {
  * @properties={typeid:24,uuid:"91F45752-C164-4AEB-ACDD-12D9E8AFC20A"}
  */
 function onFocusClear(event) {
+	if (session.errorShow){return}//don't show next field if error button active
 	var formName = event.getFormName();
 	var elName = event.getElementName();
 	var entry = event.getSource().getDataProviderID();
 	var variable = forms[formName];
-	var value = variable[entry];
-	value = "";
+	//var value = variable[entry];
+	//value = "";
+	variable[entry] = '';
+	forms[formName].controller.focusField(elName,true);
 }
 /**
  * @AllowToRunInFind
@@ -1846,6 +2277,122 @@ function onStartLoadPrefs(){
 		}
 
 	}
+}
+/**
+ * @param oldValue
+ * @param newValue
+ * @param event
+ * @properties={typeid:24,uuid:"6BC89657-3F7E-42EE-88B4-21420F8D196A"}
+ */
+function xxxUnusedonDataChangeBarcode(oldValue, newValue, event) {
+	///elements.current.requestFocus();
+	var formName = event.getFormName();
+	var scannedID = newValue;
+	stayField = (scannedID != "EXIT");
+	//application.output('stay field '+stayField);
+	globals.session.userEntry = scannedID;
+	forms[formName].elements.location.enabled = true;
+	forms[formName].elements.status.enabled = true;
+	forms[formName].elements.worker.enabled = true;
+	var barcodeId = globals.checkBarcode(scannedID);
+	if (!barcodeId){
+		currentID = "";
+		//globals.rfErrorShow('Barcode does not exist');
+		globals.errorDialogMobile(event,'701','current');//701 This ID Number was not found.
+		globals.logger(true,'Barcode does not exist.');
+		return true;
+	}
+	currentID = "";
+	forms[formName].foundset.clear();
+	globals.mob.barcode = scannedID;
+	globals.mob.barcodeId = barcodeId;
+	globals.mobIdSerialId = globals.mob.barcodeId; // setup global variable for division relation
+	if (typeof statusLocation === 'undefined'){statusLocation = ""}
+	if (typeof statusWorker === 'undefined'){statusWorker = ""}
+	globals.mob.locationArea = statusLocation;
+	globals.mob.workers = statusWorker;
+	lastID = scannedID;
+
+	globals.rfGetBarcodeIdfiles()
+	if (!globals.barcodeAttached()){
+		application.output('ERROR: Database inconsistent with barcode');//errortypeneeded
+		globals.errorDialogMobile(event,'6002','current');//6002 This item has no associated piecemark.
+		globals.logger(true,'No idfiles for this barcode.');
+		currentID = "";
+		globals.mobPreviousLocation = "";
+		globals.mobPreviousStatus = "";
+		globals.mobLocationPieces = 0;
+		globals.mobLocationWeight = 0;
+		globals.mobItemPieces = "";
+		return true;
+	}
+	
+	globals.rfGetMobIdfile();
+	globals.rfGetMobPiecemark(); // Get piecemark record
+	if (!globals.barcodePlant()){
+		globals.errorDialogMobile(event,'6001','current');//6001 This item doesn't belong to this Division.
+		globals.logger(true,'Piecemark is in the wrong plant.');
+		return true;
+	}
+	if (!globals.barcodePercentage()){ // stubbed
+		globals.errorDialog(event,'-1');
+		return true;
+	}
+	// Load up the idfiles
+	forms[formName].controller.loadRecords(databaseManager.convertToDataSet(globals.mob.idfiles)); // mob.idfiles
+	// Get representative idfile record 1 of n
+	//globals.rfGetMobIdfile();
+	//globals.rfGetMobPiecemark(); // Get piecemark record
+	globals.rfGetTransactionList(globals.mob.idfile);
+	var onHold = globals.barcodeOnHold(); //first check 1/29/2015 pp 
+	if (onHold){
+		globals.errorDialogMobile(event,'1050','current');//1050 One or more of the ID Numbers are on Hold.
+		globals.logger(true,'Idfile reports item on hold.');
+		return true;
+	}
+	var bundle = globals.barcodeIsBundle(); //stubbed
+	switch (formName){
+		case 'rf_transactions': {
+			var routeOK = globals.rfCheckRouteOrder(); // route checks out 
+			if (!routeOK){
+				return true;
+			}
+			var shipStat = globals.barcodeShip(); 
+			if (globals.rfTimed() && globals.mob.timedError != ""){
+				globals.errorDialogMobile(event,globals.mob.timedError,'current');
+				globals.logger(true,'Timed status error'+globals.mob.timedError);
+				return true;
+			}
+			saveScanTransaction();
+			break;
+		}
+		/**case 'rf_reversal' : {
+			forms['rf_reversal'].currentID = "";
+			rfF8ReversalPrep();
+			break;
+		}*/
+		default:{}
+		
+	}
+	currentID = "";
+	
+	//elements.current.requestFocus();
+	return true;
+}
+/**
+ * @properties={typeid:24,uuid:"19986C50-79D2-41A1-A028-B7C60EF3A541"}
+ */
+function saveScanTransaction(){
+	var status = rfSaveScanTransaction(mob.barcode,session.stationId,mob.locationArea);
+	currentID = '';
+	globals.rfGetLocationStats(mob.locationArea);
+	globals.rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea, statusId);
+	globals.mobPreviousLocation = mob.locationPrev;
+	globals.mobPreviousStatus = mob.statusPrev;
+	globals.mobLocationPieces = mob.locationValues.pieces;
+	globals.mobLocationWeight = mob.locationValues.weight;
+	globals.mobItemPieces = globals.mob.idValues.complete+" / "+scopes.globals.mob.idValues.total;
+	null;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1938,8 +2485,10 @@ function rfGetTransactions(){
  *
  * @properties={typeid:24,uuid:"F9C47BF5-F1BE-46D1-82FF-C80A0246CBEF"}
  */
-function rfGetWorker(oldValue, workers, event){
-	if (workers == ""){
+function onDataChangeWorker(oldValue, workers, event){
+	if (onDataChangeFixEntry(oldValue,workers,event)){return true;}
+	session.userEntry = workers;
+	if (workers == "" || workers == null){
 		forms.rf_transactions.controller.focusField('current',true);
 		return true
 	}
@@ -2094,6 +2643,12 @@ function rfTimed(){
 					return true;
 				}
 			}
+			if (rec.trans_status == mob.timedEndStat){
+				if (rec.trailer_labor_percentage >= 100){
+					mob.timedError = "407"; // cannot start timed transaction once labor is at 100%, was 1122
+					return true;
+				}
+			}
 		}
 		mob.timedBegin = new Date();
 		mob.timedTargetRec = null;
@@ -2101,19 +2656,41 @@ function rfTimed(){
 	}
 	if (rfStatusEnd()){
 		mob.timedStatus = true;
+		var endDate = new Date(); // for consistency across all idfiles for the piecemark 20150403
 		//x cannot end once ended
 		//x cannot end if not started
+		mob.timedTotalMin = 0;
 		for (index = 1;index <= mob.transactions.getSize();index++){
 			/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 			var rec = mob.transactions.getRecord(index);
-			//application.output(rec); // look for all unfinished starts, not just ascending first
+			application.output(rec);
+			if (rec.trans_status != mob.timedEndStat){continue}
+			if (rec.trailer_labor_percentage == 100.0){break}
+			application.output('timed rec adding '+rec);
+			mob.timedTotalMin = mob.timedTotalMin*1+rec.transaction_duration*1;
+			application.output('mob total min '+mob.timedTotalMin);
+		}
+		for (index = 1;index <= mob.transactions.getSize();index++){
+			/** @type {JSFoundSet<db:/stsservoy/transactions>} */
+			var rec = mob.transactions.getRecord(index);
+			application.output('xxx transaction '+rec); // look for all unfinished starts, not just ascending first
 			if (rec.trans_status == mob.timedBegStat){
 				if (rec.transaction_end == null){ // ok to end transaction
 					mob.timedBegin = rec.transaction_start;
-					mob.timedEnd = new Date();
+					mob.timedEnd = endDate;
 					mob.timedDuration = getMinutesDuration(mob.timedBegin,mob.timedEnd);
+					mob.timedTotalMin = mob.timedTotalMin*1 + mob.timedDuration*1;
 					mob.timedTargetRec = rec;
 					mob.timedError = "";
+					mob.percent = 0;
+					message = 'Total Min:'+Math.ceil((mob.timedTotalMin+0.005)*100)/100+'\nCycle Min:'+Math.ceil((mob.timedDuration*1+0.005)*100)/100+'\nComplete?';
+					globals.DIALOGS.setDialogWidth(200);
+					globals.DIALOGS.setDialogHeight(200);
+					var response = globals.DIALOGS.showQuestionDialog('End of Timed Cycle', message, 'NO', 'yes');
+					if (response == 'yes'){
+						mob.percent = 100;
+					}
+					application.output('message '+message+' response '+response);
 					return true;
 				} else {
 					mob.timedError = "1131"; // status already ended, cannot end
@@ -2131,8 +2708,16 @@ function rfTimed(){
  */
 function rfActivity(){
 	var formName = application.getActiveWindow().controller.getName();
-	if (formName == 'rfTransactions'){return "M"}
-	return "M";
+	switch (formName) {
+		case 'rf_transactions':
+			return "M";
+			break;
+		case 'rf_bundles':
+			return 'M';
+			break;
+		default:
+			return 'M';
+	}
 }
 /**
  * @properties={typeid:24,uuid:"D29E4090-7D67-4599-8AC7-B0E08AC74EBD"}
@@ -2190,6 +2775,157 @@ function rfStsLocation(transcode){
 	if (utils.stringPatternCount(transcode,'JOB') > 0) {return 'JOBSITE'}
 	if (utils.stringPatternCount(transcode,'FAB') > 0) {return 'FABRICATOR'}
 	return 'OTHERWISE';
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param singleIdfileId
+ *
+ * @properties={typeid:24,uuid:"C05D08B2-3825-4528-8EDB-BF6B309F0D62"}
+ */
+function rfLatestTransaction(singleIdfileId){
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.result.add(q.columns.trans_id);
+	q.result.add(q.columns.trans_code);
+	q.result.add(q.columns.transaction_start);//added 20150402
+	q.result.add(q.columns.transaction_end);
+	q.result.add(q.columns.transaction_duration);
+	q.result.add(q.columns.employee_id);
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.trans_status);
+	q.sort.add(q.columns.transaction_start.desc);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.idfile_id.eq(singleIdfileId))
+			//.add(q.columns.trans_status.eq(mob.timedBegStat))
+			//.add(q.columns.transaction_start.eq(mob.timedTargetRec.transaction_start))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	return resultQ;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param transactionDate
+ *
+ * @properties={typeid:24,uuid:"FB97A401-EB5A-4D6B-A456-7EC3D4AD7BBF"}
+ */
+function rfUpdateableTransactions(transactionDate){
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.result.add(q.columns.trans_id);
+	q.result.add(q.columns.trans_code);
+	q.result.add(q.columns.transaction_start);//added 20150402
+	q.result.add(q.columns.transaction_end);
+	q.result.add(q.columns.transaction_duration);
+	q.result.add(q.columns.employee_id);
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.trans_status);
+	q.sort.add(q.columns.transaction_start.desc);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			//.add(q.columns.idfile_id.eq(singleIdfileId))
+			//.add(q.columns.trans_status.eq(mob.timedBegStat))
+			.add(q.columns.transaction_date.eq(transactionDate))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	return resultQ;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param idfileArray
+ *
+ * @properties={typeid:24,uuid:"06BA1BBE-0574-4EF5-B238-1F0EB1972513"}
+ */
+function rfUpdateableIdfiles(idfileArray){
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.status_description_id);
+	q.result.add(q.columns.id_location);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.idfile_id.isin(idfileArray))
+		);
+	var resultQ = databaseManager.getFoundSet(q);
+	return resultQ;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param status
+ *
+ * @properties={typeid:24,uuid:"C1310DF0-DB99-4448-8D56-BB9A316A4CB4"}
+ */
+function rfLatestTransactionSet(status){
+	/**
+	 * is this a timed transaction
+	 * is this an end timed transaction
+	 * is this a beginning timed transaction
+	 * 
+	 */
+	var singleIdfileId = mob.idfile.idfile_id;
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.result.add(q.columns.trans_id);
+	q.result.add(q.columns.trans_code);
+	q.result.add(q.columns.transaction_start);//added 20150402
+	q.result.add(q.columns.transaction_end);
+	q.result.add(q.columns.transaction_duration);
+	q.result.add(q.columns.employee_id);
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.trans_status);
+	q.sort.add(q.columns.transaction_start.desc);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.idfile_id.eq(singleIdfileId))
+			.add(q.columns.trans_status.eq(status))
+			//.add(q.columns.transaction_start.eq(mob.timedTargetRec.transaction_start))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	return resultQ;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param idfileIdListOrNull
+ *
+ * @properties={typeid:24,uuid:"EA2F24F2-9860-46F4-A83B-3935FD7668A8"}
+ */
+function rfLatestTransactions(idfileIdListOrNull){
+	var idfileList = (typeof idfileIdListOrNull === 'undefined') ? mob.idfiles : idfileIdListOrNull;
+	var transactions = rfLatestTransaction(mobRepIdfileId);
+	if (transactions.getSize() == 0) {return transactions}
+	var rec = transactions.getRecord(1);
+	var start = rec.transaction_start;
+	var stat = rec.trans_status;
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.result.add(q.columns.trans_id);
+	q.result.add(q.columns.trans_code);
+	q.result.add(q.columns.transaction_end);
+	q.result.add(q.columns.transaction_duration);
+	q.result.add(q.columns.employee_id);
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.trans_status);
+	q.sort.add(q.columns.transaction_start.desc);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+			.add(q.columns.idfile_id.isin(idfileList))
+			.add(q.columns.trans_status.eq(stat))
+			.add(q.columns.transaction_start.eq(start))
+			//.add(q.columns.trans_status.eq(mob.timedBegStat))
+			//.add(q.columns.transaction_start.eq(mob.timedTargetRec.transaction_start))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	return resultQ;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -2264,6 +3000,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	//skip if status already recorded
 	var date = new Date();
 	var currentWorkers = [];
+	if (!mob.workers){mob.workers = ''}
 	var workers = mob.workers.split(".");
 	for (var index = 0; index < workers.length; index++) {
 		currentWorkers.push(m.workerList[workers[index]]);
@@ -2272,7 +3009,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	var transIdfiles = [];
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var newFS = databaseManager.getFoundSet('db:/stsservoy/transactions');
-	logger(true, 'Updating ' + mob.idfiles.length + ' idfiles');
+	application.output('Updating ' + mob.idfiles.length + ' idfiles');
 	//var newRecordCreated = false;
 	// status code already captured for this piece?
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
@@ -2289,7 +3026,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	var resultSize = resultQ.getSize();
 	if (resultSize != 0 && !rfScanAgainOk()) {
 		errorDialogMobile('rf_transactions.current','403','current');
-		logger(true, 'Status code has already been captured.');
+		application.output('Status code has already been captured.');
 		//forms['rf_transactions'].elements.current.requestFocus();
 		return false;
 	}
@@ -2299,21 +3036,22 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 		if (rfTransIsTimed()){
 			newRec = rfSetIdfileTimedStatus(mob.idfiles[index]);
 			if (newRec == null){
-				globals.logger(true,'rfIsTimed rec is null');
+				application.output('rfIsTimed rec is null');
 			} else {
-				globals.logger(true,'rfIsTimed rec is found');
+				application.output('rfIsTimed rec is found');
 			}
 		} 
 		if (newRec != null){//only update timed transaction records
-			globals.logger(true,'status trans rec found. updating');
+			application.output('status trans rec found. updating');
+			// dialog for completion of timed event
 			newRec.transaction_end = mob.timedEnd;
 			recordsToSave.push(newRec);
 		} //else {
 		if (routeOK){
-			globals.logger(true,'newRec created for status '+mob.statusCode);
+			application.output('newRec created for status '+mob.statusCode);
 			var newRecNum = newFS.newRecord();
 			if (newRecNum == -1){
-				globals.logger(true,'Creating new Record for transactions failed.');
+				application.output('Creating new Record for transactions failed.');
 			}
 			var newRecB = newFS.getRecord(newRecNum);
 			newRecB.status_description_id = session.stationId;
@@ -2329,6 +3067,8 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			if (mob.timedEnd != ""){
 				newRecB.transaction_end = mob.timedEnd;
 				newRecB.transaction_duration = mob.timedDuration;
+				if (mob.percent > 0){newRecB.trailer_labor_percentage = mob.percent}
+				if (mob.percent == 100.0){newRecB.trailer_labor_quantity = 1}
 			}
 			for (var index2 = 0; index2 < currentWorkers.length; index2++) {
 				switch (index2) {
@@ -2355,16 +3095,17 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 		//}
 		//recordsToSave.push(newRec);
 	}
-	globals.logger(true,'Saving '+recordsToSave.length+' trans records');
+	//globals.logger(true,'Saving '+recordsToSave.length+' trans records');
 	while (recordsToSave.length > 0){ // always save 'good' transactions 3/4/2015 pp all user entries are saved
 		var rec = recordsToSave.pop();
 		var status = databaseManager.saveData(rec);
-		if (!status){
+		/**if (!status){
 			globals.logger(true,'save of record failed');
-		}
+		}*/
 	}
 	if (routeOK){
-		if (rfCheckStatusIdfileMax()){
+		var updateIdfileStatus = rfCheckStatusIdfileMax();
+		//if (rfCheckStatusIdfileMax()){
 			/** @type {QBSelect<db:/stsservoy/idfiles>} */
 			var q = databaseManager.createSelect('db:/stsservoy/idfiles');
 			q.result.add(q.columns.idfile_id);
@@ -2377,33 +3118,40 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 				.add(q.columns.idfile_id.isin(mob.idfiles))
 			);
 			var resultQ = databaseManager.getFoundSet(q);
-			logger(true,'Updating '+resultQ.getSize()+' idfiles.');
+			//logger(true,'Updating '+resultQ.getSize()+' idfiles.');
 			if (resultQ.getSize() > 0){
 				// set previous status and location
 				index = 1;
 				// Get previous status and location
-				var record = resultQ.getRecord(1);
+				/**var record = resultQ.getRecord(1);
 				if (!record.status_description_id){
 					mob.statusPrev = "";
 				} else {
 					mob.statusPrev = m.stations[record.status_description_id].split(',')[1];
 				}
-				mob.locationPrev = (!record.id_location) ? "" : record.id_location;
+				mob.locationPrev = (!record.id_location) ? "" : record.id_location;*/
+				var saveRec = false;
 				while (index <= resultQ.getSize()){
 					record = resultQ.getRecord(index);
-					record.id_location = sLocation;
-					record.status_description_id = statusId;
-					recordsToSave.push(record);
+					if (sLocation != "" && sLocation != null){
+						record.id_location = sLocation;
+						saveRec = true;
+					}
+					if (updateIdfileStatus){
+						record.status_description_id = statusId;
+						saveRec = true;
+					}
+					if (saveRec){recordsToSave.push(record)}
 					index++;
 				}
 			}
-		} else {
+		/**} else {
 			//logger(true, 'Status code has already been captured.');
 			logger(true,'Status earlier in route. Idfile not updated.');
-		}
+		}*/
 		while (recordsToSave.length > 0){
-			var rec = recordsToSave.pop();
-			var status = databaseManager.saveData(rec);
+			rec = recordsToSave.pop();
+			status = databaseManager.saveData(rec);
 			if (!status){
 				globals.logger(true,'save of record failed');
 			}
@@ -2555,6 +3303,8 @@ function errorDialog(errorNum){
  * @AllowToRunInFind
  */
 function errorDialogMobile(event,errorNum,returnField,additionalMsg){
+	session.errorShow = true;
+	//if (event.getFormName() != application.getActiveWindow().controller.getName()){return} // 20150402 for errors originating from input fields 
 	if (typeof additionalMsg === 'undefined') {additionalMsg = ''}
 	if (typeof event === 'string') {
 		var resetItem = event.split('.');
@@ -2679,20 +3429,978 @@ function onActionHelp(event) {
  * @properties={typeid:24,uuid:"138D6C44-7A06-4841-B9A7-409FF1B186A0"}
  */
 function onActionMainMenu(event) {
+	if (mobMenuProvider == ""){return} // 20150402 executing twice for some reason unknown
 	var progList = application.getValueListArray('rfProgramList');
 	var form = event.getFormName();
 	var elName = forms[form].elements.mainMenu.getSelectedElements()[0];
 	var elIndex = progList.indexOf(elName);
-	/**if (elName[elName.length-1] == " ") {
-		elName = elName.slice(0,elName.length-1);
-	} else {
-		elName = elName+' ';
-	}*/
 	progList[elIndex] = elName;
-	var prog = forms[form].elements.mainMenu.getSelectedElements()[0].trim();
-	globals.mobMenuProvider = "";
+	var prog = mobMenuProvider.trim(); // forms[form].elements.mainMenu.getSelectedElements()[0].trim();
+	session.program = prog;
+	mobProg = prog;
 	rfFunctionKeys(prog);
 	rfChangeWindow(event,prog);
-	globals.mobProg = prog;
+	application.output('program selected '+session.program);
 	application.setValueListItems('rfProgramList',progList);
+	mobMenuProvider = "";
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param oldValue
+ * @param scannedID
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"8207B6BB-DA06-4861-8E21-3426C54CCC5F"}
+ */
+function onDataChangeBarcode2(oldValue, scannedID, event) {
+	if (onDataChangeFixEntry(oldValue,scannedID,event)){return true;}
+    session.userEntry = scannedID; //session user entry info
+    mob.barcode = scannedID;
+	var formName = event.getFormName();
+	forms[formName].currentID = "";
+	var barcodeId = globals.checkBarcode(scannedID);
+	if (!barcodeId){
+		globals.errorDialogMobile(event,'701','current');//701 This ID Number was not found.
+		globals.logger(true,'Barcode does not exist.');
+		return true;
+	}
+	rfProcessBarcode(event);
+	return true;
+}
+/**
+ * @param {JSEvent} event the event that triggered the action
+ * @properties={typeid:24,uuid:"7B28EFBB-9853-41BD-9E58-29440DEFD658"}
+ */
+function rfProcessBarcode(event){
+	var formName = event.getFormName();
+	/**forms[formName].elements.location.enabled = true;
+	forms[formName].elements.status.enabled = true;
+	forms[formName].elements.worker.enabled = true;*/
+	//if (typeof statusLocation === 'undefined'){statusLocation = ""}
+	//if (typeof statusWorker === 'undefined'){statusWorker = ""}
+	mob.locationArea = forms[formName].statusLocation;
+	mob.workers = forms[formName].statusWorker;
+	forms[formName].lastID = mob.barcode;
+	rfGetBarcodeIdfiles()
+	if (!barcodeAttached()){
+		application.output('ERROR: Database inconsistent with barcode');//errortypeneeded
+		errorDialogMobile(event,'6002','current');//6002 This item has no associated piecemark.
+		logger(true,'No idfiles for this barcode.');
+		rfWindowLastInfoClear();
+		return true;
+	}
+	var onHold = barcodeOnHold(); //first check 1/29/2015 pp 
+	if (onHold){
+		errorDialogMobile(event,'1050','current');//1050 One or more of the ID Numbers are on Hold.
+		logger(true,'Idfile reports item on hold.');
+		return true;
+	}
+	rfGetMobIdfile();
+	rfGetMobPiecemark(); // Get piecemark record
+	if (!barcodePlant()){
+		errorDialogMobile(event,'6001','current');//6001 This item doesn't belong to this Division.
+		logger(true,'Piecemark is in the wrong plant.');
+		return true;
+	}
+	var bundle = barcodeIsBundle(mob.barcode);
+	// Load up the idfiles
+	forms[formName].controller.loadRecords(databaseManager.convertToDataSet(mob.idfiles)); // mob.idfiles
+	rfGetTransactionList(mob.idfile); 
+	switch (formName){
+		case 'rf_transactions': {
+			if (flagF8){
+				rfF8ReversalPrep();
+				rfF8ReversalTransaction();
+				return true;
+			}
+			rfWindowLastInfoDisplay(event);
+			rfGetPreviousStatusLocation(); // set previous status
+			var routeOK = rfCheckRouteOrder(); // route checks out 
+			if (!routeOK){
+				application.output('Routing not ok');
+				errorDialogMobile('rf_transactions.current','405','current',missing);//405 
+				return true;
+			}
+			var shipStat = barcodeShip(); 
+			if (rfTimed() && (mob.timedError != "")){
+					errorDialogMobile(event,mob.timedError,'current');
+					logger(true,'Timed status error'+mob.timedError);
+					return true;
+			}
+			saveScanTransaction(); // moved to inside rfTimed where the form query on timed end is located
+			break;
+		}
+		case 'rf_bundles': {
+			if (flagF8){
+				if (!bundleCheckIdInside()){
+					errorDialogMobile(event,'701','current',null); // 701 This ID Number Was Not Found.
+					return true;
+				}
+				bundleGetIdfilesByBarcode();
+				bundleGetTransactions();
+				bundleIdsSaveTo(null);
+				bundleDebundle(mob.bundleTransFS);
+				//mob.bundleId = '';
+				forms['rf_bundles'].clearForm('bundle');
+				forms['rf_bundles'].piecemark = "** removed **";
+				bundleCount();
+				forms[formName].totalPieces = mob.bundleCnt;
+				forms[formName].totalWeight = mob.bundleWeight;
+				return true;
+			}
+			// add to bundle
+			bundleSaveTo(event);
+			bundleCount();
+			forms[formName].totalPieces = mob.bundleCnt;
+			forms[formName].totalWeight = mob.bundleWeight;
+			break;
+		}
+		default:{}
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"68DD1B5F-1AF5-4084-9A88-F5F36D62EFD0"}
+ */
+function rfWindowLastInfoClear(){
+	mobPreviousLocation = "";
+	mobPreviousStatus = "";
+	mobLocationPieces = 0;
+	mobLocationWeight = 0;
+	mobItemPieces = "";
+}
+/**
+ * @param {JSEvent} event the event that triggered the action
+ * @properties={typeid:24,uuid:"070781A7-D998-410A-B0DD-D7D15AA803A5"}
+ */
+function rfWindowLastInfoDisplay(event){
+	var formName = event.getFormName();
+	switch (formName){
+		case 'rf_transactions':
+			rfGetLocationStats(mob.locationArea);
+			rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea, statusId);
+			mobPreviousLocation = mob.locationPrev;
+			mobPreviousStatus = mob.statusPrev;
+			mobLocationPieces = mob.locationValues.pieces;
+			mobLocationWeight = mob.locationValues.weight;
+			mobItemPieces = mob.idValues.complete+" / "+mob.idValues.total;
+		case 'rf_bundles':
+			var rec = mob.idfilesFS.getRecord(1);
+			/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
+			var piecemarkRec = rec.sts_idfile_to_pcmks;
+			forms[formName].pcmkMaterial = piecemarkRec.material;
+			forms[formName].piecemark = piecemarkRec.piecemark;
+			if (piecemarkRec.piecemark == ""){
+				forms[formName].piecemark = "*summarized piecemark*";
+			}
+			forms[formName].pcmkLength = piecemarkRec.item_length;
+			forms[formName].pcmkWeight = piecemarkRec.item_weight;
+			var weight = piecemarkRec.item_weight;
+			break;
+		default:
+	}
+
+}
+/**
+ * @properties={typeid:24,uuid:"CBFF0C6A-6F0A-49FD-94CB-2C1FE0787E7F"}
+ */
+function rfGetPreviousStatusLocation(){
+	// No sort required.  This gets status for idfile before any work is done. Data is from idfile.
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.id_location);
+	q.result.add(q.columns.status_description_id);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.idfile_id.isin(mob.idfiles))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	if (resultQ.getSize() > 0){
+		var record = resultQ.getRecord(1);
+		if (!record.status_description_id){
+			mob.statusPrev = "";
+		} else {
+			mob.statusPrev = m.stations[record.status_description_id].split(',')[1];
+		}
+		mob.locationPrev = (!record.id_location) ? "" : record.id_location;
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param idfileId
+ *
+ * @properties={typeid:24,uuid:"0C42579C-20D2-49B6-BAC2-A96C3A659EDB"}
+ */
+function rfValidLastMaxStatus(idfileId){
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.result.add(q.columns.trans_id);
+	q.result.add(q.columns.location);
+	q.result.add(q.columns.status_description_id);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.idfile_id.eq(idfileId))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	if (resultQ.getSize() == 0){return null}
+	var rec = resultQ.getRecord(1);
+	var lastTrans = rec.status_description_id;
+	for (var index = 1;index <= resultQ.getSize();index++){
+		rec = resultQ.getRecord(index);
+		var thisTrans = rec.status_description_id;
+		var overwrite = (m.stationSeq[thisTrans] > m.stationSeq[lastTrans]) || lastTrans == null;
+		if (overwrite){
+			lastTrans = thisTrans;
+		}
+	}
+	return lastTrans;
+}
+/**
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"76457369-74E3-42E3-8B3C-EC42331E9A19"}
+ */
+function onDataChangeLocation(oldValue, newValue, event) {
+	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
+	session.userEntry = newValue;
+	var formName = event.getFormName();
+	var statusLocation = forms[formName].statusLocation;
+	if (newValue != null && newValue != ""){
+		newValue = newValue.toUpperCase();
+		statusLocation = statusLocation.toUpperCase();
+		var statArray = application.getValueListArray('stsvlg_location');
+		var newLoc = false;
+		if (statArray.indexOf(statusLocation) == -1){
+			statArray.push(statusLocation);
+			newLoc = true;
+		}
+		if (newLoc){
+			statArray.sort();
+			application.setValueListItems('stsvlg_location',statArray);
+		}
+	}
+	mob.locationArea = newValue;
+	switch (formName){
+		case 'rf_transactions':
+			globals.rfEmptyNextField(event,'worker');
+			break;
+		case 'rf_bundles':
+			globals.rfEmptyNextField(event,'current');
+			break;
+		default:
+			null;
+	}
+	
+	return true;
+}
+/**
+ * @properties={typeid:24,uuid:"CDFF75EC-9A5B-4DA1-BFB1-E9F4F6C8FDD5"}
+ */
+function thisFuncName(myName){
+   myName = myName.substr('function '.length);
+   myName = myName.substr(0, myName.indexOf('('));
+//application.output('function called '+myName);
+	myName = myName.trim();
+   return myName;
+}
+/**
+ * @properties={typeid:24,uuid:"D70092FA-99EF-4A04-8E16-FF7689B969BB"}
+ */
+function rfStatusCheck(newStatus){
+	var formName = application.getActiveWindow().controller.getName();
+	var statusCode = forms[formName].statusCode;
+	if (m.statusCodesDiv[session.associationId].indexOf(newStatus) == -1){
+		return null;
+	}
+	mob.statusCode = newStatus;
+	session.stationId = m.stations[session.associationId+', '+mob.statusCode];
+	return newStatus;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ *
+ * @properties={typeid:24,uuid:"4D64FD66-F13E-48E3-B754-A33086CC19FE"}
+ */
+function onReturnFromFunction(){
+	var form = application.getActiveWindow();
+	var winName = form.getName();
+	//session.errorForm;
+	//session.errorElement;
+	session.noError = true;
+	forms[session.errorForm].elements[session.errorElement].requestFocus();
+	forms[session.errorForm].controller.FocusField(session.errorElement,true);
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newJob new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"0A91B122-3B40-440A-9B48-96C8A1DBA659"}
+ */
+function onDataChangeJob(oldValue, newJob, event) {
+	if (onDataChangeFixEntry(oldValue,newJob,event)){return true;}
+	session.userEntry = newJob;
+	var formName = event.getFormName();
+	var fieldName = event.getElementName();
+	var returnField = formName+'.'+fieldName;
+	//application.output('return field '+returnField);
+	if (newJob == "" || newJob == null){
+		forms[formName].controller.focusField(fieldName,true);
+		return true;
+	}
+	if (!rfJobCheck(newJob)){
+		onFocusClear(event);
+		// 101 This job number was not found.
+		errorDialogMobile(event,101,fieldName,null);
+		return true;
+	}
+	if (formName == 'rf_bundles'){
+		rfEmptyNextField(event,'bundle');
+	}
+	return true;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param jobNumber
+ *
+ * @properties={typeid:24,uuid:"27D46138-8AAB-4DB7-8098-B35CAF43B76D"}
+ */
+function rfJobCheck(jobNumber){
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var q = databaseManager.createSelect('db:/stsservoy/jobs');
+	q.result.add(q.columns.job_id);
+	q.result.add(q.columns.job_number);
+	q.result.distinct = true;
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.job_number.eq(jobNumber))
+		);
+	var resultQ = databaseManager.getFoundSet(q);
+	var size = resultQ.getSize();
+	if (size == 0){
+		return false;
+	}
+	if (size > 1){
+		application.output('Multiple job numbers.  Should not happen');
+	}
+	session.jobNumber = jobNumber;
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var rec = resultQ.getRecord(1);
+	session.jobId = rec.job_id;
+	return true;
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} bundle new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"7A558DA6-FB57-40FA-AA5A-D44A5091208E"}
+ */
+function onDataChangeBundle(oldValue, bundle, event) {
+	/**
+	 * bundle exists
+	 * bundle empty
+	 * bundle in job
+	 * bundle total weight and pieces
+	 * job number id
+	 * have idfile -> piecemark -> 
+	 */
+	if (onDataChangeFixEntry(oldValue,bundle,event)){return true;}
+	session.userEntry = bundle;
+	var jobId = session.jobId;
+	application.output('uuid '+application.getUUID(application.getUUID()));
+	if (!barcodeIsBundle(bundle)){
+		// create bundle id code, no response on input, so create next bundleId
+		// dialog to accept next bundle number
+		bundleCreateValid();
+		var message = 'Do you wish to use the new Bundle Number: '+session.bundlePrefix+session.bundleSuffix;
+		var response = globals.DIALOGS.showQuestionDialog('New Bundle Number?', message, 'NO', 'yes');
+		if (response == 'NO'){
+			mob.bundleId = "";
+			onFocusClear(event);
+			return true;
+		} else {
+			mob.bundleId = session.bundlePrefix+session.bundleSuffix;
+		}
+	} else {
+		// barcode has items, is it for this job? Create new dialog for new bundle
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var rec = mob.bundleFS.getRecord(1);
+		var bundleJobId = rec.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_id;
+		if (bundleJobId+'' != session.jobId+''){
+			mob.bundleId = "";
+			// 730 This Bundle Number Does Not Belong To This Job.
+			errorDialogMobile(event,730,'bundle',null);
+			return true;
+		} else {
+			mob.bundleId = bundle;
+		}
+	}
+	onFocusSet(event,mob.bundleId,'status');
+	return true;
+}
+/**
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"CD9C087F-4451-4FCA-B756-092CCC74385B"}
+ */
+function bundleCreateValid(){
+	// idfile.bundle_id.length <= 30
+	bundlePrefixSet();
+	var bundlePrefix = session.bundlePrefix;
+	var serialLength = scopes.prefs.barcodeLength - 5;
+	/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
+	var q = databaseManager.createSelect('db:/stsservoy/last_id_serial');
+	q.result.add(q.columns.last_id_serial_id);
+	q.result.add(q.columns.prefix);
+	q.result.add(q.columns.serial);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.prefix.eq(bundlePrefix))
+		);
+	var resultQ = databaseManager.getFoundSet(q);
+	var serial = '000000000000000000000000000000';
+	if (resultQ.getSize() != 0){
+		// no prior bundle number for this year
+		/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} */
+		var rec = resultQ.getRecord(1);
+		serial = serial + rec.serial;
+	}
+	serial = countUpNumbers2(serial);
+	serial = utils.stringRight(serial, serialLength);
+	session.bundleSuffix = serial;
+	//application.output('bundle is '+bundlePrefix+serial);
+}
+/**
+ * @properties={typeid:24,uuid:"9D763899-E70E-4D8D-8767-5D9F6834FD10"}
+ */
+function bundlePrefixSet(){
+	var date = new Date();
+	var year = utils.stringRight(date.getFullYear(), 2);
+	session.bundlePrefix = 'BND'+year; // unchangeable by user, controlled by STS
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param serial
+ *
+ * @properties={typeid:24,uuid:"5A126E2E-8A63-4343-8585-3FC8363AC897"}
+ */
+function countUpNumbers2(serial){
+	var serialBefore = serial;
+	var serialLength = serial.length;
+	var index = serialLength-1;
+	var index2 = serialLength;
+	var charx = '';
+	while(index > 0){
+		charx = serial[index];
+		application.output('charx '+charx);
+		if (charx == '9'){
+			serial = utils.stringIndexReplace(serial, index2, 1, 'A');
+			break;
+		} else if (charx == 'Z'){
+			serial = utils.stringIndexReplace(serial, index2, 1, '0');
+			index--;index2--;
+		} else {
+			var nextChar = String.fromCharCode(serial.charCodeAt(index)+1);
+			serial = utils.stringIndexReplace(serial, index2, 1, nextChar);
+			break;
+		}
+	}
+	session.bundleSuffix = serial;
+
+	return serial;
+}
+/**
+ * @param {JSEvent} event the event that triggered the action
+ * @param value
+ * @param nextField
+ *
+ * @properties={typeid:24,uuid:"7D835E67-4D12-4D4E-BA30-4803F1F3CA63"}
+ */
+function onFocusSet(event,value,nextField) {
+	var formName = event.getFormName();
+	var elName = event.getElementName();
+	var entry = event.getSource().getDataProviderID();
+	var variable = forms[formName];
+	//var value = variable[entry];
+	//value = "";
+	variable[entry] = value;
+	forms[formName].controller.focusField(nextField,true);
+}
+/**
+ * @param {JSEvent} event the event that triggered the action
+ * @properties={typeid:24,uuid:"F961AF61-88F1-407B-ACF3-F91CA52B4A9B"}
+ */
+function bundleSaveTo(event){
+	bundleGetIdfilesByBundle();
+	if (bundleCheckIdInside()){
+		// 727 This ID Number Is Already In This Bundle.
+		// 728 This ID Number Is Already In Another Bundle Number.
+		// 725 A Bundle Number Was Not Created.
+		// 726 This Bundle Number Was Not Found.
+		// done 730 This Bundle Number Does Not Belong To This Job.
+		// 1045 Entered An ASN# & Qty >1 & Bundle Is NO. Change To YES or Delete ASN#.
+		errorDialogMobile(event,727,'current',null);
+		return true;
+	}
+	if (bundleCheckIdInsideElsewhere()){
+		errorDialogMobile(event,728,'current',null);
+		return true;
+	}
+	rfWindowLastInfoDisplay(event);
+	bundleSaveName();
+	bundleIdsSaveTo(event);
+	rfSaveTransaction(event);
+}
+/**
+ * @properties={typeid:24,uuid:"324811FD-C67D-431A-A5DE-9A1FFB959D2B"}
+ * @AllowToRunInFind
+ */
+function bundleCheckIdInside(){
+	/**
+	 * barcode idfiles are in the bundle
+	 */
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.bundle_id);
+	q.result.add(q.columns.id_location);
+	q.result.add(q.columns.receive_quantity);
+	q.result.add(q.columns.original_quantity);
+	
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.idfile_id.isin(mob.idfiles))
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.bundle_id.eq(mob.bundleId))
+		);
+	var resultQ = databaseManager.getFoundSet(q);
+	if (resultQ.getSize() > 0){
+		return true;
+	}
+	return false;
+}
+/**
+ * @properties={typeid:24,uuid:"F68523C0-36AE-4FAC-A66B-D8DC80D2CBAA"}
+ */
+function bundleGetIdfilesByBundle(){
+
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.bundle_id);
+	q.result.add(q.columns.id_location);
+	q.result.add(q.columns.receive_quantity);
+	q.result.add(q.columns.original_quantity);
+	
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.bundle_id.eq(mob.bundleId))
+		);
+	mob.bundleFS = databaseManager.getFoundSet(q);
+}
+/**
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"430F742C-49E5-4831-9BF7-E53F47DDFC66"}
+ */
+function bundleIdsSaveTo(event){
+	var idfilesFS = mob.bundleFS;
+	var bulk = databaseManager.getFoundSetUpdater(idfilesFS);
+	switch (flagFunction){
+		case 'rfF8BundleRemoveFrom':
+		case 'rfF4BundleClear':
+			bulk.setColumn('bundle_id','');
+			break;
+		default:
+			idfilesFS = mob.idfilesFS;
+			bulk = databaseManager.getFoundSetUpdater(idfilesFS);
+			bulk.setColumn('bundle_id',mob.bundleId);
+			if (mob.locationArea != null && mob.locationArea.length != 0){
+				bulk.setColumn('id_location',mob.locationArea);
+			}
+	}
+	
+	bulk.performUpdate();
+}
+/**
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"5A1EA9ED-1426-49E9-89D9-5C3865BCDFF9"}
+ */
+function rfSaveTransaction(event){
+	var date = new Date();
+	var currentWorkers = [];
+	if (!mob.workers){mob.workers = ''}
+	var workers = mob.workers.split(".");
+	for (var index = 0; index < workers.length; index++) {
+		currentWorkers.push(m.workerList[workers[index]]);
+	}
+	var routeOK = false;
+	var index = 0;
+	if (event.getFormName() == 'rf_bundles'){
+		routeOK = true;
+	}
+	var recordsToSave = [];
+	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
+	var transFS = databaseManager.getFoundSet('db:/stsservoy/transactions');
+	var newRec = null;
+	for (index = 0; index < mob.idfiles.length; index++) {
+		if (rfTransIsTimed()){
+			newRec = rfSetIdfileTimedStatus(mob.idfiles[index]);
+			if (newRec == null){
+				application.output('rfIsTimed rec is null');
+			} else {
+				application.output('rfIsTimed rec is found');
+			}
+		} 
+		if (newRec != null){//only update timed transaction records
+			application.output('status trans rec found. updating');
+			// dialog for completion of timed event
+			newRec.transaction_end = mob.timedEnd;
+			recordsToSave.push(newRec);
+		}
+		if (routeOK){
+			if (transFS.newRecord() == -1){
+				application.output('Creating new Record for transactions failed.');
+				return;
+			}
+			transFS.status_description_id = session.stationId;
+			transFS.employee_id = globals.mobLoggedEmployeeId;//UUID
+			transFS.idfile_id = mob.idfiles[index];
+			transFS.location = mob.locationArea;
+			transFS.transaction_date = new Date();//date;//mob.timedBegin;
+			transFS.transaction_start = date;//mob.timedBegin;
+			transFS.tenant_uuid = session.tenant_uuid;
+			transFS.trans_status = mob.statusCode;
+			transFS.trans_code = rfTransCode();
+			if (event.getFormName() == 'rf_bundles'){
+				transFS.bundle_id = mob.bundleId;
+			}
+			if (mob.timedEnd != ""){
+				transFS.transaction_end = mob.timedEnd;
+				transFS.transaction_duration = mob.timedDuration;
+				if (mob.percent > 0){transFS.trailer_labor_percentage = mob.percent}
+				if (mob.percent == 100.0){transFS.trailer_labor_quantity = 1}
+			}
+			for (var index2 = 0; index2 < currentWorkers.length; index2++) {
+				switch (index2) {
+				case 0:
+					transFS.worker_id = currentWorkers[index2];
+					break;
+				case 1:
+					transFS.worker2_id = currentWorkers[index2];
+					break;
+				case 2:
+					transFS.worker3_id = currentWorkers[index2];
+					break;
+				case 3:
+					transFS.worker4_id = currentWorkers[index2];
+					break;
+				case 4:
+					transFS.worker5_id = currentWorkers[index2];
+					break;
+				default:
+				}
+			}
+			recordsToSave.push(transFS);
+		}
+	}
+	while (recordsToSave.length > 0){
+		rec = recordsToSave.pop();
+		status = databaseManager.saveData(rec);
+		if (!status){
+			application.output('save of record failed');
+		}
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"FDEB97E1-E7F9-47BB-B08D-96241F6740F0"}
+ */
+function bundleSaveName(){
+	if (mob.bundleFS.getSize() != 0){return} // bundle name already exists
+	/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
+	var q = databaseManager.createSelect('db:/stsservoy/last_id_serial');
+	q.result.add(q.columns.last_id_serial_id);
+	q.result.add(q.columns.prefix);
+	q.result.add(q.columns.serial);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.prefix.eq(session.bundlePrefix))
+		);
+	var resultQ = databaseManager.getFoundSet(q);
+	var rec = null;
+	if (resultQ.getSize() > 0){
+		/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} */
+		rec = resultQ.getRecord(1);
+		rec.serial = session.bundleSuffix;
+		
+	} else {
+		/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} */
+		resultQ.newRecord();
+		rec = resultQ.getRecord(1);
+		rec.serial = session.bundleSuffix;
+		rec.prefix = session.bundlePrefix;
+		rec.tenant_uuid = session.tenant_uuid;
+	}
+	databaseManager.saveData(rec);
+}
+/**
+ * @properties={typeid:24,uuid:"CB3412D3-060A-45B8-AFC1-2D9172FE7928"}
+ */
+function bundleCheckIdInsideElsewhere(){
+	/**
+	 * barcode idfiles are in another bundle
+	 */
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.result.add(q.columns.idfile_id);
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.idfile_id.isin(mob.idfiles))
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.bundle_id.eq(''))
+		);
+	var resultQ = databaseManager.getFoundSet(q);
+	if (resultQ.getSize() > 0){
+		return false;
+	}
+	return true;
+}
+/**
+ * @properties={typeid:24,uuid:"61115E9F-582C-4158-98FF-181D71C46EE9"}
+ */
+function rfF4BundleClear(){
+	application.output(flagFunction);
+	//flagFunction = null;
+	var thisFunction = thisFuncName(arguments.callee.toString());
+	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	var inProgress = (thisFunction == flagFunction); // toggle function
+	flagFunction = (inProgress) ? null : thisFunction;
+	/**
+	 * set all idfiles with bundle id to empty string
+	 * set all transactions for idfiles to FABDB
+	 */
+	bundleGetIdfilesByBundle();
+	bundleGetTransactions();
+	bundleIdsSaveTo(null);
+	bundleDebundle(mob.bundleTransFS);
+	mob.bundleId = '';
+	//forms['rf_bundles'].currentBundle = "";
+	forms['rf_bundles'].clearForm('job');
+	flagFunction = null; // one pass function
+}
+/**
+ * TenantID, BundleId, Not deleted, isin idfiles for bundle, trans_code FABMO
+ * @properties={typeid:24,uuid:"8072F01C-74D2-4161-9112-B2CBC4304931"}
+ */
+function bundleGetTransactions(){
+	/**
+	 * Get FABMO transactions for BNDL status code on mob.bundleFS results
+			transFS.status_description_id = session.stationId;
+			transFS.employee_id = globals.mobLoggedEmployeeId;//UUID
+			transFS.idfile_id = mob.idfiles[index];
+			transFS.location = mob.locationArea;
+			transFS.transaction_date = new Date();//date;//mob.timedBegin;
+			transFS.transaction_start = date;//mob.timedBegin;
+			transFS.tenant_uuid = session.tenant_uuid;
+			transFS.trans_status = mob.statusCode;
+			transFS.trans_code = rfTransCode();
+			transFS.transaction_end
+			transFS.transaction_duration
+			transFS.trailer_labor_percentage
+			transFS.trailer_labor_quantity
+			transFS.worker_id = currentWorkers[index2];
+			transFS.worker2_id = currentWorkers[index2];
+			transFS.worker3_id = currentWorkers[index2];
+			transFS.worker4_id = currentWorkers[index2];
+			transFS.worker5_id = currentWorkers[index2];
+	 */
+	var date = new Date();
+	var bundIdfiles = []; var rec = null;
+	for (var index = 1;index <= mob.bundleFS.getSize();index++){
+		var rec = mob.bundleFS.getRecord(index);
+		bundIdfiles.push(rec.idfile_id);
+	}
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.result.add(q.columns.trans_id);
+	q.result.add(q.columns.bundle_id);
+	q.result.add(q.columns.location);
+	q.result.add(q.columns.status_description_id);
+	q.result.add(q.columns.employee_id);
+	q.result.add(q.columns.transaction_date);
+	q.result.add(q.columns.transaction_start);
+	q.result.add(q.columns.transaction_end);
+	q.result.add(q.columns.trans_status);
+	q.result.add(q.columns.trans_code);
+	q.result.add(q.columns.trailer_labor_percentage);
+	q.result.add(q.columns.trailer_labor_quantity);
+	q.result.add(q.columns.worker_id);
+	q.result.add(q.columns.worker2_id);
+	q.result.add(q.columns.worker3_id);
+	q.result.add(q.columns.worker4_id);
+	q.result.add(q.columns.worker5_id);
+	q.result.add(q.columns.edit_date);
+
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.idfile_id.isin(bundIdfiles))
+			.add(q.columns.bundle_id.eq(mob.bundleId))
+			.add(q.columns.trans_code.eq('FABMO'))
+			.add(q.columns.status_description_id.eq(session.stationId))
+		);
+	mob.bundleTransFS = databaseManager.getFoundSet(q);
+}
+/**
+ * @properties={typeid:24,uuid:"36DBC95D-B108-4C6D-8CCA-E10BD7E7C3D9"}
+ */
+function bundleDebundle(debundleFS){
+	var date = new Date();
+	var transSet = databaseManager.getFoundSetUpdater(debundleFS);
+	transSet.setColumn('trans_code','FABDB');
+	transSet.setColumn('edit_date',date);
+	transSet.performUpdate();
+}
+/**
+ * @properties={typeid:24,uuid:"41A77946-EDDE-42A4-AE5C-439FEAD6E4CB"}
+ */
+function rfF8BundleRemoveFrom(){
+	var formName = application.getActiveWindow().controller.getName();
+	if (forms[formName].currentBundle == "" || forms[formName].currentStatus == "" || forms[formName].currentJob == ""){return}
+	var thisFunction = thisFuncName(arguments.callee.toString());
+	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	var inProgress = (thisFunction == flagFunction); // toggle function
+	flagFunction = (inProgress) ? null : thisFunction;
+	flagF8 = (flagFunction != null);
+	if (flagF8){
+		f8ReversalText = forms[formName].elements.transShop.text;
+		f8ReversalColor = forms[formName].elements.transShop.bgcolor;
+		forms[formName].elements.transShop.bgcolor = 'Yellow';
+		forms[formName].elements.transShop.text = "Remove Bundle ID "+session.association;
+		forms[formName].controller.focusField('current',false);
+	} else {
+		forms[formName].controller.focusField('status',false);
+		forms[formName].elements.transShop.bgcolor = f8ReversalColor;
+		forms[formName].elements.transShop.text = f8ReversalText;
+	}
+	
+}
+/**
+ * @properties={typeid:24,uuid:"2A4C51DF-ADA9-41D8-A90C-58CD628A7D94"}
+ */
+function rfF5BundlePrint(){
+	
+}
+/**
+ * @properties={typeid:24,uuid:"C6BC4E31-48AF-4700-B20B-19AE5A8F3D9A"}
+ */
+function rfF6BundlePrintList(){
+	
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * Remove P-F1 Q-F2 R-F3 S-F4 T-F5 U-F6 V-F7 W-F8 X-F9 Y-F10
+ * @param {String} oldValue
+ * @param {String} newValue
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F581F607-96B6-4354-8A36-582E90AE4659"}
+ */
+function onDataChangeFixEntry(oldValue,newValue,event){
+	if (newValue == null || newValue == ""){return}
+	var formName = event.getFormName().trim();
+	var elemName = event.getElementName();
+	var entry = event.getSource().getDataProviderID();
+	var form = forms[formName];
+	//var value = variable[entry];
+	if (newValue.length == 1){
+		if (newValue.search(/[R-Z]/) != -1){
+			forms[formName].elements[elemName].requestFocus();
+			form[entry] = "";
+			return true;
+		}
+	}
+	var charx = "";
+	charx = newValue[newValue.length-1];
+	if ((newValue.length - oldValue.length) == 1 && (charx.search([/R-Z/])) != -1){
+		form[entry] = oldValue;
+		forms[formName].controller.focusField(elemName,true);
+		return true;
+	}
+	return false;
+}
+/**
+ * @properties={typeid:24,uuid:"C4B8F68F-CEC1-4450-A503-39AFDF7D0EF4"}
+ */
+function bundleCount(){
+	bundleGetIdfilesByBundle();
+	var index = 1;
+	var count = 0;
+	var weight = 0;
+	while (count != mob.bundleFS.getSize()){
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var rec = mob.bundleFS.getRecord(index);
+		count = count*1+rec.original_quantity*1;
+		var pcmkWght = rec.sts_idfile_to_pcmks.item_weight;
+		weight = weight*1+rec.original_quantity*pcmkWght;
+		index++;
+	}
+	mob.bundleCnt = count;
+	mob.bundleWeight = weight;
+}
+/**
+ * @properties={typeid:24,uuid:"EDB84E2A-6D06-42F6-8220-810C4EBE93C4"}
+ */
+function bundleWeight(){
+	
+}
+/**
+ * @properties={typeid:24,uuid:"41EC2CC6-86DA-4AE0-931E-EDC0E4C255E8"}
+ */
+function bundleGetIdfilesByBarcode(){
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.result.add(q.columns.idfile_id);
+	q.result.add(q.columns.bundle_id);
+	q.result.add(q.columns.id_location);
+	q.result.add(q.columns.receive_quantity);
+	q.result.add(q.columns.original_quantity);
+	
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.bundle_id.eq(mob.bundleId))
+			.add(q.columns.id_serial_number_id.eq(mob.barcodeId))
+		);
+	mob.bundleFS = databaseManager.getFoundSet(q);
+
 }

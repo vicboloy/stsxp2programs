@@ -11,6 +11,12 @@ name:"last_id_serial_id"
 },
 {
 allowNull:true,
+creationOrderIndex:6,
+dataType:4,
+name:"delete_flag"
+},
+{
+allowNull:true,
 creationOrderIndex:4,
 dataType:93,
 name:"edit_date"

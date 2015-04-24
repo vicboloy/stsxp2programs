@@ -49,18 +49,24 @@ var lastID = "";
  *
  * @properties={typeid:24,uuid:"D5D84404-C6EC-4EB8-984D-E594A43EAAF9"}
  */
-function onDataChangeLocation(oldValue, newValue, event) {
-	newValue = newValue.toUpperCase();
-	statusLocation = statusLocation.toUpperCase();
-	var statArray = application.getValueListArray('stsvlg_location');
-	var newLoc = false;
-	if (statArray.indexOf(statusLocation) == -1){
-		statArray.push(statusLocation);
-		newLoc = true;
+function xxxUnusedonDataChangeLocation(oldValue, newValue, event) {
+	if (newValue == "W"){
+		statusLocation = "";
+		return true;
 	}
-	if (newLoc){
-		statArray.sort();
-		application.setValueListItems('stsvlg_location',statArray);
+	if (newValue != null && newValue != ""){
+		newValue = newValue.toUpperCase();
+		statusLocation = statusLocation.toUpperCase();
+		var statArray = application.getValueListArray('stsvlg_location');
+		var newLoc = false;
+		if (statArray.indexOf(statusLocation) == -1){
+			statArray.push(statusLocation);
+			newLoc = true;
+		}
+		if (newLoc){
+			statArray.sort();
+			application.setValueListItems('stsvlg_location',statArray);
+		}
 	}
 	globals.rfEmptyNextField(event,'worker');
 	return true;
@@ -70,7 +76,7 @@ function onDataChangeLocation(oldValue, newValue, event) {
  *
  * @properties={typeid:24,uuid:"76D17832-D7CF-4DDE-96B9-94BA39C5EC8C"}
  */
-function unusedtabSeqRestore(){
+function xxxunusedtabSeqRestore(){
 	//return;
 	var restore = [];
 	if (controller.getTabSequence().length != 1) return
@@ -82,7 +88,7 @@ function unusedtabSeqRestore(){
 /**
  * @properties={typeid:24,uuid:"74288612-41CD-4356-A42C-B9F029E97B79"}
  */
-function unusedtabSeqRemove(){
+function xxxunusedtabSeqRemove(){
 	application.output(controller.getTabSequence())
 	//if (controller.getTabSequence().length == 1){return}
 	controller.setTabSequence([elements.current]);
@@ -96,7 +102,7 @@ function unusedtabSeqRemove(){
  *
  * @properties={typeid:24,uuid:"F6D06FDF-2291-4430-8649-ECE5DA9CADB8"}
  */
-function onDataChangeBarcode(oldValue, newValue, event) {
+function xxxunusedonDataChangeBarcode(oldValue, newValue, event) {
 	///elements.current.requestFocus();
 	var scannedID = newValue;
 	stayField = (scannedID != "EXIT");
@@ -109,7 +115,7 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 	if (!barcodeId){
 		currentID = "";
 		//globals.rfErrorShow('Barcode does not exist');
-		globals.errorDialogMobile(event,'701','current');
+		globals.errorDialogMobile(event,'701','current');//701 This ID Number was not found.
 		globals.logger(true,'Barcode does not exist.');
 		return true;
 	}
@@ -125,7 +131,7 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 	globals.rfGetBarcodeIdfiles()
 	if (!globals.barcodeAttached()){
 		application.output('ERROR: Database inconsistent with barcode');//errortypeneeded
-		globals.errorDialogMobile(event,'6002','current');
+		globals.errorDialogMobile(event,'6002','current');//6002 This item has no associated piecemark.
 		globals.logger(true,'No idfiles for this barcode.');
 		currentID = "";
 		globals.mobPreviousLocation = "";
@@ -136,8 +142,10 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 		return true;
 	}
 	
+	globals.rfGetMobIdfile();
+	globals.rfGetMobPiecemark(); // Get piecemark record
 	if (!globals.barcodePlant()){
-		globals.errorDialogMobile(event,'6001','current');
+		globals.errorDialogMobile(event,'6001','current');//6001 This item doesn't belong to this Division.
 		globals.logger(true,'Piecemark is in the wrong plant.');
 		return true;
 	}
@@ -148,16 +156,20 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 	// Load up the idfiles
 	controller.loadRecords(databaseManager.convertToDataSet(globals.mob.idfiles)); // mob.idfiles
 	// Get representative idfile record 1 of n
-	globals.rfGetMobIdfile();
-	globals.rfGetMobPiecemark(); // Get piecemark record
+	//globals.rfGetMobIdfile();
+	//globals.rfGetMobPiecemark(); // Get piecemark record
+	globals.rfGetTransactionList(globals.mob.idfile);
 	var onHold = globals.barcodeOnHold(); //first check 1/29/2015 pp 
 	if (onHold){
-		globals.errorDialogMobile(event,'1050','current');
+		globals.errorDialogMobile(event,'1050','current');//1050 One or more of the ID Numbers are on Hold.
 		globals.logger(true,'Idfile reports item on hold.');
 		return true;
 	}
 	var bundle = globals.barcodeIsBundle(); //stubbed
 	var routeOK = globals.rfCheckRouteOrder(); // route checks out 
+	if (!routeOK){
+		return true;
+	}
 	var shipStat = globals.barcodeShip(); 
 	if (globals.rfTimed() && globals.mob.timedError != ""){
 		globals.errorDialogMobile(event,globals.mob.timedError,'current');
@@ -171,7 +183,7 @@ function onDataChangeBarcode(oldValue, newValue, event) {
 	//scopes.globals.rfIdLength = scopes.globals.decToFeet(item_length);
 	//scopes.globals.mobIdfiles = scopes.globals.rfaIdfiles;
 	//var status = globals.rfCheckIdStatus(statusCode,statusLocation);
-	globals.rfGetTransactionLast(globals.mob.idfiles[0]);
+	//globals.rfGetTransactionLast(globals.mob.idfiles[0]);
 	globals.rfGetLocationStats(globals.mob.locationArea);
 	globals.rfGetPiecesScanned(globals.mob.piecemark.piecemark_id, globals.mob.locationArea, globals.statusId);
 	globals.mobPreviousLocation = globals.mob.locationPrev;
@@ -228,10 +240,10 @@ function onShowForm(firstShow,event) {
 	globals.mobProg = "Transactions";
 	setTransShop();
 	null;
-	if (foundset.find()){
+	/**if (foundset.find()){
 		delete_flag = 19; //why 19? maybe typo
 		foundset.search();
-	}
+	}*/
 	null;
 	statusCode = "";
 	statusLocation = "";

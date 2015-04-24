@@ -1016,6 +1016,9 @@ function secGetTenantID2(userName,companyName){
 			return false;
 		}
 	}
+	if (!tenantID){
+		tenantID = company.tenant_uuid;
+	}
 	/** @type {JSFoundSet<db:/stsservoy/users>} */																	
 	var users;														//	the tenants foundset
 	if(!userName){													//	validate input...	

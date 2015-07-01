@@ -3,6 +3,12 @@
  */
 var mappedFormatArray = [];
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"CFDAFA83-3D34-4489-8543-868CB52B1FE8"}
+ */
+var selectedCust = "";
+/**
  * TODO generated, please specify type and doc for the params
  *
  * @properties={typeid:24,uuid:"CEB68FE5-3762-496D-B815-88ADC962BE24"}
@@ -10,6 +16,8 @@ var mappedFormatArray = [];
  */
 function fileReceipt(file){
 	if (file == null){return}
+	var scope = scopes.jobs;
+	var job = scopes.jobs.importJob;
 	scopes.jobs.readKissTextFile(file);
 	scopes.jobs.appendQuantityToIdfile = null; // zero out append values array list
 	//establish error-free or dialog with errors, correct column count, mapping, 
@@ -21,47 +29,67 @@ function fileReceipt(file){
 		}
 	}
 	var jobNumberIndex = scopes.jobs.getFieldDataMapping("mapped_field","jobs.job_number").split(",")[1];
+	var jobMetricIndex = scope.getFieldDataMapping("mapped_field","jobs.metric_job").split(",")[1];
+	var jobTitleIndex = scope.getFieldDataMapping("mapped_field","jobs.job_title").split(",")[1];
 	var jobNumber = headerLine[jobNumberIndex];//global job number setting
+	var jobNameIndex = scopes.jobs.getFieldDataMapping("mapped_field","jobs.job_title").split(",")[1];
+	var jobDateIndex = scopes.jobs.getFieldDataMapping("mapped_field","jobs.project_year").split(",")[1];
+	job.jobNumber = jobNumber;
+	job.metricFlag = (headerLine[jobMetricIndex] == "F") ? 0 : 1;
+	job.title = headerLine[jobTitleIndex];
+	job.name = headerLine[jobNameIndex];
+	job.date = headerLine[jobDateIndex];
+	job.associationId = scopes.globals.session.associationId;application.output('assoc'+ globals.secCurrentAssociationID);
 	scopes.jobs.jobName = jobNumber;
+	foundset.loadAllRecords();
+	scopes.jobs.custNums = [];
+	scopes.jobs.jobNums = [];
+	scopes.jobs.custIds = [];
+	scopes.jobs.jobIds = [];
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var jobsFS = databaseManager.getFoundSet('stsservoy','jobs');
 	if (jobsFS.find()){
 		jobsFS.job_number = jobNumber;
 		var count = jobsFS.search();
 		if (count > 0){
-			scopes.jobs.customerIDs = [];
-			scopes.jobs.jobIDs = [];
-			for (var index2 = 1;index2 <= count;index2++){
-				scopes.jobs.customerIDs.push(jobsFS.customer_id);
-				scopes.jobs.jobIDs.push(jobsFS.job_id);
-				jobsFS.getRecord(index2);
-			}
-			scopes.globals.kissJobRf = jobsFS.getRecord(1).rf_interface;//save rf interface to show/noshow buttons
-			/** @type {JSFoundSet<db:/stsservoy/customers>} */
-			var custFS = databaseManager.getFoundSet('stsservoy','customers');
-			if (custFS.find()){
-				custFS.customer_id = scopes.jobs.customerIDs[0];
-				if (custFS.search()){
-					var rec = custFS.getRecord(1);
-					if (!rec.barcode_prefix || 
-							!rec.barcode_fixed_length || 
-							!rec.barcode_include_prefix || 
-							!rec.barcode_job_length ||
-							 rec.barcode_prefix.length != 2){
-						plugins.dialogs.showErrorDialog('Customer barcode incomplete.','Customer '+rec.customer_number+' barcode is incomplete.  Please review the barcode setup using the \'Edit Customer Information\' button under the Edit/Add Tab.');
-						return;
-					}
+			if (count > 1){
+				application.output('>>> jobs '+count);
+				for (var index2 = 1;index2 <= count;index2++){
+					var rec = jobsFS.getRecord(index2);
+					custIds.push(rec.customer_id);
+					jobIds.push(rec.job_id);
+					custNums.push(rec.st2_jobs_to_customers.customer_number);
+					jobNums.push(rec.job_number);
 				}
+				elements.chooseCust.text = 'Job Number '+jobNumber+' is under multiple customers. Choose customer number:';
+				elements.chooseCust.visible = true;
+				elements.chooseCustSelect.visible = true;
+				application.setValueListItems('stsvl_kiss_custList',custNums);
+				return;
 			}
+			//scopes.globals.kissJobRf = jobsFS.getRecord(1).rf_interface;//save rf interface to show/noshow buttons
+			rec = jobsFS.getRecord(1);
+			var custRec = rec.sts_job_to_customer2;
+
+			if (!custRec.barcode_prefix || 
+					// might not need to check this !custRec.barcode_fixed_length || 
+					!custRec.barcode_include_prefix || 
+					!custRec.barcode_job_length ||
+					custRec.barcode_prefix.length != 2){
+				plugins.dialogs.showErrorDialog('STS ERROR: Customer barcode incomplete.','Customer '+rec.customer_number+' barcode is incomplete.  Please review the barcode setup using the \'Edit Customer Information\' button under the Edit/Add Tab.');
+				return;
+			}
+			scopes.jobs.jobUnderCustomer = rec.job_id;
+			application.output('job record id'+rec.job_id);
 			var win = application.createWindow("KISS Import", JSWindow.DIALOG);
 			win.title = "KISS Import";
 			win.show(forms.kiss_option_import);
 		} else {
 			application.output('job not found');
-			plugins.dialogs.showErrorDialog('Job does not exist.','Job Number '+jobNumber+' does not exist.  Please setup the job using the \'Edit Job Information\' Window under the Edit/Add Tab.');
+			plugins.dialogs.showErrorDialog('STS ERROR: Job does not exist.','Job Number '+jobNumber+' does not exist.  Please setup the job using the \'Edit Job Information\' Window under the Edit/Add Tab.');
 			return;
 			//show dialog for customers
-			}
+		}
 	} 
 }
 /**
@@ -133,4 +161,55 @@ function onActionAddTenant(event) {
 function onActionHide(event) {
 	globals.mainWindowFront();
 	globals.stopWindowTrack();
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"C350E283-FBB6-4F29-B69D-FDAC625D3A2F"}
+ * @AllowToRunInFind
+ */
+function onDataChangeCustomer(oldValue, newValue, event) {
+	var index = custNums.indexOf(newValue);
+	var pkJobs = scopes.jobs.customerIDs[index];
+	for (var index = 1;index < foundset.getSize();index++){
+		var rec = foundset.getRecord(index);
+		if (rec.customer_id == pkJobs){
+			break
+		}
+	}
+	var custRec = rec.sts_job_to_customer2;
+
+	if (!custRec.barcode_prefix || 
+			!custRec.barcode_fixed_length || 
+			!custRec.barcode_include_prefix || 
+			!custRec.barcode_job_length ||
+			custRec.barcode_prefix.length != 2){
+		plugins.dialogs.showErrorDialog('STS ERROR: Customer barcode incomplete.','Customer '+rec.customer_number+' barcode is incomplete.  Please review the barcode setup using the \'Edit Customer Information\' button under the Edit/Add Tab.');
+		return;
+	}
+	var win = application.createWindow("KISS Import", JSWindow.DIALOG);
+	win.title = "KISS Import";
+	win.show(forms.kiss_option_import);
+	return true;
+}
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D7B53EDF-884A-4CFA-9DCB-374EF0C391F0"}
+ */
+function onShow(firstShow, event) {
+	elements.chooseCust.visible = false;
+	elements.chooseCustSelect.visible = false;
+	selectedCust = "";
 }

@@ -33,6 +33,7 @@ uuid:"08757308-3040-4D5B-8D46-0EABE3A65487"
 },
 {
 anchors:6,
+horizontalAlignment:0,
 location:"464,456",
 onActionMethodID:"AE427593-ABE1-4D76-AE72-7AAFF8E12156",
 onDoubleClickMethodID:"-1",
@@ -138,6 +139,7 @@ uuid:"C162F459-7030-49FA-B18F-AEE055CC747A"
 },
 {
 anchors:12,
+horizontalAlignment:0,
 location:"139,456",
 name:"saveButton",
 onActionMethodID:"7C64DFF6-6587-439E-B5C3-F9204FDA3248",

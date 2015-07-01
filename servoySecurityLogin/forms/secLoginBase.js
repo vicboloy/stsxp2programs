@@ -127,7 +127,7 @@ function login(){
 					if (minutes.length == 1) {minutes = "0"+minutes}
 					var seconds = date.getSeconds()+"";
 					if (seconds.length == 0) {seconds = "0"+seconds}
-					var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"'";
+					var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"';";
 					application.output('date '+mobileDate);
 					plugins.WebClientUtils.executeClientSideJS(mobileDate);
 				}
@@ -161,6 +161,15 @@ function callError(msg){
  * @properties={typeid:24,uuid:"A3E09D87-2EED-4CA4-8E02-C5014E5AA356"}
  */
 function onLoad(event) {
+	var server = application.getServerURL();
+	//plugins.WebClientUtils.addJsReference(server+'/ebapi.js');
+	//plugins.WebClientUtils.addJsReference(server+'/eb.system.js');
+	try {
+		// Change 000 no need to execute within STSmain, only works with Enterprise Browser
+		plugins.WebClientUtils.addJsReference(server+'/ebapi-modules.js');
+	} catch (e) {
+		application.output('This is not a mobile computer or Enterprise Browser is not installed.');
+	}
 	var win = application.getActiveWindow();
 	win.title = "STS Login_";
 	var showCompany = security.authenticate(AUTH_SOLUTION,AUTH_GET_TENANT_COUNT,[]);
@@ -178,17 +187,11 @@ function onLoad(event) {
 	}
 
 	var msg = "inside load";
-	///var callback = plugins.WebClientUtils.generateCallbackScript(callError, [msg, 'argN'], true);
-	///var script = 'function myFunction(arg1, argN){' + callback + '}';
-	///var markup = '<html><head><script type="text/javascript">' + script + '</script></head></html>'
-	
 }
 /**
  * @properties={typeid:24,uuid:"D46012B8-F198-4734-8D17-E5D53672CB98"}
  */
 function exitBrowser(){
-	//var jsToExecute = "alert('Hello World: Called From Servoy Method!');";
-	//debugText = jsToExecute;
 	var jsToExecute = "application.quit();";
 	plugins.WebClientUtils.executeClientSideJS(jsToExecute);
 }

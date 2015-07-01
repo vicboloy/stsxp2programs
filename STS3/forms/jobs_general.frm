@@ -59,14 +59,17 @@ typeid:7,
 uuid:"1ABD2389-E9A6-4D1B-B01C-6D6C8CE53BEE"
 },
 {
-dataProviderID:"job_plant",
+dataProviderID:"association_id",
+displayType:2,
+editable:false,
 location:"715,150",
 name:"job_plant",
 size:"140,20",
 tabSeq:11,
 text:"Job Plant",
 typeid:4,
-uuid:"1DDCA71F-4A4A-4D8B-8438-4E48497C1D63"
+uuid:"1DDCA71F-4A4A-4D8B-8438-4E48497C1D63",
+valuelistID:"7171223D-A518-458A-B051-215CF16CBCBE"
 },
 {
 dataProviderID:"po_release",
@@ -131,6 +134,7 @@ typeid:7,
 uuid:"47F6BBFC-8B84-4088-B23C-5DAD32DA9701"
 },
 {
+borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"sts_job_to_customer.name",
 editable:false,
 location:"460,41",
@@ -480,9 +484,10 @@ uuid:"E87326BA-D4D9-4165-85DD-BBA408912C5D"
 },
 {
 dataProviderID:"ft_projectid",
-format:"|#",
+format:"|#(10)",
 location:"715,285",
 name:"ft_projectid",
+onDataChangeMethodID:"66BEB95D-FBC3-425B-A053-FBDE880FD40C",
 size:"140,20",
 tabSeq:16,
 text:"Ft Projectid",

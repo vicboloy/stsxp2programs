@@ -1,4 +1,25 @@
-
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"1619B802-9007-405B-BA89-B2006D02E485"}
+ */
+var rfHtml = '<html> \
+	<head> \
+	<script type="text/javascript"> \
+	function saveLocalStorage() { \
+		if (typeof EB !== "undefined"){\
+			try{\
+				localStorage.device=EB.System.getProperty("deviceName");\
+				}\ catch(error){}\
+		}\
+		localStorage.browser=navigator.userAgent;\
+	} \
+	</script> \
+	</head> \
+	<body onload="saveLocalStorage()"> \
+	<button type="button" onClick="saveLocalStorage()">TEST</button> \
+	</body> \
+	</html>';
 /**
  * Handle changed data.
  *

@@ -103,6 +103,7 @@ function onLoadMain(event) {
 	globals.initLaborCodes();
 	elements.split.rightFormMinSize = 40;
 	elements.split.dividerLocation = 0.80;
+	onActionMenu(event,'view');
 	application.output('current tenant '+globals.secCurrentTenantID);
 	//replaceTabIcon('');
 

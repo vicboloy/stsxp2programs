@@ -2,7 +2,12 @@
  * @properties={typeid:35,uuid:"EB4B3603-F4EE-421B-9460-9578DB5EA104",variableType:-4}
  */
 var editEmployeeFlag = false;
-
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"129539DC-291F-41D8-8801-CD89027F7E7B"}
+ */
+var instance = "";
 /**
  * Called before the form component is rendered.
  *
@@ -15,7 +20,23 @@ function onRender(event) {
 		elements.employeeFullName.text = "RECORD: "+employee_firstname+" "+employee_middlename+" "+employee_lastname;
 	}
 }
-
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"E9AAE20F-6E81-4D9E-99EA-BB703579208C"}
+ */
+function getInstanceNum(event){
+	application.output(event);
+	instance = "";
+	var formName = event.getFormName();
+	var formSplit = formName.split("_");
+	var regExp = new RegExp('_/0-9/+$');
+	return formName.search(regExp);
+	
+}
 /**
  * TODO generated, please specify type and doc for the params
  * @param event
@@ -24,6 +45,7 @@ function onRender(event) {
  * @properties={typeid:24,uuid:"7FD30029-67F1-43B1-81F2-88F062280C00"}
  */
 function onEdit(event,editStatus){
+	application.output('regexp ' +getInstanceNum(event));
 	forms.employees.controller.readOnly = !editStatus;
 	forms.employees_lst.controller.enabled = !editStatus;
 	forms.employees.editEmployeeFlag = editStatus;

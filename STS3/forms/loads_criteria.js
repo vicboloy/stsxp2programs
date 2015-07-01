@@ -238,6 +238,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 			vLabTotalWt = 0;//totalweight
 			vLabNumPcmks = 0;//total piecemarks
 			browseInfoEnable();
+			scopes.jobs.onGetInformation(event,false);
 		} else {
 			jobFound = false;
 			status = false;

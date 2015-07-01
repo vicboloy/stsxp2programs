@@ -418,6 +418,14 @@ name:"stress_test"
 },
 {
 allowNull:true,
+compatibleColumnTypes:"[[8,17,17]]",
+creationOrderIndex:61,
+dataType:8,
+length:17,
+name:"summed_quantity"
+},
+{
+allowNull:true,
 creationOrderIndex:54,
 dataType:12,
 flags:4,

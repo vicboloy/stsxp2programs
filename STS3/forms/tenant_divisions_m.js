@@ -86,3 +86,18 @@ function onActionClose(event) {
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"DB85C56B-DE17-440E-9C99-8A52804E3DF5"}
+ */
+function onShow(firstShow, event) {
+	var form = forms[elements.tabless.getTabFormNameAt(1)];
+	form.elements.newButton.visible = true;
+	form.elements.newEntry.visible = true;
+	return _super.onShow(firstShow, event)
+}

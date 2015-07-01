@@ -86,6 +86,7 @@ valuelistID:"014DC1FC-D461-40A5-8386-9F09ACBE0623"
 },
 {
 dataProviderID:"barcode_prefix",
+format:"|#(2)",
 location:"159,60",
 name:"barcode_prefix",
 size:"43,20",

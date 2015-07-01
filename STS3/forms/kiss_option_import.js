@@ -229,6 +229,33 @@ var recomputeLabelArray = [];
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	excludeFS = null; kissDataSheets = []; kissDatasink = null; kissDataSumm = null; kissExcludes = null;
+	transitionFS = null; transitionFSsink = null; transitionFSsumm = null;
+	var job = scopes.jobs.importJob;
+	/**var headerLine = [];
+	for (var index=0;index<40;index++){
+		if (scopes.jobs.importResults.results[index][0] == "H"){
+			headerLine = scopes.jobs.importResults.results[index];
+			break;
+		}
+	}*/
+	jobNumber = job.jobNumber;
+	jobName = job.name;
+	jobDate = job.date;
+	jobMetric = job.metricFlag;
+	var customerArray = [];
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	if (foundset.find()){
+		job_number = scopes.jobs.importJob.jobNumber;
+		customer_id = scopes.jobs.importJob.customerId;
+		tenant_uuid = globals.session.tenant_uuid;
+		/**index = jobNums.indexOf(jobNumber);
+		customer_id = custIds[index];*/
+		var count = foundset.search();
+		foundset.setSelectedIndex(1);
+		scopes.jobs.jobIDs.push(job_id);
+	}
+	elements.importButt.enabled = false;
 	elements.applyButt.enabled = true;
 	var enableDrawing = true;
 	if (scopes.globals.kissJobRf){
@@ -259,7 +286,10 @@ function onShow(firstShow, event) {
 		}
 	}
 	application.setValueListItems('stsvl_employee',empArray);
+	employeeNumber = globals.session.loginUserNum;
+	application.output('employee number '+employeeNumber);
 	var jobRoutes = [];
+	var jobRouteIds = [];
 	/** @type {JSFoundSet<db:/stsservoy/routings>} */
 	var routes = databaseManager.getFoundSet('stsservoy','routings');
 	if (routes.find()){
@@ -270,10 +300,11 @@ function onShow(firstShow, event) {
 			for (index = 1;index <= routCount;index++){
 				rec = routes.getRecord(index);
 				jobRoutes.push(rec.route_code);
+				jobRouteIds.push(rec.routing_id);
 			}
 		}
 	}
-	application.setValueListItems('stsvl_route_code_id',jobRoutes);
+	application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds);
 	var window = controller.getWindow();
 	var height = window.getHeight();
 	window.setLocation(0, 0);
@@ -285,23 +316,6 @@ function onShow(firstShow, event) {
 	//index;
 	var custRec;
 	controller.enabled = true;
-	application.output("customer IDs "+scopes.jobs.customerIDs);
-	if (scopes.jobs.customerIDs.length == 1){
-		scopes.globals.importCustomerID =  scopes.jobs.customerIDs[0];
-	} else {
-		for (index = 0;index < scopes.jobs.customerIDs.length; index++){
-			//
-		}
-	}
-	/** @type {JSFoundSet<db:/stsservoy/customers>} */
-	var custFS = databaseManager.getFoundSet('stsservoy','customers');
-	if (custFS.find()){
-		custFS.customer_id = scopes.globals.importCustomerID;
-		if (custFS.search() != 0){
-			scopes.globals.importCustomerName = custFS.name;
-			scopes.jobs.custRec = custFS;
-		}
-	}
 	headerKissNames['item_quantity']='Total PcMarks Import Qty';
 	headerKissNames['sequence_quantity']='Import Qty';
 	headerKissNames['set_bc_qty']='Marks Full Label';
@@ -311,21 +325,6 @@ function onShow(firstShow, event) {
 	headerKissNames['ext_wt_qty']='Label Weight';
 	headerKissNames['sheet_number']='Sheet';
 	headerKissNames['piecemark']='Piecemark';
-	var headerLine = [];
-	for (index=0;index<40;index++){
-		if (scopes.jobs.importResults.results[index][0] == "H"){
-			headerLine = scopes.jobs.importResults.results[index];
-			break;
-		}
-	}
-	var jobNumberIndex = scopes.jobs.getFieldDataMapping("mapped_field","jobs.job_number").split(",")[1];
-	var jobNameIndex = scopes.jobs.getFieldDataMapping("mapped_field","jobs.job_title").split(",")[1];
-	var jobDateIndex = scopes.jobs.getFieldDataMapping("mapped_field","jobs.project_year").split(",")[1];
-	var jobMetricIndex = scopes.jobs.getFieldDataMapping("mapped_field","jobs.metric_job").split(",")[1];
-	jobNumber = headerLine[jobNumberIndex];
-	jobName = headerLine[jobNameIndex];
-	jobDate = headerLine[jobDateIndex];
-	jobMetric = headerLine[jobMetricIndex] == "F" ? 0 : 1;
 	defineExclDataset();
 	loadExclSumms();
 	var success = history.removeForm('kiss_excludes_lst');
@@ -340,6 +339,7 @@ function onShow(firstShow, event) {
 		elements.keep_minors.enabled = true;
 	}
 	importOption = "Use Sheet Number Matching";
+	importRouting = "";
 	scopes.jobs.tablePrefsLoad('kiss_option_import');
 	//handle excludes by shape and summaries by piecemark
 	applyImportPreferences();
@@ -544,6 +544,12 @@ function onHide(event) {
 	//	var success2 = solutionModel.removeForm('kiss_barcode_request');
 	//}
 	globals.setWindowClosed("");
+	history.removeForm('kiss_excludes_lst');
+	solutionModel.removeForm('kiss_excludes_lst');
+	history.removeForm('kiss_option_import');
+	solutionModel.removeForm('kiss_option_import');
+	history.removeForm('kiss_barcode_request');
+	solutionModel.removeForm('kiss_barcode_request');
 	var win = application.getActiveWindow();
 	win.hide();
 	return true
@@ -619,6 +625,12 @@ var notesContainCamber = false;
  * @properties={typeid:35,uuid:"B73FC9FA-0AFD-4986-8541-3F3C940FEAE5"}
  */
 var employeeNumber = "";
+/**
+ * @type {String}
+ * For selecting customerNumber if customer is selected
+ * @properties={typeid:35,uuid:"C447A713-4474-47E1-875B-B14807778575"}
+ */
+var customerNumber = "";
 /**
  * @type {String}
  * Prefix for job number that is prepended for Job Name.
@@ -1050,6 +1062,7 @@ function createKISSForm (){	// create table in form
 		if (columnNames[index].search('barcode_qty') != -1){
 			last.onDataChange = checkForm.getMethod('onQtyVerify');
 			last.tabSeq = 0;
+			last.selectOnEnter = true;
 		}
 		if (columnNames[index].search('action') != -1){
 			//last.onDataChange = checkForm.getMethod('onQtyVerify');
@@ -1450,8 +1463,10 @@ function applyImportPreferences(){
 	}
 	//scopes.jobs.warningsX();
 	elements.applyButt.enabled = true;
-	elements.importButt.bgcolor = 'green';
-	elements.importButt.enabled = true;
+	if (importRouting != ""){
+		elements.importButt.bgcolor = 'green';
+		elements.importButt.enabled = true;
+	}
 }
 /**
  * Handle changed data.
@@ -1477,8 +1492,8 @@ function onDataChange(oldValue, newValue, event) {
 			application.output('true');
 		} else {
 			application.output('false');
-			var jobID = scopes.jobs.jobIDs[0];
-			scopes.jobs.jobUnderCustomer = jobID;
+			//var jobID = scopes.jobs.jobIDs[0];
+			//scopes.jobs.jobUnderCustomer = jobID;
 			scopes.jobs.readPieceTables();	
 		}
 		if (!scopes.jobs.appendQuantityToIdfile){
@@ -1517,4 +1532,29 @@ function onActionExcel(event) {
 	plugins.file.writeFile(filePath+"\\KISS_ExcelDiscard.xls", excelFile);
 	
 	errorMessage = "See "+filePath+"\\KISS_Excel(Keep|Discard) files.";
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param incomingMetric
+ *
+ * @properties={typeid:24,uuid:"B5F199C8-66C2-407F-9240-D0C5F096A873"}
+ */
+function setMetricJob(incomingMetric){
+	metric_job = (incomingMetric) ? 1: 0;
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"3F39F3A6-7ABE-4705-A52B-EF8A8AFB058F"}
+ */
+function onDataChange1(oldValue, newValue, event) {
+	application.output('new routeing id'+newValue+' value '+importRouting);
+	return true
 }

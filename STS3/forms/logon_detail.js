@@ -5,21 +5,23 @@
  */
 var userName = "";
 /**
- * Callback method for when form is shown.
- *
- * @param {Boolean} firstShow form is shown first time after load
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"06E3910A-C5EC-4843-9923-EBED24550D19"}
- * @AllowToRunInFind
+ * @properties={typeid:24,uuid:"9678F23C-3E98-4FF7-9653-83B511DF83BA"}
  */
-function onShow(firstShow, event) {
-	// show usernames with null employee_id in users table and current employee_id
-	userName = user_name;
+function updateFields(event){
 	if (user_password != null && user_password != ""){
 		elements.userPass.placeholderText = "********";
 		elements.userPassConf.placeholderText = "********";
+	} else {
+		elements.userPass.placeholderText = "";
+		elements.userPassConf.placeholderText = "";
 	}
+}
+/**
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"DE863A38-BA1D-428F-BFD5-60BC9DD30DA9"}
+ */
+function refreshUsers(){
 	var usableIDs = [];
 	usableIDs.push(null);
 	usableIDs.push(globals.secCurrentUserID);
@@ -34,13 +36,26 @@ function onShow(firstShow, event) {
 		if (count){
 			for (var index = 1;index <= q.getSize();index++){
 				var rec = q.getRecord(index);
-				//rec.employee_id = 
 				userNames.push(rec.user_name);
 			}
 			userNames.sort();
 			application.setValueListItems('stsvlg_userNames',userNames);
 		}
 	}
+}
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"06E3910A-C5EC-4843-9923-EBED24550D19"}
+ * @AllowToRunInFind
+ */
+function onShow(firstShow, event) {
+	updateFields(event);
+	// show usernames with null employee_id in users table and current employee_id
+	refreshUsers();
 	return _super.onShow(firstShow, event)
 }
 
@@ -57,7 +72,6 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onDataChangeUserName(oldValue, newValue, event) {
-	var employee_userid = 0;
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var u = databaseManager.getFoundSet('db:/stsservoy/users');
 	if (u.find()){
@@ -65,15 +79,11 @@ function onDataChangeUserName(oldValue, newValue, event) {
 		u.tenant_uuid = globals.secCurrentTenantID;
 		if (u.search()){
 			var record = u.getRecord(1);
-			userID = record.user_id;
-			//controller.loadRecords(u);
-			//var formName = event.getFormName();
-			//var parent = application.getWindow().getParent();
-			//u.employee_id = parent.controller.forms[formName].
-			//var parent = scopes.globals.getParentForm();
-			//forms[parent].employee_userid = u.user_id;
-			
+			foundset.selectRecord(record.user_id);
+			foundset.deleteRecord(newRec);
+			forms[globals.getParentForm()].cancelEdit(event);
 		}
+		return true;
 	}
 	/** @type {JSFoundSet<db:/stsservoy/employee>} */
 	var e = databaseManager.getFoundSet('db:/stsservoy/employee');
@@ -100,6 +110,6 @@ function onDataChangeUserName(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"3EE95260-0591-4998-94B5-17D7815153C6"}
  */
 function onRecordSelection(event) {
-	userName = user_name;
+	updateFields(event);
 	return _super.onRecordSelection(event)
 }

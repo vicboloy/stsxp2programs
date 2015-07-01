@@ -63,7 +63,7 @@ function onActionClickCustomer(event) {
  * @properties={typeid:24,uuid:"B0C80879-16DA-4098-8801-18C1D7F24E96"}
  */
 function onActionClickEmployee(event) {
-	onActionClickMainButton(event,"Employees",'employees',50,50,920,505,false);
+	onActionClickMainButton(event,"Employees",'employees',50,50,920,505,true);
 }
 
 /**
@@ -214,10 +214,19 @@ function onActionJobs(event) {
  * TODO generated, please specify type and doc for the params
  * @param event
  *
+ * @properties={typeid:24,uuid:"3CD18375-D0A0-466D-A181-6D585BEE8E70"}
+ */
+function onActionTenantDivisions(event) {
+	onActionClickMainButton(event,"Department and Division Management",'tenant_divisions_m',50,50,750,350,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
  * @properties={typeid:24,uuid:"62683739-AB1C-4C81-9DD8-C03DD2959842"}
  */
-function onActionUserManage(event) {
-	onActionClickMainButton(event,"User Management",'user_management',50,50,750,330,false);
+function onActionLogonUserManage(event) {
+	onActionClickMainButton(event,"Logon User Management",'logons_m',50,50,750,330,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -225,17 +234,8 @@ function onActionUserManage(event) {
  *
  * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
  */
-function onActionTenants(event) {
-	onActionClickMainButton(event,"Divisions",'tenants',50,50,890,410,false);
-}
-/**
- * TODO generated, please specify type and doc for the params
- * @param event
- *
- * @properties={typeid:24,uuid:"3CD18375-D0A0-466D-A181-6D585BEE8E70"}
- */
-function onActionTenantGroups(event) {
-	onActionClickMainButton(event,"Department and Division Management",'members',50,50,750,350,false);
+function onActionSTSLogonManage(event) {
+	onActionClickMainButton(event,"STS Logon Employees",'tenant_users_m',50,50,890,410,false);
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -285,17 +285,17 @@ function createFormClone(formName, cloneName) {
 	
 	var clonedForm = solutionModel.cloneForm(cloneName, solutionModel.getForm(formName))
 	clonedForm.namedFoundSet = JSForm.SEPARATE_FOUNDSET;
-	globals.setWindowOpened(cloneName);
+	//globals.setWindowOpened(cloneName);
 
 	// Now we will do a depth-first traversal through all the tabs in all the tabpanels of the original form (formName),
 	// and for each tab we will make a clone of the form in that tab, and assign it
 	// to the corresponding tab of the cloned form (cloneName).
 	var aTabPanels = clonedForm.getTabPanels()
 	for (var i in aTabPanels) {
-		//var tabPanelName = aTabPanels[i].name
+		var tabPanelName = aTabPanels[i].name
 		var aTabs = aTabPanels[i].getTabs()
 		for (var j in aTabs) {
-			//var tabName = aTabs[j].name
+			var tabName = aTabs[j].name
 			var tabForm = aTabs[j].containsForm
 			var clonedTabForm = createFormClone(tabForm.name, tabForm.name + "_" + new Date().getTime());
 			clonedTabForm.namedFoundSet = JSForm.SEPARATE_FOUNDSET;

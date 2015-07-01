@@ -388,6 +388,7 @@ function onActionRecalcWeight(event) {
  * @properties={typeid:24,uuid:"D3694EFE-4004-4583-A215-4C9582FF0ED8"}
  */
 function onShow(firstShow, event) {
+	foundset.loadAllRecords();
 	var path = scopes.prefs.reportpath;
 	var labelList = [];
 	if (scopes.prefs.labelProgram == 'barTender'){

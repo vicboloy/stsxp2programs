@@ -32,12 +32,13 @@ typeid:7,
 uuid:"199AFA31-3206-4D2E-BF3A-6CB736F3DDA7"
 },
 {
+borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"mapped_field",
 editable:false,
 enabled:false,
 fontType:"Arial,1,13",
 formIndex:9,
-location:"181,294",
+location:"181,304",
 placeholderText:"-none-",
 size:"171,20",
 transparent:true,
@@ -256,7 +257,7 @@ uuid:"A24C4AF5-E6B3-41E8-B41D-B12734ACFFB6"
 {
 formIndex:8,
 horizontalAlignment:4,
-location:"61,294",
+location:"61,304",
 size:"110,20",
 text:"Current Mapping:",
 transparent:true,

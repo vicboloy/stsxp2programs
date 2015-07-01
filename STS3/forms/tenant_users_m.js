@@ -60,3 +60,32 @@ function onActionClose(event) {
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param editing
+ *
+ * @properties={typeid:24,uuid:"3356AEF1-608A-4CD0-B6A5-B7383EA2A904"}
+ */
+function onEditControllerState(editing){
+	var ltForm = elements.split.getLeftForm();
+	var rtForm =elements.split.getRightForm().elements.split.getLeftForm();
+	ltForm.controller.enabled = !editing;
+	rtForm.controller.enabled = !editing;
+}
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"A71DE566-7137-4EB4-A1F6-8D33C59BE997"}
+ */
+function onShow(firstShow, event) {
+	// disable newbutton on left and right tab panels
+	var formName = event.getFormName();
+	var ltForm = forms[formName].elements.split.getLeftForm();
+	var rtForm = forms[formName].elements.split.getRightForm().elements.split.getLeftForm();
+	ltForm.elements.newButton.visible = false;
+	ltForm.elements.newEntry.visible = false;
+	rtForm.elements.newButton.visible = false;
+}

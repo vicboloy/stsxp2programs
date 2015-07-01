@@ -189,22 +189,24 @@ var secTenantArray = [""];
  *
  * @properties={typeid:35,uuid:"73D45388-0F8A-4A73-8180-DF410838B567"}
  */
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"46A74ADC-5FC9-4604-9B1A-5405725CD1C6"}
+ */
 var html = '<html> \
 	<head> \
-	<script type="text/javascript" charset="utf-8" src="\\\Storage Card\\\EnterpriseBrowser\\rho\\\apps\\\public\\\api\\\ebapi-modules.js"></script> \
+	<script type="text/javascript" charset="utf-8" src="http://10.8.0.6:8080/ebapi-modules.js"></script> \
 	<script type="text/javascript"> \
 	function exitB() { \
-		plugins.WebClientUtils.executeClientSideJS("application.quit();") \
+		alert("joe2");\
 	} \
-	\
 	</script> \
 	</head> \
-	<body> \
-	<button type="button" onClick="exitB()">Exit</button> \
+	<body onload="exitB()"> \
+	<button type="button" onClick="exitB()">TEST</button> \
 	</body> \
 	</html>';
-//<script type="text/javascript" charset="utf-8" src="\\\Storage Card\\\EnterpriseBrowser\\rho\\\apps\\\public\\\re1\\\elements.js"></script> \
-
 /**
  * @properties={typeid:35,uuid:"84E03118-BE96-4341-A73F-68682F6CC32D",variableType:-4}
  */

@@ -16,9 +16,10 @@ uuid:"0B3D331D-FA1F-44F4-A3E3-EEE0CE3DED42"
 {
 items:[
 {
-containsFormID:"8B09D889-B2FF-4ED0-81E5-5A559CB16EFD",
+containsFormID:"00AF59BC-27CA-4FF5-96A2-C0001983D657",
 location:"5,60",
-text:"associations",
+name:"Tenant_Members",
+text:"divisions2",
 typeid:15,
 uuid:"8F5107F7-4671-43B0-BEEF-EF0F1C9176E4"
 }
@@ -56,10 +57,10 @@ typeid:19,
 uuid:"F3A9DCA2-BB3E-405D-B777-1E5A102E26B5"
 }
 ],
-name:"members",
+name:"tenant_divisions_m",
 onHideMethodID:"3D2BE672-8F9A-4905-9686-C38325E09AED",
 onLoadMethodID:"AAA6E7E0-FD63-4AC4-BB01-645B730ED523",
-onShowMethodID:"-1",
+onShowMethodID:"DB85C56B-DE17-440E-9C99-8A52804E3DF5",
 size:"357,301",
 styleName:"sts_one",
 typeid:3,

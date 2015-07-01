@@ -861,10 +861,10 @@ function onSolutionOpen() {
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
 	secSetCurrentApplication(secGetApplicationID(APPLICATION_NAME));
 	secCurrentUserID = security.getUserUID();
-	secCurrentTenantID = sec_current_user.tenant_uuid;
-	scopes.globals.mobTenantId = secCurrentTenantID
-	secCurrentAssociationID = secGetAssociationID(secCurrentTenantID);
-	secCurrentAssociationMasterID = secGetCurrentMasterAssociation(secCurrentTenantID);
+	secCurrentTenantID = sec_current_user.tenant_uuid; 
+	scopes.globals.mobTenantId = secCurrentTenantID; 
+	secCurrentAssociationID = sec_current_user.association_uuid;
+	//secCurrentAssociationMasterID = secGetCurrentMasterAssociation(secCurrentTenantID);
 	secSetCurrentApplication(17); // 17 is already STS, could be anything
 	application.output('assoc master '+secCurrentAssociationMasterID+' assoc '+secCurrentAssociationID+' tenant '+secCurrentTenantID);
 	var tenantID = sec_current_user.tenant_uuid;
@@ -877,10 +877,16 @@ function onSolutionOpen() {
 		var texts = plugins.file.readFile('c:\\STS.txt');
 		application.output(texts);
 	}
-	getLoggedEmployee(secCurrentUserID);
+	session.associationId = sec_current_user.association_uuid;
+	session.loginUserNum = sec_current_user.user_name;
+	session.loginId = sec_current_user.user_id;
 	session.tenant_uuid = secCurrentTenantID;
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.program = "STS Desktop";
+	session.login = globals.loginID;
+	session.capture;
+	getLoggedEmployee(session.loginId);
+	loginUserInfo(secCurrentUserID);
 	globals.getAssociation(secCurrentAssociationID);
 	onStartLoadPrefs();	
 	globals.getMappings();
@@ -946,6 +952,31 @@ function mainWindowFront(){
 	var windowx = application.getWindow();
 	if (windowx != null){
 		windowx.toFront();
+	}
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param userId
+ *
+ * @properties={typeid:24,uuid:"BF5D68D1-CB2D-496A-8414-BE0D7E84040D"}
+ */
+function loginUserInfo(userId){
+	application.output('useruseruser '+userId);
+	/** @type {JSFoundSet<db:/stsservoy/employee>} */
+	var fs = databaseManager.getFoundSet(globals.SEC_SERVER,'employee');
+	if (fs.find()){
+		fs.employee_userid = userId;
+		fs.search();
+		var rec = fs.getRecord(1);
+		session.loginUser = rec.employee_firstname;
+		session.loginUserNum = rec.employee_number;
+		session.fullName = "";
+		if (!rec.employee_firstname){session.fullName += rec.employee_firstname}
+		if (!rec.employee_lastname){session.fullName += rec.employee_lastname}
+		session.logging = (rec.employee_rf_logging == 1) ? 0 : 1;
+		session.rfLogging = (rec.employee_save_rftransaction == 1) ? 0 : 1;
 	}
 }
 /**
@@ -1103,7 +1134,7 @@ function setWindowOpened(windowName){
 		globals.aOpenWindows[windowName] = true;
 		//application.setValueListItems('xsts_nav_openWindows',globals.aOpenWindows);
 		application.setValueListItems('sts_nav_openWindows',globals.aOpenWindows);
-
+sts_nav_openWindows
 	}
 //	application.output(globals.aOpenWindows); //joeremove
 }
@@ -1214,6 +1245,16 @@ function numSort(r1,r2){ //use negative number for reverse sort or read column h
 		o = 1;
 	}
 	return o;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param intNumber
+ *
+ * @properties={typeid:24,uuid:"6B1819D8-85F1-47E3-995F-69ED03CE9A03"}
+ */
+function maxIntExceeded(intNumber){
+	if (intNumber > 2147483647 || intNumber < 0) {return false}
+	return true;
 }
 /**
  * @param r1

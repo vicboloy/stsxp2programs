@@ -4,6 +4,7 @@ items:[
 {
 anchors:11,
 dataProviderID:"is_account_active",
+editable:false,
 location:"0,20",
 name:"is_account_active",
 size:"48,20",
@@ -14,6 +15,7 @@ uuid:"0E3B066F-988D-436A-B920-6A1FFB8B5C19"
 {
 anchors:11,
 dataProviderID:"name_first",
+editable:false,
 location:"130,20",
 name:"name_first",
 size:"100,20",
@@ -27,7 +29,7 @@ labelFor:"name_first",
 location:"130,0",
 name:"name_first_label",
 size:"100,20",
-text:"Full Name",
+text:"Name",
 transparent:true,
 typeid:7,
 uuid:"6496C1F2-D822-4C6D-985D-76C5C6A37D92"
@@ -59,7 +61,7 @@ labelFor:"user_name",
 location:"48,0",
 name:"user_name_label",
 size:"83,20",
-text:"User Name",
+text:"Logon",
 transparent:true,
 typeid:7,
 uuid:"790C7D03-3A56-4666-85CB-1B42541F1505"
@@ -82,9 +84,10 @@ typeid:7,
 uuid:"8AA4A740-0474-4AC8-ADF2-71CB7A1D24CB"
 },
 {
-dataProviderID:"secx_users_to_tenantlist.company_name",
+dataProviderID:"sts_user_to_assoc.association_name",
+editable:false,
 location:"229,20",
-name:"company_name",
+name:"associationName",
 size:"102,20",
 text:"Company Name",
 typeid:4,
@@ -104,6 +107,7 @@ uuid:"B936652C-D7EF-4DB1-8F0B-4367B076C14F"
 {
 anchors:11,
 dataProviderID:"user_name",
+editable:false,
 location:"48,20",
 name:"user_name",
 size:"83,20",
@@ -112,11 +116,11 @@ typeid:4,
 uuid:"BF32A037-3719-4892-9894-37C2EEC30613"
 },
 {
-labelFor:"company_name",
+labelFor:"associationName",
 location:"229,0",
 name:"company_name_label",
 size:"102,20",
-text:"Divsion",
+text:"Division",
 transparent:true,
 typeid:7,
 uuid:"DDCD4059-0075-4A05-A393-FDAF122048A4"
@@ -133,9 +137,9 @@ typeid:7,
 uuid:"F0F5A1FD-D5F4-4AE8-9794-9119B391F9C0"
 }
 ],
-name:"usr_acct_lst",
+name:"tenant_logon_lst",
 size:"454,228",
-styleName:"sts_one",
+styleName:"sts_two",
 typeid:3,
 uuid:"75DFEFBE-D100-4082-8005-E5C62B4BC2BC",
 view:3

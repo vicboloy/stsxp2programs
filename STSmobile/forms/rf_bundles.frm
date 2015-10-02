@@ -2,7 +2,6 @@ dataSource:"db:/stsservoy/idfiles",
 extendsID:"72E0B299-FCCD-4C42-8A48-15F726CE17F1",
 items:[
 {
-formIndex:9,
 location:"0,0",
 name:"transShop",
 size:"187,20",
@@ -12,7 +11,7 @@ uuid:"04D656F2-7775-456A-8A0F-C41107537C3B"
 },
 {
 formIndex:14,
-location:"11,82",
+location:"11,81",
 text:"Location:",
 transparent:true,
 typeid:7,
@@ -20,7 +19,7 @@ uuid:"076C2782-C549-4A95-8E58-9AA7448EA9C9"
 },
 {
 formIndex:13,
-location:"11,103",
+location:"11,101",
 size:"80,20",
 text:"ID #:",
 transparent:true,
@@ -31,7 +30,7 @@ uuid:"0F49C5B8-6EFE-4976-8E84-690BBAACE75B"
 dataProviderID:"statusCode",
 formIndex:20,
 format:"|U",
-location:"90,62",
+location:"90,61",
 name:"status",
 onDataChangeMethodID:"26985B1F-17E8-4514-8F2A-6FF5FFBAA236",
 onFocusGainedMethodID:"9F12D05A-CD94-451C-B0D6-C2BBC656849C",
@@ -80,7 +79,7 @@ uuid:"30A824BA-370E-4595-B16A-F4E6AF3A93A9"
 dataProviderID:"statusLocation",
 formIndex:21,
 format:"|U",
-location:"90,82",
+location:"90,81",
 name:"location",
 onActionMethodID:"-1",
 onDataChangeMethodID:"76457369-74E3-42E3-8B3C-EC42331E9A19",
@@ -90,16 +89,18 @@ typeid:4,
 uuid:"3F8E75CB-5ABC-4188-BBBD-B491AC2A06B3"
 },
 {
-dataProviderID:"totalWeight",
+dataProviderID:"scopes.globals.mobBundleWeight",
 formIndex:3,
 location:"141,222",
+name:"bundleWeight",
+size:"61,20",
 transparent:true,
 typeid:7,
 uuid:"59F84747-8EF4-4488-B40E-3DF10DE5FD6D"
 },
 {
 formIndex:16,
-location:"11,62",
+location:"11,61",
 text:"Status:",
 transparent:true,
 typeid:7,
@@ -125,7 +126,7 @@ uuid:"6C6892C7-7FDC-49DD-BFA7-0D577A4A4CDA"
 dataProviderID:"pcmkWeight",
 formIndex:8,
 location:"90,203",
-size:"136,20",
+size:"103,20",
 transparent:true,
 typeid:7,
 uuid:"72A1A428-378F-442E-925D-FE3E4B066C4A"
@@ -150,7 +151,7 @@ uuid:"84F3547D-BFAB-4AD8-BC29-DDD66C29FCF7"
 dataProviderID:"currentID",
 formIndex:22,
 format:"|U",
-location:"90,103",
+location:"90,101",
 name:"current",
 onActionMethodID:"-1",
 onDataChangeMethodID:"8207B6BB-DA06-4861-8E21-3426C54CCC5F",
@@ -166,10 +167,11 @@ typeid:4,
 uuid:"92FEA347-E778-4CA7-80C0-A56D834C5C96"
 },
 {
-dataProviderID:"totalPieces",
+dataProviderID:"scopes.globals.mobBundlePieces",
 formIndex:2,
 horizontalAlignment:0,
 location:"38,222",
+name:"bundlePieces",
 size:"75,20",
 transparent:true,
 typeid:7,
@@ -195,12 +197,18 @@ uuid:"A0B943E4-0171-4AA4-9E91-EF054F1D8653"
 },
 {
 formIndex:12,
-location:"11,123",
+location:"11,121",
 size:"80,20",
 text:"PREV ID:",
 transparent:true,
 typeid:7,
 uuid:"A6534C5A-A23F-4278-8381-5BCC3CFB9B0F"
+},
+{
+extendsID:"E082B205-F6E9-4457-9D80-4E59FA43A491",
+formIndex:1,
+typeid:7,
+uuid:"B4C8BA49-18A0-489F-8F6B-3683778CBA23"
 },
 {
 formIndex:6,
@@ -210,6 +218,15 @@ text:"PcMk:",
 transparent:true,
 typeid:7,
 uuid:"C3EEDD21-2F8C-44F0-A470-BBF63803ADE9"
+},
+{
+dataProviderID:"scopes.globals.mobWeightUnits",
+location:"192,203",
+size:"40,20",
+text:"type",
+transparent:true,
+typeid:7,
+uuid:"C7905922-69EF-4F3D-AD77-408BBFA6639D"
 },
 {
 location:"11,222",

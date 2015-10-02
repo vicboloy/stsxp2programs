@@ -142,6 +142,14 @@ name:"ft_sitid"
 },
 {
 allowNull:true,
+creationOrderIndex:62,
+dataType:12,
+flags:4,
+length:36,
+name:"heat_id"
+},
+{
+allowNull:true,
 creationOrderIndex:41,
 dataType:-7,
 name:"hydro_test"

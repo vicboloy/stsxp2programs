@@ -38,7 +38,6 @@ function onSolutionOpen(){
 	secSetCurrentTenant(secCurrentTenantID);
 	//getTablesFilters(secCurrentTenantID);
 	//globals.workersList();
-	//globals.mobLoggedEmployeeId = globals.getLoggedEmployee(secCurrentUserID);
 	//application.setValueListItems('stsvlg_workers',globals.workersList())
 	// set session id varibles
 	///scopes.globals.getLoggedEmployee(secCurrentUserID);
@@ -55,6 +54,7 @@ function onSolutionOpen(){
 	}
 	session.association = m.assocs[session.associationId];
 	getLoggedEmployee(session.loginId);
+	mobLoggedEmployeeId = session.employeeId; //globals.getLoggedEmployee(secCurrentUserID);
 	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association
 	//application.output()
 	application.setValueListItems('stsvlg_status_codes',globals.m.statusCodesDiv[session.associationId]); // status codes for this association
@@ -71,5 +71,12 @@ function onSolutionOpen(){
 	globals.DIALOGS.setDialogWidth(200);
 	globals.DIALOGS.setDialogHeight(200);
 	null;
+	application.output("-----------------------");
+	//rfGetLocalStorage('deviceName');
+	//rfGetLocalStorage('deviceName');
+	//rfGetLocalStorage('deviceName');
+	//application.output("-----------------------");
+	//application.output('begin retrieve local storage '+session.localStorage);
+	//globals.rfTimerBrowser();
 }
 

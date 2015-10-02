@@ -441,7 +441,7 @@ function secCheckPassword(userID, password){
 	
 	users = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USERS);	//	search for the user
 	if(users.loadRecords(userID)){
-		
+		//if (application.isInDeveloper()){application.output('password '+password+' crypt = '+secEncryptPassword(password))}
 		return users.user_password == secEncryptPassword(password);		//	check encrypted password
 	}
 	
@@ -517,6 +517,7 @@ function secCreateUser(userName, password, tenantID){
 				users.user_name = userName;								//	set user name
 				users.user_password = password;							//	set password
 				users.tenant_uuid = tenantID;								//	set the tenant ID
+				users.is_account_active = 1;							// set active account
 				if(databaseManager.saveData(users.getSelectedRecord())){//	save the record
 					return users.getSelectedRecord();					//	return user ID
 				}
@@ -562,7 +563,7 @@ function secDeleteUser(userID){
  * @properties={typeid:24,uuid:"560E2591-06E2-4976-9A4A-BD25FDF2E2E6"}
  */
 function secInitialStart(){
-	application.output('initial start');
+	if (application.isInDeveloper()){application.output('initial start');}
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var users = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USERS);
 	users.loadAllRecords();
@@ -571,7 +572,7 @@ function secInitialStart(){
 	var tenants = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_TENANTS);
 	tenants.loadAllRecords();
 	var tenantCount = tenants.getSize();
-	application.output('tenant count '+tenantCount);
+	if (application.isInDeveloper()){application.output('tenant count '+tenantCount);}
 	if (tenantCount < 2){
 		forms.secLoginExample.companyName.visible = false;
 		forms.secLoginExample.companyNameLabel.visible = false;
@@ -588,7 +589,7 @@ function secInitialStart(){
 		//secAddTenantToAssociation('demo1','demo1');
 		secCreateUser('demo1','password',assocUUID);
 	//}
-	application.output('users: '+userCount+' tenants:' +tenantCount+' associations: '+associationCount);
+		if (application.isInDeveloper()){application.output('users: '+userCount+' tenants:' +tenantCount+' associations: '+associationCount);}
 }
 /**
  * @properties={typeid:24,uuid:"CDD97263-D36B-491A-ABAA-A0D9EFC101FB"}
@@ -624,11 +625,13 @@ function secLogin(userID){
 	}
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a users foundset
 	//security.createGroup(SEC_ADMINISTRATORS);							//	Create the group (This may not be necessary)
+	if (application.isInDeveloper()){application.output('before logical login');}
 	if(users.loadRecords(userID) && users.is_account_active){ 			//	load user record, check if active account
 		users.last_login = new Date();									//	reset last login date & login user
 		secLogger('User '+userID+' login.');
 		return security.login(users.user_name,users.user_id,[SEC_ADMINISTRATORS]);
 	}
+	if (application.isInDeveloper()){application.output('after logical login');}
 	if (users.is_account_active){scopes.globals.secLogger('User '+users.user_name+' is inactive.')}
 	return null;  //added to return some value JOE
 }
@@ -727,12 +730,15 @@ function secCreateAssociation(assocName){
 	/** @type {JSFoundSet<db:/stsservoy/associations>} */
 	var assoc;
 	// continue with association creation
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */
 	assoc = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);
 	if(assoc.find()){													//	Search the associations table...
 		assoc.association_name = assocName;								//	...by association name
-		//assoc.tenant_uuid = tenantUUID;
+		assoc.tenant_uuid = secCurrentTenantID;
 		if(!assoc.search() && assoc.newRecord()){						//	association name is unique. create the association record
 			assoc.association_name = assocName;							//	set the company name
+			assoc.tenant_uuid = secCurrentTenantID;
+			if (application.isInDeveloper()){application.output('Create assoc '+assocName+' in UUID '+secCurrentTenantID);}
 			//associationArray.push(assoc.association_uuid);
 			if(databaseManager.saveData(assoc.getSelectedRecord())){	//	save the record
 				assoc.getSelectedRecord();
@@ -820,12 +826,15 @@ function secCreateTenant(companyName) {
 	if(!companyName){													//	validate input
 		return null;
 	}
+	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
 	tenants = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_TENANTS);
 	if(tenants.find()){													//	Search the tenants table...
 		tenants.company_name = companyName;								//	...by company name
 		if(!tenants.search() && tenants.newRecord()){					//	company name is unique. create the tenant record
 			tenants.company_name = companyName;							//	set the company name
-			
+			tenants.edit_date = new Date();
+			application.output('tenant Id '+tenants.tenant_uuid )
+			secCurrentTenantID = tenants.tenant_uuid;
 			if(databaseManager.saveData(tenants.getSelectedRecord())){	//	save the record
 				return tenants.getSelectedRecord();						//	return the tenant id
 			}
@@ -899,7 +908,7 @@ function getTenantCount(){
 	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
 	var fs = databaseManager.getFoundSet('stsservoy','tenant_list');
 	fs.loadAllRecords();
-	return fs.getSize() > 1;
+	return fs.getSize();
 }
 /**
  * @AllowToRunInFind
@@ -1658,3 +1667,37 @@ function ARRAY_getAllServers(){
     return vServers;
     */
  }
+/**
+ * @properties={typeid:24,uuid:"E64C56CB-94C7-40A7-ABF3-F2EC24BB17F6"}
+ */
+function secCreateTenantAndUser(){
+	secDeleteTableInfo();
+	databaseManager.saveData();
+	secCreateTenant('Company Name');
+	secCreateAssociation('Shop');
+	secCreateUser('ADMIN','P2PROGRAMS',secCurrentTenantID);
+	databaseManager.saveData();
+}
+/**
+ * @properties={typeid:24,uuid:"CE18A6A9-7D2A-416D-AD03-D27EB3412E7C"}
+ */
+function secDeleteTableInfo(){
+	//var backupServer = databaseManager.
+	var tables = databaseManager.getTableNames('stsservoy');
+	var table = "";
+	var skipTables = ['zipcodes','valuelists'];
+	for (var index = 0; index < tables.length;index++){
+		table = tables[index];
+		if (skipTables.indexOf(table) != -1){continue}
+		var fs = databaseManager.getFoundSet('stsservoy',table);
+		fs.loadAllRecords();
+		var count = 0;
+		var index2 = 0;
+		while (index2++ < 100 && count != fs.getSize()){
+			count = fs.getSize();
+			fs.getRecord(count);
+			fs.deleteAllRecords();
+		}
+		if (application.isInDeveloper()){application.output('table '+table+' count '+count);}
+	}
+}

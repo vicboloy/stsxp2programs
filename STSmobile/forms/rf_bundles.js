@@ -92,7 +92,7 @@ function clearForm(level){
 			currentJob = "";
 		case 'job':
 			currentBundle = "";
-			globals.mob.bundleId;
+			globals.mob.bundle.Id;
 		case 'bundle':
 			totalWeight = 0.0;
 			totalPieces = 0;
@@ -107,15 +107,6 @@ function clearForm(level){
 	}
 }
 /**
- * @properties={typeid:24,uuid:"47CBEC8B-B8A4-42D2-A7EC-7A5C3D161B00"}
- */
-function setTransShop(){
-	elements.transShop.text = "Build Bundles "+globals.session.association;
-	controller.focusField('job',true);
-	clearForm();
-	//elements.status.requestFocus();
-}
-/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -124,5 +115,5 @@ function setTransShop(){
  * @properties={typeid:24,uuid:"5B1E37AE-9EAA-4F08-9EE5-A1F5BCA4AAC5"}
  */
 function onShow(firstShow, event) {
-	setTransShop();
+	globals.setTransShop();
 }

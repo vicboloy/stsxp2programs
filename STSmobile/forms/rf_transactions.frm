@@ -4,9 +4,9 @@ extendsID:"72E0B299-FCCD-4C42-8A48-15F726CE17F1",
 items:[
 {
 dataProviderID:"statusCode",
-formIndex:4,
+formIndex:5,
 format:"|U",
-location:"100,19",
+location:"100,20",
 name:"status",
 onDataChangeMethodID:"26985B1F-17E8-4514-8F2A-6FF5FFBAA236",
 onFocusGainedMethodID:"9F12D05A-CD94-451C-B0D6-C2BBC656849C",
@@ -24,7 +24,7 @@ uuid:"04F337DB-F8A3-4F79-9DC7-9B7D6D1F045C"
 },
 {
 anchors:15,
-formIndex:1,
+formIndex:2,
 items:[
 {
 containsFormID:"0125012B-3A8B-46D1-8456-20B1F29B7B0A",
@@ -48,16 +48,16 @@ uuid:"18D552FB-2E06-438A-B262-F723A0FA6AB5"
 },
 {
 extendsID:"5E1F8B4B-3AC9-4527-AAD4-2A4EA808BC6F",
-formIndex:0,
+formIndex:1,
 typeid:16,
 uuid:"35714419-897B-4BEC-B5DA-AC83CDE55FD9"
 },
 {
 customProperties:"",
 dataProviderID:"currentID",
-formIndex:6,
+formIndex:7,
 format:"|U",
-location:"100,80",
+location:"100,81",
 name:"current",
 onDataChangeMethodID:"8207B6BB-DA06-4861-8E21-3426C54CCC5F",
 onFocusGainedMethodID:"9F12D05A-CD94-451C-B0D6-C2BBC656849C",
@@ -69,7 +69,7 @@ uuid:"41B533EB-22A3-4770-8027-27A3865A9730"
 {
 dataProviderID:"lastID",
 formIndex:11,
-location:"119,101",
+location:"119,102",
 name:"previous",
 size:"121,20",
 transparent:true,
@@ -77,8 +77,8 @@ typeid:7,
 uuid:"48678B4B-5142-4899-9B1B-84E47CBDBD74"
 },
 {
-formIndex:3,
-location:"0,80",
+formIndex:4,
+location:"0,81",
 text:"ID:",
 transparent:true,
 typeid:7,
@@ -87,9 +87,9 @@ uuid:"4B1FFF00-8DD8-4159-9673-439F7A9D26B9"
 {
 customProperties:"",
 dataProviderID:"statusWorker",
-formIndex:5,
+formIndex:6,
 format:"|U",
-location:"100,60",
+location:"100,61",
 name:"worker",
 onActionMethodID:"-1",
 onDataChangeMethodID:"F9C47BF5-F1BE-46D1-82FF-C80A0246CBEF",
@@ -101,8 +101,8 @@ typeid:4,
 uuid:"5611B078-DDEF-497E-9CE2-7AB32ACFFDF7"
 },
 {
-formIndex:2,
-location:"0,101",
+formIndex:3,
+location:"0,102",
 size:"104,20",
 text:"Previous ID:",
 transparent:true,
@@ -110,7 +110,6 @@ typeid:7,
 uuid:"60600E65-4920-4218-A4BB-880D6E7E9CCD"
 },
 {
-formIndex:9,
 location:"0,0",
 name:"transShop",
 size:"187,20",
@@ -119,8 +118,8 @@ typeid:7,
 uuid:"710BDF27-CC2A-4F8C-AA85-8566CCF24740"
 },
 {
-formIndex:8,
-location:"0,60",
+formIndex:9,
+location:"0,61",
 text:"Worker:",
 transparent:true,
 typeid:7,
@@ -133,8 +132,8 @@ typeid:4,
 uuid:"9A1C3BFF-D6BE-4E0E-8265-D59BD9C4566B"
 },
 {
-formIndex:7,
-location:"0,39",
+formIndex:8,
+location:"0,40",
 text:"Location:",
 transparent:true,
 typeid:7,
@@ -148,7 +147,7 @@ uuid:"A24CCF0F-0578-4363-BB71-99B36D48F1B9"
 },
 {
 formIndex:12,
-location:"0,19",
+location:"0,20",
 text:"Status:",
 transparent:true,
 typeid:7,
@@ -158,7 +157,7 @@ uuid:"A384BF72-9451-4AC3-81DA-D3D3899EBC35"
 dataProviderID:"statusLocation",
 formIndex:10,
 format:"|U",
-location:"100,39",
+location:"100,40",
 name:"location",
 onActionMethodID:"-1",
 onDataChangeMethodID:"76457369-74E3-42E3-8B3C-EC42331E9A19",

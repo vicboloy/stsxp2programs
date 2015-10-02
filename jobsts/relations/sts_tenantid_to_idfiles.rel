@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/idfiles",
+items:[
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.tenantIDmobile",typeid:23,uuid:"AAC3171D-DD5B-451C-8575-9DB156CBF68D"}
+],
+joinType:1,
+name:"sts_tenantid_to_idfiles",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"B3AE4BBA-F1FD-4E0B-93B7-EF45B08B6357"

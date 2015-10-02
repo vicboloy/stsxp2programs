@@ -21,6 +21,12 @@ var rfHtml = '<html> \
 	</body> \
 	</html>';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"A964DEA7-D91F-4691-8B51-ECE88A4ACFCE"}
+ */
+var textAreaString = "";
+/**
  * Handle changed data.
  *
  * @param {String} oldValue old value
@@ -54,6 +60,12 @@ function hideLogo(){
  * @properties={typeid:24,uuid:"490EFD00-9D7A-4E77-BA36-1B4DE5C89540"}
  */
 function onDataChange(oldValue, newValue, event) {
+	if (event.getElementName() == 'companyName'){
+		if (!newValue || newValue == ""){
+			elements.companyName.requestFocus();
+			return true;
+		}
+	}
 	elements.password.requestFocus();
 	return true
 }

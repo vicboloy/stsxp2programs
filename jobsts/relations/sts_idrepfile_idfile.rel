@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/idfiles",
+items:[
+{foreignColumnName:"idfile_id",primaryDataProviderID:"scopes.globals.mobRepIdfileId",typeid:23,uuid:"86575B5E-2AF6-45B4-AB1E-90ED7DA8FCC5"}
+],
+joinType:1,
+name:"sts_idrepfile_idfile",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"F5063D61-5FBF-4EAF-8F88-74E672BDE57D"

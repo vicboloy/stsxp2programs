@@ -71,7 +71,18 @@ var password = null;
  * @properties={typeid:35,uuid:"4FC75C83-9F3F-4CCE-912C-F57A39126D16"}
  */
 var userName = null;
-
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E8AE7A9C-717B-4BFE-871F-967BB3D6D5AD"}
+ */
+var AUTH_MESSAGE_LOGGER = "secLogger";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C85C39E0-9C59-4F56-9488-11A0D65D2B3B"}
+ */
+var AUTH_INIT_COMPANY = "secCreateTenantAndUser";
 /**
  * @properties={typeid:24,uuid:"5F3B8ABB-AEC5-4217-967B-77FCB4D07DDA"}
  */
@@ -85,12 +96,10 @@ function login(){
 		companyName = "";
 		return false;
 	}*/
-	/*
-	if(!companyName){
+	if(elements.companyName.visible && !companyName){
 		errorMessage = 'Please specify a company name';
 		return false;
 	}
-	*/
 	if(!userName){
 		errorMessage = 'Please specify a user name';
 		return false;
@@ -105,13 +114,13 @@ function login(){
 	if(tenantID){
 		//application.output('inside tenantID');
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
-		application.output('user ID '+userID+' tenantID '+tenantID);
+		if (application.isInDeveloper()){application.output('user ID '+userID+' tenantID '+tenantID);}
 		if(userID){
-			//application.output('passCheck '+userID+' '+password);
+			application.output('passCheck '+userID+' '+password);
 			var passCheck = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_PASSWORD,[userID, password]);
 			if (!passCheck && (password == tenantID)){passCheck = true}//TODO REMOVE
 			
-			//application.output('passcheck '+passCheck+' '+password+' '+tenantID);
+			if (application.isInDeveloper()){application.output('passcheck '+passCheck+' '+password+' '+tenantID);}
 			if(passCheck && security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 				globals.secCurrentUserID = userID;
 				globals.secCurrentUserName = userName;
@@ -161,6 +170,35 @@ function callError(msg){
  * @properties={typeid:24,uuid:"A3E09D87-2EED-4CA4-8E02-C5014E5AA356"}
  */
 function onLoad(event) {
+	textAreaString = "";
+	//application.output('begin load');
+	for (var item in plugins){
+		application.output('loaded '+item);
+		textAreaString += item+",";
+	}
+	var registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
+	var counter = 10000;
+	if (!registered && (counter > 0)){
+		registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
+		counter--;
+	}
+	application.output('usermanager registered '+registered+' counter '+counter);
+	try {
+		var clientArray = plugins.UserManager.getClients();
+		var licenses = licenseCount();
+		for (var indexC = 0;indexC < clientArray.length;indexC++){
+			var client = clientArray[indexC];
+			client = client.clientId;
+			var clientInfo = plugins.UserManager.getClientByUID(client);
+			application.output(clientArray[indexC]+' client alive:'+client+' IP:'+clientInfo.ipAddress+' Login:'+clientInfo.login+' solution:'+clientInfo.solutionName+' idle:'+clientInfo.idle);
+			application.output(clientInfo);
+		}
+		application.output('license count '+licenses);
+		var moreLic = plugins.UserManager.Server().getSettingsProperty('license.0.company_name');
+		textAreaString += "license "+licenses+' more - '+moreLic+' -';
+	} catch (e)	{
+		
+	}
 	var server = application.getServerURL();
 	//plugins.WebClientUtils.addJsReference(server+'/ebapi.js');
 	//plugins.WebClientUtils.addJsReference(server+'/eb.system.js');
@@ -171,9 +209,16 @@ function onLoad(event) {
 		application.output('This is not a mobile computer or Enterprise Browser is not installed.');
 	}
 	var win = application.getActiveWindow();
-	win.title = "STS Login_";
-	var showCompany = security.authenticate(AUTH_SOLUTION,AUTH_GET_TENANT_COUNT,[]);
-	application.output('company count '+showCompany);
+	win.title = "STS Login";
+	var companyCount = security.authenticate(AUTH_SOLUTION,AUTH_GET_TENANT_COUNT,[])
+	var showCompany = (companyCount > 1);
+	var message = 'Company Count is '+companyCount;
+	if (companyCount == 0){
+		security.authenticate(AUTH_SOLUTION,AUTH_INIT_COMPANY,[]);
+	}
+	if (application.isInDeveloper()){application.output(message);}
+	security.authenticate(AUTH_SOLUTION,AUTH_MESSAGE_LOGGER,[message]);
+	if (application.isInDeveloper()){application.output('company show '+showCompany);}
 	elements.companyName.visible = showCompany;
 	elements.companyNameLabel.visible = showCompany;
 	var width = win.getWidth();
@@ -201,3 +246,22 @@ function exitBrowser(){
  * @properties={typeid:35,uuid:"4E30A6E1-0F9E-45A7-BE39-6A406BB053F3"}
  */
 var debugText = "";
+/**
+ * @properties={typeid:24,uuid:"0FB115A9-BF63-405C-9C73-6BED2239EA8E"}
+ */
+function licenseCount() {
+	for (var index = 0;index < 5;index++){
+		application.output('index '+index+': '+plugins.UserManager.Server().getSettingsProperty('license.' + index + '.licenses'));
+	}
+	application.output('URL '+plugins.UserManager.getSettingsProperty('server.0.URL'));
+	   var _nTotal = 0;
+	   var _nCount = parseInt(plugins.UserManager.Server().getSettingsProperty('licenseManager.numberOfLicenses'), 10);
+	   application.output('licenses call '+plugins.UserManager.getSettingsProperty('licenseManager.numberOfLicenses'));
+	   if(_nCount) {
+	      for (var i = 0; i < _nCount; i++) {
+	         _nTotal += parseInt(plugins.UserManager.Server().getSettingsProperty('license.' + i + '.licenses'), 10);
+	      }
+	   }
+	   
+	   return _nTotal;
+	}

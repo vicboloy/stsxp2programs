@@ -113,6 +113,7 @@ function tablePrefsColumnsToHide(tableName){
  * @properties={typeid:24,uuid:"5FD76D7C-005E-44EA-B200-F2F6F8ECDA9A"}
  */
 function onShow(firstShow, event) {
+	var formName = scopes.jobs.generalTableOrderTableName;
 	var win = application.getActiveWindow();
 	if (firstShow){
 		var formx = win.controller.getName();
@@ -124,42 +125,50 @@ function onShow(firstShow, event) {
 	//application.setValueListItems('stsvl_catTemp1',colAvail);
 	//application.setValueListItems('stsvl_catTemp2',colShow);
 	
-	var formsInUse = [];
-	var formy = null;
+	///var formsInUse = [];
+	/**var formy = null;
 	if (forms[formx].elements.tabless){
 		formy = forms[formx].elements.tabless.getTabFormNameAt(1);
 		formsInUse.push(formy);
 	}
 	if (forms[formx].elements.split){
 		//var formCombo = event.getFormName().split("_")[0]+'_pcmk_combo';
-		var top = forms[formx].elements.split.getLeftForm().controller.getName();
-		var bot = forms[formx].elements.split.getRightForm().controller.getName();
-		formsInUse.push(top);
-		formsInUse.push(bot);
+		var left = forms[formx].elements.split.getLeftForm().controller.getName();
+		var right = forms[formx].elements.split.getRightForm().controller.getName();
+		formsInUse.push(left);
+		formsInUse.push(right);
 	}
 	if (formsInUse.length == 0){
 		return;
-	}
-	while (formsInUse.length > 0){
+	}*/
+	//while (formsInUse.length > 0){
 		colAvail = [];
 		colShow = [];
 		var nameToPosY = [];
 		var nameToPosX = [];
-		formy = formsInUse.pop();
+		//formy = formName; //formsInUse.pop();
 		//scopes.globals.a.tempHiddenColumns[formy] = [];
 		//tablePrefsColumnsToHide(formy);
-		currentTableName = formy;
-		var elems = forms[formy].elements;
+		currentTableName = formName; // formy;
+		var elems = forms[currentTableName].elements;
 		var lastY = 0;
 		var lastX = 0;
 		var posX = 0;
 		var posY = 0;
-		colAvail = scopes.globals.a.tempHiddenColumns[formy].sort();
+		//colAvail = scopes.globals.a.tempHiddenColumns[formy].sort();
+		//forms.loads_pcmk_combo.elements.settingsLeft.
 		
 		for (var index in elems){
 			var name = elems[index].getName();
+			if (scopes.jobs.tablePKs.indexOf(name) != -1){continue}
 			var visible = elems[index].isVisible();
-			posX = "000000000"+elems[index].getLocationX();
+			if (elems[index].getWidth() == 0){
+				colAvail.push(name);
+			} else {
+				colShow.push(new Array(elems[index].getLocationX(),name));
+			}
+			
+			/**posX = "000000000"+elems[index].getLocationX();
 			posX = utils.stringRight(posX,9);
 			if (scopes.globals.a.tempHiddenColumns[formy].indexOf(name) == -1 && lastX != posX){
 				nameToPosX.push(posX+"|"+name);
@@ -168,24 +177,24 @@ function onShow(firstShow, event) {
 			if (scopes.globals.a.tempHiddenColumns[formy].indexOf(name) != -1 &&
 					colAvail.indexOf(name) == -1){
 				colAvail.push(name);
-			}
+			}*/
 		}
-	}
-	nameToPosX.sort();
+	//}
+	colShow = colShow.sort(function (a,b){return a[0]-b[0]});
+	//nameToPosX.sort();
 	var sortedOrder = [];
-	colAvail.sort();
-	if (nameToPosX.length > 3){
+	//colAvail = colAvail.sort();
+	/**if (nameToPosX.length > 3){
 		sortedOrder = nameToPosX;
 	} else {
 		sortedOrder = nameToPosY;
-	}
-	for (index = 0;index < sortedOrder.length;index++){
-		var name = sortedOrder[index].split("|")[1];
-		colShow.push(name);
+	}*/
+	for (index = 0;index < colShow.length;index++){
+		sortedOrder.push(colShow[index][1]);
 	}
 	//colShow.sort();
 	application.setValueListItems('stsvl_catTemp1',colAvail);
-	application.setValueListItems('stsvl_catTemp2',colShow);
+	application.setValueListItems('stsvl_catTemp2',sortedOrder);
 	resetAvailable = application.getValueListArray('stsvl_catTemp1');
 	resetSelected = application.getValueListArray('stsvl_catTemp2');
 }
@@ -434,8 +443,7 @@ function onActionApply(event) {
 	// well, this isn't really a save.  We reorder the elements and close window.  Save is performed later
 	var showArray = application.getValueListArray('stsvl_catTemp2'); // show and order, the rest are hidden
 	var hideArray = application.getValueListArray('stsvl_catTemp1'); // items to hide, put them last
-	var form = currentTableName;
-	var jsForm = solutionModel.getForm(form);
+	var form = scopes.jobs.generalTableOrderTableName;
 	//var jsField = null;
 	globals.a.tempHiddenColumns[form] = [];
 	var doneArray = [];
@@ -452,7 +460,9 @@ function onActionApply(event) {
 	}
 	application.output('missing items from avail/select '+doneArray);
 	var posX = 0;
+	var jsForm = solutionModel.getForm(form);jsForm.get
 	for (var index = 0;index < showArray.length;index++){
+		/** @type String */
 		var name = showArray[index];
 		doneArray.push(name);
 		if (!elems[name]){continue}
@@ -460,8 +470,9 @@ function onActionApply(event) {
 		elems[name].visible = true;
 		var lastPos = elems[name].getLocationX();
 		var jsField = jsForm.getField(name);
+		
+		if (!jsField){jsField = jsForm.getLabel(name);}
 		jsField.x = posX;
-		//elems[name].setLocation(posX,elems[name].getLocationY());
 		posX = posX+elems[name].getWidth();
 		if (tempEmpty.indexOf(name) != -1){
 			elems[name].visible = false;
@@ -469,13 +480,14 @@ function onActionApply(event) {
 	}
 
 	for (index = 0;index < hideArray.length;index++){
-		var name = hideArray[index];
+		name = hideArray[index];
 		doneArray.push(name);
 		if (!elems[name]){continue}
 		elems[name].visible = false;
+		/** @type JSForm */
 		jsField = jsForm.getField(name);
+		if (!jsField){jsField = jsForm.getLabel(name);}
 		jsField.x = posX;
-		//elems[name].setLocation(posX,elems[name].getLocationY());
 		posX = posX+elems[name].getWidth();
 	}
 	forms[form].controller.recreateUI();
@@ -483,4 +495,5 @@ function onActionApply(event) {
 	for (index = 0;index < hideArray.length;index++){
 		globals.a.tempHiddenColumns[form].push(hideArray[index]);
 	}
+	scopes.jobs.tablePrefsSaveDb();
 }

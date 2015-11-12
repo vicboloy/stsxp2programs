@@ -247,7 +247,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
  *
  * @properties={typeid:24,uuid:"B7085E33-A4A5-41BB-BD90-FD4BF20E5605"}
  */
-function convertLoadToId(itemCSV){
+function xxxconvertLoadToId(itemCSV){
 	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
@@ -265,7 +265,7 @@ function convertLoadToId(itemCSV){
 	}
 	if (idCSV == "") {return null}
 	idCSV.replace(",","");
-	return arrayToString(idCSV);
+	return scopes.globals.arrayToString(idCSV);
 }
 
 /**
@@ -276,7 +276,7 @@ function convertLoadToId(itemCSV){
  *
  * @properties={typeid:24,uuid:"A07D26ED-9C2B-4DEA-84B0-BBE7B2585B6F"}
  */
-function convertLotToId(itemCSV){
+function xxxconvertLotToId(itemCSV){
 	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
@@ -294,7 +294,7 @@ function convertLotToId(itemCSV){
 	}
 	if (idCSV == "") {return null}
 	idCSV.replace(",","");
-	return arrayToString(idCSV);
+	return scopes.globals.arrayToString(idCSV);
 }
 
 /**
@@ -305,7 +305,7 @@ function convertLotToId(itemCSV){
  *
  * @properties={typeid:24,uuid:"A14EC31F-DA3C-474C-926F-D30AA149D9F8"}
  */
-function convertPkgToId(itemCSV){
+function xxxconvertPkgToId(itemCSV){
 	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
@@ -323,7 +323,7 @@ function convertPkgToId(itemCSV){
 	}
 	if (idCSV == "") {return null}
 	idCSV.replace(",","");
-	return arrayToString(idCSV);
+	return scopes.globals.arrayToString(idCSV);
 }
 
 /**
@@ -331,26 +331,26 @@ function convertPkgToId(itemCSV){
  */
 function collectCriteria(formName){
 	// feeds jobs.viewBTableToForm()
-	var area = arrayToString(vArea);
-	var batch = arrayToString(vBatch);
-	var cowCode = arrayToString(vCowCode);
-	var fabShop = arrayToString(vFabShop);
-	var jobRel = arrayToString(vJobRel);
+	var area = scopes.globals.arrayToString(vArea);
+	var batch = scopes.globals.arrayToString(vBatch);
+	var cowCode = scopes.globals.arrayToString(vCowCode);
+	var fabShop = scopes.globals.arrayToString(vFabShop);
+	var jobRel = scopes.globals.arrayToString(vJobRel);
 	if (vLoadAll){
 		var loadAll = null;
 	} else {
-		loadAll = arrayToString(vLoadNum);
+		loadAll = scopes.globals.arrayToString(vLoadNum);
 	}
 	//application.output('vLoadRel '+vLoadRel);
-	var loadRel = convertLoadToId(vLoadRel);
+	var loadRel = scopes.globals.convertLoadToId(vLoadRel);
 	//application.output('loadRel '+loadRel);
-	var lotNum = convertLotToId(vLotNum);//ticket#7
-	var pkgNum = arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
-	var pcmkRel = arrayToString(vPcmkRel);
-	var pmark = arrayToString(vPiecemark);
-	var seqNum = arrayToString(vSeqNum);
-	var sheetNum = arrayToString(vSheetNum);
-	var soNum = arrayToString(vSONum);
+	var lotNum = scopes.globals.convertLotToId(vLotNum);//ticket#7
+	var pkgNum = scopes.globals.arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
+	var pcmkRel = scopes.globals.arrayToString(vPcmkRel);
+	var pmark = scopes.globals.arrayToString(vPiecemark);
+	var seqNum = scopes.globals.arrayToString(vSeqNum);
+	var sheetNum = scopes.globals.arrayToString(vSheetNum);
+	var soNum = scopes.globals.arrayToString(vSONum);
 	var criteria = {
 		area: area, 
 		batch: batch,
@@ -377,7 +377,7 @@ function collectCriteria(formName){
  *
  * @properties={typeid:24,uuid:"F0049A56-F0B8-4991-98EE-2FD5C7DF64FA"}
  */
-function arrayToString(itemCSV){
+function xxxarrayToString(itemCSV){
 	var arrayN = itemCSV.split(",");
 	var arrayStr = "(";
 	var comma = ",";

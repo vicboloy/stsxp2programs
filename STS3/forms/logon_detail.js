@@ -72,11 +72,16 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onDataChangeUserName(oldValue, newValue, event) {
+	if (oldValue == "ADMIN"){
+		var provider = forms[event.getFormName()].elements[event.getElementName()].getDataProviderID();
+		forms[event.getFormName()].controller.setDataProviderValue(provider,oldValue);
+		return true;
+	}
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var u = databaseManager.getFoundSet('db:/stsservoy/users');
 	if (u.find()){
 		u.user_name = newValue;
-		u.tenant_uuid = globals.secCurrentTenantID;
+		u.tenant_uuid = globals.session.tenant_uuid;
 		if (u.search()){
 			var record = u.getRecord(1);
 			foundset.selectRecord(record.user_id);
@@ -112,4 +117,21 @@ function onDataChangeUserName(oldValue, newValue, event) {
 function onRecordSelection(event) {
 	updateFields(event);
 	return _super.onRecordSelection(event)
+}
+/**
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"99B55E10-9A36-4074-912F-DE940E6365FB"}
+ */
+function onDataChangeActive(oldValue,newValue,event){
+	var formName = event.getFormName();
+	if (forms[formName].user_name == "ADMIN"){
+		var elName = event.getElementName();
+		forms[formName].controller.setDataProviderValue(is_account_active,1);
+		forms[formName].is_account_active = 1;
+		return true;
+	}
+	return true;
 }

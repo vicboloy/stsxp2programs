@@ -225,11 +225,6 @@ function onLoad(event) {
 	if (width <= 320){
 		forms.secLoginExample.hideLogo();
 	}
-	if (showCompany){
-		elements.companyName.requestFocus();
-	} else {
-		elements.userName.requestFocus();
-	}
 
 	var msg = "inside load";
 }

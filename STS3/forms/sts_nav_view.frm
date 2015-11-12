@@ -35,10 +35,11 @@ uuid:"553DF2A4-3861-4891-840E-D3C8BE76A306"
 {
 formIndex:10,
 location:"27,65",
-onActionMethodID:"-1",
+name:"buttonViewPiecemark",
+onActionMethodID:"8A4328F0-1952-4599-ACB4-006052830407",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"222,23",
+size:"162,23",
 text:"View Piecemark Info",
 typeid:7,
 uuid:"5AEB0449-909D-4E1B-9903-6DDB001F6CA3"
@@ -89,6 +90,7 @@ uuid:"6A8FC34D-81C5-4485-A60E-BE5BD357B7D5"
 {
 formIndex:10,
 location:"27,95",
+name:"buttonFindPiecemark",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

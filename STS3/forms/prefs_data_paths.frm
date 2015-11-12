@@ -1,5 +1,5 @@
 encapsulation:60,
-extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
+extendsID:"-1",
 items:[
 {
 customProperties:"methods:{
@@ -10,8 +10,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,135",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -21,6 +22,7 @@ uuid:"03F6E9D2-ED34-4438-9055-265C2F7AAA22"
 },
 {
 dataProviderID:"scopes.prefs.reportpath",
+editable:false,
 location:"215,255",
 name:"reportpath",
 size:"356,20",
@@ -37,8 +39,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,75",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -55,8 +58,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,225",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -66,6 +70,7 @@ uuid:"0FC13EDD-D4C8-4625-B7E8-19CB76C4B17E"
 },
 {
 dataProviderID:"scopes.prefs.xportpath",
+editable:false,
 location:"215,165",
 name:"xportpath",
 size:"356,20",
@@ -75,6 +80,7 @@ uuid:"10EE4C02-ADBF-41A2-B045-B0EFAC93F74F"
 },
 {
 dataProviderID:"scopes.prefs.mtrpath",
+editable:false,
 location:"215,285",
 name:"mtrpath",
 size:"356,20",
@@ -106,6 +112,7 @@ uuid:"221F042F-88F4-493F-90A5-6F88CF8FFFB9"
 },
 {
 dataProviderID:"scopes.prefs.importpath",
+editable:false,
 location:"215,195",
 name:"importpath",
 size:"356,20",
@@ -122,8 +129,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,285",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -133,12 +141,19 @@ uuid:"2AAAFE92-5A84-4180-9EC8-E45DE5B31F80"
 },
 {
 dataProviderID:"scopes.prefs.localpath",
+editable:false,
 location:"215,75",
 name:"localpath",
 size:"356,20",
 text:"Localpath",
 typeid:4,
 uuid:"393B934B-260F-4B05-976C-3405684194AF"
+},
+{
+height:361,
+partType:5,
+typeid:19,
+uuid:"4706E6E5-F203-408E-96F8-69AD9EA4DACF"
 },
 {
 horizontalAlignment:4,
@@ -171,8 +186,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,105",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -192,12 +208,6 @@ typeid:7,
 uuid:"6C7E2B83-1857-462D-A977-D2995A3C0286"
 },
 {
-extendsID:"D186C765-07B1-4DCC-977C-F44188337A8B",
-height:480,
-typeid:19,
-uuid:"6E091408-7EE8-49C2-B23F-F0CE0C2A2792"
-},
-{
 customProperties:"methods:{
 onActionMethodID:{
 arguments:[
@@ -206,8 +216,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,255",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -235,8 +246,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,165",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -246,6 +258,7 @@ uuid:"85BFF98F-E61C-4D07-908A-275E403914AE"
 },
 {
 dataProviderID:"scopes.prefs.datapath",
+editable:false,
 location:"215,15",
 name:"datapath",
 size:"356,20",
@@ -255,6 +268,7 @@ uuid:"880DFC0C-B16A-4ED3-8F24-5DFCA862DB1C"
 },
 {
 dataProviderID:"scopes.prefs.foxfirepath",
+editable:false,
 location:"215,225",
 name:"foxfirepath",
 size:"356,20",
@@ -275,6 +289,7 @@ uuid:"A5EBA9C7-F0C5-44ED-B89F-8CA898C12B96"
 },
 {
 dataProviderID:"scopes.prefs.wh32datapath",
+editable:false,
 location:"215,105",
 name:"wh32datapath",
 size:"356,20",
@@ -284,6 +299,7 @@ uuid:"BA22475E-40BF-4E2B-B342-F513AFD8BF42"
 },
 {
 dataProviderID:"scopes.prefs.temppath",
+editable:false,
 location:"215,135",
 name:"temppath",
 size:"356,20",
@@ -300,8 +316,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,195",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -329,8 +346,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,15",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"25,20",
@@ -347,8 +365,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"76,45",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"111,20",

@@ -842,38 +842,26 @@ var foundPassword = false;
 /**
  * TODO generated, please specify type and doc for the params
  * @param event
- * @param {Object} updateValue dataprovider that needs the update
- *
- * @properties={typeid:24,uuid:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E"}
- */
-function onActionFileOpenDialog(event,updateValue) {
-	//application.setValueListItems('stsvl_get_printer_list',application.getPrinters());
-
-	var priorPath = scopes.prefs[updateValue];
-	if (priorPath == "" || priorPath == null){priorPath = "C:\\"}
-	var dirs = plugins.file.showDirectorySelectDialog();
-	application.output(dirs);
-	//var dirs = plugins.file.showFileOpenDialog(2, priorPath, false, fileReceipt2);
-	if (dirs == null){return}
-	var path = dirs.getAbsolutePath();
-	var formName = event.getFormName();
-	scopes.prefs[updateValue] = path;
-}
-/**
- * TODO generated, please specify type and doc for the params
- * @param event
  * @param updateValue
  *
  * @properties={typeid:24,uuid:"FFF06255-B45A-457D-88BF-294263A595DE"}
  */
 function onActionGetPrinters(event,updateValue) {
-	application.setValueListItems('stsvl_get_printer_list',application.getPrinters());
+	scopes.prefs.getLocalPrinters();
+	scopes.prefs.getBTLabelFormats();
 }
 
-
-
-
-
-
-
-
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"84DD0203-ADAF-4756-9D1A-7548021A9DDE"}
+ */
+function onShow(firstShow, event) {
+	onActionGetPrinters(event,null);
+	if (!scopes.printer.default_label_name || scopes.printer.default_label_name == ""){
+		scopes.printer.default_label_name = "<NONE>";
+	}
+}

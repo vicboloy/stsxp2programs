@@ -1,0 +1,9 @@
+addEmptyValue:1,
+dataProviderID1:"cow_code",
+dataSource:"db:/stsservoy/cowcodes",
+name:"stsvlt_cowcodes",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"D51333A7-2973-4F5B-87BE-5391CE22C82D",
+valueListType:1

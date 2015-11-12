@@ -7,6 +7,8 @@
  * @properties={typeid:24,uuid:"8D60FBB7-D72A-4255-8940-61A1BB25EAC1"}
  */
 function onShow(firstShow, event) {
+	//foundset.clear(); // and this
+	//databaseManager.setCreateEmptyFormFoundsets(); // maybe on solutionOpen
 	var formPrefix = event.getFormName().split("_")[0];
 	var formNameTable = formPrefix+'_pcmk_combo_table';
 	var formCombo = formPrefix+'_pcmk_combo';
@@ -23,7 +25,7 @@ function onShow(firstShow, event) {
 	scopes.jobs.tableHideFieldsReset()
 	scopes.jobs.findEmptyColumns(event,0)
 	//scopes.jobs.findEmptyColumns(event,1)
-	scopes.jobs.tablePrefsLoad(top);
+	///scopes.jobs.tablePrefsLoad(top);
 	scopes.jobs.tablePrefsLoad(bot);
 	return _super.onShow(firstShow, event)
 }
@@ -203,7 +205,7 @@ function onActionRefreshTable(event) {
 	var formName = event.getFormName();
 	application.output('checking'+event);
 	var args = [];
-	args.push(scopes.jobs.browseJobID);
+	//args.push(scopes.jobs.browseJobID);
 	//var fs = databaseManager.getFoundSet(forms.loads_pcmk_combo_table.controller.getDataSource());
 	scopes.jobs.browseFS = databaseManager.getDataSetByQuery('stsservoy', scopes.jobs.dsQuery, args , -1);
 	scopes.jobs.viewBTableRemoveColumnArray();
@@ -213,7 +215,7 @@ function onActionRefreshTable(event) {
 	
 	//scopes.jobs.browseDatasource = scopes.jobs.dsBrowse.createDataSource('browsing',scopes.jobs.browseArray);
 	
-	//////scopes.jobs.viewBrowseTableRefresh();
+	//////scopes.jobs.xxxviewBrowseTableRefresh();
 	//changed browseFS to dynamically created global.  does it work?
 	// almost there ... 
 	//scopes.jobs.browseDatasource = browseFS.createDataSource(formName+'_browse',scopes.jobs.browseArray);

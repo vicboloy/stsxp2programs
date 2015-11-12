@@ -24,6 +24,12 @@ typeid:7,
 uuid:"4818201B-01C8-4190-8C27-FC8773DB1CC5"
 },
 {
+extendsID:"32C27CAC-2195-4B9A-8D52-197B70AC9144",
+location:"117,436",
+typeid:7,
+uuid:"536B4160-8330-4C74-B41D-15325944E908"
+},
+{
 extendsID:"51191EB6-5514-497E-91CC-7CE8F82CA59E",
 location:"5,41",
 size:"632,392",
@@ -39,7 +45,7 @@ uuid:"6E41969E-14EB-46FA-8D10-BD3FCBA345ED"
 {
 anchors:12,
 horizontalAlignment:0,
-location:"100,436",
+location:"253,436",
 onActionMethodID:"0FA60405-63B1-4C0E-82E0-7399D3E83113",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

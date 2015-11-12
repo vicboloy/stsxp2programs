@@ -149,6 +149,16 @@ var vBatch = "";
  */
 var vCowCode = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E2F6D49D-2EDF-4E6D-880C-0EDBB7B304A2"}
+ */
+var vUnits = "";
+/**
+ * @properties={typeid:35,uuid:"18F3D008-5FD1-4047-B1D8-390E7A3FB52D",variableType:-4}
+ */
+var vJobMetric = true;
+/**
  * @properties={typeid:35,uuid:"49A2E987-AF1D-48A2-BC12-349246C612AB",variableType:-4}
  */
 var jobFound = false;
@@ -165,6 +175,7 @@ function onShow(firstShow, event) {
 	scopes.jobs.getCustomersList();
 	application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
 	onActionClear(event);
+	forms.loads_pcmk_combo;
 	return _super.onShow(firstShow, event)
 }
 /**
@@ -228,6 +239,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 			var rec = fs.getRecord(1);
 			vJobName = rec.job_title;
 			vJobID = rec.job_id;
+			vJobMetric = (rec.metric_job == 1);
 			var vCustId = rec.customer_id;
 			vCustNum = rec.sts_job_to_customer2.customer_number;
 			vCustomerName = rec.sts_job_to_customer2.name;
@@ -239,6 +251,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 			vLabNumPcmks = 0;//total piecemarks
 			browseInfoEnable();
 			scopes.jobs.onGetInformation(event,false);
+			controller.focusField('frmSeqNum',true);
 		} else {
 			jobFound = false;
 			status = false;
@@ -254,7 +267,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
  *
  * @properties={typeid:24,uuid:"8A504DFD-C4AD-4AAF-AEAC-9E4F919BFC58"}
  */
-function convertLoadToId(itemCSV){
+function xxxconvertLoadToId(itemCSV){
 	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
@@ -282,7 +295,7 @@ function convertLoadToId(itemCSV){
  *
  * @properties={typeid:24,uuid:"4D41C8CC-CF16-4800-8A6B-99C3C655010B"}
  */
-function convertLotToId(itemCSV){
+function xxxconvertLotToId(itemCSV){
 	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
@@ -310,7 +323,7 @@ function convertLotToId(itemCSV){
  *
  * @properties={typeid:24,uuid:"01F9CAF6-D67B-4E29-B587-56BD5B2C02F2"}
  */
-function convertPkgToId(itemCSV){
+function xxxconvertPkgToId(itemCSV){
 	if (itemCSV == ""){return null}
 	var arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return}
@@ -335,26 +348,26 @@ function convertPkgToId(itemCSV){
  */
 function collectCriteria(){
 	// feeds jobs.viewBTableToForm()
-	var area = arrayToString(vArea);
-	var batch = arrayToString(vBatch);
-	var cowCode = arrayToString(vCowCode);
-	var fabShop = arrayToString(vFabShop);
-	var jobRel = arrayToString(vJobRel);
+	var area = scopes.globals.arrayToString(vArea);
+	var batch = scopes.globals.arrayToString(vBatch);
+	var cowCode = scopes.globals.arrayToString(vCowCode);
+	var fabShop = scopes.globals.arrayToString(vFabShop);
+	var jobRel = scopes.globals.arrayToString(vJobRel);
 	if (vLoadAll){
 		var loadAll = null;
 	} else {
-		loadAll = arrayToString(vLoadNum);
+		loadAll = scopes.globals.arrayToString(vLoadNum);
 	}
 	application.output('vLoadRel '+vLoadRel);
-	var loadRel = convertLoadToId(vLoadRel);
+	var loadRel = scopes.globals.convertLoadToId(vLoadRel);
 	application.output('loadRel '+loadRel);
-	var lotNum = convertLotToId(vLotNum);//ticket#7
-	var pkgNum = arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
-	var pcmkRel = arrayToString(vPcmkRel);
-	var pmark = arrayToString(vPiecemark);
-	var seqNum = arrayToString(vSeqNum);
-	var sheetNum = arrayToString(vSheetNum);
-	var soNum = arrayToString(vSONum);
+	var lotNum = scopes.globals.convertLotToId(vLotNum);//ticket#7
+	var pkgNum = scopes.globals.arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
+	var pcmkRel = scopes.globals.arrayToString(vPcmkRel);
+	var pmark = scopes.globals.arrayToString(vPiecemark);
+	var seqNum = scopes.globals.arrayToString(vSeqNum);
+	var sheetNum = scopes.globals.arrayToString(vSheetNum);
+	var soNum = scopes.globals.arrayToString(vSONum);
 	var criteria = {
 		area: area, 
 		batch: batch,
@@ -372,7 +385,9 @@ function collectCriteria(){
 	}
 	//scopes.jobs.xxxviewBTableAlt(criteria);
 	var formName = 'loads_pcmk_combo';
+	//xxxtestBuildFS(scopes.jobs.browseJobID);
 	scopes.jobs.viewBTableToForm(criteria,formName);
+	//var fs33 = databaseManager.getFoundSet(scopes.jobs.browseDatasource);
 //application.output('before prefs load xyz');
 //	scopes.jobs.tablePrefsLoad(formName);
 //application.output('after prefs load xyz');
@@ -387,7 +402,7 @@ function onActionShowWindow(){
 	//var formName = event.getFormName();
 	var winTitle = 'Browse Loads';
 	var formName = 'loads_pcmk_combo';
-	application.output('formname '+formName);
+	//application.output('formname '+formName);
 	var height = controller.getWindow().getHeight();
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
@@ -396,6 +411,7 @@ function onActionShowWindow(){
 	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
 	win.title = winTitle;
 
+	forms[formName];// pre-load form for speed
 	win.show(forms[formName]);
 	scopes.jobs.removeFormHist(formName+'_table');
 }
@@ -494,4 +510,38 @@ function onGetInformation(event) {
 	vLabIDNums = databaseManager.getDataSetByQuery('stsservoy', queryBarcodes, args , maxReturnedRows)[0][0];
 	vLabTotPieces = databaseManager.getDataSetByQuery('stsservoy', queryIdfiles, args , maxReturnedRows)[0][0];
 	vLabTotalWt = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , maxReturnedRows)[0][0];
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param jobID
+ *
+ * @properties={typeid:24,uuid:"0F6D8D82-0FEA-441A-A4CB-60A1DEA4B89E"}
+ */
+function xxxtestBuildFS(jobID){
+	query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",* from piecemarks p '+
+	' right join routings rt on rt.routing_id = p.e_route_code_id '+
+	' inner join sheets s on p.sheet_id = s.sheet_id SHT '+
+	' and s.job_id = ? AND s.delete_flag IS null PCMK '+
+	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag FLAG SONUM FABS AREA PCRL LDN COW LOT PKG'+
+	' inner join sequences ss on ss.sequence_id = i.sequence_id SEQN ' +
+	' inner join id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ' +
+	' left join status_description sd on sd.status_description_id = i.status_description_id ' +
+	' left join loads l on l.load_id = i.current_load_id LDRR '+
+	' order by p.parent_piecemark, p.piecemark';
+
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var q = databaseManager.createSelect('db:/stsservoy/jobs');
+	q.result.add(q.columns.job_id);
+	q.result.add(q.columns.job_number);
+	q.result.add(q.columns.metric_job);
+	q.result.distinct = true;
+	q.where.add(
+		q.and
+			.add(q.columns.delete_flag.isNull)
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
+			.add(q.columns.job_number.eq(jobNumber))
+		);
+	var resultQ = databaseManager.getFoundSet(q);
+	null;
+	
 }

@@ -1,7 +1,8 @@
-extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
+extendsID:"-1",
 items:[
 {
 dataProviderID:"scopes.prefs.stsQues",
+editable:false,
 location:"184,198",
 name:"stsQues",
 size:"387,20",
@@ -18,8 +19,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,138",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -36,8 +38,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,78",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -54,8 +57,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,48",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -94,8 +98,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,168",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -105,6 +110,7 @@ uuid:"5ACA6C55-72DA-4752-8F3D-08F89D241F50"
 },
 {
 dataProviderID:"scopes.prefs.stsStop",
+editable:false,
 location:"184,168",
 name:"stsStop",
 size:"387,20",
@@ -121,8 +127,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,108",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -132,12 +139,19 @@ uuid:"635BEFD5-350F-4FCF-9AD7-E736986A5031"
 },
 {
 dataProviderID:"scopes.prefs.stsBell",
+editable:false,
 location:"184,108",
 name:"stsBell",
 size:"387,20",
 text:"Stsbell",
 typeid:4,
 uuid:"6D7B559E-469D-4F1A-BDFA-D33B5E906DEE"
+},
+{
+height:268,
+partType:5,
+typeid:19,
+uuid:"718CF63C-72E2-40A1-A8C6-A2CEC386AC10"
 },
 {
 horizontalAlignment:4,
@@ -174,6 +188,7 @@ uuid:"9270D33F-E32E-4780-B7D4-74684755224B"
 },
 {
 dataProviderID:"scopes.prefs.stsAster",
+editable:false,
 location:"184,228",
 name:"stsAster",
 size:"387,20",
@@ -190,8 +205,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,198",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -201,6 +217,7 @@ uuid:"9BCBEBE1-4C92-4D8C-BEF5-D7A77B9398D4"
 },
 {
 dataProviderID:"scopes.prefs.stsExit",
+editable:false,
 location:"184,78",
 name:"stsExit",
 size:"387,20",
@@ -228,8 +245,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,228",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -250,6 +268,7 @@ uuid:"CA81FB32-1FD2-490B-9212-BD6A9290386C"
 },
 {
 dataProviderID:"scopes.prefs.stsStart",
+editable:false,
 location:"184,48",
 name:"stsStart",
 size:"387,20",
@@ -259,6 +278,7 @@ uuid:"E928BAAA-9F95-4CC8-8856-3622F87A1D2B"
 },
 {
 dataProviderID:"scopes.prefs.stsInfo",
+editable:false,
 location:"184,138",
 name:"stsInfo",
 size:"387,20",

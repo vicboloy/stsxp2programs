@@ -90,7 +90,7 @@ function onEdit(event,editStatus){
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ * 
  * @param event
  *
  * @properties={typeid:24,uuid:"A6202325-9051-40BE-B2D6-7474956362B2"}
@@ -102,7 +102,7 @@ function onActionCancelEdit(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ * 
  * @param event
  *
  * @properties={typeid:24,uuid:"2CD566F5-14CB-4CC4-9AAC-E158AA9E3B99"}
@@ -117,7 +117,7 @@ function onActionSaveEdit(event) {
 /**
  * @AllowToRunInFind
  * 
- * TODO generated, please specify type and doc for the params
+ * 
  * @param oldValue
  * @param newValue
  * @param event

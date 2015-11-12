@@ -30,7 +30,10 @@ function onShow(firstShow, event) {
 	globals.cronJob = 'loggerTable';
 	var args = [];
 	args.push(event.getFormName());
-	plugins.scheduler.addJob('refreshLogger', new Date(), globals.loggerTable, 20000, 400, newDate, args);
+	var names = plugins.scheduler.getCurrentJobNames();
+	if (names.indexOf('refreshLogger') == -1){ // resolve #47 view log error
+		plugins.scheduler.addJob('refreshLogger', new Date(), globals.loggerTable, 20000, 400, newDate, args);
+	}
 	return _super.onShow(firstShow, event)
 }
 /**

@@ -22,21 +22,21 @@ function delSelectedAddress(event) {
  * @param event
  *
  * @properties={typeid:24,uuid:"3268BC50-5A10-4EE0-9547-CC071F13BFDA"}
+ * @AllowToRunInFind
  */
 function addNewAddress(event) {
+	var formRev = scopes.globals.getInstanceForm(event);
 	onEditAddress(event,true);
-	var employeeUUID = forms.employees_lst.employee_id;
-	var customerUUID = forms.customers_lst.customer_id;
 	var form = application.getActiveWindow();
+	var entityId = "";
+	if (form.title.search("Employees") != -1){
+		entityId = forms["employees_lst"+formRev].employee_id;
+	}
+	if (form.title.search("Customers") != -1){
+		entityId = forms["customers_lst"+formRev].customer_id;
+	}
 	var rec = _super.newRecord(event,null,true,true);
-	//foundset.newRecord();
-	if (form.title == "Employees"){
-		foundset.customer_id = employeeUUID;
-	}
-	if (form.title == "Customers"){
-		foundset.customer_id = customerUUID;
-		//forms.addressesCustomer.onActionEditAddress(event);
-	}
+	foundset.customer_id = entityId;
 	foundset.tenant_uuid = globals.secCurrentTenantID;
 	onActionEditAddress(event);
 }
@@ -236,28 +236,36 @@ function onActionClose(event) {
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	var formRev = scopes.globals.getInstanceForm(event);
+	
 	onEditAddress(event,false);
+	var form = application.getActiveWindow();
+	//var selIndex = 1;
+	var currentID = "";
+	if (form.title.search("Employees") != -1){
+		currentID = forms["employee_specs"+formRev].employee_id;
+		//forms["employee_specs_"+formRev].currentSelection = forms["employees_lst_"+formRev].foundset.getSelectedIndex();
+		
+	}
+	if (form.title.search("Customers") != -1){
+		currentID = forms["customers_lst"+formRev].customer_id;
+		//selIndex = foundset.getSelectedIndex();//forms["customers_lst_"+formRev].foundset.getSelectedIndex();
+	}
+	//controller.setSelectedIndex(selIndex);
+	
+	var tempArray = [];
 	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
 	var fs = databaseManager.getFoundSet('stsservoy','addresses');
-	var employeeUUID = forms.employees_lst.employee_id;
-	var customerUUID = forms.customers_lst.customer_id;
-	var form = application.getActiveWindow();
-	if (form.title == "Employees"){
-		var currentID = employeeUUID;
-	}
-	if (form.title == "Customers"){
-		currentID = customerUUID;
-	}
-	var tempArray = [];
 	if (fs.find()){
-		fs.tenant_uuid = globals.secCurrentTenantID;
+		fs.tenant_uuid = globals.session.tenant_uuid;
 		fs.customer_id = currentID;
 		var count = fs.search();
 		for (var index = 1;index <= count;index++){
 			var rec = fs.getRecord(index);
-			tempArray.push(rec.address_type);
+			if (tempArray.indexOf(rec.address_type) == -1){
+				tempArray.push(rec.address_type);
+			}
 		}
-		
 	}
 	application.setValueListItems('stsvl_address_types',tempArray);
 

@@ -839,13 +839,15 @@ var tempArray = [];
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
-	application.output('okay, here');
+	plugins.UserManager.updateClientInfo();
+	//application.output('okay, here');
 	databaseManager.nullColumnValidatorEnabled = false;
 	var success = false;
 	current_db = "stsservoy";
 	new_project_db = "stsservoy_remote";
+	var switchRemote = databaseManager.switchServer(current_db,new_project_db) && application.isInDeveloper();
 	//new_project_db = "";
-	if (globals.change_to_remote) {
+	if (switchRemote) {
 		//TODO Change database to remote db versus local development
 		success = databaseManager.switchServer(current_db,new_project_db);
 		if (success){
@@ -884,11 +886,12 @@ function onSolutionOpen() {
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.program = "STS Desktop";
 	session.login = globals.loginID;
+	session.loginDate = new Date();
 	session.capture;
 	getLoggedEmployee(session.loginId);
 	loginUserInfo(secCurrentUserID);
 	globals.getAssociation(secCurrentAssociationID);
-	onStartLoadPrefs();	
+	onStartLoadPrefs("");	
 	globals.getMappings();
 	application.setValueListItems('stsvl_fab_shop',l.assocs);
 }
@@ -970,24 +973,38 @@ function loginUserInfo(userId){
 		fs.employee_userid = userId;
 		fs.search();
 		var rec = fs.getRecord(1);
-		session.loginUser = rec.employee_firstname;
-		session.loginUserNum = rec.employee_number;
-		session.fullName = "";
-		if (!rec.employee_firstname){session.fullName += rec.employee_firstname}
-		if (!rec.employee_lastname){session.fullName += rec.employee_lastname}
-		session.logging = (rec.employee_rf_logging == 1) ? 0 : 1;
-		session.rfLogging = (rec.employee_save_rftransaction == 1) ? 0 : 1;
+		if (rec){
+			session.loginUser = rec.employee_firstname;
+			session.loginUserNum = rec.employee_number;
+			//session.fullName = "";
+			//if (!rec.employee_firstname){session.fullName += rec.employee_firstname}
+			//if (!rec.employee_lastname){session.fullName += rec.employee_lastname}
+			session.logging = (rec.employee_rf_logging == 1) ? 0 : 1;
+			session.rfLogging = (rec.employee_save_rftransaction == 1) ? 0 : 1;
+		} else {
+			
+		}
 	}
 }
 /**
  * @properties={typeid:24,uuid:"17CF390E-9F2B-4248-BDA8-274828359D3C"}
+ * @AllowToRunInFind
  */
 function stopWindowTrack(){
 	globals.setWindowClosed("");
 	var win = application.getActiveWindow();
 	var winName = win.title;
 	scopes.globals.logger(true,winName+' closed.');
+	var formName = win.controller.getName();
 	win.hide();
+	if (formName.search(/_[0-9]+/) != -1){
+		var success = history.removeForm(formName);
+		//removes the named form from this session, please make sure you called history.remove() first
+		if(success)
+		{
+			solutionModel.removeForm(formName)
+		}
+	}
 	return true;
 }
 /**
@@ -1130,13 +1147,13 @@ function debugPause (){
  * @properties={typeid:24,uuid:"DA5676A8-77BE-4A25-86C3-B1FF6FE993E5"}
  */
 function setWindowOpened(windowName){
-	if (globals.aOpenWindows[windowName] == null) {
-		globals.aOpenWindows[windowName] = true;
+	if (globals.aOpenWindows.indexOf(windowName) == -1) {
+		globals.aOpenWindows.push(windowName);
 		//application.setValueListItems('xsts_nav_openWindows',globals.aOpenWindows);
+	//application.output(globals.aOpenWindows); //joeremove
 		application.setValueListItems('sts_nav_openWindows',globals.aOpenWindows);
-sts_nav_openWindows
+//sts_nav_openWindows
 	}
-//	application.output(globals.aOpenWindows); //joeremove
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -1175,6 +1192,9 @@ function setWindowClosed(windowName){
 function getTablesFilters(tenantID) {
 	var permitArray = [];
 	permitArray.push(null);
+	databaseManager.addTableFilterParam(SEC_SERVER,'associations','tenant_uuid','=',tenantID,'tenantAssocsOnly');
+	databaseManager.addTableFilterParam(SEC_SERVER,'users','tenant_uuid','=',tenantID,'tenantUsersOnly');
+	databaseManager.addTableFilterParam(SEC_SERVER,'employee','tenant_uuid','=',tenantID,'tenantEmpsOnly');
 	var ignoreTableList = 'associations users groups keys group_keys keys_table permissions tenant_list user_groups ';
 	
 	for (var index0 in secCurrentTenantIDs){
@@ -1282,4 +1302,305 @@ function alphaSort(r1,r2){
 		}
 	}
 	return o;
+}
+/**
+ * @properties={typeid:24,uuid:"1230523D-B33D-49FE-9497-EB29B7CA19D8"}
+ * @AllowToRunInFind
+ */
+function licenseCount() {
+	var number = 0;
+	var count = parseInt(plugins.UserManager.Server().getSettingsProperty('licenseManager.numberOfLicenses'), 10);
+	if(count) {
+		for (var i = 0; i < count; i++) {
+			if (parseInt(plugins.UserManager.Server().getSettingsProperty('license.' + i + '.product'), 10) == 1){continue}//developer license
+			number += parseInt(plugins.UserManager.Server().getSettingsProperty('license.' + i + '.licenses'), 10);
+		}
+	}
+	var tenantFS = getTenantFS();
+	if (tenantFS.getSize() > 1){
+		if (tenantFS.find()) {
+			tenantFS.tenant_uuid = globals.session.tenant_uuid;
+			if (tenantFS.search()){
+				number = tenantFS.licenses;
+			}
+		}
+	}
+	return number;
+}
+/**
+ * @properties={typeid:24,uuid:"FEED84CF-DF1F-429D-BA95-A3B87E94AE80"}
+ */
+function getTenantFS(){
+	/** @type {QBSelect<db:/stsservoy/tenant_list>} */
+	var q = databaseManager.createSelect('db:/stsservoy/tenant_list');
+	q.result.add(q.columns.company_name);
+	q.result.add(q.columns.tenant_uuid);
+	//q.result.add(q.columns)
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		//.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	return resultQ;
+}
+/**
+ * @properties={typeid:24,uuid:"E1C40A88-88CC-49CB-AE0A-1877E3053716"}
+ * @AllowToRunInFind
+ */
+function getTenantUsedLicenses(){
+	var totalLicenses = parseInt(licenseCount());
+	var usedLicenses = 0;
+	var assocIds = [];
+	var searchStr = new RegExp("[A-Z]");
+	for (var indexT in m.assocs){
+		if (indexT.search("-") == -1) {continue}
+		assocIds.push(indexT);
+	}
+	/** @type {QBSelect<db:/stsservoy/associations>} */
+	var q = databaseManager.createSelect('db:/stsservoy/associations');
+	q.result.add(q.columns.association_uuid);
+	q.result.add(q.columns.licenses_desktop);
+	q.result.add(q.columns.licenses_mobile);
+	q.where.add(
+	q.and
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.association_uuid.isin(assocIds))
+	);
+	var resultQ = databaseManager.getFoundSet(q);
+	for (var index = 1;index <= resultQ.getSize();index++){
+		/** @type {JSFoundSet<db:/stsservoy/associations>} */
+		var rec = resultQ.getRecord(index);
+		usedLicenses += rec.licenses_desktop*1+rec.licenses_mobile*1;
+	}
+	var remaining = parseInt(totalLicenses-usedLicenses);
+	var avail = "";
+	if (remaining > 0){avail = "+";}
+	var licenseRatio = '('+avail+remaining+') '+parseInt(usedLicenses)+'/'+totalLicenses;
+	licenseError = (usedLicenses > totalLicenses) && !application.isInDeveloper();
+	return licenseRatio;
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param oldValue old value
+ * @param newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"A5D9FAFB-5B2B-4E9D-BE6F-9CFD09A810F3"}
+ */
+function onDataChangeLicenseDesktop(oldValue, newValue, event) {
+	forms[event.getFormName()].licenses_desktop = newValue;
+	forms[event.getFormName()].showLicensing();
+	if (licenseError){
+		licenseError = false;
+		forms[event.getFormName()].licenses_desktop = newValue;
+		forms[event.getFormName()].showLicensing();
+	}
+	return true;
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param oldValue old value
+ * @param newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"398FB5E4-B7CB-4BE9-A220-1036A34F2CE2"}
+ */
+function onDataChangeLicenseMobile(oldValue, newValue, event) {
+	forms[event.getFormName()].licenses_mobile = newValue;
+	forms[event.getFormName()].showLicensing();
+	if (licenseError){
+		licenseError = false;
+		forms[event.getFormName()].licenses_mobile = oldValue;
+		forms[event.getFormName()].showLicensing();
+	}
+	
+	return true;
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"2219D1BA-B10F-431B-82D7-9EAD0C87A27C"}
+ */
+function onActionCloseButton(event) {
+	formModeShow(event);
+	onActionCancelEdit(event);
+	stopWindowTrack();
+	mainWindowFront();
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"C4BCB8DF-B7B1-4117-8C85-F550F20E86C3"}
+ */
+function formModeShow(event) {
+	var formName = event.getFormName();
+	var formEls = forms[formName].elements;
+	var formTabless = formEls['tabless'];
+	if (formTabless){
+		//var formTab = forms[formTabless.getTabFormNameAt(1)];
+		if (formTabless.editInactive){
+			formTabless.editInactive(event);
+		}
+	}
+	
+	if (formEls['buttonEdit']){
+		formEls['buttonEdit'].visible = true;
+	}
+	if (formEls['buttonCancel']){
+		formEls['buttonCancel'].visible = false;
+	}
+	if (formEls['buttonSave']){
+		formEls['buttonSave'].visible = false;
+	}
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"3554F1FA-4822-43F8-A1E5-1717AFBA43C3"}
+ */
+function formModeEdit(event) {
+	var formName = event.getFormName();
+	var formEls = forms[formName].elements;
+	var formTabless = formEls['tabless'];
+	if (formTabless){
+		//var formTab = forms[formTabless.getTabFormNameAt(1)];
+		if (formTabless.editInactive){
+			formTabless.editInactive(event);
+		}
+	}
+	
+	if (formEls['buttonEdit']){
+		formEls['buttonEdit'].visible = false;
+	}
+	if (formEls['buttonCancel']){
+		formEls['buttonCancel'].visible = true;
+	}
+	if (formEls['buttonSave']){
+		formEls['buttonSave'].visible = true;
+	}
+}
+/**
+
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"74B76F6F-F506-43EA-9F9B-CA8477DFE31D"}
+ */
+function formModeCancel(event) {
+	var formName = event.getFormName();
+	var formEls = forms[formName].elements;
+	var formTabless = formEls['tabless'];
+	if (formTabless){
+		//var formTab = forms[formTabless.getTabFormNameAt(1)];
+		if (formTabless.editInactive){
+			formTabless.editInactive(event);
+		}
+	}
+
+	if (formEls['buttonEdit']){
+		formEls['buttonEdit'].visible = true;
+	}
+	if (formEls['buttonCancel']){
+		formEls['buttonCancel'].visible = false;
+	}
+	if (formEls['buttonSave']){
+		formEls['buttonSave'].visible = false;
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"8BD00EEA-9B56-4860-9DB2-AB7CB69D2E2C"}
+ */
+function onActionEdit(event) {
+	//forms[event.getFormName()].onEdit(event,true);
+	databaseManager.setAutoSave(false);	
+	formModeEdit(event);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"7244C4DA-2CB9-4277-9D14-1475F213FD8F"}
+ */
+function onActionCancelEdit(event) {
+	//forms[event.getFormName()].onEdit(event,false);
+	databaseManager.revertEditedRecords();
+	databaseManager.setAutoSave(true);
+	formModeCancel(event);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"3482DAE1-3AA8-4BFF-8C84-57BAE8802433"}
+ */
+function onActionSaveEdit(event) {
+	//onEdit(event,false);
+	databaseManager.saveData();
+	//databaseManager.setAutoSave(true);
+	
+}
+/**
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"85EFBB5F-595A-4078-AFE8-2661EA574BA3"}
+ */
+function updateWindowFS(){
+	application.output('window '+application.getActiveWindow().getName());
+	var formRev = windowRev();
+	if (formRev == ""){
+		return;
+	}
+	var win = application.getActiveWindow();
+	var joe = win.controller
+	var windowName = win.title;
+	var windowCut = windowName.search(formRev)-1;
+	
+	windowName = windowName.slice(0,windowCut);
+	application.output(windowName);
+	application.output(globals.aTrackWindows);
+	var tempLength = globals.aTrackWindows.length;
+	var windowList = [];
+	for (var index = 0; index < tempLength; index++){
+		if (globals.aTrackWindows[index].search(windowName) != -1){
+			windowList.push(globals.aTrackWindows[index]);
+		}
+	}
+	for (index = 0;index < windowList.length;index++){
+		if (application.getWindow(windowList[index])){
+			application.output('window remain '+windowList[index]);
+			var win = application.getWindow(windowList[index]);
+			var form = win.controller.getName();
+			var fs = forms[form].foundset.sts_employee_container;
+			fs.loadAllRecords();
+			var newFS = fs.duplicateFoundSet();
+			forms[form].controller.loadRecords(newFS);		
+		}
+	}
+}
+/**
+ *
+ * @properties={typeid:24,uuid:"18144C0E-C3C0-4FA6-B1B3-BE28A36CEBB8"}
+ */
+function windowRev(){
+	var win = application.getActiveWindow();
+	var formSplit = win.controller.getName().split("_");
+	var formRev = formSplit[formSplit.length-1];
+	return formRev;
 }

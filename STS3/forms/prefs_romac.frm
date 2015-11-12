@@ -1,4 +1,4 @@
-extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
+extendsID:"-1",
 items:[
 {
 customProperties:"methods:{
@@ -9,8 +9,10 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"576,57",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+name:"getRomacRootPath",
+onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"24,20",
@@ -20,6 +22,7 @@ uuid:"2134E286-5A93-4A14-804B-F3EDAC230A0F"
 },
 {
 dataProviderID:"scopes.prefs.romacRootPath",
+editable:false,
 location:"146,57",
 name:"romacRootPath",
 size:"425,20",
@@ -44,6 +47,7 @@ dataProviderID:"scopes.prefs.lRomacPassWorker",
 displayType:4,
 location:"159,92",
 name:"lRomacPassWorker",
+onActionMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"252,20",
 text:"Pass Worker Empl Number to Romac",
 transparent:true,
@@ -55,7 +59,7 @@ dataProviderID:"scopes.prefs.lRomacImportOnly",
 displayType:4,
 location:"348,22",
 name:"lRomacImportOnly",
-onActionMethodID:"-1",
+onActionMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 onDataChangeMethodID:"-1",
 size:"203,20",
 text:"Use Settings For Imports Only",
@@ -75,14 +79,15 @@ typeid:7,
 uuid:"B3530355-1364-4134-B8D4-DE019DC2470A"
 },
 {
-extendsID:"D186C765-07B1-4DCC-977C-F44188337A8B",
-height:375,
+height:124,
+partType:5,
 typeid:19,
-uuid:"FC1B03A9-71B5-43F9-89D0-0D7A60297CCC"
+uuid:"DFD21B80-467E-48AF-8E8B-3D5F26D0F00E"
 }
 ],
 name:"prefs_romac",
 navigatorID:"-1",
+onShowMethodID:"CA3C31ED-3AF5-4D56-A86D-EB65BC562A0D",
 size:"645,0",
 styleName:"sts_one",
 typeid:3,

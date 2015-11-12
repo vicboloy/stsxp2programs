@@ -2,6 +2,19 @@ encapsulation:60,
 extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
 items:[
 {
+anchors:12,
+horizontalAlignment:0,
+location:"117,428",
+name:"settingsRight",
+onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"131,20",
+text:"Settings Bottom",
+typeid:7,
+uuid:"32C27CAC-2195-4B9A-8D52-197B70AC9144"
+},
+{
 height:453,
 partType:5,
 typeid:19,
@@ -21,11 +34,25 @@ uuid:"51191EB6-5514-497E-91CC-7CE8F82CA59E"
 {
 anchors:12,
 horizontalAlignment:0,
+location:"253,428",
+onActionMethodID:"B5F3140A-92DF-4C0D-A4A0-985F31F6573E",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"53,20",
+text:"+/-",
+typeid:7,
+uuid:"BBCFCD10-D88E-4A69-92F2-767A48874802"
+},
+{
+anchors:12,
+horizontalAlignment:0,
 location:"5,428",
+name:"settingsLeft",
 onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-text:"Settings",
+size:"107,20",
+text:"Settings Top",
 typeid:7,
 uuid:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8"
 }

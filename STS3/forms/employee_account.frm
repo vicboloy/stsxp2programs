@@ -201,6 +201,7 @@ uuid:"FE7E4D40-0B83-430F-876D-D9B2C6A14FF0"
 ],
 name:"employee_account",
 navigatorID:"-1",
+onShowMethodID:"-1",
 showInMenu:true,
 size:"376,338",
 styleName:"sts_one",

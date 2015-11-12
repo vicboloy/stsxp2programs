@@ -82,7 +82,7 @@ uuid:"1954C50B-5025-4EA1-AB5E-F2ED31E29EF9"
 containsFormID:"4B0A4F42-885F-493A-AF55-DD6A25926088",
 location:"174,61",
 name:"employee_addresses",
-relationName:"sts_employee_to_address",
+relationName:"sts_employee_container.sts_employee_to_address",
 text:"Addresses (%%sts_employee_to_address.maxRecordIndex%%)",
 typeid:15,
 uuid:"69535606-5912-477D-80B1-F5EAA83FEBFE"
@@ -154,6 +154,7 @@ visible:false
 ],
 name:"employee_specs",
 navigatorID:"-1",
+onShowMethodID:"-1",
 scrollbars:32,
 size:"549,511",
 styleName:"sts_one",

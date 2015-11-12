@@ -74,6 +74,7 @@ uuid:"DEC39AF5-B730-41C6-AD4D-F1AF22489911"
 ],
 name:"employees_lst",
 navigatorID:"-1",
+onLoadMethodID:"-1",
 onRecordSelectionMethodID:"-1",
 scrollbars:32,
 selectionMode:1,

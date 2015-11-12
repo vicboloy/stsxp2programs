@@ -1,4 +1,4 @@
-extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
+extendsID:"-1",
 items:[
 {
 location:"47,131",
@@ -15,6 +15,12 @@ text:"RF Window",
 transparent:true,
 typeid:7,
 uuid:"5D754643-8C31-4E53-8792-9D8607A4498D"
+},
+{
+height:351,
+partType:5,
+typeid:19,
+uuid:"C8D1370E-0F2D-4133-9F08-E6F50C760B2C"
 },
 {
 location:"42,194",
@@ -42,6 +48,7 @@ uuid:"F2F755F4-15FF-4612-9939-02E90BB2787A"
 ],
 name:"prefs_rf_screen_settings",
 navigatorID:"-1",
+size:"469,351",
 styleName:"sts_one",
 typeid:3,
 uuid:"AFA286CD-7451-49C2-A2BE-48E8FCF2CCA1"

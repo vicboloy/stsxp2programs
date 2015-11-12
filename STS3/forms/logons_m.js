@@ -77,6 +77,7 @@ function onActionEdit(event) {
  */
 function saveEdits(event, record, stopEdit) {
 	onEdit(event,false);
+	databaseManager.saveData(record);
 	return _super.saveEdits(event, record, stopEdit)
 }
 
@@ -102,7 +103,7 @@ function cancelEdit(event) {
  * @properties={typeid:24,uuid:"C535CDB6-BA40-4E92-A96D-4B78AE10E8C6"}
  */
 function onShow(firstShow, event) {
-	newRec = null;
+	var newRec = null;
 	onEdit(event,false);
 	return _super.onShow(firstShow, event)
 }
@@ -117,10 +118,11 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"04D6CF4D-3AD1-4D86-A9D5-431F65B088B4"}
  */
 function newRecord(event, location, changeSelection) {
-	tenant_uuid = globals.session.tenant_uuid;
-	edit_date = new Date();
 	onEdit(event,true);
 	var status = _super.newRecord(event, location, changeSelection);
-	newRec = foundset.getSelectedRecord();
+	var newRec = foundset.getSelectedRecord();
+	tenant_uuid = globals.session.tenant_uuid;
+	application.output('tenant '+tenant_uuid);
+	edit_date = new Date();
 	return status;
 }

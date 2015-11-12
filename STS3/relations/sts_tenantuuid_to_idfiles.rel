@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/idfiles",
+items:[
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.secCurrentTenantID",typeid:23,uuid:"D023E374-35BE-4177-B27A-BA41715D1B9E"}
+],
+joinType:1,
+name:"sts_tenantuuid_to_idfiles",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"00E814E4-BB44-4E6B-8692-58899C0B8350"

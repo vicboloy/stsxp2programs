@@ -96,8 +96,6 @@ function onActionClose(event) {
  * @properties={typeid:24,uuid:"DB85C56B-DE17-440E-9C99-8A52804E3DF5"}
  */
 function onShow(firstShow, event) {
-	var form = forms[elements.tabless.getTabFormNameAt(1)];
-	form.elements.newButton.visible = true;
-	form.elements.newEntry.visible = true;
+	controller.loadRecords(st2_tenantid_associations);
 	return _super.onShow(firstShow, event)
 }

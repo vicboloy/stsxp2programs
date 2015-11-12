@@ -2,12 +2,7 @@
  * @properties={typeid:35,uuid:"EB4B3603-F4EE-421B-9460-9578DB5EA104",variableType:-4}
  */
 var editEmployeeFlag = false;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"129539DC-291F-41D8-8801-CD89027F7E7B"}
- */
-var instance = "";
+
 /**
  * Called before the form component is rendered.
  *
@@ -21,23 +16,6 @@ function onRender(event) {
 	}
 }
 /**
- * @AllowToRunInFind
- * 
- * TODO generated, please specify type and doc for the params
- * @param event
- *
- * @properties={typeid:24,uuid:"E9AAE20F-6E81-4D9E-99EA-BB703579208C"}
- */
-function getInstanceNum(event){
-	application.output(event);
-	instance = "";
-	var formName = event.getFormName();
-	var formSplit = formName.split("_");
-	var regExp = new RegExp('_/0-9/+$');
-	return formName.search(regExp);
-	
-}
-/**
  * TODO generated, please specify type and doc for the params
  * @param event
  * @param editStatus
@@ -45,15 +23,16 @@ function getInstanceNum(event){
  * @properties={typeid:24,uuid:"7FD30029-67F1-43B1-81F2-88F062280C00"}
  */
 function onEdit(event,editStatus){
-	application.output('regexp ' +getInstanceNum(event));
-	forms.employees.controller.readOnly = !editStatus;
-	forms.employees_lst.controller.enabled = !editStatus;
-	forms.employees.editEmployeeFlag = editStatus;
-	forms.employees_rec.elements.addNewButton.visible = !editStatus;
-	forms.employee_specs.elements.cancelButton.visible = editStatus;
-	forms.employee_specs.elements.saveButton.visible = editStatus;
-	forms.employee_specs.elements.editButton.visible = !editStatus;
-	forms.employee_specs.elements.delButton.visible = !editStatus;
+	var formRev = scopes.globals.getInstanceForm(event);
+
+	forms["employees"+formRev].controller.readOnly = !editStatus;
+	forms["employees_lst"+formRev].controller.enabled = !editStatus;
+	forms["employees"+formRev].editEmployeeFlag = editStatus;
+	forms["employees_rec"+formRev].elements.addNewButton.visible = !editStatus;
+	forms["employee_specs"+formRev].elements.cancelButton.visible = editStatus;
+	forms["employee_specs"+formRev].elements.saveButton.visible = editStatus;
+	forms["employee_specs"+formRev].elements.editButton.visible = !editStatus;
+	forms["employee_specs"+formRev].elements.delButton.visible = !editStatus;
 	
 }
 
@@ -90,6 +69,7 @@ function onActionSaveEdit(event){
 	onEdit(event,false);
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(true);
+	globals.updateWindowFS();
 }
 
 /**
@@ -100,11 +80,19 @@ function onActionSaveEdit(event){
  * @properties={typeid:24,uuid:"F545C75F-A84C-43DF-BA74-1AB91158C183"}
  */
 function delRecord(event) {
-		globals.doDialog("Remove Employee","Delete this Employee?","Remove","Cancel");
-		if (globals.dialogResponse == "yes"){
-			controller.deleteRecord();
-		}
+	var win = application.getActiveWindow();
+	var formSplit = win.controller.getName().split("_");
+	var formRev = formSplit[formSplit.length-1];
+
+	globals.doDialog("Remove Employee","Delete this Employee?","Remove","Cancel");
+	if (globals.dialogResponse == "yes"){
+		try {
+		controller.deleteRecord(); } catch (e) {}
+		//var sortOrder = foundset.getCurrentSort();
+		//forms["employees_lst_"+formRev].foundset.sort(sortOrder);
+		//forms["employee_specs_"+formRev].foundset.sort(sortOrder);
 	}
+}
 
 /**
  * Called before the form component is rendered.
@@ -125,6 +113,9 @@ function onRenderDelButton(event) {
  * @properties={typeid:24,uuid:"AE427593-ABE1-4D76-AE72-7AAFF8E12156"}
  */
 function onActionClose(event) {
+	globals.updateWindowFS();
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
+
 }
+

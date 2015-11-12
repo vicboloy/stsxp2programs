@@ -657,9 +657,8 @@ function importTempTable(){
  * @properties={typeid:24,uuid:"536E53EC-DBBA-4831-93CA-897FF4253C42"}
  */
 function recomputeLabelLimits(){
-	var length = recomputeLabelArray.length;
-	for (var index = 0;index < length;index++){
-		setBarcodeLimits(recomputeLabelArray[index]);
+	while (recomputeLabelArray.length > 0){
+		setBarcodeLimits(recomputeLabelArray.pop());
 	}
 }
 /**
@@ -686,6 +685,8 @@ function saveDetailRow(){
 		newRow[fieldOrderTempTable['sequence_number']] = sequenceArr[index].seq; //set sequence and sequence_count for each iteration of newRow to be added to dataset
 		newRow[fieldOrderTempTable['sequence_quantity']] = newSeqCount;
 		var pMarkStringSeq = pMarkString+"_"+sequenceArr[index].seq;
+		var old = 1;
+		var lastParentQty = 1;
 		if (pMarkStringSeq in pMarks) {
 			application.output('we get here in these iterations, or is this is never experienced');
 			// this is old when there were dupes in the data due to sequence.  leave as error check.
@@ -693,13 +694,8 @@ function saveDetailRow(){
 			transitionFS.rowIndex = row;
 			var col = fieldOrderTempTable['item_quantity'];//index into new row array,zero-based
 			//var old = transitionFS.getValue(row, col+1);
-			var old = transitionFS.item_quantity;
+			lastParentQty = transitionFS.item_quantity;
 			var add = newRow[col];
-			/**transitionFS.setValue(row, col+1, old * 1 + add * 1);
-			transitionFS.setValue(row, fieldOrderTempTable['parent_piecemark']+1, ""); // no applicable parent piecemark on minor aggregration
-			transitionFS.setValue(row, fieldOrderTempTable['sheet_number']+1, ""); // no applicable parent piecemark on minor aggregration
-			transitionFS.setValue(row, fieldOrderTempTable['sequence_number']+1,"");
-			transitionFS.setValue(row, fieldOrderTempTable['sequence_quantity']+1,"");*/
 			transitionFS.item_quantity = old*1 + add*1;
 			transitionFS.parent_piecemark = "";
 			transitionFS.sheet_number = "";
@@ -712,11 +708,14 @@ function saveDetailRow(){
 			//application.output(pMark.cParent+"_"+sequenceArr[index].seq);
 			//application.output(newRow);
 			var latestIndex = transitionFS.getMaxRowIndex();
+			transitionFS.original_quantity = transitionFS.item_quantity;
+			transitionFS.item_quantity = transitionFS.item_quantity * lastParentQty;
 			setbarcodeQuantity(latestIndex);
 			//if (!(pMarkStringSeq in pMarks)) {
 			pMarks[pMarkStringSeq] = latestIndex;
 			if (pMark.cMark.toLowerCase() == pMark.cParent.toLowerCase()){
 				parentMarkIndex[pMark.cParent+"_"+sequenceArr[index].seq] = latestIndex;//keep location of parent piecemark for adding weights and associating minors
+				lastParentQty = newRow[fieldOrderTempTable['item_quantity']]; // adjust sub assembly piecemark to total for all assemblies
 				// do the same thing, tracking the last parent using form variable
 			} else { //minor mark encountered
 				//add weight to parent mark with sequence
@@ -724,14 +723,27 @@ function saveDetailRow(){
 				if (parentMarkIndex[pMark.cParent+"_"+sequenceArr[index].seq]){
 					var parentW = parentMarkIndex[pMark.cParent+"_"+sequenceArr[index].seq]; //hold and check for seq
 					transitionFS.rowIndex = parentW;
-					var subAssemblyCount = Math.floor(newRow[fieldOrderTempTable['item_quantity']]/transitionFS.item_quantity);
+					//var subAssemblyCount = Math.floor(newRow[fieldOrderTempTable['item_quantity']]/transitionFS.item_quantity);
+					//var subAssemblyCount = Math.floor(newRow[fieldOrderTempTable['item_quantity']]*transitionFS.item_quantity);
+					var subAssemblyCount = newRow[fieldOrderTempTable['item_quantity']];
+					application.output('sub assembly count '+subAssemblyCount);
 					var addWeight = newRow[fieldOrderTempTable['item_weight']];
+					var itemQty = newRow[fieldOrderTempTable['item_quantity']] * transitionFS.sequence_quantity;
+					//newRow[fieldOrderTempTable['item_quantity']] = itemQty; 
 					//var addMult = newRow[fieldOrderTempTable['sequence_quantity']];
 					//if (addMult == ""){addMult = newRow[fieldOrderTempTable['item_quantity']];}
 					//application.output('    '+pMark.cParent+"_"+sequenceArr[index].seq+'add '+subAssemblyCount+' subs at'+addWeight+' = '+addWeight*newSeqCount+' to '+transitionFS.item_weight);
 					transitionFS.item_weight = transitionFS.item_weight*1+addWeight*subAssemblyCount;
+					//application.output(' item Quantity '+transitionFS.item_quantity+' = '+old+' trans '+transitionFS.item_quantity+' * '+itemQty+' blahdata '+newRow[fieldOrderTempTable['item_quantity']]+' / '+transitionFS.item_quantity);
 					if (recomputeLabelArray.indexOf(parentW) == -1){recomputeLabelArray.push(parentW)}//save parent for recomputer of label limits
 					//application.output('labels '+recomputeLabelArray);
+					application.output('row.b '+newRow);
+					transitionFS.rowIndex = latestIndex; //reset to current record from parent
+					transitionFS.item_quantity = itemQty;
+					//transitionFS.sequence_quantity = transitionFS.sequence_quantity;
+					application.output(' output itemQty '+itemQty+' parent Qty '+lastParentQty);
+					recomputeLabelArray.push(latestIndex);
+					application.output('row.c '+latestIndex+' '+transitionFS.getRowAsArray(latestIndex));
 				}
 			}
 		}
@@ -785,6 +797,7 @@ function popKISSTable() {
 	newRow = null;
 	newRow = rowTemplate.concat();
 	var sequence = {seq : "", cnt :0}
+	sequenceArr = []; // reset sequence array
 	for (var index = 0;index < lengthResults;index++){
 		lineArray = results[index];
 		lineType = lineArray[0];
@@ -864,6 +877,7 @@ function popKISSTable() {
 	kissDatasink = transitionFSsink.createDataSource('kissImportSwap',tempArray);
 	kissDataSumm = transitionFSsumm.createDataSource('kissImportSumm',tempArray);
 	kissDataSheets = sheetsFS.createDataSource('kissSheets',tempArray);
+	sequenceArr = []; //clear unused sequence array
 }
 /**
  * @AllowToRunInFind
@@ -962,29 +976,7 @@ function createKISSForm (){	// create table in form
 	 */
 	checkForm.onRender = checkForm.newMethod('\
 	function onRender(event) {\
-		var stat=forms.kiss_option_import.jobImportExc+forms.kiss_option_import.jobImportSum;\
-		var rec=event.getRecord();\
-		var rend=event.getRenderable();\
-		var hidebool=rec&&rec.select_hidebool==1;\
-		var discard=rec && rec.material && (stat.search(" "+rec.material.split(" ")[0]+" ") != -1);\
-		var wght=rec && (scopes.prefs.wtPrompt*1 > 0)&&(rec.item_weight*1 > 0)&&(rec.item_weight*1 < scopes.prefs.wtPrompt*1)&&(rec.item_quantity*1 > 1*1);\
-		if (rec){\
-			if (rec.sequence_quantity != "") {var quant = rec.sequence_quantity} else {quant = rec.item_quantity}\
-		}\
-		if (!discard && (rend.bgcolor=="#ff0000")){rend.bgcolor="#f3f5f7"}\
-		if (quant < 2){rend.enabled=false;}\
-		if (rend.getName()=="action"){rend.enabled=true}\
-		if (discard){rend.bgcolor="cyan"}\
-		if (rec&&rec.last_bc_qty&& (rend.getName()=="last_bc_qty")&&(rec.last_bc_qty<0)){rend.bgcolor="red"}\
-		if (rec && rend.getName()=="barcode_qty"){\
-			var itemChng = rec.barcode_qty*1!=1 && quant*1!=1;\
-			if (quant*1!= 1 && quant*1==rec.barcode_qty*1) {rend.bgcolor="#daa520";itemChng=false;}\
-			if (quant*1>1 && rec.barcode_qty*1==1) {rend.bgcolor="#daa520";itemChng=false}\
-			if (quant*1 <= scopes.prefs.qtyPrompt*1 && quant*1!=rec.barcode_qty*1){itemChng=true}\
-			if (itemChng){rend.bgcolor="yellow"}\
-		}\
-		if (rec && rec.select_hidebool == 1&&rend.getName()!="action"){rend.enabled=false}\
-		if (hidebool){rend.bgcolor="yellow"}\
+		try {scopes.jobs.onRender2(event);} catch (e) {null;}\
 	}');	
 	var code1 = 'function mySortFunction(){\
 		forms.kiss_option_import.sortIndex(arguments[0]);\
@@ -996,21 +988,27 @@ function createKISSForm (){	// create table in form
 	checkForm.newMethod(code1);	sortIndex('item_quantity');	globals.sortColumn *= -1;
 	transitionFS.sort(globals.numSort);
 	checkForm.onSortCmd = checkForm.getMethod('mySortFunction');
-	var code = 'function onRecordSelection(event) {\
-		var index = controller.getSelectedIndex();}\
-	';
+	var code = 'function onRecordSelection(event) {var index = controller.getSelectedIndex();}';
 	checkForm.onRecordSelection = checkForm.newMethod(code);
 	checkForm.navigator = SM_DEFAULTS.NONE;
 	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
+	//		quant = item_quantity;\
+	
 	code = 'function onQtyVerify(last,current,event) {\
 		if (current*1<1||Math.floor(current)!=current){\
 		forms.kiss_option_import.errorMessage = "Label Quantity must be integer, and less than or equal to number of items. <Esc> to reset.";\
 		return false;\
 		}\
 		var quant = 0;\
-		if (sequence_quantity && current*1>sequence_quantity){return false;} else if (item_quantity && current*1>item_quantity*1){return false;}\
+		if (sequence_quantity && current*1>sequence_quantity){return false;}\
+		if (item_quantity && current*1>item_quantity*1){return false;}\
 		if (sequence_quantity&&sequence_quantity != ""){quant = sequence_quantity} else {quant = item_quantity}\
+		if (item_quantity && current*1>item_quantity*1){return false;}\
 		var bcNums = scopes.jobs.createBCnums(current,quant,item_weight);\
+		application.output("current "+current+" quant "+quant+" weight "+item_weight+"\\n bcNums "+bcNums);\
+		for (xitem in bcNums){\
+			application.output("bcNums."+xitem+": "+bcNums[xitem]);\
+		}\
 		set_bc_qty = Math.floor(bcNums.full);\
 		last_bc_qty = Math.floor(bcNums.last);\
 		total_label_qty = bcNums.per;\
@@ -1131,29 +1129,36 @@ function deleteRow(row,sourceDb){
  * @properties={typeid:24,uuid:"4CB1DF63-FC21-4F9A-8CEB-1A820897013F"}
  */
 function applyShapeExcludes(sourceDb,destDb){
-	var descrip = fieldOrderTempTable['material']+1;
+	//var descrip = fieldOrderTempTable['material']+1;
 	var srcLength = sourceDb.getMaxRowIndex();	
 	var i1 = 0;
 	var shape;
 	var excList = forms.kiss_option_import.jobImportExc;
-	var sumList = "";
-	var major = fieldOrderTempTable['parent_piecemark']+1;
-	var minor = fieldOrderTempTable['piecemark']+1;
-	for (i1 = srcLength; i1 > 0; i1--) {
+	var sumList = forms.kiss_option_import.jobImportSum;
+	//var major = fieldOrderTempTable['parent_piecemark']+1;
+	//var minor = fieldOrderTempTable['piecemark']+1;
+	for (i1 = srcLength; i1 >= 0; i1--) {
 		//if (sourceDb.getValue(i1,fieldOrderTempTable['select_hidebool']+1) == 1) {continue}
 		errorMessage = "Exclude record "+i1+" processed.";
-		var majorPm = sourceDb.getValue(i1,major);
-		var minorPm = sourceDb.getValue(i1,minor);
+		sourceDb.rowIndex = i1;
+		/** @type String */
+		var majorPm = sourceDb.parent_piecemark;
+		/** @type String */
+		var minorPm = sourceDb.piecemark;
+		
 		if (!majorPm){continue}
-		var minorRecord = (keepMinors == 0) && (majorPm.toLowerCase() != minorPm.toLowerCase());
-		var material = sourceDb.getValue(i1, descrip);
+		var minorRecord = (keepMinors == 0) && ((minorPm != "") && majorPm.toLowerCase() != minorPm.toLowerCase());
+		/** @type String */
+		var material = sourceDb.material;
 		if (!material){continue}
 		shape = material.split(" ")[0];
 		shape = " " + shape + " ";
-		if (sourceDb.getValue(i1,minor) == "" && sourceDb.getValue(i1,major) == ""){  //remove summaries, excludes overrides
-			sourceDb.removeRow(i1);
+		//var special = majorPm+' '+minorPm+' '+material+" "+sourceDb.grade+" "+sourceDb.finish+sourceDb.item_weight;
+		//application.output('minor '+minorRecord+' '+special);
+		if (minorPm == "" && majorPm == ""){  //remove summaries, excludes overrides
+			//sourceDb.removeRow(i1);
 		}
-		if (((excList.search(shape) != -1) || (sumList.search(shape) != -1)) || minorRecord) {
+		if ((excList.search(shape) != -1) || minorRecord) { // || (sumList.search(shape) != -1)) 
 			moveRow(i1, sourceDb, destDb);
 		}
 	}	
@@ -1255,34 +1260,35 @@ function applyShapeSummary(sourceDb,destDb){
 	var zeroFields = [];
 	var zeroNames = ['piecemark','parent_piecemark','sequence_qty','sequence_number','sheet_number','reference_drawing','route_code','sequence_quantity'];
 	for (i1=0;i1<zeroNames.length;i1++){zeroFields.push(fieldOrderTempTable[zeroNames[i1]]);}
-	var descrip = "";
-	var length = 0;
+	var descrip = ""; var length = 0; var grade = ""; var finish = "";
 	var itemCount = 0;
 	var sumList = forms.kiss_option_import.jobImportSum;
 	var excList = forms.kiss_option_import.jobImportExc;
-	var descripI = fieldOrderTempTable['material']+1;
+	/**var descripI = fieldOrderTempTable['material']+1;
 	var lengthI = fieldOrderTempTable['item_length']+1;
 	var gradeI = fieldOrderTempTable['grade']+1
+	var finishI = fieldOrderTempTable['finish']+1;
 	var countI = fieldOrderTempTable['item_quantity']+1;
-	//var piecemarkI = fieldOrderTempTable['piecemark']+1;
+	var piecemarkI = fieldOrderTempTable['piecemark']+1;*/
 	var newRow = "";
 	var summaryItem = "";
 	var shape;
 	for (i1 = srcLength; i1 > 0; i1--) {
 		forms.kiss_barcode_request.controller.recordIndex = i1;
 		transitionFS.rowIndex = i1;
-		errorMessage = "Processing "+i1+" summaries.";
-		shape = transitionFS.getValue(i1, descripI).split(" ")[0];
+		errorMessage = "Processing "+i1+" summaries."; //shape = transitionFS.getValue(i1, descripI).split(" ")[0];
+		shape = transitionFS.material;
 		shape = " " + shape + " ";
+		descrip = transitionFS.material;
+		length = transitionFS.item_length;
+		grade = transitionFS.grade;
+		finish = transitionFS.finish;
+		itemCount = transitionFS.sequence_quantity;
+			application.output('removing summaries index '+i1+' of '+srcLength+' ; '+descrip+' '+length+' '+grade+' '+finish+' '+itemCount);
 		if (excList.search(shape) != -1){continue} // shape already discarded
-		if ((sumList.search(shape) != -1) && shape && (transitionFS.getValue(i1,fieldOrderTempTable['piecemark']+1)!="")) {
-			//var piecemark = transitionFS.getValue(i1,piecemarkI);
-			descrip = transitionFS.getValue(i1,descripI);
-			length = transitionFS.getValue(i1,lengthI);
-			var grade = transitionFS.getValue(i1,gradeI);
-			itemCount = transitionFS.getValue(i1,fieldOrderTempTable['sequence_quantity']+1);
-			if (!itemCount || itemCount == ""){itemCount = transitionFS.getValue(i1,fieldOrderTempTable['item_quantity']+1);}
-			summaryItem = descrip+grade+length;
+		if (shape && (sumList.search(shape) != -1) && (transitionFS.piecemark != "")){
+			if (!itemCount || itemCount == ""){itemCount = transitionFS.item_quantity}
+			summaryItem = descrip+grade+finish;
 			if (summaryItem in summedArray){
 				forms.kiss_barcode_request.controller.recordIndex = summedArray[summaryItem+"idx"];
 				var oldQuant =  forms.kiss_barcode_request.item_quantity;//transitionFS.getValue(i1,fieldOrderTempTable['item_quantity']+1);
@@ -1372,17 +1378,15 @@ function setBarcodeLimits(row){
 	//var currentLabelCount = transitionFS.getValue(row,fieldOrderTempTable['barcode_qty']+1);
 	var currentLabelCount = transitionFS.barcode_qty;
 	//var itemsCount = transitionFS.getValue(row,fieldOrderTempTable['sequence_quantity']+1);
-	var itemsCount = transitionFS.sequence_quantity;
+	var itemsCount = (transitionFS.sequence_qty == "") ? transitionFS.item_quantity : transitionFS.sequence_quantity;
+	application.output('row '+row+'item quantity '+transitionFS.item_quantity);
 	if (!itemsCount || itemsCount == ""){itemsCount = transitionFS.item_quantity}
 	var bcNums = scopes.jobs.createBCnums(currentLabelCount,itemsCount,transitionFS.item_weight);
-	var itemsPerLabel = bcNums.per;
-	var labelsFull = bcNums.full; 
-	var lastLabelCount = bcNums.last;
-	var labelWeight = bcNums.totwt;
-	transitionFS.set_bc_qty = labelsFull;
-	transitionFS.last_bc_qty = lastLabelCount;
-	transitionFS.total_label_qty = itemsPerLabel;
-	transitionFS.ext_wt_qty = labelWeight;
+
+	transitionFS.set_bc_qty = bcNums.full; //labelsFull;
+	transitionFS.last_bc_qty = bcNums.last; //lastLabelCount;
+	transitionFS.total_label_qty = bcNums.per; //itemsPerLabel;
+	transitionFS.ext_wt_qty = bcNums.totwt; //labelWeight;
 }
 /**
  * Remove or include minor piecemarks within retention Foundset
@@ -1451,6 +1455,9 @@ function applyImportPreferences(){
 	}
 	errorMessage = 'Exclude and summary selections set.'+minors;
 	importRecordCount = transitionFS.getMaxRowIndex();
+	for (var index = 0;index <= importRecordCount;index++){
+		setBarcodeLimits(index);
+	}
 	//scopes.jobs.warningsMessage('Import records check.');
 	scopes.jobs.importRecordsCheck();
 	forms.kiss_option_import.impDirty = false;
@@ -1558,3 +1565,4 @@ function onDataChange1(oldValue, newValue, event) {
 	application.output('new routeing id'+newValue+' value '+importRouting);
 	return true
 }
+

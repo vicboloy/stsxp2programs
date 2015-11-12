@@ -1,4 +1,4 @@
-extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
+extendsID:"-1",
 items:[
 {
 anchors:15,
@@ -34,10 +34,10 @@ typeid:16,
 uuid:"15A9B991-32EB-4849-9AE1-79DAE2BE5DBF"
 },
 {
-extendsID:"D186C765-07B1-4DCC-977C-F44188337A8B",
-height:477,
+height:478,
+partType:5,
 typeid:19,
-uuid:"87862FA2-D058-46FF-B936-B0789B2E489F"
+uuid:"F8EA1249-FBDF-4C70-956E-D2CF125928FF"
 }
 ],
 name:"prefs_other_applications",

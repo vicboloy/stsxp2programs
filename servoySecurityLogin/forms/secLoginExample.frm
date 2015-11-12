@@ -201,7 +201,7 @@ uuid:"F4CCF570-38BD-4A36-B670-31B814C52414"
 name:"secLoginExample",
 navigatorID:"-1",
 onLoadMethodID:"A3E09D87-2EED-4CA4-8E02-C5014E5AA356",
-onShowMethodID:"-1",
+onShowMethodID:"512C7CD9-95A7-40F7-A473-10411521055E",
 paperPrintScale:100,
 showInMenu:true,
 size:"233,320",

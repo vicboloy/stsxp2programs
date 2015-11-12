@@ -1,4 +1,5 @@
 encapsulation:60,
+extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
 items:[
 {
 height:505,

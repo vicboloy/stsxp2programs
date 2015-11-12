@@ -22,6 +22,17 @@ typeid:7,
 uuid:"145AE80B-B5BD-4EE6-89EA-F19B5DD88357"
 },
 {
+location:"10,363",
+name:"buttonViewLicense",
+onActionMethodID:"0C6FA445-BE8E-4005-BDD5-70B401E4E1D9",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"239,23",
+text:"View Logon License Info",
+typeid:7,
+uuid:"15F07628-F01C-46A0-9DC2-B9C3E2912413"
+},
+{
 formIndex:8,
 location:"10,45",
 name:"ButtonPreferences",
@@ -35,10 +46,10 @@ uuid:"2F0892E3-CF0E-4F2F-8771-D3A156130280"
 },
 {
 location:"10,150",
-onActionMethodID:"-1",
+onActionMethodID:"26F19DD0-BB10-443A-849E-43064F850D75",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"207,23",
+size:"239,23",
 text:"Barcode Printer",
 typeid:7,
 uuid:"34527C14-8649-4876-97B0-5650F3FC97FF"
@@ -81,6 +92,7 @@ visible:false
 },
 {
 location:"10,325",
+name:"buttonViewLog",
 onActionMethodID:"AF952016-58E9-4E89-8F5F-857177470611",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -117,10 +129,11 @@ uuid:"8867AA06-B928-493A-B688-78D78283F4C6"
 },
 {
 location:"10,115",
-onActionMethodID:"-1",
+name:"viewWhoAmI",
+onActionMethodID:"2145BB44-7554-439C-A782-4B3EFB19502B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"207,23",
+size:"239,23",
 text:"Who am I",
 typeid:7,
 uuid:"9408EB88-3752-43F3-944A-C61FAA8EAFC7"

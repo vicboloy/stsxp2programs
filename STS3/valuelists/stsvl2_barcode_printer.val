@@ -1,0 +1,13 @@
+addEmptyValue:1,
+customValues:"Allegro\r
+DataMax\r
+LabeLase 1000\r
+Pinacle\r
+Prodigy Plus\r
+TEC B-400\r
+Zebra",
+name:"stsvl2_barcode_printer",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"FED7F396-D05C-4491-9ED7-2FEA64B4A376"

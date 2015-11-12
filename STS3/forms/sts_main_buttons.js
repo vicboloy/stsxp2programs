@@ -119,3 +119,17 @@ function onLoadMain(event) {
 function onActionLogout(event) {
 	globals.doLogout();
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"723791EB-AA78-41D4-92B3-DA1A525766B1"}
+ */
+function onShow(firstShow, event) {
+	if (firstShow){
+		plugins.UserManager.updateClientInfo();
+	}
+}

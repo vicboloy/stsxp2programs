@@ -1,0 +1,8 @@
+addEmptyValue:1,
+customValues:"Parallel Port\r
+Serial Port",
+name:"stsvl2_printer_connection",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"50630F53-9D8C-4241-80A8-EAC6668E761E"

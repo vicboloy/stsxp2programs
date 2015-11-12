@@ -21,7 +21,6 @@ uuid:"6831BC83-97B6-4099-8917-B6D58078C84B"
 {
 containsFormID:"EB7D6ADE-D726-461D-8984-46223237C197",
 location:"5,60",
-relationName:"applications_to_permissions",
 text:"General Permissions",
 typeid:15,
 uuid:"82F41797-043E-4885-BB5C-061988DF7BE0"

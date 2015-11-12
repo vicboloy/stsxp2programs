@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/sheets",
+items:[
+{foreignColumnName:"sheet_id",primaryDataProviderID:"sheet_id",typeid:23,uuid:"BBEFB48B-FEB4-4BFD-BF12-3FEBE3E1AB30"}
+],
+joinType:1,
+name:"sts_sheetid",
+primaryDataSource:"db:/stsservoy/sheets",
+typeid:22,
+uuid:"B7BABEC1-4457-453F-AB4B-4CB113A56061"

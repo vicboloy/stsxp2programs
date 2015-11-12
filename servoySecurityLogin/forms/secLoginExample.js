@@ -86,3 +86,19 @@ function onFocusLost(event) {
 		forms[formName].elements[elName].requestFocus();
 	}
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"512C7CD9-95A7-40F7-A473-10411521055E"}
+ */
+function onShow(firstShow, event) {
+	if (elements.companyName.visible){
+		elements.companyName.requestFocus();
+	} else {
+		elements.userName.requestFocus();
+	}
+}

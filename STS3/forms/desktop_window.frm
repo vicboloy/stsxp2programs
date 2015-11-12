@@ -1,0 +1,14 @@
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"1B76D52F-1643-424B-82C4-21155C5A85B9"
+}
+],
+name:"desktop_window",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"B3662810-23ED-4C9A-AF3F-68751D1FE3FA"

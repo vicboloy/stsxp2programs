@@ -29,12 +29,15 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"AFBA62E6-C20B-4626-ADB8-DC2D7D17E805"}
  * @AllowToRunInFind
  */
-function onActionUpdatePrefs(event) {
+function onActionUpdatePrefs(event, prefType) {
 	// for globals, user_id = -1, tenant_uuid= main tenant, field_name = index, value_type, value_string
 	errorMessage = "Saving preferences.";
 	application.updateUI();
 	var prefs = scopes.prefs;
-	var fs = sts_prefs;
+	if (prefType == "Printer"){
+		prefs = scopes.printer;
+	}
+	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
 	user_id = -1;
 	var tenant = globals.secCurrentTenantID;
 	var variable = "";

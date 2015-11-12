@@ -151,7 +151,7 @@ uuid:"BC84D282-5F40-483B-BD84-A9031F5C82FE"
 {
 formIndex:9,
 location:"332,37",
-onActionMethodID:"-1",
+onActionMethodID:"8378DB0B-1F09-430A-84C3-D34DCCAD8B59",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"156,23",

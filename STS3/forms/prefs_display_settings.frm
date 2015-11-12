@@ -1,9 +1,10 @@
-extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
+extendsID:"-1",
 items:[
 {
 dataProviderID:"scopes.prefs.winTitle",
 location:"150,160",
 name:"winTitle",
+onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"424,20",
 text:"Wintitle",
 typeid:4,
@@ -18,8 +19,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"579,100",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -48,6 +50,7 @@ uuid:"66E8370E-C46E-4F2A-B859-652A41EEE0D8"
 },
 {
 dataProviderID:"scopes.prefs.iconFile",
+editable:false,
 location:"150,100",
 name:"iconFile",
 size:"424,20",
@@ -64,8 +67,9 @@ null,
 ]
 }
 }",
+horizontalAlignment:0,
 location:"579,130",
-onActionMethodID:"37BF4310-4DD9-4A54-841B-48E2F18DBF5E",
+onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
@@ -75,6 +79,7 @@ uuid:"B05888E3-7F03-4606-87A2-8C4339755F49"
 },
 {
 dataProviderID:"scopes.prefs.bmpFile",
+editable:false,
 location:"150,130",
 name:"bmpFile",
 size:"424,20",
@@ -87,10 +92,17 @@ dataProviderID:"scopes.prefs.lLogoDisplay",
 displayType:4,
 location:"150,70",
 name:"lLogoDisplay",
+onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"26,20",
 transparent:true,
 typeid:4,
 uuid:"D447FF0D-14D6-4FA2-94DF-868C8C652D80"
+},
+{
+height:259,
+partType:5,
+typeid:19,
+uuid:"DBB7DF4F-BDAC-47B9-8650-4392BDBDC385"
 },
 {
 horizontalAlignment:4,

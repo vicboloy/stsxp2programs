@@ -973,6 +973,454 @@ var lRomacPassWorker = false;
  * @properties={typeid:35,uuid:"FBFBEAD2-3977-4D8D-B00F-E394E09EAB78",variableType:-4}
  */
 var foundPassword = false;
+/**
+ * @properties={typeid:35,uuid:"3FCAD52F-204F-460A-9FE0-265234C773FB",variableType:-4}
+ */
+var prefsDirty = false;
+/**
+ * @properties={typeid:35,uuid:"BDB8F2E6-F38A-4341-914C-C4A81A150F8C",variableType:-4}
+ */
+var prefsPrinterDirty = false;
+
+/**
+var labels = "1 AREA Character 6 idfiles.id_area 10,\
+	2 BATCH Character 3 idfiles.id_batch 15,\
+	3 BCCUST Character 16 customers.name 45,\
+	4 BCFORM Character 10 jobs.barcode_form ->,\
+	5 BCINCLDPFX Character 15 customers.barcode_include_prefix 15,\
+	6 BCJOBSTART Character 35 customers.barcode_job_start 35,\
+	7 BCPREFIX Character 2 customers.barcode_prefix 2,\
+	8 BCTITLE Character 26 UNKNOWN,\
+	9 BOLOUT Character 15 loads.bill_of_lading_out 15,\
+	10 CARRNUM Character 10 loads.carrier_number 15,\
+	11 COMMENTS Character 50 loads.load_comment media-inderminate,\
+	12 COWCODE Character 10 piecemarks.cost_of_work_code 10,\
+	13 CTRLNUM Character 30 idfiles.control_number 30,\
+	14 CUSCITY Character 25 customers.addresses.city 50,\
+	15 CUSFAX Character 10 customer.fax 25,\
+	16 CUSFIRST Character 15 customer.representative 25,\
+	17 CUSLAST Character 15 customer.representative 25,\
+	18 CUSMIDDLE Character 15 customer.representative 25,\
+	19 CUSNAME Character 30 customers.name 45,\
+	20 CUSPHONE Character 10 customers.phone 25,\
+	21 CUSSTATE Character 2 customers.addresses.state 2,\
+	22 CUSSTREET Character 30 customers.addresses.line1 (.line2) 100 (100),\
+	23 CUSTNUM Character 10 customers.customer_number 15,\
+	24 CUSTPO Character 20 jobs.customer_po 30,\
+	25 CUSTSO Character 10 idfiles.shop_order 20,\
+	26 CUSZIP Character 9 customers.addresses.zipcodes.zipcode_id 20,\
+	27 DESCR1 Character 30 piecemarks.material 40,\
+	28 DESCR2 Character 30 piecemarks.description 40,\
+	29 EDITTIME Character 8 idfiles.edit_date DATETIME,\
+	30 ENGXTIME Character 8 loads.sent_engineer DATETIME,\
+	31 FABINVOICE Character 10 jobs.loads.fabricator.invoice 15,\
+	32 FABSHOP Character 5 associations.association_name 50,\
+	33 FABXTIME Character 8 loads.sent_fabricator DATETIME,\
+	34 FIREXTIME Character 8 loads.sent_fireproofer DATETIME,\
+	35 GALVXTIME Character 8 loads.sent_galvinizer DATETIME,\
+	36 GRADE Character 10 piecemarks.grade 20,\
+	37 HEAT Character 15 heats.heat_number 40,\
+	38 ID Character 10 id_serial_numbers.id_serial_number 30,\
+	39 IDFORMAT Character 9 UNKNOWN,\
+	40 IDLOCATION Character 10 idfiles.id_location 15,\
+	41 IDSTATUS Character 10 idfiles.status_description.status_code 15,\
+	42 INVOICE Character 10 jobs.loads.invoice 15,\
+	43 JOBCAREOF Character 28 jobs.job_care_of 50,\
+	44 JOBID Character 10 jobs.job_number 20 *** check max size ***,\
+	45 JOBLOCAT Character 28 jobs.job_location 50,\
+	46 JOBNUM Character 10 jobs.job_number 20,\
+	47 JOBSHIPTO Character 10 jobs.addresses->/addresses/,\
+	48 JOBSTRUCT Character 28 jobs.job_structure 50,\
+	49 JOBTITLE Character 28 jobs.job_title 50,\
+	50 JOIDFORMAT Character 9 UNKNOWN,\
+	51 JOLINE1NUM Character 15 *** Manual entry ***,\
+	52 JOLINE1STR Character 30 *** Manual entry ***,\
+	53 JOLINE2NUM Character 15 *** Manual entry ***,\
+	54 JOLINE2STR Character 30 *** Manual entry ***,\
+	55 LINE0FLD Character 30 *** Manual entry ***,\
+	56 LINE0PRMPT Character 9 *** Manual entry ***,\
+	57 LINE1NUM Character 15 *** Manual entry ***,\
+	58 LINE1STR Character 26 *** Manual entry ***,\
+	59 LINE2NUM Character 15 *** Manual entry ***,\
+	60 LINE2STR Character 26 *** Manual entry ***,\
+	61 LINE3FLD Character 30 *** Manual entry ***,\
+	62 LINE3PRMPT Character 9 *** Manual entry ***,\
+	63 LINE4FLD Character 30 *** Manual entry ***,\
+	64 LINE4PRMPT Character 9 *** Manual entry ***,\
+	65 LINE5FLD Character 30 *** Manual entry ***,\
+	66 LINE5PRMPT Character 9 *** Manual entry ***,\
+	67 LINE6FLD Character 30 *** Manual entry ***,\
+	68 LINE6PRMPT Character 9 *** Manual entry ***,\
+	69 LINE7FLD Character 30 *** Manual entry ***,\
+	70 LINE7PRMPT Character 9 *** Manual entry ***,\
+	71 LINE8FLD Character 30 *** Manual entry ***,\
+	72 LINE8PRMPT Character 9 *** Manual entry ***,\
+	73 LINE9FLD Character 30 *** Manual entry ***,\
+	74 LINE9PRMPT Character 9 *** Manual entry ***,\
+	75 LINEAFLD Character 30 *** Manual entry ***,\
+	76 LINEAPRMPT Character 9 *** Manual entry ***,\
+	77 LINEBFLD Character 30 *** Manual entry ***,\
+	78 LINEBPRMPT Character 9 *** Manual entry ***,\
+	79 LOADNUM Character 10 loads.load_number 20,\
+	80 LODCAREOF Character 28 loads.care_of 30,\
+	81 LODPO Character 20 loads.load_po 20,\
+	82 LODRELEASE Character 20 loads.load_release 20,\
+	83 LODSHIPTO Character 10 loads.ship_to->/addresses/,\
+	84 LOT Character 11 lots.lot 15,\
+	85 MRR Character 10 idfiles.mrr 15,\
+	86 ORIGEMPL Character 5 idfiles.original_employee->/employees/,\
+	87 OTHRXTIME Character 8 loads.sent_other DATETIME,\
+	88 PANTXTIME Character 8 loads.sent_paint DATETIME,\
+	89 PCCOLOR Character 10 idfiles.piece_color 20,\
+	90 PCCOWCODE Character 10 piecemarks.cost_of_work_code 10,\
+	91 PCMARK Character 30 piecemarks.piecemark 40,\
+	92 PCRELEASE Character 3 idfiles.piece_release 10,\
+	93 PCUOM Character 4 piecemarks.unit_of_measure 10 *** is this used ***,\
+	94 PORELEASE Character 20 jobs.PO_release 25,\
+	95 PRODTYPE Character 3 piecemarks.product_type 10,\
+	96 PROJYEAR Character 4 jobs.project_year 0,\
+	97 RAWMATLID Character 10 idfiles.raw_material_id 40,\
+	98 RECACTION Character 1 UNKNOWN,\
+	99 RECVLOAD Character 10 idfiles.received_load_id->//,\
+	100 RECVTIME Character 8 loads.receipt_date DATETIME,\
+	101 REMAILTIME Character 8 UNKNOWN,\
+	102 REVLEVEL Character 6 idfiles.revision_level 10,\
+	103 ROUTECODE Character 10 piecemarks.routings.route_code 15,\
+	104 SEMAILTIME Character 8 UNKNOWN,\
+	105 SEQNUM Character 20 jobs.sequences.sequence_number 30,\
+	106 SHEETNUM Character 8 piecemarks.sheets.sheet_number 20,\
+	107 SHIPLOAD Character 10 loads.ship_date DATETIME,\
+	108 SHIPTAG Character 16 piecemarks.ship_tag 20,\
+	109 SHIPTIME Character 8 loads.ship_date DATETIME,\
+	110 SITEXTIME Character 8 loads.sent_site DATETIME,\
+	111 TRAILINFO Character 20 loads.trailer_information 20,\
+	112 EDITDATE Date 8 idfiles.edit_date DATETIME,\
+	113 ENGXDATE Date 8 loads.sent_engineer DATETIME,\
+	114 FABXDATE Date 8 loads.sent_fabrication DATETIME,\
+	115 FIREXDATE Date 8 loads.sent_fireproofer DATETIME,\
+	116 GALVXDATE Date 8 loads.send_galvinizer DATETIME,\
+	117 IDCREATED Date 8 id_serial_number.edit_date DATETIME,\
+	118 OTHRXDATE Date 8 loads.sent_other DATETIME,\
+	119 PANTXDATE Date 8 loads.sent_painter DATETIME,\
+	120 RECVDATE Date 8 loads.receipt_date DATETIME,\
+	121 REMAILDATE Date 8 UNKNOWN,\
+	122 REQDSHIP Date 8 UNKNOWN,\
+	123 SCHDSHIP Date 8 UNKNOWN,\
+	124 SEMAILDATE Date 8 UNKNOWN,\
+	125 SHIPDATE Date 8 loads.ship_date DATETIME,\
+	126 SITEXDATE Date 8 loads.sent_site DATETIME,\
+	127 DELETEID Logical 1 idfiles.deleted_date DATETIME,\
+	128 LOGICFLAG Logical 1 idfiles.logic_flag 0,\
+	129 LPRINT Logical 1 idfiles.lprint 0,\
+	130 LSOTOLOAD Logical 1 customers.lsotoload 0,\
+	131 METRICJOB Logical 1 jobs.metric_job,\
+	132 BCJBSTRT Numeric 1 customers.barcode_job_start (17) ,\
+	133 BCJOBLGTH Numeric 1 customers.barcode_job_length (17),\
+	134 BCPFXLGTH Numeric 1 customers.barcode_fixed_length (17),\
+	135 COSTEA Numeric 11.4 piecemarks.cost_each (17),\
+	136 COWQTY Numeric 10.3 piecemarks.cost_of_work_quantity (17),\
+	137 FIREPFCF Numeric 9.2 piecemarks.fireproof_cubic_feet (17),\
+	138 INCREMNT Numeric 3 UNKNOWN,\
+	139 ITEMWT Numeric 10.3 piecemarks.item_weight_lbs (17),\
+	140 ITEMWTKG Numeric 10.3 piecemarks.item_weight (17),\
+	141 JOBWT Numeric 11 jobs.job_weight (17),\
+	142 LABELBC Numeric 5 *** calc'ed ***,\
+	143 LABELQTY Numeric 5 *** calc'ed ***,\
+	144 LGTNUM Numeric 11.4 piecemarks.item_length OR item_length_in (17),\
+	145 ORIGQTY Numeric 5 idfiles.original_quantity (17),\
+	146 PCUOMDOLL Numeric 11.4 piecemarks.piecemark_uom_dollars (17),\
+	147 QTY2PRINT Numeric 5 *** calc'ed ***,\
+	148 RECVQTY Numeric 5 *** calc'ed ***,\
+	149 RECVWT Numeric 10 loads.receiving_weight (17),\
+	150 SEQQTY Numeric 5 sequences.sequence_quantity 0,\
+	151 SHIPQTY Numeric 5 sequences.quantity 0,\
+	152 SHIPWT Numeric 10 loads.shipped_weight 17,\
+	153 TOTALWT Numeric 10 loads.total_weight 17,\
+	154 WIDNUM Numeric 10.4 piecemarks.item_weight OR item_weight_lbs (17),\
+	155 RTBW Character 6 sheets.rtbw 6,\
+	156 RTSW Character 6 sheets.rtsw 6,\
+	157 RTBRANCH Character 6 sheets.rtbranch 6,\
+	158 PTFILLET Character 6 sheets.ptfillet 6,\
+	159 PTBRANCH Character 6 sheets.rtbranch 6,\
+	160 MTFILLET Character 6 sheets.mtfillet 6,\
+	161 MTBRANCH Character 6 sheets.mtbranch 6,\
+	162 LINESPEC Character 10 sheets.line_spec 10,\
+	163 PREHEAT Character 15 sheets.preheat 15,\
+	164 SHOPHYDRO Character 6 sheets.shop_hydro 6,\
+	165 FLDHYDRO Character 6 sheets.field_hydro 6,\
+	166 PMI Character 6 sheets.pmi 6,\
+	167 PWHT Character 6 sheets.pwht 6,\
+	168 DRAWNBY Character 5 sheets.drawn_by 5,\
+	169 CHECKBY Character 5 sheets.checked_by 5,\
+	170 PAINTSYS Character 25 sheets.paint_system 25,\
+	171 BHN Character 6 sheets.bhn 6,\
+	172 BHNMAX Character 6 sheets.bhn_maximum 6,\
+	173 LINENBR Character 30 sheets.line_number 30,\
+	174 REFDWG Character 30 sheets.reference_drawing 30,\
+	175 SKETCH Character 10 sheets.sketch 10,\
+	176 PHASE Character 10 idfiles.piece_phase 15,\
+	177 BOMCOMMENT Character 50 sheets.bom_comment MEDIA,\
+	178 SHEETPO Character 20 sheets.sheet_po 20,\
+	179 PRIORDATE Date 8 sheets.prior_date DATETIME,\
+	180 MINORID Character 10 *** piecemarks...idfile...id_serial_numbers.id_serial_number,\
+	181 MINORQTY Numeric 5 *** calc'ed ***,\
+	182 BOMPARTNUM Character 30 UNKNOWN,\
+	183 BOMHEAT Character 15 UNKNOWN,\
+	184 BOMGUID Character 40 UNKNOWN,\
+	185 BOMGRADE Character 10 UNKNOWN,\
+	186 BOMSEQNUM Character 20 UNKNOWN,\
+	187 BOMITEMNUM Character 6 UNKNOWN,\
+	188 BOMREMARKS Character 20 UNKNOWN,\
+	189 PARENTPCMK Character 30 *** piecemarks.parent_piecemark 40,\
+	190 BOMQTY Numeric 5 UNKNOWN,\
+	191 BOMLGTNUM Numeric 11.4 UNKNOWN,\
+	192 BOMWIDNUM Numeric 10.4 UNKNOWN,\
+	193 BOMITEMWT Numeric 10.3 UNKNOWN,\
+	194 ERECTDWG Character 15 idfiles.erection_drawing 20,\
+	195 BUNDLEID Character 10 idfiles.bundle_id 30,\
+	196 FINISH Character 10 piecemarks.finish 30,\
+	197 DETAILMIN Numeric 10.4 piecemarks.saw_minutes (17),\
+	198 FABMIN Numeric 10.4 piecemarks.fabrication_minutes (17),\
+	199 HANDLMIN Numeric 10.4 piecemarks.handling_minutes (17),\
+	200 PAINTMIN Numeric 10.4 piecemarks.paint_minutes (17),\
+	201 SAWMIN Numeric 10.4 piecemarks.saw_minutes (17),\
+	202 WELDMIN Numeric 10.4 piecemarks.weld_minutes (17),\
+	203 RULECODE Character 20 piecemarks.rule_code 20,\
+	204 FT_PKGNO Integer 4 idfiles.ft_pkgno 0,\
+	205 PCPHASE Character 10 idfiles.piece_phase 15,\
+	206 PARENTCOPY Numeric 4 UNKNOWN,\
+	207 PARENTID Character 10 piecemarks.parent_piecemark...id_serial_numbers.id_serial_number,\
+	208 CAMBER Numeric 7.4 piecemarks.camber (17),\
+	209 BOMMATL Character 100 UNKNOWN,\
+	210 BOMSIZE Character 13 UNKNOWN,\
+	211 BOMRATING Character 15 UNKNOWN,\
+	212 MATLCLASS Character 10 piecemarks.material_class 10,\
+	213 BOMENDPREP Character 6 UNKNOWN,\
+	214 GUID Character 40 idfiles.id_guid 40,\
+	215 BOMFINISH Character 30 UNKNOWN,\
+	216 PRIORITY Character 10 sheets.priority 10,\
+	217 BOMLGTCHAR Character 15 UNKNOWN";
+	*/
+/**
+ * @properties={typeid:35,uuid:"5DDCF579-40D5-485C-97F1-184AFCE4FC33",variableType:-4}
+ */
+var labelFields = ['AREA',
+	'BATCH',
+	'BCCUST',
+	'BCFORM',
+	'BCINCLDPFX',
+	'BCJOBSTART',
+	'BCPREFIX',
+	'BCTITLE',
+	'BOLOUT',
+	'CARRNUM',
+	'COMMENTS',
+	'COWCODE',
+	'CTRLNUM',
+	'CUSCITY',
+	'CUSFAX',
+	'CUSFIRST',
+	'CUSLAST',
+	'CUSMIDDLE',
+	'CUSNAME',
+	'CUSPHONE',
+	'CUSSTATE',
+	'CUSSTREET',
+	'CUSTNUM',
+	'CUSTPO',
+	'CUSTSO',
+	'CUSZIP',
+	'DESCR1',
+	'DESCR2',
+	'EDITTIME',
+	'ENGXTIME',
+	'FABINVOICE',
+	'FABSHOP',
+	'FABXTIME',
+	'FIREXTIME',
+	'GALVXTIME',
+	'GRADE',
+	'HEAT',
+	'ID',
+	'IDFORMAT',
+	'IDLOCATION',
+	'IDSTATUS',
+	'INVOICE',
+	'JOBCAREOF',
+	'JOBID',
+	'JOBLOCAT',
+	'JOBNUM',
+	'JOBSHIPTO',
+	'JOBSTRUCT',
+	'JOBTITLE',
+	'JOIDFORMAT',
+	'JOLINE1NUM',
+	'JOLINE1STR',
+	'JOLINE2NUM',
+	'JOLINE2STR',
+	'LINE0FLD',
+	'LINE0PRMPT',
+	'LINE1NUM',
+	'LINE1STR',
+	'LINE2NUM',
+	'LINE2STR',
+	'LINE3FLD',
+	'LINE3PRMPT',
+	'LINE4FLD',
+	'LINE4PRMPT',
+	'LINE5FLD',
+	'LINE5PRMPT',
+	'LINE6FLD',
+	'LINE6PRMPT',
+	'LINE7FLD',
+	'LINE7PRMPT',
+	'LINE8FLD',
+	'LINE8PRMPT',
+	'LINE9FLD',
+	'LINE9PRMPT',
+	'LINEAFLD',
+	'LINEAPRMPT',
+	'LINEBFLD',
+	'LINEBPRMPT',
+	'LOADNUM',
+	'LODCAREOF',
+	'LODPO',
+	'LODRELEASE',
+	'LODSHIPTO',
+	'LOT',
+	'MRR',
+	'ORIGEMPL',
+	'OTHRXTIME',
+	'PANTXTIME',
+	'PCCOLOR',
+	'PCCOWCODE',
+	'PCMARK',
+	'PCRELEASE',
+	'PCUOM',
+	'PORELEASE',
+	'PRODTYPE',
+	'PROJYEAR',
+	'RAWMATLID',
+	'RECACTION',
+	'RECVLOAD',
+	'RECVTIME',
+	'REMAILTIME',
+	'REVLEVEL',
+	'ROUTECODE',
+	'SEMAILTIME',
+	'SEQNUM',
+	'SHEETNUM',
+	'SHIPLOAD',
+	'SHIPTAG',
+	'SHIPTIME',
+	'SITEXTIME',
+	'TRAILINFO',
+	'EDITDATE',
+	'ENGXDATE',
+	'FABXDATE',
+	'FIREXDATE',
+	'GALVXDATE',
+	'IDCREATED',
+	'OTHRXDATE',
+	'PANTXDATE',
+	'RECVDATE',
+	'REMAILDATE',
+	'REQDSHIP',
+	'SCHDSHIP',
+	'SEMAILDATE',
+	'SHIPDATE',
+	'SITEXDATE',
+	'DELETEID',
+	'LOGICFLAG',
+	'LPRINT',
+	'LSOTOLOAD',
+	'METRICJOB',
+	'BCJBSTRT',
+	'BCJOBLGTH',
+	'BCPFXLGTH',
+	'COSTEA',
+	'COWQTY',
+	'FIREPFCF',
+	'INCREMNT',
+	'ITEMWT',
+	'ITEMWTKG',
+	'JOBWT',
+	'LABELBC',
+	'LABELQTY',
+	'LGTNUM',
+	'ORIGQTY',
+	'PCUOMDOLL',
+	'QTY2PRINT',
+	'RECVQTY',
+	'RECVWT',
+	'SEQQTY',
+	'SHIPQTY',
+	'SHIPWT',
+	'TOTALWT',
+	'WIDNUM',
+	'RTBW',
+	'RTSW',
+	'RTBRANCH',
+	'PTFILLET',
+	'PTBRANCH',
+	'MTFILLET',
+	'MTBRANCH',
+	'LINESPEC',
+	'PREHEAT',
+	'SHOPHYDRO',
+	'FLDHYDRO',
+	'PMI',
+	'PWHT',
+	'DRAWNBY',
+	'CHECKBY',
+	'PAINTSYS',
+	'BHN',
+	'BHNMAX',
+	'LINENBR',
+	'REFDWG',
+	'SKETCH',
+	'PHASE',
+	'BOMCOMMENT',
+	'SHEETPO',
+	'PRIORDATE',
+	'MINORID',
+	'MINORQTY',
+	'BOMPARTNUM',
+	'BOMHEAT',
+	'BOMGUID',
+	'BOMGRADE',
+	'BOMSEQNUM',
+	'BOMITEMNUM',
+	'BOMREMARKS',
+	'PARENTPCMK',
+	'BOMQTY',
+	'BOMLGTNUM',
+	'BOMWIDNUM',
+	'BOMITEMWT',
+	'ERECTDWG',
+	'BUNDLEID',
+	'FINISH',
+	'DETAILMIN',
+	'FABMIN',
+	'HANDLMIN',
+	'PAINTMIN',
+	'SAWMIN',
+	'WELDMIN',
+	'RULECODE',
+	'FT_PKGNO',
+	'PCPHASE',
+	'PARENTCOPY',
+	'PARENTID',
+	'CAMBER',
+	'BOMMATL',
+	'BOMSIZE',
+	'BOMRATING',
+	'MATLCLASS',
+	'BOMENDPREP',
+	'GUID',
+	'BOMFINISH',
+	'PRIORITY',
+	'BOMLGTCHAR'];
 // _________________________________________________________________________________________________
 /**
  * moved to globals. scopes.globals.
@@ -1045,4 +1493,1061 @@ function onElementFocusLost(event) {
 		//application.updateUI();
 	}
 	return true
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param event {JSEvent}
+ *
+ * @properties={typeid:24,uuid:"3218661F-609A-45FA-8A8D-12DF3DBEED6B"}
+ */
+function onActionUpdatePrefs(event) {
+	// for globals, user_id = -1, tenant_uuid= main tenant, field_name = index, value_type, value_string
+	var prefs = scopes.prefs;
+	prefType = (event.getFormName().search('printer') != -1) ? 'Printer' : 'Prefs';
+	var description = "Global Preference";
+	if (prefType == "Printer"){
+		prefs = scopes.printer;
+		description = "Global Printer";
+		forms.preferences_printer.errorMessage = "Saving preferences.";
+	}
+	application.updateUI();
+	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
+	var user_id = -1;
+	var tenant = globals.secCurrentTenantID;
+	var variable = "";
+	var variableSetting = "";
+	var saveRec = false;
+	var rec = null;
+	//var updateCount = 0;
+	for (var index in prefs){
+		variable = index;
+		variableSetting = prefs[index];
+		var variableType = typeof(variableSetting);
+		if (variableType === 'function'){continue}
+		var fieldType = typeof(prefs[index]);
+		variableSetting +="";
+		saveRec = false;
+		if (fs.find()){
+			fs.user_id = -1;
+			fs.tenant_uuid = tenant;
+			fs.field_name = variable;
+			if (fs.search() > 0){
+				rec = fs.getRecord(1);
+				if (rec.field_value != variableSetting){
+					rec.field_value = variableSetting;saveRec = true;
+				}
+				if (rec.value_description != description){
+					rec.value_description = description;saveRec = true;
+				}
+				if (rec.field_type != variableType){
+					rec.field_type = variableType;saveRec = true;
+				}
+				//application.output('changed record '+variable);
+			} else {
+				var recNum = fs.newRecord();
+				rec = fs.getRecord(recNum);
+				if (!user_id) {
+					rec.user_id = -1;
+				} else {
+					rec.user_id = user_id;
+				}
+				rec.tenant_uuid = tenant;
+				rec.field_name = variable;
+				rec.field_value = variableSetting;
+				rec.field_type = variableType;
+				rec.value_description = description;
+				saveRec = true;
+			}
+		}
+		
+		if (saveRec){databaseManager.saveData(rec)}
+		//application.output(index+" = "+prefs[index]+" user_id: "+-1+" tenant_uuid "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
+	}
+	//application.output("update count "+updateCount);
+	if (prefType == "Printer"){
+		forms.preferences_printer.errorMessage = "";
+	}
+	setPrefsClean(event,prefType);
+	globals.onActionCancelButton(event);
+	application.updateUI();
+}
+/**
+ * @properties={typeid:24,uuid:"FAFD3720-4D08-4BE2-A2F6-BCAE870935A0"}
+ */
+function getBTLabelFormats(){
+	var reportsPath = scopes.prefs.reportpath;
+	var labelList = [];
+	var btwFiles = plugins.file.getFolderContents(reportsPath,".btw");
+	labelList.push('<NONE>');
+	for (var index = 0;index < btwFiles.length;index++){
+		labelList.push(btwFiles[index].getName());
+	}
+	application.setValueListItems('stsvl_label_formats',labelList);
+}
+/**
+ * @properties={typeid:24,uuid:"2FDB4922-1121-4905-BF7F-EA235F50409D"}
+ */
+function getLocalPrinters(){
+	application.setValueListItems('stsvl_get_printer_list',application.getPrinters());
+}
+/**
+ * @param event {JSEvent}
+ * @param prefsType {String}
+ * @properties={typeid:24,uuid:"6A1B1375-8F19-4418-BD98-EEE564E7C264"}
+ * @AllowToRunInFind
+ */
+function setPrefsDirty(event,prefsType){
+	var formName = "";
+	if (event){
+		formName = event.getFormName();
+	}
+	if (!formName){
+		if (prefsType == 'Print'){
+			formName = "print";
+		}
+	}
+	if (formName.search('print') != -1){
+		prefsPrinterDirty = (prefsType == "Printer") ? true : false;
+		forms.preferences_printer.elements.prefsUpdate.visible = (prefsPrinterDirty) ? true : false;
+		forms.preferences_printer.elements.prefsSession.visible = (prefsPrinterDirty) ? true : false;
+	} else {
+		prefsDirty = (prefsType != "Printer") ? true : false;
+		forms.preferences_main.elements.prefsUpdate.visible = (prefsDirty) ? true : false;
+		forms.preferences_main.elements.prefsSession.visible = (prefsDirty) ? true : false;
+	}
+}
+/**
+ * @param event {JSEvent}
+ * @param prefsType {String}
+ *
+ * @properties={typeid:24,uuid:"08572388-36D7-4BB3-B26B-8E6C99E4AB33"}
+ * @AllowToRunInFind
+ */
+function setPrefsClean(event,prefsType){
+	var formName = event.getFormName();
+	if (formName.search('print') != -1){
+		prefsPrinterDirty = (prefsType == "Printer") ? true : false;
+		forms.preferences_printer.elements.prefsUpdate.visible = (!prefsPrinterDirty);
+		forms.preferences_printer.elements.prefsSession.visible = (!prefsPrinterDirty);
+	} else {
+		prefsDirty = (prefsType != "Printer") ? true : false;
+		forms.preferences_main.elements.prefsUpdate.visible = (!prefsDirty);
+		forms.preferences_main.elements.prefsSession.visible = (!prefsDirty);
+	}
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ * @param {String} prefsType
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"04DB1200-402E-4A31-85CB-8F463D135F52"}
+ */
+function onDataChangePrefsGeneral(oldValue, newValue, event,prefsType) {
+	setPrefsDirty(event,prefsType);
+	return true
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param updateValue
+ * @param scopeName
+ *
+ * @properties={typeid:24,uuid:"BF49A765-9ECE-4164-AAF0-208CA327A66C"}
+ */
+function onActionFileOpenDialog(event,updateValue,prefsType) {
+	//var priorPath = (prefsType == 'Printer') ? scopes.printer[updateValue]: scopes.prefs[updateValue];
+	//if (priorPath == "" || priorPath == null){priorPath = "C:\\"}
+	var dirs = plugins.file.showDirectorySelectDialog();
+	//var dirs = plugins.file.showFileOpenDialog(2, priorPath, false, fileReceipt2);
+	if (dirs == null){return}
+	var path = dirs.getAbsolutePath();
+	var formName = event.getFormName();
+	if (prefsType == "Printer"){
+		scopes.printer[updateValue] = path;
+	} else {
+		scopes.prefs[updateValue] = path;
+	}
+	setPrefsDirty(event,prefsType);
+}
+/**
+ * @param event {JSEvent}
+ *
+ * @properties={typeid:24,uuid:"DF62A537-91F7-4B78-955B-76456B9BE458"}
+ * @AllowToRunInFind
+ */
+function onActionCancelPrefs(event) {
+	var prefsType = (event.getFormName().search("printer") != -1) ? "Printer" : "Prefs";
+	scopes.globals.onStartLoadPrefs(prefsType);
+	setPrefsClean(event,prefsType);
+	scopes.globals.onActionCancelButton(event);
+}
+
+
+/**
+ * @param event {JSEvent}
+ * @param updateValue
+ *
+ * @properties={typeid:24,uuid:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C"}
+ * @AllowToRunInFind
+ */
+function onActionFileOpenDialogFile(event,updateValue) {
+	var prefsType = (event.getFormName().search("printer") != -1) ? "Printer" : "Prefs";
+	var scoper = (prefsType == 'Printer') ? scopes.printer : scopes.prefs;
+	var lastValue = scoper[updateValue];
+	var file = plugins.file.showFileOpenDialog(1, "\\windows\\", false, new Array("Images and Audio Files","wav","ico","bmp","png","gif"));
+	if (!file){return}
+	setPrefsDirty(event,prefsType);
+	var path = file.getAbsolutePath();
+	var formName = event.getFormName();
+	scoper[updateValue] = file;
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"4EEDD213-B9E1-4EBF-932D-8CBE5ECB49A5"}
+ * @AllowToRunInFind
+ */
+function onActionFormTemplate(event) {
+	var templateTextDbName = "Text File 1.txt";
+	var reports = scopes.prefs.reportpath;
+	var pathName = reports+"\\"+templateTextDbName;
+
+	var pathNameMeta = plugins.file.convertToJSFile(reports);
+
+	if (!pathNameMeta.exists()){
+		plugins.dialogs.showErrorDialog('STS ERROR: Reports Folder is Invalid.','Reports Folder is Invalid. Verify under Preferences/Data Paths/Report Folder Path.');
+		return; // path does not exist
+	}
+	var fileMeta = plugins.file.convertToJSFile(pathName);
+	if (fileMeta.exists()){
+		plugins.file.writeTXTFile(pathName,"");// clear out file
+	}
+	var newContent = "";
+	var items = scopes.printer.labelText.split(",");
+	var dataSize = items.length;
+	var itemList = "";
+	for (var index = 0;index < dataSize;index++){
+		//var splits = items[index].split(" ");
+		//itemList += "'"+splits[1]+"'"+",\n";
+		newContent += "\t";
+	}
+	//application.output(itemList);
+	newContent += "\n";
+	plugins.file.writeTXTFile(pathName,newContent);
+	newContent = "";
+	null;
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D533C90F-42D6-426E-83DA-2ADE3C394DBC"}
+ * @AllowToRunInFind
+ */
+function onActionPrintLabels(event) {
+	/**
+	 * collect label fields and then push into tabbed fields with data
+	 */
+	application.output('print label fields');
+	var dbFields = scopes.printer.barTenderTextSpecs.split(",");
+	//scopes.printer.labelFields2 = scopes.printer.labelFields.split(",");
+	var tabCount = scopes.printer.barTenderFields.length;
+//	if (true == true ){return}
+	var outputFields = [];
+	var outputSpecs = [];
+	for (var index = 0;index < tabCount;index++){
+		//application.output('index '+index+" of "+tabCount+" "+dbFields[index]);
+		var fields = dbFields[index].split(" ");
+		var fieldIn = fields[1];
+		var fieldNameDb = fields[4].split(".");
+		var fieldOut = fieldNameDb[fieldNameDb.length-1];
+		var fieldType = fields[2];
+		var fieldSize = fields[3];
+		outputFields.push(fieldOut);
+		outputSpecs.push(new Array(fieldType,fieldSize,fieldIn));
+		//application.output(fieldOut);
+	}
+	
+	//if (true || true) {return;}
+	var formName = event.getFormName();
+	var formTable = formName+"_table";
+	/** @type JSFoundSet */
+	var fs = forms[formTable].foundset;
+	var i = 1;
+	var fileLine = "";
+	var itemsSelected = false;
+	while (i <= fs.getSize()){
+		var rec = fs.getRecord(i++);
+		var tabContents = "";
+		if (rec.selection != 1){continue}
+		itemsSelected = true;
+		for (index = 0;index < tabCount;index++){
+			var outputField = outputFields[index];
+			/** @type {Array} */
+			var outputSpec = outputSpecs[index]; // fieldtype,fieldsize
+			tabContents = rec[outputFields[index]];
+			//application.output(outputFields[index]+' tabContents '+tabContents)
+			if (typeof tabContents === 'undefined'){
+				//application.output('undefined or unknow - '+scopes.printer.barTenderFields[index]);
+				var fieldTagName = scopes.printer.barTenderFields[index];
+				tabContents = getNonRecordValues(rec,fieldTagName);
+			}
+			if (tabContents == null){
+				tabContents = "";
+			}
+
+			tabContents = tabContentFormat(tabContents,outputSpec);
+			//application.output('contents '+tabContents);
+			fileLine += tabContents+"\t";
+		}
+		fileLine += "\n";
+	}
+	if (itemsSelected){bartenderPrint(event,fileLine);} //BARTENDER
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} txtString
+ *
+ * @properties={typeid:24,uuid:"5D168323-EA10-466B-AEED-B5B6E31D38F3"}
+ */
+function bartenderPrint(event,txtString){
+	null;
+	var formName = event.getFormName();
+	var reportPth = scopes.prefs.reportpath;
+	var btwFile = reportPth+"\\"+forms['barcode_idlabel'].printingLabel;
+	var line = "";
+	var fileName = reportPth+"\\barcodelabel.txt";
+	var data = "";
+	var randFileName = reportPth+"\\" + application.getUUID().toString().split("-")[4] +".txt";
+	//application.output(randFileName);
+	var status = plugins.file.writeTXTFile(fileName,txtString);
+	status = plugins.file.appendToTXTFile(fileName,line + "\n");
+	plugins.file.copyFile(fileName,randFileName);
+	null;
+	if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
+		plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
+		return;
+	}
+	var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
+	if (!com || !com.isJACOBLoaded()) {
+		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
+		return;
+	}
+	com.put("Visible","true");
+	var formats = com.getChildJSCOM("Formats");
+	var format = formats.getChildJSCOM("Open","",[btwFile,"false",""]);
+	//application.output('btw file '+btwFile);
+	var DBs = format.getChildJSCOM("Databases");
+	var db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
+	//var setDb = db.getChildJSCOM("TextFile");
+	// Need db.TextFile.FileName = "c:\\barcodelabel.txt"
+	var oleDb = db.getChildJSCOM("TextFile");
+	oleDb.put("FileName",randFileName);
+	/**
+	var db = DBs.getChildJSCOM("GetDatabase","",["PostgreSQL35W"]);
+	var ole = db.getChildJSCOM("ODBC");
+	var sql = 'SELECT "bc_id", "bc_text1" FROM "public"."barcode_test" WHERE bc_id <> \'*EX0B022680*\'';
+	ole.put("SQLStatement",sql);
+	ole.put("UserId","DBA");
+	application.output("sql "+ole.get("SQLStatement"));*/
+	//format.put("Printer","Bullzip PDF Printer");
+	format.getChildJSCOM("PrintOut","",["false","true"]);
+	//formatsFile.call("ExportToClipboard",0,0);
+	//var comItems = formats.get("NamedSubStrings");
+	//var comMaterial = comItems.get('Item("Material")');
+	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+	com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+	com.release();
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param {String} tabContents  "string indicating field from which to grab information
+ * @param {Array} tabSpec //// fieldtype="Character|Date|Logical|Numeric",fieldsize="x|x.x"
+ *
+ * @properties={typeid:24,uuid:"86A68CCA-D101-4D62-886B-8F9197D80CD0"}
+ * @AllowToRunInFind
+ */
+function tabContentFormat(tabContents,tabSpec){
+	if (tabContents == ""){return tabContents}
+	/** @type {Array} */
+	var tabType = tabSpec[0]; // content type
+	/** @type {Array} */
+	var spec = tabSpec[1].split("."); //length or number.decimal
+	var length = spec[0];	// decimal included?
+	var expectedData = tabSpec[2]; // incoming expected Data name field for Character, Numeric, Logical, Date
+	var decimal = 0;
+	if (spec.length == 2){
+		decimal = spec[1];
+	}
+	var contentLength = tabContents.length;
+	var blanks = "                    ";
+	var a = tabContents;
+	var b = "";
+	if (tabType == "Numeric"){
+		if (decimal != 0){
+			var nums = a.toString().split(".");
+			var zeroes = "0000000000000000";
+			a = blanks+nums[0];
+			b = nums[1]+zeroes;
+			b = b.substr(0,(decimal*1+1)); // get decimal, and round
+			b = Math.round(b/10)+zeroes;
+			b = b.substr(0,decimal);
+			b = "."+b;
+		}
+	}
+	if (tabType == "Date"){
+		var myDate = a;
+		myDate = Date.parse(myDate);
+		myDate2 = myDate.clone().add(6).days();
+		//application.ouput('in date '+myDate+" changed + 6 days "+myDate.add(6).days());
+		application.output('date is '+tabContents+ 'expected Data '+tabSpec+" +-+-+-+ "+expectedData+" dayts "+myDate2);
+		/** @type {Date} */
+		var dated = a;
+		if (expectedData && expectedData.search("TIME") == -1){
+			//a ="";
+			var day = Date.parse(tabContents);
+			a = (day.getMonth()+1)+"/"+day.getDate()+"/"+day.getFullYear().toString().substr(2);
+			application.output('data converted is '+a);
+		} else {
+			a= day.getHours()+":"+day.getMinutes();
+			application.output('time is '+a);
+		}
+		
+		//if (expectedData.search("DATE") != -1) {
+			
+		//}
+	}
+	a = blanks+a;
+	a = a.substr(a.length-length);
+	return a+b;
+}
+/**
+ * @properties={typeid:24,uuid:"A0BDA211-2B39-4739-87CC-E244592AA285"}
+ */
+function getNonRecordValues(currentRecord,barTenderField){
+	application.output(barTenderField);
+	var newVal = "";
+	switch (barTenderField){
+		case 'BCCUST':
+			null;
+			break;
+		case 'BCFORM':
+			null;
+			break;
+		case 'BCINCLDPFX':
+			null;
+			break;
+		case 'BCJOBSTART':
+			null;
+			break;
+		case 'BCPREFIX':
+			null;
+			break;
+		case 'BCTITLE':
+			null;
+			break;
+		case 'BOLOUT':
+			null;
+			break;
+		case 'CARRNUM':
+			null;
+			break;
+		case 'COMMENTS':
+			null;
+			break;
+		case 'COWCODE':
+			null;
+			break;
+		case 'CTRLNUM':
+			null;
+			break;
+		case 'CUSCITY':
+			null;
+			break;
+		case 'CUSFAX':
+			null;
+			break;
+		case 'CUSFIRST':
+			null;
+			break;
+		case 'CUSLAST':
+			null;
+			break;
+		case 'CUSMIDDLE':
+			null;
+			break;
+		case 'CUSNAME':
+			null;
+			break;
+		case 'CUSPHONE':
+			null;
+			break;
+		case 'CUSSTATE':
+			null;
+			break;
+		case 'CUSSTREET':
+			null;
+			break;
+		case 'CUSTNUM':
+			null;
+			break;
+		case 'CUSTPO':
+			null;
+			break;
+		case 'CUSTSO':
+			null;
+			break;
+		case 'CUSZIP':
+			null;
+			break;
+		case 'DESCR2':
+			null;
+			break;
+		case 'EDITTIME':
+			null;
+			break;
+		case 'ENGXTIME':
+			null;
+			break;
+		case 'FABINVOICE':
+			null;
+			break;
+		case 'FABSHOP':
+			null;
+			break;
+		case 'FABXTIME':
+			null;
+			break;
+		case 'FIREXTIME':
+			null;
+			break;
+		case 'GALVXTIME':
+			null;
+			break;
+		case 'HEAT':
+			null;
+			break;
+		case 'IDFORMAT':
+			null;
+			break;
+		case 'IDLOCATION':
+			null;
+			break;
+		case 'IDSTATUS':
+			null;
+			break;
+		case 'INVOICE':
+			null;
+			break;
+		case 'JOBCAREOF':
+			null;
+			break;
+		case 'JOBID':
+			null;
+			break;
+		case 'JOBLOCAT':
+			null;
+			break;
+		case 'JOBNUM':
+			null;
+			break;
+		case 'JOBSHIPTO':
+			null;
+			break;
+		case 'JOBSTRUCT':
+			null;
+			break;
+		case 'JOBTITLE':
+			null;
+			break;
+		case 'JOIDFORMAT':
+			null;
+			break;
+		case 'JOLINE1NUM':
+			null;
+			break;
+		case 'JOLINE1STR':
+			null;
+			break;
+		case 'JOLINE2NUM':
+			null;
+			break;
+		case 'JOLINE2STR':
+			null;
+			break;
+		case 'LINE0FLD':
+			null;
+			break;
+		case 'LINE0PRMPT':
+			null;
+			break;
+		case 'LINE1NUM':
+			null;
+			break;
+		case 'LINE1STR':
+			null;
+			break;
+		case 'LINE2NUM':
+			null;
+			break;
+		case 'LINE2STR':
+			null;
+			break;
+		case 'LINE3FLD':
+			null;
+			break;
+		case 'LINE3PRMPT':
+			null;
+			break;
+		case 'LINE4FLD':
+			null;
+			break;
+		case 'LINE4PRMPT':
+			null;
+			break;
+		case 'LINE5FLD':
+			null;
+			break;
+		case 'LINE5PRMPT':
+			null;
+			break;
+		case 'LINE6FLD':
+			null;
+			break;
+		case 'LINE6PRMPT':
+			null;
+			break;
+		case 'LINE7FLD':
+			null;
+			break;
+		case 'LINE7PRMPT':
+			null;
+			break;
+		case 'LINE8FLD':
+			null;
+			break;
+		case 'LINE8PRMPT':
+			null;
+			break;
+		case 'LINE9FLD':
+			null;
+			break;
+		case 'LINE9PRMPT':
+			null;
+			break;
+		case 'LINEAFLD':
+			null;
+			break;
+		case 'LINEAPRMPT':
+			null;
+			break;
+		case 'LINEBFLD':
+			null;
+			break;
+		case 'LINEBPRMPT':
+			null;
+			break;
+		case 'LOADNUM':
+			null;
+			break;
+		case 'LODCAREOF':
+			null;
+			break;
+		case 'LODPO':
+			null;
+			break;
+		case 'LODRELEASE':
+			null;
+			break;
+		case 'LODSHIPTO':
+			null;
+			break;
+		case 'LOT':
+			null;
+			break;
+		case 'MRR':
+			null;
+			break;
+		case 'ORIGEMPL':
+			null;
+			break;
+		case 'OTHRXTIME':
+			null;
+			break;
+		case 'PANTXTIME':
+			null;
+			break;
+		case 'PCCOLOR':
+			null;
+			break;
+		case 'PCCOWCODE':
+			null;
+			break;
+		case 'PCRELEASE':
+			null;
+			break;
+		case 'PCUOM':
+			null;
+			break;
+		case 'PORELEASE':
+			null;
+			break;
+		case 'PRODTYPE':
+			null;
+			break;
+		case 'PROJYEAR':
+			null;
+			break;
+		case 'RAWMATLID':
+			null;
+			break;
+		case 'RECACTION':
+			null;
+			break;
+		case 'RECVLOAD':
+			null;
+			break;
+		case 'RECVTIME':
+			null;
+			break;
+		case 'REMAILTIME':
+			null;
+			break;
+		case 'REVLEVEL':
+			null;
+			break;
+		case 'SEMAILTIME':
+			null;
+			break;
+		case 'SHIPLOAD':
+			null;
+			break;
+		case 'SHIPTAG':
+			null;
+			break;
+		case 'SHIPTIME':
+			null;
+			break;
+		case 'SITEXTIME':
+			null;
+			break;
+		case 'TRAILINFO':
+			null;
+			break;
+		case 'EDITDATE':
+			null;
+			break;
+		case 'ENGXDATE':
+			null;
+			break;
+		case 'FABXDATE':
+			null;
+			break;
+		case 'FIREXDATE':
+			null;
+			break;
+		case 'GALVXDATE':
+			null;
+			break;
+		case 'IDCREATED':
+			null;
+			break;
+		case 'OTHRXDATE':
+			null;
+			break;
+		case 'PANTXDATE':
+			null;
+			break;
+		case 'RECVDATE':
+			null;
+			break;
+		case 'REMAILDATE':
+			null;
+			break;
+		case 'REQDSHIP':
+			null;
+			break;
+		case 'SCHDSHIP':
+			null;
+			break;
+		case 'SEMAILDATE':
+			null;
+			break;
+		case 'SHIPDATE':
+			null;
+			break;
+		case 'SITEXDATE':
+			null;
+			break;
+		case 'DELETEID':
+			null;
+			break;
+		case 'LOGICFLAG':
+			null;
+			break;
+		case 'LSOTOLOAD':
+			null;
+			break;
+		case 'METRICJOB':
+			null;
+			break;
+		case 'BCJBSTRT':
+			null;
+			break;
+		case 'BCJOBLGTH':
+			null;
+			break;
+		case 'BCPFXLGTH':
+			null;
+			break;
+		case 'COSTEA':
+			null;
+			break;
+		case 'COWQTY':
+			null;
+			break;
+		case 'FIREPFCF':
+			null;
+			break;
+		case 'INCREMNT':
+			null;
+			break;
+		case 'JOBWT':
+			null;
+			break;
+		case 'LABELBC':
+			null;
+			break;
+		case 'LABELQTY':
+			null;
+			break;
+		case 'LGTNUM':
+			null;
+			break;
+		case 'PCUOMDOLL':
+			null;
+			break;
+		case 'QTY2PRINT':
+			null;
+			break;
+		case 'RECVQTY':
+			null;
+			break;
+		case 'RECVWT':
+			null;
+			break;
+		case 'SHIPQTY':
+			null;
+			break;
+		case 'SHIPWT':
+			null;
+			break;
+		case 'TOTALWT':
+			null;
+			break;
+		case 'RTBW':
+			null;
+			break;
+		case 'RTSW':
+			null;
+			break;
+		case 'RTBRANCH':
+			null;
+			break;
+		case 'PTFILLET':
+			null;
+			break;
+		case 'PTBRANCH':
+			null;
+			break;
+		case 'MTFILLET':
+			null;
+			break;
+		case 'MTBRANCH':
+			null;
+			break;
+		case 'LINESPEC':
+			null;
+			break;
+		case 'PREHEAT':
+			null;
+			break;
+		case 'SHOPHYDRO':
+			null;
+			break;
+		case 'FLDHYDRO':
+			null;
+			break;
+		case 'PMI':
+			null;
+			break;
+		case 'PWHT':
+			null;
+			break;
+		case 'DRAWNBY':
+			null;
+			break;
+		case 'CHECKBY':
+			null;
+			break;
+		case 'PAINTSYS':
+			null;
+			break;
+		case 'BHN':
+			null;
+			break;
+		case 'BHNMAX':
+			null;
+			break;
+		case 'LINENBR':
+			null;
+			break;
+		case 'REFDWG':
+			null;
+			break;
+		case 'SKETCH':
+			null;
+			break;
+		case 'PHASE':
+			null;
+			break;
+		case 'BOMCOMMENT':
+			null;
+			break;
+		case 'SHEETPO':
+			null;
+			break;
+		case 'PRIORDATE':
+			null;
+			break;
+		case 'MINORID':
+			null;
+			break;
+		case 'MINORQTY':
+			null;
+			break;
+		case 'BOMPARTNUM':
+			null;
+			break;
+		case 'BOMHEAT':
+			null;
+			break;
+		case 'BOMGUID':
+			null;
+			break;
+		case 'BOMGRADE':
+			null;
+			break;
+		case 'BOMSEQNUM':
+			null;
+			break;
+		case 'BOMITEMNUM':
+			null;
+			break;
+		case 'BOMREMARKS':
+			null;
+			break;
+		case 'PARENTPCMK':
+			null;
+			break;
+		case 'BOMQTY':
+			null;
+			break;
+		case 'BOMLGTNUM':
+			null;
+			break;
+		case 'BOMWIDNUM':
+			null;
+			break;
+		case 'BOMITEMWT':
+			null;
+			break;
+		case 'ERECTDWG':
+			null;
+			break;
+		case 'BUNDLEID':
+			null;
+			break;
+		case 'DETAILMIN':
+			null;
+			break;
+		case 'FABMIN':
+			null;
+			break;
+		case 'HANDLMIN':
+			null;
+			break;
+		case 'PAINTMIN':
+			null;
+			break;
+		case 'SAWMIN':
+			null;
+			break;
+		case 'WELDMIN':
+			null;
+			break;
+		case 'RULECODE':
+			null;
+			break;
+		case 'FT_PKGNO':
+			null;
+			break;
+		case 'PCPHASE':
+			null;
+			break;
+		case 'PARENTCOPY':
+			null;
+			break;
+		case 'CAMBER':
+			null;
+			break;
+		case 'BOMMATL':
+			null;
+			break;
+		case 'BOMSIZE':
+			null;
+			break;
+		case 'BOMRATING':
+			null;
+			break;
+		case 'MATLCLASS':
+			null;
+			break;
+		case 'BOMENDPREP':
+			null;
+			break;
+		case 'GUID':
+			null;
+			break;
+		case 'BOMFINISH':
+			null;
+			break;
+		case 'PRIORITY':
+			null;
+			break;
+		case 'BOMLGTCHAR':
+			null;
+			break;
+		default:
+
+	}
+	return newVal;
+}
+/**
+ * @properties={typeid:24,uuid:"1737A0EF-1FE3-498B-A8B7-404992F069CA"}
+ */
+function getAddressInfo(){
+	
 }

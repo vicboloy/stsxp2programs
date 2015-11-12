@@ -27,7 +27,7 @@ function onActionHide(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ * 
  * @param event
  *
  * @properties={typeid:24,uuid:"06E6E42C-CC68-43C0-8292-61EEC7F96F34"}

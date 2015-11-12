@@ -9,6 +9,8 @@ var statusId = "";
  * @AllowToRunInFind
  */
 function onSolutionOpen(){
+	plugins.UserManager.updateClientInfo();
+	application.output('license mobile '+plugins.UserManager.getSettingsProperty('license.0.licenses'));
 	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		var mobileURL = application.getServerURL()+'/servoy-webclient/ss/s/STSmobile';
 		var status = application.showURL(mobileURL,'_blank','height=320,width=240,kiosk=yes,status=no,toolbar=no,menubar=no,location=no,resizable=no,titlebar=no');

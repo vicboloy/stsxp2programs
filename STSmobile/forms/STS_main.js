@@ -61,6 +61,8 @@ function onActionTemp(event) {
 function onShow(firstShow, event) {
 	globals.mobForm = "STS_main";
 	globals.mobProg = "Main";
+	var licCount = plugins.UserManager.Server().getSettingsProperty('license.0.licenses');
+	plugins.dialogs.showErrorDialog('Message','License count'+licCount);
 	//globals.rfGetLocalStorage('deviceName'); //JOE DISABLE
 
 }

@@ -1,0 +1,15 @@
+dataSource:"db:/stsservoy/mapping",
+encapsulation:60,
+items:[
+{
+height:480,
+partType:5,
+typeid:19,
+uuid:"4E6F4653-8257-4D1C-AF7A-BE8EE091B70B"
+}
+],
+name:"division_user_detail2",
+showInMenu:true,
+styleName:"sts_one",
+typeid:3,
+uuid:"61934CFA-208F-4430-8AFF-4E4282D48B41"

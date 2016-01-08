@@ -108,6 +108,7 @@ horizontalAlignment:0,
 imageMediaID:"7DE60661-FA20-4CC8-8F60-48A8518B377F",
 location:"615,50",
 mediaOptions:14,
+name:"btn_Home",
 onActionMethodID:"0F7CB54B-C3AC-4211-9A81-5E931253B58C",
 showClick:false,
 showFocus:false,
@@ -118,7 +119,7 @@ uuid:"55ECC2A1-13C1-43E3-BE5C-79D8F9BED371"
 },
 {
 extendsID:"D186C765-07B1-4DCC-977C-F44188337A8B",
-height:531,
+height:537,
 typeid:19,
 uuid:"99ED9E50-1BAD-49DC-BCC6-0B4AD2715B34"
 },

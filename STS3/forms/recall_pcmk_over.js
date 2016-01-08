@@ -1,5 +1,4 @@
 /**
- * TODO generated, please specify type and doc for the params
  * @param firstShow
  * @param event
  *
@@ -10,7 +9,6 @@ function onShow(firstShow, event) {
 	return _super.onShow(firstShow, event)
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"2FFB8EDD-4659-4BB7-8A7C-50E697DCD50D"}
@@ -25,7 +23,6 @@ function onActionSelectAll(event) {
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"D2BCDFB7-33BC-4BF6-B957-E95BA18320D9"}
@@ -40,7 +37,6 @@ function onActionClearAll(event) {
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  * @param formName
  *

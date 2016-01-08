@@ -20,7 +20,7 @@ function onActionEnable(event) {
 	elements.lFsAllowNonSerial.enabled = fabsuiteEnabled;
 	elements.getFabsuiteRootPath.enabled = fabsuiteEnabled;
 	
-	if (event == ""){return}
+	if (!event){return}
 	scopes.prefs.onDataChangePrefsGeneral(null,null,event,"Prefs");
 }
 
@@ -33,7 +33,7 @@ function onActionEnable(event) {
  * @properties={typeid:24,uuid:"7EB6AD38-6529-444D-BA79-ED9C327B3FB4"}
  */
 function onShow(firstShow, event) {
-	onActionEnable("");
+	onActionEnable(null);
 }
 
 /**
@@ -44,5 +44,5 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"3FB93242-8CDD-4EA6-976B-02AB7F207559"}
  */
 function onAction(event) {
-	onActionEnable("");
+	onActionEnable(null);
 }

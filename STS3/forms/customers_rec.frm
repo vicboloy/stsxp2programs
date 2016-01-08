@@ -2,9 +2,10 @@ dataSource:"db:/stsservoy/customers",
 extendsID:"-1",
 items:[
 {
+enabled:false,
 horizontalAlignment:0,
 location:"5,5",
-name:"addNewButton",
+name:"btn_New",
 onActionMethodID:"C8FE22F3-9879-4FD0-A0ED-8D4F46D0F3CF",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

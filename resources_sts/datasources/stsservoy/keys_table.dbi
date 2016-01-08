@@ -34,6 +34,14 @@ creationOrderIndex:2,
 dataType:12,
 length:50,
 name:"key_name"
+},
+{
+allowNull:true,
+creationOrderIndex:5,
+dataType:12,
+flags:4,
+length:36,
+name:"tenant_uuid"
 }
 ],
 name:"keys_table",

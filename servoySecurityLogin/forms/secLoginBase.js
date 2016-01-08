@@ -84,7 +84,15 @@ var AUTH_MESSAGE_LOGGER = "secLogger";
  */
 var AUTH_INIT_COMPANY = "secCreateTenantAndUser";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"EA1E69BB-9C53-41D8-93D1-3CA210A506EA"}
+ */
+var AUTH_METHOD_CHECK_LICENSE = 'secCheckLicense';
+
+/**
  * @properties={typeid:24,uuid:"5F3B8ABB-AEC5-4217-967B-77FCB4D07DDA"}
+ * @AllowToRunInFind
  */
 function login(){
 
@@ -111,6 +119,7 @@ function login(){
 	//application.output('before tenantid');
 	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[userName,companyName]);
 	//application.output('after tenantid'+tenantID+' ID ');
+	var checkLicense = "";
 	if(tenantID){
 		//application.output('inside tenantID');
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
@@ -118,43 +127,52 @@ function login(){
 		if(userID){
 			application.output('passCheck '+userID+' '+password);
 			var passCheck = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_PASSWORD,[userID, password]);
-			if (!passCheck && (password == tenantID)){passCheck = true}//TODO REMOVE
+			//if (!passCheck && (password == tenantID)){passCheck = true}//TODO REMOVE
 			
 			if (application.isInDeveloper()){application.output('passcheck '+passCheck+' '+password+' '+tenantID);}
-			if(passCheck && security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
-				globals.secCurrentUserID = userID;
-				globals.secCurrentUserName = userName;
-				if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
-					var date = new Date();//<YYYY>-<MM>-<DD>T<HH>-<MM>-<SS> synchronize mobile computer date with server time
-					var days = date.getDate()+"";
-					if (days.length == 1) {days = "0"+days}
-					var month = date.getMonth()+1+"";
-					if (month.length == 1) {month = "0"+month}
-					var hours = date.getHours()+"";
-					if (hours.length == 1) {hours = "0"+hours}
-					var minutes = date.getMinutes()+"";
-					if (minutes.length == 1) {minutes = "0"+minutes}
-					var seconds = date.getSeconds()+"";
-					if (seconds.length == 0) {seconds = "0"+seconds}
-					var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"';";
-					application.output('date '+mobileDate);
-					plugins.WebClientUtils.executeClientSideJS(mobileDate);
+			checkLicense = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[application.getSolutionName(),tenantID,userID]);
+			application.output('license use '+checkLicense);
+			if(passCheck && checkLicense.search('OUT') == -1){
+				if (security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
+					globals.secCurrentUserID = userID;
+					globals.secCurrentUserName = userName;
+					globals.licenseResult = checkLicense;
+					if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+						var date = new Date();//<YYYY>-<MM>-<DD>T<HH>-<MM>-<SS> synchronize mobile computer date with server time
+						var days = date.getDate()+"";
+						if (days.length == 1) {days = "0"+days}
+						var month = date.getMonth()+1+"";
+						if (month.length == 1) {month = "0"+month}
+						var hours = date.getHours()+"";
+						if (hours.length == 1) {hours = "0"+hours}
+						var minutes = date.getMinutes()+"";
+						if (minutes.length == 1) {minutes = "0"+minutes}
+						var seconds = date.getSeconds()+"";
+						if (seconds.length == 0) {seconds = "0"+seconds}
+						var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"';";
+						application.output('date '+mobileDate);
+						plugins.WebClientUtils.executeClientSideJS(mobileDate);
+					}
+					return true;
 				}
-				return true;
 			}
 		}
 	}
 	//application.output('user id '+userID);
-	var message = "Login Failed";
+	var message = "Login Failed ";
+	if (checkLicense.search('OUT') != -1){
+		message += '. '+checkLicense; // only add license info if login failure license-related
+	}
 	//application.output('message '+message+' text '+errorMessage+'xx');
 	if (errorMessage == message){
 		message = message +"!";
 	}
 	errorMessage = message;
 	return null;
+	//var licenses = globals.secCheckLicense();
+	//licenses = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[userName]);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param msg
  *
  * @properties={typeid:24,uuid:"13DDA005-3E30-4B2E-A7C2-BC804DDB6D8F"}
@@ -171,7 +189,6 @@ function callError(msg){
  */
 function onLoad(event) {
 	textAreaString = "";
-	//application.output('begin load');
 	for (var item in plugins){
 		application.output('loaded '+item);
 		textAreaString += item+",";
@@ -183,17 +200,34 @@ function onLoad(event) {
 		counter--;
 	}
 	application.output('usermanager registered '+registered+' counter '+counter);
+	//var solutionNames = []; // either STS3 or STSmobile
+	var solutionNames = [];
+
 	try {
+		// get license info on load  for this tenant addreses #45 unfuddle
+		if (application.isInDeveloper()){application.output(application.getSolutionName())}
+		var solutionName = application.getSolutionName(); // addresses #45
+
 		var clientArray = plugins.UserManager.getClients();
 		var licenses = licenseCount();
+		licenseTotal = licenses;
+		var currentTime = new Date().getTime();
 		for (var indexC = 0;indexC < clientArray.length;indexC++){
 			var client = clientArray[indexC];
 			client = client.clientId;
 			var clientInfo = plugins.UserManager.getClientByUID(client);
-			application.output(clientArray[indexC]+' client alive:'+client+' IP:'+clientInfo.ipAddress+' Login:'+clientInfo.login+' solution:'+clientInfo.solutionName+' idle:'+clientInfo.idle);
+			var clientSolution = clientInfo.solutionName;
+			if (!solutionNames[clientSolution]){solutionNames[clientSolution] = 0}
+			solutionNames[clientSolution] =  parseInt(solutionNames[clientSolution]) + 1;
+			var clientIdle = clientInfo.idle;
+			var beginTime = clientIdle.getTime();
+			var idleMillis = Math.floor((currentTime - beginTime)/100);
+			application.output(clientArray[indexC]+' loginId:'+clientInfo.userUid+' client:'+client+' IP:'+clientInfo.ipAddress+' Login:'+clientInfo.login+' solution:'+clientInfo.solutionName+' idle:'+clientInfo.idle+' solution '+clientInfo.solutionName+' idle seconds '+idleMillis);
 			application.output(clientInfo);
 		}
-		application.output('license count '+licenses);
+		//errorMessage = 'Desk ('+solutionNames['STS3']+') Mobile ('+solutionNames['STSmobile']+' of '+licenses+'.';
+		application.output('sol '+solutionName+' license count '+licenses+' solution STS3 '+solutionNames['STS3']+' STSmobile '+solutionNames['STSmobile']);
+		application.output('solution counts '+solutionNames);
 		var moreLic = plugins.UserManager.Server().getSettingsProperty('license.0.company_name');
 		textAreaString += "license "+licenses+' more - '+moreLic+' -';
 	} catch (e)	{
@@ -221,10 +255,13 @@ function onLoad(event) {
 	if (application.isInDeveloper()){application.output('company show '+showCompany);}
 	elements.companyName.visible = showCompany;
 	elements.companyNameLabel.visible = showCompany;
+
+
 	var width = win.getWidth();
 	if (width <= 320){
 		forms.secLoginExample.hideLogo();
 	}
+	//errorMessage = 'Desk ('+solutionNames['STS3']+') Mobile ('+solutionNames['STSmobile']+' of '+licenses+'.';
 
 	var msg = "inside load";
 }

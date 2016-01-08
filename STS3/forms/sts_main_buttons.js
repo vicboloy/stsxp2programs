@@ -5,7 +5,6 @@
  */
 var winderList = "";
 /**
- * TODO generated, please specify type and doc for the params
  * @param {JSEvent} event event that launched this function
  * @param tabName {String} identify the tab selected to open that form view
  *
@@ -36,7 +35,6 @@ function onActionMenu(event,tabName){
 	replaceTabIcon(tabName);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param tabName
  *
  * @properties={typeid:24,uuid:"1866A7CB-D2A5-4FD5-92FA-ECC35CA24587"}
@@ -44,8 +42,8 @@ function onActionMenu(event,tabName){
 function replaceTabIcon(tabName){
 	var colorSelect = '#b7bcbf';
 	var colorUnSelect = '#e5e5e5';
-	var white = '#ffffff';
-	var black = '#000000'
+	///var white = '#ffffff';
+	///var black = '#000000'
 	elements.home.bgcolor = colorUnSelect;
 	elements.imports.bgcolor = colorUnSelect;
 	elements.labels.bgcolor = colorUnSelect;
@@ -117,7 +115,7 @@ function onLoadMain(event) {
  * @properties={typeid:24,uuid:"090C0E7C-8BB9-4683-8822-491A39A5DF32"}
  */
 function onActionLogout(event) {
-	globals.doLogout();
+	globals.doLogout(event);
 }
 
 /**

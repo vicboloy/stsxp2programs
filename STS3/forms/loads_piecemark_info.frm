@@ -9,6 +9,7 @@ uuid:"1D2BE481-7250-4231-AF3D-63A364D38229"
 }
 ],
 name:"loads_piecemark_info",
+navigatorID:"-1",
 showInMenu:true,
 styleName:"sts_one",
 typeid:3,

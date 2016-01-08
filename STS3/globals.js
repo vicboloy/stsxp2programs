@@ -187,7 +187,6 @@ function initStatusTypes(){
  */
 var aLaborCodes = [];
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"C8E73EE3-0C3E-484C-ADE7-ECF0D06813E7"}
@@ -839,8 +838,13 @@ var tempArray = [];
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
+	application.output('globals onSolutionOpen opened. STS3/globals.js');
 	plugins.UserManager.updateClientInfo();
-	//application.output('okay, here');
+	APPLICATION_NAME = application.getSolutionName();
+	secCreateApplication('STSmobile');
+	var mobileID = secGetApplicationID('STSmobile');
+	application.output('mobile id '+mobileID);
+
 	databaseManager.nullColumnValidatorEnabled = false;
 	var success = false;
 	current_db = "stsservoy";
@@ -859,6 +863,7 @@ function onSolutionOpen() {
 	} else {
 		application.output('USING local development Database.')
 	}
+	application.output('okay, here2 '+APPLICATION_NAME);
 	
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
 	secSetCurrentApplication(secGetApplicationID(APPLICATION_NAME));
@@ -867,11 +872,11 @@ function onSolutionOpen() {
 	scopes.globals.mobTenantId = secCurrentTenantID; 
 	secCurrentAssociationID = sec_current_user.association_uuid;
 	//secCurrentAssociationMasterID = secGetCurrentMasterAssociation(secCurrentTenantID);
-	secSetCurrentApplication(17); // 17 is already STS, could be anything
+	//secSetCurrentApplication(17); // 17 is already STS, could be anything
 	application.output('assoc master '+secCurrentAssociationMasterID+' assoc '+secCurrentAssociationID+' tenant '+secCurrentTenantID);
 	var tenantID = sec_current_user.tenant_uuid;
 	secCurrentTenantIDs = secGetTenantIDs(secCurrentAssociationMasterID);
-	secSetCurrentTenant(tenantID);
+	secSetCurrentTenant(tenantID.toString());
 	getTablesFilters(tenantID);
 	var appType = application.getApplicationType();
 	//application.output(appType+"app type"); //2 is smart client
@@ -883,17 +888,20 @@ function onSolutionOpen() {
 	session.loginUserNum = sec_current_user.user_name;
 	session.loginId = sec_current_user.user_id;
 	session.tenant_uuid = secCurrentTenantID;
-	session.sessionId = application.getIPAddress()+' '+security.getClientID();
+	session.sessionId = security.getClientID();
+	session.sessionIp = application.getIPAddress();
 	session.program = "STS Desktop";
-	session.login = globals.loginID;
+	session.login = session.loginUserNum;
 	session.loginDate = new Date();
 	session.capture;
 	getLoggedEmployee(session.loginId);
 	loginUserInfo(secCurrentUserID);
 	globals.getAssociation(secCurrentAssociationID);
+	session.association = mobAssoc;
 	onStartLoadPrefs("");	
 	globals.getMappings();
 	application.setValueListItems('stsvl_fab_shop',l.assocs);
+	databaseManager.addTableFilterParam('stsservoy',null,'tenant_uuid','=',globals.secCurrentTenantID,'filterCurrentTenant');
 }
 
 /**
@@ -910,7 +918,6 @@ function onDialogYes(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"08692DE9-A9EE-46FB-BEC0-02207AD52611"}
@@ -922,7 +929,6 @@ function onDialogNo(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param winTitle Name of window in border
  * @param message Message for delete operation
  * @param buttonYes Well, yes.
@@ -939,7 +945,6 @@ function doDialog(winTitle,message,buttonYes,buttonNo){
 	win.show('dialog');
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param s
  *
  * @properties={typeid:24,uuid:"8C60BFB7-E653-4F70-BBF2-05337CF0959B"}
@@ -960,7 +965,6 @@ function mainWindowFront(){
 /**
  * @AllowToRunInFind
  * 
- * TODO generated, please specify type and doc for the params
  * @param userId
  *
  * @properties={typeid:24,uuid:"BF5D68D1-CB2D-496A-8414-BE0D7E84040D"}
@@ -1030,9 +1034,8 @@ function onActionCancelButton(event) {
  * @properties={typeid:24,uuid:"3227F354-E244-4B7C-9F63-D4C4B2F0BF5C"}
  */
 function onActionFileOpenDialog(event,updateValue) {
-	//var dirs = 
 	var file = plugins.file.showFileOpenDialog(2, "\\", false, null);
-	//var path = dirs.getAbsolutePath();
+	if (file){globals.loggerDev(this,'File open diaglog failed.')}
 }
 /**
  * @AllowToRunInFind
@@ -1110,7 +1113,7 @@ function getParentForm() {
 			//throw new Error ('getParentForm() called from a form that is a top-level form and therefore has no parent.')
 		}
 	}*/
-	return null;
+	///return null;
 }
 /**
  * @param {Number} index row index
@@ -1141,7 +1144,6 @@ function debugPause (){
 	application.output(joe);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param windowName
  *
  * @properties={typeid:24,uuid:"DA5676A8-77BE-4A25-86C3-B1FF6FE993E5"}
@@ -1156,7 +1158,6 @@ function setWindowOpened(windowName){
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param windowName
  *
  * @properties={typeid:24,uuid:"D0A287B8-0F23-4C9E-8821-023919515D46"}
@@ -1166,19 +1167,19 @@ function setWindowClosed(windowName){
 	var win = application.getActiveWindow();
 	var formName = win.title;
 	if (formName == null){return}
-	if (formName.search('STS') == 0){return}
-	var tempArray = new Array;
-	//tempArray = globals.aTrackWindows;
+	if (formName.search('STS - Main') == 0){return}
+	var tempArray2 = new Array;
+	//tempArray2 = globals.aTrackWindows;
 	var tempLength = globals.aTrackWindows.length;
-	var windowName = "";
+	var windowName2 = "";
 	for (var index = 0; index < tempLength; index++){
-		windowName = globals.aTrackWindows[index];
-		if (formName.search(windowName) != 0){
-			tempArray.push(windowName);
+		windowName2 = globals.aTrackWindows[index];
+		if (formName.search(windowName2) != 0){
+			tempArray2.push(windowName2);
 		}
 	}
-	globals.aTrackWindows = tempArray;
-	application.setValueListItems('stsvl_nav_windows',tempArray);
+	globals.aTrackWindows = tempArray2;
+	application.setValueListItems('stsvl_nav_windows',tempArray2);
 }
 /**
  * Set tenant filters on applicable tables to enable access to creating more tenants, but not view other information.  This expressly leaves out the 
@@ -1217,7 +1218,7 @@ function getTablesFilters(tenantID) {
 		if (tableColumn == null){continue}
 		tableFilter = 'Filter_'+tableName;
 		//databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','=',tenantID,tableFilter);
-		var success = databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','IN',permitArray,tableFilter);
+		databaseManager.addTableFilterParam(SEC_SERVER,tableName,'tenant_uuid','IN',permitArray,tableFilter);
 		//application.output(success+' table '+tableName+' filter '+tableFilter+" "+permitArray);
 		tableColumn = jsTableColumns.getColumn('delete_flag');
 		//if (tableColumn == null){continue}
@@ -1267,7 +1268,6 @@ function numSort(r1,r2){ //use negative number for reverse sort or read column h
 	return o;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param intNumber
  *
  * @properties={typeid:24,uuid:"6B1819D8-85F1-47E3-995F-69ED03CE9A03"}
@@ -1316,6 +1316,7 @@ function licenseCount() {
 			number += parseInt(plugins.UserManager.Server().getSettingsProperty('license.' + i + '.licenses'), 10);
 		}
 	}
+	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
 	var tenantFS = getTenantFS();
 	if (tenantFS.getSize() > 1){
 		if (tenantFS.find()) {
@@ -1329,6 +1330,7 @@ function licenseCount() {
 }
 /**
  * @properties={typeid:24,uuid:"FEED84CF-DF1F-429D-BA95-A3B87E94AE80"}
+ * @SuppressWarnings(wrongparameters)
  */
 function getTenantFS(){
 	/** @type {QBSelect<db:/stsservoy/tenant_list>} */
@@ -1347,12 +1349,13 @@ function getTenantFS(){
 /**
  * @properties={typeid:24,uuid:"E1C40A88-88CC-49CB-AE0A-1877E3053716"}
  * @AllowToRunInFind
+ * @SuppressWarnings(wrongparameters)
  */
 function getTenantUsedLicenses(){
 	var totalLicenses = parseInt(licenseCount());
 	var usedLicenses = 0;
 	var assocIds = [];
-	var searchStr = new RegExp("[A-Z]");
+	///var searchStr = new RegExp("[A-Z]");
 	for (var indexT in m.assocs){
 		if (indexT.search("-") == -1) {continue}
 		assocIds.push(indexT);
@@ -1458,14 +1461,14 @@ function formModeShow(event) {
 		}
 	}
 	
-	if (formEls['buttonEdit']){
-		formEls['buttonEdit'].visible = true;
+	if (formEls['btn_Edit']){
+		formEls['btn_Edit'].visible = true;
 	}
-	if (formEls['buttonCancel']){
-		formEls['buttonCancel'].visible = false;
+	if (formEls['btn_Cancel']){
+		formEls['btn_Cancel'].visible = false;
 	}
-	if (formEls['buttonSave']){
-		formEls['buttonSave'].visible = false;
+	if (formEls['btn_Save']){
+		formEls['btn_Save'].visible = false;
 	}
 }
 /**
@@ -1484,14 +1487,14 @@ function formModeEdit(event) {
 		}
 	}
 	
-	if (formEls['buttonEdit']){
-		formEls['buttonEdit'].visible = false;
+	if (formEls['btn_Edit']){
+		formEls['btn_Edit'].visible = false;
 	}
-	if (formEls['buttonCancel']){
-		formEls['buttonCancel'].visible = true;
+	if (formEls['btn_Cancel']){
+		formEls['btn_Cancel'].visible = true;
 	}
-	if (formEls['buttonSave']){
-		formEls['buttonSave'].visible = true;
+	if (formEls['btn_Save']){
+		formEls['btn_Save'].visible = true;
 	}
 }
 /**
@@ -1511,18 +1514,17 @@ function formModeCancel(event) {
 		}
 	}
 
-	if (formEls['buttonEdit']){
-		formEls['buttonEdit'].visible = true;
+	if (formEls['btn_Edit']){
+		formEls['btn_Edit'].visible = true;
 	}
-	if (formEls['buttonCancel']){
-		formEls['buttonCancel'].visible = false;
+	if (formEls['btn_Cancel']){
+		formEls['btn_Cancel'].visible = false;
 	}
-	if (formEls['buttonSave']){
-		formEls['buttonSave'].visible = false;
+	if (formEls['btn_Save']){
+		formEls['btn_Save'].visible = false;
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"8BD00EEA-9B56-4860-9DB2-AB7CB69D2E2C"}
@@ -1533,7 +1535,6 @@ function onActionEdit(event) {
 	formModeEdit(event);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"7244C4DA-2CB9-4277-9D14-1475F213FD8F"}
@@ -1545,7 +1546,6 @@ function onActionCancelEdit(event) {
 	formModeCancel(event);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"3482DAE1-3AA8-4BFF-8C84-57BAE8802433"}
@@ -1560,6 +1560,7 @@ function onActionSaveEdit(event) {
  * @AllowToRunInFind
  *
  * @properties={typeid:24,uuid:"85EFBB5F-595A-4078-AFE8-2661EA574BA3"}
+ * @SuppressWarnings(wrongparameters)
  */
 function updateWindowFS(){
 	application.output('window '+application.getActiveWindow().getName());
@@ -1568,7 +1569,7 @@ function updateWindowFS(){
 		return;
 	}
 	var win = application.getActiveWindow();
-	var joe = win.controller
+	///var joe = win.controller
 	var windowName = win.title;
 	var windowCut = windowName.search(formRev)-1;
 	
@@ -1585,7 +1586,7 @@ function updateWindowFS(){
 	for (index = 0;index < windowList.length;index++){
 		if (application.getWindow(windowList[index])){
 			application.output('window remain '+windowList[index]);
-			var win = application.getWindow(windowList[index]);
+			win = application.getWindow(windowList[index]);
 			var form = win.controller.getName();
 			var fs = forms[form].foundset.sts_employee_container;
 			fs.loadAllRecords();

@@ -43,7 +43,7 @@ uuid:"21F01406-0196-4DBB-BA90-8974173A37A6"
 anchors:9,
 horizontalAlignment:0,
 location:"43,179",
-name:"deleteButton",
+name:"btn_Delete",
 onActionMethodID:"2D287199-D61E-4046-B016-9D2428958251",
 onDoubleClickMethodID:"-1",
 onRenderMethodID:"-1",
@@ -57,7 +57,7 @@ uuid:"24147474-DE0C-4357-8A6C-DCEDE1BD5B03"
 {
 horizontalAlignment:0,
 location:"133,179",
-name:"saveButton",
+name:"btn_Save",
 onActionMethodID:"2B35638B-C278-4114-AF60-3917DF462343",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -218,7 +218,7 @@ uuid:"A7AD2B7C-FB44-4627-B420-1A2B596D21C1"
 {
 horizontalAlignment:0,
 location:"411,179",
-name:"addButton",
+name:"btn_New",
 onActionMethodID:"82D5107C-68C1-42AB-AA87-9E232A425AFD",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -277,7 +277,7 @@ valuelistID:"200D7265-F11D-445E-A431-6180D681DA03"
 {
 horizontalAlignment:0,
 location:"227,178",
-name:"editButton",
+name:"btn_Edit",
 onActionMethodID:"86244384-6AF2-4275-9F55-95D9A31E13CB",
 onDoubleClickMethodID:"-1",
 onRenderMethodID:"-1",
@@ -291,7 +291,7 @@ uuid:"C1888A2C-4DF6-4D02-92AC-6AE6A5269E82"
 {
 horizontalAlignment:0,
 location:"319,179",
-name:"cancelButton",
+name:"btn_Cancel",
 onActionMethodID:"47808596-9F27-4EB1-A28D-FFADDC70C9B6",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

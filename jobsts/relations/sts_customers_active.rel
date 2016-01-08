@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/customers",
+items:[
+{foreignColumnName:"customer_id",primaryDataProviderID:"customer_id",typeid:23,uuid:"46C51EF1-7EA2-4833-A0DC-3E9D24324D83"},
+{foreignColumnName:"delete_flag",operator:5,primaryDataProviderID:"LITERAL:99",typeid:23,uuid:"BC15C090-29AA-4276-90F2-EFF86D4492A8"}
+],
+joinType:1,
+name:"sts_customers_active",
+primaryDataSource:"db:/stsservoy/customers",
+typeid:22,
+uuid:"D6488687-203C-4ABF-9A3E-FBBD6E535EF9"

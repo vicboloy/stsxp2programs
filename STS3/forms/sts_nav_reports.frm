@@ -4,6 +4,7 @@ items:[
 {
 formIndex:9,
 location:"54,209",
+name:"btn_LoadShipmentReceived",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -15,6 +16,7 @@ uuid:"0AD2AFBA-6B57-42B5-AF59-42DC21102C14"
 {
 formIndex:9,
 location:"54,176",
+name:"btn_LoadShipmentOriginal",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -26,6 +28,7 @@ uuid:"195E11CD-EA8C-450D-8C8F-7BE93DFB989F"
 {
 formIndex:9,
 location:"15,242",
+name:"btn_EditReportForms",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -47,6 +50,7 @@ uuid:"2AC2F52D-F6F8-4E89-BEFE-4C0E101D77E6"
 {
 formIndex:9,
 location:"15,308",
+name:"btn_StatusReport",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -68,6 +72,7 @@ uuid:"5352305C-6032-4BEF-8E72-B8883DEE679B"
 {
 formIndex:9,
 location:"15,341",
+name:"btn_PercentComplete",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -79,6 +84,7 @@ uuid:"61048F47-604D-4234-AFB2-06BAACDFDD93"
 {
 formIndex:9,
 location:"54,143",
+name:"btn_LoadReceivedOriginal",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -90,6 +96,7 @@ uuid:"6C81F1E4-5391-4B02-923B-476253895291"
 {
 formIndex:9,
 location:"15,74",
+name:"btn_ReceivingReport",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -107,6 +114,7 @@ uuid:"990CBA9A-0880-4665-B0D9-68BE2F2FA878"
 {
 formIndex:10,
 location:"332,71",
+name:"btn_PartLabels",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -118,6 +126,7 @@ uuid:"9E275002-1718-4612-809B-AF65621DF2DF"
 {
 formIndex:9,
 location:"15,407",
+name:"btn_AssemblyReport",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -129,6 +138,7 @@ uuid:"9E30D67A-8A08-4458-8D67-419EA42EA7C4"
 {
 formIndex:9,
 location:"15,374",
+name:"btn_ReaderSheets",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -140,6 +150,7 @@ uuid:"A3482EA8-A8DE-45BE-AC39-C55A676DCD0C"
 {
 formIndex:9,
 location:"14,440",
+name:"btn_ProductivityReport",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -151,6 +162,7 @@ uuid:"BC84D282-5F40-483B-BD84-A9031F5C82FE"
 {
 formIndex:9,
 location:"332,37",
+name:"btn_BarCodeIDLabels",
 onActionMethodID:"8378DB0B-1F09-430A-84C3-D34DCCAD8B59",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -162,6 +174,7 @@ uuid:"D1B93FE8-76FC-4A2C-877C-64E1D829EE72"
 {
 formIndex:9,
 location:"15,41",
+name:"btn_PackingListReport",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -173,6 +186,7 @@ uuid:"EE849839-4162-45FF-8E82-244DE6F79ED8"
 {
 formIndex:9,
 location:"15,275",
+name:"btn_FoxfireReports",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

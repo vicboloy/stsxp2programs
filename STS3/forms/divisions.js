@@ -21,7 +21,7 @@ var licenseMobile = 0;
  */
 var existingDivisions = [];
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param {Number} [index] 
  *
  *
@@ -102,7 +102,7 @@ function onActionCompanyRename(event) {
 	//change company name
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"E80702F9-4ADD-4168-BF0E-C56D58C62399"}
@@ -111,7 +111,7 @@ function editActive(event){
 	buttonsEnabled(true);
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"EB184517-7E7C-4618-B3F9-A6C188FEFDCA"}
@@ -120,18 +120,18 @@ function editInactive(event){
 	buttonsEnabled(false);
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param enabled
  *
  * @properties={typeid:24,uuid:"7DBD09A1-E713-4988-9D5F-773501992A73"}
  */
 function buttonsEnabled(enabled){
-	elements.checkButton.enabled = enabled;
+	elements.btn_Check.enabled = enabled;
 	elements.companyName.enabled = enabled;
-	elements.delButton.enabled = enabled;
+	elements.btn_Delete.enabled = enabled;
 	elements.desktop.editable = enabled;
 	elements.mobile.editable = enabled;
-	elements.newButton.enabled = enabled;
+	elements.btn_New.enabled = enabled;
 	elements.newEntry.enabled = enabled;
 }
 /**

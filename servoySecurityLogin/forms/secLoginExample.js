@@ -21,6 +21,10 @@ var rfHtml = '<html> \
 	</body> \
 	</html>';
 /**
+ * @properties={typeid:35,uuid:"08F18DA8-4F03-4CD6-A240-D500564DBCF1",variableType:-4}
+ */
+var licenses = [];
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"A964DEA7-D91F-4691-8B51-ECE88A4ACFCE"}
@@ -60,11 +64,15 @@ function hideLogo(){
  * @properties={typeid:24,uuid:"490EFD00-9D7A-4E77-BA36-1B4DE5C89540"}
  */
 function onDataChange(oldValue, newValue, event) {
-	if (event.getElementName() == 'companyName'){
-		if (!newValue || newValue == ""){
-			elements.companyName.requestFocus();
-			return true;
-		}
+	switch (event.getElementName()){
+		case 'companyName':
+			if (!newValue || newValue == ""){
+				elements.companyName.requestFocus();
+				return true;
+			}
+			break;
+		case 'userName':
+		default:
 	}
 	elements.password.requestFocus();
 	return true

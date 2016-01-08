@@ -37,7 +37,7 @@ function onActionClose(event) {
 	globals.mainWindowFront();
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  * @param editFlag
  *
@@ -47,9 +47,9 @@ function onEdit(event,editFlag){
 	if (!editFlag){
 		newRec = null;
 	}
-	elements.editButton.visible = !editFlag;
-	elements.cancelButton.visible = editFlag;
-	elements.saveButton.visible = editFlag;
+	elements.btn_Edit.visible = !editFlag;
+	elements.btn_Cancel.visible = editFlag;
+	elements.btn_Save.visible = editFlag;
 	elements.split.getLeftForm().controller.enabled = !editFlag;
 	elements.split.getRightForm().controller.enabled = editFlag;
 	elements.split.getRightForm().elements.user_name.editable = editFlag;
@@ -122,7 +122,6 @@ function newRecord(event, location, changeSelection) {
 	var status = _super.newRecord(event, location, changeSelection);
 	var newRec = foundset.getSelectedRecord();
 	tenant_uuid = globals.session.tenant_uuid;
-	application.output('tenant '+tenant_uuid);
 	edit_date = new Date();
 	return status;
 }

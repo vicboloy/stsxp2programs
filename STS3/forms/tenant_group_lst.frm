@@ -36,11 +36,13 @@ typeid:16,
 uuid:"61D7E9A7-AD16-487E-9990-BA871E84B8F5"
 },
 {
+horizontalAlignment:0,
 location:"0,0",
+name:"btn_New",
 onActionMethodID:"5E85197C-4A42-4D56-B1EE-7C833A2AB724",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"108,20",
+size:"108,26",
 text:"Add Group",
 typeid:7,
 uuid:"8B172699-A7EE-4955-B88C-ED37BE79D999"

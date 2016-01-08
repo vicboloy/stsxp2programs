@@ -44,7 +44,7 @@ function onDataChange(oldValue, newValue, event) {
 /**
  * 
  * 
- * TODO generated, please specify type and doc for the params
+ *
  * @param oldValue
  * @param newValue
  * @param event
@@ -56,7 +56,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	if (name == null){
 		name = "Name Required";
 	}
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 	databaseManager.nullColumnValidatorEnabled = false;
 	if (globals.newCustomerRecord != null){
 		globals.newCustomerRecord = customer_id;
@@ -79,6 +79,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 		foundset.sts_customer_container.loadAllRecords();
 		foundset.setSelectedIndex(globals.selectedCustomerIndex);
 	}
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
+	databaseManager.saveData(foundset);
 	return true
 }

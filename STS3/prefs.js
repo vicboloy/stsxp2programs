@@ -1609,12 +1609,12 @@ function setPrefsDirty(event,prefsType){
 	}
 	if (formName.search('print') != -1){
 		prefsPrinterDirty = (prefsType == "Printer") ? true : false;
-		forms.preferences_printer.elements.prefsUpdate.visible = (prefsPrinterDirty) ? true : false;
-		forms.preferences_printer.elements.prefsSession.visible = (prefsPrinterDirty) ? true : false;
+		forms.preferences_printer.elements.btn_UpdatePreferences.visible = (prefsPrinterDirty) ? true : false;
+		forms.preferences_printer.elements.btn_SessionPreferences.visible = (prefsPrinterDirty) ? true : false;
 	} else {
 		prefsDirty = (prefsType != "Printer") ? true : false;
-		forms.preferences_main.elements.prefsUpdate.visible = (prefsDirty) ? true : false;
-		forms.preferences_main.elements.prefsSession.visible = (prefsDirty) ? true : false;
+		forms.preferences_main.elements.btn_UpdatePreferences.visible = (prefsDirty) ? true : false;
+		forms.preferences_main.elements.btn_SessionPreferences.visible = (prefsDirty) ? true : false;
 	}
 }
 /**
@@ -1628,12 +1628,12 @@ function setPrefsClean(event,prefsType){
 	var formName = event.getFormName();
 	if (formName.search('print') != -1){
 		prefsPrinterDirty = (prefsType == "Printer") ? true : false;
-		forms.preferences_printer.elements.prefsUpdate.visible = (!prefsPrinterDirty);
-		forms.preferences_printer.elements.prefsSession.visible = (!prefsPrinterDirty);
+		forms.preferences_printer.elements.btn_UpdatePreferences.visible = (!prefsPrinterDirty);
+		forms.preferences_printer.elements.btn_SessionPreferences.visible = (!prefsPrinterDirty);
 	} else {
 		prefsDirty = (prefsType != "Printer") ? true : false;
-		forms.preferences_main.elements.prefsUpdate.visible = (!prefsDirty);
-		forms.preferences_main.elements.prefsSession.visible = (!prefsDirty);
+		forms.preferences_main.elements.btn_UpdatePreferences.visible = (!prefsDirty);
+		forms.preferences_main.elements.btn_SessionPreferences.visible = (!prefsDirty);
 	}
 }
 /**
@@ -1653,10 +1653,9 @@ function onDataChangePrefsGeneral(oldValue, newValue, event,prefsType) {
 	return true
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  * @param updateValue
- * @param scopeName
+ * @param prefsType
  *
  * @properties={typeid:24,uuid:"BF49A765-9ECE-4164-AAF0-208CA327A66C"}
  */
@@ -1667,7 +1666,7 @@ function onActionFileOpenDialog(event,updateValue,prefsType) {
 	//var dirs = plugins.file.showFileOpenDialog(2, priorPath, false, fileReceipt2);
 	if (dirs == null){return}
 	var path = dirs.getAbsolutePath();
-	var formName = event.getFormName();
+	///var formName = event.getFormName();
 	if (prefsType == "Printer"){
 		scopes.printer[updateValue] = path;
 	} else {
@@ -1704,7 +1703,7 @@ function onActionFileOpenDialogFile(event,updateValue) {
 	if (!file){return}
 	setPrefsDirty(event,prefsType);
 	var path = file.getAbsolutePath();
-	var formName = event.getFormName();
+	///var formName = event.getFormName();
 	scoper[updateValue] = file;
 }
 
@@ -1734,7 +1733,7 @@ function onActionFormTemplate(event) {
 	var newContent = "";
 	var items = scopes.printer.labelText.split(",");
 	var dataSize = items.length;
-	var itemList = "";
+	///var itemList = "";
 	for (var index = 0;index < dataSize;index++){
 		//var splits = items[index].split(" ");
 		//itemList += "'"+splits[1]+"'"+",\n";
@@ -1827,11 +1826,13 @@ function bartenderPrint(event,txtString){
 	var btwFile = reportPth+"\\"+forms['barcode_idlabel'].printingLabel;
 	var line = "";
 	var fileName = reportPth+"\\barcodelabel.txt";
-	var data = "";
+	///var data = "";
 	var randFileName = reportPth+"\\" + application.getUUID().toString().split("-")[4] +".txt";
 	//application.output(randFileName);
 	var status = plugins.file.writeTXTFile(fileName,txtString);
+	if (status){globals.loggerDev(this,'Status write to txt file fail.');}
 	status = plugins.file.appendToTXTFile(fileName,line + "\n");
+	if (status){globals.loggerDev(this,'Status append to txt file fail.');}
 	plugins.file.copyFile(fileName,randFileName);
 	null;
 	if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
@@ -1872,7 +1873,6 @@ function bartenderPrint(event,txtString){
 	com.release();
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param {String} tabContents  "string indicating field from which to grab information
  * @param {Array} tabSpec //// fieldtype="Character|Date|Logical|Numeric",fieldsize="x|x.x"
  *
@@ -1891,7 +1891,7 @@ function tabContentFormat(tabContents,tabSpec){
 	if (spec.length == 2){
 		decimal = spec[1];
 	}
-	var contentLength = tabContents.length;
+	///var contentLength = tabContents.length;
 	var blanks = "                    ";
 	var a = tabContents;
 	var b = "";
@@ -1914,7 +1914,7 @@ function tabContentFormat(tabContents,tabSpec){
 		//application.ouput('in date '+myDate+" changed + 6 days "+myDate.add(6).days());
 		application.output('date is '+tabContents+ 'expected Data '+tabSpec+" +-+-+-+ "+expectedData+" dayts "+myDate2);
 		/** @type {Date} */
-		var dated = a;
+		///var dated = a;
 		if (expectedData && expectedData.search("TIME") == -1){
 			//a ="";
 			var day = Date.parse(tabContents);

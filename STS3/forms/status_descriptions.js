@@ -23,7 +23,6 @@ var availFabCodes = [];
  */
 var localStations = [];
 /**
- * TODO generated, please specify type and doc for the params
  * @param firstShow
  * @param event
  *
@@ -54,14 +53,13 @@ function onShowStatusDescr(firstShow, event) {
 	}
 	globals.newRecordKey = null;
 	if (foundset.getSize() == 0){
-		elements.deleteButton.visible = false;
-		elements.editButton.visible = false;
+		elements.btn_Delete.visible = false;
+		elements.btn_Edit.visible = false;
 	}
 	getStatusList();
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  *
@@ -92,7 +90,7 @@ function onActionDelete(event,itemDescription) {
 	globals.doDialog(itemDescr,"Delete?","Delete","Cancel");
 	if (globals.dialogResponse == "yes"){
 		//controller.deleteRecord();
-		var index = controller.getSelectedIndex();
+		///var index = controller.getSelectedIndex();
 		//application.output('index '+index);
 		delete_flag = 99;
 		edit_date = new Date();
@@ -123,7 +121,6 @@ function onActionEdit(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  * @param editStatus Status of boolean for record edit status changes
  *
@@ -135,11 +132,11 @@ function onEdit(event,editStatus){
 	databaseManager.nullColumnValidatorEnabled = false;
 	editFlag = editStatus;
 	controller.readOnly = !editStatus;
-	elements.addButton.visible = !editStatus;
-	elements.editButton.visible = !editStatus;
-	elements.deleteButton.visible = !editStatus;
-	elements.saveButton.visible = editStatus;
-	elements.cancelButton.visible = editStatus;
+	elements.btn_New.visible = !editStatus;
+	elements.btn_Edit.visible = !editStatus;
+	elements.btn_Delete.visible = !editStatus;
+	elements.btn_Save.visible = editStatus;
+	elements.btn_Cancel.visible = editStatus;
 	if (status_code && (status_code.search(RegExp('TRANS')) != -1 || status_code.search(RegExp('XFER')) != -1)) {
 		elements.req_xfer_status.enabled = true;
 	} else {
@@ -184,17 +181,17 @@ function onActionCancelEdit(event) {
 function onActionSaveEdit(event) {
 	null;
 	if (association_id == "" || association_id == null){
-		globals.errorDialogMobile(event,'-1',"");
+		globals.errorDialogMobile(event,-1,"",null);
 		//elements.fab_shop.requestFocus();
 		return;
 	}
 	if (status_code == "" || status_code == null){
-		globals.errorDialogMobile(event,'401',"");
+		globals.errorDialogMobile(event,401,"",null);
 		//elements.status_code.requestFocus();
 		return;
 	}
 	if (status_sequence == "" || status_sequence == null){
-		globals.errorDialogMobile(event,'-1',"");
+		globals.errorDialogMobile(event,-1,"",null);
 		//elements.status_sequence.requestFocus();
 		return
 	}
@@ -295,7 +292,6 @@ function onActionOverwrite(event) {
 /**
  * @AllowToRunInFind
  * 
- * TODO generated, please specify type and doc for the params
  * @param statusCode
  *
  * @properties={typeid:24,uuid:"88505C08-1487-4B7C-81A0-BC87C51DB9BB"}
@@ -383,6 +379,7 @@ function onActionCheckStatusFabShop(event){
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"7A0C7C5E-62FD-4F81-8ED6-EB07E4193343"}
+ * @SuppressWarnings(wrongparameters)
  */
 function onDataChangeFabShop(oldValue, newValue, event) {
 	if (newValue == "" || newValue == null){
@@ -391,15 +388,14 @@ function onDataChangeFabShop(oldValue, newValue, event) {
 	changeToStation(event);
 	getStatusList();
 	return true;
-	var checkStatus = onActionCheckStatusFabShop(event);
+	/**var checkStatus = onActionCheckStatusFabShop(event);
 	if (checkStatus){
 		var arrayS = globals.m.statusCodesDiv[newValue];
 		application.setValueListItems('stsvl_status_code',arrayS);
 	}
-	return checkStatus;
+	return checkStatus;*/
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param index
  *
  * @properties={typeid:24,uuid:"628420C0-F583-4FA4-9612-E365F2CF28BA"}
@@ -439,6 +435,7 @@ function changeToStation(event){
 /**
  * also get local list of stations
  * @properties={typeid:24,uuid:"5E21AD0F-0903-4586-9F55-0429698316FE"}
+ * @SuppressWarnings(wrongparameters)
  */
 function getStatusList(){
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
@@ -453,6 +450,7 @@ function getStatusList(){
 		.add(q.columns.delete_flag.isNull)
 		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
 	);
+	/** @type {JSFoundSet<db:/stsservoy/status_description>} */
 	var resultQ = databaseManager.getFoundSet(q);
 	var statusArray = [];
 	var stationArrayId = [];
@@ -472,7 +470,6 @@ function getStatusList(){
 	application.setValueListItems('stsvl_station_codes',statusArray,stationArrayId);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"115F40D6-82D8-49F6-AF54-9CDED48265C2"}
@@ -482,22 +479,22 @@ function getRecollectStatusDescription(event){
 	var eventName = event.getElementName();
 	application.output('element name '+eventName);
 	switch( eventName ) {
-	case "editButton" : {
+	case "btn_Edit" : {
 		
 	}
-	case "cancelButton" : {
+	case "btn_Cancel" : {
 		
 	}
-	case "addButton" : {
+	case "btn_New" : {
 		
 	}
-	case "editButton" : {
+	case "btn_Edit" : {
 		
 	}
-	case "saveButton" : {
+	case "btn_Save" : {
 		
 	}
-	case "closeButton" : {
+	case "btn_Close" : {
 		
 	}
 	default:

@@ -7,20 +7,28 @@
  * @properties={typeid:24,uuid:"8D60FBB7-D72A-4255-8940-61A1BB25EAC1"}
  */
 function onShow(firstShow, event) {
+	///application.output('inside on show loads_pcmk_combo ______________________________________');
 	//foundset.clear(); // and this
 	//databaseManager.setCreateEmptyFormFoundsets(); // maybe on solutionOpen
+	var versionForm = globals.getInstanceForm(event);
 	var formPrefix = event.getFormName().split("_")[0];
 	var formNameTable = formPrefix+'_pcmk_combo_table';
 	var formCombo = formPrefix+'_pcmk_combo';
-	var formCriteria = formPrefix+'_criteria';
+	///var formCriteria = formPrefix+'_criteria';
 	scopes.jobs.removeFormHist(formNameTable);
 	//var success = history.removeForm(formNameTable);
 	//var success2 = solutionModel.removeForm(formNameTable);
 	//forms[formCriteria].collectCriteria(formCombo);
-	forms[formCombo].elements.split.setRightForm(formPrefix+'_pcmk_transaction','sts_idfile_to_transactions');
+	var origFormName = formPrefix+'_pcmk_transaction';
+	var rightFormName = origFormName+versionForm;
+	if (!forms[rightFormName]){
+		solutionModel.cloneForm(rightFormName,solutionModel.getForm(origFormName));
+	}
+	var relationInfo = solutionModel.getRelation('sts_idfile_to_transactions');
+	forms[formCombo+versionForm].elements.split.setRightForm(rightFormName,relationInfo.name+versionForm);
 	//hideColumns(event,0);
-	var bot = forms[formCombo].elements.split.getRightForm().controller.getName();
-	var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
+	var bot = forms[formCombo+versionForm].elements.split.getRightForm().controller.getName();
+	///var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
 	//forms[formOverview].elements.tabless.addTab(formNameTable); // add tab to main window to see subset of this table
 	scopes.jobs.tableHideFieldsReset()
 	scopes.jobs.findEmptyColumns(event,0)
@@ -36,7 +44,7 @@ function unusedhideColumns(event,table){
 	var formName = event.getFormName();
 	application.output('form name '+formName+' loads_pcmk_combo');
 	//forms.loads_pcmk_combo.elements.split.getRightForm().elements.checklist_line.visible
-	var form = forms.loads_pcmk_combo.elements.split.getLeftForm().elements.Selection.visible = false;
+	///var form = forms.loads_pcmk_combo.elements.split.getLeftForm().elements.Selection.visible = false;
 	var formEls = forms.loads_pcmk_combo.elements.split.getLeftForm().elements;
 	//var disableList = ['checklist','uuid'];
 	//for (var tab = 0;tab < 2;tab++){
@@ -48,7 +56,7 @@ function unusedhideColumns(event,table){
 	var recCount = databaseManager.getFoundSetCount(browse);
 	//var formName = forms.loads_pcmk_combo.elements.split.getLeftForm().getName();
 	var fs = forms['loads_pcmk_combo_table'].foundset;
-	var recCount = databaseManager.getFoundSetCount(fs);
+	recCount = databaseManager.getFoundSetCount(fs);
 	var maxCount = recCount;
 	if (recCount > 100) {maxCount = 100}
 	for (var item in formEls){
@@ -106,7 +114,7 @@ function onActionClearAll(event) {
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
- *
+ * @param formName
  * @properties={typeid:24,uuid:"507DEF79-899B-413E-8AB4-6EEAD1EDA0B3"}
  */
 function onActionDeleteSelected(event,formName) {
@@ -123,7 +131,7 @@ function onActionDeleteSelected(event,formName) {
 	}
     //application.output('continued with deletion');
     if (formName == null){
-    	var formName = event.getFormName();
+    	formName = event.getFormName();
     }
 	var fs = forms[formName+'_table'].foundset;
 	var omitList = [];
@@ -202,15 +210,16 @@ function onHide(event) {
  * @properties={typeid:24,uuid:"F63CDE5B-1EB8-4BE1-A3E2-4B32404A519A"}
  */
 function onActionRefreshTable(event) {
-	var formName = event.getFormName();
-	application.output('checking'+event);
+	var versionForm = globals.getInstanceForm(event);
+	///var formName = event.getFormName();
+	///application.output('checking'+event);
 	var args = [];
 	//args.push(scopes.jobs.browseJobID);
 	//var fs = databaseManager.getFoundSet(forms.loads_pcmk_combo_table.controller.getDataSource());
-	scopes.jobs.browseFS = databaseManager.getDataSetByQuery('stsservoy', scopes.jobs.dsQuery, args , -1);
+	scopes.jobs.browseFS2[versionForm] = databaseManager.getDataSetByQuery('stsservoy', scopes.jobs.dsQuery, args , -1);
 	scopes.jobs.viewBTableRemoveColumnArray();
 	scopes.jobs.viewBTableRemoveRows();
-	scopes.jobs.browseDatasource = scopes.jobs.browseFS.createDataSource('loads_pcmk_combo_browse',scopes.jobs.browseArray);
+	scopes.jobs.browseDatasource = scopes.jobs.browseFS[versionForm].createDataSource('loads_pcmk_combo_browse',scopes.jobs.browseArray);
 
 	
 	//scopes.jobs.browseDatasource = scopes.jobs.dsBrowse.createDataSource('browsing',scopes.jobs.browseArray);

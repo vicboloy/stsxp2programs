@@ -7,13 +7,15 @@ items:[
 {
 containsFormID:"F9BF05D3-03D4-4B0D-86D8-1C3F0FB6FBE4",
 location:"125,93",
-text:"Application Keys",
+relationName:"sts_application",
+text:"Group Keys",
 typeid:15,
 uuid:"3BD94FF2-FF09-44A5-9952-721E5C4F4886"
 },
 {
 containsFormID:"31E5E8CB-B508-4AD3-8B69-A2B0079B56FF",
 location:"225,120",
+relationName:"sts_application",
 text:"Permission Groups",
 typeid:15,
 uuid:"6831BC83-97B6-4099-8917-B6D58078C84B"
@@ -21,6 +23,7 @@ uuid:"6831BC83-97B6-4099-8917-B6D58078C84B"
 {
 containsFormID:"EB7D6ADE-D726-461D-8984-46223237C197",
 location:"5,60",
+relationName:"applications_to_permissions",
 text:"General Permissions",
 typeid:15,
 uuid:"82F41797-043E-4885-BB5C-061988DF7BE0"
@@ -36,12 +39,14 @@ typeid:16,
 uuid:"368C0DEC-6360-49BA-AAEC-10F394846CBA"
 },
 {
-anchors:3,
+anchors:6,
 horizontalAlignment:0,
 location:"427,480",
+name:"btn_Close",
 onActionMethodID:"ECB24AB3-5DAE-46D2-9E35-7361D5FFE6BE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
+size:"80,26",
 tabSeq:-2,
 text:"Close",
 typeid:7,
@@ -71,6 +76,7 @@ typeid:19,
 uuid:"4D479881-EF82-43FB-AC50-1A016CD04F79"
 },
 {
+fontType:"Arial,3,16",
 location:"5,5",
 size:"269,20",
 text:"STS Permissions",
@@ -82,6 +88,7 @@ uuid:"627D4746-D2A5-4993-8AC0-D91EFA7C0A8B"
 name:"app_permissions",
 navigatorID:"-1",
 onHideMethodID:"41C6029A-BC29-4525-B403-ACA73D655FD8",
+onShowMethodID:"FD3C98F8-5551-4019-85B4-057D6C128018",
 scrollbars:0,
 showInMenu:true,
 size:"512,480",

@@ -85,7 +85,7 @@ function onDataChangeUserName(oldValue, newValue, event) {
 		if (u.search()){
 			var record = u.getRecord(1);
 			foundset.selectRecord(record.user_id);
-			foundset.deleteRecord(newRec);
+			foundset.deleteRecord(newRec);//created upon new record
 			forms[globals.getParentForm()].cancelEdit(event);
 		}
 		return true;
@@ -128,7 +128,7 @@ function onRecordSelection(event) {
 function onDataChangeActive(oldValue,newValue,event){
 	var formName = event.getFormName();
 	if (forms[formName].user_name == "ADMIN"){
-		var elName = event.getElementName();
+		///var elName = event.getElementName();
 		forms[formName].controller.setDataProviderValue(is_account_active,1);
 		forms[formName].is_account_active = 1;
 		return true;

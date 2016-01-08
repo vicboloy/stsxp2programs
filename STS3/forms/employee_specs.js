@@ -16,7 +16,7 @@ function onRender(event) {
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  * @param editStatus
  *
@@ -28,16 +28,16 @@ function onEdit(event,editStatus){
 	forms["employees"+formRev].controller.readOnly = !editStatus;
 	forms["employees_lst"+formRev].controller.enabled = !editStatus;
 	forms["employees"+formRev].editEmployeeFlag = editStatus;
-	forms["employees_rec"+formRev].elements.addNewButton.visible = !editStatus;
-	forms["employee_specs"+formRev].elements.cancelButton.visible = editStatus;
-	forms["employee_specs"+formRev].elements.saveButton.visible = editStatus;
-	forms["employee_specs"+formRev].elements.editButton.visible = !editStatus;
-	forms["employee_specs"+formRev].elements.delButton.visible = !editStatus;
+	forms["employees_rec"+formRev].elements.btn_New.visible = !editStatus;
+	forms["employee_specs"+formRev].elements.btn_Cancel.visible = editStatus;
+	forms["employee_specs"+formRev].elements.btn_Save.visible = editStatus;
+	forms["employee_specs"+formRev].elements.btn_Edit.visible = !editStatus;
+	forms["employee_specs"+formRev].elements.btn_Delete.visible = !editStatus;
 	
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"CC3812E4-6FD8-461F-9749-A972DF579433"}
@@ -48,7 +48,7 @@ function onActionEdit(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"868EBCCD-CB9C-4014-A79F-9BF649AE09C0"}
@@ -60,7 +60,7 @@ function onActionCancelEdit(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"7C64DFF6-6587-439E-B5C3-F9204FDA3248"}
@@ -102,7 +102,7 @@ function delRecord(event) {
  * @properties={typeid:24,uuid:"C74EDC7C-1D05-4C89-A7DD-DDA85668ACD1"}
  */
 function onRenderDelButton(event) {
-	elements.delButton.text = 'Delete '+employee_lastname+", "+employee_firstname;
+	elements.btn_Delete.text = 'Delete '+employee_lastname+", "+employee_firstname;
 }
 
 /**

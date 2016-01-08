@@ -24,7 +24,7 @@ uuid:"BE69ACDE-4D64-4345-B203-AE2E78471FA4"
 location:"5,5",
 name:"split",
 printable:false,
-size:"403,240",
+size:"403,352",
 tabOrientation:-3,
 tabSeq:-2,
 transparent:true,
@@ -32,7 +32,7 @@ typeid:16,
 uuid:"12C9C971-ED18-49A7-8445-51658A7BA1B2"
 },
 {
-height:250,
+height:362,
 partType:5,
 typeid:19,
 uuid:"ED459F97-0A2E-48A6-B7B1-AE025FCA4E21"

@@ -119,47 +119,29 @@ var vRFInterface = "";
  */
 var vMetricJob = 0;
 /**
- * @properties={typeid:24,uuid:"04253830-4047-45C7-A36D-3AC5571821AB"}
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"6546F713-0409-4297-9036-732389C5FA9C"}
  */
-function additionalActionAddFunctions(){
-	return;
-	//loadResetForm()
-}
+var vCustomerId = "";
 /**
- * @properties={typeid:24,uuid:"9D0A98CD-B5D1-42C3-983C-CA2E41B490BB"}
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"86D79647-C706-413B-AEA5-46A11DDAD6AE"}
  */
-function additionalSaveFunctions(){
-	return;
-	/**
-	//var index = foundset.newRecord();
-	globals.lookupItem = vJobNumber;
-	var fsJobN = sts_check_jobnum;
-	if (fsJobN.getSize() == 0){
-		fsJobN.newRecord();
-	}
-	saveRecordFromForm(fsJobN);
-	
-	var fs = sts_job_to_loads;
-	if (fs == null){
-		/ * * @type {JSFoundSet<db:/stsservoy/loads>} * /
-		fs = sts_job_to_loads.newRecord();
-	}
-	if (fs.getSize() == 0){
-		fs.newRecord();
-		fs.job_id = job_id;
-		//always have first load record as empty record
-		fs.load_number = "";
-	}
-	databaseManager.saveData(fsJobN);
-	databaseManager.saveData(fs);
-	*/
-}
+var vJobWeightUnits = "";
 /**
- * @properties={typeid:24,uuid:"5E618682-B6B8-4203-93BC-918C9D00FDD2"}
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"598B5533-19F3-458A-8401-A69FB44F3553"}
  */
-function otherSelectionFunctions(){
-	loadRecordIntoForm()
-}
+var vBar1 = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"1DADCCFF-5CBE-4267-B031-B8F33CA2F2FA"}
+ */
+var vBar2 = "";
 /**
  * Handle changed data.
  *
@@ -173,15 +155,27 @@ function otherSelectionFunctions(){
  * @AllowToRunInFind
  */
 function onDataChangeCustomerNumber(oldValue, newValue, event) {
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var fs = databaseManager.getFoundSet('stsservoy','jobs');
+	var custId = newValue;
+	if (!custId){
+		globals.addCustomer(event);
+		//return false;
+	}
+	/** @type {JSFoundSet<db:/stsservoy/customers>} */
+	var fs = databaseManager.getFoundSet('stsservoy','customers');
 	if (fs.find()){
-		//application.output('inside cust number change');
 		fs.customer_id = newValue;
-		if (job_number != null){
-			fs.job_number = job_number;
-		}
 		var count = fs.search();
+		if (count == 0){
+			globals.addCustomer(event);
+			return false;
+		}
+	}
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	fs = databaseManager.getFoundSet('stsservoy','jobs');
+	if (fs.find()){
+		fs.customer_id = newValue;
+		fs.job_id = job_id;
+		count = fs.search();
 		if (count > 0 && job_number != null){
 			/**
 			 * count >= 1 and customer_id already filled, show record, delete if newRecord
@@ -192,11 +186,13 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 				controller.deleteRecord();
 				newRecord = null;
 			}
+			customer_id = newValue;
 			onActionCancelEdit(event);
 			var rec = fs.getRecord(1);
 			foundset.selectRecord(rec.job_id);
+		} else {
+			customer_id = newValue;
 		}
-		return true;
 	}
 	return true;
 }
@@ -218,11 +214,9 @@ function onDataChangeJobNum(oldValue, newValue, event) {
 	var fs = databaseManager.getFoundSet('stsservoy','jobs');
 	if (fs.find()){
 		fs.job_number = newValue;
-		if (customer_id != null){
-			fs.customer_id = customer_id;
-		}
+		fs.delete_flag != 99;
 		var count = fs.search();
-		if (count > 0 && customer_id != null){
+		if (count > 0){
 			/**
 			 * count >= 1 and customer_id already filled, show record, delete if newRecord
 			 * count == 1 and customer_id empty, return true and set focus to customer
@@ -236,14 +230,14 @@ function onDataChangeJobNum(oldValue, newValue, event) {
 			var rec = fs.getRecord(1);
 			foundset.selectRecord(rec.job_id);
 		}
-		return true;
 	}
+	globals.onFocusTabsSTS(event);
 	return true;
 }
 /**
  * @properties={typeid:24,uuid:"5D580134-54DE-4F13-8876-35934F93A382"}
  */
-function addOnActionDelete2(){
+function unusedaddOnActionDelete2(){
 	globals.lookupItem = job_id;
 	var fs = sts_check_loadnum;
 	if (fs.getSize() == 1){
@@ -251,12 +245,12 @@ function addOnActionDelete2(){
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param rec
  *
  * @properties={typeid:24,uuid:"A523191B-CF6C-4E0B-AB3F-F52161CDEB04"}
  */
-function loadRecordIntoForm(rec){
+function unusedloadRecordIntoForm(rec){
 	return;
 	vJobNumber= job_number;
 	globals.selectedCustomerID = customer_id;
@@ -284,7 +278,7 @@ function loadRecordIntoForm(rec){
 	vFTProjectID = ft_projectid;
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * 
  *
  * @properties={typeid:24,uuid:"1FB02E0B-65E9-4B9C-A3A9-0C31834C2101"}
@@ -313,7 +307,7 @@ function saveRecordFromForm(){
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param status
  *
  * @properties={typeid:24,uuid:"AB6E37A9-B1D6-4AE8-A167-A0C0480DCD99"}
@@ -325,7 +319,7 @@ function editStatus(status){
 	
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  *
  * @properties={typeid:24,uuid:"C310F5FA-BE1B-4643-AE5C-993106D876F2"}
  */
@@ -370,7 +364,8 @@ function onActionHide(event) {
  * @properties={typeid:24,uuid:"ADDF0C91-C9B7-4BA9-BE2E-B0586A227A18"}
  */
 function onActionRecalcWeight(event) {
-	var queryWeight =  'select sum(item_weight*item_quantity) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '
+	var weightColumn = (metric_job) ? "item_weight" : "item_weight_lbs";
+	var queryWeight =  'select sum('+weightColumn+'*item_quantity) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '
 	+ ' and sheets.delete_flag IS NULL'
 	+ ' and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL and piecemarks.piecemark = piecemarks.parent_piecemark '
 	+ ' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL'
@@ -388,6 +383,12 @@ function onActionRecalcWeight(event) {
  * @properties={typeid:24,uuid:"D3694EFE-4004-4583-A215-4C9582FF0ED8"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+		elements.ft_projectid.enabled = (scopes.prefs.lFabtrolInstalled == 1);
+		elements.third_party_job_num.enabled = (scopes.prefs.lFabsuiteInstalled==1||scopes.prefs.lFabtrolInstalled==1||scopes.prefs.lRomacInstalled==1);
+		vJobWeightUnits = (metric_job==1) ? "kgs" : "lbs";
+	}
+	onActionHeats(event);
 	foundset.loadAllRecords();
 	var path = scopes.prefs.reportpath;
 	var labelList = [];
@@ -416,12 +417,12 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"96D0E7FA-8490-4C31-95D5-2F1E3514219D"}
  */
 function onRecordSelection(event, buttonTextSrc) {
-	//vJobNumber = job_number;
-	
-	//application.updateUI();
-	//return _super.onRecordSelection(event, buttonTextSrc)
+	elements.btn_Delete.visible = elements.btn_New.visible && globals.checkJobEmpty(job_id);
+	vCustomerNumber = (st2_jobs_to_customers) ? sts_job_to_customer.customer_number : "";
+	application.setValueListItems('stsvlt_customers',[]);
+	onActionHeats(event);
+	null;
 }
-
 /**
  * Perform the element default action.
  *
@@ -435,23 +436,33 @@ function onActionSaveEdit(event) {
 	metric_job = vMetricJob;
 	rf_interface = vRFInterface;
 	ship_to = vShipTo;
-	//globals.lookupItem = vJobNumber;
-	//var fsJobN = sts_check_jobnum;
-	//if (fsJobN.getSize() == 0){
-	///	fsJobN.newRecord();
-	//}
-	//saveRecordFromForm(fsJobN);
-	
-	//var fs = sts_job_to_loads;
-	//if (fs == null){
-	//	/** @type {JSFoundSet<db:/stsservoy/loads>} */
-	//	fs = sts_job_to_loads.newRecord();
-	//}
-	//if (fs.getSize() == 0){
-	//	fs.newRecord();
-	//	fs.job_id = job_id;
-	//	//always have first load record as empty record
-	//	fs.load_number = "";
-	//}
+	vCustomerNumber = null;
 	return _super.onActionSaveEdit(event)
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"A247989E-824F-4426-8E45-13F6BAE5503A"}
+ */
+function onHide(event) {
+	null;
+	return true
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"1558C518-4112-451B-A5DC-FCBC1D4D1798"}
+ */
+function onActionHeats(event) {
+	elements.validate_fittings.enabled = (validate_heats == 1);
+	elements.btn_Heats.enabled = false;
+	elements.validate_pipes.enabled = (validate_heats == 1);
 }

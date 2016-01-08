@@ -24,7 +24,7 @@ uuid:"74B85C17-2C92-44A5-A06F-B33C9D213F75"
 {
 horizontalAlignment:0,
 location:"5,5",
-name:"addNewCarrierButton",
+name:"btn_New",
 onActionMethodID:"FA29E187-8F22-43AD-B141-BE6934214905",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

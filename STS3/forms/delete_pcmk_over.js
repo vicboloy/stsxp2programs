@@ -29,7 +29,7 @@ function onActionSelectAll(event) {
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"83D9C53D-815E-40D0-A20B-F17DE9CD933F"}
@@ -43,7 +43,7 @@ function onActionClearAll(event) {
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  * @param formName
  *

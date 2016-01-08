@@ -16,7 +16,7 @@
 	}
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param previousIndex
  * @param event
  *

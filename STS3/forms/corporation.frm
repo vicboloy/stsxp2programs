@@ -2,11 +2,12 @@ encapsulation:32,
 extendsID:"4E83FC43-0E9E-45F9-B01E-036E71805DF5",
 items:[
 {
-location:"475,30",
+location:"484,24",
+name:"btn_New",
 onActionMethodID:"1CD650DA-305D-4443-BDBE-42BA09A94348",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"112,20",
+size:"112,26",
 text:"New Tenant",
 typeid:7,
 uuid:"6C61B015-7DF4-4C03-BE15-197E12C40008"
@@ -19,7 +20,7 @@ uuid:"9695F96C-5450-47B6-8D2A-31084A996689"
 },
 {
 dataProviderID:"company_name",
-location:"353,55",
+location:"360,55",
 onDataChangeMethodID:"36BA5FF2-283B-40D6-BE47-83DF5A718A6B",
 size:"236,20",
 typeid:4,

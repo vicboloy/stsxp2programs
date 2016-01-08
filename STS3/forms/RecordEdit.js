@@ -28,23 +28,29 @@ function onShowRE(firstShow, event) {
 }
 */
 /**
- * TODO generated, please specify type and doc for the params
- * @param event
+ * @param {JSEvent} event
  * @param {string} recordKeyID
  *
  *
  * @properties={typeid:24,uuid:"1C48C95D-A375-495D-9D45-70364F986DDB"}
  */
 function onActionAdd(event,recordKeyID){
+	databaseManager.setAutoSave(false);
 	selectedIndex = controller.getSelectedIndex();
 	onEdit(event,true);
 	newRecord = foundset.newRecord();
 	tenant_uuid = globals.secCurrentTenantID;
 	globals.newRecordKey = eval(recordKeyID);
+	if (elements.btn_Heats){
+		elements.btn_Heats.enabled = (validate_heats == 1);
+	}
+	if (elements.btn_Recalc){
+		elements.btn_Recalc.enabled = true;
+	}
 	additionalActionAddFunctions();
 }
 /**
- * @param event
+ * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"A939DCF6-66E6-4E1B-AA03-B49FE47EAADE"}
  */
@@ -62,12 +68,16 @@ function onActionAddForm(event){
  * @properties={typeid:24,uuid:"30AE3F2F-AA0B-4BC4-9E02-96FFD937D512"}
  */
 function onActionDelete(event) {
-	var itemDescription;
-	var itemDescr = "Remove ";
-	globals.doDialog(itemDescr,"Delete?","Delete","Cancel");
-	if (globals.dialogResponse == "yes"){
+	///var itemDescription;
+	///var itemDescr = "Remove ";
+	
+	//show dialog
+	// addresses #50 part 3 ticket
+	if (globals.DIALOGS.showQuestionDialog('Delete','Delete?',"Delete","Cancel") == 'Delete'){
 		addOnActionDelete();
 		delete_flag = 99;
+		foundset.loadRecords();
+		elements.btn_Delete.visible = globals.checkJobEmpty(job_id);
 	}
 }
 /**
@@ -83,7 +93,7 @@ function onRecordSelection(event,buttonTextSrc) {
 	if (parent == null){return}
 	var formName = event.getFormName();
 	var index = forms[formName].controller.getSelectedIndex();
-	parent.controller.setSelectedIndex(index)
+	parent.controller.setSelectedIndex(index);
 }
 /**
  * Perform the element default action.
@@ -95,7 +105,7 @@ function onRecordSelection(event,buttonTextSrc) {
  */
 function onActionEdit(event) {
 	newRecord = null;
-	databaseManager.setAutoSave(false);
+	//databaseManager.setAutoSave(false);
 	var count = databaseManager.getFoundSetCount(foundset);
 	if (count > 0){
 		onEdit(event,true);
@@ -103,18 +113,17 @@ function onActionEdit(event) {
 		onActionAdd(event,"");
 	}
 	var formName = event.getFormName();
-	forms[formName].controller.focusField('cancelButton',true);
-	forms[formName].elements.cancelButton.requestFocus();
+	forms[formName].controller.focusField('btn_Cancel',true);
+	forms[formName].elements.btn_Cancel.requestFocus();
 	additionalEditFunctions(); //stubbed out on this for extending for other forms
 }
 /**
  * @properties={typeid:24,uuid:"764FA991-DE70-4B85-B363-C0ED316CCCD6"}
  */
 function focusCancelButton(){
-	controller.focusField('cancelButton',true);
+	controller.focusField('btn_Cancel',true);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param {JSEvent} event
  * @param editStatus Status of boolean for record edit status changes
  *
@@ -125,16 +134,22 @@ function onEdit(event,editStatus){
 	if (typeof codesAvail == 'undefined'){codesAvail = null}
 	if (typeof codesSelect == 'undefined'){codesSelect = null}
 	editFlag = editStatus;
+	//databaseManager.setAutoSave(!editFlag);
 	var formName = event.getFormName();
 	if (forms[formName].elements.tablessX){
 		forms[formName].elements.tablessX.enabled = !editFlag;
 	}
 	controller.readOnly = !editFlag;
-	elements.addButton.visible = !editFlag;
-	elements.cancelButton.visible = editFlag;
-	elements.saveButton.visible = editFlag;
-	elements.deleteButton.visible = !editFlag;
-	elements.editButton.visible = !editFlag;
+	elements.btn_New.visible = !editFlag;
+	elements.btn_Cancel.visible = editFlag;
+	elements.btn_Save.visible = editFlag;
+	elements.btn_Delete.visible = false;
+	elements.btn_Edit.visible = !editFlag;
+	if (elements.btn_Recalc){
+		vCustomerNumber = (st2_jobs_to_customers) ? sts_job_to_customer.customer_number : "";
+		elements.btn_Recalc.enabled = editFlag;
+	}
+
 	//elements.orderProcess.visible = editFlag;
 	//elements.orderDown.visible = editFlag;
 	//elements.orderUp.visible = editFlag;
@@ -149,10 +164,10 @@ function onEdit(event,editStatus){
  * @properties={typeid:24,uuid:"C9F5DFA1-D2EA-414C-87B3-A158BD655AB1"}
  */
 function onActionCancelEdit(event) {
+	databaseManager.revertEditedRecords(foundset);
 	onEdit(event,false);
 	additionalEditCancelFunctions();
-	databaseManager.revertEditedRecords(foundset);
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 	newRecord = null;
 }
 /**
@@ -164,6 +179,7 @@ function onActionCancelEdit(event) {
  * @properties={typeid:24,uuid:"70C1DAF1-E603-4AAF-8930-0E480CB7ABCA"}
  */
 function onActionClose(event) {
+	onActionCancelEdit(event);
 	editStatus(false);
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
@@ -185,24 +201,8 @@ function onActionSaveEdit(event) {
 		application.output("No code entered to save.");
 		controller.deleteRecord();
 	}
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 	newRecord = null;
-}
-/**
- * TODO generated, please specify type and doc for the params
- * @param event
- *
- * @properties={typeid:24,uuid:"99A66AB2-1E7B-4867-9711-C57528428608"}
- * @AllowToRunInFind
- */
-function unusedonActionSaveEditForm(event) {
-	edit_date = new Date;
-	onEdit(event,false);
-	databaseManager.saveData(foundset);
-	databaseManager.setAutoSave(true);
- 	additionalSaveFunctions();
- 	controller.loadAllRecords();
- 	controller.sort('customer_number,asci,job_number asc')
 }
 /**
  * @properties={typeid:24,uuid:"684C5C01-1CEE-4994-89CC-12A28C7B101A"}
@@ -227,7 +227,7 @@ function entryCheckDuplicatePKRecord(){
  */
 function onDataChange(oldValue, newValue, event, recordUniq, recordKeyID) {
 	databaseManager.nullColumnValidatorEnabled = false;
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 	var fs = foundset.find();
 	if (fs) //find will fail if autosave is disabled and there are unsaved records
 	{
@@ -253,7 +253,7 @@ function onDataChange(oldValue, newValue, event, recordUniq, recordKeyID) {
 		foundset.setSelectedIndex(otherIndex);
 		addOtherChangeFunctions();
 	}
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 	globals.newRecordKey = "";
 	return true
 }
@@ -291,7 +291,6 @@ function getParentForm() {
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param array {array} array to be changed
  * @param element {string} element to be added
  *
@@ -308,7 +307,6 @@ function addElementToArray(array,element){
 	return newArray;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param array {array} array to be changed
  * @param element {string} element to be added
   *
@@ -328,7 +326,6 @@ function removeElementFromArray(array,element){
 	return newArray;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param array
  * @param element
  *

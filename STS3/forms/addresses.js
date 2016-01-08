@@ -18,7 +18,6 @@ function delSelectedAddress(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"3268BC50-5A10-4EE0-9547-CC071F13BFDA"}
@@ -35,14 +34,13 @@ function addNewAddress(event) {
 	if (form.title.search("Customers") != -1){
 		entityId = forms["customers_lst"+formRev].customer_id;
 	}
-	var rec = _super.newRecord(event,null,true,true);
+	_super.newRecord(event,null,true,true);
 	foundset.customer_id = entityId;
 	foundset.tenant_uuid = globals.secCurrentTenantID;
 	onActionEditAddress(event);
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param oldValue
  * @param newValue
  * @param event
@@ -72,7 +70,6 @@ function onDataChangeZipCode(oldValue, newValue, event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param oldValue
  * @param newValue
  * @param event
@@ -112,16 +109,15 @@ function onRenderDeleteAddressButton(event) {
 	if (!editAddressFlag){
 		var addyType = address_type;
 		if (addyType != null){
-			elements.deleteButton.text = "Delete \'"+addyType+"\'";
-			elements.deleteButton.visible = true;
+			elements.btn_Delete.text = "Delete"; // \'"+addyType+"\'";
+			elements.btn_Delete.visible = true;
 		} else {
-			//elements.deleteButton.visible = false;
+			//elements.btn_Delete.visible = false;
 		}
 	}
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"86B853C9-AA6A-4395-89A8-B1BB1F8939C7"}
@@ -130,14 +126,13 @@ function onRenderEditAddressButton(event) {
 	if (!editAddressFlag){
 		var addyType = address_type;
 		if (addyType != null){
-			elements.editButton.visible = true;
+			elements.btn_Edit.visible = true;
 		} else {
-			elements.editButton.visible = false;
+			elements.btn_Edit.visible = false;
 		}
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"D92C5F5E-161C-410F-A7DA-0243B2333602"}
@@ -153,7 +148,6 @@ function onActionEditAddress(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  * @param editStatus
  *
@@ -162,11 +156,11 @@ function onActionEditAddress(event) {
 function onEditAddress(event,editStatus){
 	//controller.enabled = status;
 	editAddressFlag = editStatus;
-	elements.deleteButton.visible = !editStatus;
-	elements.addAddressButton.visible = !editStatus;
-	elements.cancelButton.visible = editStatus;
-	elements.saveButton.visible = editStatus;
-	elements.editButton.visible = !editStatus;
+	elements.btn_Delete.visible = !editStatus;
+	elements.btn_New.visible = !editStatus;
+	elements.btn_Cancel.visible = editStatus;
+	elements.btn_Save.visible = editStatus;
+	elements.btn_Edit.visible = !editStatus;
 	elements.tabless.enabled = !editStatus;
 	elements.address_type.enabled = editStatus;
 	elements.address_type.editable = editStatus;
@@ -179,7 +173,6 @@ function onEditAddress(event,editStatus){
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"FF7606F7-99DE-4C97-8E9E-385A230040D9"}
@@ -191,7 +184,6 @@ function onActionSaveEditAddress(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"E71A7A0A-4F5D-4AE6-AC22-33D055AD20FB"}
@@ -210,7 +202,8 @@ function onActionCancelEditAddress(event) {
  * @properties={typeid:24,uuid:"2E4D57B4-E6C1-4A99-AF34-6B12A4F2BE23"}
  */
 function onRecordSelection(event) {
-	application.output('test')
+	elements.btn_Delete.visible = (foundset.getSize() > 0)
+	elements.btn_Edit.visible = (foundset.getSize() > 0)
 }
 
 /**
@@ -253,13 +246,13 @@ function onShow(firstShow, event) {
 	}
 	//controller.setSelectedIndex(selIndex);
 	
-	var tempArray = [];
+	var tempArray = []; var count = 0;
 	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
 	var fs = databaseManager.getFoundSet('stsservoy','addresses');
 	if (fs.find()){
 		fs.tenant_uuid = globals.session.tenant_uuid;
 		fs.customer_id = currentID;
-		var count = fs.search();
+		count = fs.search();
 		for (var index = 1;index <= count;index++){
 			var rec = fs.getRecord(index);
 			if (tempArray.indexOf(rec.address_type) == -1){
@@ -268,5 +261,8 @@ function onShow(firstShow, event) {
 		}
 	}
 	application.setValueListItems('stsvl_address_types',tempArray);
-
+	application.output('inside on show addresses.js');
+	elements.btn_Edit.enabled = (count > 0);
+	elements.btn_Delete.enabled = (count > 0);
+	globals.setUserFormPermissions(event);
 }

@@ -840,7 +840,7 @@ var lRomacPassWorker = false;
  */
 var foundPassword = false;
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  * @param updateValue
  *

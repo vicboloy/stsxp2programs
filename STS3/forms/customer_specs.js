@@ -28,6 +28,7 @@ var editCustomerFlag = false;
  * @properties={typeid:24,uuid:"1FC02317-CBF4-4ED9-A5EF-EF22CD4EB0E3"}
  */
 function onShow(firstShow, event) {
+	globals.setUserFormPermissions(event);
 	//set this up for edit, save, cancel
 	controller.readOnly = true;
 }
@@ -53,14 +54,14 @@ function onShow(firstShow, event) {
  *
  * @properties={typeid:24,uuid:"4E55E3A9-A2A1-4E0F-9334-3CCBA4C0849A"}
  */
-function onRenderDelButton(event) {
+function unusedonRenderDelButton(event) {
 	elements.delButton.text = 'Delete \''+name+'\'';
 }
 
 /**
  * 
  * 
- * TODO generated, please specify type and doc for the params
+ *
  * @param oldValue
  * @param newValue
  * @param event
@@ -68,11 +69,11 @@ function onRenderDelButton(event) {
  * @properties={typeid:24,uuid:"F3350810-0151-4CB9-A0F6-5AE417EB6BA6"}
  * @AllowToRunInFind
  */
-function onDataChangeCustomerNumber(oldValue, newValue, event) {
+function unusedonDataChangeCustomerNumber(oldValue, newValue, event) {
 	if (name == null){
 		name = "X";
 	}
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 	databaseManager.nullColumnValidatorEnabled = false;
 	if (globals.newCustomerRecord != null){
 		globals.newCustomerRecord = customer_id;
@@ -90,13 +91,13 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 		foundset.sts_customer_container.loadAllRecords();
 		foundset.setSelectedIndex(globals.selectedCustomerIndex);
 	}
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 	return true
 }
 
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event button event
  * @param editStatus set event status to editing or not to disable buttons, etc
  *
@@ -109,11 +110,11 @@ function onEdit(event,editStatus){
 	forms.customer_barcode.controller.readOnly = !editStatus;
 	forms.customer_taxes.controller.readOnly = !editStatus;
 	forms.customer_specs.editCustomerFlag = editStatus;
-	forms.customers_rec.elements.addNewButton.visible = !editStatus;
-	forms.customer_specs.elements.cancelButton.visible = editStatus;
-	forms.customer_specs.elements.delButton.visible = !editStatus;
-	forms.customer_specs.elements.saveButton.visible = editStatus;
-	forms.customer_specs.elements.editButton.visible = !editStatus;
+	forms.customers_rec.elements.btn_New.visible = !editStatus;
+	forms.customer_specs.elements.btn_Cancel.visible = editStatus;
+	forms.customer_specs.elements.btn_Delete.visible = !editStatus;
+	forms.customer_specs.elements.btn_Save.visible = editStatus;
+	forms.customer_specs.elements.btn_Edit.visible = !editStatus;
 	forms.customer_contact.elements.editMessage.visible = editStatus;
 	forms.customer_barcode.elements.editMessage.visible = editStatus;
 	forms.customer_taxes.elements.editMessage.visible = editStatus;
@@ -128,7 +129,7 @@ function onEdit(event,editStatus){
  */
 function onActionEdit(event) {
 	onEdit(event,true);
-	databaseManager.setAutoSave(false);
+	//databaseManager.setAutoSave(false);
 }
 
 /**
@@ -141,10 +142,10 @@ function onActionEdit(event) {
 function onActionCancelEdit(event) {
 	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"A1A1A785-417C-4E54-8753-674C58E45BA9"}
@@ -152,8 +153,10 @@ function onActionCancelEdit(event) {
 function onActionSaveEdit(event){
 	onEdit(event,false);
 	tenant_uuid = scopes.globals.secCurrentTenantID;
-	databaseManager.saveData(foundset);
-	databaseManager.setAutoSave(true);
+	var rec = foundset.getRecord(controller.getSelectedIndex());
+	databaseManager.saveData(rec);
+	application.setValueListItems('stsvlt_customers',globals.getCustomerList());
+	//databaseManager.setAutoSave(true);
 }
 
 /**

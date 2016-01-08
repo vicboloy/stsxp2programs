@@ -243,7 +243,7 @@ function onShow(firstShow, event) {
 	jobName = job.name;
 	jobDate = job.date;
 	jobMetric = job.metricFlag;
-	var customerArray = [];
+	///var customerArray = [];
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	if (foundset.find()){
 		job_number = scopes.jobs.importJob.jobNumber;
@@ -251,12 +251,12 @@ function onShow(firstShow, event) {
 		tenant_uuid = globals.session.tenant_uuid;
 		/**index = jobNums.indexOf(jobNumber);
 		customer_id = custIds[index];*/
-		var count = foundset.search();
+		///var count = foundset.search();
 		foundset.setSelectedIndex(1);
 		scopes.jobs.jobIDs.push(job_id);
 	}
-	elements.importButt.enabled = false;
-	elements.applyButt.enabled = true;
+	elements.btn_Import.enabled = false;
+	elements.btn_Apply.enabled = true;
 	var enableDrawing = true;
 	if (scopes.globals.kissJobRf){
 		if ((scopes.globals.kissJobRf.search('FabSuite') != -1) ||
@@ -311,10 +311,10 @@ function onShow(firstShow, event) {
 	window.setSize(application.getScreenWidth(),height);
 	scopes.jobs.importLabelCounts = [];
 	importOption = null;
-	elements.importButt.enabled = false;
+	elements.btn_Import.enabled = false;
 	keepMinors = scopes.prefs.lKeepMinorPcMarks;
 	//index;
-	var custRec;
+	///var custRec;
 	controller.enabled = true;
 	headerKissNames['item_quantity']='Total PcMarks Import Qty';
 	headerKissNames['sequence_quantity']='Import Qty';
@@ -329,8 +329,10 @@ function onShow(firstShow, event) {
 	loadExclSumms();
 	var success = history.removeForm('kiss_excludes_lst');
 	var success2 = solutionModel.removeForm('kiss_excludes_lst');
+	if (!success || !success2){globals.loggerDev(this,'Form kiss_excludes_lst remove fail.')}
 	success = history.removeForm('kiss_barcode_request');
 	success2 = solutionModel.removeForm('kiss_barcode_request');
+	if (!success || !success2){globals.loggerDev(this,'Form kiss_barcode_request remove fail.')}
 	importTempTable();
 	if (keepMinors == 0) {
 		elements.keep_minors.enabled = false;
@@ -756,7 +758,6 @@ function saveDetailRow(){
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param lineArray
  *
  * @properties={typeid:24,uuid:"5CE001A6-0DED-47DB-987D-27AB150DE799"}
@@ -776,7 +777,7 @@ function newKRecord(lineArray){
  */
 function popKISSTable() {
 	recomputeLabelArray = [];
-	var lastParent = 0;
+	///var lastParent = 0;
 	parentMarkIndex = [];
 	pMarkString = "";
 	pMarks = [];
@@ -918,7 +919,7 @@ function defineKISSdataset() {
 	booleans = new RegExp('(exclude|delete_similar|bool)');
 	numbers = new RegExp('(length|weight)');
 	integers = new RegExp('(num|qty|quan)');
-	var addSuccess = false;
+	///var addSuccess = false;
 	for (item in scopes.jobs.mappedFormatArray){  // insert columns representing kiss data file fields
 		if (!(item in scopes.jobs.usedFields)){continue} // these are fields in the input file that are blank/unused in the scopes.jobs file
 		field = scopes.jobs.mappedFormatArray[item];
@@ -1107,14 +1108,13 @@ function moveRow(row,sourceDb,targetDb){
 	targetDb.addRow(rowArray);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param row
  * @param sourceDb
  *
  * @properties={typeid:24,uuid:"69802EB8-BCF2-4750-8C28-C39AD3EB4832"}
  */
 function deleteRow(row,sourceDb){
-	var rowArray = sourceDb.getRowAsArray(row);
+	///var rowArray = sourceDb.getRowAsArray(row);
 	sourceDb.removeRow(row);
 }
 /**
@@ -1134,7 +1134,7 @@ function applyShapeExcludes(sourceDb,destDb){
 	var i1 = 0;
 	var shape;
 	var excList = forms.kiss_option_import.jobImportExc;
-	var sumList = forms.kiss_option_import.jobImportSum;
+	///var sumList = forms.kiss_option_import.jobImportSum;
 	//var major = fieldOrderTempTable['parent_piecemark']+1;
 	//var minor = fieldOrderTempTable['piecemark']+1;
 	for (i1 = srcLength; i1 >= 0; i1--) {
@@ -1196,7 +1196,6 @@ function applySheetUpdatesRemove(importDb){
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param importDb
  *
  * @properties={typeid:24,uuid:"F982408D-96A3-4912-84AC-5DF0A2A3FA99"}
@@ -1251,11 +1250,11 @@ function applyResetExclusions(){
  */
 function applyShapeSummary(sourceDb,destDb){
 	// array of indices for summary records by 'material and length'
-	var tempTotal=0;
+	///var tempTotal=0;
 	var summedArray = [];
 	var summedRemoval = [];
 	var srcLength = transitionFS.getMaxRowIndex();	
-	var dstLength = destDb.getMaxRowIndex();
+	///var dstLength = destDb.getMaxRowIndex();
 	var i1 = 0;
 	var zeroFields = [];
 	var zeroNames = ['piecemark','parent_piecemark','sequence_qty','sequence_number','sheet_number','reference_drawing','route_code','sequence_quantity'];
@@ -1270,7 +1269,7 @@ function applyShapeSummary(sourceDb,destDb){
 	var finishI = fieldOrderTempTable['finish']+1;
 	var countI = fieldOrderTempTable['item_quantity']+1;
 	var piecemarkI = fieldOrderTempTable['piecemark']+1;*/
-	var newRow = "";
+	///var newRow = "";
 	var summaryItem = "";
 	var shape;
 	for (i1 = srcLength; i1 > 0; i1--) {
@@ -1324,7 +1323,6 @@ function applyShapeSummary(sourceDb,destDb){
 	// remove all not selected from sumList from main selection.  No summing necessary, etc, just delete summaries
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param row
  *
  * @properties={typeid:24,uuid:"41F095E2-D5E4-424D-98C6-050C2DA0A156"}
@@ -1360,7 +1358,6 @@ function setbarcodeQuantity(row){
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param row
  *
  * @properties={typeid:24,uuid:"F666AC7A-2559-4A89-91B0-E83B9577EE54"}
@@ -1378,7 +1375,7 @@ function setBarcodeLimits(row){
 	//var currentLabelCount = transitionFS.getValue(row,fieldOrderTempTable['barcode_qty']+1);
 	var currentLabelCount = transitionFS.barcode_qty;
 	//var itemsCount = transitionFS.getValue(row,fieldOrderTempTable['sequence_quantity']+1);
-	var itemsCount = (transitionFS.sequence_qty == "") ? transitionFS.item_quantity : transitionFS.sequence_quantity;
+	var itemsCount = (transitionFS.sequence_quantity == "") ? transitionFS.item_quantity : transitionFS.sequence_quantity;
 	application.output('row '+row+'item quantity '+transitionFS.item_quantity);
 	if (!itemsCount || itemsCount == ""){itemsCount = transitionFS.item_quantity}
 	var bcNums = scopes.jobs.createBCnums(currentLabelCount,itemsCount,transitionFS.item_weight);
@@ -1408,7 +1405,6 @@ function applyRemoveMinors(sourceDb){
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param db
  *
  * @properties={typeid:24,uuid:"1630C59E-8B33-4E7C-8FC5-2B5DD9FE37E1"}
@@ -1438,11 +1434,11 @@ function listDataset(db){
 function applyImportPreferences(){
 	//scopes.jobs.warningsYes();
 	//scopes.jobs.warningsMessage('Apply import preferences.');
-	elements.applyButt.enabled = false;
-	elements.importButt.enabled = false;
-	elements.importButt.bgcolor = '#f0f0f0';
+	elements.btn_Apply.enabled = false;
+	elements.btn_Import.enabled = false;
+	elements.btn_Import.bgcolor = '#f0f0f0';
 	//application.updateUI();
-	//application.output('color '+elements.importButt.bgcolor);
+	//application.output('color '+elements.btn_Import.bgcolor);
 	var appendToData2 = importOption.search('Append') != -1;
 	applyResetExclusions();
 	applyShapeExcludes(transitionFS,transitionFSsink);
@@ -1469,10 +1465,10 @@ function applyImportPreferences(){
 		applySheetUpdates(sheetsFS,transitionFS);//add piecemarks from database not in the import file
 	}
 	//scopes.jobs.warningsX();
-	elements.applyButt.enabled = true;
+	elements.btn_Apply.enabled = true;
 	if (importRouting != ""){
-		elements.importButt.bgcolor = 'green';
-		elements.importButt.enabled = true;
+		elements.btn_Import.bgcolor = 'green';
+		elements.btn_Import.enabled = true;
 	}
 }
 /**
@@ -1488,7 +1484,7 @@ function applyImportPreferences(){
  * @AllowToRunInFind
  */
 function onDataChange(oldValue, newValue, event) {
-	forms.kiss_option_import.elements.importButt.enabled = false;
+	forms.kiss_option_import.elements.btn_Import.enabled = false;
 	scopes.jobs.appendToData = (newValue.search('Append') != -1);
 	//application.output('jobid '+scopes.jobs.jobIDs[0]);
 	//scopes.jobs.appendQuantityToIdfile = [];
@@ -1541,7 +1537,6 @@ function onActionExcel(event) {
 	errorMessage = "See "+filePath+"\\KISS_Excel(Keep|Discard) files.";
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param incomingMetric
  *
  * @properties={typeid:24,uuid:"B5F199C8-66C2-407F-9240-D0C5F096A873"}

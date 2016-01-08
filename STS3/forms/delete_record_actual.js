@@ -9,7 +9,7 @@
 function onActionClose(event) {
 	//return;
 	// just close the window to return to base selection, execute a clear on remaining window
-	var form = event.getFormName();
+	///var form = event.getFormName();
 	
 	var win = application.getActiveWindow();
 	//application.output(form+' '+win.getName());

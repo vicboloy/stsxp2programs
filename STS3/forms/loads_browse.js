@@ -8,6 +8,7 @@
  * @properties={typeid:24,uuid:"DBCAA96E-A13B-49F3-9DB9-BC2B9572A5F3"}
  */
 function onShow(firstShow, event) {
+	var versionForm = scopes.jobs.versionForm;
 	var formPrefix = event.getFormName().split("_")[0];
 	formPrefix = 'loads_browse';
 	var formNameTable = formPrefix+'_table';
@@ -18,7 +19,12 @@ function onShow(firstShow, event) {
 	//var success = history.removeForm(formNameTable);
 	//var success2 = solutionModel.removeForm(formNameTable);
 	//forms[formCriteria].collectCriteria(formCombo);
-	forms[formPrefix].elements.split.setRightForm(formPrefix+'_pcmk_transaction','sts_idfile_to_transactions');
+	var origFormName = formPrefix+'_pcmk_transaction';
+	var rightFormName = origFormName+versionForm;
+	if (!forms[rightFormName]){
+		solutionModel.cloneForm(rightFormName,solutionModel.getForm(origFormName));
+	}
+	forms[formPrefix].elements.split.setRightForm(rightFormName,'sts_idfile_to_transactions');
 	var top = forms[formPrefix].elements.split.getRightForm().controller.getName();
 	var bot = forms[formPrefix].elements.split.getLeftForm().controller.getName();
 	//forms[formCombo].elements.tabless.addTab(formNameTable);

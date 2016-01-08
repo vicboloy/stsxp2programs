@@ -47,18 +47,18 @@ var vCowCode = "";
  */
 var vUomCodeSpecific = false;
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param edit
  *
  * @properties={typeid:24,uuid:"54C9E1C5-FC87-4E26-95E3-49E078523537"}
  */
 function editStatus(edit){
 	//controller.readOnly = !edit;
-	elements.addButton.visible = !edit;
-	elements.cancelButton.visible = edit;
-	elements.deleteButton.visible = !edit;
-	elements.editButton.visible = !edit;
-	elements.saveButton.visible = edit;
+	elements.btn_New.visible = !edit;
+	elements.btn_Cancel.visible = edit;
+	elements.btn_Delete.visible = !edit;
+	elements.btn_Edit.visible = !edit;
+	elements.btn_Save.visible = edit;
 	elements.tabless.enabled = !edit;
 	elements.jobNumberEntry.readOnly = false;
 	elements.jobNumberEntry.enabled = true;
@@ -132,7 +132,7 @@ function onDataChangeCow(oldValue, newValue, event) {
 	return true
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param oldValue
  * @param newValue
  * @param event

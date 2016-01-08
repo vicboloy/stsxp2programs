@@ -6,10 +6,11 @@
  * @param {Number} location
  * @param {Boolean} changeSelection
  *
- * @properties={typeid:24,uuid:"044FFDF6-4B6A-4B7A-8FA9-435B5D0A327E"}
  * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"62001F4C-7D1B-41D3-AF56-1B43144B9EF9"}
  */
-function newRecord(event, location, changeSelection) {
+function xxxunusednewRecord(event, location, changeSelection) {/**
 	if (!company_name){
 		errorMessage = 'Please enter a company name.';
 		return false;
@@ -36,7 +37,7 @@ function newRecord(event, location, changeSelection) {
 		foundset.loadRecords();
 		return true;
 	}
-	//return false; 
+	//return false; */
 }
 
 /**
@@ -61,7 +62,6 @@ function onActionClose(event) {
 	globals.mainWindowFront();
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param editing
  *
  * @properties={typeid:24,uuid:"3356AEF1-608A-4CD0-B6A5-B7383EA2A904"}
@@ -85,7 +85,23 @@ function onShow(firstShow, event) {
 	var formName = event.getFormName();
 	var ltForm = forms[formName].elements.split.getLeftForm();
 	var rtForm = forms[formName].elements.split.getRightForm().elements.split.getLeftForm();
-	ltForm.elements.newButton.visible = false;
+	ltForm.elements.btn_New.visible = false;
 	ltForm.elements.newEntry.visible = false;
-	rtForm.elements.newButton.visible = false;
+	rtForm.elements.btn_New.visible = false;
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"65A69292-B7F4-4F11-9A42-A0078026855A"}
+ */
+function onHide(event) {
+	globals.stopWindowTrack();
+	globals.mainWindowFront();
+	globals.setWindowClosed("");
+	return true;
 }

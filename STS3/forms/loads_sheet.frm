@@ -20,6 +20,7 @@ uuid:"EFAD72FB-E862-4D7B-8C38-AA6AFAC56197"
 }
 ],
 name:"loads_sheet",
+navigatorID:"-1",
 showInMenu:true,
 styleName:"sts_one",
 typeid:3,

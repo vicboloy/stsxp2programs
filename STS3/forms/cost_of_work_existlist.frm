@@ -1,5 +1,5 @@
 dataSource:"db:/stsservoy/idfiles",
-encapsulation:60,
+encapsulation:12,
 items:[
 {
 anchors:11,

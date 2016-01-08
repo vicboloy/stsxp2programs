@@ -1,6 +1,6 @@
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"16FB7385-D1C1-4E70-A59F-BBEE985AA926"}

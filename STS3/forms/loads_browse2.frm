@@ -2,7 +2,7 @@ dataSource:"db:/stsservoy/piecemarks",
 extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
 items:[
 {
-height:452,
+height:459,
 partType:5,
 typeid:19,
 uuid:"540CBA6B-CF66-4796-89B7-DD060E97990A"
@@ -22,9 +22,11 @@ uuid:"B650C9A2-57FC-488F-8436-28C221C12AFE"
 anchors:12,
 horizontalAlignment:0,
 location:"123,427",
+name:"btn_Exit",
 onActionMethodID:"63F7E439-74CD-4D0C-B390-177D161770D0",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
+size:"80,26",
 text:"Exit",
 typeid:7,
 uuid:"C5BCFCC3-AEFD-4023-8EE7-5ECC010E4D33"
@@ -33,9 +35,11 @@ uuid:"C5BCFCC3-AEFD-4023-8EE7-5ECC010E4D33"
 anchors:12,
 horizontalAlignment:0,
 location:"5,427",
+name:"btn_EditSettingsLeftPanel",
 onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
+size:"80,26",
 text:"Settings",
 typeid:7,
 uuid:"D2FDF4BD-C3D0-4752-91BD-23B3D1D1FDDC"

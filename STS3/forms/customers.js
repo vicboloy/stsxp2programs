@@ -26,3 +26,15 @@ function onLoadCreateRecord(event) {
 function onTabChange(previousIndex, event) {
 	globals.customersDividerLocation = elements.tabs.dividerLocation;
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"782359C0-6519-4B97-B1C4-D2A2D50918EE"}
+ */
+function onShow(firstShow, event) {
+	globals.setUserFormPermissions(event);
+}

@@ -10,7 +10,7 @@ function addCustomerRecord(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"84AC098F-7D5F-4889-8D7F-26BF1B77EB9B"}

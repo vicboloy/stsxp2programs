@@ -3,7 +3,7 @@
  */
 var editCarrierFlag = false;
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"E064DA2E-782E-474C-86F5-D602473B1173"}
@@ -23,10 +23,10 @@ function delCarrierRecordAndAddress(event) {
  * @properties={typeid:24,uuid:"B9AB506A-3288-47F8-8A1A-0F33D772766A"}
  */
 function onRenderCarrierButton(event) {
-	elements.deleteCarrierButton.text = 'Delete \''+carrier_name+'\'';
+	elements.btn_Delete.text = 'Delete \''+carrier_name+'\'';
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  * @param editStatus
  *
@@ -36,16 +36,16 @@ function onEditCarrier(event,editStatus){
 		forms.carriers.controller.readOnly = !editStatus;
 		forms.carriers_lst.controller.enabled = !editStatus;
 		editCarrierFlag = editStatus;
-		forms.carriers_rec.elements.addNewCarrierButton.visible = !editStatus;
-		forms.carrier_info.elements.deleteCarrierButton.visible = !editStatus;
-		forms.carrier_info.elements.cancelButton.visible = editStatus;
-		forms.carrier_info.elements.saveButton.visible = editStatus;
-		forms.carrier_info.elements.editButton.visible = !editStatus;
+		forms.carriers_rec.elements.btn_New.visible = !editStatus;
+		forms.carrier_info.elements.btn_Delete.visible = !editStatus;
+		forms.carrier_info.elements.btn_Cancel.visible = editStatus;
+		forms.carrier_info.elements.btn_Save.visible = editStatus;
+		forms.carrier_info.elements.btn_Edit.visible = !editStatus;
 		
 	}
 
 	/**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"B9D2388A-C4A5-411A-A952-9EA4CC7D76FE"}
@@ -56,7 +56,7 @@ function onActionEditCarrier(event) {
 	}
 
 	/**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"2D2FDD4C-4DC6-4BB9-B450-9446D0DB8840"}
@@ -68,7 +68,7 @@ function onActionCancelEditCarrier(event) {
 	}
 
 	/**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"100B8F88-B23F-43E4-BC9F-2CB51D291148"}

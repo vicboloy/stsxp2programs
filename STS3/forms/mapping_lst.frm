@@ -23,7 +23,7 @@ typeid:4,
 uuid:"324A1B63-ED7E-4A73-9821-1F1C4B571DC5"
 },
 {
-height:22,
+height:26,
 partType:1,
 typeid:19,
 uuid:"6941A8C1-9A03-4751-A879-04706F5DC104"
@@ -70,10 +70,14 @@ uuid:"B9E65E01-A486-4007-9ABE-DF9FB8CCC0F2"
 },
 {
 anchors:3,
+horizontalAlignment:0,
 location:"239,0",
+mnemonic:"",
+name:"btn_New",
 onActionMethodID:"5E85197C-4A42-4D56-B1EE-7C833A2AB724",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
+size:"80,26",
 text:"New",
 typeid:7,
 uuid:"C3B868EF-B28D-4C94-BE05-55E94D027E43"
@@ -90,9 +94,11 @@ uuid:"CE2783DF-D6C4-43ED-91CC-EE6B2041EBB1"
 },
 {
 location:"0,0",
+name:"btn_Resort",
 onActionMethodID:"6C25FCD2-234C-4A9B-BE6A-802659DDF7F6",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
+size:"80,26",
 text:"Re-sort",
 typeid:7,
 uuid:"D217CDFF-DB4C-487F-A8FD-F65AEF2520CA"

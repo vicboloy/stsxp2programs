@@ -32,12 +32,12 @@ typeid:7,
 uuid:"3478F1D4-55E9-4C0D-A7EC-E4F0A0D1E030"
 },
 {
-location:"262,175",
-name:"updateButton",
+location:"262,169",
+name:"btn_Update",
 onActionMethodID:"07B224C1-B513-4869-BD4A-60BCF4E94ECA",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"74,20",
+size:"74,26",
 tabSeq:-2,
 text:"Update",
 typeid:7,
@@ -97,7 +97,6 @@ valuelistID:"7171223D-A518-458A-B051-215CF16CBCBE"
 {
 dataProviderID:"user_name",
 displayType:2,
-format:"|U",
 location:"117,91",
 name:"user_name",
 onActionMethodID:"-1",

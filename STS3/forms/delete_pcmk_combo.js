@@ -50,7 +50,7 @@ function onActionClearAll(event) {
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
- *
+ * @param formName
  * @properties={typeid:24,uuid:"6588863C-C211-45FD-B32C-4FFCA0CA9711"}
  */
 function onActionDeleteSelected(event,formName) {
@@ -67,7 +67,7 @@ function onActionDeleteSelected(event,formName) {
 	}
     //application.output('continued with deletion');
     if (formName == null){
-    	var formName = event.getFormName();
+    	formName = event.getFormName();
     }
 	var fs = forms[formName+'_table'].foundset;
 	var omitList = [];

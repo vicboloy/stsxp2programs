@@ -6,6 +6,7 @@ items:[
 {
 containsFormID:"C504C8D7-7AF5-4730-9D86-620853BDF88E",
 location:"85,35",
+relationName:"sts_job_to_loads",
 text:"Load Detail",
 typeid:15,
 uuid:"36FD4E6C-70A9-4034-AE30-231710EC28E8"
@@ -13,6 +14,7 @@ uuid:"36FD4E6C-70A9-4034-AE30-231710EC28E8"
 {
 containsFormID:"322ABC2B-A2CC-4E79-9436-CC7B512FBCE0",
 location:"5,35",
+relationName:"sts_jobs",
 text:"General",
 typeid:15,
 uuid:"B91A6C19-CF8A-452C-BE6E-B1A6403697AC"
@@ -39,6 +41,7 @@ horizontalAlignment:0,
 imageMediaID:"7DE60661-FA20-4CC8-8F60-48A8518B377F",
 location:"872,3",
 mediaOptions:14,
+name:"btn_Home",
 onActionMethodID:"0F7CB54B-C3AC-4211-9A81-5E931253B58C",
 showClick:false,
 showFocus:false,

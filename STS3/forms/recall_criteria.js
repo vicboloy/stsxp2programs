@@ -167,7 +167,7 @@ var jobFound = false;
  * @properties={typeid:24,uuid:"4A4879B5-5968-4331-9C3D-B08C19E4437E"}
  */
 function onDataChangeJobNumber(oldValue, newValue, event) {
-	var action = event.getFormName().split("_")[0];
+	///var action = event.getFormName().split("_")[0];
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var fs = sts_jobs.duplicateFoundSet();
 	fs.loadAllRecords();
@@ -199,11 +199,10 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		forms[formName].elements.tabless.removeAllTabs();
 		scopes.jobs.removeFormHist(formTable);
 	}
-	browseInfoEnable();
+	browseInfoEnable(null);
 	return status;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"54DC4A60-42B4-4132-9020-4439EDCC336E"}

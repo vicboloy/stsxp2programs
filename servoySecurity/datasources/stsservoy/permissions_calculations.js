@@ -36,6 +36,7 @@ function display_resource()
 	if(permission_type == globals.SEC_PERMISSION_TYPE_DATA){
 		return server_name+'.'+table_name;
 	}else if(permission_type == globals.SEC_PERMISSION_TYPE_UI){
+		if (1==1){return form_name+'.'+element_name;}
 		if(form_name && element_uuid){
 			var uuids = security.getElementUUIDs(form_name);
 			for(var i = 1; i <= uuids.getMaxRowIndex(); i++){

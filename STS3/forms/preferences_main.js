@@ -25,7 +25,7 @@ function onShow(firstShow, event) {
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
- *
+ * @param prefType
  * @properties={typeid:24,uuid:"AFBA62E6-C20B-4626-ADB8-DC2D7D17E805"}
  * @AllowToRunInFind
  */
@@ -50,7 +50,7 @@ function onActionUpdatePrefs(event, prefType) {
 		variable = index;
 		variableSetting = prefs[index];
 		var variableType = typeof(variableSetting);
-		var fieldType = typeof(prefs[index]);
+		///var fieldType = typeof(prefs[index]);
 		variableSetting +="";
 		saveRec = false;
 		if (fs.find()){

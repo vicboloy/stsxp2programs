@@ -8,6 +8,7 @@ uuid:"164CBD2C-D094-419C-9417-9B9E02E4C8ED"
 },
 {
 anchors:15,
+borderType:"BevelBorder,0",
 items:[
 {
 containsFormID:"EE9D7F11-257C-4193-ADC9-803B65C4698D",
@@ -42,7 +43,7 @@ name:"customers",
 navigatorID:"-1",
 onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
 onLoadMethodID:"A785614B-DB14-4162-B492-EBA64064C985",
-onShowMethodID:"-1",
+onShowMethodID:"782359C0-6519-4B97-B1C4-D2A2D50918EE",
 showInMenu:true,
 size:"849,480",
 styleName:"sts_one",

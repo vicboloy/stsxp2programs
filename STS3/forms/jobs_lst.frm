@@ -6,7 +6,7 @@ items:[
 {
 anchors:11,
 labelFor:"customer_number",
-location:"77,0",
+location:"78,0",
 name:"customer_number_label",
 size:"55,20",
 text:"Customer",
@@ -19,10 +19,19 @@ labelFor:"job_number",
 location:"0,0",
 name:"job_number_label",
 size:"78,20",
-text:"Job Number",
+text:"Job #",
 transparent:true,
 typeid:7,
 uuid:"35EA5D57-9015-4FE4-B47B-C85022E86990"
+},
+{
+anchors:11,
+dataProviderID:"sts_job_to_customer.name",
+location:"133,20",
+name:"name",
+size:"68,20",
+typeid:4,
+uuid:"53A903D4-F277-47AE-949D-6ED22B945C2C"
 },
 {
 dataProviderID:"job_number",
@@ -35,8 +44,19 @@ uuid:"B1AF6551-6408-4185-8B46-FEE206BBB87B"
 },
 {
 anchors:11,
+labelFor:"name",
+location:"133,0",
+name:"name_label",
+size:"68,20",
+text:"Name",
+transparent:true,
+typeid:7,
+uuid:"BF98CF5F-8AAA-40F2-A607-FA0ACC153178"
+},
+{
+anchors:11,
 dataProviderID:"sts_job_to_customer.customer_number",
-location:"77,20",
+location:"78,20",
 name:"customer_number",
 size:"55,20",
 text:"Customer Number",
@@ -45,7 +65,7 @@ uuid:"CCBF52D5-5F8F-4376-9CA0-EE714357A1BD"
 },
 {
 extendsID:"309DAEC2-F9E3-4DBF-8718-0884B5FE1FBF",
-height:307,
+height:95,
 typeid:19,
 uuid:"E4890FF4-A10F-4BA1-A3F3-9A8E4F7301A3"
 }
@@ -54,7 +74,7 @@ name:"jobs_lst",
 navigatorID:"-1",
 onRecordSelectionMethodID:"0D273E9E-ECB7-4362-9492-21A6DACDA13D",
 scrollbars:32,
-size:"137,350",
+size:"201,307",
 styleName:"sts_one",
 typeid:3,
 uuid:"628FBF67-6BF2-4701-A2E2-ED86DA4F447B",

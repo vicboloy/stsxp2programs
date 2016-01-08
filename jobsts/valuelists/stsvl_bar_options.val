@@ -1,0 +1,9 @@
+addEmptyValue:1,
+customValues:"Bar Code Form #\r
+Customer Number\r
+Custom",
+name:"stsvl_bar_options",
+returnDataProviders:1,
+showDataProviders:1,
+typeid:34,
+uuid:"E3C802A2-E8A6-4444-82F3-525BE8C4F8DF"

@@ -98,7 +98,6 @@ function onActionSelectAvailable(event) {
 	application.setValueListItems('stsvl_avail_status_overwrite',statusAvailArray,true);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"CBB10AAE-D7FA-4EAB-B575-831D925D1201"}
@@ -118,7 +117,6 @@ function onActionUnselect(event) {
 
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param array {array} array to be changed
  * @param element {string} element to be added
  *
@@ -142,7 +140,6 @@ function addElementToArray(array,element){
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param array {array} array to be changed
  * @param element {string} element to be added
   *

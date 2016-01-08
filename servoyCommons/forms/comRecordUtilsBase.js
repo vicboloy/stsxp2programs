@@ -100,9 +100,14 @@ function omitRecord(event, index) {
 function deleteRecord(event, index) {
 	index = (index) ? index :  foundset.getSelectedIndex();
 	var rec = foundset.getRecord(index);
-	rec.delete_flag = 99;
-	databaseManager.saveData(rec);
-	//application.updateUI();
+	if (rec.delete_flag === undefined){
+		foundset.deleteRecord(rec);
+	} else {
+		rec.delete_flag = 99;
+		databaseManager.saveData(rec);
+		
+	}
+	application.updateUI();
 	return true;
 }
 

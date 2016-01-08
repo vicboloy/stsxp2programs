@@ -6,6 +6,7 @@
  * @properties={typeid:24,uuid:"C8FE22F3-9879-4FD0-A0ED-8D4F46D0F3CF"}
  */
 function addRecord(event) {
+	databaseManager.setAutoSave(false);
 	globals.selectedCustomerIndex = controller.getSelectedIndex();
 	forms.customer_specs.onEdit(event,true);
 	forms.customers_lst.controller.newRecord();
@@ -25,4 +26,5 @@ function onShow(firstShow, event) {
 	if (customersDivider == 0.0){
 		forms.customers.elements.tabs.dividerLocation = 317.0;
 	}
+	globals.setUserFormPermissions(event);
 }

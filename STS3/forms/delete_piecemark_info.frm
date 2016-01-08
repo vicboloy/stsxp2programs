@@ -3,6 +3,7 @@ extendsID:"DAE74AF3-27A9-4DF3-8774-098F9824F3C0",
 items:[
 {
 extendsID:"A3D4B7DF-E17B-4B1E-AB13-34DE0FD6E96E",
+location:"670,427",
 typeid:7,
 uuid:"91733D06-AEF9-4237-AD5D-E852CF1D3CD1",
 visible:false
@@ -10,6 +11,7 @@ visible:false
 {
 extendsID:"2FBC559C-7671-4B42-92A2-4BDD40EE6F4C",
 scrollTabs:true,
+size:"745,417",
 typeid:16,
 uuid:"F47845F7-4A1C-4D00-83FB-22B75ACE57B9"
 }

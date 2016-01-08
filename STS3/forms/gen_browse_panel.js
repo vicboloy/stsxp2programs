@@ -34,8 +34,8 @@ function onActionHide(event) {
  */
 function onRecordSelection(event) {
 	null;
-	var index = forms[event.getFormName()].controller.getSelectedIndex();
-	var rec = forms[event.getFormName()];
+	///var index = forms[event.getFormName()].controller.getSelectedIndex();
+	///var rec = forms[event.getFormName()];
 	//var fs = databaseManager.getFoundSetCount('sts_piecemarks');
 	//fs.sts_piecemark.loadRecords();
 	//var fs = rec.piecemark_id.rr;

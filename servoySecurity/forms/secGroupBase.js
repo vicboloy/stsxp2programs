@@ -43,11 +43,14 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 	if(newIDs.length > oldIDs.length){										//	check difference: id was ADDED
 		id = newIDs[newIDs.length - 1];									//	determine the id, starting with the last element in the array
 		for(i in oldIDs){													//	iterate by the old ids
-			if(oldIDs[i] != newIDs[i])										//	until the corresponding new id doesn't match
+			if(oldIDs[i] != newIDs[i])	{									//	until the corresponding new id doesn't match
 				id = newIDs[i];												//	which gives the id that was added
+				break;
+			}
 		}
 		if(fs.newRecord()){													//	create the related record
 			fs[idColumnName] = id;											//	set the foreign key column value
+			fs.tenant_uuid = globals.secCurrentTenantID;
 			databaseManager.saveData(fs.getSelectedRecord());				//	save data
 		}
 	} else {																//	id was REMOVED	

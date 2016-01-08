@@ -35,6 +35,14 @@ titleText:"Display Name"
 },
 {
 allowNull:true,
+autoEnterSubType:3,
+autoEnterType:1,
+creationOrderIndex:6,
+dataType:93,
+name:"edit_date"
+},
+{
+allowNull:true,
 creationOrderIndex:2,
 dataType:12,
 length:50,

@@ -14,6 +14,7 @@ uuid:"0E86A311-A656-4566-BECA-CAD2E4BFA61E"
 {
 formIndex:10,
 location:"69,155",
+name:"btn_ViewCustomerInformation",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -35,7 +36,7 @@ uuid:"553DF2A4-3861-4891-840E-D3C8BE76A306"
 {
 formIndex:10,
 location:"27,65",
-name:"buttonViewPiecemark",
+name:"btn_ViewPiecemark",
 onActionMethodID:"8A4328F0-1952-4599-ACB4-006052830407",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -57,6 +58,7 @@ uuid:"64D759E8-F3EE-4F6C-9982-B90414DF2530"
 {
 formIndex:10,
 location:"69,275",
+name:"btn_ViewStatusCodes",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -68,6 +70,7 @@ uuid:"65D63F7F-286C-47B6-821B-5AF5B7E70826"
 {
 formIndex:10,
 location:"69,215",
+name:"btn_ViewEmployeeInformation",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -79,6 +82,7 @@ uuid:"67948879-5476-4214-BDC4-0A6217135463"
 {
 formIndex:10,
 location:"27,335",
+name:"btn_ViewHistoryLoadInformation",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -90,11 +94,11 @@ uuid:"6A8FC34D-81C5-4485-A60E-BE5BD357B7D5"
 {
 formIndex:10,
 location:"27,95",
-name:"buttonFindPiecemark",
+name:"btn_FindPiecemark",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"222,23",
+size:"162,23",
 text:"Find a Piecemark",
 typeid:7,
 uuid:"707A7563-49D4-4AC2-B10A-9C6CC9F2DEB5"
@@ -102,6 +106,7 @@ uuid:"707A7563-49D4-4AC2-B10A-9C6CC9F2DEB5"
 {
 formIndex:10,
 location:"27,365",
+name:"btn_ViewArchivedLoadInformation",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -113,6 +118,7 @@ uuid:"70A7A4A8-BBD7-4C2B-964A-44C673386E9F"
 {
 formIndex:10,
 location:"69,185",
+name:"btn_ViewCarrierInformation",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -124,6 +130,7 @@ uuid:"92CE009E-38A8-4095-B616-35814DB977C6"
 {
 formIndex:10,
 location:"69,245",
+name:"btn_ViewEmployeeClassInformation",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -141,7 +148,7 @@ uuid:"E7BC9A0C-07A2-4E8C-A5D3-CAA034E6ACCC"
 {
 formIndex:9,
 location:"27,35",
-name:"ButtonViewLoadInformation",
+name:"btn_ViewLoadInformation",
 onActionMethodID:"81C230BD-F337-45A5-9638-883D435E9B82",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -153,6 +160,7 @@ uuid:"F9E17EB8-7DFB-4F8E-B921-A45EFDE12541"
 ],
 name:"sts_nav_view",
 navigatorID:"-1",
+onShowMethodID:"2D11822A-3DD9-45DB-A675-D9AAFA44548D",
 showInMenu:true,
 size:"599,439",
 transparent:true,

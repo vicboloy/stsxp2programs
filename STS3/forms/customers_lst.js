@@ -20,4 +20,6 @@ function addCustomerRecord(event) {
 function onRecordSelection(event) {
 	globals.selectedCustomerIndex = controller.getSelectedIndex(); 
 	globals.selectedCustomerID = customer_id; 
+	forms.customer_specs.elements.btn_Delete.visible =  (globals.checkCustEmpty(customer_id)) && (forms.customers_rec.elements.btn_New.visible);
+	forms.addressesCustomer.onRecordSelection(event);
 }

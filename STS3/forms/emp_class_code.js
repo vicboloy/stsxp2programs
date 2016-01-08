@@ -24,11 +24,11 @@ function onShow(firstShow, event) {
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
 	}
-	elements.deleteButton.text = 'Delete class \''+class_code+'\'';
+	elements.btn_Delete.text = 'Delete class \''+class_code+'\'';
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"0AC1F465-7E38-41C1-9CB9-AC43FEAB1DEE"}
@@ -62,7 +62,7 @@ function onActionDelete(event) {
  * @properties={typeid:24,uuid:"76EF827F-5EBC-488E-AF0B-920AE2FC2807"}
  */
 function onRecordSelection(event) {
-	elements.deleteButton.text = 'Delete class \''+class_code+'\'';
+	elements.btn_Delete.text = 'Delete class \''+class_code+'\'';
 }
 
 /**
@@ -78,7 +78,7 @@ function onActionEdit(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  * @param editStatus Status of boolean for record edit status changes
  *
@@ -87,11 +87,11 @@ function onActionEdit(event) {
 function onEdit(event,editStatus){
 	editFlag = editStatus;
 	controller.readOnly = !editStatus;
-	elements.addButton.visible = !editStatus;
-	elements.saveButton.visible = editStatus;
-	elements.cancelButton.visible = editStatus;
-	elements.editButton.visible = !editStatus;
-	elements.deleteButton.visible = !editStatus;
+	elements.btn_New.visible = !editStatus;
+	elements.btn_Save.visible = editStatus;
+	elements.btn_Cancel.visible = editStatus;
+	elements.btn_Edit.visible = !editStatus;
+	elements.btn_Delete.visible = !editStatus;
 	elements.tablessX.enabled = !editStatus;
 }
 

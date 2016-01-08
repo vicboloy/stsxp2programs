@@ -96,7 +96,7 @@ uuid:"A19D56AF-CA7C-4B26-8349-F85F7D96A0B5"
 {
 fontType:"Arial,0,8",
 horizontalAlignment:0,
-labelFor:"delete_rec",
+labelFor:"btn_Delete",
 location:"428,0",
 size:"23,20",
 text:"Del",
@@ -127,7 +127,7 @@ uuid:"DDCD4059-0075-4A05-A393-FDAF122048A4"
 },
 {
 location:"428,20",
-name:"delete_rec",
+name:"btn_Delete",
 onActionMethodID:"23DF4B40-3BF9-4277-A9FB-EEDA7CBCD90C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

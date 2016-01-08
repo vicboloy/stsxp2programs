@@ -43,11 +43,12 @@ function onShow(firstShow, event) {
 	return _super.onShow(firstShow, event)
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param pcmk
  * @param sheet
  *
  * @properties={typeid:24,uuid:"21CDE48C-7E67-4103-A26B-57502A2B1A82"}
+ * @SuppressWarnings(wrongparameters)
  */
 function refreshFoundset(pcmk, sheet){
 	databaseManager.revertEditedRecords(foundset);
@@ -114,6 +115,7 @@ function onActionRefresh(event) {
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"4E4EB056-903A-4287-8680-42D541140C50"}
+ * @SuppressWarnings(wrongparameters)
  */
 function onActionApply(event) {
 	/**
@@ -130,7 +132,7 @@ function onActionApply(event) {
 		controller.setSelectedIndex(index);
 		cowSet[index]=freeField;
 	}
-	for (var index = count;index > 0;index--){
+	for (index = count;index > 0;index--){
 		controller.setSelectedIndex(index);
 		application.output(controller.getMaxRecordIndex())
 		var vCowCode = cowSet[index];

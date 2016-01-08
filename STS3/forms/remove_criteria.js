@@ -211,11 +211,10 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		forms[formName].elements.tabless.removeAllTabs();
 		scopes.jobs.removeFormHist(formTable);
 	}
-	browseInfoEnable();
+	browseInfoEnable(null);
 	return status;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"B4464A45-2994-4FF2-8837-3AC4ACADD07C"}

@@ -326,7 +326,7 @@ function onActionClickSC(event) {
  * @properties={typeid:24,uuid:"81C230BD-F337-45A5-9638-883D435E9B82"}
  */
 function onActionClickViewLoads(event) {
-	onActionClickMainButton(event,"View Loads",'loads_tabs',50,50,750,595,false);
+	onActionClickMainButton(event,"View Loads",'loads_tabs',50,50,750,595,true);
 }
 /**
  * @param event
@@ -396,7 +396,7 @@ function onActionRoutings(event) {
  * @properties={typeid:24,uuid:"CE4DD060-E710-49BA-9DAB-0760EE82DF4B"}
  */
 function onActionJobs(event) {
-	onActionClickMainButton(event,"Jobs",'jobs_tabs',50,50,960,450,false);
+	onActionClickMainButton(event,"Job Information",'jobs_tabs',50,50,960,450,false);
 }
 /**
  * @param event
@@ -629,7 +629,7 @@ function windowRev(event){
  */
 function onActionClickViewLicense(event) {
 	globals.showViewDetail = true;
-	onActionClickMainButton(event,"Logon License Info",'view_license',50,50,650,505,false);
+	onActionClickMainButton(event,"Logon License Info",'view_license',50,50,650,535,false);
 }
 /**
  * @param event

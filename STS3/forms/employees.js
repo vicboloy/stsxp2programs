@@ -7,7 +7,6 @@ var editEmployeeFlag = false;
  * Callback method when form is (re)loaded.
  *
  * @param {JSEvent} event the event that triggered the action
- * @param {Boolean} firstShow
  *
  * @properties={typeid:24,uuid:"D6F28D92-40D4-4CE3-8583-A89421109813"}
  */
@@ -66,13 +65,13 @@ function onShow(firstShow, event) {
 	
 }
 /**
- * TODO generated, please specify type and doc for the params
+ *
  * @param event
  *
  * @properties={typeid:24,uuid:"B7EDE72A-F320-4CF0-98E6-C45DD801847B"}
  */
 function onActionAddRecord(event) {
-	var formRev = scopes.globals.getInstanceForm(event);
+	///var formRev = scopes.globals.getInstanceForm(event);
 	controller.newRecord();
 	tenant_uuid = globals.session.tenant_uuid;
 	onEdit(event,true);

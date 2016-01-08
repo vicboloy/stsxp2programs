@@ -24,3 +24,4 @@ function onActionAdd(event) {
 function onActionRefresh(event) {
 	foundset.loadAllRecords();
 }
+

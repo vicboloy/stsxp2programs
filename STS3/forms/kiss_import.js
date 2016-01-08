@@ -9,7 +9,6 @@ var mappedFormatArray = [];
  */
 var selectedCust = "";
 /**
- * TODO generated, please specify type and doc for the params
  *
  * @properties={typeid:24,uuid:"CEB68FE5-3762-496D-B815-88ADC962BE24"}
  * @AllowToRunInFind
@@ -42,10 +41,10 @@ function fileReceipt(file){
 	job.associationId = scopes.globals.session.associationId;application.output('assoc'+ globals.secCurrentAssociationID);
 	scopes.jobs.jobName = jobNumber;
 	foundset.loadAllRecords();
-	scopes.jobs.custNums = [];
-	scopes.jobs.jobNums = [];
-	scopes.jobs.custIds = [];
-	scopes.jobs.jobIds = [];
+	scopes.jobs.custNums = [];/** @type {Array} */ var custNums = scopes.jobs.custNums;
+	scopes.jobs.jobNums = []; /** @type {Array} */ var jobNums = scopes.jobs.jobNums;
+	scopes.jobs.custIds = []; /** @type {Array} */ var custIds = scopes.jobs.custIds;
+	scopes.jobs.jobIds = []; /** @type {Array} */ var jobIds = scopes.jobs.jobIds;
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var jobsFS = databaseManager.getFoundSet('stsservoy','jobs');
 	if (jobsFS.find()){
@@ -93,8 +92,7 @@ function fileReceipt(file){
 	} 
 }
 /**
- * TODO generated, please specify type and doc for the params
- * @param {Event} event
+ * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
@@ -103,6 +101,7 @@ function getKissFile(event){
 	var success = history.removeForm('kiss_barcode_request');
 	if (success){
 		var success2 = solutionModel.removeForm('kiss_barcode_request');
+		if (!success2){globals.loggerDev(this,'Remove form history fail.');}
 	}
 	history.removeForm('kiss_excludes_lst');
 	solutionModel.removeForm('kiss_excludes_lst');
@@ -170,15 +169,15 @@ function onActionHide(event) {
  * @param {String} newValue new value
  * @param {JSEvent} event the event that triggered the action
  *
- * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"C350E283-FBB6-4F29-B69D-FDAC625D3A2F"}
  * @AllowToRunInFind
  */
-function onDataChangeCustomer(oldValue, newValue, event) {
+function xxxunusedonDataChangeCustomer(oldValue, newValue, event) {
+	/**
 	var index = custNums.indexOf(newValue);
 	var pkJobs = scopes.jobs.customerIDs[index];
-	for (var index = 1;index < foundset.getSize();index++){
+	for (index = 1;index < foundset.getSize();index++){
 		var rec = foundset.getRecord(index);
 		if (rec.customer_id == pkJobs){
 			break
@@ -197,7 +196,7 @@ function onDataChangeCustomer(oldValue, newValue, event) {
 	var win = application.createWindow("KISS Import", JSWindow.DIALOG);
 	win.title = "KISS Import";
 	win.show(forms.kiss_option_import);
-	return true;
+	return true;*/
 }
 
 /**

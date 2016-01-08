@@ -10,7 +10,7 @@
  */
 function newRecord(event, location, changeSelection, transactional) {
 	forms.app_permiss_detail.controller.loadRecords(foundset);
-	forms.app_permiss_detail.newRecord(event,location,changeSelection, transactional);
+	///forms.app_permiss_detail.newRecord(event,location,changeSelection, transactional);
 	forms.app_permiss_detail.showDialog(event);
 }
 

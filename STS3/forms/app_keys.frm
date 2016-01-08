@@ -8,15 +8,16 @@ typeid:19,
 uuid:"4D28E6C4-9056-4D2F-A3EF-7C0414C8349B"
 },
 {
-height:28,
+height:22,
 partType:1,
 typeid:19,
 uuid:"8AA65289-7AF2-4D49-9893-F200B6706E21"
 },
 {
+fontType:"Arial,1,13",
 location:"5,2",
-size:"198,20",
-text:"Access Key List",
+size:"375,20",
+text:"Grouped Permissions (to be added to Permission Groups)",
 transparent:true,
 typeid:7,
 uuid:"EA6128C9-11A6-456D-8B8F-68809D920925"
@@ -26,7 +27,7 @@ anchors:15,
 items:[
 {
 containsFormID:"59EA6ECC-62D2-403B-AABF-E9C3BCCF94E7",
-location:"85,62",
+location:"82,45",
 relationName:"applications_to_keys",
 text:"app_key_details",
 typeid:15,
@@ -34,17 +35,17 @@ uuid:"E37AE2A3-A072-4BF2-8B00-49D32B4A2726"
 },
 {
 containsFormID:"ED8DEB1A-A352-45C4-9F36-6AB09559EA2B",
-location:"5,62",
+location:"6,46",
 relationName:"applications_to_keys",
 text:"app_key_list",
 typeid:15,
 uuid:"EA3D8884-E7A0-4C1B-9B11-EE81DE0010D1"
 }
 ],
-location:"5,32",
+location:"5,25",
 name:"split",
 printable:false,
-size:"492,252",
+size:"492,259",
 tabOrientation:-3,
 tabSeq:-2,
 transparent:true,

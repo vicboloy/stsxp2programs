@@ -140,7 +140,6 @@ function onActionSelectAvailable(event) {
 	//return true;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * 
@@ -171,7 +170,7 @@ function additionalSaveFunctions(){
 	var selectCodes = application.getValueListArray('stsvl_route_status_selected');
 	length = selectCodes.length;
 	// selected codes and order
-	var maxSort = 0;
+	///var maxSort = 0;
 	for (var index = 0; index < length; index++) {
 		//maxSort = maxSort + 10;
 		//aCurrentSort[aRouteCodes[index]] = maxSort;
@@ -181,7 +180,7 @@ function additionalSaveFunctions(){
 	var newFS = sts_route_to_status_code;
 	//add code to route
 	length = aRouteCodes.length;
-	var routeOrd = 10;
+	///var routeOrd = 10;
 	for (index = 0; index < length; index++) {
 		var code = aRouteCodes[index];
 		if (elementIsInArray(aRouteCodesTemp,code)){continue}
@@ -342,7 +341,6 @@ function onActionSelect(event) {
 	elements.orderDown.enabled = moveNoMove;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param name
  *
  * @properties={typeid:24,uuid:"FED504C6-A4AD-42CC-AF54-2B6580490BB1"}
@@ -419,7 +417,6 @@ function onActionClose(event) {
  * Handle record selected.
  *
  * @param {JSEvent} event the event that triggered the action
- * @param {String} buttonTextSrc
  *
  * @properties={typeid:24,uuid:"174A28ED-90C3-408E-A0C0-F555186AD4C8"}
  */
@@ -436,16 +433,16 @@ function onRecordSelection(event) {
  *
  * @properties={typeid:24,uuid:"66376CF4-6BB9-4439-B3E2-FA9C7FE5E2F9"}
  */
-function onActionProcessOrder(event) {
-	elements.orderDown.visible = !lUseStsProcessOrder;
-	elements.orderUp.visible = !lUseStsProcessOrder;
+function xxxunusedonActionProcessOrder(event) {
+	/**elements.orderDown.visible = !lUseStsProcessOrder;
+	elements.orderUp.visible = !lUseStsProcessOrder;*/
 }
 
 /**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
- *
+ * @param valuelist
  * @properties={typeid:24,uuid:"C0AA9949-83EF-4DE7-ADE0-D7095BD075E2"}
  */
 function onActionOrderByProcess(event,valuelist) {
@@ -464,7 +461,6 @@ function onActionOrderByProcess(event,valuelist) {
 	application.setValueListItems(valuelist,newSelect);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"6356D5D1-8057-430B-A674-B3F64E2F207A"}

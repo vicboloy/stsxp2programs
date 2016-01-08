@@ -10,7 +10,6 @@ var editFlag = false;
 var selectedIndex = 0;
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param firstShow
  * @param event
  *
@@ -24,7 +23,6 @@ function onShow(firstShow, event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"BBCAFF29-FA7C-4C79-89F3-B649CD227D28"}
@@ -37,7 +35,6 @@ function onActionAdd(event){
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"CDFF9131-9C62-44EC-9FB4-AD364EEAA176"}
@@ -51,7 +48,6 @@ function onActionDelete(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"C7BBBE77-1B45-4874-BCF4-C79131018700"}
@@ -61,7 +57,6 @@ function onRecordSelectionEP(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"1248B902-DB67-48F1-BD63-FB87D937D5D0"}
@@ -72,7 +67,6 @@ function onActionEdit(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  * @param editStatus
  *
@@ -81,11 +75,11 @@ function onActionEdit(event) {
 function onEdit(event,editStatus){
 	editFlag = editStatus;
 	controller.readOnly = !editStatus;
-	elements.addButton.visible = !editStatus;
-	elements.saveButton.visible = editStatus;
-	elements.cancelButton.visible = editStatus;
-	elements.editButton.visible = !editStatus;
-	elements.deleteButton.visible = !editStatus;
+	elements.btn_New.visible = !editStatus;
+	elements.btn_Save.visible = editStatus;
+	elements.btn_Cancel.visible = editStatus;
+	elements.btn_Edit.visible = !editStatus;
+	elements.btn_Delete.visible = !editStatus;
 	elements.tablessX.enabled = !editStatus;
 }
 

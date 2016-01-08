@@ -19,7 +19,7 @@ uuid:"2BD14DC5-EBC4-4D49-A986-5DD70A3D4094"
 {
 horizontalAlignment:0,
 location:"143,21",
-name:"assocDel",
+name:"btn_Delete",
 onActionMethodID:"23DF4B40-3BF9-4277-A9FB-EEDA7CBCD90C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -31,7 +31,7 @@ verticalAlignment:0
 },
 {
 horizontalAlignment:0,
-labelFor:"assocDel",
+labelFor:"btn_Delete",
 location:"143,0",
 size:"31,20",
 text:"X",

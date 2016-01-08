@@ -3,7 +3,7 @@ extendsID:"4E83FC43-0E9E-45F9-B01E-036E71805DF5",
 items:[
 {
 horizontalAlignment:0,
-labelFor:"compDel",
+labelFor:"btn_Delete",
 location:"126,0",
 size:"29,22",
 transparent:true,
@@ -32,7 +32,7 @@ uuid:"28A99E4A-575F-454E-AC5D-3DC524722AA5"
 anchors:3,
 horizontalAlignment:0,
 location:"126,21",
-name:"compDel",
+name:"btn_Delete",
 onActionMethodID:"489C93B7-3DFD-458E-A1CB-3A58ACFBF080",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

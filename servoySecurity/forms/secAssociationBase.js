@@ -1,5 +1,4 @@
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"4EF59B33-2D80-4EE9-8FAC-47AEC1D4A690"}
@@ -8,7 +7,6 @@ function validate(event) {
 	return !foundset.getSize() || validateAssociationName() && _super.validate(event);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param oldValue
  * @param newValue
  * @param event

@@ -55,6 +55,7 @@ function onDataChangeUserGroups(oldIDs, newIDs, event) {
 		}
 		if(fs.newRecord()){													//	create the related record
 			fs[idColumnName] = id;											//	set the foreign key column value
+			fs.tenant_uuid = globals.secCurrentTenantID;
 			databaseManager.saveData(fs.getSelectedRecord());				//	save data
 		}
 	} else {																//	id was REMOVED	

@@ -5,15 +5,6 @@ height:250,
 partType:5,
 typeid:19,
 uuid:"3437A22E-D768-4AF8-9ACB-413B16D8A3E9"
-},
-{
-location:"24,40",
-onActionMethodID:"-1",
-onDoubleClickMethodID:"-1",
-onRightClickMethodID:"-1",
-text:"button",
-typeid:7,
-uuid:"3E1B2C2D-D3AE-40F1-91DD-3B9DFF3996EA"
 }
 ],
 name:"view_license_users",

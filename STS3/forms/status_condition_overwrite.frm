@@ -26,30 +26,33 @@ valuelistID:"811D815C-5AB0-4565-8445-2921A21D885B"
 },
 {
 location:"210,107",
+name:"btn_SelectAll",
 onActionMethodID:"DDC4FD03-A8B3-4847-8DD1-133504897B8B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"144,21",
+size:"144,26",
 text:"Select ALL >>",
 typeid:7,
 uuid:"210D7941-524F-418E-BEFD-34C044AB0E42"
 },
 {
 location:"210,72",
+name:"btn_Save",
 onActionMethodID:"5FF35171-E088-4913-805C-0520108CDFD6",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"144,20",
+size:"144,26",
 text:"Okay",
 typeid:7,
 uuid:"2EB15EFB-7832-4D33-BC4A-D14CC65C2763"
 },
 {
 location:"210,213",
+name:"btn_Cancel",
 onActionMethodID:"7F430155-E419-47F3-B6D5-FBE88FEFFDFE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"144,20",
+size:"144,26",
 text:"Cancel",
 typeid:7,
 uuid:"5D85F51A-558C-406E-AD79-4A8FC554DBFA"
@@ -98,10 +101,11 @@ uuid:"B1BB26E4-B51C-4E25-B0CF-990B90E14FD6"
 },
 {
 location:"210,143",
+name:"btn_RemoveAll",
 onActionMethodID:"DE17EF12-2072-4205-9FE8-2AADDECC9A18",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"144,20",
+size:"144,26",
 text:"<< Remove ALL",
 typeid:7,
 uuid:"CB56C7F9-1DE2-48CE-8730-36112A6DBA38"
@@ -109,10 +113,11 @@ uuid:"CB56C7F9-1DE2-48CE-8730-36112A6DBA38"
 {
 customProperties:"",
 location:"197,178",
+name:"btn_OverwriteToCurrent",
 onActionMethodID:"F0F0911F-EA88-443A-892E-60E47DC20FDE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"176,25",
+size:"176,26",
 text:"Overwrite to current >>",
 typeid:7,
 uuid:"E876FDBF-B4A4-419F-B50D-039BA3F10ADE"

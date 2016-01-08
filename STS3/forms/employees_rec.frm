@@ -32,7 +32,7 @@ uuid:"A8C073B1-9C65-42B5-B4DC-492B88360968"
 {
 horizontalAlignment:0,
 location:"5,5",
-name:"addNewButton",
+name:"btn_New",
 onActionMethodID:"0E76A0C5-1857-4089-8E25-97D995FC0B4A",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -44,6 +44,7 @@ uuid:"DD849FC7-FEF4-4EB9-9AC3-FB30D4B47D7C"
 },
 {
 location:"163,5",
+name:"btn_Rf",
 onActionMethodID:"2F7DC238-3B8B-4803-AA21-E9786FD009B1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

@@ -60,6 +60,28 @@ var userEmployeeID = "";
  */
 var userLoginID = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3FB34AD4-F34D-421A-8D7F-7210A8CCA260"}
+ */
+var userAssociation = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3CBEE0B5-6C96-4E15-8587-1AF83B05C576"}
+ */
+var userIPAddress = "";
+/**
+ * @properties={typeid:35,uuid:"25DDD253-0645-4751-9E54-592D0F0A24DA",variableType:-4}
+ */
+var licenseDs = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C3400F32-EA9C-4FF3-B130-A1E526492014"}
+ */
+var userDuration = "";
+/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -78,22 +100,171 @@ function onShow(firstShow, event) {
 	userSessionId = globals.session.sessionId;
 	userLoginDate = globals.session.loginDate;
 	userProgram = globals.session.program;
+	userIPAddress = globals.session.sessionIp;
+	userAssociation = globals.session.association;
+	userDuration = refreshLoginDuration();
 	elements.tabless.visible = scopes.globals.showViewDetail;
-	var clients = plugins.UserManager.getClients();
+	
 	//plugins.UserManager.Server().getServerProperties();
-	for (var index = 0;index < clients.length;index++){
-		application.output('client host ip '+clients[index].hostAddress);
-		application.output('client alive '+clients[index].alive);
-		application.output('client id '+clients[index].clientId);
-		application.output('client mac '+clients[index].macAddress);
-		application.output('client idle '+clients[index].idle);
-		application.output('client ip '+clients[index].ipAddress);
-		application.output('client login '+clients[index].login);
-		application.output('client opened '+clients[index].solutionName);
-		application.output('client type '+clients[index].applicationType);
-		application.output('client username '+clients[index].userName);
-		application.output('client userid '+clients[index].userUid);
-		//plugins.UserManager.
-	}
+	createLicenseTable(event);
 	return _super.onShow(firstShow, event)
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"908D0CFA-585D-430E-80F4-C1E058E87151"}
+ */
+function onHide(event) {
+	elements.tabless.removeAllTabs();
+	history.removeForm('view_license_users1');
+	solutionModel.removeForm('view_license_users1');
+	return _super.onHide(event)
+}
+/**
+ * @param {JSEvent} event
+ * @properties={typeid:24,uuid:"698D54C1-82DC-4029-89CC-59B1E1ED1B0A"}
+ */
+function createLicenseTable(event){
+	var canKill = false;
+	if (globals.checkUserPermissions(globals.session.userId)){
+		canKill = true;
+	}
+	var clients = plugins.UserManager.getClients();
+	///var currentDate = new Date();
+	var currentMillis = new Date().getTime();
+	var thisClientMillis = plugins.UserManager.Client().idle.getTime();
+	thisClientMillis = plugins.UserManager.Client().idle.getTime();
+	var timeAdjust = currentMillis - thisClientMillis;
+	currentMillis = currentMillis - timeAdjust;
+	
+	
+	var userTableHeaders = ['Active','Employee_Name','employee_number','User_Name','User_ID','Plant','IP','Client_ID','Idle_Time','Type','App'];
+	if (canKill){userTableHeaders.unshift('Stop');}
+	licenseDs = databaseManager.createEmptyDataSet();
+	var licenseDataFormat = [];
+	var rowTemplate = [];
+	for (var index = 0;index < userTableHeaders.length;index++){
+		licenseDs.addColumn(userTableHeaders[index],index+1,JSColumn.TEXT);
+		rowTemplate.push(null);
+		licenseDataFormat.push(JSColumn.TEXT);
+	}
+	for (index = 0;index < clients.length;index++){
+		var clientId = clients[index].clientId;
+		var clientInfo = plugins.UserManager.getClientByUID(clientId);
+		var userIdleDate = clientInfo.idle;
+		var userIdleMillis = userIdleDate.getTime();
+
+		var idleSeconds = Math.floor((currentMillis-userIdleMillis)/1000);
+		var idleText = "";
+		var idleTime = idleSeconds/3600;
+		if (idleTime >= 1){
+			idleText = Math.floor(idleTime*10)/10+' hrs';
+		} else {
+			idleTime = idleSeconds/60;
+			if (idleTime >= 1) {
+				idleText = Math.floor(idleTime*10)/10+' min';
+			} else {
+				idleText = idleSeconds+' sec';
+			}
+		}
+		var clientRow = rowTemplate.concat();
+		var userLoginName = (!clients[index].userUid) ? "" : globals.m.userNames[clients[index].userUid];
+		///var employeeName = (!clients[index].userUid) ? "" : globals.m.employeeNames[clients[index].userUid];
+		var association = (!clients[index].userUid) ? "" : globals.m.assocs[globals.m.userAssocs[clients[index].userUid]];
+		if (canKill){
+			clientRow[userTableHeaders.indexOf('Stop')] = "X";
+		}
+		clientRow[userTableHeaders.indexOf('Idle_Time')] = idleText;
+		clientRow[userTableHeaders.indexOf('IP')] = clients[index].hostAddress;
+		clientRow[userTableHeaders.indexOf('Active')] = (clients[index].alive) ? 'Active' : 'Inactive';
+		clientRow[userTableHeaders.indexOf('Client_ID')] = clients[index].clientId;
+		clientRow[userTableHeaders.indexOf('Login')] = clients[index].userName;
+		clientRow[userTableHeaders.indexOf('Type')] = clients[index].applicationType;
+		clientRow[userTableHeaders.indexOf('App')] = clients[index].solutionName;
+		clientRow[userTableHeaders.indexOf('User_ID')] = clients[index].userUid;
+		clientRow[userTableHeaders.indexOf('Plant')] = association;
+		clientRow[userTableHeaders.indexOf('IP')] = clients[index].ipAddress;
+		clientRow[userTableHeaders.indexOf('Employee_Name')] = (!clients[index].userUid) ? "" : globals.m.employeeNames[clients[index].userUid];
+		clientRow[userTableHeaders.indexOf('User_Name')] = userLoginName;
+		clientRow[userTableHeaders.indexOf('employee_number')] = (!clients[index].userUid) ? "" : globals.m.employeeNumbers[clients[index].userUid];
+		
+		licenseDs.addRow(clientRow.concat([]));
+	}
+	var licenseDataSource = licenseDs.createDataSource('licenseData',licenseDataFormat);
+	elements.tabless.removeAllTabs();
+	var checkForm = solutionModel.newForm('view_license_users1',licenseDataSource,'sts_one',false,90,175);
+	checkForm.navigator = SM_DEFAULTS.NONE;
+	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
+	//checkForm.initialSort = 'shape asc';
+	checkForm.scrollbars = SM_SCROLLBAR.HORIZONTAL_SCROLLBAR_NEVER;
+	///var client = clients[index];
+	var killCode = "function onAction(event) {globals.killClient(event);}";
+	if (canKill){
+		var killMethod = checkForm.newMethod(killCode);
+	}
+	///var colWidth = 15; 
+	var item; var columnPos = 0;
+	
+	for (index = 0;index < userTableHeaders.length;index++){
+		var headerText = userTableHeaders[index];
+		var label = userTableHeaders[index];
+
+		item = checkForm.newLabel(headerText,columnPos,0,15,21);
+	 	item.labelFor=label; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+
+	 	if (headerText == "Stop"){
+			item = checkForm.newButton('X',columnPos,21,3,21,killMethod);
+			item.name = label; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+			item.horizontalAlignment = SM_ALIGNMENT.CENTER;
+	 	} else {
+			item = checkForm.newTextField(label,columnPos,21,15,21);
+			item.name = label; item.editable = false; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+			item.toolTipText = item.text;
+	 	}
+	}
+	elements.tabless.addTab('view_license_users1');	
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"E041540E-F117-403E-A1A9-1DF37BCB986B"}
+ */
+function refreshLicenseTable(event){
+	userDuration = refreshLoginDuration();
+	form = forms['view_license'];
+	form.elements.tabless.removeAllTabs();
+	history.removeForm('view_license_users1');
+	solutionModel.removeForm('view_license_users1');
+	createLicenseTable(event);
+}
+/**
+ * @properties={typeid:24,uuid:"8732D4EF-1E50-4CA5-9578-2CC179CA39C3"}
+ */
+function refreshLoginDuration(){
+	var clientInfo = plugins.UserManager.Client();
+	var currentTimeSec = Math.floor((new Date().getTime()/1000));
+	var clientTimeSec = Math.floor(clientInfo.idle.getTime()/1000);
+	var loginTimeSec = Math.floor(clientInfo.login.getTime()/1000);
+	
+	var timeDiff = currentTimeSec-clientTimeSec;
+
+	var loggedSeconds = currentTimeSec - timeDiff - loginTimeSec;
+	var loggedText = "";
+	var loggedTime = loggedSeconds/3600;
+	if (loggedTime >= 1){
+		loggedText = Math.floor(loggedTime*10)/10+' hrs';
+	} else {
+		loggedTime = loggedSeconds/60;
+		if (loggedTime >= 1) {
+			loggedText = Math.floor(loggedTime*10)/10+' min';
+		} else {
+			loggedText = loggedSeconds+' sec';
+		}
+	}
+	return loggedText;
 }

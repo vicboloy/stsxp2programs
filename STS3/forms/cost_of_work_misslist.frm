@@ -1,5 +1,5 @@
 dataSource:"db:/stsservoy/piecemarks",
-encapsulation:60,
+encapsulation:28,
 items:[
 {
 height:71,

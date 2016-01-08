@@ -4,7 +4,7 @@ items:[
 {
 anchors:12,
 horizontalAlignment:0,
-location:"5,427",
+location:"27,432",
 onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -14,7 +14,7 @@ uuid:"1632631D-EA92-4C15-B0B5-2DE17159D22A"
 },
 {
 extendsID:"3E4B72F8-63D3-45E6-BB1E-DD1C3351D10D",
-height:452,
+height:458,
 typeid:19,
 uuid:"45068D91-A58B-468A-BD5E-43D6685237E0"
 },
@@ -27,7 +27,7 @@ uuid:"5A67C3F5-A9D0-4104-AEE7-FB36BD231166"
 {
 anchors:12,
 horizontalAlignment:0,
-location:"123,427",
+location:"127,433",
 onActionMethodID:"F8DA2C40-ECF1-4137-9F4E-1778F13040AE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

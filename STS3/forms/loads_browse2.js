@@ -25,7 +25,6 @@ function onActionHide(event) {
 	globals.mainWindowFront();
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"9BB07BFE-2A7E-4FF1-B4B8-CB45896D9AE7"}

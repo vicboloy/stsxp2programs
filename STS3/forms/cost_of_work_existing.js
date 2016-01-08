@@ -24,7 +24,7 @@ var vShowDetail = 0;
  * @properties={typeid:24,uuid:"1ACDDE9F-EA2B-480B-86CB-BA1A20CEADCC"}
  */
 function onActionMarked(event) {
-	var custCowToFormula = [];
+	//var custCowToFormula = [];
 	var count = foundset.getSize();
 	var cowUnset = [];
 	for (var index = count;index > 0;index--){
@@ -38,7 +38,7 @@ function onActionMarked(event) {
 	m.result.add(m.columns.piecemark_id);
 	m.result.add(m.columns.cost_of_work_code);
 	m.where.add(m.columns.piecemark_id.isin(cowUnset));
-	var result = databaseManager.getDataSetByQuery(m,-1);
+	//var result = databaseManager.getDataSetByQuery(m,-1);
 	var fs = null;
 	fs = databaseManager.getFoundSet(m);
 	var fsUpdater = databaseManager.getFoundSetUpdater(fs);
@@ -59,6 +59,7 @@ function onActionMarked(event) {
  *
  * @properties={typeid:24,uuid:"64736B02-3306-4EDE-AF97-277164B7175E"}
  * @AllowToRunInFind
+ * @SuppressWarnings(wrongparameters)
  */
 function onActionCalcCost(event) {
 	var skipShipped = (vKeepCostsShipped == 1);
@@ -77,10 +78,10 @@ function onActionCalcCost(event) {
 	}
 	// Collect piecemark_id for all piecemarks to set
 	var custCowToFormula = [];
-	for (var index = 1;index <= count;index++){
-		if (skipCostsExisting && cost_each == 0){continue}
-		if (skipShipped && shippedMarks.length > 0 && shippedMarks.indexOf(piecemark_id) == -1){continue}
+	for (index = 1;index <= count;index++){
 		controller.setSelectedIndex(index);
+		if (skipCostsExisting && st2_idfiles_to_piecemarks.cost_each == 0){continue}
+		if (skipShipped && shippedMarks.length > 0 && shippedMarks.indexOf(piecemark_id) == -1){continue}
 		var cow = st2_idfiles_to_piecemarks.cost_of_work_code;
 		if (custCowToFormula.indexOf(cow+'value') == -1){
 			var valueFormula = st2_idfiles_to_piecemarks.sts_piecemark_cowxref.sts_cowxref_cowcode.sts_cowcode_uomtype.uom_to_get_value;
@@ -111,28 +112,12 @@ function onActionCalcCost(event) {
 	controller.setSelectedIndex(lastIndex);
 }
 /**
- * @properties={typeid:24,uuid:"81A65EBC-3BDE-4920-B2C7-07D52B7FA685"}
- */
-function calcCows(){
-	/**
-	 * Calculate costs
-	 * 		
-	 * fsUpdater.setColumn('cost_of_work_code',null);
-		fsUpdater.setColumn('cost_each',null);
-		fsUpdater.setColumn('piecemark_unit_of_measure',null);
-		fsUpdater.setColumn('piecemark_uom_dollars',null);
-		fsUpdater.setColumn('cost_of_work_quantity',null);
-	 */
-		var width = wdthin/12;
-		var length = lgthin/12;
-		var sqft = width * length		// calculate the squate feet of the item
-}
-/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"3128BA95-3BFC-41FC-BF66-1AB329F3F670"}
+ * @SuppressWarnings(wrongparameters)
  */
 function onActionRefresh(event) {
 	var detail = (vShowDetail == 1);
@@ -150,7 +135,7 @@ function onActionRefresh(event) {
 	}
 	//var localCode = "";
 	databaseManager.revertEditedRecords(foundset);
-	var result = null;
+	//var result = null;
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q =  databaseManager.createSelect("db:/stsservoy/sheets");
 	q.result.add(q.columns.sheet_id);
@@ -172,9 +157,11 @@ function onActionRefresh(event) {
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
 	var tempPcmksArray = [];
+	/** @type {JSDataSet} */
 	var tempResult = databaseManager.getDataSetByQuery(m,-1);
-	for (var index = 1;index <= count;index++){
+	for (index = 1;index <= count;index++){
 		tempResult.rowIndex = index;
+		/** @type {*} */
 		tempPcmksArray.push(tempResult.piecemark_id);
 	}
 	i.result.add(i.columns.idfile_id);

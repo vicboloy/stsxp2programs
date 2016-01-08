@@ -9,7 +9,6 @@ var editFlag = false;
  */
 var selectedUOMIndex = 0;
 /**
- * TODO generated, please specify type and doc for the params
  * @param firstShow
  * @param event
  *
@@ -20,12 +19,11 @@ function onShow(firstShow, event) {
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
 	} else {
-		elements.deleteButton.text = 'Delete UOM \''+uom_code+'\'';
+		elements.btn_Delete.text = 'Delete UOM \''+uom_code+'\'';
 	}
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"E48C67E7-992B-409E-8B64-2F280239F708"}
@@ -38,8 +36,7 @@ function onActionAdd(event){
 }
 
 /**
- * TODO generated, please specify type and doc for the params
- * @param event
+* @param event
  *
  * @properties={typeid:24,uuid:"2E41F535-CE15-4213-B79C-20B4F4122D6D"}
  */
@@ -52,17 +49,15 @@ function onActionDelete(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"8BFBB16C-B5EB-4D10-8E51-77728A017A2A"}
  */
 function onRecordSelection(event) {
-	elements.deleteButton.text = 'Delete UOM \''+uom_code+'\'';
+	//elements.btn_Delete.text = 'Delete UOM \''+uom_code+'\'';
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"592AC6AF-8E61-42CB-AED4-6DF63CAD4403"}
@@ -73,7 +68,6 @@ function onActionEdit(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  * @param editStatus
  *
@@ -82,16 +76,15 @@ function onActionEdit(event) {
 function onEdit(event,editStatus){
 	editFlag = editStatus;
 	controller.readOnly = !editStatus;
-	elements.addButton.visible = !editStatus;
-	elements.saveButton.visible = editStatus;
-	elements.cancelButton.visible = editStatus;
-	elements.editButton.visible = !editStatus;
-	elements.deleteButton.visible = !editStatus;
+	elements.btn_New.visible = !editStatus;
+	elements.btn_Save.visible = editStatus;
+	elements.btn_Cancel.visible = editStatus;
+	elements.btn_Edit.visible = !editStatus;
+	elements.btn_Delete.visible = !editStatus;
 }
 
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"3675CD88-2B85-4DA5-AA05-B005CA40B258"}
@@ -103,8 +96,7 @@ function onActionCancelEdit(event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
- * @param event
+ @param event
  *
  * @properties={typeid:24,uuid:"EB19EADC-193D-44C9-9455-8EC9DC5D406A"}
  */
@@ -117,7 +109,6 @@ function onActionSaveEdit(event) {
 /**
  * @AllowToRunInFind
  * 
- * TODO generated, please specify type and doc for the params
  * @param oldValue
  * @param newValue
  * @param event

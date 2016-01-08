@@ -10,7 +10,7 @@ uuid:"0B627A33-952D-4107-80C4-A75FE9CFA861"
 },
 {
 location:"10,255",
-name:"ButtonSTSLogonManagement",
+name:"btn_StsManagement",
 onActionMethodID:"0BD62770-5A9E-45E0-85B0-3DB856E01950",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -23,7 +23,7 @@ uuid:"145AE80B-B5BD-4EE6-89EA-F19B5DD88357"
 },
 {
 location:"10,363",
-name:"buttonViewLicense",
+name:"btn_LicenseUseInfo",
 onActionMethodID:"0C6FA445-BE8E-4005-BDD5-70B401E4E1D9",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -35,7 +35,7 @@ uuid:"15F07628-F01C-46A0-9DC2-B9C3E2912413"
 {
 formIndex:8,
 location:"10,45",
-name:"ButtonPreferences",
+name:"btn_Preferences",
 onActionMethodID:"CCC7C093-1A7B-4EC7-A8E7-1E0A2B0DC5ED",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -46,6 +46,7 @@ uuid:"2F0892E3-CF0E-4F2F-8771-D3A156130280"
 },
 {
 location:"10,150",
+name:"btn_BarcodePrinter",
 onActionMethodID:"26F19DD0-BB10-443A-849E-43064F850D75",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -56,7 +57,7 @@ uuid:"34527C14-8649-4876-97B0-5650F3FC97FF"
 },
 {
 location:"10,185",
-name:"ButtonDivisionAndDepartmentManagement",
+name:"btn_PlantManagement",
 onActionMethodID:"3CD18375-D0A0-466D-A181-6D585BEE8E70",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -92,7 +93,7 @@ visible:false
 },
 {
 location:"10,325",
-name:"buttonViewLog",
+name:"btn_ViewLog",
 onActionMethodID:"AF952016-58E9-4E89-8F5F-857177470611",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -104,7 +105,7 @@ uuid:"74E5BFA8-88B5-490A-8F92-E3515B709DBB"
 {
 location:"10,220",
 mediaOptions:14,
-name:"ButtonUserManagement",
+name:"btn_LogonManagement",
 onActionMethodID:"62683739-AB1C-4C81-9DD8-C03DD2959842",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -117,7 +118,7 @@ uuid:"879036EA-DB8B-46E5-B5FF-E451C65E4D49"
 },
 {
 location:"10,290",
-name:"ButtonApplicationPermissions",
+name:"btn_Permissions",
 onActionMethodID:"5426D223-B48C-4FF8-B12D-AAE9F4FDD1FA",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -129,7 +130,7 @@ uuid:"8867AA06-B928-493A-B688-78D78283F4C6"
 },
 {
 location:"10,115",
-name:"viewWhoAmI",
+name:"btn_WhoAmI",
 onActionMethodID:"2145BB44-7554-439C-A782-4B3EFB19502B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -140,6 +141,7 @@ uuid:"9408EB88-3752-43F3-944A-C61FAA8EAFC7"
 },
 {
 location:"10,80",
+name:"btn_Help",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -150,6 +152,7 @@ uuid:"9A31AE7B-925A-463F-9314-6332A79AD18A"
 },
 {
 location:"10,10",
+name:"btn_About",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -161,6 +164,7 @@ uuid:"B0E9EB41-0C89-47C7-AE57-9F101EF1FA98"
 ],
 name:"sts_nav_default",
 navigatorID:"-1",
+onShowMethodID:"10E18E11-E1F6-4D5D-8FEC-F6AF8ADAC194",
 showInMenu:true,
 styleClass:"detail",
 styleName:"sts_one",

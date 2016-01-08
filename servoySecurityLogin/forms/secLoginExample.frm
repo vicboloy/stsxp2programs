@@ -172,7 +172,6 @@ uuid:"C194F0A9-1906-4651-AF44-0DBC7D69F74F"
 {
 dataProviderID:"userName",
 formIndex:10,
-format:"|U",
 location:"110,70",
 name:"userName",
 onDataChangeMethodID:"490EFD00-9D7A-4E77-BA36-1B4DE5C89540",

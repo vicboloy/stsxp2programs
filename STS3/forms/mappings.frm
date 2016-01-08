@@ -38,7 +38,7 @@ uuid:"7E7457D8-AB2C-49B6-A5CB-0EF520FEBB7F"
 {
 horizontalAlignment:0,
 location:"783,505",
-name:"deleteButtonc",
+name:"btn_Close",
 onActionMethodID:"3D26E5E5-ABEE-4388-94B6-FF4CA6B2ED3B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",

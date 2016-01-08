@@ -227,7 +227,6 @@ function onActionPrint(event) {
 	scopes.jobs.removeFormHist(formName+'_table');
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param formName
  *
  * @properties={typeid:24,uuid:"3989EEE5-5DE2-492A-8456-D9EB616B8A63"}

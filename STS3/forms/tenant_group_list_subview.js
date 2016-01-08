@@ -14,7 +14,6 @@ function onShow(firstShow, event) {
 }
 
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"7586B5C2-52D3-4E7D-AA6B-8CCF54874B15"}

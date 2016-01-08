@@ -37,10 +37,12 @@ uuid:"20FB3CE6-B104-4B03-AA2D-656BDA77E17D"
 anchors:6,
 formIndex:3,
 horizontalAlignment:0,
-location:"387,470",
+location:"390,465",
+name:"btn_Close",
 onActionMethodID:"F8DA2C40-ECF1-4137-9F4E-1778F13040AE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
+size:"80,26",
 text:"Close",
 typeid:7,
 uuid:"BFD397EF-948E-40F9-B5AE-F1715DFDFF72"

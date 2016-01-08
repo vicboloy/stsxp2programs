@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/keys",
+items:[
+{foreignColumnName:"key_id",operator:256,primaryDataProviderID:"scopes.globals.SEC_ZERO",typeid:23,uuid:"CF7B641A-29DB-458A-8946-E0F5EE205E8B"},
+{foreignColumnName:"application_id",primaryDataProviderID:"application_id",typeid:23,uuid:"F91E8664-D55D-436B-9ADE-124098DC1DB0"}
+],
+joinType:1,
+name:"applications_to_permissions_general",
+primaryDataSource:"db:/stsservoy/applications",
+typeid:22,
+uuid:"07FDEC86-D5DF-478E-8A86-9B51BC654AC4"

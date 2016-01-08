@@ -216,7 +216,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 			var rec = fs.getRecord(1);
 			vJobName = rec.job_title;
 			vJobID = rec.job_id;
-			var vCustId = rec.customer_id;
+			vCustomerID = rec.customer_id; // was var vCustId =, check this TODO
 			vCustNum = rec.sts_job_to_customer2.customer_number;
 			vCustomerName = rec.sts_job_to_customer2.name;
 			scopes.jobs.browseJobID = rec.job_id;
@@ -235,97 +235,9 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		forms[formName].elements.tabless.removeAllTabs();
 		scopes.jobs.removeFormHist(formName+"_table");
 	}
-	browseInfoEnable();
+	browseInfoEnable(null);
 	return status;
 }
-
-/**
- * @AllowToRunInFind
- * 
- * TODO generated, please specify type and doc for the params
- * @param itemCSV
- *
- * @properties={typeid:24,uuid:"B7085E33-A4A5-41BB-BD90-FD4BF20E5605"}
- */
-function xxxconvertLoadToId(itemCSV){
-	if (itemCSV == ""){return null}
-	var arrayN = itemCSV.split(",");
-	if (arrayN.length == 0){return}
-	/** @type {JSFoundSet<db:/stsservoy/loads>} */
-	var fs = databaseManager.getFoundSet('stsservoy','loads');
-	var idCSV = "";
-	for (var index = 0;index < arrayN.length;index++){
-		if (fs.find()){
-			fs.load_number = arrayN[index];
-			if (fs.search()){
-				var rec = fs.getRecord(1);
-				idCSV = idCSV + "," + rec.load_id;
-			}
-		}
-	}
-	if (idCSV == "") {return null}
-	idCSV.replace(",","");
-	return scopes.globals.arrayToString(idCSV);
-}
-
-/**
- * @AllowToRunInFind
- * 
- * TODO generated, please specify type and doc for the params
- * @param itemCSV
- *
- * @properties={typeid:24,uuid:"A07D26ED-9C2B-4DEA-84B0-BBE7B2585B6F"}
- */
-function xxxconvertLotToId(itemCSV){
-	if (itemCSV == ""){return null}
-	var arrayN = itemCSV.split(",");
-	if (arrayN.length == 0){return}
-	/** @type {JSFoundSet<db:/stsservoy/lots>} */
-	var fs = databaseManager.getFoundSet('stsservoy','lots');
-	var idCSV = "";
-	for (var index = 0;index < arrayN.length;index++){
-		if (fs.find()){
-			fs.lot_number = arrayN[index];
-			if (fs.search()){
-				var rec = fs.getRecord(1);
-				idCSV = idCSV + "," + rec.load_id;
-			}
-		}
-	}
-	if (idCSV == "") {return null}
-	idCSV.replace(",","");
-	return scopes.globals.arrayToString(idCSV);
-}
-
-/**
- * @AllowToRunInFind
- * 
- * TODO generated, please specify type and doc for the params
- * @param itemCSV
- *
- * @properties={typeid:24,uuid:"A14EC31F-DA3C-474C-926F-D30AA149D9F8"}
- */
-function xxxconvertPkgToId(itemCSV){
-	if (itemCSV == ""){return null}
-	var arrayN = itemCSV.split(",");
-	if (arrayN.length == 0){return}
-	/** @type {JSFoundSet<db:/stsservoy/lots>} */
-	var fs = databaseManager.getFoundSet('stsservoy','lots');
-	var idCSV = "";
-	for (var index = 0;index < arrayN.length;index++){
-		if (fs.find()){
-			fs.lot_number = arrayN[index];
-			if (fs.search()){
-				var rec = fs.getRecord(1);
-				idCSV = idCSV + "," + rec.load_id;
-			}
-		}
-	}
-	if (idCSV == "") {return null}
-	idCSV.replace(",","");
-	return scopes.globals.arrayToString(idCSV);
-}
-
 /**
  * @properties={typeid:24,uuid:"86087C50-E905-4A7C-A726-3DB659540029"}
  */
@@ -356,6 +268,7 @@ function collectCriteria(formName){
 		batch: batch,
 		cowcode: cowCode,
 		fabshop: fabShop,
+		jobrel : jobRel,
 		loadall : loadAll,
 		loadrel : loadRel,
 		lotnum : lotNum,
@@ -370,37 +283,16 @@ function collectCriteria(formName){
 	scopes.jobs.browseJobID = vJobID;
 	scopes.jobs.viewBTableToForm(criteria,formName);
 }
-
-/**
- * TODO generated, please specify type and doc for the params
- * @param itemCSV
- *
- * @properties={typeid:24,uuid:"F0049A56-F0B8-4991-98EE-2FD5C7DF64FA"}
- */
-function xxxarrayToString(itemCSV){
-	var arrayN = itemCSV.split(",");
-	var arrayStr = "(";
-	var comma = ",";
-	var length = arrayN.length;
-	for (var index = 0;index<length;index++){
-		if (index == length-1){comma = ""}
-		arrayStr = arrayStr+"\'"+arrayN[index]+"\'"+comma;
-	}
-	arrayStr = arrayStr+")";
-	if (arrayStr == "(\'\')"){arrayStr = null}
-	return arrayStr;
-}
-
 /**
  * @properties={typeid:24,uuid:"C475BEBD-83D4-4676-828B-D6C8AB673616"}
  */
 function browseInfoEnable(altEnable){
 	if (jobFound || altEnable){
-		elements.buttInfo.enabled = true;
+		elements.btn_Info.enabled = true;
 	} else {
 		if (!altEnable){
-			elements.buttBrowse.enabled = false;
-			elements.buttInfo.enabled = false;	
+			elements.btn_Browse.enabled = false;
+			elements.btn_Info.enabled = false;	
 		}
 	}
 }
@@ -409,21 +301,22 @@ function browseInfoEnable(altEnable){
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
+ * @param {String} formName
  *
  * @properties={typeid:24,uuid:"24AD80C5-DC06-4258-9587-54CFAAF778EE"}
  * @AllowToRunInFind
  */
 function onActionClear(event,formName) {
 	if (formName == null){
-		var formName = event.getFormName();
+		formName = event.getFormName();
 	}
 	var formPrefix = event.getFormName().split("_")[0];
 	var formNameTable = formPrefix+'_piecemark_info_table';
-	var formName = formPrefix+"_criteria";
+	formName = formPrefix+"_criteria";
 	//application.output(event);
 	for(var index in forms[formName]){
 		var name = index;
-		if (name == 'validate'){continue}
+		if (name.search('validate') != -1){continue}
 		if (name.search('v') == 0){
 			if ((typeof forms[formName][index]) == "number"){
 				forms[formName][index] = 0
@@ -438,12 +331,13 @@ function onActionClear(event,formName) {
 		forms.delete_piecemark_info.elements.tabless.removeAllTabs();
 	}
 	scopes.jobs.removeFormHist(formNameTable);
-	browseInfoEnable();
+	browseInfoEnable(null);
 }
 /**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
+ * @param {String} winTitle
  *
  * @properties={typeid:24,uuid:"3DAECF38-C686-4432-A939-6C97466A4A28"}
  */

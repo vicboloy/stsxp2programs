@@ -212,6 +212,10 @@ var html = '<html> \
  */
 var secTenantArraySearch = [""];
 /**
+ * @properties={typeid:35,uuid:"5897309D-07C3-4FC3-8C50-6D09B64C9049",variableType:-4}
+ */
+var secLicenses = [];
+/**
  * Adds the specified user to the named group
  * Looks first in the current tenant's groups, then the current application-wide groups
  * @param {Number} userID the ID of the user
@@ -686,7 +690,6 @@ function secSetCurrentTenant(tenantID){
 	}
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param assocID
  *
  * @properties={typeid:24,uuid:"FF0A15E2-196E-4CF0-B87B-9762ED9B7E7C"}
@@ -913,7 +916,6 @@ function getTenantCount(){
 /**
  * @AllowToRunInFind
  * 
- * TODO generated, please specify type and doc for the params
  * @param userName
  *
  * @properties={typeid:24,uuid:"1B936C87-8D76-4E7C-A218-AC4BB2718734"}
@@ -1107,7 +1109,6 @@ function secGetTenantIDs(assocID){
 /**
  * @AllowToRunInFind
  * 
- * TODO generated, please specify type and doc for the params
  * @param {String} [tenantName]
  *
  * @properties={typeid:24,uuid:"4CEF9138-EB73-4473-8041-E179E87EEFB8"}
@@ -1132,7 +1133,6 @@ function secDeleteTenant(tenantName){
 /**
  * @AllowToRunInFind
  * 
- * TODO generated, please specify type and doc for the params
  * @param usernum
  *
  * @properties={typeid:24,uuid:"3D622E0A-C148-4D26-AE4C-61929955DC67"}
@@ -1191,7 +1191,6 @@ function secGetAssociationID(assocName){
 /**
  * @AllowToRunInFind
  * 
- * TODO generated, please specify type and doc for the params
  * @param tenantUUID
  *
  * @properties={typeid:24,uuid:"FB78739F-A47B-4C6A-B624-7147F4D3E8C4"}
@@ -1234,7 +1233,7 @@ function secCreateApplication(applicationName) {
 		apps.application_name = applicationName;						//	...by a name
 		if(!apps.search() && apps.newRecord()){							//	app name is unique. create the record
 			//TODO JOE apps.applicationName = companyName;							//	set the app name
-			apps.applicationName = applicationName;							//	set the app name
+			apps.application_name = applicationName;							//	set the app name
 
 			if(databaseManager.saveData(apps.getSelectedRecord())){		//	save the record
 				return apps.getSelectedRecord();						//	return the tenant id
@@ -1700,4 +1699,114 @@ function secDeleteTableInfo(){
 		}
 		if (application.isInDeveloper()){application.output('table '+table+' count '+count);}
 	}
+}
+/**
+ * @param solutionName
+ * @param tenantID
+ * @param userID
+ *
+ * @properties={typeid:24,uuid:"21455034-EAB9-43F1-9B7C-CE27C298CF03"}
+ * @AllowToRunInFind
+ */
+function secCheckLicense(solutionName,tenantID,userID){
+	var registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
+	// get license info on load  for this tenant addreses ticket #45 unfuddle
+	var licenseInfo = [];
+	var assocId = "";
+	var licensed = "";
+	
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	var fs = databaseManager.getFoundSet('stsservoy','users');
+	if (fs.find()){
+		fs.user_id = userID;
+		fs.tenant_uuid = tenantID;
+		fs.search();
+		var rec = fs.getRecord(1);
+		assocId = rec.association_uuid;
+		
+		/** @type {JSFoundSet<db:/stsservoy/associations>} */
+		var fs2 = databaseManager.getFoundSet('stsservoy','associations');
+		if (fs2.find()){
+			fs2.association_uuid = assocId;
+			fs2.search();
+			rec = fs2.getRecord(1);
+			licenseInfo['STSmobile'] = rec.licenses_mobile;
+			licenseInfo['STS3'] = rec.licenses_desktop;
+		}
+	}
+
+	var allUsers = [];
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	fs = databaseManager.getFoundSet('stsservoy','users');
+	if (fs.find()){
+		fs.tenant_uuid = tenantID;
+		fs.association_uuid = assocId;
+		fs.search();
+		index = 1;
+		while (index <= fs.getSize()){
+			rec = fs.getRecord(index++);
+			allUsers.push(rec.user_id+"");
+		}		
+	}
+	var solutionNames = [];
+	solutionNames['STS3'] = 0; solutionNames['STSmobile'] = 0; solutionNames['servoySecurityLogin'] = 0; solutionNames['servoySecurityAuthenticator'] = 0; 
+	var clientArray = plugins.UserManager.getClients();
+
+	for (var index = 0;index < clientArray.length;index++){
+		var client = clientArray[index];
+		client = client.clientId;
+		var clientInfo = plugins.UserManager.getClientByUID(client);
+		if (allUsers.indexOf(clientInfo.userUid+"") == -1){continue} // not in this company
+		var clientSolution = clientInfo.solutionName;
+		if (!solutionNames[clientSolution]){solutionNames[clientSolution] = 0}
+		solutionNames[clientSolution] =  parseInt(solutionNames[clientSolution]) + 1;
+		//var clientIdle = clientInfo.idle;
+		//var beginTime = clientIdle.getTime();
+		//var idleMillis = Math.floor((currentTime - beginTime)/100);
+	}
+	licensed = "L"+solutionNames['servoySecurityLogin']+" D"+solutionNames['STS3']+" M"+solutionNames['STSmobile'];
+	if (solutionNames[solutionName] == licenseInfo[solutionName]){
+		licensed += " OUTOFLICENSE";
+	}
+
+	return licensed;
+}
+
+/**
+ * Called when the valuelist needs data, it has 3 modes.
+ * real and display params both null: return the whole list
+ * only display is specified, called by a typeahead, return a filtered list
+ * only real value is specified, called when the list doesnt contain the real value for the give record value, this will insert this value into the existing list
+ *
+ * @param {String} displayValue The value of a lookupfield that a user types
+ * @param {Object} realValue The real value for a lookupfield where a display value should be get for
+ * @param {JSRecord} [record] The current record for the valuelist.
+ * @param {String} [valueListName] The valuelist name that triggers the method.
+ *
+ * @returns {JSDataSet} A dataset with 1 or 2 columns display[,real]
+ *
+ * @properties={typeid:24,uuid:"F22B6D48-9038-4ED6-8E89-F7236FC66274"}
+ */
+function secGetFormElementNames(displayValue, realValue, record, valueListName) {
+	if(record && record.form_name){
+		var values = security.getElementUUIDs(record.form_name);
+		values.setValue(1,1,'-form-');									//	TODO: i18n here
+		values.sort(1,true);
+
+		if (displayValue == null && realValue == null) {
+			return values;
+		} else if (displayValue != null) {
+			var ds = databaseManager.createEmptyDataSet(0,2);
+			for(var i = 1; i <= values.getMaxRowIndex(); i++){
+				if(displayValue.equalsIgnoreCase(utils.stringLeft(values.getValue(i,1),displayValue.length))){
+					ds.addRow(values.getRowAsArray(i));
+				}
+			}
+			return ds;
+			
+		} else if (realValue != null) {
+			return values;
+		}
+	}
+	return null; //added for return of some value JOE
 }

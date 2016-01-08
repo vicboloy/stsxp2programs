@@ -4,10 +4,11 @@ items:[
 {
 horizontalAlignment:0,
 location:"114,5",
+name:"btn_Clear",
 onActionMethodID:"8A60887A-D04E-4CF9-9A0A-064C45575E1A",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"94,20",
+size:"94,26",
 text:"Clear All",
 typeid:7,
 uuid:"1910AD93-9248-4443-96D7-ADF0492EF25E"
@@ -16,11 +17,11 @@ uuid:"1910AD93-9248-4443-96D7-ADF0492EF25E"
 anchors:3,
 fontType:"Arial,1,13",
 horizontalAlignment:0,
-location:"501,0",
+location:"499,5",
 onActionMethodID:"AEC1BA24-274B-42EC-B7C0-030C214B0A62",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"136,36",
+size:"136,26",
 text:"Recall Selected",
 typeid:7,
 uuid:"4F7820F0-837D-405E-85A0-11D805D7D76A"
@@ -39,24 +40,13 @@ typeid:16,
 uuid:"B1A18BD8-CCB2-4A60-9024-8A0B37C73D62"
 },
 {
-anchors:12,
-horizontalAlignment:0,
-location:"100,428",
-onActionMethodID:"20322A68-9260-4BF4-97BC-D1E38ECA4E90",
-onDoubleClickMethodID:"-1",
-onRightClickMethodID:"-1",
-size:"53,20",
-text:"+/-",
-typeid:7,
-uuid:"B21F5554-00D4-4E34-B863-9BEDAF710DB3"
-},
-{
 horizontalAlignment:0,
 location:"5,5",
+name:"btn_SelectAll",
 onActionMethodID:"38A78B82-0606-4AF3-9D17-1E6FD79F2BDF",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"94,20",
+size:"94,26",
 text:"Select All",
 typeid:7,
 uuid:"E10B3F16-14C4-4079-99D5-1991AF87E54B"

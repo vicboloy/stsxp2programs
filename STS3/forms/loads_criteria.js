@@ -163,6 +163,12 @@ var vJobMetric = true;
  */
 var jobFound = false;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"CAADE13C-879B-4474-B248-A2A0D0EB3A8A"}
+ */
+var versionForm = "";
+/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -179,7 +185,6 @@ function onShow(firstShow, event) {
 	return _super.onShow(firstShow, event)
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param oldValue
  * @param newValue
  * @param event
@@ -260,93 +265,10 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	return status;
 }
 /**
- * @AllowToRunInFind
- * 
- * TODO generated, please specify type and doc for the params
- * @param itemCSV
- *
- * @properties={typeid:24,uuid:"8A504DFD-C4AD-4AAF-AEAC-9E4F919BFC58"}
- */
-function xxxconvertLoadToId(itemCSV){
-	if (itemCSV == ""){return null}
-	var arrayN = itemCSV.split(",");
-	if (arrayN.length == 0){return}
-	/** @type {JSFoundSet<db:/stsservoy/loads>} */
-	var fs = databaseManager.getFoundSet('stsservoy','loads');
-	var idCSV = "";
-	for (var index = 0;index < arrayN.length;index++){
-		if (fs.find()){
-			fs.load_number = arrayN[index];
-			if (fs.search()){
-				var rec = fs.getRecord(1);
-				idCSV = idCSV + "," + rec.load_id;
-			}
-		}
-	}
-	if (idCSV == "") {return null}
-	idCSV.replace(",","");
-	return arrayToString(idCSV);
-}
-/**
- * @AllowToRunInFind
- * 
- * TODO generated, please specify type and doc for the params
- * @param itemCSV
- *
- * @properties={typeid:24,uuid:"4D41C8CC-CF16-4800-8A6B-99C3C655010B"}
- */
-function xxxconvertLotToId(itemCSV){
-	if (itemCSV == ""){return null}
-	var arrayN = itemCSV.split(",");
-	if (arrayN.length == 0){return}
-	/** @type {JSFoundSet<db:/stsservoy/lots>} */
-	var fs = databaseManager.getFoundSet('stsservoy','lots');
-	var idCSV = "";
-	for (var index = 0;index < arrayN.length;index++){
-		if (fs.find()){
-			fs.lot_number = arrayN[index];
-			if (fs.search()){
-				var rec = fs.getRecord(1);
-				idCSV = idCSV + "," + rec.load_id;
-			}
-		}
-	}
-	if (idCSV == "") {return null}
-	idCSV.replace(",","");
-	return arrayToString(idCSV);
-}
-/**
- * @AllowToRunInFind
- * 
- * TODO generated, please specify type and doc for the params
- * @param itemCSV
- *
- * @properties={typeid:24,uuid:"01F9CAF6-D67B-4E29-B587-56BD5B2C02F2"}
- */
-function xxxconvertPkgToId(itemCSV){
-	if (itemCSV == ""){return null}
-	var arrayN = itemCSV.split(",");
-	if (arrayN.length == 0){return}
-	/** @type {JSFoundSet<db:/stsservoy/lots>} */
-	var fs = databaseManager.getFoundSet('stsservoy','lots');
-	var idCSV = "";
-	for (var index = 0;index < arrayN.length;index++){
-		if (fs.find()){
-			fs.lot_number = arrayN[index];
-			if (fs.search()){
-				var rec = fs.getRecord(1);
-				idCSV = idCSV + "," + rec.load_id;
-			}
-		}
-	}
-	if (idCSV == "") {return null}
-	idCSV.replace(",","");
-	return arrayToString(idCSV);
-}
-/**
  * @properties={typeid:24,uuid:"7A941D9A-5D56-4B77-BC2C-165EC3F8DE8B"}
  */
 function collectCriteria(){
+	versionForm = globals.getInstanceForm(null);
 	// feeds jobs.viewBTableToForm()
 	var area = scopes.globals.arrayToString(vArea);
 	var batch = scopes.globals.arrayToString(vBatch);
@@ -384,7 +306,7 @@ function collectCriteria(){
 		sonum : soNum
 	}
 	//scopes.jobs.xxxviewBTableAlt(criteria);
-	var formName = 'loads_pcmk_combo';
+	var formName = 'loads_pcmk_combo'+versionForm;
 	//xxxtestBuildFS(scopes.jobs.browseJobID);
 	scopes.jobs.viewBTableToForm(criteria,formName);
 	//var fs33 = databaseManager.getFoundSet(scopes.jobs.browseDatasource);
@@ -400,8 +322,10 @@ function onActionShowWindow(){
 	//scopes.jobs.xxxviewBTableThrowSplit(event,winTitle);
 	//return;
 	//var formName = event.getFormName();
-	var winTitle = 'Browse Loads';
-	var formName = 'loads_pcmk_combo';
+	versionForm = globals.getInstanceForm(null);
+	//application.output('form version '+versionForm);
+	var winTitle = 'Browse Loads'+versionForm;
+	var formName = 'loads_pcmk_combo'+versionForm;
 	//application.output('formname '+formName);
 	var height = controller.getWindow().getHeight();
 	var width = controller.getWindow().getWidth();
@@ -416,7 +340,6 @@ function onActionShowWindow(){
 	scopes.jobs.removeFormHist(formName+'_table');
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param itemCSV
  *
  * @properties={typeid:24,uuid:"3D134DB8-8264-4793-82B5-6F7ABED9EB1D"}
@@ -439,11 +362,11 @@ function arrayToString(itemCSV){
  */
 function browseInfoEnable(){
 	if (jobFound){
-		elements.buttBrowse.enabled = true;
-		elements.buttInfo.enabled = true;
+		elements.btn_Browse.enabled = true;
+		elements.btn_Info.enabled = true;
 	} else {
-		elements.buttBrowse.enabled = false;
-		elements.buttInfo.enabled = false;		
+		elements.btn_Browse.enabled = false;
+		elements.btn_Info.enabled = false;		
 	}
 }
 /**
@@ -457,7 +380,7 @@ function browseInfoEnable(){
 function onActionClear(event) {
 	for(var index in forms.loads_criteria){
 		var name = index;
-		if (name == 'validate'){continue}
+		if (name.search('validate') != -1){continue}
 		if (name.search('v') == 0){
 			if ((typeof forms.loads_criteria[index]) == "number"){
 				forms.loads_criteria[index] = 0
@@ -512,12 +435,14 @@ function onGetInformation(event) {
 	vLabTotalWt = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , maxReturnedRows)[0][0];
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param jobID
  *
  * @properties={typeid:24,uuid:"0F6D8D82-0FEA-441A-A4CB-60A1DEA4B89E"}
+ * @SuppressWarnings(wrongparameters)
+ * @SuppressWarnings(unused)
  */
 function xxxtestBuildFS(jobID){
+	/**
 	query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",* from piecemarks p '+
 	' right join routings rt on rt.routing_id = p.e_route_code_id '+
 	' inner join sheets s on p.sheet_id = s.sheet_id SHT '+
@@ -529,7 +454,7 @@ function xxxtestBuildFS(jobID){
 	' left join loads l on l.load_id = i.current_load_id LDRR '+
 	' order by p.parent_piecemark, p.piecemark';
 
-	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	/** @type {QBSelect<db:/stsservoy/jobs>} * /
 	var q = databaseManager.createSelect('db:/stsservoy/jobs');
 	q.result.add(q.columns.job_id);
 	q.result.add(q.columns.job_number);
@@ -543,5 +468,5 @@ function xxxtestBuildFS(jobID){
 		);
 	var resultQ = databaseManager.getFoundSet(q);
 	null;
-	
+	*/
 }

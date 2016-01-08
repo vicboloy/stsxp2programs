@@ -9,6 +9,7 @@ uuid:"8D6215FE-856A-4892-9655-C180C79ECEF8"
 }
 ],
 name:"loads_print",
+navigatorID:"-1",
 showInMenu:true,
 styleName:"sts_one",
 typeid:3,

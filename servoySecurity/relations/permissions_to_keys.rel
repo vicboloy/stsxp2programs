@@ -1,6 +1,6 @@
 foreignDataSource:"db:/stsservoy/keys",
 items:[
-{foreignColumnName:"key_id",primaryDataProviderID:"key_id",typeid:23,uuid:"162510C2-0A1C-49E8-9BF5-5705FC702E05"}
+{foreignColumnName:"key_uuid",primaryDataProviderID:"key_uuid",typeid:23,uuid:"162510C2-0A1C-49E8-9BF5-5705FC702E05"}
 ],
 name:"permissions_to_keys",
 primaryDataSource:"db:/stsservoy/permissions",

@@ -2,7 +2,7 @@ allowCreationRelatedRecords:true,
 deleteRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/permissions",
 items:[
-{foreignColumnName:"key_id",primaryDataProviderID:"key_id",typeid:23,uuid:"F9FE8739-B97D-4E33-80E1-652E34D3DC6A"}
+{foreignColumnName:"key_uuid",primaryDataProviderID:"key_uuid",typeid:23,uuid:"F9FE8739-B97D-4E33-80E1-652E34D3DC6A"}
 ],
 name:"keys_to_permissions",
 primaryDataSource:"db:/stsservoy/keys",

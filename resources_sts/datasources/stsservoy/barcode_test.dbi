@@ -7,28 +7,32 @@ creationOrderIndex:0,
 dataType:12,
 flags:5,
 length:36,
-name:"barcode_test_id"
+name:"barcode_test_id",
+titleText:"Barcode Test Id"
 },
 {
 allowNull:true,
 creationOrderIndex:1,
 dataType:12,
 length:50,
-name:"bc_id"
+name:"bc_id",
+titleText:"Bc Id"
 },
 {
 allowNull:true,
 creationOrderIndex:2,
 dataType:12,
 length:50,
-name:"bc_text1"
+name:"bc_text1",
+titleText:"Bc Text1"
 },
 {
 allowNull:true,
 creationOrderIndex:3,
 dataType:12,
 length:50,
-name:"bc_text2"
+name:"bc_text2",
+titleText:"Bc Text2"
 }
 ],
 name:"barcode_test",

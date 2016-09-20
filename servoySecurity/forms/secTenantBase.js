@@ -35,12 +35,12 @@ function onDataChangeCompanyName(oldValue, newValue, event) {
 function validateCompanyName(oldValue){
 	errorMessage = null;													//	reset the error message
 	if(!company_name){														//	company name must be non-null;
-		errorMessage = 'Please provide a company name'						//	TODO: i18n HERE
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.company.name');
 		return false;														//	failed validation
 	}
 	var id = globals.secGetTenantID(company_name);							//	Check tenant ID
 	if(id && id != tenant_uuid){												//	It should be unique
-		errorMessage = 'Company name is already in use';					//	TODO: i18n HERE
+		errorMessage = i18n.getI18NMessage('sts.txt.company.name.already.in.use');
 		company_name = oldValue;											// 	return value to old value
 		return false;														//	failed validation
 	}

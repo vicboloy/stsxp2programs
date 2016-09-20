@@ -8,7 +8,7 @@ onActionMethodID:"50C962C1-634B-4610-A8A2-8C2C63849FD5",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"146,27",
-text:"OK",
+text:"i18n:sts.btn.ok",
 typeid:7,
 uuid:"26285038-1783-4800-B721-97731D2F622E"
 },

@@ -1,6 +1,6 @@
 foreignDataSource:"db:/stsservoy/users",
 items:[
-{foreignColumnName:"user_id",primaryDataProviderID:"user_id",typeid:23,uuid:"C059F684-976C-4F93-B8EB-83845C4F7811"}
+{foreignColumnName:"user_uuid",primaryDataProviderID:"user_uuid",typeid:23,uuid:"C059F684-976C-4F93-B8EB-83845C4F7811"}
 ],
 name:"user_groups_to_users",
 primaryDataSource:"db:/stsservoy/user_groups",

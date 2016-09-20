@@ -161,9 +161,9 @@ var secCurrentAssociationName = "";
  */
 var secCurrentAssociationMasterID = "";
 /**
- * @type {Number}
+ * @type {String}
  *
- * @properties={typeid:35,uuid:"7B1F0B21-B375-49E5-B768-6E3947F8280B",variableType:4}
+ * @properties={typeid:35,uuid:"7B1F0B21-B375-49E5-B768-6E3947F8280B"}
  */
 var secCurrentUserID = null;
 /**
@@ -233,11 +233,11 @@ function secAddUserToGroup(userID, groupID){
 
 	userGroups = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USER_GROUPS);
 	if(userGroups.find()){												//	search the user groups table for existing entry
-		userGroups.user_id = userID;									//	search by user id
-		userGroups.group_id = groupID;									//	search by group id	
+		userGroups.user_uuid = userID;									//	search by user id
+		userGroups.group_uuid = groupID;									//	search by group id	
 		if(!userGroups.search() && userGroups.newRecord()){				//	not already in group, so create the record
-			userGroups.user_id = userID;								//	set the user id
-			userGroups.group_id = groupID;								//	set the group id
+			userGroups.user_uuid = userID;								//	set the user id
+			userGroups.group_uuid = groupID;								//	set the group id
 			if(databaseManager.saveData(userGroups.getSelectedRecord())){
 				return userGroups.getSelectedRecord();					//	save and return record
 			}
@@ -522,6 +522,9 @@ function secCreateUser(userName, password, tenantID){
 				users.user_password = password;							//	set password
 				users.tenant_uuid = tenantID;								//	set the tenant ID
 				users.is_account_active = 1;							// set active account
+				if (userName == 'P2'){
+					users.first_name = "P2 Programs";
+				}
 				if(databaseManager.saveData(users.getSelectedRecord())){//	save the record
 					return users.getSelectedRecord();					//	return user ID
 				}
@@ -633,7 +636,7 @@ function secLogin(userID){
 	if(users.loadRecords(userID) && users.is_account_active){ 			//	load user record, check if active account
 		users.last_login = new Date();									//	reset last login date & login user
 		secLogger('User '+userID+' login.');
-		return security.login(users.user_name,users.user_id,[SEC_ADMINISTRATORS]);
+		return security.login(users.user_name,users.user_uuid,[SEC_ADMINISTRATORS]);
 	}
 	if (application.isInDeveloper()){application.output('after logical login');}
 	if (users.is_account_active){scopes.globals.secLogger('User '+users.user_name+' is inactive.')}
@@ -655,8 +658,8 @@ function secRemoveUserFromGroup(userID, groupID){
 	}
 	userGroups = databaseManager.getFoundSet(SEC_SERVER, SEC_TABLE_USER_GROUPS);
 	if(userGroups.find()){												//	search user groups table
-		userGroups.user_id = userID;									//	search by user
-		userGroups.group_id= groupID;									//	search by group
+		userGroups.user_uuid = userID;									//	search by user
+		userGroups.group_uuid= groupID;									//	search by group
 		return userGroups.search() && userGroups.deleteRecord();		//	delete record
 	}
 	return false; //added to return some value JOE
@@ -726,6 +729,7 @@ function secEncryptPassword(password) {
  * @properties={typeid:24,uuid:"E122828D-EDF3-43CB-B2BD-27B444F2CAE8"}
  */
 function secCreateAssociation(assocName){
+	if (application.isInDeveloper()){application.output('Creating association '+assocName)}
 	//var associationArray = [];
 	if (!assocName){
 		return null;
@@ -737,10 +741,20 @@ function secCreateAssociation(assocName){
 	assoc = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);
 	if(assoc.find()){													//	Search the associations table...
 		assoc.association_name = assocName;								//	...by association name
+		if (assocName == 'ADMIN'){
+			assoc.association_name = "OFFICE";
+			assoc.logic_flag = 1;
+		} 			//  only one admin association
+		
 		assoc.tenant_uuid = secCurrentTenantID;
 		if(!assoc.search() && assoc.newRecord()){						//	association name is unique. create the association record
 			assoc.association_name = assocName;							//	set the company name
 			assoc.tenant_uuid = secCurrentTenantID;
+			if (assocName == "ADMIN"){
+				assoc.tenant_group_uuid = secCurrentTenantID;
+				assoc.association_name = "OFFICE";
+				assoc.logic_flag = 1;
+			}
 			if (application.isInDeveloper()){application.output('Create assoc '+assocName+' in UUID '+secCurrentTenantID);}
 			//associationArray.push(assoc.association_uuid);
 			if(databaseManager.saveData(assoc.getSelectedRecord())){	//	save the record
@@ -836,7 +850,7 @@ function secCreateTenant(companyName) {
 		if(!tenants.search() && tenants.newRecord()){					//	company name is unique. create the tenant record
 			tenants.company_name = companyName;							//	set the company name
 			tenants.edit_date = new Date();
-			application.output('tenant Id '+tenants.tenant_uuid )
+			if (application.isInDeveloper()){application.output('tenant Id '+tenants.tenant_uuid )}
 			secCurrentTenantID = tenants.tenant_uuid;
 			if(databaseManager.saveData(tenants.getSelectedRecord())){	//	save the record
 				return tenants.getSelectedRecord();						//	return the tenant id
@@ -869,7 +883,7 @@ function secGetUserID(userName, tenantID) {
 		//users.tenant_uuid IN 
 		users.user_name = userName;										//	search by user name	
 		if(users.search()){												
-			return users.user_id;										//	return the ID
+			return users.user_uuid;										//	return the ID
 		}
 	}
 	return null;														//	could not get user
@@ -897,8 +911,9 @@ function secGetUserID2(userName, tenantID) {
 	if(users.find()){													//	search the user foundset...
 		users.tenant_uuid = (tenantID) ? tenantID : secCurrentTenantID;	//	search by tenant (use the current tenant when no tenant id specified)
 		users.user_name = userName;										//	search by user name	
-		if(users.search()){												
-			return users.user_id;										//	return the ID
+		if(users.search()){
+			scopes.globals.getBasePermissions(users.user_uuid,users.tenant_uuid);
+			return users.user_uuid;										//	return the ID
 		}
 	}
 	scopes.globals.secLogger('UserName '+userName+' invalid.');
@@ -906,12 +921,75 @@ function secGetUserID2(userName, tenantID) {
 }
 /**
  * @properties={typeid:24,uuid:"E5A874B4-5284-482B-AE8C-9A7B8CBAA168"}
+ * @AllowToRunInFind
  */
 function getTenantCount(){
 	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
-	var fs = databaseManager.getFoundSet('stsservoy','tenant_list');
-	fs.loadAllRecords();
-	return fs.getSize();
+	var tent = databaseManager.getFoundSet('stsservoy','tenant_list');
+	tent.loadAllRecords();
+	var empID = null;
+	if (tent.getSize() == 0){// new install because no tenant found
+		/** @type {JSFoundSet<db:/stsservoy/employee>} */
+		var empl = databaseManager.getFoundSet('stsservoy','employee');
+		if (empl.find()){
+			empl.employee_number = "P2";
+			if (empl.search()){
+				empID = empl.employee_id;
+			} else {
+				var idx = empl.newRecord();
+				rec2 = empl.getRecord(idx);
+				rec2.edit_date = new Date();
+				rec2.employee_active_flag = 1;
+				rec2.employee_email = "paul@p2programs.com";
+				rec2.employee_firstname = "Paul";
+				rec2.employee_lastname = "Parks";
+				rec2.employee_number = "P2";
+				rec2.employee_workphone = "512-858-2007";
+				databaseManager.saveData(rec2);
+				empID = rec2.employee_id;
+			}
+		}
+		var tenantRec = secCreateTenant('MY COMPANY');
+		databaseManager.saveData();
+		var assocId = secCreateAssociation('SHOP');
+		databaseManager.saveData();
+		var adminAssocId = secCreateAssociation('ADMIN');
+		databaseManager.saveData();
+		var adminUser = secCreateUser('P','p',tenantRec.tenant_uuid);
+		adminUser.association_uuid = adminAssocId;
+		adminUser.name_first = 'P2PROGRAMS';
+		adminUser.employee_id = empID;
+		//getBasePermissions(adminUser.user_uuid,tenantRec.tenant_uuid);
+		databaseManager.saveData();
+		var tablesToClear = ['addresses','carrier','cow_xref','cowcodes','customers','employee','employee_class','end_conditions',
+		'heats','id_serial_numbers','idfiles','jobs','labor_codes','labor_department','last_id_serial','loads','lots',
+		'piecemarks','preferences2','rf_transactions','route_detail','routings','sequences','sheets','status_description',
+		'transactions','uom_types'
+		]
+		//, 'groups','group_keys','user_groups','permissions','applications','keys'
+		// 'mapping', 'users','applications','associations','barcode_test','i18n_table',
+		// 'ref_types','messages','tenant_list','zipcodes','valuelists'
+		for (var index = 0;index < tablesToClear.length;index++){
+			var fs = databaseManager.getFoundSet('stsservoy',tablesToClear[index]);
+			fs.loadRecords();
+			if (fs.getSize() == 0){continue}
+			var table = databaseManager.getTable('stsservoy',tablesToClear[index]);
+			/* @type {Array} */
+			var tableNames = table.getColumnNames();
+			var tableFS = databaseManager.getFoundSetUpdater(fs);
+			if (tableNames.indexOf('tenant_uuid') != -1){
+				tableFS.setColumn('tenant_uuid',tenantRec.tenant_uuid);
+			}
+			if (tableNames.indexOf('association_id') != -1){
+				tableFS.setColumn('association_id',assocId);
+			}
+			if (application.isInDeveloper()){application.output('setting tenant and assoc in table '+tablesToClear[index])}
+			tableFS.performUpdate();
+		}
+	}
+	databaseManager.saveData();
+	tent.loadAllRecords();
+	return tent.getSize();
 }
 /**
  * @AllowToRunInFind
@@ -928,14 +1006,14 @@ function secGetAssocID(userName) {
 	if(!userName){														//	validate input...	
 		return false;
 	}
-	application.output('test');
+	if (application.isInDeveloper()){application.output('test')}
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get a user foundset
 	if(users.find()){													//	search the user foundset...
-		application.output('find');
+		if (application.isInDeveloper()){application.output('find')}
 		//users.tenant_uuid = (tenantID) ? tenantID : secCurrentTenantID;	//	search by tenant (use the current tenant when no tenant id specified)
 		users.user_name = userName;										//	search by user name	
 		if(users.search()){			
-			application.output('search zone '+users.association_uuid)
+			if (application.isInDeveloper()){application.output('search zone '+users.association_uuid)}
 			return users.association_uuid;										//	return the ID
 		}
 	}
@@ -964,7 +1042,7 @@ function secGetGroupID(groupName, tenantID, appID) {
 		groups.application_id = (appID)?appID:secCurrentApplicationID;	//	search the pplication ID
 		groups.group_name = groupName;									//	search by group name	
 		if(groups.search()){												
-			return groups.group_id;										//	return the selected record
+			return groups.group_uuid;										//	return the selected record
 		}
 	}
 	return null;	
@@ -1040,7 +1118,9 @@ function secGetTenantID2(userName,companyName){
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);//	get a tenant foundset
 	//users.loadRecords();
 	if(users.find()){													//	search the tenant foundset...
-		users.user_name = userName;								//	search by tenant name	
+		users.user_name = userName;								//	search by tenant name
+		if (application.isInDeveloper()){application.output('finding user ('+userName+')')}
+		users.delete_flag = '^';	
 		if (companyName != ""){
 			users.tenant_uuid = tenantID;
 		} else {
@@ -1049,11 +1129,11 @@ function secGetTenantID2(userName,companyName){
 			
 		}
 		var count = users.search();
-		application.output('Users '+count);
+		if (application.isInDeveloper()){application.output('Users '+count)}
 		if(count){
 			if (count > 1){
 				if (!companyName){
-					application.output(count+' users namedx '+userName);
+					if (application.isInDeveloper()){application.output(count+' users misnamed '+userName)}
 					return null; 
 				}
 				/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
@@ -1115,7 +1195,7 @@ function secGetTenantIDs(assocID){
  */
 function secDeleteTenant(tenantName){
 	if (!tenantName){
-		//errorMessage = 'Please provide a company name';
+		//errorMessage = i18n.getI18NMessage('sts.txt.provide.company.name');
 		return false;
 	}
 	// /** @type {JSFoundset<db:/stsservoy/tenant_list>} */
@@ -1123,7 +1203,6 @@ function secDeleteTenant(tenantName){
 	if (tenants.find()){
 		tenants.company_name = tenantName;
 		if (tenants.search()) {
-			//var count=
 			databaseManager.getFoundSetCount(tenants);
 			// TODO delete a tenant
 		}
@@ -1361,7 +1440,7 @@ function secGetKeyID(keyName, appID) {
 		keys.key_name = keyName;									//	search by name
 		keys.application_id = appID;								//	search by application
 		if(keys.search()){											
-			return keys.key_id;										//	get the record
+			return keys.key_uuid;										//	get the record
 		}
 	}
 	return null;  //added to return some value JOE
@@ -1709,7 +1788,7 @@ function secDeleteTableInfo(){
  * @AllowToRunInFind
  */
 function secCheckLicense(solutionName,tenantID,userID){
-	var registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
+	plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
 	// get license info on load  for this tenant addreses ticket #45 unfuddle
 	var licenseInfo = [];
 	var assocId = "";
@@ -1718,7 +1797,7 @@ function secCheckLicense(solutionName,tenantID,userID){
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var fs = databaseManager.getFoundSet('stsservoy','users');
 	if (fs.find()){
-		fs.user_id = userID;
+		fs.user_uuid = userID;
 		fs.tenant_uuid = tenantID;
 		fs.search();
 		var rec = fs.getRecord(1);
@@ -1745,7 +1824,7 @@ function secCheckLicense(solutionName,tenantID,userID){
 		index = 1;
 		while (index <= fs.getSize()){
 			rec = fs.getRecord(index++);
-			allUsers.push(rec.user_id+"");
+			allUsers.push(rec.user_uuid+"");
 		}		
 	}
 	var solutionNames = [];
@@ -1765,7 +1844,7 @@ function secCheckLicense(solutionName,tenantID,userID){
 		//var idleMillis = Math.floor((currentTime - beginTime)/100);
 	}
 	licensed = "L"+solutionNames['servoySecurityLogin']+" D"+solutionNames['STS3']+" M"+solutionNames['STSmobile'];
-	if (solutionNames[solutionName] == licenseInfo[solutionName]){
+	if (solutionNames[solutionName] && solutionNames[solutionName] == licenseInfo[solutionName]){
 		licensed += " OUTOFLICENSE";
 	}
 
@@ -1809,4 +1888,77 @@ function secGetFormElementNames(displayValue, realValue, record, valueListName) 
 		}
 	}
 	return null; //added for return of some value JOE
+}
+/**
+ * @properties={typeid:24,uuid:"EF8AF24A-7C87-4375-94DE-5F5A5CA22F33"}
+ * @AllowToRunInFind
+ */
+function getBasePermissions(userId,newTenant){
+	//var baseTenant = 'B90A956F-282B-4C29-A251-3E7C58FB026B';
+	var baseTenant = 'FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF';
+	var test = databaseManager.getFoundSet('stsservoy','keys');
+	if (test.find()){
+		test.tenant_uuid = newTenant;
+		if (test.search()){
+			return
+		}//base permissions already installed
+	}
+	// newest
+	var permsTables = ['keys','permissions','groups','group_keys','user_groups'];//keys_table not used
+	/**
+	users -> (user_uuid), 
+	keys -> (key_uuid), tenant_uuid
+	permissions -> (permission_uuid), key_uuid, tenant_uuid
+	user_groups -> (user_group_uuid), group_uuid, tenant_uuid, user_uuid
+	group_keys -> (group_key_uuid), group_uuid, key_uuid, tenant_uuid
+	groups -> (group_uuid), tenant_uuid
+	*/
+	var keyMap = [];
+	var grpMap = [];
+	for (var index = 0;index < permsTables.length;index++){
+		var table = databaseManager.getFoundSet('stsservoy',permsTables[index]);
+		var tableIds = databaseManager.getTable(table).getRowIdentifierColumnNames();
+		if (table.find()){
+			table.tenant_uuid = newTenant;
+			if (!table.search()){
+				table.loadRecords();
+				table.find();
+				table.tenant_uuid = baseTenant;
+				table.search();
+				var ind1 = 1;
+				var tableCols = databaseManager.getTable(table).getColumnNames();
+				var rec = table.getRecord(ind1);
+				var tableSize = table.getSize();
+				while (ind1 <= tableSize){
+					rec = table.getRecord(ind1);
+					var newDex = table.newRecord(false);
+					var newRec = table.getRecord(newDex);
+					if (permsTables[index] == 'keys'){keyMap[rec.key_uuid] = newRec.key_uuid}
+					if (permsTables[index] == 'groups'){grpMap[rec.group_uuid] = newRec.group_uuid}
+					for (var ind2 = 0;ind2 < tableCols.length;ind2++){
+						if (tableIds.indexOf(tableCols[ind2]) != -1){continue}//skip primary keys
+						if (rec[tableCols[ind2]]){
+							newRec[tableCols[ind2]] = rec[tableCols[ind2]];
+						}
+						switch (permsTables[index]){
+							case 'permissions' :
+								newRec.key_uuid = keyMap[rec.key_uuid];
+								break;
+							case 'user_groups':
+								newRec.group_uuid = grpMap[rec.group_uuid];
+								newRec.user_uuid = userId;
+								break;
+							case 'group_keys':
+								newRec.group_uuid = grpMap[rec.group_uuid];
+								newRec.key_uuid = keyMap[rec.key_uuid];
+								break;
+							default:
+						}
+						newRec.tenant_uuid = newTenant;
+					}
+					ind1++;
+				}
+			}
+		}
+	}
 }

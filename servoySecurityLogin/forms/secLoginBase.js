@@ -105,15 +105,15 @@ function login(){
 		return false;
 	}*/
 	if(elements.companyName.visible && !companyName){
-		errorMessage = 'Please specify a company name';
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.company.name');
 		return false;
 	}
 	if(!userName){
-		errorMessage = 'Please specify a user name';
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.user.name');
 		return false;
 	}
 	if(!password){
-		errorMessage = 'Please specify a password';
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.password');
 		return false;
 	}
 	//application.output('before tenantid');
@@ -125,13 +125,13 @@ function login(){
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
 		if (application.isInDeveloper()){application.output('user ID '+userID+' tenantID '+tenantID);}
 		if(userID){
-			application.output('passCheck '+userID+' '+password);
+			if (application.isInDeveloper()){application.output('passCheck '+userID+' '+password);}
 			var passCheck = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_PASSWORD,[userID, password]);
 			//if (!passCheck && (password == tenantID)){passCheck = true}//TODO REMOVE
 			
 			if (application.isInDeveloper()){application.output('passcheck '+passCheck+' '+password+' '+tenantID);}
 			checkLicense = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[application.getSolutionName(),tenantID,userID]);
-			application.output('license use '+checkLicense);
+			if (application.isInDeveloper()){application.output('license use '+checkLicense)}
 			if(passCheck && checkLicense.search('OUT') == -1){
 				if (security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 					globals.secCurrentUserID = userID;
@@ -150,13 +150,15 @@ function login(){
 						var seconds = date.getSeconds()+"";
 						if (seconds.length == 0) {seconds = "0"+seconds}
 						var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"';";
-						application.output('date '+mobileDate);
+						if (application.isInDeveloper()){application.output('date '+mobileDate)}
 						plugins.WebClientUtils.executeClientSideJS(mobileDate);
 					}
 					return true;
 				}
 			}
 		}
+	} else {
+		if (application.isInDeveloper()){application.output('No Tenant ID')}
 	}
 	//application.output('user id '+userID);
 	var message = "Login Failed ";
@@ -190,7 +192,7 @@ function callError(msg){
 function onLoad(event) {
 	textAreaString = "";
 	for (var item in plugins){
-		application.output('loaded '+item);
+		if (application.isInDeveloper()){application.output('loaded '+item)}
 		textAreaString += item+",";
 	}
 	var registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
@@ -199,12 +201,12 @@ function onLoad(event) {
 		registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
 		counter--;
 	}
-	application.output('usermanager registered '+registered+' counter '+counter);
+	if (application.isInDeveloper()){application.output('usermanager registered '+registered+' counter '+counter)}
 	//var solutionNames = []; // either STS3 or STSmobile
 	var solutionNames = [];
 
 	try {
-		// get license info on load  for this tenant addreses #45 unfuddle
+		// get license info on load  for this tenant addresses #45 unfuddle
 		if (application.isInDeveloper()){application.output(application.getSolutionName())}
 		var solutionName = application.getSolutionName(); // addresses #45
 
@@ -222,12 +224,12 @@ function onLoad(event) {
 			var clientIdle = clientInfo.idle;
 			var beginTime = clientIdle.getTime();
 			var idleMillis = Math.floor((currentTime - beginTime)/100);
-			application.output(clientArray[indexC]+' loginId:'+clientInfo.userUid+' client:'+client+' IP:'+clientInfo.ipAddress+' Login:'+clientInfo.login+' solution:'+clientInfo.solutionName+' idle:'+clientInfo.idle+' solution '+clientInfo.solutionName+' idle seconds '+idleMillis);
-			application.output(clientInfo);
+			if (application.isInDeveloper()){application.output(clientArray[indexC]+' loginId:'+clientInfo.userUid+' client:'+client+' IP:'+clientInfo.ipAddress+' Login:'+clientInfo.login+' solution:'+clientInfo.solutionName+' idle:'+clientInfo.idle+' solution '+clientInfo.solutionName+' idle seconds '+idleMillis)}
+			if (application.isInDeveloper()){application.output(clientInfo)}
 		}
 		//errorMessage = 'Desk ('+solutionNames['STS3']+') Mobile ('+solutionNames['STSmobile']+' of '+licenses+'.';
-		application.output('sol '+solutionName+' license count '+licenses+' solution STS3 '+solutionNames['STS3']+' STSmobile '+solutionNames['STSmobile']);
-		application.output('solution counts '+solutionNames);
+		if (application.isInDeveloper()){application.output('sol '+solutionName+' license count '+licenses+' solution STS3 '+solutionNames['STS3']+' STSmobile '+solutionNames['STSmobile'])}
+		if (application.isInDeveloper()){application.output('solution counts '+solutionNames)}
 		var moreLic = plugins.UserManager.Server().getSettingsProperty('license.0.company_name');
 		textAreaString += "license "+licenses+' more - '+moreLic+' -';
 	} catch (e)	{
@@ -240,7 +242,7 @@ function onLoad(event) {
 		// Change 000 no need to execute within STSmain, only works with Enterprise Browser
 		plugins.WebClientUtils.addJsReference(server+'/ebapi-modules.js');
 	} catch (e) {
-		application.output('This is not a mobile computer or Enterprise Browser is not installed.');
+		if (application.isInDeveloper()){application.output('This is not a mobile computer or Enterprise Browser is not installed.')}
 	}
 	var win = application.getActiveWindow();
 	win.title = "STS Login";
@@ -269,8 +271,12 @@ function onLoad(event) {
  * @properties={typeid:24,uuid:"D46012B8-F198-4734-8D17-E5D53672CB98"}
  */
 function exitBrowser(){
-	var jsToExecute = "application.quit();";
-	plugins.WebClientUtils.executeClientSideJS(jsToExecute);
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		var jsToExecute = "application.quit();";
+		plugins.WebClientUtils.executeClientSideJS(jsToExecute);
+	} else {
+		application.exit(); // changes to ensure client quits and web quits
+	}
 }
 /**
  * @type {String}
@@ -283,12 +289,12 @@ var debugText = "";
  */
 function licenseCount() {
 	for (var index = 0;index < 5;index++){
-		application.output('index '+index+': '+plugins.UserManager.Server().getSettingsProperty('license.' + index + '.licenses'));
+		if (application.isInDeveloper()){application.output('index '+index+': '+plugins.UserManager.Server().getSettingsProperty('license.' + index + '.licenses'))}
 	}
-	application.output('URL '+plugins.UserManager.getSettingsProperty('server.0.URL'));
+	if (application.isInDeveloper()){application.output('URL '+plugins.UserManager.getSettingsProperty('server.0.URL'))}
 	   var _nTotal = 0;
 	   var _nCount = parseInt(plugins.UserManager.Server().getSettingsProperty('licenseManager.numberOfLicenses'), 10);
-	   application.output('licenses call '+plugins.UserManager.getSettingsProperty('licenseManager.numberOfLicenses'));
+	   if (application.isInDeveloper()){application.output('licenses call '+plugins.UserManager.getSettingsProperty('licenseManager.numberOfLicenses'))}
 	   if(_nCount) {
 	      for (var i = 0; i < _nCount; i++) {
 	         _nTotal += parseInt(plugins.UserManager.Server().getSettingsProperty('license.' + i + '.licenses'), 10);

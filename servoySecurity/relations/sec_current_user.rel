@@ -1,7 +1,7 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/users",
 items:[
-{foreignColumnName:"user_id",primaryDataProviderID:"globals.secCurrentUserID",typeid:23,uuid:"56A730F4-4C62-41A7-B97C-B7AE42EA9294"}
+{foreignColumnName:"user_uuid",primaryDataProviderID:"scopes.globals.secCurrentUserID",typeid:23,uuid:"56A730F4-4C62-41A7-B97C-B7AE42EA9294"}
 ],
 name:"sec_current_user",
 primaryDataSource:"db:/stsservoy/users",

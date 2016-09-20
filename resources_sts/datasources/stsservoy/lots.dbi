@@ -7,13 +7,15 @@ creationOrderIndex:0,
 dataType:12,
 flags:5,
 length:36,
-name:"lot_id"
+name:"lot_id",
+titleText:"Lot Id"
 },
 {
 allowNull:true,
 creationOrderIndex:5,
 dataType:4,
-name:"delete_flag"
+name:"delete_flag",
+titleText:"Delete Flag"
 },
 {
 allowNull:true,
@@ -21,20 +23,23 @@ autoEnterSubType:3,
 autoEnterType:1,
 creationOrderIndex:3,
 dataType:93,
-name:"edit_date"
+name:"edit_date",
+titleText:"Edit Date"
 },
 {
 allowNull:true,
 creationOrderIndex:4,
 dataType:4,
-name:"logic_flag"
+name:"logic_flag",
+titleText:"Logic Flag"
 },
 {
 allowNull:true,
 creationOrderIndex:1,
 dataType:12,
 length:15,
-name:"lot"
+name:"lot",
+titleText:"Lot"
 },
 {
 allowNull:false,
@@ -42,7 +47,8 @@ creationOrderIndex:2,
 dataType:12,
 flags:4,
 length:36,
-name:"sequence_id"
+name:"sequence_id",
+titleText:"Sequence Id"
 },
 {
 allowNull:true,
@@ -50,7 +56,8 @@ creationOrderIndex:6,
 dataType:12,
 flags:4,
 length:36,
-name:"tenant_uuid"
+name:"tenant_uuid",
+titleText:"Tenant Uuid"
 }
 ],
 name:"lots",

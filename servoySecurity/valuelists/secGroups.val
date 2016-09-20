@@ -1,5 +1,5 @@
 dataProviderID1:"group_name",
-dataProviderID2:"group_id",
+dataProviderID2:"group_uuid",
 dataSource:"db:/stsservoy/groups",
 name:"secGroups",
 returnDataProviders:2,

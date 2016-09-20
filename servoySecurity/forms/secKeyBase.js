@@ -29,12 +29,12 @@ function validate(event) {
 function validateKeyName(){
 	errorMessage = null;													//	reset the error message
 	if(!key_name){															//	Key Name must be non-null;
-		errorMessage = 'Please provide a key name'							//	TODO: i18n HERE
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.key.name');
 		return false;														//	failed validation
 	}
 	var id = globals.secGetKeyID(key_name,application_id);					//	Check Key ID
-	if(id && id != key_id){													//	It should be unique
-		errorMessage = 'Key name is already in use';						//	TODO: i18n HERE
+	if(id && id != key_uuid){													//	It should be unique
+		errorMessage = i18n.getI18NMessage('sts.txt.key.name.already.in.use');
 		return false;														//	failed validation
 	}
 	return true;															//	validation success
@@ -50,7 +50,7 @@ function validateKeyName(){
  * @properties={typeid:24,uuid:"E3CA4B60-D12D-4975-A022-349464BC3E20"}
  */
 function updateUI(event) {
-	keyGroups = databaseManager.getFoundSetDataProviderAsArray(keys_to_group_keys,'group_id').join('\n');
+	keyGroups = databaseManager.getFoundSetDataProviderAsArray(keys_to_group_keys,'group_uuid').join('\n');
 	return _super.updateUI(event);
 }
 
@@ -72,7 +72,7 @@ function updateUI(event) {
 function onDataChangeKeyGroups(oldValue, newValue, event) {	
 																			//	Variable Declarations
 	var fs = keys_to_group_keys.duplicateFoundSet();						//	The related foundset 
-	var idColumnName = 'group_id';											//	The name of the fk id column to set
+	var idColumnName = 'group_uuid';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
 	var i;
 	var newIDs = [];

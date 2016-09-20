@@ -43,7 +43,7 @@ var textAreaString = "";
  */
 function onDataChangeCompany(oldValue, newValue, event) {
 	globals.companyLoginName = newValue;
-	application.output('-----'+globals.companyLoginName);
+	if (application.isInDeveloper()){application.output('-----'+globals.companyLoginName)}
 	return true
 }
 /**

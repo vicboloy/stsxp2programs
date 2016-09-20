@@ -2,7 +2,7 @@ allowCreationRelatedRecords:true,
 deleteRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/user_groups",
 items:[
-{foreignColumnName:"user_id",primaryDataProviderID:"user_id",typeid:23,uuid:"543D5446-36AA-4F68-B075-E26FB2AB5558"}
+{foreignColumnName:"user_uuid",primaryDataProviderID:"user_uuid",typeid:23,uuid:"543D5446-36AA-4F68-B075-E26FB2AB5558"}
 ],
 name:"users_to_user_groups",
 primaryDataSource:"db:/stsservoy/users",

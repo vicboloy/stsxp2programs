@@ -1,5 +1,5 @@
 dataProviderID1:"key_name",
-dataProviderID2:"key_id",
+dataProviderID2:"key_uuid",
 name:"secKeys",
 relationName:"sec_current_app_keys",
 returnDataProviders:2,

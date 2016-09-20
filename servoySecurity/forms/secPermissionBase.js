@@ -11,25 +11,25 @@ function validate(event) {
 		return _super.validate(event);
 	}
 	if(!permission_type){													//	validate permission type
-		errorMessage = 'Please specify a permission type';					//	TODO: i18n HERE
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.permission.type');
 		return false;														//	failed validation
 	}
 	if(permission_type == globals.SEC_PERMISSION_TYPE_DATA){				//	Data permission...
 		if(!server_name){													//	validate server name
-			errorMessage = 'Please specify a server name';					//	TODO: i18n HERE
+			errorMessage = i18n.getI18NMessage('sts.txt.provide.server.name');
 			return false;													//	failed validation
 		}
 		if(!table_name){													//	validate table name
-			errorMessage = 'Please specify a table name';					//	TODO: i18n HERE
+			errorMessage = i18n.getI18NMessage('sts.txt.provide.table.name');
 			return false;													//	failed validation
 		}
 	} else if(permission_type == globals.SEC_PERMISSION_TYPE_UI){			//	UI Permission...
 		if(!form_name){														//	validate form name
-			errorMessage = 'Please specify a form';							//	TODO: i18n HERE
+			errorMessage = i18n.getI18NMessage('sts.txt.provide.form');
 			return false;													//	failed validation
 		}
 		if(!element_uuid){													//	validate eliment uuid
-			errorMessage = 'Please specify an element';						//	TODO: i18n HERE
+			errorMessage = i18n.getI18NMessage('sts.txt.provide.element');
 			return false;													//	failed validation
 		}
 	}

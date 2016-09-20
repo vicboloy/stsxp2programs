@@ -1,6 +1,6 @@
 foreignDataSource:"db:/stsservoy/groups",
 items:[
-{foreignColumnName:"group_id",primaryDataProviderID:"group_id",typeid:23,uuid:"DBA423EF-FC38-4223-B59C-F9B40160097F"}
+{foreignColumnName:"group_uuid",primaryDataProviderID:"group_uuid",typeid:23,uuid:"DBA423EF-FC38-4223-B59C-F9B40160097F"}
 ],
 name:"group_keys_to_groups",
 primaryDataSource:"db:/stsservoy/group_keys",

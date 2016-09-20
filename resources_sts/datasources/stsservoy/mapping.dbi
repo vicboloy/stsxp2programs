@@ -7,7 +7,8 @@ creationOrderIndex:0,
 dataType:12,
 flags:5,
 length:36,
-name:"mapping_id"
+name:"mapping_id",
+titleText:"Mapping Id"
 },
 {
 allowNull:true,
@@ -15,88 +16,101 @@ autoEnterSubType:3,
 autoEnterType:1,
 creationOrderIndex:13,
 dataType:93,
-name:"edit_date"
+name:"edit_date",
+titleText:"Edit Date"
 },
 {
 allowNull:true,
 compatibleColumnTypes:"[[12,2147483647,0]]",
 creationOrderIndex:6,
 dataType:12,
-name:"field_comment"
+name:"field_comment",
+titleText:"Field Comment"
 },
 {
 allowNull:true,
 creationOrderIndex:1,
 dataType:12,
 length:50,
-name:"field_name"
+name:"field_name",
+titleText:"Field Name"
 },
 {
 allowNull:true,
 creationOrderIndex:9,
 dataType:4,
-name:"field_order"
+name:"field_order",
+titleText:"Field Order"
 },
 {
 allowNull:true,
 creationOrderIndex:2,
 dataType:4,
-name:"field_required"
+name:"field_required",
+titleText:"Field Required"
 },
 {
 allowNull:true,
 creationOrderIndex:12,
 dataType:4,
-name:"field_sort_order"
+name:"field_sort_order",
+titleText:"Field Sort Order"
 },
 {
 allowNull:true,
 creationOrderIndex:3,
 dataType:12,
 length:50,
-name:"field_value"
+name:"field_value",
+titleText:"Field Value"
 },
 {
 allowNull:true,
 compatibleColumnTypes:"[[8,17,17]]",
 creationOrderIndex:11,
 dataType:8,
-name:"field_value_length"
+name:"field_value_length",
+titleText:"Field Value Length"
 },
 {
 allowNull:true,
 creationOrderIndex:4,
 dataType:12,
 length:10,
-name:"field_value_type"
+name:"field_value_type",
+titleText:"Field Value Type"
 },
 {
 allowNull:true,
 creationOrderIndex:7,
 dataType:12,
 length:50,
-name:"mapped_field"
+name:"mapped_field",
+titleText:"Mapped Field"
 },
 {
 allowNull:true,
 creationOrderIndex:8,
 dataType:12,
 length:30,
-name:"mapped_format"
+name:"mapped_format",
+titleText:"Mapped Format"
 },
 {
 allowNull:true,
 creationOrderIndex:10,
 dataType:12,
 length:4,
-name:"mapping_key"
+name:"mapping_key",
+titleText:"Mapping Key"
 },
 {
 allowNull:true,
 creationOrderIndex:5,
 dataType:12,
 length:60,
-name:"mapping_line"
+name:"mapping_line",
+titleText:"Mapping Line"
 }
 ],
 name:"mapping",

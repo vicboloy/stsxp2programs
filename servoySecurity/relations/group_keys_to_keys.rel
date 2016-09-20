@@ -1,6 +1,6 @@
 foreignDataSource:"db:/stsservoy/keys",
 items:[
-{foreignColumnName:"key_id",primaryDataProviderID:"key_id",typeid:23,uuid:"4813CDFC-DD9E-4AF5-8F48-7A1C8CD08136"}
+{foreignColumnName:"key_uuid",primaryDataProviderID:"key_uuid",typeid:23,uuid:"4813CDFC-DD9E-4AF5-8F48-7A1C8CD08136"}
 ],
 name:"group_keys_to_keys",
 primaryDataSource:"db:/stsservoy/group_keys",

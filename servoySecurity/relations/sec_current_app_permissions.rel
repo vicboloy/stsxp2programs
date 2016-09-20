@@ -1,8 +1,8 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/permissions",
 items:[
-{foreignColumnName:"application_id",primaryDataProviderID:"globals.secCurrentApplicationID",typeid:23,uuid:"433ABB9D-0DBF-4E95-B9F2-6BF649B46F01"},
-{foreignColumnName:"key_id",primaryDataProviderID:"globals.SEC_NULL",typeid:23,uuid:"83C34347-924C-4777-99C3-5E966F1B912C"}
+{foreignColumnName:"application_id",primaryDataProviderID:"scopes.globals.secCurrentApplicationID",typeid:23,uuid:"433ABB9D-0DBF-4E95-B9F2-6BF649B46F01"},
+{foreignColumnName:"key_uuid",primaryDataProviderID:"scopes.globals.SEC_NULL",typeid:23,uuid:"83C34347-924C-4777-99C3-5E966F1B912C"}
 ],
 name:"sec_current_app_permissions",
 primaryDataSource:"db:/stsservoy/permissions",

@@ -30,7 +30,7 @@ var groupUsers = null;
 function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 																			//	Variable Declarations
 	var fs = groups_to_group_keys.duplicateFoundSet();						//	The related foundset 
-	var idColumnName = 'key_id';											//	The name of the fk id column to set
+	var idColumnName = 'key_uuid';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
 	var i;
 	
@@ -54,10 +54,14 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 			databaseManager.saveData(fs.getSelectedRecord());				//	save data
 		}
 	} else {																//	id was REMOVED	
-		id = oldIDs[oldIDs.length - 1];									//	determine the id, starting with the last element in the array
-		for(i in newIDs){													//	iterate by the new ids
+		//id = oldIDs[oldIDs.length - 1];									//	determine the id, starting with the last element in the array
+		/**for(i in newIDs){													//	iterate by the new ids
 			if(oldIDs[i] != newIDs[i])										//	until the corresponding old id doesn't match
 				id = oldIDs[i];												//	which gives the id that was removed
+		}*/
+		id = oldIDs.pop();
+		while (newIDs.indexOf(id) != -1){
+			id = oldIDs.pop();
 		}
 		if(fs.find()){														//	search the foundset
 			fs[idColumnName] = id;											//	by the fk column
@@ -89,7 +93,7 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 function onDataChangeGroupUsers(oldValue, newValue, event) {
 																			//	Variable Declarations
 	var fs = groups_to_user_groups.duplicateFoundSet();						//	The related foundset 
-	var idColumnName = 'user_id';											//	The name of the fk id column to set
+	var idColumnName = 'user_uuid';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
 	var i;
 	var newIDs =[];
@@ -134,8 +138,8 @@ function onDataChangeGroupUsers(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"CD7F46B7-E92F-42CF-80B4-52833E0E02C0"}
  */
 function updateUI(event) {													//	set the values for linked-list form variables
-	groupKeys = databaseManager.getFoundSetDataProviderAsArray(groups_to_group_keys,'key_id').join('\n');
-	groupUsers = databaseManager.getFoundSetDataProviderAsArray(groups_to_user_groups,'user_id').join('\n');
+	groupKeys = databaseManager.getFoundSetDataProviderAsArray(groups_to_group_keys,'key_uuid').join('\n');
+	groupUsers = databaseManager.getFoundSetDataProviderAsArray(groups_to_user_groups,'user_uuid').join('\n');
 	return _super.updateUI(event);											//	call to super
 }
 
@@ -162,14 +166,14 @@ function validate(event) {
 function validateGroupName(){
 	errorMessage = null;													//	reset the error message
 	if(!group_name){														//	Group Name must be non-null;
-		errorMessage = 'Please provide a group name'						//	TODO: i18n HERE
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.group.name');
 		return false;														//	failed validation
 	}
 	/** @type {UUID} tenant_uuid */
 	/** @type {Number} application_id */
 	var id = globals.secGetGroupID(group_name,tenant_uuid, application_id);	//	Check group ID
-	if(id && id != group_id){												//	It should be unique
-		errorMessage = 'Group name is already in use';						//	TODO: i18n HERE
+	if(id && id != group_uuid){												//	It should be unique
+		errorMessage = i18n.getI18NMessage('sts.txt.group.name.already.in.use');
 		return false;														//	failed validation
 	}
 	return true;															//	validation success

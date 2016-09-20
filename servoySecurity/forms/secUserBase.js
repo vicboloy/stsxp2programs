@@ -37,7 +37,7 @@ var userPassword = null;
 function onDataChangeUserGroups(oldIDs, newIDs, event) {
 																			//	Variable Declarations
 	var fs = users_to_user_groups.duplicateFoundSet();						//	The related foundset 
-	var idColumnName = 'group_id';											//	The name of the fk id column to set
+	var idColumnName = 'group_uuid';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
 	var i;
 	
@@ -82,7 +82,7 @@ function onDataChangeUserGroups(oldIDs, newIDs, event) {
  * @properties={typeid:24,uuid:"F82ED3C0-F92D-4537-9414-D4FAB9B3A520"}
  */
 function updateUI(event) {													//	set the values for linked-list form variables
-	userGroups = databaseManager.getFoundSetDataProviderAsArray(users_to_user_groups,'group_id').join('\n');
+	userGroups = databaseManager.getFoundSetDataProviderAsArray(users_to_user_groups,'group_uuid').join('\n');
 	
 	userPassword = null;													//	reset user password
 	passwordConfirm = null;													//	reset password confirm	
@@ -119,17 +119,23 @@ function validatePassword(event){
 	errorMessage = null;													//	clear the error
 	if(userPassword){														//	password was modified
 		if(!passwordConfirm){												//	must confirm password
-			errorMessage = 'Please confirm the password'					//	TODO: i18n HERE
+			errorMessage = i18n.getI18NMessage('sts.txt.provide.password.confirmation');
 			return false;													//	failed validation
 		}
 		if(userPassword != passwordConfirm){								//	password confirmation must match
-			errorMessage = 'Password confirmation does not match';			//	TODO: i18n HERE
+			errorMessage = i18n.getI18NMessage('sts.txt.password.confirmation.does.not.match');
 			return false;													//	failed validation
 		}
 		user_password = userPassword;										//	set the password
+		is_account_active = 1;												//  Password is set, so make account active
 		userPassword = null;												//	clear pw variable
 		passwordConfirm = null;												//	clear pw confirm variable
 	}
+	if (this.updatePassword){
+		updatePassword(false);
+		updateFields();
+	}
+	//forms[event.getFormName()].elements.btn_Update.enabled = false;
 	return true;
 }
 
@@ -160,12 +166,13 @@ function onDataChangeUserName(oldValue, newValue, event) {
 function validateUserName(event){
 	errorMessage = null;													//	reset the error message
 	if(!user_name){															//	user name must be non-null;
-		errorMessage = 'Please provide a user name'							//	TODO: i18n HERE
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.user.name');
 		return false;														//	failed validation
 	}
 	var id = globals.secGetUserID(user_name,tenant_uuid);						//	Check user ID
-	if(id && id != user_id){												//	It should be unique
-		errorMessage = 'User name is already in use';						//	TODO: i18n HERE
+	if(id && id != user_uuid){												//	It should be unique
+		errorMessage = i18n.getI18NMessage('sts.txt.user.name.already.in.use');
+		/** @type {QBSelect<db:/stsservoy/users>} */
 		return false;														//	failed validation
 	}
 	return true;															//	validation success		

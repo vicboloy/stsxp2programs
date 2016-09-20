@@ -2,7 +2,7 @@ allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/users",
 items:[
 {foreignColumnName:"tenant_uuid",primaryDataProviderID:"tenant_uuid",typeid:23,uuid:"16A351A7-F1EF-42F8-99AA-6E3B9E8C6982"},
-{foreignColumnName:"user_id",primaryDataProviderID:"employee_userid",typeid:23,uuid:"BC892502-68B7-4FDB-AA71-62A63910B935"}
+{foreignColumnName:"employee_id",primaryDataProviderID:"employee_id",typeid:23,uuid:"BC892502-68B7-4FDB-AA71-62A63910B935"}
 ],
 joinType:1,
 name:"sts_employee_to_userid",

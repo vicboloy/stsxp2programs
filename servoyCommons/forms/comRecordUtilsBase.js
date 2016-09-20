@@ -107,7 +107,7 @@ function deleteRecord(event, index) {
 		databaseManager.saveData(rec);
 		
 	}
-	application.updateUI();
+	application.updateUI(30);
 	return true;
 }
 

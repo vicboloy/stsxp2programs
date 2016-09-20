@@ -19,12 +19,12 @@ function validate(event) {
 function validateApplicationName(){
 	errorMessage = null;
 	if(!application_name){													//	application must be non-null;
-		errorMessage = 'Please provide an application name'					//	TODO: i18n HERE
+		errorMessage = i18n.getI18NMessage('sts.txt.provide.app.name');
 		return false;														//	failed validation
 	}
 	var appID = globals.secGetApplicationID(application_name);				//	search application ID
 	if(appID && appID != application_id){									//	it should be unique
-		errorMessage = 'Application name is already in use';				//	TODO: i18n HERE
+		errorMessage = i18n.getI18NMessage('sts.txt.app.name.already.in.use');
 			return false;													//	failed validation
 	}
 	return true;															//	validation success

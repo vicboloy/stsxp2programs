@@ -42,7 +42,7 @@ var DIALOGS = new function() {
 	var bluePrintStack = []
 
 	function markBluePrintsForCleanup(formName) {
-		application.output('Marking form "' + formName + '" for cleanup', LOGGINGLEVEL.DEBUG);
+		if (application.isInDeveloper()){application.output('Marking form "' + formName + '" for cleanup', LOGGINGLEVEL.DEBUG)}
 		bluePrintStack.push(formName);
 	}
 
@@ -69,14 +69,14 @@ var DIALOGS = new function() {
 		var formName;
 		for (var i = 0; i < bluePrintStack.length; i++) {
 			formName = bluePrintStack[i];
-			application.output('Cleaning up form "' + formName + '"', LOGGINGLEVEL.DEBUG);
+			if (application.isInDeveloper()){application.output('Cleaning up form "' + formName + '"', LOGGINGLEVEL.DEBUG)}
 			if (history.removeForm(formName)) {
 				bluePrintStack.splice(i, 1);
 				if (!solutionModel.removeForm(formName)) {
-					application.output("Can't remove dialog form '" + formName + "'", LOGGINGLEVEL.ERROR);
+					if (application.isInDeveloper()){application.output("Can't remove dialog form '" + formName + "'", LOGGINGLEVEL.ERROR)}
 				}
 			} else {
-				application.output("Can't remove dialog form '" + formName + "' from history", LOGGINGLEVEL.ERROR);
+				if (application.isInDeveloper()){application.output("Can't remove dialog form '" + formName + "' from history", LOGGINGLEVEL.ERROR)}
 			}
 		}
 
@@ -90,7 +90,7 @@ var DIALOGS = new function() {
 			//Store pointer to otherwise private method on the form, to be used when hiding the form
 			forms[_sFormName]['bluePrintCleanupCallback'] = markBluePrintsForCleanup;
 		} else {
-			application.output("Form '" + _sFormName + "' already exists.", LOGGINGLEVEL.ERROR);
+			if (application.isInDeveloper()){application.output("Form '" + _sFormName + "' already exists.", LOGGINGLEVEL.ERROR)}
 		}
 	}
 

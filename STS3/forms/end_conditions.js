@@ -16,6 +16,9 @@ var selectedIndex = 0;
  * @properties={typeid:24,uuid:"16DA5ADC-AD41-4B59-93B4-EBB53F37C097"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
@@ -40,8 +43,8 @@ function onActionAdd(event){
  * @properties={typeid:24,uuid:"CDFF9131-9C62-44EC-9FB4-AD364EEAA176"}
  */
 function onActionDelete(event) {
-	globals.doDialog("Remove End Condition","Delete this End Condition?","Delete","Cancel");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog('Remove End Condition','Delete this End Condition?','Delete','Cancel');
+	if (globals.dialogResponse == 'yes'){
 			controller.deleteRecord();
 		}
 

@@ -68,7 +68,7 @@ onActionMethodID:"23C234C1-325A-4265-A4D4-AD643F6284DA",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
-text:"Edit",
+text:"i18n:sts.btn.edit",
 typeid:7,
 uuid:"90437E9C-EC9F-42AD-876C-41175E929A5E"
 },
@@ -81,7 +81,7 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"122,26",
 tabSeq:-2,
-text:"New Logon",
+text:"i18n:sts.btn.logon.new",
 typeid:7,
 uuid:"98DDCBF6-7F75-4DB8-B849-B187B97FA8C4"
 },
@@ -95,7 +95,7 @@ onActionMethodID:"69FBB4DA-B107-4FDF-90C4-92A75D439466",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
-text:"Cancel",
+text:"i18n:sts.btn.cancel",
 typeid:7,
 uuid:"AC0CFC67-4175-4FC4-A6F5-9437AA2F0479",
 visible:false
@@ -106,7 +106,7 @@ customProperties:"methods:{
 onActionMethodID:{
 arguments:[
 null,
-null,
+\"true\",
 \"true\"
 ]
 }
@@ -118,7 +118,7 @@ onActionMethodID:"A7D4B571-2BDD-4EF7-BA77-D45BCD0CA43E",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
-text:"Save",
+text:"i18n:sts.btn.save",
 typeid:7,
 uuid:"DD248B26-F5E8-4FD1-81EB-C08BE261386B",
 visible:false
@@ -132,7 +132,7 @@ onActionMethodID:"AA944071-CA23-4099-8DF6-19DD86CEF6C7",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
-text:"Close",
+text:"i18n:sts.btn.close",
 typeid:7,
 uuid:"E98DCFAC-B389-4E0C-976D-C1243069B380"
 }

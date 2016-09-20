@@ -13,7 +13,7 @@ horizontalAlignment:0,
 labelFor:"",
 location:"5,3",
 size:"97,20",
-text:"Opened Views",
+text:"i18n:sts.label.opened.views",
 transparent:true,
 typeid:7,
 uuid:"EA42B19B-90B5-4775-80E6-94F50F89154F"

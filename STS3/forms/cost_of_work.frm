@@ -7,22 +7,22 @@ anchors:15,
 items:[
 {
 containsFormID:"476231BC-1AAD-45C0-B13E-CDE4E06808B1",
-location:"80,35",
-text:"Category Entry",
+location:"65,68",
+text:"i18n:sts.tab.cow.category.entry",
 typeid:15,
 uuid:"0CF48095-09BD-41F5-9B27-AD60950D234C"
 },
 {
 containsFormID:"7548A829-FE15-4FD2-9757-2850B712E1B9",
-location:"240,35",
-text:"Existing Pc Mark Codes",
+location:"223,130",
+text:"i18n:sts.tab.cow.existing.pc.mark.codes",
 typeid:15,
 uuid:"132AC75A-4F7E-41E2-985B-8D086FA2F83A"
 },
 {
 containsFormID:"F12E09DF-7A5D-461D-AFD9-3785D74D0F71",
-location:"160,35",
-text:"Needing Codes",
+location:"138,99",
+text:"i18n:sts.tab.cow.needing.codes",
 typeid:15,
 uuid:"E16BC0E8-FDF8-4352-976C-427842EC86E9"
 },
@@ -30,7 +30,7 @@ uuid:"E16BC0E8-FDF8-4352-976C-427842EC86E9"
 containsFormID:"B7D0937E-A7E4-49B3-BB8E-35855F420FD6",
 location:"0,35",
 relationName:"sts_cowcodes",
-text:"Your Codes",
+text:"i18n:sts.tab.cow.your.codes",
 typeid:15,
 uuid:"EE2DF28A-B426-46FB-B5D8-ED7BB391F14B"
 }
@@ -78,7 +78,7 @@ onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"120,26",
-text:"Apply Settings",
+text:"i18n:sts.btn.apply.settings",
 typeid:7,
 uuid:"E92A95E4-B91E-4D28-84CB-E8A31F6CCAF5"
 },
@@ -92,7 +92,7 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
 tabSeq:-2,
-text:"Close",
+text:"i18n:sts.btn.close",
 typeid:7,
 uuid:"FE9B9522-8AC3-4DE2-97BB-48EA560159F3"
 }

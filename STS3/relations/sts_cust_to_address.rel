@@ -2,7 +2,8 @@ allowCreationRelatedRecords:true,
 deleteRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/addresses",
 items:[
-{foreignColumnName:"customer_id",primaryDataProviderID:"customer_id",typeid:23,uuid:"214433B8-15A2-4809-81DA-9389FFCED879"}
+{foreignColumnName:"customer_id",primaryDataProviderID:"customer_id",typeid:23,uuid:"214433B8-15A2-4809-81DA-9389FFCED879"},
+{foreignColumnName:"delete_flag",operator:261,primaryDataProviderID:"LITERAL:99",typeid:23,uuid:"9F7B41EF-0E3D-4ACA-A44B-035D1C01AB6F"}
 ],
 joinType:1,
 name:"sts_cust_to_address",

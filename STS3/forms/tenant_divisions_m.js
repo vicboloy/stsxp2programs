@@ -96,6 +96,24 @@ function onActionClose(event) {
  * @properties={typeid:24,uuid:"DB85C56B-DE17-440E-9C99-8A52804E3DF5"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	controller.loadRecords(st2_tenantid_associations);
 	return _super.onShow(firstShow, event)
+}
+/**
+ * @param {JSEvent} event
+ * @param {Boolean} editing
+ *
+ * @properties={typeid:24,uuid:"A4708092-B1D2-4146-BED0-2C258BE4D434"}
+ */
+function onEdit(event,editing){
+	var tab = event.getFormName();
+	var tabFormName = elements.tabless.getTabFormNameAt(1);
+	if (editing){
+		forms[tabFormName].editActive(event);
+	} else {
+		forms[tabFormName].editInactive(event);
+	}
 }

@@ -24,6 +24,7 @@ uuid:"5E0457B7-516A-42F2-BF3A-CAA7B991437B"
 {
 anchors:11,
 dataProviderID:"end_prep_description",
+editable:false,
 location:"98,20",
 name:"end_prep_description",
 size:"140,20",
@@ -33,6 +34,7 @@ uuid:"979169B8-4B94-4C9A-B6DB-2415BD1DC76A"
 },
 {
 dataProviderID:"end_prep",
+editable:false,
 location:"0,20",
 name:"end_prep",
 size:"99,20",

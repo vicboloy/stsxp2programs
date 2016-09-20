@@ -43,3 +43,16 @@ function onRecordSelection(event) {
 	//application.output('barcode id '+id_serial_number_id);
 	return _super.onRecordSelection(event)
 }
+
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"8F26F009-A366-4722-B951-18EE4D3CBF7E"}
+ */
+function onActionHideNoFront(event) {
+	var win = application.getActiveWindow();
+	var winName = win.title;
+	scopes.globals.logger(true,winName+' closed.');
+	win.hide();
+	application.output('closing browse');
+}

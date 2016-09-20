@@ -9,3 +9,14 @@
 function onActionCoverSheet(event) {
 	// Intercept button clicks for buttons under Cover Sheet
 }
+/**
+ * @param {JSEvent} event
+ * @param {Boolean} editing
+ *
+ *
+ * @properties={typeid:24,uuid:"BD554DD1-55D2-4FE0-8A9F-3475871864DD"}
+ */
+function onActionEdit(event,editing){
+	controller.readOnly = !editing;	
+	elements.editMessage.visible = editing;
+}

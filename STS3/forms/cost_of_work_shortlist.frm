@@ -16,7 +16,7 @@ anchors:11,
 labelFor:"cowCodes",
 location:"0,0",
 size:"91,20",
-text:"Description",
+text:"i18n:sts.col.label.description",
 transparent:true,
 typeid:7,
 uuid:"2C9FD3C5-4596-4A52-B9CE-8158285ADEDE"

@@ -1,174 +1,4 @@
 /**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"7072EF26-CEAA-4164-B5CE-73F6C0676DA7"}
- */
-var vCustNum = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"3DE05ECE-6929-46FD-8910-AACA991D08D5"}
- */
-var vCustomerName = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"4974EA09-E924-4A8C-86F4-6619DE02F562"}
- */
-var vCustomerID = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"FFEE1A6D-5B49-4EDE-A7B7-258FFD9AEA37"}
- */
-var vJobNum = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"975112F5-9E7D-4868-B8C1-654EFEFF5667"}
- */
-var vJobName = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"CE4E278C-EBE5-479F-A005-ED63F5FA4595"}
- */
-var vJobID = "";
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"0154F9FB-F97C-48D3-99C4-EAF60C64BB22",variableType:4}
- */
-var vLabIDNums = 0;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"94B4D1D2-4661-439C-9C91-75CD791E40EB",variableType:4}
- */
-var vLabTotPieces = 0;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"28DAF216-B491-4E44-A1F8-22762388B410",variableType:4}
- */
-var vLabTotalWt = 0;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"8357B404-7B2C-43C8-B534-22F5B8596A8D",variableType:4}
- */
-var vLabNumPcmks = 0;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"FA3668FD-DAC0-402D-8C9E-1D7D0DD3B0A2"}
- */
-var vSeqNum = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"5A45C7F4-D07A-4E13-A75E-144FB48356C0"}
- */
-var vSheetNum = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"223DF198-32EC-4A32-B3D0-BB38BF03479E"}
- */
-var vSONum = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"D77C4418-D3AD-48BD-B89E-F388994794A1"}
- */
-var vLoadNum = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"78BC713E-4B8A-45E2-801E-49891FAD2CC8"}
- */
-var vLotNum = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"1A72DD60-1837-4DA4-8CD6-376ED2954110"}
- */
-var vPkgNum = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"D0E92AE7-3638-4EA0-AEB5-5BC5ED422FF9"}
- */
-var vLoadAll = "";
-/**
- * @type {String}
- * Load Release loads.load_release
- * @properties={typeid:35,uuid:"C11896CD-C9D7-4914-A36B-BF765C839C0E"}
- */
-var vLoadRel = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"FA1B3E24-1EB7-4791-89C4-78482F032516"}
- */
-var vPiecemark = "";
-/**
- * @type {String}
- * Piecemark Release idfiles.piece_release
- * @properties={typeid:35,uuid:"192C2B1A-6AEE-4526-B8C2-70F3FCEC10D1"}
- */
-var vPcmkRel = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"D1C7B6A6-87A0-4F07-9395-97435A28173E"}
- */
-var vFabShop = "";
-/**
- * @type {String}
- * Job PO Release jobs.po_release 
- * @properties={typeid:35,uuid:"58FFBC46-C984-4747-B114-3D318C036CB2"}
- */
-var vJobRel = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"846491C4-16FF-4FD8-A85A-C224C85367B7"}
- */
-var vArea = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"49EA1A21-D422-4EEA-B3B5-510775E80980"}
- */
-var vBatch = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"2CC9DA9E-9C21-4673-B504-C545CDBE0D20"}
- */
-var vCowCode = "";
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"E2F6D49D-2EDF-4E6D-880C-0EDBB7B304A2"}
- */
-var vUnits = "";
-/**
- * @properties={typeid:35,uuid:"18F3D008-5FD1-4047-B1D8-390E7A3FB52D",variableType:-4}
- */
-var vJobMetric = true;
-/**
- * @properties={typeid:35,uuid:"49A2E987-AF1D-48A2-BC12-349246C612AB",variableType:-4}
- */
-var jobFound = false;
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"CAADE13C-879B-4474-B248-A2A0D0EB3A8A"}
- */
-var versionForm = "";
-/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -177,12 +7,15 @@ var versionForm = "";
  * @properties={typeid:24,uuid:"6B7F8C7A-B000-4AA8-85AB-05A6519B73E3"}
  */
 function onShow(firstShow, event) {
-	scopes.jobs.getJobsList();
-	scopes.jobs.getCustomersList();
-	application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
-	onActionClear(event);
-	forms.loads_pcmk_combo;
-	return _super.onShow(firstShow, event)
+	if (firstShow){
+		_super.onShow(firstShow, event);
+		scopes.jobs.getJobsList();
+		scopes.jobs.getCustomersList();
+		application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
+		onActionClear(event);
+		}
+	globals.setUserFormPermissions(event);
+	//forms.loads_pcmk_combo;
 }
 /**
  * @param oldValue
@@ -209,7 +42,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 			}
 		} else {
 			vJobNum = "";
-			vJobName = "No Jobs For This Customer";
+			vJobName = 'No Jobs For This Customer';
 			scopes.jobs.jobUnderCustomer = "";
 		}
 		application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
@@ -270,50 +103,44 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 function collectCriteria(){
 	versionForm = globals.getInstanceForm(null);
 	// feeds jobs.viewBTableToForm()
-	var area = scopes.globals.arrayToString(vArea);
-	var batch = scopes.globals.arrayToString(vBatch);
-	var cowCode = scopes.globals.arrayToString(vCowCode);
-	var fabShop = scopes.globals.arrayToString(vFabShop);
-	var jobRel = scopes.globals.arrayToString(vJobRel);
+
 	if (vLoadAll){
 		var loadAll = null;
 	} else {
 		loadAll = scopes.globals.arrayToString(vLoadNum);
 	}
-	application.output('vLoadRel '+vLoadRel);
-	var loadRel = scopes.globals.convertLoadToId(vLoadRel);
-	application.output('loadRel '+loadRel);
-	var lotNum = scopes.globals.convertLotToId(vLotNum);//ticket#7
-	var pkgNum = scopes.globals.arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
-	var pcmkRel = scopes.globals.arrayToString(vPcmkRel);
-	var pmark = scopes.globals.arrayToString(vPiecemark);
-	var seqNum = scopes.globals.arrayToString(vSeqNum);
-	var sheetNum = scopes.globals.arrayToString(vSheetNum);
-	var soNum = scopes.globals.arrayToString(vSONum);
-	var criteria = {
-		area: area, 
-		batch: batch,
-		cowcode: cowCode,
-		fabshop: fabShop,
+	
+	criteria = {
+		area: scopes.globals.arrayToString(vArea),
+		areaa: scopes.globals.csvToArray(vArea),
+		batch: scopes.globals.arrayToString(vBatch),
+		batcha: scopes.globals.csvToArray(vBatch),
+		cowcode: scopes.globals.arrayToString(vCowCode),
+		cowcodea:scopes.globals.csvToArray(vCowCode),
+		fabshop: scopes.globals.arrayToString(vFabShop),
+		fabshopa: scopes.globals.csvToFabshopID(vFabShop),
+		jobid : vJobID,
 		loadall : loadAll,
-		loadrel : loadRel,
-		lotnum : lotNum,
-		pcmkrel : pcmkRel,
-		piecemark : pmark,
-		pkgnum : pkgNum,
-		seqnum : seqNum,
-		sheetnum : sheetNum,
-		sonum : soNum
+		loadalla : scopes.globals.csvToArray(vLoadAll),
+		loadrel : scopes.globals.convertLoadToId(vLoadRel),
+		loadrela : scopes.globals.csvToArray(vLoadRel),
+		lotnum : scopes.globals.convertLotToId(vLotNum), //ticket#7
+		lotnuma : scopes.globals.csvToArray(vLotNum),
+		pcmkrel : scopes.globals.arrayToString(vPcmkRel),
+		pcmkrela : scopes.globals.csvToArray(vPcmkRel),
+		piecemark : vPiecemark,
+		piecemarka : scopes.globals.csvToArray(vPiecemark),
+		pkgnum : scopes.globals.arrayToString(vPkgNum), //ticket#7, currently pkgNum is a FabTrol reference number,
+		pkgnuma : scopes.globals.csvToArray(vPkgNum),
+		seqnum : scopes.globals.arrayToString(vSeqNum),
+		seqnuma : scopes.globals.csvToArray(vSeqNum),
+		sheetnum : scopes.globals.arrayToString(vSheetNum),
+		sheetnuma : scopes.globals.csvToArray(vSheetNum),
+		statusa : scopes.globals.csvToFabCodes(vFabShop),
+		sonum : scopes.globals.arrayToString(vSONum),
+		sonuma : scopes.globals.csvToArray(vSONum)
 	}
-	//scopes.jobs.xxxviewBTableAlt(criteria);
-	var formName = 'loads_pcmk_combo'+versionForm;
-	//xxxtestBuildFS(scopes.jobs.browseJobID);
-	scopes.jobs.viewBTableToForm(criteria,formName);
-	//var fs33 = databaseManager.getFoundSet(scopes.jobs.browseDatasource);
-//application.output('before prefs load xyz');
-//	scopes.jobs.tablePrefsLoad(formName);
-//application.output('after prefs load xyz');
-	onActionShowWindow();
+	return criteria;
 }
 /**
  * @properties={typeid:24,uuid:"5497D571-E5BA-4996-AB84-4C60EC27F459"}
@@ -378,17 +205,19 @@ function browseInfoEnable(){
  * @AllowToRunInFind
  */
 function onActionClear(event) {
-	for(var index in forms.loads_criteria){
+	var form = forms[event.getFormName()]; // mw change
+	for(var index in form){
 		var name = index;
 		if (name.search('validate') != -1){continue}
 		if (name.search('v') == 0){
-			if ((typeof forms.loads_criteria[index]) == "number"){
-				forms.loads_criteria[index] = 0
+			if ((typeof form[index]) == "number"){
+				form[index] = 0
 			} else {
-				forms.loads_criteria[index] = "";
+				form[index] = "";
 			}
 		}
 	}
+	form.elements['frmJobNum'].requestFocus();
 	jobFound = false;
 	browseInfoEnable();
 }
@@ -400,7 +229,7 @@ function onActionClear(event) {
  *
  * @properties={typeid:24,uuid:"8206E21B-8B05-4261-90FE-94191969C2A0"}
  */
-function onGetInformation(event) {
+function xxxunusedonGetInformation(event) {
 	if (!jobFound) {return}
 	//scopes.jobs.loadCountsJobId = job_id;
 	var queryWeight =  'select sum(item_weight*item_quantity) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '
@@ -443,7 +272,7 @@ function onGetInformation(event) {
  */
 function xxxtestBuildFS(jobID){
 	/**
-	query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",* from piecemarks p '+
+	query = 'select random()*1000000 AS "browsing_id",0 AS "selection",* from piecemarks p '+
 	' right join routings rt on rt.routing_id = p.e_route_code_id '+
 	' inner join sheets s on p.sheet_id = s.sheet_id SHT '+
 	' and s.job_id = ? AND s.delete_flag IS null PCMK '+
@@ -469,4 +298,44 @@ function xxxtestBuildFS(jobID){
 	var resultQ = databaseManager.getFoundSet(q);
 	null;
 	*/
+}
+/**
+ * @param criteria
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"691EE7E2-97CD-4BBB-B4A3-57C87D0E87B0"}
+ */
+function openBrowseTable(criteria){
+	var formName = 'loads_pcmk_combo'+versionForm;
+	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	onActionShowWindow();
+}
+/**
+ * @properties={typeid:24,uuid:"3261ECE1-7C4F-4E31-8D33-34561FEA55B6"}
+ */
+function collectAndBrowse(){
+	var brDS = scopes.jobs.queryAssembly(criteria,null,'browse');
+	openBrowseTable(collectCriteria());
+}
+/**
+ * @properties={typeid:24,uuid:"8ED9C835-157C-438B-956F-62E3E4C26AFF"}
+ */
+function collectAndTab(formName){
+	criteria = collectCriteria();
+	//scopes.jobs.viewBTableSQL2(criteria,formName);
+	scopes.jobs.viewBTableSQLSummary(criteria,formName);
+	var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
+	var summaryForm = 'loads_summary_info'+versionForm;
+	var removeFormName = summaryForm+'_table';
+	forms[summaryForm].elements.tabless.removeAllTabs();
+	scopes.jobs.removeFormHist(removeFormName);
+	scopes.jobs.createRouteSummaryForm(summaryQuery,formName.replace('piecemark','summary'));
+
+	forms['loads_piecemark_info'+versionForm].elements.tabless.removeAllTabs();
+	if (forms[formName+"_table"] && forms[formName+"_table"].hide){forms[formName+"_table"].hide();}
+	scopes.jobs.removeFormHist(formName+"_table");
+	scopes.jobs.browseJobID = vJobID;
+	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
+	null;
 }

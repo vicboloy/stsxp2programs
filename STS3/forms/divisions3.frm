@@ -1,5 +1,13 @@
 dataSource:"db:/stsservoy/associations",
 extendsID:"8B09D889-B2FF-4ED0-81E5-5A559CB16EFD",
+items:[
+{
+extendsID:"551ED239-D6F2-4133-B91D-48AD849D7ED4",
+typeid:7,
+uuid:"D14CC79B-E049-493D-BEAF-27FB9B93F564",
+visible:false
+}
+],
 name:"divisions3",
 styleName:"sts_one",
 typeid:3,

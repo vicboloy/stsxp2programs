@@ -1,6 +1,6 @@
 addEmptyValue:1,
-customValues:"Include Prefix\r
-Exclude Prefix",
+customValues:"i18n:sts.txt.barcode.include.prefix\r
+i18n:sts.txt.barcode.exclude.prefix",
 name:"sts_barcode_include_prefix",
 returnDataProviders:1,
 showDataProviders:1,

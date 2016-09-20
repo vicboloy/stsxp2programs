@@ -9,6 +9,12 @@ typeid:16,
 uuid:"0CCE4E42-1398-4AF6-AB7E-F3CF44228929"
 },
 {
+extendsID:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8",
+onActionMethodID:"7EA8420A-FA8D-438F-B9DC-714B4F8E971F",
+typeid:7,
+uuid:"6DD1CDF7-1A68-4370-9C7C-1C7F83822354"
+},
+{
 horizontalAlignment:0,
 location:"114,5",
 name:"btn_Clear",

@@ -5,6 +5,22 @@
  */
 var winderList = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B89D144B-5730-4295-B63F-B918BA4A8FAD"}
+ */
+var areaHtml = '<html> \
+	<head> \
+	<script type="text/javascript"> \
+	function idMain() { \
+		localStorage.WinMain = window.self;\
+	} \
+	</script> \
+	</head> \
+	<body onload="idMain()"> \
+	</body> \
+	</html>'
+/**
  * @param {JSEvent} event event that launched this function
  * @param tabName {String} identify the tab selected to open that form view
  *
@@ -130,4 +146,12 @@ function onShow(firstShow, event) {
 	if (firstShow){
 		plugins.UserManager.updateClientInfo();
 	}
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		application.output('web app alert');
+		var alert = 'alert("here in start"+localStorage.WinMain);';
+		plugins.WebClientUtils.executeClientSideJS(alert);
+		application.output('web app alert 2 '+alert);
+		//plugins.WebClientUtils.executeClientSideJS('localStorage.MainWin = window.self;alert("win "+window.self);');
+	}
+	null;
 }

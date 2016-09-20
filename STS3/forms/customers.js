@@ -36,5 +36,14 @@ function onTabChange(previousIndex, event) {
  * @properties={typeid:24,uuid:"782359C0-6519-4B97-B1C4-D2A2D50918EE"}
  */
 function onShow(firstShow, event) {
+	foundset.sts_customer_container;
+	foundset.loadAllRecords();
+	var newFS = foundset.duplicateFoundSet();
+	controller.loadRecords(newFS);
+	if (foundset.getSize() == 0){
+		databaseManager.setAutoSave(false);
+		foundset.newRecord();
+		//foundset.getRecord(1);
+	}
 	globals.setUserFormPermissions(event);
 }

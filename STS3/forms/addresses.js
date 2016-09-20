@@ -11,9 +11,22 @@ var editAddressFlag = false;
  * @properties={typeid:24,uuid:"1965D683-4062-420F-A3A7-09CE735A5E8E"}
  */
 function delSelectedAddress(event) {
-	globals.doDialog("Delete Record","Delete this address?","Delete","Cancel Action");
-	if (globals.dialogResponse == "yes"){
-		foundset.deleteRecord();
+	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.record'),i18n.getI18NMessage('sts.txt.delete.this.address.question'),i18n.getI18NMessage('sts.txt.delete'),i18n.getI18NMessage('sts.txt.cancel'));
+	if (globals.dialogResponse == 'yes'){
+		delete_flag = 99;
+		edit_date = new Date();
+		var rec = foundset.getSelectedRecord();
+		databaseManager.saveData(rec);
+		if (foundset.getSize() == 0){
+			//var topForm = globals.getParentForm();
+			//while (true){
+				//for (element in forms[topForm]){
+					
+				//}
+				//forms.customer_specs.elements.
+			//} set up for multiple windows
+			if (forms.customer_specs.onActionEdit){forms.customer_specs.onActionEdit(event,false)}
+		}
 	}
 }
 
@@ -25,19 +38,19 @@ function delSelectedAddress(event) {
  */
 function addNewAddress(event) {
 	var formRev = scopes.globals.getInstanceForm(event);
-	onEditAddress(event,true);
+	//onActionEdit(event,true);
 	var form = application.getActiveWindow();
 	var entityId = "";
-	if (form.title.search("Employees") != -1){
+	if (form.title.search('Employees') != -1){
 		entityId = forms["employees_lst"+formRev].employee_id;
 	}
-	if (form.title.search("Customers") != -1){
+	if (form.title.search('Customers') != -1){
 		entityId = forms["customers_lst"+formRev].customer_id;
 	}
 	_super.newRecord(event,null,true,true);
-	foundset.customer_id = entityId;
-	foundset.tenant_uuid = globals.secCurrentTenantID;
-	onActionEditAddress(event);
+	customer_id = entityId;
+	tenant_uuid = globals.secCurrentTenantID;
+	onActionEdit(event,true);
 }
 
 /**
@@ -49,7 +62,7 @@ function addNewAddress(event) {
  */
 function onDataChangeZipCode(oldValue, newValue, event) {
 	if (!utils.hasRecords(sts_addresses_to_zip)){
-		//TODO throw dialog error this zipcode does not exist, need to add zipcode
+		globals.errorDialogMobile(event,"7001",zip_postal_code,"");
 		return false
 	} else {
 		if(!city){
@@ -90,97 +103,50 @@ function onAddressTypeChange(oldValue, newValue, event) {
 			controller.deleteRecord();
 			globals.selectedAddressIndex = controller.getSelectedIndex();
 			controller.setSelectedIndex(2);
-			onActionCancelEditAddress(event);
+			onActionCancelEdit(event);
 		}
 	}
 	//forms.addresses.controller.loadRecords(fs);
 	//forms.addresses.controller.loadAllRecords();
  	return true
 }
-
 /**
- * Called before the form component is rendered.
- *
- * @param {JSRenderEvent} event the render event
- *
- * @properties={typeid:24,uuid:"AC080D32-4094-4A4B-9591-EA87495D8865"}
- */
-function onRenderDeleteAddressButton(event) {
-	if (!editAddressFlag){
-		var addyType = address_type;
-		if (addyType != null){
-			elements.btn_Delete.text = "Delete"; // \'"+addyType+"\'";
-			elements.btn_Delete.visible = true;
-		} else {
-			//elements.btn_Delete.visible = false;
-		}
-	}
-}
-
-/**
- * @param event
- *
- * @properties={typeid:24,uuid:"86B853C9-AA6A-4395-89A8-B1BB1F8939C7"}
- */
-function onRenderEditAddressButton(event) {
-	if (!editAddressFlag){
-		var addyType = address_type;
-		if (addyType != null){
-			elements.btn_Edit.visible = true;
-		} else {
-			elements.btn_Edit.visible = false;
-		}
-	}
-}
-/**
- * @param event
+ * @param {JSEvent} event
+ * @param {Boolean} editStatus
  *
  * @properties={typeid:24,uuid:"D92C5F5E-161C-410F-A7DA-0243B2333602"}
  */
-function onActionEditAddress(event) {
-	onEditAddress(event,true);
-	databaseManager.setAutoSave(false);
-	var count = databaseManager.getFoundSetCount(foundset);
-	if (count == 0){
-		controller.newRecord();
-	}
-
-}
-
-/**
- * @param event
- * @param editStatus
- *
- * @properties={typeid:24,uuid:"ED0E61C4-70AF-43D4-949A-4632C8344733"}
- */
-function onEditAddress(event,editStatus){
-	//controller.enabled = status;
+function onActionEdit(event, editStatus) {
 	editAddressFlag = editStatus;
-	elements.btn_Delete.visible = !editStatus;
-	elements.btn_New.visible = !editStatus;
-	elements.btn_Cancel.visible = editStatus;
-	elements.btn_Save.visible = editStatus;
-	elements.btn_Edit.visible = !editStatus;
-	elements.tabless.enabled = !editStatus;
-	elements.address_type.enabled = editStatus;
-	elements.address_type.editable = editStatus;
-	elements.address_type.readOnly = !editStatus;
-	elements.line1.editable = editStatus;
-	elements.line2.editable = editStatus;
-	elements.city.editable = editStatus;
-	elements.state.editable = editStatus;
-	elements.zip_postal_code.editable = editStatus;
-}
+	controller.readOnly = !editStatus;
+	elements.btn_Delete.visible = editStatus;
+	elements.btn_New.visible = editStatus;
+	elements.tabless.readOnly = !editStatus;
+	elements.editMessage.visible = editStatus;
+	elements.btn_Delete.enabled = (foundset.getSize() != 0 && !(!foundset.address_type));
 
+	databaseManager.setAutoSave(false);
+	//var count = databaseManager.getFoundSetCount(foundset);
+	if (editStatus && foundset.getSize() == 0){
+		//controller.newRecord();
+		addNewAddress(event);
+	}
+	elements.btn_New.enabled = true;
+	var addTypeValue = elements.address_type.getDataProviderID();
+	if (editStatus && !foundset[addTypeValue]){
+		elements.address_type.requestFocus()
+		elements.btn_New.enabled = false;
+	}
+}
 /**
  * @param event
  *
  * @properties={typeid:24,uuid:"FF7606F7-99DE-4C97-8E9E-385A230040D9"}
  */
-function onActionSaveEditAddress(event) {
-	onEditAddress(event,false);
+function onActionSaveEdit(event) {
+	//onActionEdit(event, false);
 	databaseManager.saveData(foundset);
-	databaseManager.setAutoSave(true);
+	databaseManager.setAutoSave(false);
 }
 
 /**
@@ -188,24 +154,11 @@ function onActionSaveEditAddress(event) {
  *
  * @properties={typeid:24,uuid:"E71A7A0A-4F5D-4AE6-AC22-33D055AD20FB"}
  */
-function onActionCancelEditAddress(event) {
-	onEditAddress(event,false);
+function onActionCancelEdit(event) {
+	onActionEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
 	databaseManager.setAutoSave(true);
 }
-
-/**
- * Handle record selected.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"2E4D57B4-E6C1-4A99-AF34-6B12A4F2BE23"}
- */
-function onRecordSelection(event) {
-	elements.btn_Delete.visible = (foundset.getSize() > 0)
-	elements.btn_Edit.visible = (foundset.getSize() > 0)
-}
-
 /**
  * Perform the element default action.
  *
@@ -214,7 +167,7 @@ function onRecordSelection(event) {
  * @properties={typeid:24,uuid:"24D5F6D8-B068-4741-8454-B8460E276AAD"}
  */
 function onActionClose(event) {
-	onActionCancelEditAddress(event);
+	onActionCancelEdit(event);
 	globals.setWindowClosed(event.getFormName());
 	globals.mainWindowFront();
 }
@@ -231,16 +184,16 @@ function onActionClose(event) {
 function onShow(firstShow, event) {
 	var formRev = scopes.globals.getInstanceForm(event);
 	
-	onEditAddress(event,false);
+	//onEditAddress(event,false);
 	var form = application.getActiveWindow();
 	//var selIndex = 1;
 	var currentID = "";
-	if (form.title.search("Employees") != -1){
+	if (form.title.search('Employees') != -1){
 		currentID = forms["employee_specs"+formRev].employee_id;
 		//forms["employee_specs_"+formRev].currentSelection = forms["employees_lst_"+formRev].foundset.getSelectedIndex();
 		
 	}
-	if (form.title.search("Customers") != -1){
+	if (form.title.search('Customers') != -1){
 		currentID = forms["customers_lst"+formRev].customer_id;
 		//selIndex = foundset.getSelectedIndex();//forms["customers_lst_"+formRev].foundset.getSelectedIndex();
 	}
@@ -261,8 +214,21 @@ function onShow(firstShow, event) {
 		}
 	}
 	application.setValueListItems('stsvl_address_types',tempArray);
-	application.output('inside on show addresses.js');
-	elements.btn_Edit.enabled = (count > 0);
 	elements.btn_Delete.enabled = (count > 0);
 	globals.setUserFormPermissions(event);
+}
+
+
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"718BC3DA-0399-48C1-B30B-4F89819F2C79"}
+ */
+function onRecordSelection(event) {
+	if (!address_type){
+		elements.address_type.requestFocus();
+	}
+	return _super.onRecordSelection(event)
 }

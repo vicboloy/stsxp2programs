@@ -63,6 +63,7 @@ function startEditing(event) {
  * @properties={typeid:24,uuid:"A49F5599-C013-4967-ACA3-8547602C989A"}
  */
 function stopEditing(event) {
+	databaseManager.revertEditedRecords(foundset);
 	editStatus(false)
 	return _super.stopEditing(event)
 }

@@ -53,11 +53,12 @@ var vUomCodeSpecific = false;
  * @properties={typeid:24,uuid:"54C9E1C5-FC87-4E26-95E3-49E078523537"}
  */
 function editStatus(edit){
+	var empty = (foundset.getSize() == 0);
 	//controller.readOnly = !edit;
 	elements.btn_New.visible = !edit;
 	elements.btn_Cancel.visible = edit;
-	elements.btn_Delete.visible = !edit;
-	elements.btn_Edit.visible = !edit;
+	elements.btn_Delete.visible = (!empty && !edit);
+	elements.btn_Edit.visible = (!empty && !edit);
 	elements.btn_Save.visible = edit;
 	elements.tabless.enabled = !edit;
 	elements.jobNumberEntry.readOnly = false;
@@ -127,7 +128,7 @@ function onDataChangeCow(oldValue, newValue, event) {
 	vCowDescrip = forms.cost_of_work.cowCodes[newValue+"Descrip"];
 	cowcode_id = forms.cost_of_work.cowCodes[newValue];
 	if (!vUomCodeSpecific){
-		uom_dollar = forms.cost_of_work.cowCodes[newValue+"Value"];
+		uom_dollar = forms.cost_of_work.cowCodes[newValue+'Value'];
 	}
 	return true
 }
@@ -198,6 +199,7 @@ function onShow(firstShow, event) {
 	elements.uomCodesSpecific.visible = vUomCodeSpecific;
 	elements.uom_value.editable = vUomCodeSpecific;
 	scopes.jobs.tablePrefsLoad('cost_of_work_category');
+	editStatus(false);
 	return _super.onShow(firstShow, event)
 }
 /**
@@ -220,6 +222,7 @@ function clearForm(){
  */
 function deleteRecord(event, index) {
 	editStatus(false);
+	clearForm();
 	return _super.deleteRecord(event, index)
 }
 
@@ -287,13 +290,17 @@ function stopEditing(event) {
  * @properties={typeid:24,uuid:"7F19003A-1F49-4784-91C4-FE816A2D552C"}
  */
 function onRecordSelection(event) {
-	if (cowcode_id) {
-		vCowCode = sts_cowxref_cowcode.cow_code;
+	if (cowcode_id && vJobNumber) {
+		//vCowCode = sts_cowxref_cowcode.cow_code;
 		vCowDescrip = sts_cowxref_cowcode.cow_description;
 		vPONumber = sts_cowxref_jobs.customer_po;
 		vJobNumber = sts_cowxref_jobs.job_number;
 		vCustomerName = sts_cowxref_jobs.sts_job_to_customer.name;
 		vCustomerNumber = sts_cowxref_jobs.sts_job_to_customer.customer_number;
+	}
+	if (foundset.getSize() == 0){
+		elements.btn_Delete.visible = false;
+		elements.btn_Edit.visible = false;
 	}
 	return _super.onRecordSelection(event)
 }
@@ -310,4 +317,13 @@ function onRecordSelection(event) {
 function onHide(event) {
 	//foundset.removeFoundSetFilterParam('job_cowxref');
 	return _super.onHide(event)
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"CEEDD68C-E1A0-47D2-B8B1-74ABBF19B8AA"}
+ */
+function onActionClose(event){
+	clearForm();
+	databaseManager.revertEditedRecords(foundset);
 }

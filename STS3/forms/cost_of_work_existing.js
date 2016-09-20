@@ -201,3 +201,11 @@ function onShow(firstShow, event) {
 	}
 	return _super.onShow(firstShow, event)
 }
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"4CC974BE-486D-4C62-B2D7-50964875341B"}
+ */
+function onActionClose(event){
+	databaseManager.revertEditedRecords(foundset);
+}

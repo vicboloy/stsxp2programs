@@ -1,13 +1,15 @@
 /**
- * Perform the element default action.
+ * @type {String}
  *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"F710F1F7-49B7-48AD-900E-6F225D3DAD1C"}
+ * @properties={typeid:35,uuid:"18C9D8B7-9B13-4B7B-9749-4422DD5DC74C"}
  */
-function onActionTempNewUser(event) {
-	application.output("onActionTempNewUser user_management "+globals.secCurrentTenantID);
-}
+var formFunc = "CreateLogin";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"A69F9F37-51F2-4FBE-BF85-13A22915490A",variableType:4}
+ */
+var showIndex = 0;
 /**
  * Handle hide window.
  *
@@ -21,6 +23,7 @@ function onHide(event) {
 	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
 	globals.setWindowClosed();
+	onActionClose(event);
 	return _super.onHide(event)
 }
 
@@ -50,9 +53,13 @@ function onEdit(event,editFlag){
 	elements.btn_Edit.visible = !editFlag;
 	elements.btn_Cancel.visible = editFlag;
 	elements.btn_Save.visible = editFlag;
+	elements.btn_New.enabled = !editFlag;
 	elements.split.getLeftForm().controller.enabled = !editFlag;
 	elements.split.getRightForm().controller.enabled = editFlag;
 	elements.split.getRightForm().elements.user_name.editable = editFlag;
+	var rightForm = elements.split.getRightForm();
+	rightForm.elements.btn_Update.enabled = editFlag;
+	
 }
 /**
  * Perform the element default action.
@@ -70,12 +77,14 @@ function onActionEdit(event) {
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
- * @param {JSRecord} record
  * @param {Boolean} stopEdit
  *
  * @properties={typeid:24,uuid:"A7D4B571-2BDD-4EF7-BA77-D45BCD0CA43E"}
  */
-function saveEdits(event, record, stopEdit) {
+function saveEdits(event, stopEdit) {
+	var record = foundset.getSelectedRecord();
+	var assoc = forms[event.getFormName()].elements.split.getRightForm().assoc;
+	//record.association_uuid = assoc;
 	onEdit(event,false);
 	databaseManager.saveData(record);
 	return _super.saveEdits(event, record, stopEdit)
@@ -88,10 +97,10 @@ function saveEdits(event, record, stopEdit) {
  *
  * @properties={typeid:24,uuid:"69FBB4DA-B107-4FDF-90C4-92A75D439466"}
  */
-function cancelEdit(event) {
+function onActionCancelEdit(event) {
 	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
-	stopEditing(event);
+	//stopEditing(event);
 }
 
 /**
@@ -103,6 +112,7 @@ function cancelEdit(event) {
  * @properties={typeid:24,uuid:"C535CDB6-BA40-4E92-A96D-4B78AE10E8C6"}
  */
 function onShow(firstShow, event) {
+	globals.setUserFormPermissions(event);
 	var newRec = null;
 	onEdit(event,false);
 	return _super.onShow(firstShow, event)
@@ -124,4 +134,26 @@ function newRecord(event, location, changeSelection) {
 	tenant_uuid = globals.session.tenant_uuid;
 	edit_date = new Date();
 	return status;
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"249E7B98-1CB7-45AB-8AF2-ABA89D241637"}
+ */
+function onActionSelectInterval(event) {
+	for (var index = 1;index <= foundset.getSize();index++){
+		var date = new Date().getTime()+1000;
+		var newDate = new Date().getTime();
+		while (newDate < date){
+			newDate = new Date().getTime();
+			
+		}
+		application.output('date '+newDate+' '+date);
+		application.output('select '+index);
+		foundset.setSelectedIndex(index);
+		application.updateUI();
+	}
 }

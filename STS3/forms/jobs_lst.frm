@@ -27,6 +27,7 @@ uuid:"35EA5D57-9015-4FE4-B47B-C85022E86990"
 {
 anchors:11,
 dataProviderID:"sts_job_to_customer.name",
+editable:false,
 location:"133,20",
 name:"name",
 size:"68,20",
@@ -35,6 +36,7 @@ uuid:"53A903D4-F277-47AE-949D-6ED22B945C2C"
 },
 {
 dataProviderID:"job_number",
+editable:false,
 location:"0,20",
 name:"job_number",
 size:"78,20",
@@ -56,6 +58,7 @@ uuid:"BF98CF5F-8AAA-40F2-A607-FA0ACC153178"
 {
 anchors:11,
 dataProviderID:"sts_job_to_customer.customer_number",
+editable:false,
 location:"78,20",
 name:"customer_number",
 size:"55,20",

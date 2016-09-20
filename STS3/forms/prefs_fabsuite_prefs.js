@@ -21,7 +21,7 @@ function onActionEnable(event) {
 	elements.getFabsuiteRootPath.enabled = fabsuiteEnabled;
 	
 	if (!event){return}
-	scopes.prefs.onDataChangePrefsGeneral(null,null,event,"Prefs");
+	scopes.prefs.onDataChangePrefsGeneral(null,null,event,'Prefs');
 }
 
 /**

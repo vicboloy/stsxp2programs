@@ -4,6 +4,7 @@ items:[
 {
 dataProviderID:"vLoadAll",
 extendsID:"CA76C452-D7D4-480F-915D-DF237F53B4B5",
+text:"All Load Numbers",
 typeid:4,
 uuid:"00FD6E36-F7CC-418C-8767-04065A2F65C7"
 },
@@ -36,6 +37,7 @@ null,
 }",
 extendsID:"18E453D3-1551-44B8-9AC6-3C29B3C8DC91",
 onActionMethodID:"24AD80C5-DC06-4258-9587-54CFAAF778EE",
+text:"Clear",
 typeid:7,
 uuid:"17DEEE65-8FB2-4BD8-B4A0-39755A25E3E7"
 },
@@ -104,6 +106,7 @@ null,
 }",
 extendsID:"386A923E-2D96-456D-BF91-E7A5922EEADA",
 onActionMethodID:"99D86CE4-07A3-4625-8174-9F332A538ACD",
+text:"Get Information",
 typeid:7,
 uuid:"7BF5B9A8-31B6-408B-B043-6CA87B362C89"
 },

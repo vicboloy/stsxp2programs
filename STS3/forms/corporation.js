@@ -10,7 +10,7 @@
  */
 function newRecord(event, location, changeSelection) {
 	if (!company_name){
-		errorMessage = 'Please enter a company name.';
+		errorMessage = i18n.getI18NMessage('sts.txt.please.enter.company.name');
 		return false;
 	}
 	var tenants = databaseManager.getFoundSet(globals.SEC_SERVER,globals.SEC_TABLE_TENANTS);  // get an association's foundset
@@ -22,7 +22,7 @@ function newRecord(event, location, changeSelection) {
 		} else {
 			var maxTenants = tenants.getSize();
 			if (maxTenants > 1){
-				errorMessage = 'There are multiple companies with this ID.';
+				errorMessage = i18n.getI18NMessage('sts.txt.multiple.company.ids');
 				return false;
 			}
 			var rec = tenants.getRecord(1);
@@ -36,4 +36,19 @@ function newRecord(event, location, changeSelection) {
 		return true;
 	}
 	
+}
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"C7B497FC-CBFD-4FC8-B153-1265CA024A33"}
+ */
+function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
+	return _super.onShow(firstShow, event)
 }

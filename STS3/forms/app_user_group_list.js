@@ -7,7 +7,6 @@
  * @properties={typeid:24,uuid:"7E651C76-6B8A-4E00-9E35-84E98F1DD18F"}
  */
 function onAction(event) {
-	// TODO Auto-generated method stub
 }
 
 /**
@@ -43,11 +42,24 @@ function deleteRecord(event, index) {
 	/** @type {JSFoundSet<db:/stsservoy/user_groups>} */
 	var fs = databaseManager.getFoundSet('stsservoy','user_groups');
 	if (fs.find()){
-		fs.group_id = group_id;
+		fs.group_uuid = group_uuid;
 		if (fs.search()){
 			globals.DIALOGS.showErrorDialog('Cannot delete Permission Group','Group Key already used within User Group Keys.');
 			return true;
 		}
 	}
 	return _super.deleteRecord(event, index);
+}
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"9763F85B-5156-46CC-9A37-0E526289361C"}
+ */
+function onShow(firstShow, event) {
+	//foundset.loadAllRecords();
+	return _super.onShow(firstShow, event)
 }

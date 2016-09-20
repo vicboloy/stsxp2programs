@@ -18,6 +18,7 @@ null,
 }",
 extendsID:"386A923E-2D96-456D-BF91-E7A5922EEADA",
 onActionMethodID:"99D86CE4-07A3-4625-8174-9F332A538ACD",
+text:"Get Information",
 typeid:7,
 uuid:"96BF518D-6837-4F6A-BC9D-CA2A0FE647FA"
 }

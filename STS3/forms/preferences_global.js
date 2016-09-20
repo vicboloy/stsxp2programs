@@ -7,23 +7,23 @@
 * @type abcPrinterList {Array} Array containing units of measure
  */
 var abcPrinterList = new Array;
-abcPrinterList.push("Allegro");
-abcPrinterList.push("DataMax");
-abcPrinterList.push("LabeLase 1000");
-abcPrinterList.push("Pinnacle");
-abcPrinterList.push("Prodigy Plus");
-abcPrinterList.push("TEC B-400");
-abcPrinterList.push("Zebra");
+abcPrinterList.push('Allegro');
+abcPrinterList.push('DataMax');
+abcPrinterList.push('LabeLase 1000');
+abcPrinterList.push('Pinnacle');
+abcPrinterList.push('Prodigy Plus');
+abcPrinterList.push('TEC B-400');
+abcPrinterList.push('Zebra');
 
 /**
  * @properties={typeid:35,uuid:"8587CE77-93D0-4A12-AAE1-E3AB85CB6CE9",variableType:-4}
  * @type aLabelType {Array} aLabelType Array containing units of measure
 */
 var aLabelType = new Array;
-aLabelType.push("Raw Matl");
-aLabelType.push("Serial #");
-aLabelType.push("Serial01");
-aLabelType.push("Standard");
+aLabelType.push('Raw Matl');
+aLabelType.push('Serial #');
+aLabelType.push('Serial01');
+aLabelType.push('Standard');
 
 /**
  * @properties={typeid:35,uuid:"EAE37CDD-26F7-4CF8-9312-55774F700588",variableType:-4}
@@ -36,20 +36,20 @@ var lanUsers = new Array;
  *
  * @properties={typeid:35,uuid:"893F0151-5ADB-4357-8D78-30D771DC4C56"}
  */
-var shipTranCode = "FABSH";
+var shipTranCode = 'FABSH';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"3310B039-1166-4776-937D-28F214B4690A"}
  */
-var recvTranCode = "FABRC";
+var recvTranCode = 'FABRC';
 
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"8DA04489-BEF3-4371-A499-914DD92A7CFA"}
  */
-var dlApp = "LDTDNLD.APP";
+var dlApp = 'LDTDNLD.APP';
 /**
  * @type {String}
  *
@@ -95,7 +95,7 @@ var enableDebug = false;
  *
  * @properties={typeid:35,uuid:"61EC124C-30DD-49CF-BFF1-C976A720E557"}
  */
-var rfShipStatus = "WELD";
+var rfShipStatus = 'WELD';
 /**
  * @type {String}
  *
@@ -148,7 +148,7 @@ var rfPortableType = "";
  *
  * @properties={typeid:35,uuid:"D315BE9B-3282-4141-ACA2-027764CFC60E"}
  */
-var yourFcCallSign = "TEST CALL SIGN";
+var yourFcCallSign = 'TEST CALL SIGN';
 /**
  * @properties={typeid:35,uuid:"A3330E84-6C48-45F5-990C-E20C37502EF6",variableType:-4}
  */
@@ -243,7 +243,7 @@ var autoCreateLoad = true;
  *
  * @properties={typeid:35,uuid:"9804B5CD-59D6-4619-9C6D-55601AAC8070"}
  */
-var rfPlRpType = "Summary Report";
+var rfPlRpType = 'Summary Report';
 /**
  * @properties={typeid:35,uuid:"38F3DAC9-B028-4574-A982-486E9F2D17F6",variableType:-4}
  */
@@ -323,7 +323,7 @@ var maxwt = 42000.000000;
  *
  * @properties={typeid:35,uuid:"B841A433-CC9D-4B4B-B6B6-8263E8256C2C"}
  */
-var markZip = "MARKUNIQ";
+var markZip = 'MARKUNIQ';
 /**
  * @properties={typeid:35,uuid:"18464B0F-E917-4470-B345-AD2E57B51D0E",variableType:-4}
  */
@@ -367,7 +367,7 @@ var qtyPrompt = 9.000000;
  *
  * @properties={typeid:35,uuid:"A9682ED5-B331-455B-91AD-B946FAEC754F"}
  */
-var recvrZip = "RECEIVER";
+var recvrZip = 'RECEIVER';
 /**
  * @type {Number}
  *
@@ -379,7 +379,7 @@ var paintDelay = 0.000000;
  *
  * @properties={typeid:35,uuid:"14FE2873-7ECE-4116-A677-B3AB2D259615"}
  */
-var dflRouteCode = "NORMAL";
+var dflRouteCode = 'NORMAL';
 /**
  * @properties={typeid:35,uuid:"C4727821-F7C2-46A3-9DD6-7354434FFF6A",variableType:-4}
  */
@@ -397,13 +397,13 @@ var lOnlyOneCustPerJob = false;
  *
  * @properties={typeid:35,uuid:"C74E2575-1DF1-498E-A151-2DBCDC765700"}
  */
-var madeIn = "Made in USA";
+var madeIn = 'Made in USA';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"8F7761A4-D78A-4C0E-A87E-57E53251332B"}
  */
-var stsInstalled = "Fabricator";
+var stsInstalled = 'Fabricator';
 /**
  * @properties={typeid:35,uuid:"E3642D3F-4D61-49B1-81B7-A7210779DF5D",variableType:-4}
  */
@@ -416,19 +416,19 @@ var smallMadeInFont = true;
  *
  * @properties={typeid:35,uuid:"3B1EB578-2D37-434C-A9BA-A6A2A914EF0D"}
  */
-var poSetting = "Use the Job P.O. Number";
+var poSetting = 'Use the Job P.O. Number';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"6A91320B-AD2F-4F7F-939F-2F1B593DAF35"}
  */
-var relSetting = "Use the Load Release #";
+var relSetting = 'Use the Load Release #';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"119371A6-CEF2-4440-A117-7F4521257115"}
  */
-var poCostSetting = "Use the Job P.O. Number";
+var poCostSetting = 'Use the Job P.O. Number';
 
 
 //Display Settings preferences -----------------------------------------------------------------
@@ -467,19 +467,19 @@ var lTranTrak = false;
  *
  * @properties={typeid:35,uuid:"1953C899-F570-438D-A4AE-A6B45222162B"}
  */
-var dflIdFmt = "FORMAT 2";
+var dflIdFmt = 'FORMAT 2';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"45352643-7D77-439A-967B-D3AA2B19315F"}
  */
-var idBLine1 = "Bar Code Form #";
+var idBLine1 = 'Bar Code Form #';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"3BB720FF-58C5-483A-8D94-94409D2A8402"}
  */
-var idBLine2 = "Customer Number";
+var idBLine2 = 'Customer Number';
 /**
  * @type {String}
  *
@@ -513,7 +513,7 @@ var ignoreBatchJobLoadQty = true;
  *
  * @properties={typeid:35,uuid:"8990867E-B020-4179-B86F-79B74A299B46"}
  */
-var portableType = "Symbol 38xx - Status Job";
+var portableType = 'Symbol 38xx - Status Job';
 /**
  * @type {String}
  *
@@ -525,7 +525,7 @@ var mcLinkPath = "";
  *
  * @properties={typeid:35,uuid:"1B3913B0-6E1E-4FB2-A98D-CBE9A942D2DF"}
  */
-var loadCreate = "Job Number Specific";
+var loadCreate = 'Job Number Specific';
 /**
  * @type {String}
  *
@@ -666,7 +666,7 @@ var lFabtrolShip = true;
  *
  * @properties={typeid:35,uuid:"A924676D-B9C2-4610-976F-FC8209A45FAA"}
  */
-var ftMatchType = "LOAD";
+var ftMatchType = 'LOAD';
 /**
  * @properties={typeid:35,uuid:"81EAB07D-CBA8-4848-9B6E-E98DA869AD2F",variableType:-4}
  */
@@ -687,19 +687,19 @@ var fabtrolServerName = "BSCFAB";
  *
  * @properties={typeid:35,uuid:"1AAA6F50-E574-4167-9FA3-204BBF06F9DE"}
  */
-var fabtrolDatabase = "FABTROLMRP";
+var fabtrolDatabase = 'FABTROLMRP';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"3388531B-42E3-4ED2-B60E-C850F5856012"}
  */
-var fabtrolUserid = "FTAPP";
+var fabtrolUserid = 'FTAPP';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"EA85C89A-C2FE-44B0-B779-F90BEB5422B2"}
  */
-var fabtrolPassword = "FT-SQL-DB";
+var fabtrolPassword = 'FT-SQL-DB';
 /**
  * @properties={typeid:35,uuid:"6EBBE16F-E80E-4964-855D-528E6EE5E75D",variableType:-4}
  */
@@ -713,7 +713,7 @@ var lFabtrolImportOnly = false;
  *
  * @properties={typeid:35,uuid:"A3A7D21D-11CA-4036-B58B-45B7644888E4"}
  */
-var fabtrolAdcPath = "LOAD";
+var fabtrolAdcPath = 'LOAD';
 /**
  * @type {String}
  *
@@ -743,7 +743,7 @@ var ftUnitOdbc = "FTMRP38UNIT";
  *
  * @properties={typeid:35,uuid:"D0EF2C69-B09B-4989-8415-9A4297FCB3C6"}
  */
-var ftSimpleJobs = "OLD";
+var ftSimpleJobs = 'OLD';
 /**
  * @properties={typeid:35,uuid:"E6203B9B-37CC-4EDC-8D63-2FB04567ACC6",variableType:-4}
  */
@@ -862,6 +862,6 @@ function onActionGetPrinters(event,updateValue) {
 function onShow(firstShow, event) {
 	onActionGetPrinters(event,null);
 	if (!scopes.printer.default_label_name || scopes.printer.default_label_name == ""){
-		scopes.printer.default_label_name = "<NONE>";
+		scopes.printer.default_label_name = '<NONE>';
 	}
 }

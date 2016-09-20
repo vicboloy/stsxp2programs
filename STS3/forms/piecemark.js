@@ -32,6 +32,7 @@ function onShow(firstShow, event) {
 	if (firstShow){
 		fieldOrder = globals.setFieldOrder(event);
 	}
+	globals.setUserFormPermissions(event);
 	foundset.clear();
 	employee = globals.session.loginUserNum;
 	associationId = globals.session.associationId;

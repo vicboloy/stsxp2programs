@@ -79,19 +79,19 @@ var compileVersion = "0.1";
  *
  * @properties={typeid:35,uuid:"4A2D3762-336A-4CB6-BD15-9E1F1AD94FA0"}
  */
-var compileDate = "2013.01.01";
+var compileDate = '2013.01.01';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"019BA213-87C9-4DE4-8AD5-F01DADDBE917"}
  */
-var compileTime = "00:00:00";
+var compileTime = '00:00:00';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"9E3C988C-F438-48E1-80E7-0060051093A1"}
  */
-var cSwitch = "PC";
+var cSwitch = 'PC';
 //--------------------------------------------------------------------------------------
 /**
  * @properties={typeid:35,uuid:"25BCF05F-27A8-4993-9992-6BFF1BAF769F",variableType:-4}
@@ -103,18 +103,22 @@ var uomarray = new Array;
  */
 function initUomArray() {
 	if (uomarray.length == 0 ){
-		uomarray[1] = "CWT";
-		uomarray.push("EACH");
-		uomarray.push("LBS");
-		uomarray.push("LNFT");
-		uomarray.push("METR");
-		uomarray.push("MTON");
-		uomarray.push("MTR2");
-		uomarray.push("PNLS");
-		uomarray.push("SQFT");
-		uomarray.push("TON");
+		uomarray[1] = 'CWT';
+		uomarray.push('EACH');
+		uomarray.push('LBS');
+		uomarray.push('LNFT');
+		uomarray.push('METR');
+		uomarray.push('MTON');
+		uomarray.push('MTR2');
+		uomarray.push('PNLS');
+		uomarray.push('SQFT');
+		uomarray.push('TON');
 	}
 }
+/**
+ * @properties={typeid:35,uuid:"35B65CE5-89D3-4ECF-93F2-D9058F73272D",variableType:-4}
+ */
+var transactions = false;
 //--------------------------------------------------------------------------------------
 /**
  * @properties={typeid:35,uuid:"75DABA6A-1EB2-4E4E-BCA4-6B65DF8804B7",variableType:-4}
@@ -125,7 +129,7 @@ var aStatusTypes = new Array;
  * @properties={typeid:35,uuid:"0A0B01AA-138B-4C3F-85E0-1EBE650867EE",variableType:-4}
  * @type aTrackWindows {Array} Windows lists
  */
-var aTrackWindows = ["STS - Main"];
+var aTrackWindows = ['STS - Main'];
 /**
  * @properties={typeid:24,uuid:"E55D375F-2EA8-4D4E-8234-B7AF6A47619E"}
  */
@@ -135,51 +139,51 @@ var aTrackWindows = ["STS - Main"];
  */
 function initStatusTypes(){
 	if (aStatusTypes.length == 0){
-		aStatusTypes.push("None");
-		aStatusTypes.push("Fab Raw Received");
-		aStatusTypes.push("Fab Receive");
-		aStatusTypes.push("Fab Cut");
-		aStatusTypes.push("Fab Beam Line");
-		aStatusTypes.push("Fab Blased");
-		aStatusTypes.push("Fab Drilled");
-		aStatusTypes.push("Fab Layout");
-		aStatusTypes.push("Fab Fitup");
-		aStatusTypes.push("Fab Welded");
-		aStatusTypes.push("Fab 1stInspect");
-		aStatusTypes.push("Fab 2ndInspect");
-		aStatusTypes.push("Fab 3rdInspect");
-		aStatusTypes.push("Fab 4thInspect");
-		aStatusTypes.push("Fab Inspected");
-		aStatusTypes.push("Fab Fabricated");
-		aStatusTypes.push("Fab Paint");
-		aStatusTypes.push("Fab Bundled");
-		aStatusTypes.push("Fab Move");
-		aStatusTypes.push("Fab Transfer");
-		aStatusTypes.push("Fab Loading");
-		aStatusTypes.push("Fab Loaded");
-		aStatusTypes.push("Fab LoadVerify");
-		aStatusTypes.push("Fab Ship");
-		aStatusTypes.push("Galvanizer Received");
-		aStatusTypes.push("Galvanizer Shipped");
-		aStatusTypes.push("Galvan LoadVerify");
-		aStatusTypes.push("Painter Received");
-		aStatusTypes.push("Painter Shipped");
-		aStatusTypes.push("Paint LoadVerify");
-		aStatusTypes.push("FireProofer Received");
-		aStatusTypes.push("FireProofer Shipped");
-		aStatusTypes.push("FireProof LoadVerify");
-		aStatusTypes.push("Other Received");
-		aStatusTypes.push("Other Shipped");
-		aStatusTypes.push("Other LoadVerify");
-		aStatusTypes.push("Jobsite Received");
-		aStatusTypes.push("Jobsite Shipped");
-		aStatusTypes.push("Jobsite LoadVerify");
-		aStatusTypes.push("Jobsite Inspected");
-		aStatusTypes.push("Jobsite Painted");
-		aStatusTypes.push("Jobsite Field Work");
-		aStatusTypes.push("Jobsite Move");
-		aStatusTypes.push("Jobsite Issued");
-		aStatusTypes.push("Jobsite Erected");
+		aStatusTypes.push('None');
+		aStatusTypes.push('Fab Raw Received');
+		aStatusTypes.push('Fab Receive');
+		aStatusTypes.push('Fab Cut');
+		aStatusTypes.push('Fab Beam Line');
+		aStatusTypes.push('Fab Blased');
+		aStatusTypes.push('Fab Drilled');
+		aStatusTypes.push('Fab Layout');
+		aStatusTypes.push('Fab Fitup');
+		aStatusTypes.push('Fab Welded');
+		aStatusTypes.push('Fab 1stInspect');
+		aStatusTypes.push('Fab 2ndInspect');
+		aStatusTypes.push('Fab 3rdInspect');
+		aStatusTypes.push('Fab 4thInspect');
+		aStatusTypes.push('Fab Inspected');
+		aStatusTypes.push('Fab Fabricated');
+		aStatusTypes.push('Fab Paint');
+		aStatusTypes.push('Fab Bundled');
+		aStatusTypes.push('Fab Move');
+		aStatusTypes.push('Fab Transfer');
+		aStatusTypes.push('Fab Loading');
+		aStatusTypes.push('Fab Loaded');
+		aStatusTypes.push('Fab LoadVerify');
+		aStatusTypes.push('Fab Ship');
+		aStatusTypes.push('Galvanizer Received');
+		aStatusTypes.push('Galvanizer Shipped');
+		aStatusTypes.push('Galvan LoadVerify');
+		aStatusTypes.push('Painter Received');
+		aStatusTypes.push('Painter Shipped');
+		aStatusTypes.push('Paint LoadVerify');
+		aStatusTypes.push('FireProofer Received');
+		aStatusTypes.push('FireProofer Shipped');
+		aStatusTypes.push('FireProof LoadVerify');
+		aStatusTypes.push('Other Received');
+		aStatusTypes.push('Other Shipped');
+		aStatusTypes.push('Other LoadVerify');
+		aStatusTypes.push('Jobsite Received');
+		aStatusTypes.push('Jobsite Shipped');
+		aStatusTypes.push('Jobsite LoadVerify');
+		aStatusTypes.push('Jobsite Inspected');
+		aStatusTypes.push('Jobsite Painted');
+		aStatusTypes.push('Jobsite Field Work');
+		aStatusTypes.push('Jobsite Move');
+		aStatusTypes.push('Jobsite Issued');
+		aStatusTypes.push('Jobsite Erected');
 	}
 }
 /**
@@ -192,8 +196,8 @@ var aLaborCodes = [];
  * @properties={typeid:24,uuid:"C8E73EE3-0C3E-484C-ADE7-ECF0D06813E7"}
  */
 function doLogout(event) {
-	globals.doDialog("Exit Steel Tracking System","Exit STS program?","Exit","Cancel");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog('Exit Steel Tracking System','Exit STS program?','Exit','Cancel');
+	if (globals.dialogResponse == 'yes'){
 		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT) {
 			application.showURL("http://" + application.getHostName() + "/webclient.html", "_top");
 		}	    	  
@@ -227,7 +231,7 @@ var aStatusCodes = [];
  * Keep track of open windows for tracknig.
  * @properties={typeid:35,uuid:"A025872B-C6F5-4D3C-A876-7EAF54B3A6D6",variableType:-4}
  */
-var aOpenWindows = ["STS - Main Window"];
+var aOpenWindows = ['STS - Main Window'];
 /**
  * @properties={typeid:24,uuid:"445AB0E6-10DB-401A-8DDF-D685503FEAF4"}
  */
@@ -268,7 +272,7 @@ var yn = true;
  *
  * @properties={typeid:35,uuid:"F93A1E07-F780-45C9-BCB4-BF306C176DD2"}
  */
-var popupName = "MASTEREDIT";
+var popupName = 'MASTEREDIT';
 /**
  * @properties={typeid:35,uuid:"0E0D99A8-09E1-4CF5-A5DB-CE91BC1DD411",variableType:-4}
  */
@@ -601,7 +605,7 @@ var nssValue = "792.000000";
  *
  * @properties={typeid:35,uuid:"167B74CA-D390-4D68-BA3A-C9D449309A6E"}
  */
-var cssMessage = "Fully Registered LAN Version.";
+var cssMessage = 'Fully Registered LAN Version.';
 
 //-------------------------------------------------------------------------------------------------------
 /**
@@ -609,7 +613,7 @@ var cssMessage = "Fully Registered LAN Version.";
  *
  * @properties={typeid:35,uuid:"76D088DC-9D24-43BE-8D42-6B30046D8575"}
  */
-var action = "Cancel";
+var action = 'Cancel';
 /**
  * @type {String}
  *
@@ -621,7 +625,7 @@ var cTempSTSInstalled = "";
  *
  * @properties={typeid:35,uuid:"87A0D8D8-D7CA-4EDC-A65F-827A452A922E"}
  */
-var lanVersion = "TESTING";
+var lanVersion = 'TESTING';
 /**
  * @properties={typeid:35,uuid:"407B0805-31EE-4952-9FE6-A56DA26922BC",variableType:-4}
  */
@@ -833,17 +837,21 @@ var importRecordCount=0;
  */
 var tempArray = [];
 /**
+ * @properties={typeid:35,uuid:"9B53D57D-E63F-4EA7-B47E-E46831EE61B6",variableType:-4}
+ */
+var formsToRemove = [];
+/**
  * Callback method for when solution is opened.
  *
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
-	application.output('globals onSolutionOpen opened. STS3/globals.js');
+	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STS3/globals.js')}
 	plugins.UserManager.updateClientInfo();
 	APPLICATION_NAME = application.getSolutionName();
 	secCreateApplication('STSmobile');
 	var mobileID = secGetApplicationID('STSmobile');
-	application.output('mobile id '+mobileID);
+	if (application.isInDeveloper()){application.output('mobile id '+mobileID)}
 
 	databaseManager.nullColumnValidatorEnabled = false;
 	var success = false;
@@ -855,15 +863,15 @@ function onSolutionOpen() {
 		//TODO Change database to remote db versus local development
 		success = databaseManager.switchServer(current_db,new_project_db);
 		if (success){
-			application.output("CHANGED to REMOTE Database.");
+			if (application.isInDeveloper()){application.output("CHANGED to REMOTE Database.")}
 		} else {
-			application.output('FAILED change to REMOTE Database.')
+			if (application.isInDeveloper()){application.output('FAILED change to REMOTE Database.')}
 		}
 		current_db = new_project_db;
 	} else {
-		application.output('USING local development Database.')
+		if (application.isInDeveloper()){application.output('USING local development Database.')}
 	}
-	application.output('okay, here2 '+APPLICATION_NAME);
+	if (application.isInDeveloper()){application.output('okay, here2 '+APPLICATION_NAME)}
 	
 	application.overrideStyle('baseStyle', 'sts_one'); // was baseStyle
 	secSetCurrentApplication(secGetApplicationID(APPLICATION_NAME));
@@ -873,7 +881,7 @@ function onSolutionOpen() {
 	secCurrentAssociationID = sec_current_user.association_uuid;
 	//secCurrentAssociationMasterID = secGetCurrentMasterAssociation(secCurrentTenantID);
 	//secSetCurrentApplication(17); // 17 is already STS, could be anything
-	application.output('assoc master '+secCurrentAssociationMasterID+' assoc '+secCurrentAssociationID+' tenant '+secCurrentTenantID);
+	if (application.isInDeveloper()){application.output('assoc master '+secCurrentAssociationMasterID+' assoc '+secCurrentAssociationID+' tenant '+secCurrentTenantID)}
 	var tenantID = sec_current_user.tenant_uuid;
 	secCurrentTenantIDs = secGetTenantIDs(secCurrentAssociationMasterID);
 	secSetCurrentTenant(tenantID.toString());
@@ -886,7 +894,7 @@ function onSolutionOpen() {
 	}
 	session.associationId = sec_current_user.association_uuid;
 	session.loginUserNum = sec_current_user.user_name;
-	session.loginId = sec_current_user.user_id;
+	session.loginId = sec_current_user.user_uuid;
 	session.tenant_uuid = secCurrentTenantID;
 	session.sessionId = security.getClientID();
 	session.sessionIp = application.getIPAddress();
@@ -894,6 +902,8 @@ function onSolutionOpen() {
 	session.login = session.loginUserNum;
 	session.loginDate = new Date();
 	session.capture;
+	session.corporate = getAssocCorporate(secCurrentAssociationID);
+	//scopes.globals.getBasePermissions(session.loginId,'FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF'); // using to install FFF on current active app
 	getLoggedEmployee(session.loginId);
 	loginUserInfo(secCurrentUserID);
 	globals.getAssociation(secCurrentAssociationID);
@@ -902,6 +912,9 @@ function onSolutionOpen() {
 	globals.getMappings();
 	application.setValueListItems('stsvl_fab_shop',l.assocs);
 	databaseManager.addTableFilterParam('stsservoy',null,'tenant_uuid','=',globals.secCurrentTenantID,'filterCurrentTenant');
+	if (globals.SEC_ASSOCIATION_FILTER && session.corporate){
+		databaseManager.removeTableFilterParam('stsservoy',globals.SEC_ASSOCIATION_FILTER);
+	}
 }
 
 /**
@@ -912,7 +925,7 @@ function onSolutionOpen() {
  * @properties={typeid:24,uuid:"3CE9BBAA-04DA-498B-93E1-371EBCA7861E"}
  */
 function onDialogYes(event) {
-	globals.dialogResponse = "yes";
+	globals.dialogResponse = 'yes';
 	var win = application.getActiveWindow();
 	win.destroy();
 }
@@ -923,7 +936,7 @@ function onDialogYes(event) {
  * @properties={typeid:24,uuid:"08692DE9-A9EE-46FB-BEC0-02207AD52611"}
  */
 function onDialogNo(event) {
-	globals.dialogResponse = "no";
+	globals.dialogResponse = 'no';
 	var win = application.getActiveWindow();
 	win.destroy();
 }
@@ -935,6 +948,7 @@ function onDialogNo(event) {
  * @param buttonNo Maybe, no.
  *
  * @properties={typeid:24,uuid:"B57D889C-179C-491D-83DC-A9647BD2EF93"}
+ * @AllowToRunInFind
  */
 function doDialog(winTitle,message,buttonYes,buttonNo){
 	globals.dialogMessage = message;
@@ -943,11 +957,15 @@ function doDialog(winTitle,message,buttonYes,buttonNo){
 	var win = application.createWindow(winTitle,JSWindow.MODAL_DIALOG);
 	win.title = winTitle;
 	win.show('dialog');
+	if (buttonNo.search('Cancel') != -1 || buttonYes.search){
+		forms[win.controller.getName()].elements.btn_Yes.requestFocus();
+	}
 }
 /**
  * @param s
  *
  * @properties={typeid:24,uuid:"8C60BFB7-E653-4F70-BBF2-05337CF0959B"}
+ * @SuppressWarnings(hides)
  */
 function capitalize(s){
     return s.toLowerCase().replace( /\b./g, function(a){ return a.toUpperCase(); } );
@@ -961,6 +979,7 @@ function mainWindowFront(){
 	if (windowx != null){
 		windowx.toFront();
 	}
+	//plugins.WebClientUtils.executeClientSideJS('var win = localStorage.WinMain;win.focus();alert("win");');
 }
 /**
  * @AllowToRunInFind
@@ -974,7 +993,7 @@ function loginUserInfo(userId){
 	/** @type {JSFoundSet<db:/stsservoy/employee>} */
 	var fs = databaseManager.getFoundSet(globals.SEC_SERVER,'employee');
 	if (fs.find()){
-		fs.employee_userid = userId;
+		fs.user_uuid = userId;
 		fs.search();
 		var rec = fs.getRecord(1);
 		if (rec){
@@ -1000,7 +1019,10 @@ function stopWindowTrack(){
 	var winName = win.title;
 	scopes.globals.logger(true,winName+' closed.');
 	var formName = win.controller.getName();
-	win.hide();
+	application.output('win '+win);
+	try {
+		win.hide()
+	} catch (e) {}
 	if (formName.search(/_[0-9]+/) != -1){
 		var success = history.removeForm(formName);
 		//removes the named form from this session, please make sure you called history.remove() first
@@ -1009,7 +1031,7 @@ function stopWindowTrack(){
 			solutionModel.removeForm(formName)
 		}
 	}
-	return true;
+	return;
 }
 /**
  * Perform the element default action.
@@ -1047,7 +1069,7 @@ function unusedonStartLoadPrefs(){
 	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
 	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
 	if (fs.find()){
-		fs.user_id = -1;
+		fs.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 		fs.tenant_uuid = globals.secCurrentTenantID;
 		var recIndex = 1;
 		var recCount = fs.search();
@@ -1196,7 +1218,7 @@ function getTablesFilters(tenantID) {
 	databaseManager.addTableFilterParam(SEC_SERVER,'associations','tenant_uuid','=',tenantID,'tenantAssocsOnly');
 	databaseManager.addTableFilterParam(SEC_SERVER,'users','tenant_uuid','=',tenantID,'tenantUsersOnly');
 	databaseManager.addTableFilterParam(SEC_SERVER,'employee','tenant_uuid','=',tenantID,'tenantEmpsOnly');
-	var ignoreTableList = 'associations users groups keys group_keys keys_table permissions tenant_list user_groups ';
+	var ignoreTableList = 'applications associations users groups keys group_keys keys_table permissions tenant_list user_groups ';
 	
 	for (var index0 in secCurrentTenantIDs){
 		permitArray.push(index0)
@@ -1366,11 +1388,12 @@ function getTenantUsedLicenses(){
 	q.result.add(q.columns.licenses_desktop);
 	q.result.add(q.columns.licenses_mobile);
 	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.association_uuid.isin(assocIds))
+		q.and
+		.add(q.columns.delete_flag.isin([null,0]))
+		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 	);
 	var resultQ = databaseManager.getFoundSet(q);
+	usedLicenses = 0;
 	for (var index = 1;index <= resultQ.getSize();index++){
 		/** @type {JSFoundSet<db:/stsservoy/associations>} */
 		var rec = resultQ.getRecord(index);
@@ -1530,7 +1553,7 @@ function formModeCancel(event) {
  * @properties={typeid:24,uuid:"8BD00EEA-9B56-4860-9DB2-AB7CB69D2E2C"}
  */
 function onActionEdit(event) {
-	//forms[event.getFormName()].onEdit(event,true);
+	if (forms[event.getFormName()].onEdit){forms[event.getFormName()].onEdit(event,true)}
 	databaseManager.setAutoSave(false);	
 	formModeEdit(event);
 }
@@ -1540,9 +1563,9 @@ function onActionEdit(event) {
  * @properties={typeid:24,uuid:"7244C4DA-2CB9-4277-9D14-1475F213FD8F"}
  */
 function onActionCancelEdit(event) {
-	//forms[event.getFormName()].onEdit(event,false);
+	if (forms[event.getFormName()].onEdit){forms[event.getFormName()].onEdit(event,false)}
 	databaseManager.revertEditedRecords();
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 	formModeCancel(event);
 }
 /**
@@ -1551,8 +1574,9 @@ function onActionCancelEdit(event) {
  * @properties={typeid:24,uuid:"3482DAE1-3AA8-4BFF-8C84-57BAE8802433"}
  */
 function onActionSaveEdit(event) {
-	//onEdit(event,false);
+	if (forms[event.getFormName()].onEdit){forms[event.getFormName()].onEdit(event,false)}
 	databaseManager.saveData();
+	formModeCancel(event);
 	//databaseManager.setAutoSave(true);
 	
 }
@@ -1563,7 +1587,7 @@ function onActionSaveEdit(event) {
  * @SuppressWarnings(wrongparameters)
  */
 function updateWindowFS(){
-	application.output('window '+application.getActiveWindow().getName());
+	if (application.isInDeveloper()){application.output('window '+application.getActiveWindow().getName())}
 	var formRev = windowRev();
 	if (formRev == ""){
 		return;
@@ -1574,8 +1598,8 @@ function updateWindowFS(){
 	var windowCut = windowName.search(formRev)-1;
 	
 	windowName = windowName.slice(0,windowCut);
-	application.output(windowName);
-	application.output(globals.aTrackWindows);
+	if (application.isInDeveloper()){application.output(windowName)}
+	if (application.isInDeveloper()){application.output(globals.aTrackWindows)}
 	var tempLength = globals.aTrackWindows.length;
 	var windowList = [];
 	for (var index = 0; index < tempLength; index++){
@@ -1588,6 +1612,7 @@ function updateWindowFS(){
 			application.output('window remain '+windowList[index]);
 			win = application.getWindow(windowList[index]);
 			var form = win.controller.getName();
+			/** @type JSFoundSet */
 			var fs = forms[form].foundset.sts_employee_container;
 			fs.loadAllRecords();
 			var newFS = fs.duplicateFoundSet();
@@ -1604,4 +1629,107 @@ function windowRev(){
 	var formSplit = win.controller.getName().split("_");
 	var formRev = formSplit[formSplit.length-1];
 	return formRev;
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"3D1D7CE4-2BA6-4116-99D0-3B33BF587D1F"}
+ */
+function onActionCloseModal(event) {
+	var formName = event.getFormName();
+	var win = forms[formName].controller.getWindow();
+	win.hide();
+	//stopWindowTrack();
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"ABD9D8FD-0BCD-42E8-BBC3-913C100812D4"}
+ * @AllowToRunInFind
+ */
+function loadZipCodeFile(event){
+	var path = "C:\\";
+	var zips = plugins.file.showFileOpenDialog(1, path, false);
+	if (zips){
+		var zipList = [];
+		/** @type {JSFoundSet<db:/stsservoy/zipcodes>} */
+		var zipFS = databaseManager.getFoundSet('stsservoy','zipcodes');
+		zipFS.loadRecords();
+		var recIndex = 1;
+		while (recIndex <= zipFS.getSize()){
+			rec = zipFS.getRecord(recIndex);
+			zipList.push(rec.zipcode_id);
+			recIndex++;
+		}
+		var openZips = plugins.file.readTXTFile(zips);
+		var zipLines = openZips.split('\n');
+		var zipCount = zipLines.length;
+		var index = 0;
+		var count = 20;
+		databaseManager.setAutoSave(false);
+		databaseManager.startTransaction();
+		for (index = 1; index < zipCount;index++){
+
+			var zipInfo = zipLines[index];
+			application.output(zipInfo);
+			if (count == 0){// administrative clear of foundset. speed up data additions?
+				zipFS.clear();
+				count = 20;
+				databaseManager.commitTransaction();
+				databaseManager.saveData(zipFS);
+				databaseManager.startTransaction();
+			}
+			zipInfo = zipInfo.split(',');
+			var decommed = zipInfo[7];
+			if (decommed == "1"){continue}
+			var zipLength = zipInfo.length;
+			var zipNumber = zipInfo[0];
+			var zipType = zipInfo[1];
+			var zipCity = zipInfo[2]
+			var zipState = zipInfo[3];
+			var zipCounty = zipInfo[4];
+			var zipCountry = zipInfo[6];
+			//application.output('zip:'+zipNumber+' type:'+zipType+' city:'+zipCity+ ' state: '+zipState+' county:'+zipCounty+' country:'+zipCountry);
+			if (zipList.indexOf(zipNumber) != -1){
+				application.output('found '+zipNumber);
+			} else {
+
+				application.output('missing '+zipInfo);
+				//continue;
+				zipFS.newRecord();
+				var rec = zipFS.getSelectedRecord();
+				rec.primary_city = zipCity;
+				rec.country = zipCountry;
+				rec.zipcode_id = zipNumber;
+				rec.state = zipState;
+				if (rec.county != ""){rec.county = zipCounty;}
+				rec.ziptype = zipType;
+				count--;
+			}
+		}
+		databaseManager.commitTransaction();
+		databaseManager.saveData(zipFS);
+	}
+	application.output('total zip line size is '+zipLines.length);
+}
+/**
+ * @param assocId
+ *
+ * @properties={typeid:24,uuid:"4A36187E-1368-4475-A412-4B5CD4A20BF8"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function getAssocCorporate(assocId){
+	/** @type {QBSelect<db:/stsservoy/associations>} */
+	var q = databaseManager.createSelect('db:/stsservoy/associations');
+	q.where.add(q.columns.association_uuid.eq(assocId));
+	var fs = databaseManager.getFoundSet(q);
+	if (fs.getSize() != 0){
+		var rec = fs.getRecord(1);
+		return (!rec.logic_flag) ? false : true;
+	} else {
+		return false;
+	}
+	
 }

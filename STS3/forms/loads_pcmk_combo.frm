@@ -19,6 +19,7 @@ visible:false
 {
 extendsID:"BBCFCD10-D88E-4A69-92F2-767A48874802",
 location:"273,436",
+text:"+/-",
 typeid:7,
 uuid:"175E0FEB-A14C-4546-A6C0-16512BE53899"
 },
@@ -53,12 +54,14 @@ uuid:"6CC567C1-E5A0-48FF-8DDF-DEAAC89FD267"
 extendsID:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8",
 location:"5,436",
 tabSeq:-2,
+text:"Settings Top",
 typeid:7,
 uuid:"A4C91460-09B3-4136-9CA5-507CB1199049"
 },
 {
 extendsID:"32C27CAC-2195-4B9A-8D52-197B70AC9144",
 location:"127,436",
+text:"Settings Bottom",
 typeid:7,
 uuid:"AD6F0ECE-116B-419B-9FA5-B06C6B97AAA9"
 },
@@ -68,7 +71,7 @@ formIndex:3,
 horizontalAlignment:0,
 location:"556,436",
 name:"btn_Close",
-onActionMethodID:"F8DA2C40-ECF1-4137-9F4E-1778F13040AE",
+onActionMethodID:"3D1D7CE4-2BA6-4116-99D0-3B33BF587D1F",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",

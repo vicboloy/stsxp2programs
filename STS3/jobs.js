@@ -274,9 +274,11 @@ var dsSequenceArray = [];
  */
 var countsBCandID = null;
 /**
- * @properties={typeid:35,uuid:"E94FE975-C814-4098-80B4-3B96BC84F169",variableType:-4}
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"E94FE975-C814-4098-80B4-3B96BC84F169",variableType:4}
  */
-var createRecordsArray = [];
+var createdRecords = 0;
 /**
  * Status on databaseManager saves.
  * @properties={typeid:35,uuid:"33C4B5E5-BA06-4F8A-949F-5BD3844BE1EC",variableType:-4}
@@ -322,11 +324,11 @@ var importJob = {
  */
 var importJobNumber = "";
 /**
- * @type {String}
+ * @type {Date}
  *
- * @properties={typeid:35,uuid:"31C27CBE-0E9D-4730-A03C-922F0BA707C8"}
+ * @properties={typeid:35,uuid:"31C27CBE-0E9D-4730-A03C-922F0BA707C8",variableType:93}
  */
-var importDate = "";
+var importDate = null;
 /**
  * @type {String}
  *
@@ -597,7 +599,7 @@ var loadCountsJobId = null;
 /**
  * @properties={typeid:35,uuid:"EFDE9CA2-94A9-402F-BADA-AB6AC70DD8B9",variableType:-4}
  */
-var tablePKs = ['tenant_uuid','sheet_id','sequence_id','delete_flag','piecemark_id',
+var tablePKs = ['tenant_uuid','sheet_id','sequence_id','piecemark_id',
 	'idfile_id','loads_id','status_description_id','e_route_code_id','routing_id','job_id',
 	'lot_id','id_creation_date','id_serial_number_id','association_uuid'];
 /**
@@ -622,6 +624,90 @@ var generalTableOrderTableName = "";
  * @properties={typeid:35,uuid:"2021418E-22BA-43E6-894D-CC7739166ECB"}
  */
 var versionForm = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C596BAD6-0911-4FAA-A8AF-983CAB7C1811"}
+ */
+var tmp_LabelSort = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"12D32104-0E17-4D9C-8A20-7CF71B1F67E0"}
+ */
+var tmp_Print = "";
+/**
+ * @properties={typeid:35,uuid:"E6DE4DAF-44E1-4107-9654-A861BD4BE156",variableType:-4}
+ */
+var parseArray = [];
+/**
+ * @properties={typeid:35,uuid:"0938BA6C-F971-453E-BE39-5F8D0295170A",variableType:-4}
+ */
+var parseLines = [];
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"7D3677A2-E9AB-40CB-BA4A-B5FD7961B57E",variableType:4}
+ */
+var recordSaveLimit = 20;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"2D599E37-A3A6-403A-889E-82592AF49808",variableType:4}
+ */
+var recordSaveDur = 40;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"B1BF3C15-4FDE-4DF0-9289-09BBF82C3F99",variableType:4}
+ */
+var idCreationCount = 0;
+/**
+ * List of new barcodes if they are not located in the db by primary key, meaning they are not yet saved
+ * @properties={typeid:35,uuid:"2B60F91D-407F-4D2E-BC15-ED2A6625CE08",variableType:-4}
+ */
+var idBarcodePool = [];
+/**
+ * This is to keep a cache of import records by primary key as the index, so that they may be cached 
+ * while building piecemarks during the import process.
+ * 
+ * @properties={typeid:35,uuid:"A983CC8F-33D1-4246-BF5D-54947242D569",variableType:-4}
+ */
+var importRecordCache = [];
+/**
+ * @properties={typeid:35,uuid:"00A52664-9097-4B32-9A20-4B80A17A222A",variableType:-4}
+ */
+var idfilePool = [];
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E0A7B238-7C46-42DB-96C5-602DC3E2A9E4"}
+ */
+var remainingTime = "";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"C9AC0F7B-06CD-4AAC-A356-27B6AF9A1664",variableType:4}
+ */
+var createdIdfileCount = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"6F291F55-9F86-457A-BC7C-A3BD3ABCA624",variableType:4}
+ */
+var commitStart = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"71CACE69-EEF8-432C-B24E-9E9DFF46D5AB",variableType:4}
+ */
+var commitLastDur = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"7B6E83BB-E004-4844-8A02-CBED067CA707",variableType:4}
+ */
+var commitRecAt = 20;
 // -------------------------------------------------------------------------------------------------------------------
 /**
  * dsLotArray["_"+lotNum+"|"+"_"+seqNum] = lot_id
@@ -1012,14 +1098,6 @@ function readPieceTables(){
 	readLots();
 }
 /**
- * @properties={typeid:24,uuid:"DFD9FD73-F260-4519-A662-B93F09F3E2BA"}
- */
-function xxxunusedreadAsIsTable(){
-	///var dsAsis = null;
-	////dsAsis = databaseManager.createEmptyDataSet();
-	///var jobID = scopes.jobs.jobUnderCustomer;
-}
-/**
  * @param sourceDb
  *
  * @properties={typeid:24,uuid:"9DE8FC30-5705-47E1-B2E0-05D7F9AA9A4F"}
@@ -1033,6 +1111,7 @@ function createSummedMarks(sourceDb){
 		sourceDb.rowIndex = index+1;
 		////var unique = sourceDb.piecemark+","+sourceDb.parent_piecemark+","+dsSheetArray["_"+sourceDb.sheet_number]+","+sourceDb.grade+","+sourceDb.finish;
 		var unique = uniquePiecemark(sourceDb);
+		commitTransactions();
 		if (dsPiecemarkArray[unique] == null){
 			/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
 			var fsRec = sourceDb;		
@@ -1053,7 +1132,7 @@ function createSummedMarks(sourceDb){
 			rec.delete_flag = 11; // 1+1 is summarization record
 			rec.edit_date = new Date();
 			dsPiecemarkArray[unique] = rec.piecemark_id;
-			createRecordsArray.push(rec);
+			createdRecords++;
 		}
 	}
 }
@@ -1373,14 +1452,21 @@ function tableHideField(fieldName,formName){
  * @properties={typeid:24,uuid:"6F0DC9D2-F762-48DB-8986-1B959B8F4C8B"}
  */
 function tablePrefsLoad(formx){
+	if (application.isInDeveloper()){application.output('tablePrefsLoad table '+formy+' table prefs '+prefsFormName)}
 	if (!formx || formx == ""){
-		formx = controller.getName();
+		formx = application.getActiveWindow().controller.getName();
 	}
+	var version = "";
+	if (forms[formx].baseForm == formx){
+		version = forms[formx].versionForm;
+	}
+	version = globals.getInstanceForm(formx);
 	if (forms[formx].elements.tabless){
 		var formy = forms[formx].elements.tabless.getTabFormNameAt(1);
 	} else {
 		formy = formx; // already adjudicated as a table form
 	}
+	var prefsFormName = formy.replace(version,"");
 	globals.a.tempHiddenColumns[formy] = [];
 	var elems = forms[formy].elements;
 	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
@@ -1390,8 +1476,8 @@ function tablePrefsLoad(formx){
 		var vis = (elems[index].isVisible()) ? 1 : 0;
 		var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+vis;
 		if (prefsFS.find()) {
-			prefsFS.user_id = -1;
-			prefsFS.form_name = formy;
+			prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+			prefsFS.form_name = formy.replace(version,"");
 			prefsFS.field_name = colName;
 			prefsFS.tenant_uuid = globals.secCurrentTenantID;
 			var index2 = prefsFS.search();
@@ -1401,10 +1487,10 @@ function tablePrefsLoad(formx){
 					//application.output('field '+colName+" dims "+colDims+" prefs "+prefsFS.field_value);
 					elems[index].setLocation(sets[0],sets[1]);
 					elems[index].setSize(sets[2],elems[index].getHeight());
-					/**if (sets[3]){
-						application.output('entering visible '+sets[3]);
-						//elems[index].visible = (sets[3] == 1);
-					}*/
+					if (sets[3]){
+						//application.output('entering visible '+sets[3]);
+						elems[index].visible = (sets[3] == 1);
+					}
 				}
 				if (sets[3] && sets[3] == 0 && globals.a.tempHiddenColumns[formy].indexOf(colName) == -1){
 					globals.a.tempHiddenColumns[formy].push(colName);
@@ -1459,7 +1545,9 @@ function getJobPiecemarkCount(jobId,tenantId,flaggedDeleted){
 	var maxReturnedRows = -1;
 	var args = [];
 	args.push(jobId.toString());
+	//var fs = databaseManager.getFoundSet(queryPiecemarks);
 	args.push(tenantId);
+	//return fs.getSize();
 	return databaseManager.getDataSetByQuery('stsservoy', queryPiecemarks, args , maxReturnedRows)[0][0];
 }
 /**
@@ -1534,11 +1622,11 @@ function getJobTotalWeight(jobId,tenantId,metric,flaggedDeleted){
  * @AllowToRunInFind
  */
 function onGetInformation(event,flaggedDeleted) {
-	if (!forms[event.getFormName()].jobFound) {return}
+	if (!forms[event.getFormName()].jobFound && event.getFormName().search('summary') == -1) {return}
 	var formX = forms[event.getFormName()];
 	var formXName = event.getFormName();
 	var vJobID = formX.vJobID;
-	var vJobMetric = formX.vJobMetric;
+	var vJobMetric = formX.vJobMetric; 
 	formX.vLabNumPcmks = scopes.jobs.getJobPiecemarkCount(vJobID,globals.secCurrentTenantID,flaggedDeleted);
 	formX.vLabIDNums = scopes.jobs.getJobBarcodeCount(vJobID,globals.secCurrentTenantID,flaggedDeleted);
 	var arrayWghtPc = scopes.jobs.getJobTotalWeight(vJobID,globals.secCurrentTenantID,vJobMetric,flaggedDeleted);
@@ -1547,14 +1635,30 @@ function onGetInformation(event,flaggedDeleted) {
 	if (!formX.vLabTotalWt) {formX.vLabTotalWt = 0}
 	if (!formX.vLabTotPieces) {formX.vLabTotPieces = 0}
 	
-	if (formX.vLabTotPieces != 0 || formX.vLabIDNums != 0){
+	if (formX.elements.btn_Browse && (formX.vLabTotPieces != 0 || formX.vLabIDNums != 0)){
 		formX.elements.btn_Browse.enabled = true;
 	}
-	if (formXName.search('load') == -1){
-		var formXPrefix = formXName.split("_")[0];
-		formX.collectCriteria(formXPrefix+'_piecemark_info');
-	}
 	formX.vUnits = (vJobMetric) ? 'kgs' : 'lbs';
+	if (formXName.search('load') == -1){
+		versionForm = globals.getInstanceForm(event);
+		var formXPrefix = formXName.split("_")[0];
+		var oldFormName = formXPrefix+'_piecemark_info';
+		var newFormName = oldFormName+versionForm;
+		if (!forms[newFormName]){
+			solutionModel.cloneForm(newFormName,solutionModel.getForm(oldFormName));
+		}
+		formX.collectCriteria(newFormName); //table dataset is built within
+	}
+	if (formXName.search('load') != -1){
+		versionForm = globals.getInstanceForm(event);
+		formXPrefix = formXName.split("_")[0];
+		oldFormName = formXPrefix+'_piecemark_info';
+		newFormName = oldFormName+versionForm;
+		if (!forms[newFormName]){
+			solutionModel.cloneForm(newFormName,solutionModel.getForm(oldFormName));
+		}
+		formX.collectAndTab(newFormName); //table dataset is built within
+	}
 }
 /**
  * @param {JSEvent} event
@@ -1563,7 +1667,9 @@ function onGetInformation(event,flaggedDeleted) {
  * @AllowToRunInFind
  */
 function tablePrefsSave(event){
-	var response = plugins.dialogs.showSelectDialog('Modify Table Settings','Save or modify table order preferences?',["Save","Modify"]);
+	var response = plugins.dialogs.showSelectDialog(i18n.getI18NMessage('sts.txt.modify.table.settings'),
+			i18n.getI18NMessage('sts.txt.save.or.modify.table.preferences'),
+			[i18n.getI18NMessage('sts.btn.save'),i18n.getI18NMessage('sts.btn.modify')]);
 	if (response == null){return}
 	var buttonName = event.getElementName();
 	var leftPanel = (buttonName.search('Right') == -1);
@@ -1572,10 +1678,10 @@ function tablePrefsSave(event){
 	///var controlName = event.getElementName();
 	// get current column ordering
 	var formx = event.getFormName();
-	warningsYes();
-	forms[formx].errorMessage = "Saving table column order.";
-	application.updateUI();
+	//forms[formx].errorMessage = "Saving table column order.";
+	//application.updateUI();
 	var formsInUse = [];
+	/** @type String */
 	var formy = null;
 	if (forms[formx].elements.tabless){
 		formy = forms[formx].elements.tabless.getTabFormNameAt(1);
@@ -1584,63 +1690,84 @@ function tablePrefsSave(event){
 	if (forms[formx].elements.split){
 		var formCombo = event.getFormName().split("_")[0]+'_pcmk_combo';
 		if (leftPanel){
-			formy = forms[formCombo].elements.split.getLeftForm().controller.getName();
+			formy = forms[formCombo+versionForm].elements.split.getLeftForm().controller.getName();
 		} else {
-			formy = forms[formCombo].elements.split.getRightForm().controller.getName();
+			formy = forms[formCombo+versionForm].elements.split.getRightForm().controller.getName();
 		}
 	}
 	//while (formsInUse.length > 0){
 	//formy = formsInUse.pop();
 	generalTableOrderTableName = formy;
-	var elems = forms[formy].elements;
-	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-	for (var index in elems){
-		warningsMessage('Saving column settings');
-		var colName = elems[index].getName();
-		if (colName == ""){continue}//sometimes a blank entry after array and value list manip
-		var visible = (elems[index].getWidth == 0 || elems[index].visible) ? 1 : 0;
-		var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+visible;
-		//var colDims = elems[index].getLocationX()+","+0+",110";
+	if (response == "Save"){
+		warningsYes();
+		if (application.isInDeveloper()){application.output('saving '+formy.replace(versionForm,""))}
+		/** @type {JSFoundset<db:/stsservoy/preferences2>} */
+		var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
 		if (prefsFS.find()) {
-			prefsFS.user_id = -1;
-			prefsFS.form_name = formy;
-			prefsFS.field_name = colName;
+			prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+			prefsFS.form_name = formy.replace(versionForm,"");
+			//prefsFS.field_name = colName;
 			prefsFS.tenant_uuid = globals.secCurrentTenantID;
 			//prefsFS.value_material = rec.shape;
 			var index2 = prefsFS.search();
-			if (index2 > 0) {
+		}
+		var savedElems = new Array();savedElems.push("");
+		var index1 = 1;
+		while (index1 <= prefsFS.getSize()){
+			var rec =  prefsFS.getRecord(index1);
+			savedElems.push(rec.field_name);
+			index1++;
+		}
+		var elems = forms[formy].elements;
+		databaseManager.startTransaction();
+		for (var index in elems){
+			warningsMessage(i18n.getI18NMessage('sts.txt.saving.column.settings'),false);
+			var colName = elems[index].getName();
+			if (colName == ""){application.output('skip');continue}//sometimes a blank entry after array and value list manip
+			var visible = (elems[index].visible) ? 1 : 0;
+			if (visible){
+				var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+visible;
+			} else {
+				colDims = "0,0,"+elems[index].getWidth()+",0";
+			}
+			//var colDims = elems[index].getLocationX()+","+0+",110";
+			index2 = savedElems.indexOf(colName);
+			if (index2 != -1) {
+				if (application.isInDeveloper()){application.output('found '+colName)}
 				///var maxIndex = prefsFS.getSize();
-				var rec = prefsFS.getRecord(1);
-				if (prefsFS.field_value != colDims){
+				rec = prefsFS.getRecord(index2);
+				if (rec.field_value != colDims){
 					rec.field_value = colDims;
 					rec.edit_date = new Date();
-					status = databaseManager.saveData(rec);
+					//status = databaseManager.saveData(rec);
 					//application.output('save status change '+status);
 				}
 			} else {
+				application.output('create '+colName);
 				var newDex = prefsFS.newRecord();
 				var newRec = prefsFS.getRecord(newDex);
 				newRec.tenant_uuid = globals.secCurrentTenantID;
-				newRec.user_id = -1;
-				newRec.form_name = formy;
+				newRec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+				newRec.form_name = formy.replace(versionForm,"");
 				newRec.field_name = colName;
 				//newRec.value_material = rec.shape;
 				newRec.field_value = colDims;
 				newRec.edit_date = new Date();
-				var status = databaseManager.saveData(newRec);
-				if (status){globals.loggerDev(this,'Record not saved')}
+				//var status = databaseManager.saveData(newRec);
+				//if (status){globals.loggerDev(this,'Record not saved')}
 			}
 		}
-		//}
-		forms[formx].errorMessage = "Column ordering SAVED.";
-		warningsMessage('Column ordering SAVED.');
+
+		commitTransactions();
+		databaseManager.commitTransaction();
+		forms[formx].errorMessage = i18n.getI18NMessage('sts.txt.column.ordering.saved');
+		warningsMessage(i18n.getI18NMessage('sts.txt.column.ordering.saved'),true);
 		warningsX();
 	}
-	if (response == "Modify"){
-		var win = application.createWindow("Column Order", JSWindow.MODAL_DIALOG);
+	if (response == i18n.getI18NMessage('sts.btn.modify')){
+		var win = application.createWindow(i18n.getI18NMessage('sts.txt.column.order'), JSWindow.MODAL_DIALOG);
 		win.setInitialBounds(10, 10, 555, 485);
-		win.title = "This is the column settings window.";
+		win.title = i18n.getI18NMessage('sts.txt.this.is.the.column.settings.window');
 		globals.modalResponse = "";
 		win.show(forms.gen_table_order);
 		//if (globals.modalResponse == "Cancel"){return}
@@ -1662,14 +1789,15 @@ function viewBTableToForm(criteria,formName){
 	 * dsPiecemarks,dsBarcodes,dsIdfiles,dsSequences,dsLots,dsSheets
 	 */
 	dsQuery = viewBTableSQL(criteria,formName);
+	if (application.isInDeveloper()){application.output('x --- viewBTableToForm '+dsQuery);}
 	var maxReturnedRows = -1;
 	var args = [];
-	//args.push(scopes.jobs.browseJobID);
 	/** @type  {JSDataSet} */
-	//var tempFS = forms[formName].controller.loadRecords(dsQuery);
-	null;
-	//browseFS = databaseManager.getDataSetByQuery('stsservoy', dsQuery, args , maxReturnedRows);
+	//1browseFS2[versionForm] = databaseManager.getDataSetByQuery(dsQuery, maxReturnedRows);
 	browseFS2[versionForm] = databaseManager.getDataSetByQuery('stsservoy', dsQuery, args , maxReturnedRows);
+	//3browseFS2[versionForm] = databaseManager.getDataSetByQuery(dsQuery, 200);//limit on returned rows
+	
+
 	if (application.isInDeveloper()){application.output('sql \n'+dsQuery+'\ndataset size '+browseFS2[versionForm].getMaxRowIndex())}
 	viewBTableRemoveColumns();//dsBrowse and browseFS
 	viewBTableRemoveRows();//browseFS
@@ -1694,13 +1822,14 @@ function viewBTableSQL(criteria,formName){
 	/**
 	 * Left join for records  which may not exist.  inner join for necessary records.
 	 */
-	var query = 'select random()*1000000 AS "browsing_id",0 AS "Selection",FLD from piecemarks '+
-		' right join routings on routings.routing_id = piecemarks.e_route_code_id '+
+	null; //stop here 20160219
+	var query = "select random()*1000000 AS browsing_id,0 AS \"selection\",FLD from piecemarks "+
+		' left join routings on routings.routing_id = piecemarks.e_route_code_id '+
 		' inner join sheets on piecemarks.sheet_id = sheets.sheet_id SHT '+
-		' and sheets.job_id = JOBID AND sheets.delete_flag IS null PCMK '+
+		' and sheets.job_id = JOBID AND sheets.delete_flag IS null '+
 		' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id AND idfiles.delete_flag FLAG SONUM FABS AREA PCRL LDN COW LOT PKG'+
 		' inner join sequences on sequences.sequence_id = idfiles.sequence_id SEQN ' +
-		' inner join id_serial_numbers on id_serial_numbers.id_serial_number_id = idfiles.id_serial_number_id ' +
+		' inner join id_serial_numbers on id_serial_numbers.id_serial_number_id = idfiles.id_serial_number_id IDNM ' +
 		' left join status_description on idfiles.status_description_id = status_description.status_description_id ' +
 		' left join associations on status_description.association_id = associations.association_uuid ' +
 		' left join jobs on sheets.job_id = jobs.job_id ' +
@@ -1711,7 +1840,7 @@ function viewBTableSQL(criteria,formName){
 		' left join loads on loads.load_id = idfiles.current_load_id LDRR ';
 	var addOrderQuery = ' order by piecemarks.parent_piecemark, piecemarks.piecemark';
 	if (formName.search("barcode_") != -1) {
-		var ordered = forms[formName].elements.labelPrintOrder;
+		var ordered = scopes.jobs.tmp_LabelSort;
 		switch (ordered){
 			case 'Piece Mark':
 				addOrderQuery = ' order by piecemarks.parent_piecemark, piecemarks.piecemark';
@@ -1729,10 +1858,9 @@ function viewBTableSQL(criteria,formName){
 				addOrderQuery = ' order by piecemarks.parent_piecemark, piecemarks.piecemark';
 		}
 	}
-	query += addOrderQuery;
 	var FLD = "";
 	var DBs = ["id_serial_numbers","piecemarks","routings","sheets","idfiles","status_description","loads","associations","sequences","jobs","customers","lots"];
-	var skipFields = [];
+	var skipFields = ['logic_flag','edit_date'];//'delete_flag',
 	//var skipFields = [];
 	for (var index1 = 0;index1 < DBs.length;index1++){
 		//application.output('table '+DBs[index1])
@@ -1746,6 +1874,10 @@ function viewBTableSQL(criteria,formName){
 			if ((index1 != DBs.length-1)|| (index2 != tableColumns.length-1)){FLD += ","}
 		}
 	}
+	//var fieldNames = FLD.split(',');
+	if (typeof versionForm === 'undefined'){ var versionForm = ""};
+	var prefsFormName = formName.replace(versionForm,"");
+	tablePrefsPreOrderFields(prefsFormName,versionForm,FLD);
 	if (formName.search(/(recall|remove)/) == -1){
 		query = query.replace('FLAG',"IS null");
 	} else {
@@ -1754,10 +1886,17 @@ function viewBTableSQL(criteria,formName){
 	//  FLAG PCMK SHT SEQN SONUM LDN LDR PCRL FABS JOBR AREA BTCH COW (LOT) (PKG)
 	query = query.replace('FLD',FLD);
 	query = query.replace('JOBID',"\'"+scopes.jobs.browseJobID+"\'");
-	if (criteria.piecemark){
-		query = query.replace('PCMK'," AND piecemarks.piecemark IN "+criteria.piecemark);
+	if (criteria.idnum){
+		query = query.replace('IDNM'," AND id_serial_numbers.id_serial_number IN "+criteria.idnum);
 	} else {
-		query = query.replace('PCMK','');
+		query = query.replace('IDNM','');
+	}
+	var PCMK = " WHERE piecemarks.piecemark LIKE '%"+criteria.piecemark+"%'";
+	if (criteria.piecemark){
+		//query = query.replace('PCMK'," WHERE piecemarks.piecemark LIKE %"+criteria.piecemark+"%");
+	} else {
+		//query = query.replace('PCMK','');
+		PCMK = "";
 	}
 	if (criteria.sheetnum){
 		query = query.replace('SHT'," AND sheets.sheet_number IN "+criteria.sheetnum);
@@ -1780,7 +1919,7 @@ function viewBTableSQL(criteria,formName){
 		query = query.replace('BTCH','');
 	}
 	if (criteria.area){
-		query = query.replace('AREA'," AND idfiles.id_area IN "+criteria.area);
+		query = query.replace('AREA'," AND idfiles.id_location IN "+criteria.area);
 	} else {
 		query = query.replace('AREA','');
 	}
@@ -1800,7 +1939,7 @@ function viewBTableSQL(criteria,formName){
 		query = query.replace('PKG','');
 	}
 	if (criteria.fabshop){
-		query = query.replace('FABS'," AND idfiles.id_fabrication_shop IN "+criteria.fabshop);
+		query = query.replace('FABS'," AND idfiles.status_description_id IN "+criteria.fabshop);
 	} else {
 		query = query.replace('FABS','');
 	}
@@ -1819,7 +1958,8 @@ function viewBTableSQL(criteria,formName){
 	} else {
 		query = query.replace('LDN','');
 	}
-	//application.output('sql '+query);
+	query += PCMK + addOrderQuery;
+	if (application.isInDeveloper()){application.output('sql2-- '+query)}
 	return query;
 }
 /**
@@ -1837,8 +1977,7 @@ function viewBTableRemoveColumnArray(){
  */
 function viewBTableRemoveColumns(){
 	columnNames2 = []; var index = 0; var fieldIndex = 0; removeColumns = [];
-
-	columnNames2.push('Selection');//Want this one first
+	columnNames2.push('selection');//Want this one first
 	browseArray = [];
 	nullRow = [];
 	var cols = browseFS2[versionForm].getMaxColumnIndex();
@@ -1848,11 +1987,12 @@ function viewBTableRemoveColumns(){
 		var columnName = browseFS2[versionForm].getColumnName(index);
 		
 		if (columnName == null){continue}
+		//if (tablePKs.indexOf(columnName) != -1 || 
 		if (columnNames2.indexOf(columnName) != -1){
 			removeColumns.push(index);
 			continue}
 		columnNames2[fieldIndex] = columnName;
-		if (columnName == "Selection"){
+		if (columnName == "selection"){
 			dsBrowse.addColumn(columnName,fieldIndex+1,JSColumn.INTEGER);
 			browseArray.push(JSColumn.INTEGER);
 		} else {
@@ -1904,6 +2044,7 @@ function viewBTableRemoveRows(){
  * @SuppressWarnings(wrongparameters)
  */
 function viewBTableCreateForm(formName){
+	versionForm = globals.getInstanceForm(null);
 	var formNameTable = formName+'_table';
 	var checkForm = solutionModel.newForm(formNameTable,browseDatasource,'sts_one',false,500,600);
 	var code = 'function onRecordSelection(event){scopes.jobs.onRecordSelectIdfile(event);}';
@@ -1951,7 +2092,7 @@ function viewBTableCreateForm(formName){
 	 	last.labelFor=columnNames2[index];
 	 	last.dataProviderID = columnNames2[index];
 	 	last.toolTipText = last.labelFor;
-	 	if (columnName == "Selection"){
+	 	if (columnName == "selection"){
 			last = checkForm.newField(columnName,JSField.CHECKS,posArray[1],20,colLength,20);
 	 	} else {
 	 		//application.output(' column data '+columnName+" "+posArray[1]);
@@ -1961,8 +2102,9 @@ function viewBTableCreateForm(formName){
 		last.name = columnName;
 		last.editable = false;
 		last.visible = setVisible;
-		if (columnName == "Selection"){
+		if (columnName == "selection"){
 			last.editable = true;
+			last.horizontalAlignment = SM_ALIGNMENT.LEFT;
 		}
 	 	offset += colLength*1;		
 	}
@@ -1988,14 +2130,6 @@ function viewBTableCreateForm(formName){
 	}
 }
 /**
- * @properties={typeid:24,uuid:"D8DA5987-3E63-41C0-B087-CF2207E337BB"}
- */
-function xxxviewBrowseTableRefresh(){
-	var args = [];
-	args.push(browseJobID); 
-	browseDatasource = scopes.jobs.browseSF.getDataSetByQuery('stsservoy', dsQuery, args , -1); 
-}
-/**
  * @properties={typeid:24,uuid:"45A2608F-DF18-4BAE-B137-44FD41D23A77"}
  * @AllowToRunInFind
  */
@@ -2004,13 +2138,23 @@ function getJobsList(){
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var fs = databaseManager.getFoundSet('db:/stsservoy/jobs');
 	//fs.loadAllRecords();
-	if (fs.find()){
-		fs.association_id = globals.session.associationId;
-		if (fs.search()){
-			for (var index = 1;index <= fs.getSize();index++){
-				fs.setSelectedIndex(index);
-				jobsArray.push(fs.job_number);
-			}			
+	if (globals.session.associationId){
+		if (fs.find()){
+			fs.association_id = globals.session.associationId;
+			if (fs.search()){
+				for (var index = 1;index <= fs.getSize();index++){
+					fs.setSelectedIndex(index);
+					jobsArray.push(fs.job_number);
+				}			
+			}
+		}
+	} else {
+		fs.loadAllRecords();
+		var count = 1;
+		while (count <= fs.getSize()){
+			var rec = fs.getRecord(count);
+			jobsArray.push(rec.job_number);
+			count++;
 		}
 	}
 }
@@ -2094,6 +2238,7 @@ function createIdfileRecord(pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity,
 	seqId = dsSequenceArray["_"+sequence];
 	lotId = dsLotArray["_"+lot+"|_"+sequence];
 	var recIndex = fs.newRecord();
+	createdIdfileCount++;
 	var rec = fs.getRecord(recIndex);
 	rec.piecemark_id = piecemarkId;
 	rec.sequence_id = seqId;
@@ -2116,9 +2261,9 @@ function createIdfileRecord(pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity,
 				rec.camber = camberInfo(remarks);//resolves ticket#5
 		}
 	}
-	rec.id_creation_date = new Date();
-	createRecordsArray.push(rec);
-	return rec.idfile_id;
+	rec.id_creation_date = importDate;
+	createdRecords++;
+	return rec;
 }
 /**
  * @param fsRec
@@ -2130,6 +2275,7 @@ function createIdfileRecord(pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity,
 function createPiecemark(fsRec,unique){
 	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
 	var fs = databaseManager.getFoundSet('stsservoy','piecemarks');
+	commitTransactions();
 	warningsMessage('Create pm '+unique);
 	var recIndex = fs.newRecord();
 	var rec = fs.getRecord(recIndex);
@@ -2161,72 +2307,9 @@ function createPiecemark(fsRec,unique){
 	dsPiecemarkArray[unique] = rec.piecemark_id;
 	insertedPiecemarks.push(rec.piecemark_id);
 	dsIdfileListByPm[rec.piecemark_id] = [];
-	createRecordsArray.push(rec);
+	createdRecords++;
 }
-/**
- * @properties={typeid:24,uuid:"C5510BFA-2477-4BF9-95BD-1C54BAAC370E"}
- * @AllowToRunInFind
- */
-function createPiecemarks(){
-	dsDiffPiecemarks = [];
-	warningsMessage('Creating piecemarks.');
-	var retainFS = forms.kiss_option_import.transitionFS;
-	// tenantuuid, piecemark, grade, sequence, lot
-	///var jobID = scopes.jobs.jobUnderCustomer;
-	var rows = forms.kiss_option_import.transitionFS.getMaxRowIndex();
-	scopes.globals.importRecordCount = rows;
-	for (var index = 0;index < rows;index++){
-		retainFS.rowIndex = index+1;
-		////var unique = retainFS.piecemark+","+retainFS.parent_piecemark+","+dsSheetArray["_"+retainFS.sheet_number]+","+retainFS.grade+","+retainFS.finish;
-		////	unique = retainFS.material+","+retainFS.grade+","+retainFS.finish; 
-		var unique = uniquePiecemark(retainFS);
-		if (dsPiecemarkArray[unique] != null){
-			//xx application.output('piecemark '+unique+" exists.");
-			/**
-			 * check for count of idfiles that have piecemark_id, sequence_id, Lot_id and count equal to record
-			 * count is an aggregate of idfile counts
-			 * What if less records or more records?
-			 */
-			///var lotId = "";
-			var pmarkId = dsPiecemarkArray[unique];
-			var seqId = retainFS.sequence_number;
-			/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-			var fs = databaseManager.getFoundSet('stsservoy','idfiles');
-			var idfileCount = retainFS.item_quantity;
-			if (retainFS.sequence_quantity != ""){idfileCount = retainFS.sequence_quantity}//part of a sequence, not total items
-			if (fs.find()){
-				fs.piecemark_id = pmarkId;
-				fs.sequence_id = seqId;
-				var count = fs.search()
-				if (count > 0){
-					if (count != idfileCount){
-						//application.output('idfile Count is incorrect.');
-						dsDiffPiecemarks.push(pmarkId);
-					} else {
-						var diffBars = [];
-						for (var bIndex = 1;bIndex <= count;bIndex++){
-							var idRec = fs.getRecord(bIndex);
-							if (diffBars[idRec.id_serial_number_id]) {
-								diffBars[idRec.id_serial_number]++;
-							} else {
-								diffBars[idRec.id_serial_number] = 1;
-							}
-						}
-						///for (index in diffBars){
-							///var barCountsAs = retainFS.total_label_qty
-							//application.output('barcode count '+pmarkId+" "+seqId+" "+diffBars[index]);
-						///}
-						
-					}
-				}
-			}
-		} else {
-			//application.output('create piecemark '+unique);
-			var fsRec = retainFS;		
-			createPiecemark(fsRec,unique)
-		}
-	}
-}
+
 /**
  * @param sheetNumber
  *
@@ -2243,13 +2326,14 @@ function createSheet(sheetNumber){
 	rec.tenant_uuid = scopes.globals.secCurrentTenantID;
 	dsSheetArray["_"+sheetNumber] = sheetId;
 	dsSheetArray[sheetId] = "_"+sheetNumber;
-	createRecordsArray.push(rec);
+	createdRecords++;
 }
 /**
  * @properties={typeid:24,uuid:"C69E27A8-6A48-41A4-965E-203DC14DEC4A"}
  */
 function createSheets(){
-	scopes.globals.stsMessages = "Creating sheets.";application.updateUI();
+	scopes.globals.stsMessages = "Creating sheets.";
+	databaseManager.startTransaction();
 	///var newItems = [];
 	//var rows = dsBrowse.getMaxRowIndex();
 	/** @type {JSFoundSet<db:/stsservoy/sheets>} */
@@ -2266,10 +2350,12 @@ function createSheets(){
 			//application.output("do not create sheet "+sheet_num);
 			null;
 		} else {
-			application.output("create sheet "+sheet_num);
+			scopes.jobs.warningsMessage("Create sheet "+sheet_num);
+			commitTransactions();
 			createSheet(sheet_num);
 		}
 	}
+	if (databaseManager.hasTransaction()){databaseManager.saveData();databaseManager.commitTransaction();}
 }
 /**
  * @param sequenceNumber
@@ -2292,7 +2378,7 @@ function createSequenceNumber(sequenceNumber){
 	var unique = "_"+sequenceNumber;
 	dsSequenceArray[unique] = seqId;
 	dsSequenceArray[seqId] = unique;
-	createRecordsArray.push(rec);
+	createdRecords++;
 	//dsSequenceList[rec.sequence_id] = newItems[index];
 }
 /**
@@ -2323,12 +2409,13 @@ function createLotNumber(lotNumber,sequence){
 	var unique = "_"+lotNum+"|_"+seqNum;
 	dsLotArray[unique] = lotId;
 	dsLotArray[lotId] = unique;
-	createRecordsArray.push(rec);
+	createdRecords++;
 }
 /**
  * @properties={typeid:24,uuid:"234B6EE5-1FBC-4C47-8303-B9A8D35A968F"}
  */
 function createLotNumbers(){
+	databaseManager.startTransaction();
 	warningsMessage('Creating lots.');
 	///var newItems = [];
 	var retainFS = forms.kiss_option_import.transitionFS;
@@ -2336,7 +2423,7 @@ function createLotNumbers(){
 	for (var index = 0;index < rows;index++){
 		retainFS.rowIndex = index+1;
 		var seq_num = retainFS.sequence_number;
-		var lot_num = retainFS.lot_number;
+		var lot_num = retainFS.sequence_lot_number;
 		if (!retainFS.lot_number){
 			lot_num = "";
 		}
@@ -2351,6 +2438,7 @@ function createLotNumbers(){
 			warningsMessage('Lot '+unique+' exists');
 		} else {
 			createLotNumber(lot_num,seq_num);
+			commitTransactions();
 			warningsMessage('Create lot: '+lot_num+', seq: '+seq_num);
 		}
 	}
@@ -2365,11 +2453,14 @@ function createLotNumbers(){
 		}
 		*/
 		//dsLotList[rec.lot_id] = newItems[sequence][lot];
+	//createRecordsArray = [];
+	if (databaseManager.hasTransaction()){databaseManager.saveData();databaseManager.commitTransaction();}
 }
 /**
  * @properties={typeid:24,uuid:"EC33F91A-05F5-41A5-831C-857B708912DD"}
  */
 function createSequenceNumbers(){
+	databaseManager.startTransaction();
 	warningsMessage('Creating sequences.');
 	var newItems = [];
 	var retainFS = forms.kiss_option_import.transitionFS;
@@ -2390,9 +2481,12 @@ function createSequenceNumbers(){
 			continue
 		}
 		warningsMessage('Create sequence '+newItems[index]);
+		commitTransactions();
 		createSequenceNumber(newItems[index]);
 		//dsSequenceList[rec.sequence_id] = newItems[index];
 	}
+	
+	databaseManager.commitTransaction();
 }
 /**
  * @AllowToRunInFind
@@ -2431,7 +2525,7 @@ function createBarCodePrefix(){
 		///var serial = barcodeLast; //SSSSSS, length=6
 		
 		///var barcodeLength = scopes.prefs.barcodeLength;//fixed unless changed in preferences
-		var bPrefix = barcode_include_prefix == "Include Prefix" ? true : false;
+		var bPrefix = barcode_include_prefix == i18n.getI18NMessage('sts.txt.barcode.include.prefix') ? true : false;
 		var begStr,endStr;
 		var jobNameLength = bPrefix ? barcode_preamble_length-2 : barcode_preamble_length;
 		///var serialLength = barcodeLength-barcode_preamble_length;
@@ -2440,10 +2534,10 @@ function createBarCodePrefix(){
 		///var lastSerial = barcodeLast;//save to barcode table
 		///var barcode = "";
 		var jobPrefix = "";
-		if (barcode_job_start.search('Last') != -1) {
+		if (barcode_job_start == i18n.getI18NMessage('sts.txt.barcode.last.characters')) {
 			begStr = jobStrLength-jobNameLength;
 			endStr = jobStrLength;
-		} else if (barcode_job_start.search('Starting') != -1) {
+		} else if (barcode_job_start == i18n.getI18NMessage('i18n:sts.txt.barcode.start.position')) {
 			begStr = (barcode_fixed_length+jobNameLength > jobStrLength) ? jobStrLength-jobNameLength : barcode_fixed_length-1;
 			endStr = begStr+jobNameLength;
 		} else {
@@ -3111,7 +3205,7 @@ function createBarCodeSerial(){
 			var recIndex = bcFS.newRecord();
 			rec = bcFS.getRecord(recIndex);
 			rec.serial = 0;
-			rec.tenant_uuid = globals.secCurrentTenantID;
+			rec.tenant_uuid = globals.session.tenant_uuid;
 			rec.prefix = barcodePrefix;
 		} else {
 			rec = bcFS.getRecord(1);
@@ -3145,61 +3239,6 @@ function saveBarCodeSerial(){
 	//get last barcode serial for this customer
 }
 /**
- * Preamble is (4,5)
- * Barcode prefix is always (2)
- * if include prefix, then the preamble is prefix (2) and job number (2,3) (preambleLength-2)
- * if exclude prefix, then preamble (4,5) is job number only(4,5), matching jobnumber from position
- * the total length of the barcode is (10), so the serial gets 10 minus the preamble
- * jobNumber is not changeable, follows prefix length, plus or minus the prefix
- * 
- * 
- * @properties={typeid:24,uuid:"A9901D66-1405-4F29-B763-64E296A272BE"}
- * @AllowToRunInFind
- */
-function xxxunusedcreateBarCode(notSample){
-	/**
-	var padZeroes = "00000000000000000000000000000";
-	if (notSample){//total length = 10
-		var barcode_include_prefix = "Exclude Prefix";//"Include Prefix";//
-		var barcode_prefix_label = "P2";//PP
-		var barcode_preamble_length = 4;
-		var barcode_job_start = "First characters";//"JobNumber. Starting at Position";//"Last Characters of Job Number";//
-		var barcode_fixed_length = 2;
-		var barcode_job_length = 0;
-		///var jobNumber = "ABCDEF";
-		var serial = "7654321"; //SSSSSS, length=6
-	} else {
-		///var tenantID = scopes.globals.secCurrentTenantID;
-		/ ** @type {JSFoundSet<db:/stsservoy/customers>} * /
-		var custFS = databaseManager.getFoundSet('stsservoy','customers');
-		/ ** 		load customer barcode specs
-		 	field.barcode_include_prefix(include,exclude)
-			field.barcode_prefix_label (twochars)
-			field.barcode_preamble_length (4 or 5)
-			field.barcode_job_start (last characters, first characters, starting at position)
-		 	field.barcode_fixed_length (1..8)
-		 	field.barcode_job_length (1..20)
-		 * /
-				
-		barcode_include_prefix = custRec.barcode_include_prefix;
-		barcode_prefix_label = custRec.barcode_prefix;
-		barcode_preamble_length = custRec.barcode_preamble_length;
-		barcode_job_start = custRec.barcode_job_start;
-		barcode_fixed_length = custRec.barcode_fixed_length;
-		barcode_job_length = custRec.barcode_job_length;
-		jobNumber = jobName;
-		serial = barcodeLast; //SSSSSS, length=6
-		
-		//get last barcode serial for this customer
-	}
-	serial = ++barcodeLast;
-	serial = padZeroes+serial;
-	///serial = serial.slice(serial.length-serialLength,serial.length);
-
-	var barcode = barcodePrefix+serial;
-	return barcode;*/
-}
-/**
  * @param file
  *
  * @properties={typeid:24,uuid:"82933605-B94C-4B67-979A-6E8B9A0BF807"}
@@ -3218,11 +3257,10 @@ function readKissTextFile(file) {
 	var fileText = "";
 	//var fileJS = plugins.file.convertToJSFile(file);
 	fileText = plugins.file.readTXTFile(file);
-	var header = fileText.indexOf("\nH,");
-	var headerEnd = fileText.indexOf("*",header);
-	application.output(fileText.substring(header,headerEnd));
+	parseIntoLines(fileText);
+	fileText = "";//clear file input string
     
-    importResults =  parse(fileText,prefs);
+    //importResults =  parse(fileText,prefs);
 /*
     var length = importResults.results.length;
     var linePre = "";
@@ -3282,7 +3320,7 @@ function loadKissMapping(){
 	// verify that all provided elements have been mapped, this is an error if any are missed from KISS file
 	// errors in mapping should cancel an import
 	/** @type {Array} */
-	var data = importResults.results;
+	var data = importResults;
 	var dataLength = data.length;
 	var needsMap = [];
 	for (i6=1;i6<dataLength;i6++){ // start at line 1 (one) to skip header title
@@ -3320,8 +3358,9 @@ function findEmptyColumns(event,table){
 	//forms.loads_pcmk_combo.elements.split.getRightForm().elements.checklist_line.visible
 	if (prefix == 'loads'){
 		var form = 'loads_pcmk_combo'+versionForm;
-		if (forms[form].elements.split.getLeftForm().elements.Selection){
-			forms[form].elements.split.getLeftForm().elements.Selection.visible = false;
+		if (forms[form].elements.split.getLeftForm().elements.selection){
+			if (application.isInDeveloper()){application.output('hiding visibility of elements.selection column')}
+			//forms[form].elements.split.getLeftForm().elements.selection.visible = false;
 		}
 	}
 	form = prefix+'_pcmk_combo'+versionForm;
@@ -3393,7 +3432,7 @@ function findEmptyColumns(event,table){
  */
 function idHeaders(){
 	var format = "";
-	var data = importResults.results;
+	var data = importResults;
 	///var length = data.length;
 	if (data[0].length >2 && data[0][2].search("FabSuite") != -1){format = "FabSuite"}
 	application.output('File Format '+format);
@@ -3447,6 +3486,7 @@ function idHeaders(){
  * @AllowToRunInFind
  */
 function onRecordSelectIdfile(event){
+	//application.output('selected line');
 	var versionForm = globals.getInstanceForm(event);
 	var formName = event.getFormName();
 	var tableParent = formName.replace("_table","");
@@ -3479,7 +3519,7 @@ function onRecordSelectIdfile(event){
 function dataErrorCheck(index) {
 	///var importRouteCodes = [];
 	/** @type {Array} */
- 	var data = importResults.results;
+ 	var data = importResults;
  	usedFields = [];
 	//var index2 = index;
 	//var length2 = length < 3000 ? length : length*.10;
@@ -3525,38 +3565,6 @@ function dataErrorCheck(index) {
 		}
 	}
 }
-
-
-/*
- Papa Parse
- v2.0.3
- https://github.com/mholt/jquery.parse
- */
-
-	/**
- * @param e
- *
- * @properties={typeid:24,uuid:"47520824-FBB2-456A-B43E-9CC14EDDE74C"}
- */
-function t(e) {
-		return typeof e === "function"
-	}
-/**
- * @AllowToRunInFind
- *
- * @properties={typeid:24,uuid:"51338C04-3DB6-4787-9395-7D5D21637D3A"}
- */
-function xxxunusedgetBarcodeLatest(){
-	/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} * /
-	var barsFS = databaseManager.getFoundSet('stsservoy', 'last_id_serial');
-	var barcode; //just added to remove a warning
-	if (barsFS.find()){
-			barsFS.id_serial_number = barcode;
-			if (barsFS.search() == 0){
-				var barcodeSafe = true;
-			}
-	}*/
-}
 /**
  * @AllowToRunInFind
  * Ensure barcode is unique, then save
@@ -3568,10 +3576,10 @@ function createValidBarcode(){
 	var recIndex = barsFS.newRecord();
 	var barRec = barsFS.getRecord(recIndex);
 	barRec.id_serial_number = createBarCodeNextNumber(); 
-	barRec.tenant_uuid = scopes.globals.secCurrentTenantID;
-	createRecordsArray.push(barRec);
-	databaseManager.saveData(barRec);
-	return barRec.id_serial_number_id;
+	barRec.tenant_uuid = globals.session.tenant_uuid;
+	createdRecords++;
+	//databaseManager.saveData(barRec);
+	return barRec;
 }
 /**
  * @AllowToRunInFind
@@ -4346,7 +4354,8 @@ function removeFormHist(formName){
 	//application.getActiveWindow().
 	var statHis = history.removeForm(formName);
 	var statMod = solutionModel.removeForm(formName);
-	application.output(formName+' history remove: '+statHis+' solution model remove form: '+statMod);
+	if (application.isInDeveloper()){application.output(formName+' history remove: '+statHis+' solution model remove form: '+statMod);}
+	return (statHis && statMod);
 }
 /**
  * @param record
@@ -4810,36 +4819,18 @@ function importRecordCheckIdfileCount(record,correct){
 	nums.bcAdd = Math.abs(nums.bcAdd); nums.bcDel = Math.abs(nums.bcDel); 
 	nums.idfileAdd = Math.abs(nums.idfileAdd); nums.idfileDel = Math.abs(nums.bcDel); 
 	///var origQuant;
+	var newIdfileRecs = [];
+	var newIdfileIds = [];
 	if (edited){
 		var action = record.action;
-		application.output('actions to be taken '+action);
+		if (application.isInDeveloper()){application.output('actions to be taken '+action);}
 		var orphanIdfileList = [];
 
-		var createNumberBarcodes = nums.bcAdd;
-		while (createNumberBarcodes > 0){  // add barcodes
-			var newBcId = createValidBarcode();
-			nums.bcCodes.push(newBcId);
-			dsBarcodeList[newBcId] = []; // update listing of idfles 
-			nums.bcIdfiles[newBcId] = [];//comment out
-			//nums.dbIdfiles.push(newBcId);
-			createNumberBarcodes--;
-		}		
-		application.output('created barcodes '+nums.bcAdd);
+		orphanIdfileList = createNumberBarcodes(orphanIdfileList);
+		if (application.isInDeveloper()){application.output('created barcodes '+nums.bcAdd);}
 		
-		var deleteNumberBarcodes = nums.bcDel;
-		while (deleteNumberBarcodes > 0){ // delete barcodes, keep list of idfiles on each deleted barcode
-			var bcCode = nums.bcCodes.pop();
-			barcodesToDelete.push(bcCode);
-			/** @type {Array} */
-			var barIdlist5 = nums.bcIdfiles[bcCode];
-			var length5 = barIdlist5.length;
-			for (var index5 = 0;index5 < length5;index5++){
-				orphanIdfileList.push(barIdlist5[index5]);//no break since orphanIdfiles will be reallocated to another barcode
-			}
-			deleteNumberBarcodes--;
-			nums.bcIdfiles[bcCode] = null; // barcode no longer in use
-		}
-		application.output('deleted barcodes '+nums.bcDel);
+		orphanIdfileList = deleteNumberBarcodes(orphanIdfileList);
+		if (application.isInDeveloper()){application.output('deleted barcodes '+nums.bcDel);}
 		
 		if (nums.idfileAdd > 0){  // include orphans first, and then new idfiles to orphan list, not yet allocated to barcode
 			var createNumberIdfiles2 = (orphanIdfileList.length >= nums.idfileAdd) ? 0 : nums.idfileAdd - orphanIdfileList.length;
@@ -4863,11 +4854,17 @@ function importRecordCheckIdfileCount(record,correct){
 						summQuant = totalQuant;
 					}
 				}
-				application.output('----create quant '+createQuant+' item count '+nums.inItemCnt+' summQuant '+summQuant);
-				var newIdfileId = createIdfileRecord(uniquePm,pcmkId,idSequence,idLot,bcCode,createQuant,nums.inItemCnt,summQuant,record.remarks);
-				orphanIdfileList.push(newIdfileId);
+				if (application.isInDeveloper()){application.output('----create quant '+createQuant+' item count '+nums.inItemCnt+' summQuant '+summQuant);}
+				var newIdfileRec = createIdfileRecord(uniquePm,pcmkId,idSequence,idLot,bcCode,createQuant,nums.inItemCnt,summQuant,record.remarks);
+				var guid = getValidGuidMajMin(record.guid_hideindex);
+				newIdfileRec.guid_major = guid.major;
+				newIdfileRec.guid_minor = guid.minor;
+				newIdfileRecs[newIdfileRec.idfile_id] = newIdfileRec;
+				newIdfileIds.push(newIdfileRec.idfile_id);
 				//nums.bcIdfiles[barCode].push(newIdfileId);
-				nums.dbIdfiles.push(newIdfileId);
+				nums.dbIdfiles.push(newIdfileRec.idfile_id);
+				orphanIdfileList.push(newIdfileRec.idfile_id);
+				idfilePool.push(newIdfileRec);
 				createNumberIdfiles2 -= 1;//was createQuant, but that is only copied to the idfile, not creating idfiles, BUT summarized items are set otherwise
 			}
 			application.output('added idfiles '+nums.idfileAdd);
@@ -4877,7 +4874,7 @@ function importRecordCheckIdfileCount(record,correct){
 			var deleteNumberIdfiles = (orphanIdfileList.length >= nums.idfileDel) ? 0 : nums.idfileDel - orphanIdfileList.length;
 			var index7;
 			for (index7 = nums.bcCodes.length-1;index7 >= 0;index7--){//start at end of allocated barcodes
-				var barId7 = nums.bcCodes[index7];
+				var barId7 = nums.bcCodes[index7].id_serial_number_id;
 				/** @type {Array} */
 				var barId7list = nums.bcIdfiles[barId7];
 				while (barId7list.length > nums.inLabelQntEa && deleteNumberIdfiles != 0){ // remove orphans from each barcode to barcode max quant
@@ -4895,7 +4892,7 @@ function importRecordCheckIdfileCount(record,correct){
 				}
 				if (deleteNumberIdfiles == 0){break}
 			} // remove orphans from end barcodes to achieve import quantity
-			application.output('deleted idfiles '+nums.idfileDel);
+			if (application.isInDeveloper()){application.output('deleted idfiles '+nums.idfileDel);}
 		}
 		
 		for (index7 = 0;index7 < nums.bcCodes.length;index7++){
@@ -4908,7 +4905,7 @@ function importRecordCheckIdfileCount(record,correct){
 				barId7list.push(orphanIdfileList.pop()); // add orphan idfiles to a barcode that is not at capacity
 			} // this is where the idfile.id_serial_number_id needs to start set
 		}
-		timeIn = 0; warningsMessage('Setting '+record.material);
+		timeIn = 0; warningsMessage('Setting '+record.piecemark+' '+record.material);
 		var idfileListing = []; // get list of all idfiles in the barcodes for the pm to update the id_serial_number_id
 		if (summaryRec){
 			//------------  summary record
@@ -4945,15 +4942,15 @@ function importRecordCheckIdfileCount(record,correct){
 		}
 
 		/**
-		 * SAVE all save records or an sql search will not find new records
+		 * SAVE all save records or an sql search will not find new records, NOW use caching. SAVE too slow.
 		 * all idfiles for this listing
 		 * check to see if already in a barcode for this pm
 		 * add to barcode within bc limit
 		 * save idfile changes
 		 */
-		databaseManager.saveData();//inclusive, reverify and save ONLY records in this action
+		//databaseManager.saveData();///inclusive, reverify and save ONLY records in this action
 		while (idfileListing.length != 0){// put each idfile in the correct barcode
-			application.output(' enter final idfilelisting corrections ');
+			if (application.isInDeveloper()){application.output(' enter final idfilelisting corrections ');}
 			var templist = [];
 			if (idfileListing.length > 200){
 				templist = [].concat(idfileListing.slice(200));
@@ -4970,6 +4967,8 @@ function importRecordCheckIdfileCount(record,correct){
 			q.result.add(q.columns.original_quantity);
 			q.result.add(q.columns.summed_quantity);
 			q.result.add(q.columns.lprint);
+			q.result.add(q.columns.guid_major);
+			q.result.add(q.columns.guid_minor);
 			if (loseHist){
 				q.where.add(q.and
 					 .add(q.columns.idfile_id.isin(templist))
@@ -4989,23 +4988,29 @@ function importRecordCheckIdfileCount(record,correct){
 			//}
 			var shortIdlist = dsIdListForPmDyn2;
 			///var length = nums.bcCodes.length;
-			for (var indexId = 1;indexId <= dsIdListForPmDyn2.getSize();indexId++){
-				shortIdlist.setSelectedIndex(indexId);
+			//for (var indexId = 1;indexId <= dsIdListForPmDyn2.getSize();indexId++){
+			//	existingIds.push(shortIdlist.getRecord(indexId));
+			//}
+			//application.output('existing '+existingIds.length+' created '+idfilePool.length);
+			
+			for (var indexId = 0;indexId < idfilePool.length;indexId++){
+				//shortIdlist.setSelectedIndex(indexId);
 				/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-				var recIdfile = shortIdlist.getRecord(indexId); 
+				var recIdfile = idfilePool[indexId];
 				if (nums.bcCodes.indexOf(recIdfile.id_serial_number_id) == -1){ //not already in bc
 					var recId = recIdfile.idfile_id;
 					barId = idfileBarcodes[recId];
 					recIdfile.id_serial_number_id = barId; // add idfile to barcode
 					recIdfile.summed_quantity =  (summaryRec) ? finalBcCounts[nums.bcCodes.indexOf(barId)] : 1;
 					barList.push(recIdfile.idfile_id+""); // update barList
-					createRecordsArray.push(recIdfile);
+
+					warningsMessage('Id File normalization.');
 					///saveRec = true;
 				}
 			}
 		}
-		//warningsMessage('Update idfile barcodes.');
-		databaseManager.saveData();
+		warningsMessage('Update idfile barcodes.',true);
+		//databaseManager.saveData();
 		while (orphanIdfileList.length != 0){
 			/** @type {JSFoundSet<db:/stsservoy/idfiles>} */	
 			//var fs = databaseManager.getFoundSet('stsservoy','idfiles');
@@ -5017,8 +5022,9 @@ function importRecordCheckIdfileCount(record,correct){
 				deleteIdfiles();
 			}
 		}
-		//warningsMessage('Deleted orphans. '+count);
+		warningsMessage('Deleted orphans.',true);
 	}
+	idfilePool = [];
 	/**
 	 * check barcode, if one idfile is printed and not overridden, they all are. 
 	 * check barcode, if one idfile is printed and not lose history, next barcode.
@@ -5173,6 +5179,10 @@ function importRecords_sheet(){
 	createLotNumbers();
 	warningsMessage('Saving Lots');
 
+	if (databaseManager.saveData()){
+		databaseManager.commitTransaction();
+	}
+	databaseManager.startTransaction();
 	var retainFS = forms.kiss_option_import.transitionFS;
 	var rows = retainFS.getMaxRowIndex();
 	for (var index = 0;index < rows;index++){
@@ -5183,9 +5193,22 @@ function importRecords_sheet(){
 		importRecordPiecemarkExist(record,true);
 	}
 	timeIn = 0;	warningsMessage('Saving Piecemark markers ');
+	commitTransactions();
 	
 	//readPiecemarks();
+	var recStart = new Date().getTime();
+	if (!databaseManager.hasTransaction()){databaseManager.saveData();databaseManager.startTransaction()}
+	createdIdfileCount = 0;
 	for (index = 0;index < rows;index++){
+		var recCnt = rows-index;
+		var recCurrT = new Date().getTime();
+		var dur = recCurrT-recStart;
+		var recSec = Math.floor(10*index/(dur/1000))/10;
+		if (application.isInDeveloper()){application.output('rec sec '+recSec)}
+		forms.kiss_option_import.importRecordCount = recCnt;
+		forms.kiss_option_import.importSpeed = '('+recSec+'/s)';
+		forms.kiss_option_import.errorMessage = Math.floor(rows/recSec/6)/10+' min '+createdIdfileCount+' pieces';
+		remainingTime = Math.floor((rows-index)/recSec/6)/10+' min ';
 		retainFS.rowIndex = index+1;
 		if (!retainFS.action || retainFS.action == ""){continue}
 		warningsMessage('Processing idfiles line '+index);
@@ -5195,9 +5218,13 @@ function importRecords_sheet(){
 		if (exists) {
 			importRecordCheckIdfileCount(record,true);
 		}
+		commitTransactions();
 	}
+	databaseManager.commitTransaction();databaseManager.startTransaction();
+	warningsMessage('Committing non-aggregate piecemarks.');
 	createSummedMarks(forms.kiss_option_import.transitionFSsumm);
-	warningsMessage('Summed file stubs created.');
+	commitTransactions();
+	warningsMessage('Summed piecemarks saving.',true);
 	deleteIdfiles(); // delete marked Idfiles, along with transaction and barcodes
 	deletePiecemarks();
 	deleteImportBatch();
@@ -5236,7 +5263,10 @@ function importRecordsDelete(){
  * @AllowToRunInFind
  */
 function importRecordsAlt(){
+	///var win = application.getActiveWindow();
+	///win.controller.enabled = false;
 	var beginTime = new Date().getTime();
+	importDate = new Date().getDate();
 	var importOpt = forms.kiss_option_import.importOption;
 	warningsYes();
 	//var win = application.createWindow("STS Message", JSWindow.DIALOG);
@@ -5244,13 +5274,14 @@ function importRecordsAlt(){
 	//win.title = "STS Message";
 	//win.show('messagesWarnings');
 	
-	var jobID = scopes.jobs.jobIDs[0];
-	scopes.jobs.jobUnderCustomer = jobID;
+	//var jobID = scopes.jobs.jobIDs[0];
+	//scopes.jobs.jobUnderCustomer = jobID;
 	//readPieceTables(); // existing records
 	barcodePrefix = "";
 	barcodeLast = 0;
 	var statusSave = databaseManager.saveData(); //  clean save
 	databaseManager.setAutoSave(false);
+	if (databaseManager.hasTransaction()){databaseManager.saveData();databaseManager.startTransaction();}
 	warningsMessage('Start (save:'+statusSave+')'+forms.kiss_option_import.importOption);
 	//timeIn = new Date().getTime();
 	if (importOpt.search('Overwrite') != -1) {
@@ -5260,55 +5291,78 @@ function importRecordsAlt(){
 	} else if (importOpt.search('Match') != -1){
 		importRecords_sheet();
 	} else {
+		if (databaseManager.hasTransaction()){databaseManager.saveData();databaseManager.commitTransaction();}
 		return;
 	}
+	if (databaseManager.hasTransaction()){databaseManager.saveData();databaseManager.commitTransaction();}
+
 	//win.hide();
 	//win.destroy();
-	warningsMessage('Records imported');
+	///win.controller.enabled = true;
+	warningsMessage('Records imported',true);
 	//forms.kiss_option_import.controller.enabled = true;
 	saveBarCodeSerial();
-	timeIn = 0;warningsMessage('Save remaining records.');
-	databaseManager.setAutoSave(true);
+	warningsMessage('Save remaining records.',true);
+	databaseManager.setAutoSave(true);//
 	var duration = new Date().getTime()-beginTime;
-	warningsMessage('Total import time minutes '+duration/1000/60);
+	application.output('Total import time minutes '+duration/1000/60+ 'saving at record count: '+commitRecAt);
+	warningsMessage('Total import time minutes '+duration/1000/60+ 'saving at record count: '+commitRecAt,true);
 	//application.output('total import time ms '+timeOut);
 	//win.hide();
 	//win.destroy();
 	warningsX();
 	//scopes.jobs.importRecordsCheck();
 	forms.kiss_option_import.onHide(null);
-	databaseManager.saveData();
+	if (databaseManager.hasTransaction()){
+		databaseManager.saveData();
+		databaseManager.commitTransaction();
+	} else {
+		databaseManager.saveData();
+	}
+	databaseManager.setAutoSave(true);
 }
 /**
- * @param message
+ * @param {String} message
+ * @param {Boolean} showAnyway
  *
  * @properties={typeid:24,uuid:"99C38E1E-7B95-45DB-B7D0-6159795027B0"}
  */
-function warningsMessage(message){
+function warningsMessage(message,showAnyway){
 	timeOut = new Date().getTime();
-	if (timeOut - timeIn < 4000){return}
+	//var newTime = timeOut-timeUpdate;
+	/** if (false && (newTime > 3000) || false && (createdRecords > recordSaveLimit)){
+		timeUpdate = timeOut;
+		if (databaseManager.hasTransaction()){
+			var saveBegin = timeOut;
+			if (application.isInDeveloper()){application.output('committing '+createdRecords);}
+			databaseManager.commitTransaction();
+			databaseManager.startTransaction();
+			createdRecords = 0;
+			var saveEnd = new Date().getTime();
+			var dur = saveEnd - saveBegin;
+			recordSaveLimit = (dur < recordSaveDur) ? recordSaveLimit-2 : recordSaveLimit+2;
+			recordSaveLimit = (recordSaveLimit < 1) ? 2 : recordSaveLimit; 
+			recordSaveDur = dur;
+		} 
+		else {
+			databaseManager.saveData();
+			if (application.isInDeveloper()){application.output('saving warning message saveDATA .............');}
+		}
+
+	} */
+	if (timeOut - timeIn < 1000){
+		return;
+		if (showAnyway != true){return}
+	}
 	if (message == scopes.globals.stsMessages){message = message + " x"}
 	scopes.globals.stsMessages = message;
 	if (application.isInDeveloper()){
 		var timeOutMessage = timeOut - timeIn;
-		application.output(message+timeOutMessage)
+		application.output(message+' '+timeOutMessage+' ms');
 	}
 	application.updateUI();
 	timeIn = timeOut;
-	if ((timeOut-timeUpdate > 60000) || (createRecordsArray && createRecordsArray.length > 0) || createRecordsArray.length > 100){
-		timeUpdate = timeOut;
-		while (createRecordsArray.length != 0){
-			try {
-			var record = createRecordsArray.shift();
-			} catch (e) {
-				application.output('record catch '+record);
-				saveStat = databaseManager.saveData(record);
-			}
-			if (!saveStat){
-				application.output('not saved '+record);
-			}
-		}
-	}
+
 }
 /**
  * @properties={typeid:24,uuid:"11C43EF7-2680-4EA7-9AEB-B11E629275BC"}
@@ -5326,858 +5380,15 @@ function warningsYes(){
  * @properties={typeid:24,uuid:"CC81217A-D9DE-4B01-8636-1849F3F07FB5"}
  */
 function warningsX(){
+	application.output('close warning window');
+	application.updateUI();
 	var win = scopes.jobs.warnWindow;
 	win.hide();
 	win.destroy();
 	var skip = true;
 	if (skip) {return}
 }
-/**
- * @param e
- * @param t
- *
- * @SuppressWarnings(deprecated,hides,wrongparameters,undeclared,unused,nls)
-* @properties={typeid:24,uuid:"F2FD7DA1-2F64-47EB-8A2B-416FBAC080AF"}
- */
-function n(e, t) {
-		function a(n) {
-			var r = s + n.target.result;
-			s = "";
-			if (r >= t.chunkSize) {
-				var u = r.lastIndexOf("\n");
-				if (u < 0)u = r.lastIndexOf("\r");
-				if (u > -1) {
-					s = r.substring(u + 1);
-					r = r.substring(0, u)
-				}
-			}
-			var a = o.parse(r);
-			if (i >= e.size)return f(n);
-			else if (a.errors.abort)return;
-			else c()
-		}
-		function f(n) {
-			if (typeof t.onComplete === "function")t.onComplete(undefined, e, t.inputElem, n)
-		}
-		function l() {
-			if (typeof t.onFileError === "function")t.onFileError(u.error, e, t.inputElem)
-		}
-		function c() {
-			if (i < e.size) {
-				u.readAsText(e.slice(i, Math.min(i + t.chunkSize, e.size)));
-				i += t.chunkSize
-			}
-		}
-		if (!t)t = { };
-		if (!t.chunkSize)t.chunkSize = 1024 * 1024 * 5;
-		if (t.config.step) {
-			var n = t.config.step;
-			t.config.step = function(r) {
-				n(r, e, t.inputElem)
-			}
-		}
-		var i = 0;
-		var s = "";
-		var o = new r(t.config);
-		var u = new FileReader;
-		u.onload = a;
-		u.onerror = l;
-		this.stream = function(e, n) {
-			t.onComplete = e;
-			t.onFileError = n;
-			c()
-		};
-	}
-/**
- * @param e
- *
- *
- * @SuppressWarnings(deprecated,hides,wrongparameters,undeclared,unused,nls)
- * @properties={typeid:24,uuid:"0115493C-393C-4FA6-820C-B7CEEB46F4F7"}
- */
-function r(e) {
-		function c(e) {
-			if (typeof e !== "object")e = { };
-			if (typeof e.delimiter !== "string" || e.delimiter.length != 1)e.delimiter = f.delimiter;
-			if (e.deimiter == '"' || e.delimiter == "\n")e.delimiter = f.delimiter;
-			if (typeof e.header !== "boolean")e.header = f.header;
-			if (typeof e.dynamicTyping !== "boolean")e.dynamicTyping = f.dynamicTyping;
-			if (typeof e.preview !== "number")e.preview = f.preview;
-			if (typeof e.step !== "function")e.step = f.step;
-			return e
-		}
-		function h(e) {
-			var t = [",", "	", "|", ";"];
-			var n, i, s;
-			for (var o in t) {
-				var a = t[o];
-				var f = 0, l = 0;
-				var c = (new r({ delimiter: a, header: false, dynamicTyping: false, preview: 10 })).parse(e);
-				for (var h in c.results) {
-					var p = c.results[h].length;
-					l += p;
-					if (typeof s === "undefined") {
-						s = p;
-						continue
-					} else if (p > 1) {
-						f += Math.abs(p - s);
-						s = p
-					}
-				}
-				l /= c.results.length;
-				if ( (typeof i === "undefined" || f < i) && l > 1.99) {
-					i = f;
-					n = a
-				}
-			}
-			u.delimiter = n;
-			return !!n
-		}
-		function p() {
-			var e = a.i > 0 && g(a.i - 1) || a.i == 0;
-			var t = a.i < i.length - 1 && g(a.i + 1) || a.i == i.length - 1;
-			var n = a.i < i.length - 1 && i[a.i + 1] == '"';
-			if (a.inQuotes && n) {
-				a.fieldVal += '"';
-				a.i++
-			} else if (e || t)a.inQuotes = !a.inQuotes;
-			else C("Quotes", "UnexpectedQuotes", "Unexpected quotes")
-		}
-		function pp() {
-			var nn = a.i < i.length - 1 
-						&& a.ch == ')';
-			if (nn)
-				a.inParens = false;
-			else if (a.ch == '(')
-				a.inParens = true;
-			else
-				C("Parentheses", "UnexpectedParentheses", "Unexpected parentheses");		
-		}
-		function d() {
-			v()
-		}
-		function v() {
-			a.fieldVal += a.ch
-		}
-		function m() {
-			if (a.ch == u.delimiter)b();
-			else if (a.ch == "\r" && a.i < i.length - 1 && i[a.i + 1] == "\n" || a.ch == "\n" && a.i < i.length - 1 && i[a.i + 1] == "\r") {
-				w();
-				a.i++
-			} else if (a.ch == "\n" || a.ch == "\r")w();
-			else v()
-		}
-		function g(e) {
-			if (e >= i.length)return false;
-			var t = i[e];
-			if (t == u.delimiter || t == "\n" || t == "\r" && e < i.length - 1 && i[e + 1] == "\n")return true;
-			else return false
-		}
-		function y(e) {
-			if (e >= i.length)return false;
-			if (e < i.length - 1)return i[e] == "\n" || i[e] == "\r" && i[e + 1] == "\n";
-			else return i[e] == "\n"
-		}
-		function b() {
-			if (u.header) {
-				if (a.lineNum == 1 && n == 1)a.parsed.fields.push(a.fieldVal);
-				else {
-					var e = a.parsed.rows[a.parsed.rows.length - 1];
-					var t = a.parsed.fields[a.field];
-					if (t) {
-						if (u.dynamicTyping)a.fieldVal = x(a.fieldVal);
-						e[t] = a.fieldVal
-					} else {
-						if (typeof e.__parsed_extra === "undefined")e.__parsed_extra = [];
-						e.__parsed_extra.push(a.fieldVal)
-					}
-				}
-			} else {
-				if (u.dynamicTyping)a.fieldVal = x(a.fieldVal);
-				a.parsed[a.parsed.length - 1].push(a.fieldVal)
-			}
-			a.fieldVal = "";
-			a.field++
-		}
-		function w() {
-			E();
-			if (S()) {
-				a.errors = { };
-				a.errors.length = 0
-			}
-			if (u.header && a.lineNum > 0) {
-				if (S())a.parsed.rows = [{ }];
-				else a.parsed.rows.push({ })
-			} else {
-				if (S())a.parsed = [[]];
-				else a.parsed.push([])
-			}
-			a.lineNum++;
-			a.line = "";
-			a.field = 0
-		}
-		function E() {
-			if (o)return;
-			b();
-			var e = T();
-			if (!e && u.header)N();
-			if (S() && (!u.header || u.header && a.parsed.rows.length > 0)) {
-				var t = u.step(k());
-				if (t === false)o = true
-			}
-		}
-		function S() {
-			return typeof u.step === "function"
-		}
-		function x(e) {
-			var t = l.floats.test(e);
-			return t ? parseFloat(e) : e
-		}
-		function T() {
-			if (l.empty.test(a.line)) {
-				if (u.header) {
-					if (a.lineNum == 1) {
-						a.parsed.fields = [];
-						a.lineNum--
-					} else a.parsed.rows.splice(a.parsed.rows.length - 1, 1)
-				} else a.parsed.splice(a.parsed.length - 1, 1);
-				return true
-			}
-			return false
-		}
-		function N() {
-			if (!u.header)return true;
-			if (a.parsed.rows.length == 0)return true;
-			var e = a.parsed.fields.length;
-			var t = 0;
-			var n = a.parsed.rows[a.parsed.rows.length - 1];
-			for (var r in n)
-				if (n.hasOwnProperty(r))t++;
-			if (t < e)return C("FieldMismatch", "TooFewFields", "Too few fields: expected " + e + " fields but parsed " + t);
-			else if (t > e)return C("FieldMismatch", "TooManyFields", "Too many fields: expected " + e + " fields but parsed " + t);
-			return true
-		}
-		function C(e, t, n, r) {
-			var i = u.header ? a.parsed.rows.length ? a.parsed.rows.length - 1 : undefined : a.parsed.length - 1;
-			var o = r || i;
-			if (typeof a.errors[o] === "undefined")a.errors[o] = [];
-			a.errors[o].push({ type: e, code: t, message: n, line: a.lineNum, row: i, index: a.i + s });
-			a.errors.length++;
-			return false
-		}
-		function k() {
-			return { results: a.parsed, errors: a.errors }
-		}
-		function L(e) {
-			n++;
-			if (n > 1 && S())s += e.length;
-			a = A();
-			i = e
-		}
-		function A() {
-			var e;
-			if (u.header) {
-				e = { fields: S() ? a.parsed.fields || [] : [], rows: S() && n > 1 ? [{ }] : [] }
-			} else e = [[]];
-			return { i: 0, lineNum: S() ? a.lineNum : 1, field: 0, fieldVal: "", line: "", ch: "", inQuotes: false, inParens: false, parsed: e, errors: { length: 0 } }
-		}
-		var t = this;
-		var n = 0;
-		var i = "";
-		var s = 0;
-		var o = false;
-		var u = { };
-		var a = A();
-		var f = { delimiter: "", header: true, dynamicTyping: true, preview: 0 };
-		var l = { floats: /^\s*-?(\d*\.?\d+|\d+\.?\d*)(e[-+]?\d+)?\s*$/i, empty: /^\s*$/ };
-		e = c(e);
-		u = { delimiter: e.delimiter, header: e.header, dynamicTyping: e.dynamicTyping, preview: e.preview, step: e.step };
-		this.parse = function(e) {
-			if (typeof e !== "string")return k();
-			L(e);
-			if (!u.delimiter && !h(e)) {
-				C("Delimiter", "UndetectableDelimiter", "Unable to auto-detect delimiting character; defaulted to comma", "config");
-				u.delimiter = ","
-			}
-			for (a.i = 0; a.i < i.length; a.i++) {
-				if (o || u.preview > 0 && a.lineNum > u.preview)break;
-				a.ch = i[a.i];
-				a.line += a.ch;
-				if (a.ch == '(' || a.ch == ')')pp();
-				if (a.inParens)d();
-				if (a.ch == '"')p();
-				if (a.inQuotes) d();
-				if (!a.inQuotes && !a.inParens)m();
-			}
-			if (o)C("Abort", "ParseAbort", "Parsing was aborted by the user's step function", "abort");
-			else {
-				E();
-				if (a.inQuotes)C("Quotes", "MissingQuotes", "Unescaped or mismatched quotes")//joe
-				if (a.inParens)C("Parentheses", "MissingParentheses", "Unescaped or mistached parentheses")
-			}
-			return k()
-		};
-		this.getOptions = function() {
-			return { delimiter: u.delimiter, header: u.header, dynamicTyping: u.dynamicTyping, preview: u.preview, step: u.step }
-		}
-	}
-	e.fn.parse = function(r) {
-		function o(i) {
-			var s = a, o;
-			if (t(r.error))o = function() {
-					r.error(c.error, i.file, i.inputElem)
-				};
-			if (t(r.complete))s = function(e, t, n, i) {
-					r.complete(e, t, n, i);
-					a()
-				};
-			if (t(r.before)) {
-				var f = r.before(i.file, i.inputElem);
-				if (typeof f === "object")i.instanceConfig = e.extend(i.instanceConfig, f);
-				else if (f === "skip")return a();
-				else if (f === false) {
-					u("AbortError", i.file, i.inputElem);
-					return
-				}
-			}
-			if (i.instanceConfig.step) {
-				var l = new n(i.file, { inputElem: i.inputElem, config: e.extend({ }, i.instanceConfig) });
-				l.stream(s, o)
-			} else {
-				var c = new FileReader;
-				c.onerror = o;
-				c.onload = function(t) {
-					var n = t.target.result;
-					var r = e.parse(n, i.instanceConfig);
-					s(r, i.file, i.inputElem, t)
-				};
-				c.readAsText(i.file)
-			}
-		}
-		function u(e, n, i) {
-			if (t(r.error))r.error({ name: e }, n, i)
-		}
-		function a() {
-			s.splice(0, 1);
-			if (s.length > 0)o(s[0])
-		}
-		var i = r.config || { };
-		var s = [];
-		this.each(function(t) {
-			var n = e(this).prop("tagName").toUpperCase() == "INPUT" && e(this).attr("type") == "file" && window.FileReader;
-			if (!n)return true;
-			var r = e.extend({ }, i);
-			if (!this.files || this.files.length == 0) {
-				u("NoFileError", undefined, this);
-				return true
-			}
-			for (var a = 0; a < this.files.length; a++)s.push({ file: this.files[a], inputElem: this, instanceConfig: r });
-			if (s.length > 0)o(s[0])
-		});
-		return this
-	};
-	e.parse = function(e, t) {
-		var n = new r(t);
-		return n.parse(e)
-	}
-	
-	/**
- * @param e
- * @param t
- * @SuppressWarnings(deprecated,hides,wrongparameters,undeclared,unused,nls)
- * @properties={typeid:24,uuid:"A4A8DE34-3A1B-4963-819A-7918F84E36B3"}
- */
-function parse(e, t) {
-		var n = new r(t);// either r or Parser
-		return n.parse(e)
-	}
 
-	// Parser is the actual parsing component.
-	// It is under test and does not depend on jQuery.
-	// You could rip this entire function out of the plugin
-	// and use it independently (with attribution).
-	/**
- * @param config
- *
- * @properties={typeid:24,uuid:"CB7133A6-6AC8-4DE0-AE43-D7318B9B880D"}
- */
-function Parser(config)
-	{
-	}
-
-/**
-		var self = this;
-		var _invocations = 0;
-		var _input = "";
-		var _chunkOffset = 0;
-		var _abort = false;
-		var _config = {};
-		var _state = freshState();
-		var _defaultConfig = {
-			delimiter: "",
-			header: true,
-			dynamicTyping: true,
-			preview: 0
-		};
-		var _regex = {
-			floats: /^\s*-?(\d*\.?\d+|\d+\.?\d*)(e[-+]?\d+)?\s*$/i,
-			empty: /^\s*$/
-		};
-
-		config = validConfig(config);
-		_config = {
-			delimiter: config.delimiter,
-			header: config.header,
-			dynamicTyping: config.dynamicTyping,
-			preview: config.preview,
-			step: config.step
-		};
-
-		this.parse = function(input)
-		{
-			if (typeof input !== 'string')
-				return returnable();
-
-			reset(input);
-
-			if (!_config.delimiter && !guessDelimiter(input))
-			{
-				addError("Delimiter", "UndetectableDelimiter", "Unable to auto-detect delimiting character; defaulted to comma", "config");
-				_config.delimiter = ",";
-			}
-
-			for (_state.i = 0; _state.i < _input.length; _state.i++)
-			{
-				if (_abort || (_config.preview > 0 && _state.lineNum > _config.preview))
-					break;
-
-				_state.ch = _input[_state.i];
-				_state.line += _state.ch;
-				
-				if (_state.ch == '(' || _state.ch == ')')
-					handleParens();
-				if (_state.inParens)
-					inParens();
-				if (_state.ch == '"')
-					handleQuote();
-				else if (_state.inQuotes)
-					inQuotes();
-				if (!_state.inQuotes && !_state.inParens){
-					notEscaped();
-				}
-			}
-
-			if (_abort)
-				addError("Abort", "ParseAbort", "Parsing was aborted by the user's step function", "abort");
-			else
-			{
-				endRow();	// End of input is also end of the last row
-				if (_state.inQuotes)
-					addError("Quotes", "MissingQuotes", "Unescaped or mismatched quotes");
-			}
-
-			return returnable();
-		};
-
-		this.getOptions = function()
-		{
-			return {
-				delimiter: _config.delimiter,
-				header: _config.header,
-				dynamicTyping: _config.dynamicTyping,
-				preview: _config.preview,
-				step: _config.step
-			};
-		};
-
-		function validConfig(config)
-		{
-			if (typeof config !== 'object')
-				config = {};
-
-			if (typeof config.delimiter !== 'string'
-				|| config.delimiter.length != 1)
-				config.delimiter = _defaultConfig.delimiter;
-
-			if (config.delimiter == '"' || config.delimiter == "\n")
-				config.delimiter = _defaultConfig.delimiter;
-
-			if (typeof config.header !== 'boolean')
-				config.header = _defaultConfig.header;
-			
-			if (typeof config.dynamicTyping !== 'boolean')
-				config.dynamicTyping = _defaultConfig.dynamicTyping;
-
-			if (typeof config.preview !== 'number')
-				config.preview = _defaultConfig.preview;
-
-			if (typeof config.step !== 'function')
-				config.step = _defaultConfig.step;
-
-			return config;
-		}
-
-		function guessDelimiter(input)
-		{
-			var delimiters = [",", "\t", "|", ";"];
-			var bestDelim, bestDelta, fieldCountPrevRow;
-
-			for (var i in delimiters)
-			{
-				var delim = delimiters[i];
-				var delta = 0, avgFieldCount = 0;
-
-				var preview = new Parser({
-					delimiter: delim,
-					header: false,
-					dynamicTyping: false,
-					preview: 10
-				}).parse(input);
-
-				for (var j in preview.results)
-				{
-					var fieldCount = preview.results[j].length;
-					avgFieldCount += fieldCount;
-
-					if (typeof fieldCountPrevRow === 'undefined')
-					{
-						fieldCountPrevRow = fieldCount;
-						continue;
-					}
-					else if (fieldCount > 1)
-					{
-						delta += Math.abs(fieldCount - fieldCountPrevRow);
-						fieldCountPrevRow = fieldCount;
-					}
-				}
-
-				avgFieldCount /= preview.results.length;
-
-				if ((typeof bestDelta === 'undefined' || delta < bestDelta)
-					&& avgFieldCount > 1.99)
-				{
-					bestDelta = delta;
-					bestDelim = delim;
-				}
-			}
-
-			_config.delimiter = bestDelim;
-
-			return !!bestDelim;
-		}
-
-		function handleParens()
-		{
-			var delimBefore = (_state.i > 0 && isBoundary(_state.i-1))
-								|| _state.i == 0;
-			var delimAfter  = (_state.i < _input.length - 1 && isBoundary(_state.i+1))
-								|| _state.i == _input.length - 1;
-			var escaped     = _state.i < _input.length - 1
-								&& _input[_state.i+1] == '(';
-			var releaseEscape = _state.i < _input.length - 1 
-								&& _state.ch == ')';
-				
-			if (releaseEscape)
-				_state.inParens = false;
-			else if (_state.ch == '(')
-				_state.inParens = true;
-			else
-				addError("Parentheses", "UnexpectedParentheses", "Unexpected parentheses");
-		}
-		
-		function handleQuote()
-		{
-			var delimBefore = (_state.i > 0 && isBoundary(_state.i-1))
-								|| _state.i == 0;
-			var delimAfter  = (_state.i < _input.length - 1 && isBoundary(_state.i+1))
-								|| _state.i == _input.length - 1;
-			var escaped     = _state.i < _input.length - 1
-								&& _input[_state.i+1] == '"';
-
-			if (_state.inQuotes && escaped)
-			{
-				_state.fieldVal += '"';
-				_state.i++;
-			}
-			else if (delimBefore || delimAfter)
-				_state.inQuotes = !_state.inQuotes;
-			else
-				addError("Quotes", "UnexpectedQuotes", "Unexpected quotes");
-		}
-
-		function inQuotes()
-		{
-			appendCharToField();
-		}
-		
-		function inParens()
-		{
-			appendCharToField();
-		}
-
-		function appendCharToField()
-		{
-			_state.fieldVal += _state.ch;
-		}
-
-		function notEscaped()
-		{
-			if (_state.ch == _config.delimiter)
-				saveValue();
-			else if ((_state.ch == "\r" && _state.i < _input.length - 1
-						&& _input[_state.i+1] == "\n")
-					|| (_state.ch == "\n" && _state.i < _input.length - 1
-						&& _input[_state.i+1] == "\r"))
-			{
-				newRow();
-				_state.i++;
-			}
-			else if (_state.ch == "\n" || _state.ch == "\r")
-				newRow();
-			else
-				appendCharToField();
-		}
-
-		function isBoundary(i)
-		{
-			if (i >= _input.length)
-				return false;
-			
-			var ch = _input[i];
-
-			if (ch == _config.delimiter
-				|| ch == "\n"
-				|| (ch == "\r" && i < _input.length - 1 && _input[i+1] == "\n"))
-				return true;
-			else
-				return false;
-		}
-
-		function isLineEnding(i)
-		{
-			if (i >= _input.length)
-				return false;
-
-			if (i < _input.length - 1)
-				return _input[i] == "\n" || (_input[i] == "\r" && _input[i+1] == "\n");
-			else
-				return _input[i] == "\n";
-		}
-
-		function saveValue()
-		{
-			if (_config.header)
-			{
-				if (_state.lineNum == 1 && _invocations == 1)
-					_state.parsed.fields.push(_state.fieldVal)
-				else
-				{
-					var currentRow = _state.parsed.rows[_state.parsed.rows.length - 1];
-					var fieldName = _state.parsed.fields[_state.field];
-					if (fieldName)
-					{
-						if (_config.dynamicTyping)
-							_state.fieldVal = tryParseFloat(_state.fieldVal);
-						currentRow[fieldName] = _state.fieldVal;
-					}
-					else
-					{
-						if (typeof currentRow.__parsed_extra === 'undefined')
-							currentRow.__parsed_extra = [];
-						currentRow.__parsed_extra.push(_state.fieldVal);
-					}
-				}
-			}
-			else
-			{
-				if (_config.dynamicTyping)
-					_state.fieldVal = tryParseFloat(_state.fieldVal);
-				_state.parsed[_state.parsed.length - 1].push(_state.fieldVal);
-			}
-			
-			_state.fieldVal = "";
-			_state.field ++;
-		}
-
-		function newRow()
-		{
-			endRow();
-
-			if (streaming())
-			{
-				_state.errors = {};
-				_state.errors.length = 0;
-			}
-
-			if (_config.header && _state.lineNum > 0)
-			{
-				if (streaming())
-					_state.parsed.rows = [ {} ];
-				else
-					_state.parsed.rows.push({});
-			}
-			else
-			{
-				if (streaming())
-					_state.parsed = [ [] ];
-				else
-					_state.parsed.push([]);
-			}
-
-			_state.lineNum ++;
-			_state.line = "";
-			_state.field = 0;
-		}
-
-		function endRow()
-		{
-			if (_abort)
-				return;
-
-			saveValue();
-
-			var emptyLine = trimEmptyLine();
-			
-			if (!emptyLine && _config.header)
-				inspectFieldCount();
-
-			if (streaming() && (!_config.header ||
-					(_config.header && _state.parsed.rows.length > 0)))
-			{
-				var keepGoing = _config.step(returnable());
-				if (keepGoing === false)
-					_abort = true;
-			}
-		}
-
-		function streaming()
-		{
-			return typeof _config.step === 'function';
-		}
-
-		function tryParseFloat(num)
-		{
-			var isNumber = _regex.floats.test(num);
-			return isNumber ? parseFloat(num) : num;
-		}
-
-		function trimEmptyLine()
-		{
-			if (_regex.empty.test(_state.line))
-			{
-				if (_config.header)
-				{
-					if (_state.lineNum == 1)
-					{
-						_state.parsed.fields = [];
-						_state.lineNum --;
-					}
-					else
-						_state.parsed.rows.splice(_state.parsed.rows.length - 1, 1);
-				}
-				else
-					_state.parsed.splice(_state.parsed.length - 1, 1);
-
-				return true;
-			}
-			return false;
-		}
-
-		function inspectFieldCount()
-		{
-			if (!_config.header)
-				return true;
-
-			if (_state.parsed.rows.length == 0)
-				return true;
-
-			var expected = _state.parsed.fields.length;
-			
-			// Actual field count tabulated manually because IE<9 doesn't support Object.keys
-			var actual = 0;
-			var lastRow = _state.parsed.rows[_state.parsed.rows.length - 1];
-			for (var prop in lastRow)
-				if (lastRow.hasOwnProperty(prop))
-					actual++;
-
-			if (actual < expected)
-				return addError("FieldMismatch", "TooFewFields", "Too few fields: expected " + expected + " fields but parsed " + actual);
-			else if (actual > expected)
-				return addError("FieldMismatch", "TooManyFields", "Too many fields: expected " + expected + " fields but parsed " + actual);
-			return true;
-		}
-
-		function addError(type, code, msg, errKey)
-		{
-			var row = _config.header
-						? (_state.parsed.rows.length ? _state.parsed.rows.length - 1 : undefined)
-						: _state.parsed.length - 1;
-			var key = errKey || row;
-
-			if (typeof _state.errors[key] === 'undefined')
-				_state.errors[key] = [];
-
-			_state.errors[key].push({
-				type: type, 
-				code: code,
-				message: msg,
-				line: _state.lineNum,
-				row: row,
-				index: _state.i + _chunkOffset
-			});
-
-			_state.errors.length ++;
-
-			return false;
-		}
-
-		function returnable()
-		{
-			return {
-				results: _state.parsed,
-				errors: _state.errors
-			};
-		}
-
-		function reset(input)
-		{
-			_invocations++;
-			if (_invocations > 1 && streaming())
-				_chunkOffset += input.length;
-			_state = freshState();
-			_input = input;
-		}
-
-		function freshState()
-		{
-			// If streaming, and thus parsing the input in chunks, this
-			// is careful to preserve what we've already got, when necessary.
-			var parsed;
-			if (_config.header)
-			{
-				parsed = {
-					fields: streaming() ? _state.parsed.fields || [] : [],
-					rows: streaming() && _invocations > 1 ? [ {} ] : []
-				};
-			}
-			else
-				parsed = [ [] ];
-
-			return {
-				i: 0,
-				lineNum: streaming() ? _state.lineNum : 1,
-				field: 0,
-				fieldVal: "",
-				line: "",
-				ch: "",
-				inQuotes: false,
-				inParens: false,
-				parsed: parsed,
-				errors: { length: 0 }
-			};
-		}
-	}	
-		*/
 		/**
  * Handle changed data.
  *
@@ -6266,13 +5477,15 @@ function sampleBCPrint(event){
 	//application.output('Version '+plugins.servoyguy_servoycom.getVersion());
 	
 	if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
-		plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
+		globals.errorDialog('952');
+		//plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
 		return;
 	}
 	
 	//var com = plugins.servoyguy_servoycom.getNewClientJSCOM("SAPI.SpVoice");
 	var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
 	if (!com || !com.isJACOBLoaded()) {
+		globals.errorDialog('953');
 		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
 		return;
 	}
@@ -6320,9 +5533,10 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	var formName = event.getFormName();
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var fs = databaseManager.getFoundSet('stsservoy','jobs');
-	fs.loadAllRecords();
+	//fs.loadAllRecords();
 	if (fs.find()){
 		fs.job_number = newValue;
+		fs.delete_flag = null;
 		var count = fs.search();
 		if (count > 0){
 			forms[formName].jobFound = true;
@@ -6339,18 +5553,31 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 			forms[formName].vLabTotPieces = 0;//totalpieces
 			forms[formName].vLabTotalWt = 0;//totalweight
 			forms[formName].vLabNumPcmks = 0;//total piecemarks
-			if (formName != "barcode_idlabel"){
+			var info = getJobIdInfo(newValue);
+			forms[info.topForm].jobIdData = info;
+			if (formName.search("barcode_idlabel") == -1){
 				browseInfoEnable(event);
 				scopes.jobs.onGetInformation(event,false);
+				forms[formName].controller.focusField('frmSeqNum',false);
 			} else {
-				forms[formName].elements.buttonPrint.visible = true;
+				//forms[formName].onActionClear(event);
+				//forms[formName].elements.btn_Print.enabled = true;
+				forms[formName].elements.btn_PrintSelected.enabled = true;
+				forms[formName].elements.btn_PrintAll.enabled = true;
+				for (var element in forms[formName].elements){
+					if (element.search(/frm/) != -1){
+						forms[formName].elements[element].enabled = true;
+					}
+				}
+				forms[formName].controller.focusField('frmSeqNum',false);
+				forms[formName].elements.frmSeqNum.requestFocus();
 			}
-			forms[formName].controller.focusField('frmSeqNum',true);
+			status = true;
 		} else {
 			// jobFound = false;
 			status = false;
-			if (formName != "barcode_idlabel"){
-				forms[formName].elements.buttonPrint.visible = true;
+			if (formName.search("barcode_idlabel") == -1) {
+				forms[formName].elements.btn_Print.enabled = true;
 			}
 		}
 	}
@@ -6359,11 +5586,27 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 /**
  * @param {JSEvent} event
  * @properties={typeid:24,uuid:"B38E1BA8-9F7D-4BB4-B8D2-6EA0AFD15C71"}
+ * @AllowToRunInFind
  */
 function browseInfoEnable(event){
 	var formName = event.getFormName();
-	forms[formName].elements.buttBrowse.enabled = true;
-	forms[formName].elements.buttInfo.enabled = true;
+	if (forms[formName].elements.btn_Browse){
+		forms[formName].elements.btn_Browse.enabled = true;
+	}
+	if (forms[formName].elements.btn_Info){
+		forms[formName].elements.btn_Info.enabled = true;
+	}
+	if (forms[formName].elements.btn_PrintSelected){
+		forms[formName].elements.btn_PrintSelected.enabled = true;
+	}
+	if (forms[formName].elements.btn_PrintAll){
+		forms[formName].elements.btn_PrintAll.enabled = true;
+	}
+	for (var element in forms[formName].elements){
+		if (element.search('frm') != -1){
+			forms[formName].elements[element].enabled = true;
+		}
+	}
 }
 /**
  * @properties={typeid:24,uuid:"0AD92C53-8AC8-4015-B333-726F34D77950"}
@@ -6421,12 +5664,16 @@ function collectCriteria(){
  * @SuppressWarnings(wrongparameters)
  */
 function tablePrefsSaveDb(){
+	application.output('inside tablePrefsSaveDb');
 	var formName = generalTableOrderTableName;
 	var elems = forms[formName].elements;
 	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
 	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
+	databaseManager.startTransaction();
+	application.output('vsrn form  '+versionForm);
+	var recChanges = 0;
 	for (var index in elems){
-		warningsMessage('Saving column settings');
+		warningsMessage('Saving column settings '+formName);
 		var elem = elems[index];
 		var colName = elem.getName();
 		if (colName == ""){continue}//sometimes a blank entry after array and value list manip
@@ -6434,8 +5681,8 @@ function tablePrefsSaveDb(){
 		var colDims = elem.getLocationX()+","+0+","+elem.getWidth()+","+visible;
 		//var colDims = elems[index].getLocationX()+","+0+",110";
 		if (prefsFS.find()) {
-			prefsFS.user_id = -1;
-			prefsFS.form_name = formName;
+			prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+			prefsFS.form_name = formName.replace(versionForm,'');
 			prefsFS.field_name = colName;
 			prefsFS.tenant_uuid = globals.secCurrentTenantID;
 			//prefsFS.value_material = rec.shape;
@@ -6446,27 +5693,38 @@ function tablePrefsSaveDb(){
 				if (prefsFS.field_value != colDims){
 					rec.field_value = colDims;
 					rec.edit_date = new Date();
-					status = databaseManager.saveData(rec);
+					//status = databaseManager.saveData(rec);
+					recChanges++;
 					//application.output('save status change '+status);
 				}
 			} else {
 				var newDex = prefsFS.newRecord();
 				var newRec = prefsFS.getRecord(newDex);
 				newRec.tenant_uuid = globals.secCurrentTenantID;
-				newRec.user_id = -1;
-				newRec.form_name = formName;
+				newRec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+				newRec.form_name = formName.replace(versionForm,'');
 				newRec.field_name = colName;
 				//newRec.value_material = rec.shape;
 				newRec.field_value = colDims;
 				newRec.edit_date = new Date();
+				recChanges++;
 				
 				//application.output('save status '+status);
 			}
 		}
-		var status = databaseManager.saveData(prefsFS);
-		if (!status){globals.loggerDev(this,'Save record failed');}
-		warningsMessage('Column ordering SAVED.');
+		if (recChanges > 20){
+			var status = databaseManager.commitTransaction();
+			databaseManager.startTransaction();
+		}
+		//var status = databaseManager.saveData(prefsFS);
+		warningsMessage('Column ordering SAVED. '+formName);
 		warningsX();
+		status = databaseManager.commitTransaction();
+		if (!status){
+			globals.loggerDev(this,'Save record failed');
+			databaseManager.rollbackTransaction();
+		}
+
 	}
 }
 /**
@@ -6477,18 +5735,21 @@ function tablePrefsSaveDb(){
  * @properties={typeid:24,uuid:"32312F45-ECD5-4CCB-8D60-D49BDF6B7D66"}
  */
 function tablePrefsPreLoad(formx){
+	if (application.isInDeveloper()){application.output('tablePrefsPreLoad')}
+	var thisVersion = scopes.globals.getInstanceForm(null);
 	var tableArray = [];
 	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
 	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
 	//var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+vis;
 	if (prefsFS.find()) {
-		prefsFS.user_id = -1;
-		prefsFS.form_name = formx;
+		prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+		prefsFS.form_name = formx.replace(thisVersion,"");
 		//prefsFS.field_name = colName;
 		prefsFS.tenant_uuid = globals.secCurrentTenantID;
 		var count = prefsFS.search();
 		if (count > 0) {
-			for (var index = 1;index <= count;index++){
+			var index = 1;var maxIndex = 0;
+			while (index <= prefsFS.getSize()){
 				var record = prefsFS.getRecord(index);
 				var position = record.field_value.split(",");
 				if (position.length != 4){position = new Array(0,0,scopes.prefs.defaultColumnWidth,0)}
@@ -6499,6 +5760,7 @@ function tablePrefsPreLoad(formx){
 				//if (position[2] !== 'number'){position[2] = scopes.prefs.defaultColumnWidth}
 				//if (position[3] !== 'number'){position[3] = 1} // visible setting
 				tableArray.push(new Array(record.field_name,position[0],position[2],position[3]));
+				index++;maxIndex = index;
 			}
 		}
 	}
@@ -6521,5 +5783,1516 @@ function tablePrefsPreLoad(formx){
 	null;
 	return tableArray;
 }
+/**
+ * Get job info with jobNumber, returning arrays of sheets, loads, etc
+ * big procedure. may break into smaller
+ * return {topForm : parent, job_id : jobId, job_num : jobNum};
+ * 
+ * @param jobNum
+ *
+ * @properties={typeid:24,uuid:"1B7090BE-FEB1-4719-9E5F-71BEF50AF6B3"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function getJobIdInfo(jobNum){
+	/*
+	 * return sequence_number, load_number, load_release, customer so, shop, Lot, package, area, batch, drawing num, 
+	 */
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var p = databaseManager.createSelect('db:/stsservoy/jobs');
+	p.result.add(p.columns.job_id);
+	p.result.add(p.columns.association_id);
+	p.result.distinct = true;
+	p.where.add(
+	p.and
+		.add(p.columns.delete_flag.isNull)
+		.add(p.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(p.columns.job_number.eq(jobNum))
+	);
+	var fsJ = databaseManager.getFoundSet(p);
+	/** @type JSRecord<db:/stsservoy/jobs> */
+	var rec = fsJ.getRecord(1);
+	var jobId = rec.job_id;
+
+	var win = application.getActiveWindow();
+	var parent = win.controller.getName();
+	/** sheetRefDrawing = sheetRefDrawing.sort();
+	loadRels = loadRels.sort();
+	shopOrderNumbers = shopOrderNumbers.sort();
+	pcmkReleases = pcmkReleases.sort();
+	activeStations = activeStations.sort();
+	areaNames = areaNames.sort();
+	batchNames = batchNames.sort();
+	{sheet_ids :sheetIds, sheet_nums :sheetNumbers, ref_drawing :sheetRefDrawing,
+		sequence_ids :sequenceIds, sequence_nums :sequenceNumbers,
+		load_ids :loadIds, load_nums :loadNumbers, load_rels :loadRels,
+		lot_ids :lotIds, lot_nums :lotNumbers,
+		area_names : areaNames, batch_names :batchNames, customer_sos :shopOrderNumbers,
+		pcmk_releases :pcmkReleases, active_stations :activeStations, package_nums: packageNumbers}
+	 */
+	return {topForm : parent, job_id : jobId, job_num : jobNum};
+}
+
+/**
+ * Update job plant name when updating association for job.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"E7991386-6C19-43BF-88E8-69707BC20B19"}
+ */
+function onDataChangeJobPlant(oldValue, newValue, event) {
+	var fs = st2_tenantid_associations;
+	var index = 1;
+	while (index <= fs.getSize()){
+		var rec = fs.getRecord(index);
+		if (rec.association_uuid+"" == newValue+""){forms[event.getFormName()].job_plant = rec.association_name;break;}
+		index++;
+	}
+	return true;
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"89C9B487-F698-454D-8492-73F53E0E0792"}
+ */
+function onHideMW(event) {
+	var formName = event.getFormName();
+	var instance = globals.getInstanceForm(event);
+	//remove from history
+	if (instance != ""){
+		globals.formsToRemove.push(formName);
+	}
+	globals.setWindowClosed(event.getFormName());
+	var win = application.getActiveWindow();
+	win.destroy();
+	return true;
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param {String} formName
+ * @param {String} version
+ * @param {String} fieldStr
+ *
+ * @properties={typeid:24,uuid:"36D53BE3-C27F-4782-B6B3-1D1DB85E7BD7"}
+ */
+function tablePrefsPreOrderFields(formName,version,fieldStr){
+	function fldOrderSort(r1, r2)
+	{
+		var o = 0; var frst = r1.field_value.split(',')[0]*1.0;var scnd = r2.field_value.split(',')[0]*1.0;
+		if(frst < scnd)
+		{
+			o = -1;
+		}
+		else if(frst > scnd)
+		{
+			o = 1;
+		}
+		return o;
+	}
+	
+	if (application.isInDeveloper()){application.output('tablePrefsPreOrderFields')}
+	var prefsFormName = formName.replace(versionForm,"");
+	var fields = fieldStr.split(',');
+	if (application.isInDeveloper()){application.output('PREFS: table '+formName+' table prefs '+prefsFormName);}
+	//if (1==1){return}
+	var FLD2 = "";
+	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
+	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
+	if (prefsFS.find()) {
+		prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+		prefsFS.form_name = prefsFormName+"_table";
+		prefsFS.tenant_uuid = globals.secCurrentTenantID;
+		prefsFS.search();
+		//prefsFS.sort(fldOrderSort);
+	}
+	var orderedList = [];
+	for (var index3 = 1;index3 <= prefsFS.getSize();index3++){
+		var rec = prefsFS.getRecord(index3);
+		//if (application.isInDeveloper()){application.output(rec.field_name+" "+rec.field_value);}
+		var name = rec.field_name;
+		if (orderedList.indexOf(name) == -1){orderedList.push(name)}
+	}
+	for (index3 = 0;index3 < fields.length;index3++){
+		name = fields[index3].split('.')[1];
+		if (orderedList.indexOf(name) == -1){orderedList.push(name)}		
+	}
+	for (index3 = 0;index3 < orderedList.length;index3++){
+		FLD2 += orderedList[index3];
+		if (index3 != prefsFS.getSize()){FLD2 += ","}
+	}
+	if (application.isInDeveloper()){application.output('fld order '+FLD2);}
+}
+/**
+ * @param {String} textString
+ *
+ * @properties={typeid:24,uuid:"50BDC897-3F5D-4896-8FFB-FC12370D5F6A"}
+ */
+function parseIntoLines(textString){
+	importResults = textString.split("\n");
+
+	var lineCount = importResults.length;
+	for (var index = 0;index < lineCount;index++){
+		importResults[index] = importResults[index].split(',');
+	}
+	null;
+}
+/**
+ * @properties={typeid:24,uuid:"16F69129-5837-49DF-90C4-FA8FD2852830"}
+ */
+function createBarcodes(){
+	while (idCreationCount > 0){
+		var barcodeRec = createValidBarcode();
+		idBarcodePool.push(barcodeRec.id_serial_number_id);
+		importRecordCache.push(barcodeRec);
+		idCreationCount--;
+	}
+}
+/**
+ * @param orphanFileList
+ *
+ * @properties={typeid:24,uuid:"EACC48AD-95DA-4DF1-8399-54BAE5EB7272"}
+ */
+function createNumberBarcodes(orphanIdfileList){
+	var nums = scopes.jobs.countsBCandID;
+	var createNumBarcodes = nums.bcAdd;
+	while (createNumBarcodes > 0){  // add barcodes
+		var newBcRec = createValidBarcode();
+		var newBcId = newBcRec.id_serial_number_id;
+		nums.bcCodes.push(newBcId);
+		dsBarcodeList[newBcId] = []; // update listing of idfles 
+		nums.bcIdfiles[newBcId] = [];//comment out
+		//nums.dbIdfiles.push(newBcId);
+		createdRecords++;
+		commitTransactions();
+		createNumBarcodes--;
+	}
+	return orphanIdfileList;
+}
+/**
+ * @param orphanIdfileList
+ *
+ * @properties={typeid:24,uuid:"EA69A3EF-A23E-48CF-B4E7-C8A30596A157"}
+ */
+function deleteNumberBarcodes(orphanIdfileList){
+	var nums = scopes.jobs.countsBCandID;
+	var deleteNumBarcodes = nums.bcDel;
+	while (deleteNumBarcodes > 0){ // delete barcodes, keep list of idfiles on each deleted barcode
+		var bcCode = nums.bcCodes.pop();
+		barcodesToDelete.push(bcCode);
+		/** @type {Array} */
+		var barIdlist5 = nums.bcIdfiles[bcCode];
+		var length5 = barIdlist5.length;
+		for (var index5 = 0;index5 < length5;index5++){
+			orphanIdfileList.push(barIdlist5[index5]);//no break since orphanIdfiles will be reallocated to another barcode
+		}
+		deleteNumBarcodes--;
+		nums.bcIdfiles[bcCode] = null; // barcode no longer in use
+	}
+	return orphanIdfileList;
+}
+/**
+ * @properties={typeid:24,uuid:"06C802B0-FE96-43A2-81D5-701FF67C1A3C"}
+ */
+function commitTransactions(){
+	if (createdRecords > commitRecAt){
+		var timeIn = new Date().getTime();
+		createdRecords = 0;
+		if (databaseManager.saveData()){
+			databaseManager.commitTransaction();
+			databaseManager.startTransaction();
+			var thisDur = timeIn-commitStart;
+			if (thisDur-commitLastDur > 0){
+				commitRecAt--;
+			} else {
+				commitRecAt++;
+			}
+			commitLastDur = thisDur;
+			commitStart = timeIn;
+		}
+		//application.output("--------------- committing at "+commitRecAt);
+	}
+}
+/**
+ * @param topForm {String}
+ *
+ * @properties={typeid:24,uuid:"CBB124EF-765A-4EC1-92B1-580ED808F690"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function jobSheetAndDrawingNumbers(topForm){
+	var jobData = forms[topForm].jobIdData;
+	var jobId = jobData.job_id;
+	if (jobData.sheet_nums) {return}
+	
+	jobData.sheet_nums = [];
+	jobData.sheet_ids = [];
+	jobData.ref_drawings = [];
+	
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var sh = databaseManager.createSelect('db:/stsservoy/sheets');
+	sh.result.add(sh.columns.sheet_id);
+	sh.result.add(sh.columns.sheet_number);
+	sh.result.add(sh.columns.reference_drawing);
+	sh.result.distinct = true;
+	sh.sort.add(sh.columns.sheet_number);
+	sh.where.add(
+	sh.and
+		.add(sh.columns.delete_flag.isNull)
+		.add(sh.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(sh.columns.job_id.eq(jobId))
+	);
+	/** @type {JSFoundSet<db:/stsservoy/sheets>} */
+	var fsSh = databaseManager.getFoundSet(sh);
+	var index = 1;
+	while (index <= fsSh.getSize()){
+		var rec = fsSh.getRecord(index);
+		jobData.sheet_ids.push(rec.sheet_id);
+		jobData.sheet_nums.push(rec.sheet_number);
+		if (rec.reference_drawing){
+			if (jobData.ref_drawings.indexOf(rec.reference_drawing) == -1){
+				jobData.ref_drawings.push(rec.reference_drawing);
+			}
+		}
+		index++;
+	}	
+}
+/**
+ * @param topForm {String}
+ *
+ * @properties={typeid:24,uuid:"2DB0AFB5-C00E-4689-AEEB-6FD32FBCC74F"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function jobSequenceNumbers(topForm){
+	var jobData = forms[topForm].jobIdData;
+	var jobId = jobData.job_id;
+	jobData.sequence_nums = [];
+	jobData.sequence_ids = [];
+	/** @type {QBSelect<db:/stsservoy/sequences>} */
+	var sq = databaseManager.createSelect('db:/stsservoy/sequences');
+	sq.result.add(sq.columns.sequence_id);
+	sq.result.add(sq.columns.sequence_number);
+	sq.result.distinct = true;
+	sq.sort.add(sq.columns.sequence_number);
+	sq.where.add(
+	sq.and
+		.add(sq.columns.delete_flag.isNull)
+		.add(sq.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(sq.columns.job_id.eq(jobId))
+	);
+	/** @type {JSFoundSet<db:/stsservoy/sequences>} */
+	var fsS = databaseManager.getFoundSet(sq);
+	var index = 1;
+	while (index <= fsS.getSize()){
+		var rec = fsS.getRecord(index);
+		jobData.sequence_ids.push(rec.sequence_id);
+		jobData.sequence_nums.push(rec.sequence_number);
+		index++;
+	}
+}
+/**
+ * @param topForm {String}
+ * @param sequenceIds
+ *
+ * @properties={typeid:24,uuid:"A25FBD6A-F687-421B-99C5-71C35A8ED9D0"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function jobLotNumbers(topForm){
+	var jobData = forms[topForm].jobIdData;
+	var jobId = jobData.job_id;
+	if (jobData.lot_nums) {return}
+	
+	// Dependencies
+	jobSequenceNumbers(topForm);
+	
+	jobData.lot_nums = [];
+	jobData.lot_ids = [];
+	/** @type {QBSelect<db:/stsservoy/lots>} */
+	var lt = databaseManager.createSelect('db:/stsservoy/lots');
+	lt.result.add(lt.columns.lot_id);
+	lt.result.add(lt.columns.lot);
+	lt.result.distinct = true;
+	lt.sort.add(lt.columns.lot);
+	lt.where.add(
+	lt.and
+		.add(lt.columns.delete_flag.isNull)
+		.add(lt.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(lt.columns.sequence_id.isin(jobData.sequence_ids))
+	);
+	/** @type {JSFoundSet<db:/stsservoy/lots>} */
+	var fsLot = databaseManager.getFoundSet(lt);
+	var index = 1;
+	while (index <= fsLot.getSize()){
+		var rec = fsLot.getRecord(index);
+		jobData.lot_ids.push(rec.lot_id);
+		jobData.lot_nums.push(rec.lot);
+		index++;
+	}
+	// JOE check lot number creation 
+	for (index = jobData.lot_nums.length-1;index != -1;index--){
+		if (jobData.lot_nums[index] == ""){
+			jobData.lot_nums.pop();
+			jobData.lot_ids.pop();
+		}
+	}
+}
+/**
+ * @SuppressWarnings(wrongparameters)
+* 
+ * @param topForm
+ *
+ * @properties={typeid:24,uuid:"2ACE34BE-9636-4BFE-8AC5-D6AAA89E6479"}
+ */
+function jobLoadsAndReleases(topForm){
+	var jobData = forms[topForm].jobIdData;
+	var jobId = jobData.job_id;
+	if (jobData.load_nums) {return}
+	
+	jobData.load_nums = [];
+	jobData.load_ids = [];
+	jobData.load_rels = [];
+	/** @type {QBSelect<db:/stsservoy/loads>} */
+	var ld = databaseManager.createSelect('db:/stsservoy/loads');
+	ld.result.add(ld.columns.load_id);
+	ld.result.add(ld.columns.load_number);
+	ld.result.add(ld.columns.load_release);
+	ld.result.distinct = true;
+	ld.where.add(
+	ld.and
+		.add(ld.columns.delete_flag.isNull)
+		.add(ld.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(ld.columns.job_id.eq(jobId))
+	);
+	/** @type {JSFoundSet<db:/stsservoy/loads>} */
+	var fsL = databaseManager.getFoundSet(ld);
+	var index = 1;
+	while (index <= fsL.getSize()){
+		var rec = fsL.getRecord(index);
+		jobData.load_ids.push(rec.load_id);
+		jobData.load_nums.push(Math.floor(rec.load_number)+"");
+		if (rec.load_release && jobData.load_rels.indexOf(rec.load_release) != -1){jobData.load_rels.push(rec.load_release);}
+		index++;
+	}
+}
+/**
+ * @param topForm
+ *
+ * @properties={typeid:24,uuid:"779C179F-45C6-4D7C-96DC-84001292895B"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function jobPcmks(topForm){
+	var jobData = forms[topForm].jobIdData;
+	//var jobId = jobData.job_id;
+	if (jobData.load_nums) {return}
+	
+	//Dependecies
+	scopes.jobs.jobSheetAndDrawingNumbers(topForm);
+	
+	jobData.piecemark_ids = [];
+	jobData.piecemarks = [];
+	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+	var pm = databaseManager.createSelect('db:/stsservoy/piecemarks');
+	pm.result.add(pm.columns.piecemark_id);
+	pm.result.add(pm.columns.piecemark);
+	pm.where.add(
+	pm.and
+		.add(pm.columns.delete_flag.isNull)
+		.add(pm.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(pm.columns.sheet_id.isin(jobData.sheet_ids))
+	);
+	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
+	var fsPm = databaseManager.getFoundSet(pm);
+	var index = 1;
+	while (index <= fsPm.getSize()){
+		var rec = fsPm.getRecord(index);
+		jobData.piecemark_ids.push(rec.piecemark_id);
+		jobData.piecemarks.push(rec.piecemark);
+		index++;
+	}
+
+}
+/**
+ * @param topForm {String}
+ *
+ * @properties={typeid:24,uuid:"00B16D84-AC68-45F7-BF36-BF081AF0D461"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function jobIdfileMiscInfo(topForm){
+	var jobData = forms[topForm].jobIdData;
+	//var jobId = jobData.job_id;
+	if (jobData.load_nums) {return}
+	warningsYes();
+	
+	// Dependencies
+	jobStatii(topForm);
+	jobPcmks(topForm);
+
+	jobData.batch_names = [];
+	jobData.area_names = [];
+	jobData.shoporder_nums = [];
+	jobData.pcmk_rels = [];
+	jobData.active_stations = [];
+	jobData.package_nums = [];
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var id = databaseManager.createSelect('db:/stsservoy/idfiles');
+	id.result.add(id.columns.idfile_id);
+	id.result.add(id.columns.id_location);
+	id.result.add(id.columns.id_batch);
+	id.result.add(id.columns.shop_order);
+	id.result.add(id.columns.piece_release);
+	id.result.add(id.columns.status_description_id);
+	id.result.add(id.columns.ft_pkgno);
+	id.where.add(
+	id.and
+		.add(id.columns.delete_flag.isNull)
+		.add(id.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(id.columns.piecemark_id.isin(jobData.piecemark_ids))
+	);
+	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+	var fsId = databaseManager.getFoundSet(id);
+	var index = 1;
+	while (index <= fsId.getSize()){
+		warningsMessage('Collecting data',false);
+		var rec = fsId.getRecord(index);
+		if (rec.id_batch && jobData.batch_names.indexOf(rec.id_batch) == -1){jobData.batch_names.push(rec.id_batch);}
+		if (rec.id_location && jobData.area_names.indexOf(rec.id_location) == -1){jobData.area_names.push(rec.id_location);}
+		if (rec.shop_order && jobData.shoporder_nums.indexOf(rec.shop_order)== -1){jobData.shoporder_nums.push(rec.shop_order);}
+		if (rec.piece_release && jobData.pcmk_rels.indexOf(rec.piece_release)== -1){jobData.pcmk_rels.push(rec.piece_release);}
+		if (rec.ft_pkgno && jobData.package_nums.indexOf(rec.ft_pkgno)== -1){jobData.package_nums.push(rec.ft_pkgno);}
+		if (rec.status_description_id){
+			var station = globals.m.stations[rec.status_description_id];
+			///if (jobData.status_codes[rec.status_description_id]){
+			///	var station = jobData.status_codes[rec.status_description_id];
+			station = station.split(", ")[1];
+			if (jobData.active_stations.indexOf(station) == -1) {jobData.active_stations.push(station);}
+			///}
+		}
+		index++;
+	}
+	
+	if (jobData.batch_names.length > 1){jobData.batch_names = jobData.batch_names.sort();}
+	if (jobData.area_names.length > 1){jobData.area_names = jobData.area_names.sort();}
+	if (jobData.active_stations.length > 1){jobData.active_stations = jobData.active_stations.sort();}
+	if (jobData.package_nums.length > 1){jobData.package_nums = jobData.package_nums.sort();}
+	if (jobData.shoporder_nums.length > 1){jobData.shoporder_nums = jobData.shoporder_nums.sort();}
+	warningsX();
+}
+/**
+ * @SuppressWarnings(wrongparameters)
+* 
+ * @param topForm
+ *
+ * @properties={typeid:24,uuid:"8E0E142F-A44F-4CB5-9DC1-118F176EDE08"}
+ */
+function jobStatii(topForm){
+	var jobData = forms[topForm].jobIdData;
+	if (jobData.load_nums) {return}
+
+	jobData.status_codes = [];
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var sd = databaseManager.createSelect('db:/stsservoy/status_description');
+	sd.result.add(sd.columns.status_description_id);
+	sd.result.add(sd.columns.status_code);
+	sd.sort.add(sd.columns.status_sequence);
+	sd.sort.add(sd.columns.status_code);
+	sd.where.add(
+	sd.and
+		.add(sd.columns.delete_flag.isNull)
+		.add(sd.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(sd.columns.association_id.eq(globals.secCurrentAssociationID))
+	);
+	/** @type {JSFoundSet<db:/stsservoy/status_description>} */
+	var fsSd = databaseManager.getFoundSet(sd);
+	var index = 1;
+	while (index <= fsSd.getSize()){	
+		var rec = fsSd.getRecord(index);
+		jobData.status_codes[rec.status_description_id] = rec.status_code;
+		index++;
+	}
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param criteria
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"E39EFC0F-4F3F-43D7-B0AB-62E3C056903F"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function viewBTableSQLSummary(criteria,formName){
+	var dsName = "dsSQL";
+	var count = 1;
+	var newDsName = dsName;
+	while (databaseManager.dataSourceExists("mem:PM"+newDsName)){
+		this[newDsName] = -1;
+		newDsName = dsName+count;
+		count++;
+	}
+
+	var queryPM = queryAssembly(criteria,formName,"piecemark"); 
+	var pmDS = databaseManager.createDataSourceByQuery('PM'+newDsName,queryPM,-1);
+	var pmFS = databaseManager.getFoundSet(pmDS);
+	pmFS.loadAllRecords();
+	var index = 1;
+	while (index < pmFS.getSize()){
+		index = pmFS.getSize();
+		pmFS.getRecord(index);
+		index++;
+	}
+	var pmSize = pmFS.getSize();
+	var querySM = queryAssembly(criteria,formName,"summarized");
+	var smDS = databaseManager.createDataSourceByQuery('SM'+newDsName,querySM,-1);
+	var smFS = databaseManager.getFoundSet(smDS);
+	smFS.loadAllRecords();
+	//var summarizedCount = 0;
+	/**var summVisited = [];
+	index = 1;
+	while (index <= smFS.getSize()){
+		var rec = smFS.getRecord(index);
+		var recId = rec.piecemark_id;
+		//if (application.isInDeveloper()){application.output('piecemark id '+recId)}
+		if (summVisited.indexOf(recId) == -1){
+			summVisited.push(recId);
+		}
+		//index = smFS.getSize();
+		index++;
+	}*/
+	//if (application.isInDeveloper()){
+	//	for (index = 1;index <= smFS.getSize();index++){
+	//		rec = smFS.getRecord(index);
+	//		//application.output('summary rec '+rec);
+	//	}
+	//}
+	
+	//if (application.isInDeveloper()){
+	//	//application.output('pcmks '+pmFS.getSize()+' summarized '+smFS.getSize()+' '+summVisited.length);
+	//}
+	var jobDATA = {
+		weight : 0,
+		weight_lbs : 0,
+		//pcmks : pmFS.getSize()*1+smFS.getSize()*1,
+		pcmks : pmSize,
+		idfiles : 0,
+		idnumbers : 0
+	}
+
+	var query = queryAssembly(criteria,formName,'piecemark');
+	var stDS = databaseManager.createDataSourceByQuery('ST'+newDsName,query,-1);
+	var stFS = databaseManager.getFoundSet(stDS);
+	stFS.loadAllRecords();
+	//if (application.isInDeveloper()){application.output('matching records count '+fsST.getSize())}
+	//if (application.isInDeveloper()){
+	//	for (index = 1;index <= stFS.getSize();index++){application.output(stFS.getRecord(index))}
+	//}
+
+	index = 1;
+	while (index <= stFS.getSize()){
+		/** @type {JSRecord} */
+		rec = stFS.getRecord(index);
+		jobDATA.idfiles = jobDATA.idfiles*1 + rec.total_marks;
+		jobDATA.weight = jobDATA.weight*1 + rec.item_weight*rec.total_marks;
+		jobDATA.weight_lbs = jobDATA.weight_lbs*1 + rec.item_weight_lbs * rec.total_marks;
+		
+		index++;
+	}
+	
+	
+	var snQuery = queryAssembly(criteria,formName,'idnumbers');
+	var snDS = databaseManager.createDataSourceByQuery('SN'+newDsName,snQuery,-1);
+	var snFS = databaseManager.getFoundSet(snDS);
+	snFS.loadAllRecords();
+	index = 1;
+	while (index < snFS.getSize()){
+		index = snFS.getSize();
+		snFS.getRecord(index);
+		index++;
+	}
+	jobDATA.idnumbers = snFS.getSize();
+
+	if (application.isInDeveloper()){
+		for (var item in jobDATA){
+			application.output('item '+item+': '+jobDATA[item]);
+		}
+	}
+
+	var instance = globals.getInstanceForm(null);
+	var currForm = formName.split("_")[0]+"_criteria"+instance;
+	if (typeof forms[currForm].vLabTotalWt != 'undefined'){
+		if (forms[currForm].vJobMetric){
+			forms[currForm].vLabTotalWt = jobDATA.weight;			
+		} else {
+			forms[currForm].vLabTotalWt = jobDATA.weight_lbs;
+		}
+		forms[currForm].vLabTotPieces = jobDATA.idfiles;
+		forms[currForm].vLabIDNums = jobDATA.idnumbers;
+		forms[currForm].vLabNumPcmks = jobDATA.pcmks;
+	}
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param criteria
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"56F577A6-4F3D-4467-868B-A2822EEE3561"}
+ */
+function viewBTableSQL2(criteria,formName){
+	/**
+	 * Left join for records  which may not exist.  inner join for necessary records.
+	 */
+	null; //stop here 20160219
+	var query = "select random()*1000000 AS browsing_id,0 AS \"selection\",FLD from piecemarks "+
+		' right join routings on routings.routing_id = piecemarks.e_route_code_id '+
+		' inner join sheets on piecemarks.sheet_id = sheets.sheet_id SHT '+
+		' and sheets.job_id = JOBID AND sheets.delete_flag IS null '+
+		' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id AND idfiles.delete_flag FLAG SONUM FABS AREA PCRL LDN COW LOT PKG'+
+		' inner join sequences on sequences.sequence_id = idfiles.sequence_id SEQN ' +
+		' inner join id_serial_numbers on id_serial_numbers.id_serial_number_id = idfiles.id_serial_number_id IDNM ' +
+		' left join status_description on idfiles.status_description_id = status_description.status_description_id ' +
+		' left join associations on status_description.association_id = associations.association_uuid ' +
+		' left join jobs on sheets.job_id = jobs.job_id ' +
+		' left join customers on  jobs.customer_id = customers.customer_id ' +
+//		' left join heats on '
+//		' left join addresses on customers.customer_id = addresses.customer_id'
+		' left join lots on idfiles.lot_id = lots.lot_id ' +
+		' left join loads on loads.load_id = idfiles.current_load_id LDRR ';
+	var addOrderQuery = ' order by piecemarks.parent_piecemark, piecemarks.piecemark';
+	if (formName.search("barcode_") != -1) {
+		var ordered = scopes.jobs.tmp_LabelSort;
+		switch (ordered){
+			case 'Piece Mark':
+				addOrderQuery = ' order by piecemarks.parent_piecemark, piecemarks.piecemark';
+				break;
+			case 'ID Number':
+				addOrderQuery = ' order by id_serial_numbers.id_serial_number, piecemarks.piecemark';
+				break;
+			case 'Drawing Number':
+				addOrderQuery = ' order by sheets.reference_drawing, piecemarks.piecemark';
+				break;
+			case 'Material':
+				addOrderQuery = ' order by piecemarks.material, piecemarks.piecemark';
+				break;
+			default:
+				addOrderQuery = ' order by piecemarks.parent_piecemark, piecemarks.piecemark';
+		}
+	}
+	var FLD = "";
+	var DBs = ["id_serial_numbers","piecemarks","routings","sheets","idfiles","status_description","loads","associations","sequences","jobs","customers","lots"];
+	var skipFields = ['logic_flag','edit_date'];//'delete_flag',
+	//var skipFields = [];
+	for (var index1 = 0;index1 < DBs.length;index1++){
+		//application.output('table '+DBs[index1])
+		var table = databaseManager.getTable("stsservoy",DBs[index1]);
+		var tableColumns = table.getColumnNames();
+		for (var index2 = 0;index2 < tableColumns.length;index2++){
+			var fieldName = tableColumns[index2];
+			if (skipFields.indexOf(fieldName) != -1){continue}
+			//application.output(DBs[index1]+"."+tableColumns[index2])
+			FLD += DBs[index1]+"."+tableColumns[index2];
+			if ((index1 != DBs.length-1)|| (index2 != tableColumns.length-1)){FLD += ","}
+		}
+	}
+	//var fieldNames = FLD.split(',');
+	if (typeof versionForm === 'undefined'){ var versionForm = ""};
+	var prefsFormName = formName.replace(versionForm,"");
+	tablePrefsPreOrderFields(prefsFormName,versionForm,FLD);
+	if (formName.search(/(recall|remove)/) == -1){
+		query = query.replace('FLAG',"IS null");
+	} else {
+		query = query.replace('FLAG','= 99');
+	}
+	//  FLAG PCMK SHT SEQN SONUM LDN LDR PCRL FABS JOBR AREA BTCH COW (LOT) (PKG)
+	query = query.replace('FLD',FLD);
+	query = query.replace('JOBID',"\'"+scopes.jobs.browseJobID+"\'");
+	if (criteria.idnum){
+		query = query.replace('IDNM'," AND id_serial_numbers.id_serial_number IN "+criteria.idnum);
+	} else {
+		query = query.replace('IDNM','');
+	}
+	var PCMK = " WHERE ";
+	if (criteria.piecemarka.length > 0){
+		for (var index3 = 0;index3 < criteria.piecemarka.length;index3++){
+			if (index2 == 0) {
+				PCMK += " piecemarks.piecemark LIKE '%"+criteria.piecemarka[index3]+"%'";
+			} else {
+				PCMK += " OR piecemarks.piecemark LIKE '%"+criteria.piecemarka[index3]+"%'";
+			}
+		}
+		//query = query.replace('PCMK'," WHERE piecemarks.piecemark LIKE %"+criteria.piecemark+"%");
+	} else {
+		//query = query.replace('PCMK','');
+		PCMK = "";
+	}
+	if (criteria.sheetnum){
+		query = query.replace('SHT'," AND sheets.sheet_number IN "+criteria.sheetnum);
+	} else {
+		query = query.replace('SHT','');
+	}
+	if (criteria.seqnum){
+		query = query.replace('SEQN'," AND sequences.sequence_number IN "+criteria.seqnum);
+	} else {
+		query = query.replace('SEQN','');
+	}
+	if (criteria.sonum){
+		query = query.replace('SONUM'," AND idfiles.shop_order IN "+criteria.sonum);
+	} else {
+		query = query.replace('SONUM','');
+	}
+	if (criteria.batch){
+		query = query.replace('BTCH'," AND idfiles.id_batch IN "+criteria.batch);
+	} else {
+		query = query.replace('BTCH','');
+	}
+	if (criteria.area){
+		query = query.replace('AREA'," AND idfiles.id_location IN "+criteria.area);
+	} else {
+		query = query.replace('AREA','');
+	}
+	if (criteria.cow){
+		query = query.replace('COW'," AND piecemarks.piecemark_cow_code IN "+criteria.cow);// cost_of_work_code (10) ticket#6
+	} else {
+		query = query.replace('COW','');
+	}
+	if (criteria.lotnum){
+		query = query.replace('LOT'," AND idfiles.lot_id IN "+criteria.lotnum);//ticket#7
+	} else {
+		query = query.replace('LOT','');
+	}
+	if (criteria.pkgnum){
+		query = query.replace('PKG'," AND idfiles.ft_pkgid IN "+criteria.pkgnum);//ticket#7
+	} else {
+		query = query.replace('PKG','');
+	}
+	if (criteria.fabshop){
+		query = query.replace('FABS'," AND idfiles.status_description_id IN "+criteria.fabshop);
+	} else {
+		query = query.replace('FABS','');
+	}
+	if (criteria.pcmkrel){
+		query = query.replace('PCRL'," AND idfiles.piece_release IN "+criteria.pcmkrel);
+	} else {
+		query = query.replace('PCRL','');
+	}
+	if (criteria.loadrel){
+		query = query.replace('LDRR'," AND loads.load_release IN "+criteria.loadrel);
+	} else {
+		query = query.replace('LDRR','');
+	}
+	if (criteria.loadall){//need number to id current_load_id
+		query = query.replace('LDN'," AND idfiles.current_load_id IN "+criteria.loadall);
+	} else {
+		query = query.replace('LDN','');
+	}
+	query += PCMK + addOrderQuery;
+	if (application.isInDeveloper()){application.output('sql2-- '+query)}
+	return query;
+}
+/**
+ * @param criteria
+ * @param formName
+ * @param subquery
+ *
+ * @properties={typeid:24,uuid:"467D86A8-28B2-41DD-84B9-7A1E83E54047"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function queryAssembly(criteria,formName,subquery){
+	/**
+	 * Sequences, Sheets, ShopOrder Numbers, Load Numbers/ALL, Load Releases
+	 * Piecemark, Pcmk Releases, FaB Shop Stations, Lot Numbers, Package Numbers, 
+	 * Areas, Batches, COW Codes 
+	 */
+
+	null;//idserials
+	var jobId = criteria.jobid; //forms.loads_criteria.vJobID
+	var shownCols = [];
+
+	// Get transactions subquery
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var trans = databaseManager.createSelect('db:/stsservoy/sheets');
+	trans.where.add(trans.columns.delete_flag.isNull);
+	trans.where.add(trans.columns.job_id.eq(jobId));
+	trans.where.add(trans.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+	var trpm = trans.joins.add('db:/stsservoy/piecemarks');
+	trpm.root.where.add(trpm.columns.delete_flag.isNull);
+	trpm.root.where.add(trpm.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	trpm.root.where.add(trans.columns.sheet_id.eq(trpm.columns.sheet_id));
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var trIdf = trans.joins.add('db:/stsservoy/idfiles');
+	trIdf.root.where.add(trIdf.columns.delete_flag.isNull);
+	trIdf.root.where.add(trIdf.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	trIdf.root.where.add(trIdf.columns.piecemark_id.eq(trpm.columns.piecemark_id));
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var trSd = trans.joins.add('db:/stsservoy/transactions');
+	trSd.root.where.add(trSd.columns.delete_flag.isNull);
+	trSd.root.where.add(trSd.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	trSd.root.where.add(trSd.columns.idfile_id.eq(trIdf.columns.idfile_id));
+	trans.result.distinct = true;
+	trans.result.add(trSd.columns.status_description_id);
+	
+	// Get unique idfile subquery
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var uIdfile = databaseManager.createSelect('db:/stsservoy/sheets');
+	uIdfile.where.add(uIdfile.columns.delete_flag.isNull);
+	uIdfile.where.add(uIdfile.columns.job_id.eq(jobId));
+	uIdfile.where.add(uIdfile.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var uIdpm = uIdfile.joins.add('db:/stsservoy/piecemarks');
+	uIdpm.on.add(uIdfile.columns.sheet_id.eq(uIdpm.columns.sheet_id));
+	uIdpm.root.where.add(uIdpm.columns.delete_flag.isNull);
+	uIdpm.root.where.add(uIdpm.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var uIdIdfile = uIdfile.joins.add('db:/stsservoy/idfiles');
+	uIdIdfile.on.add(uIdIdfile.columns.piecemark_id.eq(uIdpm.columns.piecemark_id));
+	uIdIdfile.root.where.add(uIdIdfile.columns.delete_flag.isNull);
+	uIdIdfile.root.where.add(uIdIdfile.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	/** @type {QBJoin<db:/stsservoy/transactions>} */
+	var uIdTrans = uIdfile.joins.add('db:/stsservoy/transactions');
+	uIdTrans.on.add(uIdTrans.columns.idfile_id.eq(uIdIdfile.columns.idfile_id));
+	uIdTrans.root.where.add(uIdTrans.columns.delete_flag.isNull);
+	uIdTrans.root.where.add(uIdTrans.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	if (criteria.fabshopa && criteria.fabshopa.length > 0){
+		uIdTrans.root.where.add(uIdTrans.columns.status_description_id.isin(criteria.fabshopa));
+	}
+	uIdfile.result.distinct = true;
+	uIdfile.groupBy.add(uIdIdfile.columns.idfile_id);
+	uIdfile.result.add(uIdIdfile.columns.idfile_id);
+	
+	// Get unique piecemarks subquery
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var upcmk = databaseManager.createSelect('db:/stsservoy/sheets');
+	upcmk.where.add(upcmk.columns.delete_flag.isNull);
+	upcmk.where.add(upcmk.columns.job_id.eq(jobId));
+	upcmk.where.add(upcmk.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var upmm = upcmk.joins.add('db:/stsservoy/piecemarks');
+	upmm.on.add(upcmk.columns.sheet_id.eq(upmm.columns.sheet_id));
+	upcmk.where.add(upmm.columns.delete_flag.isNull);
+	upcmk.where.add(upmm.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	upcmk.result.distinct = true;
+	upcmk.result.add(upmm.columns.piecemark_id);
+	
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var st = databaseManager.createSelect('db:/stsservoy/sheets');
+	st.sort.add(st.columns.sheet_number);
+	st.where.add(st.columns.delete_flag.isNull);
+	st.where.add(st.columns.job_id.eq(jobId));
+	st.where.add(st.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	if (criteria.sheetnuma && criteria.sheetnuma.length > 0){
+		st.where.add(st.columns.sheet_number.isin(criteria.sheetnuma));
+	}
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var pmm = st.joins.add('db:/stsservoy/piecemarks');
+	pmm.on.add(st.columns.sheet_id.eq(pmm.columns.sheet_id));
+	if (criteria.piecemarka && criteria.piecemarka.length == 1){
+		st.where.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"));
+	} else if (criteria.piecemarka && criteria.piecemarka.length > 1){
+		st.where.add(st.or
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+			.add(pmm.columns.piecemark.like("%"+criteria.piecemarka.pop()+"%"))
+		)
+	} // overkill, but satisfies n-1 approach for search criteria
+
+	st.result.distinct;
+	st.sort.add(pmm.columns.piecemark);
+	st.sort.add(pmm.columns.parent_piecemark);
+	//if (subquery == 'summarized'){
+	//	st.sort.add(pmm.columns.material);
+	//	st.where.add(pmm.columns.piecemark.eq(""));
+	//}
+	st.groupBy.add(pmm.columns.piecemark_id);
+	st.groupBy.add(st.columns.sheet_number);
+	st.groupBy.add(st.columns.sheet_id);
+	st.where.add(pmm.columns.delete_flag.isNull);
+	
+	var pmTable = databaseManager.getTable('stsservoy','piecemarks');
+	var pmCols = pmTable.getColumnNames();
+	for (var index = 0;index < pmCols.length;index++){
+		st.result.add(pmm.columns[pmCols[index]]);
+	}
 
 
+	/** @type {QBJoin<db:/stsservoy/routings>} */
+	var rt1 = pmm.joins.add('db:/stsservoy/routings');
+	rt1.on.add(pmm.columns.e_route_code_id.eq(rt1.columns.routing_id));
+	st.groupBy.add(rt1.columns.route_code);
+	st.result.add(rt1.columns.route_code);
+	
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var id1 = st.joins.add('db:/stsservoy/idfiles');
+	id1.on.add(pmm.columns.piecemark_id.eq(id1.columns.piecemark_id));
+	if (subquery == "summarized"){
+		id1.root.result.distinct;
+		id1.root.groupBy.add(id1.columns.piecemark_id);
+		st.result.add(id1.columns.summed_quantity.sum,'piece_count');
+	}
+	if (criteria.areaa && criteria.areaa.length > 0){
+		st.where.add(id1.columns.id_location.isin(criteria.areaa));
+		st.groupBy.add(id1.columns.id_location);
+		st.result.add(id1.columns.id_location);
+	}
+	if (criteria.batcha && criteria.batcha.length > 0){
+		st.where.add(id1.columns.id_batch.isin(criteria.batcha));
+	}
+	if (criteria.loadalla && criteria.loadalla.length > 0){
+		st.where.add(id1.columns.current_load_id.isin(criteria.loadalla));
+	}
+	/**if (criteria.loadrela && criteria.loadrela.length > 0){
+		st.where.add(id1.columns..isin(criteria.loadrela));
+	}*/
+	if (criteria.pcmkrela && criteria.pcmkrela.length > 0){
+		st.where.add(id1.columns.piece_release.isin(criteria.pcmkrela));
+	}
+	if (criteria.pkgnuma && criteria.pkgnuma.length > 0){
+		st.where.add(id1.columns.ft_pkgno.isin(criteria.pkgnuma));//fabtrol specific
+	}
+	if (criteria.seqida && criteria.seqida.length > 0){
+		st.where.add(id1.columns.sequence_id.isin(criteria.seqida));//fabtrol specific
+	}
+	
+	if (criteria.fabshopa && criteria.fabshopa.length > 0){
+		if (subquery != 'summary'){
+			st.where.add((st.exists(uIdIdfile.root.where.add(id1.columns.idfile_id.eq(uIdIdfile.columns.idfile_id)).root)))
+		}
+	} else {
+		//st.result.add(id1.columns.summed_quantity.sum,'total_marks');		
+	}
+	/** @type {QBJoin<db:/stsservoy/sequences>} */
+	var sq1 = st.joins.add('db:/stsservoy/sequences');
+	st.sort.add(sq1.columns.sequence_id);
+	st.groupBy.add(sq1.columns.sequence_id);
+	st.where.add(sq1.columns.delete_flag.isNull);
+	st.where.add(sq1.columns.job_id.eq(jobId));
+	st.where.add(sq1.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	st.where.add(sq1.columns.sequence_id.eq(id1.columns.sequence_id));
+	if (criteria.seqnuma && criteria.seqnuma.length > 0){
+		sq1.on.add(id1.columns.sequence_id.eq(sq1.columns.sequence_id));
+		st.where.add(sq1.columns.sequence_number.isin(criteria.seqnuma));
+	}
+	if (subquery == "browse"){
+		var stShown = [];
+		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
+		var sn1 = st.joins.add('db:/stsservoy/id_serial_numbers');
+		sn1.on.add(id1.columns.id_serial_number_id.eq(sn1.columns.id_serial_number_id));
+		/** @type {QBJoin<db:/stsservoy/status_description>} */
+		var stat1 = st.joins.add('db:/stsservoy/status_description');
+		stat1.on.add(id1.columns.status_description_id.eq(stat1.columns.status_description_id));
+//		///** @type {QBJoin<db:/stsservoy/transactions>} */
+//		var trans1 = st.joins.add('db:/stsservoy/transactions');
+//		trans1.on.add(id1.columns.idfile_id.eq(trans1.columns.idfile_id));
+		st.result.clear();
+		st.sort.clear();
+		st.groupBy.clear();
+		st.result.addValue(0,"selection");
+		var tables = ['id_serial_numbers','piecemarks','status_description','idfiles','sheets','sequences'];
+		for (var itemDex = 0;itemDex < tables.length;itemDex++){
+			var table = databaseManager.getTable('stsservoy',tables[itemDex]);
+			var cols = table.getColumnNames();
+			for (index = 0;index < cols.length;index++){
+				if (stShown.indexOf(cols[index]) == -1){
+					stShown.push(cols[index]);
+					switch (tables[itemDex]){
+						case 'id_serial_numbers' : var tableCol = sn1.getColumn(cols[index]);break;
+						case 'piecemarks' : tableCol = pmm.getColumn(cols[index]);break;
+						case 'status_description' : tableCol = stat1.getColumn(cols[index]);break;
+						case 'idfiles' : tableCol = id1.getColumn(cols[index]);break;
+						case 'sheets' : tableCol = st.getColumn(cols[index]);break;
+						case 'sequences' : tableCol = sq1.getColumn(cols[index]);break;
+						default: null;
+					}
+					st.result.add(tableCol); 
+				}
+			}
+		}
+		stShown = [];
+		return st;
+	}
+	if (subquery == "idnumbers"){
+		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
+		sn1 = st.joins.add('db:/stsservoy/id_serial_numbers');
+		sn1.on.add(id1.columns.id_serial_number_id.eq(sn1.columns.id_serial_number_id));
+		st.result.clear();
+		st.sort.clear();
+		st.groupBy.clear();
+		st.result.distinct = true;
+		st.result.add(sn1.columns.id_serial_number);
+		st.groupBy.add(sn1.columns.id_serial_number);
+		return st;
+	}
+
+	if (subquery == 'piecemark'){
+		id1.root.result.add(id1.columns.summed_quantity);
+		st.result.clear();
+		st.groupBy.clear();
+		st.sort.clear();
+		st.result.distinct = true;
+		st.result.add(id1.columns.summed_quantity.sum,'total_marks');
+		st.groupBy.add(pmm.columns.piecemark_id);
+		for (index = 0;index < pmCols.length;index++){
+			if (pmCols[index] == "piecemark_id"){continue}
+			st.result.add(pmm.columns[pmCols[index]]);
+		}
+		null;
+	}
+
+	if (subquery == 'summarized'){
+		//pmm.parent.result.distinct;
+		st.result.distinct;
+		id1.root.result.distinct;
+		pmm.root.result.distinct;
+		rt1.root.result.distinct;
+		
+		st.groupBy.add(pmm.columns.piecemark_id);
+		id1.root.groupBy.add(id1.columns.piecemark_id);
+		pmm.root.groupBy.add(pmm.columns.piecemark_id);
+		
+		//st.where.add(pmm.columns.piecemark.eq(""));
+		//st.groupBy.add(pmm.columns.material);
+		//st.where.add(pmm.columns.piecemark.eq(""));
+	}
+	
+	if (subquery == 'stations'){
+		id1.root.result.add(id1.columns.idfile_id);
+			id1.root.groupBy.add(id1.columns.idfile_id);
+		id1.root.result.add(id1.columns.summed_quantity);
+		id1.root.groupBy.add(id1.columns.summed_quantity);
+		/** @type {QBJoin<db:/stsservoy/transactions>} */
+		var tr2 = st.joins.add('db:/stsservoy/transactions');///2241
+		tr2.on.add(tr2.columns.idfile_id.eq(id1.columns.idfile_id));
+		tr2.root.result.distinct;
+		tr2.root.groupBy.add(tr2.columns.status_description_id);
+		tr2.root.result.add(tr2.columns.status_description_id);
+		tr2.root.where.add((tr2.root.exists(trans.where.add(tr2.columns.status_description_id.eq(tr2.columns.status_description_id)).root)))
+		/** @type {QBJoin<db:/stsservoy/status_description>} */
+		var sd2 = st.joins.add('db:/stsservoy/status_description');
+		sd2.on.add(tr2.columns.status_description_id.eq(sd2.columns.status_description_id));
+		//sd2.root.result.distinct;
+		//sd2.root.groupBy.add(sd2.columns.status_description_id);
+		sd2.root.groupBy.add(sd2.columns.status_code);
+		sd2.root.groupBy.add(sd2.columns.association_id);
+		sd2.root.groupBy.add(sd2.columns.status_sequence);
+		sd2.root.groupBy.add(sd2.columns.status_description);
+		sd2.root.result.add(sd2.columns.status_code);
+		sd2.root.result.add(sd2.columns.association_id);
+		sd2.root.result.add(sd2.columns.status_sequence);
+		sd2.root.result.add(sd2.columns.status_description);
+		if (criteria.statusa && criteria.statusa.length > 0){
+			sd2.root.where.add(sd2.columns.status_code.isin(criteria.statusa))
+		}
+		/** @type {QBJoin<db:/stsservoy/associations>} */
+		var pl2 = st.joins.add('db:/stsservoy/associations');
+		pl2.on.add(pl2.columns.association_uuid.eq(sd2.columns.association_id));
+		pl2.root.groupBy.add(pl2.columns.association_name);
+		pl2.root.result.add(pl2.columns.association_name);
+	}
+    if (application.isInDeveloper()){
+    	application.output(st);
+    }
+null;
+	return st;
+}
+/**
+ * @param query
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"A92CB857-56F6-4B3F-A4A0-632787F34D3F"}
+ */
+function createRouteSummaryForm(query,formName){
+	tableOrderingArray = [];
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var stat = databaseManager.createSelect('db:/stsservoy/status_description');
+	stat.result.add(stat.columns.status_sequence);
+	stat.result.add(stat.columns.status_code);
+	stat.result.addValue(0,'quantity');
+	stat.result.addValue(0,'weight');
+	stat.result.addValue(0,'percent');
+	stat.result.addValue("",'plant');
+	stat.result.add(stat.columns.status_description_id);
+	stat.sort.add(stat.columns.status_sequence);
+	stat.sort.add(stat.columns.status_code);
+	stat.where.add(stat.columns.delete_flag.isNull);
+	stat.where.add(stat.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	var statDS = databaseManager.createDataSourceByQuery('statDS',stat,-1);
+	
+	var statFS = databaseManager.getFoundSet(statDS); 
+	statFS.loadRecords();
+	
+	var ds = 'dbDS';
+	var newDs = ds;
+	var count = 1;//createsummaryform, STOP
+	while (databaseManager.dataSourceExists('mem:'+newDs)){
+		newDs = -1;
+		newDs = ds+count++;
+	}
+	var dbDS = databaseManager.createDataSourceByQuery(newDs,query,-1);
+	var dbFS = databaseManager.getFoundSet(dbDS);
+	dbFS.loadRecords();
+	var codeToStat = [];
+	var index2 = 1;
+	while (index2 <= statFS.getSize()){
+		var rec2 = statFS.getRecord(index2);
+		var statId = rec2.status_description_id;
+		codeToStat[statId] = index2;
+		index2++;
+	}
+	var index = 1;
+	while (index <= dbFS.getSize()){
+		var rec = dbFS.getRecord(index);
+		var plant = rec.association_name;
+		var weight = rec.item_weight;
+		count = rec.summed_quantity;
+		var codeId = rec.status_description_id;
+		if (!codeId){continue}
+		var statRec = statFS.getRecord(codeToStat[codeId]);
+		statRec.plant = plant;
+		statRec.quantity = statRec.quantity*1+count*1;
+		statRec.weight = statRec.weight*1 + weight*count;
+		index++;
+	}
+	
+	var divisorQty = (!forms['loads_summary_info'+versionForm]) ? false : (forms['loads_summary_info'+versionForm].vPercentByQty == 0);
+	var overallWeight = forms['loads_criteria'+versionForm].vLabTotalWt;
+	var overallCount = forms['loads_criteria'+versionForm].vLabTotPieces;
+	for (index = 1;index <= statFS.getSize();index++){
+		rec = statFS.getRecord(index);
+		if (!rec.quantity){continue}
+		if (divisorQty){
+			rec.percent = Math.floor(10000*(rec.quantity/overallCount+.00005))/100;
+		} else {
+			rec.percent = Math.floor(10000*(rec.weight/overallWeight+.00005))/100;
+		}
+		if (application.isInDeveloper()){application.output(rec)}
+	}
+	viewBTableCreateForm2('loads_summary_info'+versionForm,statFS.getDataSource());
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param criteria
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"4006E40C-9A0B-4F9C-AB12-991FDE6F8784"}
+ */
+function viewBTableToFormQB(criteria,formName){
+	if (formName.search('summary_info') != -1){
+		dsQuery = queryAssembly(criteria,formName,'stations');
+	} else 	if (formName.search('combo') != -1){
+		dsQuery = queryAssembly(criteria,formName,'browse');
+	} else {
+		dsQuery = queryAssembly(criteria,formName,'piecemark');
+	}
+
+	tableOrderingData = tablePrefsPreLoad(formName+'_table');
+	var dsName = 'tableDS';
+	var newDsName = dsName; var count = 1;
+	while (databaseManager.dataSourceExists('mem:'+newDsName)){
+		newDsName = dsName+count++;
+	}
+	/** @type  {JSDataSet} */
+	browseFS2[formName] = databaseManager.createDataSourceByQuery(newDsName,dsQuery,-1);
+	versionForm = globals.getInstanceForm(null);
+	viewBTableCreateForm2(formName,browseFS2[formName]);
+	//tablePrefsLoad(formName)
+}
+/**
+ * No reorder table
+ * @AllowToRunInFind
+ * 
+ * @param formName
+ * @param datasource
+ *
+ * @properties={typeid:24,uuid:"581286EF-154A-4A11-A545-0984FFD73846"}
+ */
+function viewBTableCreateForm2(formName,datasource){
+	versionForm = globals.getInstanceForm(null);
+	var formNameTable = formName+'_table';
+	
+	//tableOrderingData = tablePrefsPreLoad(formName);
+	var formFS = databaseManager.getFoundSet(datasource);
+	formFS.loadRecords();
+	viewBTableRemoveColumnsQB(formFS);//dsBrowse and browseFS
+	var checkForm = solutionModel.newForm(formNameTable,datasource,'sts_one',false,500,600);
+	var code = 'function onRecordSelection(event){scopes.jobs.onRecordSelectIdfile(event);}';
+	var code2 = 'function onRender3(event){null;}';
+	if (formName.search('barcode') != -1){
+		code2 = 'function onRender3(event){scopes.printer.onRenderPrint(event);}';
+	}
+	if (formName.search('combo') != -1){
+		checkForm.onRecordSelection = checkForm.newMethod(code);
+		//checkForm.onRender = checkForm.newMethod(code2);
+	}
+	checkForm.navigator = SM_DEFAULTS.NONE;
+	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
+	if (formName.search('summary_info') != -1){
+		checkForm.onSortCmd = checkForm.newMethod(code2);
+	}
+	var last = ""; 
+	var offset = 0;
+	var colLength = 0;
+	var setVisible = true;
+	var posArray = [];
+	var defArray = ['default column',0,scopes.prefs.defaultColumnWidth,1];
+	var rec = formFS.getRecord(1);
+	var columnNames4 = [];
+	null;
+	null;
+	null;
+	if (!rec){return}
+	for (var index2 = 0;index2 < tableOrderingArray.length;index2++){
+		//if (!tableOrderingArray[index2]){continue}
+		//if (!rec){continue}
+		if (tableOrderingArray[index2] in rec){columnNames4.push(tableOrderingArray[index2])}
+	}
+	for (var column in rec){
+		if (typeof rec[column] == 'function'){continue}
+		if (columnNames4.indexOf(column) == -1 && columnNames4.indexOf(column) == -1){columnNames4.push(column)}
+	}
+	var columnCnt = 1; var fieldPos = 0;
+	for (var index = 0;index < columnNames4.length;index++){
+		/** @type {String} */
+		var columnName = columnNames4[index];
+		if (columnName == ""){continue}
+		if (formName.search('summary') != -1 && columnName.search('status_description_id') != -1){continue}
+		//if (columnName.search("rowid") != -1){continue}
+		var columnDataIndex = tableOrderingArray.indexOf(columnName);
+		posArray = tableOrderingData[columnDataIndex];
+		if (!posArray){posArray = defArray}
+		// column not in prefs, add basic config
+		//if (tableOrderingData[columnDataIndex].length != 4){tableOrderingData[columnDataIndex] = new Array(columnName,0,20,1)} // prefs data incorrect
+		//if (typeof tableOrderingData[columnDataIndex][1] == "string"){tableOrderingData[columnDataIndex][1] = 0}
+		setVisible = !(scopes.globals.hideEmptyColumns == 1 && removeColumns.indexOf(columnName) != -1) &&
+			((scopes.prefs.maxColumnShow == 0) || (columnCnt <= scopes.prefs.maxColumnShow)) && (posArray[3] == 1);
+			//if (posArray[3] == 0){colLength = 0;setVisible = false;}
+		//application.output(columnName+'column count '+columnCnt+' visible '+setVisible+' hideEmpty '+scopes.globals.hideEmptyColumns+' remove '+removeColumns.indexOf(columnName));
+		if (setVisible){columnCnt++}
+		if (!setVisible){var offsetHide = 9999999} else {offsetHide = 0}
+		if (columnName.search(/(_rowid|browsing_id)/) != -1){
+			colLength = 0;
+		} else {
+			colLength = posArray[2]; //scopes.prefs.defaultColumnWidth;
+		}
+		//if (application.isInDeveloper()){application.output('column '+columnName+ ' length '+ colLength+ ' position '+fieldPos+' visibile '+setVisible);}
+
+	 	last = checkForm.newLabel(columnName,fieldPos*1+offsetHide*1,0,colLength,20);
+	 	last.enabled = false;
+		if (columnName.search(/(_rowid|browsing_id)/) != -1){
+			last.visible = false;
+		}
+		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+	 	if (index == columnName.length -1){
+	 		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
+	 	}
+	 	last.labelFor=columnName;//columnNames2[index];
+	 	last.dataProviderID = columnName;//columnNames2[index];
+	 	last.toolTipText = last.labelFor;
+	 	if (columnName == 'selection'){
+	 		//if (removeColumns.indexOf('selection') == -1){setVisible = true}
+			last = checkForm.newField(columnName,JSField.CHECKS,fieldPos*1+offsetHide*1,20,colLength,20);
+	 	} else {
+	 		//if (removeColumns.indexOf(columnName) == -1){setVisible = true}
+	 		//application.output(' column data '+columnName+" "+posArray[1]);
+			last = checkForm.newField(columnName,JSField.TEXT_FIELD,fieldPos*1+offsetHide*1,20,colLength,20);
+	 	}
+		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+		last.name = columnName;
+		var typeCol = typeof rec[columnName];
+		//application.output('type '+typeCol+ ' '+columnName);
+ 		if (typeof rec[columnName] == "number"){
+ 			last.horizontalAlignment = SM_ALIGNMENT.RIGHT;
+ 		}	
+		last.editable = false;
+		last.visible = setVisible;
+		if (columnName == "selection"){
+			last.editable = true;
+			last.horizontalAlignment = SM_ALIGNMENT.LEFT;
+		}
+	 	offset += colLength*1;	
+	 	//if (columnName == "selection"){
+	 		//if (application.isInDeveloper()){application.output('selection: '+last)}
+	 	//}
+	 	fieldPos += colLength*1;
+	}
+	last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
+	if (!forms[formName]){
+		//versionForm = globals.getInstanceForm(null);
+		var newFormName = 'loads_pcmk_combo'+versionForm;
+		solutionModel.cloneForm(newFormName,solutionModel.getForm('loads_pcmk_combo'));
+	}
+	var status = false;
+	if (forms[formName].elements.tabless){
+		forms[formName].elements.tabless.removeAllTabs();
+		status = forms[formName].elements.tabless.addTab(formNameTable);
+		//forms[formName].controller.loadAllRecords();
+	}
+	if (!status){
+		status = forms[formName].elements.split.setLeftForm(formNameTable);		//forms.delete_pcmk_combo.elements.split.setLeftForm(formNameTable);
+	}
+	var relationInfo = solutionModel.getRelation('sts_idfile_to_transactions');
+	if (!solutionModel.getRelation(relationInfo.name+versionForm)){
+		var newRelation = solutionModel.newRelation(relationInfo.name+versionForm,relationInfo.primaryDataSource,relationInfo.foreignDataSource,relationInfo.joinType);
+		null;
+		var newGlobal = solutionModel.newGlobalVariable('jobs','transactionIdfileId'+versionForm,JSVariable.TEXT);
+		newRelation.newRelationItem(relationInfo.getRelationItems()[0].primaryDataProviderID+versionForm,'=','idfile_id');
+	}
+	fieldPos += posArray[1];
+}
+/**
+ * @SuppressWarnings(wrongparameters)
+* 
+ * @param topForm
+ *
+ * @properties={typeid:24,uuid:"D4B8DDB0-91D7-42AC-BF7C-5EACAD7E8001"}
+ */
+function jobStations(topForm){
+	var jobData = forms[topForm].jobIdData;
+	if (jobData.stations) {return}
+	
+	jobData.stations = [];
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var sq = databaseManager.createSelect('db:/stsservoy/status_description');
+	sq.result.distinct = true;
+	sq.result.add(sq.columns.status_code);
+	sq.sort.add(sq.columns.status_code);
+	sq.where.add(
+	sq.and
+		.add(sq.columns.delete_flag.isNull)
+		.add(sq.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	);
+	/** @type {JSFoundSet<db:/stsservoy/status_description>} */
+	var fsS = databaseManager.getFoundSet(sq);
+	var index = 1;
+	while (index <= fsS.getSize()){
+		var rec = fsS.getRecord(index);
+		/** @type {JSRecord<db:/stsservoy/status_description>} */
+		if (jobData.stations.indexOf(rec.status_code) == -1){jobData.stations.push(rec.status_code);}
+		index++;
+	}
+}
+/**
+ * This assigns guids that are not yet in the system to imported piecemarks, represented as idfiles
+ * 	major guid and minor guid are both represented
+ * When performing subassembly or minor guid additions, the major guid is NOT represented, but is 
+ *  present somewhere in the db.  True GUIDs are unique, so there can only be one represented within the db
+ *  as a minor guid_minor.  Major guids are repeated in the guid_major field.
+ *  
+ * @param guidIndex
+ *
+ * @properties={typeid:24,uuid:"D571DAF9-D820-4E21-9CF3-A04ACC0AF087"}
+ */
+function getValidGuidMajMin(guidIndex){
+	guidIndex = guidIndex*1;
+	/** @type {Array} */
+	var minorGUIDs = new Array(); // associative array, must iterate won't push/shift
+	minorGUIDs = forms.kiss_option_import.importSubGuidList[guidIndex];
+	/** @type {Array} */
+	var majorGUIDs = new Array();
+	if (forms.kiss_option_import.importMainGuidList[guidIndex].length > 0){
+		majorGUIDs = forms.kiss_option_import.importMainGuidList[guidIndex];
+	} else { // no Z record for the import, so recall major assembly guid of Y record
+		for (var key in minorGUIDs){
+			majorGUIDs.push(key);
+		}
+	}
+	for (var index = 0;index < majorGUIDs.length;index++){
+		var major = majorGUIDs.pop();
+		for (var index2 = 0;index2 < minorGUIDs[major].length;index2++){
+			var minor = minorGUIDs[major].pop();
+			/** @type {QBSelect<db:/stsservoy/idfiles>} */
+			var ids = databaseManager.createSelect('db:/stsservoy/idfiles');
+			ids.result.add(ids.columns.idfile_id);
+			ids.where.add(ids.columns.guid_major.eq(major));
+			ids.where.add(ids.columns.guid_minor.eq(minor));
+			var idFS = databaseManager.getFoundSet(ids);
+			idFS.loadRecords();
+			if (idFS.getSize() == 0) {
+				return {major: major, minor: minor};
+			}
+		}
+	}
+	return {major: null,minor:null};
+}
+/**
+ * @param foundset
+ *
+ * @properties={typeid:24,uuid:"6ECEA5F0-9BD5-4A40-AECF-E73C2402B0C1"}
+ */
+function viewBTableRemoveColumnsQB(foundset){
+	if (foundset.getSize() == 0){return}
+	columnNames2 = []; var index = 0; var fieldIndex = 0; removeColumns = [];
+	var hasDataCol = [];
+	columnNames2.push('selection');//Want this one first
+	browseArray = [];
+	nullRow = [];
+	for (var item in foundset.getRecord(1)){
+		columnNames2.push(item);
+	}
+	hasDataCol.push('selection');
+	var maxRows = (foundset.getSize() < 100) ? foundset.getSize() : 100;
+	for (index = 1;index <= maxRows;index++){
+		var rec = foundset.getRecord(index);
+		for (fieldIndex = 0;fieldIndex < columnNames2.length;fieldIndex++){
+			var fldName = columnNames2[fieldIndex];
+			if (hasDataCol.indexOf(fldName) != -1){continue}//already tagged as containing info
+			if (!rec[fldName]){continue}//empty, anything past this has data
+			hasDataCol.push(columnNames2[fieldIndex]);
+			
+		}
+	}
+	for (fieldIndex = 0;fieldIndex < columnNames2.length;fieldIndex++){
+		fldName = columnNames2[fieldIndex];
+		if (hasDataCol.indexOf(fldName) == -1){removeColumns.push(fldName)}
+	}
+	null;
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"96044B1E-7FB7-477A-BC65-6B60F6703FB8"}
+ */
+function onDataChangeAssociation(oldValue, newValue, event) {
+	var form = event.getFormName();
+	// stsvlg_userNames
+	if (event.getFormName() == 'division_user_detail'){
+		if (forms[form].user_name == "P"){
+			forms[form].association_uuid = oldValue;
+			return true;
+		}
+		/** @type {QBSelect<db:/stsservoy/associations>} */
+		var assoc = databaseManager.createSelect('db:/stsservoy/associations');
+		assoc.where.add(assoc.columns.association_uuid.eq(newValue));
+		assoc.result.add(assoc.columns.logic_flag);
+		var a = databaseManager.getFoundSet(assoc);
+		/** @type {JSRecord<db:/stsservoy/associations>} */
+		var rec = a.getRecord(1);
+		forms.division_user_detail.isAdminAccount = rec.logic_flag;
+	}
+	return true
+}

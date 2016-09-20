@@ -91,12 +91,15 @@ var userDuration = "";
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	userEmployeeName = globals.session.fullName;
 	userEmployeeNum = globals.session.employeeNum;
 	userEmployeeID = globals.session.employeeId;
 	userName = globals.session.fullName;
 	userLogin = globals.session.login;
-	userLoginID = globals.session.userId;
+	userLoginID = globals.session.loginId;
 	userSessionId = globals.session.sessionId;
 	userLoginDate = globals.session.loginDate;
 	userProgram = globals.session.program;
@@ -104,9 +107,10 @@ function onShow(firstShow, event) {
 	userAssociation = globals.session.association;
 	userDuration = refreshLoginDuration();
 	elements.tabless.visible = scopes.globals.showViewDetail;
+	elements.lbl_who.visible = (elements.tabless.visible);
 	
 	//plugins.UserManager.Server().getServerProperties();
-	createLicenseTable(event);
+	if (elements.tabless.visible){createLicenseTable(event)}
 	return _super.onShow(firstShow, event)
 }
 
@@ -123,6 +127,7 @@ function onHide(event) {
 	elements.tabless.removeAllTabs();
 	history.removeForm('view_license_users1');
 	solutionModel.removeForm('view_license_users1');
+	globals.onActionCloseButton(event);
 	return _super.onHide(event)
 }
 /**
@@ -143,13 +148,24 @@ function createLicenseTable(event){
 	currentMillis = currentMillis - timeAdjust;
 	
 	
-	var userTableHeaders = ['Active','Employee_Name','employee_number','User_Name','User_ID','Plant','IP','Client_ID','Idle_Time','Type','App'];
-	if (canKill){userTableHeaders.unshift('Stop');}
+	var userTableHeaders = [i18n.getI18NMessage('table.general.active'),
+							i18n.getI18NMessage('table.employee.name'),
+							i18n.getI18NMessage('table.general.application.name'),
+							i18n.getI18NMessage('table.general.ip.address'),
+							i18n.getI18NMessage('table.general.idle.time'),
+							i18n.getI18NMessage('table.employee.employee_number'),
+							i18n.getI18NMessage('table.users.user_name'),
+							i18n.getI18NMessage('table.associations.association_name'),
+							i18n.getI18NMessage('table.general.user_uuid'),
+							i18n.getI18NMessage('table.general.client.id'),
+							i18n.getI18NMessage('table.general.application.type')
+							];
+	if (canKill){userTableHeaders.unshift(i18n.getI18NMessage('table.general.application.stop'));}
 	licenseDs = databaseManager.createEmptyDataSet();
 	var licenseDataFormat = [];
 	var rowTemplate = [];
 	for (var index = 0;index < userTableHeaders.length;index++){
-		licenseDs.addColumn(userTableHeaders[index],index+1,JSColumn.TEXT);
+		licenseDs.addColumn(userTableHeaders[index].replace(' ','_'),index+1,JSColumn.TEXT);
 		rowTemplate.push(null);
 		licenseDataFormat.push(JSColumn.TEXT);
 	}
@@ -176,22 +192,23 @@ function createLicenseTable(event){
 		var userLoginName = (!clients[index].userUid) ? "" : globals.m.userNames[clients[index].userUid];
 		///var employeeName = (!clients[index].userUid) ? "" : globals.m.employeeNames[clients[index].userUid];
 		var association = (!clients[index].userUid) ? "" : globals.m.assocs[globals.m.userAssocs[clients[index].userUid]];
+		association = (!association) ? "" : association;// in the case of no association assigned to login
 		if (canKill){
-			clientRow[userTableHeaders.indexOf('Stop')] = "X";
+			clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.application.stop'))] = 'X';
 		}
-		clientRow[userTableHeaders.indexOf('Idle_Time')] = idleText;
-		clientRow[userTableHeaders.indexOf('IP')] = clients[index].hostAddress;
-		clientRow[userTableHeaders.indexOf('Active')] = (clients[index].alive) ? 'Active' : 'Inactive';
-		clientRow[userTableHeaders.indexOf('Client_ID')] = clients[index].clientId;
-		clientRow[userTableHeaders.indexOf('Login')] = clients[index].userName;
-		clientRow[userTableHeaders.indexOf('Type')] = clients[index].applicationType;
-		clientRow[userTableHeaders.indexOf('App')] = clients[index].solutionName;
-		clientRow[userTableHeaders.indexOf('User_ID')] = clients[index].userUid;
-		clientRow[userTableHeaders.indexOf('Plant')] = association;
-		clientRow[userTableHeaders.indexOf('IP')] = clients[index].ipAddress;
-		clientRow[userTableHeaders.indexOf('Employee_Name')] = (!clients[index].userUid) ? "" : globals.m.employeeNames[clients[index].userUid];
-		clientRow[userTableHeaders.indexOf('User_Name')] = userLoginName;
-		clientRow[userTableHeaders.indexOf('employee_number')] = (!clients[index].userUid) ? "" : globals.m.employeeNumbers[clients[index].userUid];
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.idle.time'))] = idleText;
+		//clientRow[userTableHeaders.indexOf('IP')] = clients[index].hostAddress;
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.active'))] = (clients[index].alive) ? 'Active' : 'Inactive';
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.client.id'))] = clients[index].clientId;
+		//clientRow[userTableHeaders.indexOf('Login')] = clients[index].userName;
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.application.type'))] = clients[index].applicationType;
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.application.name'))] = clients[index].solutionName;
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.user_uuid'))] = clients[index].userUid;
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.associations.association_name'))] = association;
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.ip.address'))] = clients[index].ipAddress;
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.employee.name'))] = (!globals.m.employeeNames[clients[index].userUid]) ? "" : globals.m.employeeNames[clients[index].userUid];
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.users.user_name'))] = userLoginName;
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.employee.employee_number'))] = (!globals.m.employeeNumbers[clients[index].userUid]) ? "" : globals.m.employeeNumbers[clients[index].userUid];
 		
 		licenseDs.addRow(clientRow.concat([]));
 	}
@@ -216,13 +233,15 @@ function createLicenseTable(event){
 
 		item = checkForm.newLabel(headerText,columnPos,0,15,21);
 	 	item.labelFor=label; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+	 	item.toolTipText=label;
 
-	 	if (headerText == "Stop"){
+	 	if (headerText == 'Stop'){
 			item = checkForm.newButton('X',columnPos,21,3,21,killMethod);
 			item.name = label; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
 			item.horizontalAlignment = SM_ALIGNMENT.CENTER;
 	 	} else {
 			item = checkForm.newTextField(label,columnPos,21,15,21);
+			item.printSliding = SM_PRINT_SLIDING.GROW_WIDTH | SM_PRINT_SLIDING.ALLOW_MOVE_X;
 			item.name = label; item.editable = false; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
 			item.toolTipText = item.text;
 	 	}

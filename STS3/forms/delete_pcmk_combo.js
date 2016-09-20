@@ -54,14 +54,14 @@ function onActionClearAll(event) {
  * @properties={typeid:24,uuid:"6588863C-C211-45FD-B32C-4FFCA0CA9711"}
  */
 function onActionDeleteSelected(event,formName) {
-	globals.doDialog("Delete Selected Records","Delete the Selected Records?","Delete","Cancel");
-	if (globals.dialogResponse != "yes"){
+	globals.doDialog('Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
+	if (globals.dialogResponse != 'yes'){
 		//application.output('delete cancelled');
 		return;
 	}
 	//application.output('ask second question');
-	globals.doDialog("Delete Selected Records","This is a permanent delete. Continue with deletion?","Cancel","Delete");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog('Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
+	if (globals.dialogResponse == 'yes'){
 		//application.output('delete aborted');
 		return;
 	}

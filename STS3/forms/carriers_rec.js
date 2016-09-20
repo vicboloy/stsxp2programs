@@ -28,8 +28,8 @@ function addCarrierRecord(event) {
  * @properties={typeid:24,uuid:"DA37CF27-B7CE-44F2-BC8E-9A49E8285114"}
  */
 function onShow(firstShow, event) {
-	var carriersDivider = globals.carriersDividerLocation;
+	/** var carriersDivider = globals.carriersDividerLocation;
 	if (carriersDivider == 0.0){
 		forms.carriers.elements.split.dividerLocation = 317.0;
-	}
+	} */
 }

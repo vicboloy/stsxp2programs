@@ -1,6 +1,6 @@
 addEmptyValue:1,
-customValues:"Parallel Port\r
-Serial Port",
+customValues:"i18n:sts.txt.parallel.port\r
+i18n:sts.txt.serial.port",
 name:"stsvl2_printer_connection",
 returnDataProviders:1,
 showDataProviders:1,

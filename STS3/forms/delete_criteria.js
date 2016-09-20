@@ -187,6 +187,9 @@ var jobFound = false;
  * @properties={typeid:24,uuid:"620FACFC-1270-4391-84B5-AA6295D5B3B6"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	scopes.jobs.getJobsList();
 	scopes.jobs.getCustomersList();
 	application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);

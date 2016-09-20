@@ -7,6 +7,7 @@ items:[
 {
 anchors:11,
 dataProviderID:"sts_status_description_to_associations.association_name",
+editable:false,
 location:"69,20",
 name:"fab_shop",
 size:"69,20",
@@ -49,6 +50,7 @@ uuid:"1B9FF1E9-A36B-463E-85CA-923AB7F3BAF7"
 {
 anchors:11,
 dataProviderID:"status_sequence",
+editable:false,
 format:"#|",
 horizontalAlignment:4,
 location:"0,20",
@@ -61,6 +63,7 @@ uuid:"A2D540A4-BABA-4499-A830-2915C1ACEB2A"
 {
 anchors:11,
 dataProviderID:"status_code",
+editable:false,
 location:"138,20",
 name:"status_code",
 size:"53,20",

@@ -31,6 +31,30 @@ var resetAvailable = [];
  */
 var resetSelected = [];
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"189335B0-DE99-449C-83A2-44123001D7EF",variableType:4}
+ */
+var elementCount = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C9ACBC2B-EA6F-4F79-A632-6B8E94739D90"}
+ */
+var versionForm = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"073C6E68-6D72-4C21-9029-714B394F0FF1"}
+ */
+var baseForm = "";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"DA73D2DB-26FB-4F76-88C0-FAB1B4A01B98",variableType:4}
+ */
+var elementShow = 0;
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -84,21 +108,33 @@ function setElements(side){
  * @properties={typeid:24,uuid:"F6F30370-7F30-4622-8A08-98A160EF9AAC"}
  */
 function tablePrefsColumnsToHide(tableName){
+	var elems = forms[currentTableName].elements;
+	var existEl = new Array();
+	for (var name in elems){existEl.push(name)}
 	globals.a.tempHiddenColumns[tableName] = [];
+	/** @type {Array} */
+	var tempArray = globals.a.tempHiddenColumns[tableName];
+	var version = globals.getInstanceForm(tableName);
 	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
 	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
 	if (prefsFS.find()) {
-		prefsFS.user_id = -1;
-		prefsFS.form_name = tableName;
+		prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+		prefsFS.form_name = tableName.replace(version,"");
 		prefsFS.tenant_uuid = globals.secCurrentTenantID;
 		if (prefsFS.search()){
-			for (var index = 1;index <= prefsFS.getSize();index++){
+			var index = 1;
+			while (index <= prefsFS.getSize()){
 				var rec = prefsFS.getRecord(index);
+				if (existEl.indexOf(rec.field_name) == -1 || rec.field_name == 'selection'){index++;continue}
 				var columnSpec = rec.field_value.split(",");
 				if (columnSpec[3] == 0){
-					/** @type {Array} */ var tempArray = globals.a.tempHiddenColumns[tableName];
-					tempArray.push(rec.field_name);
+					if (rec.field_name == 'selection'){
+						tempArray.unshift(rec.field_name);
+					} else {
+						if (tempArray.indexOf(rec.field_name) == -1){tempArray.push(rec.field_name);}
+					}
 				}
+				index++;
 			}
 		}
 	}
@@ -112,7 +148,14 @@ function tablePrefsColumnsToHide(tableName){
  * @properties={typeid:24,uuid:"5FD76D7C-005E-44EA-B200-F2F6F8ECDA9A"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+		versionForm = globals.getInstanceForm(event);
+		baseForm = event.getFormName().replace(versionForm,'');
+	}
+	globals.setUserFormPermissions(event);
 	var formName = scopes.jobs.generalTableOrderTableName;
+	selAvailable = '';
+	selSelected = '';
 	///var win = application.getActiveWindow();
 	/** if (firstShow){
 		var formx = win.controller.getName();
@@ -127,22 +170,26 @@ function onShow(firstShow, event) {
 	///var nameToPosX = [];
 	//formy = formName; //formsInUse.pop();
 	//scopes.globals.a.tempHiddenColumns[formy] = [];
-	//tablePrefsColumnsToHide(formy);
 	currentTableName = formName; // formy;
+	tablePrefsColumnsToHide(currentTableName);
+	//var tableVersion = globals.getInstanceForm(currentTableName);
 	var elems = forms[currentTableName].elements;
+	//if (elems['selection'] && elems['selection'].visible == false){colAvail.push('selection')}
+	elementCount = elems.length;
 	///var lastY = 0;
 	///var lastX = 0;
 	///var posX = 0;
 	///var posY = 0;
-	//colAvail = scopes.globals.a.tempHiddenColumns[formy].sort();
+	colAvail = scopes.globals.a.tempHiddenColumns[currentTableName].sort();
 	//forms.loads_pcmk_combo.elements.settingsLeft.
 
 	for (var index in elems){
 		var name = elems[index].getName();
-		if (scopes.jobs.tablePKs.indexOf(name) != -1){continue}
+		if (name == 'selection'){continue}
+		///if (scopes.jobs.tablePKs.indexOf(name) != -1){continue}
 		///var visible = elems[index].isVisible();
-		if (elems[index].getWidth() == 0){
-			colAvail.push(name);
+		if (colAvail.indexOf(name) != -1 || elems[index].visible == false){
+			if (colAvail.indexOf(name) == -1){colAvail.push(name);}
 		} else {
 			colShow.push(new Array(elems[index].getLocationX(),name));
 		}
@@ -161,20 +208,26 @@ function onShow(firstShow, event) {
 	colShow = colShow.sort(function (a,b){return a[0]-b[0]});
 	//nameToPosX.sort();
 	var sortedOrder = [];
-	//colAvail = colAvail.sort();
+	colAvail = colAvail.sort();
 	/**if (nameToPosX.length > 3){
 	 sortedOrder = nameToPosX;
 	 } else {
 	 sortedOrder = nameToPosY;
 	 }*/
 	for (index = 0;index < colShow.length;index++){
-		sortedOrder.push(colShow[index][1]);
+		var newShowEl = colShow[index][1];
+		if (newShowEl == 'selection'){continue}
+		if (sortedOrder.indexOf(newShowEl) == -1){sortedOrder.push(newShowEl)}
 	}
 	//colShow.sort();
+	if (elems['selection'] && elems['selection'].visible == false && colAvail.indexOf('selection') == -1){colAvail.unshift('selection')}
+	
+	if (elems['selection'] && elems['selection'].visible == true && sortedOrder.indexOf('selection') == -1){sortedOrder.unshift('selection')}
 	application.setValueListItems('stsvl_catTemp1',colAvail);
 	application.setValueListItems('stsvl_catTemp2',sortedOrder);
 	resetAvailable = application.getValueListArray('stsvl_catTemp1');
 	resetSelected = application.getValueListArray('stsvl_catTemp2');
+	setElementCount();
 }
 
 /**
@@ -185,7 +238,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"BC9995D4-4CC7-4AD9-8CC4-15E74C78460D"}
  */
 function onActionCancel(event) {
-	globals.modalResponse = "Cancel";
+	globals.modalResponse = 'Cancel';
 	var win = application.getActiveWindow();
 	win.hide();
 }
@@ -213,6 +266,7 @@ function onActionShow(event) {
 	}
 	application.setValueListItems('stsvl_catTemp1',avail);
 	application.setValueListItems('stsvl_catTemp2',select);
+	setElementCount();
 }
 /**
  * @param event
@@ -230,6 +284,7 @@ function onActionShowAll(event){
 	}
 	application.setValueListItems('stsvl_catTemp1',avail);
 	application.setValueListItems('stsvl_catTemp2',select);
+	setElementCount();
 }
 /**
  * @param event
@@ -252,6 +307,7 @@ function onActionHide(event) {
 	avail.sort();
 	application.setValueListItems('stsvl_catTemp1',avail);
 	application.setValueListItems('stsvl_catTemp2',select);
+	setElementCount();
 }
 /**
  * @param event
@@ -270,6 +326,7 @@ function onActionHideAll(event) {
 	avail.sort();
 	application.setValueListItems('stsvl_catTemp1',avail);
 	application.setValueListItems('stsvl_catTemp2',[]);
+	setElementCount();
 }
 
 /**
@@ -430,7 +487,7 @@ function onActionApply(event) {
 			}
 		}
 	}
-	application.output('missing items from avail/select '+doneArray);
+	if (application.isInDeveloper()){application.output('missing items from avail/select '+doneArray);}
 	var posX = 0;
 	var jsForm = solutionModel.getForm(form);
 	for (var index = 0;index < showArray.length;index++){
@@ -440,12 +497,15 @@ function onActionApply(event) {
 		if (!elems[name]){continue}
 		//if (elems[name] == ""){continue}
 		elems[name].visible = true;
+		var elPosY = elems[name].getLocationY();
+		elems[name].setLocation(posX,elPosY);
 		///var lastPos = elems[name].getLocationX();
 		var jsField = jsForm.getField(name);
 		
 		if (!jsField){jsField = jsForm.getLabel(name);}
-		jsField.x = posX;
-		posX = posX+elems[name].getWidth();
+		jsField.x = posX;jsField.visible = true;
+		if (jsField.width < 3){jsField.width = 110}
+		posX = (elems[name].getWidth() < 3) ? posX+elems[name].getWidth() : posX+110;
 		if (tempEmpty.indexOf(name) != -1){
 			elems[name].visible = false;
 		}
@@ -459,14 +519,24 @@ function onActionApply(event) {
 		/** @type JSForm */
 		jsField = jsForm.getField(name);
 		if (!jsField){jsField = jsForm.getLabel(name);}
-		jsField.x = posX;
+		jsField.x = posX;jsField.visible = false;
 		posX = posX+elems[name].getWidth();
 	}
+	
 	forms[form].controller.recreateUI();
 	globals.a.tempHiddenColumns[form] = [];
 	for (index = 0;index < hideArray.length;index++){
 		/** @type {Array} */ var tempArray = globals.a.tempHiddenColumns[form];
 		tempArray.push(hideArray[index]);
 	}
-	scopes.jobs.tablePrefsSaveDb();
+	//scopes.jobs.tablePrefsSaveDb();
+}
+/**
+ * @properties={typeid:24,uuid:"087925C3-B29C-4B22-BD62-FB5911B08BC9"}
+ */
+function setElementCount(){
+	var showArray = application.getValueListArray('stsvl_catTemp2'); // show and order, the rest are hidden
+	var hideArray = application.getValueListArray('stsvl_catTemp1'); // items to hide, put them last
+	elementCount = hideArray.length;
+	elementShow = showArray.length;
 }

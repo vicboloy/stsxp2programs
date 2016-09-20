@@ -6,9 +6,10 @@
  * @properties={typeid:24,uuid:"C8FE22F3-9879-4FD0-A0ED-8D4F46D0F3CF"}
  */
 function addRecord(event) {
+	forms.customer_specs.elements.tabs.tabIndex = 1;
 	databaseManager.setAutoSave(false);
 	globals.selectedCustomerIndex = controller.getSelectedIndex();
-	forms.customer_specs.onEdit(event,true);
+	forms.customer_specs.onActionEdit(event,true);
 	forms.customers_lst.controller.newRecord();
 	globals.newCustomerRecord = null; //reset customer record for save current edit record
 }
@@ -26,5 +27,16 @@ function onShow(firstShow, event) {
 	if (customersDivider == 0.0){
 		forms.customers.elements.tabs.dividerLocation = 317.0;
 	}
-	globals.setUserFormPermissions(event);
+	//globals.setUserFormPermissions(event);
+}
+/**
+ * @param event
+ * @param editing
+ *
+ * @properties={typeid:24,uuid:"12323A23-7C38-45F7-BD1B-1D7F2DC6FBD1"}
+ */
+function onEdit(event,editing){
+	controller.enabled = !editing;
+	controller.readOnly = !editing;	
+	elements.btn_New.visible = !editing;
 }

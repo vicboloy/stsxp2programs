@@ -318,7 +318,7 @@ uuid:"6DE8C7D4-CF76-4F8B-B784-392F167FB678"
 },
 {
 anchors:11,
-dataProviderID:"sts_status_code_container.sts_status_description_to_associations.association_name",
+dataProviderID:"sts_transactions_to_status_description.sts_status_description_to_associations.association_name",
 location:"153,20",
 name:"association_name",
 size:"78,20",
@@ -690,7 +690,7 @@ uuid:"F7BDBE3F-53AD-40B9-835D-31D19D2510CB"
 ],
 name:"gen_browse_trans",
 navigatorID:"-1",
-onShowMethodID:"-1",
+onShowMethodID:"D90AFB1C-613F-4B96-9D4A-0EFA64D6173A",
 showInMenu:true,
 size:"2411,87",
 styleName:"sts_one",

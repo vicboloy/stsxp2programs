@@ -11,3 +11,14 @@
 function onActionStartingPosition(oldValue,newValue,event) {
 		elements.barcode_fixed_length.visible = (newValue.search('Starting') == 0);
 }
+/**
+ * @param {JSEvent} event
+ * @param {Boolean} editing
+ *
+ *
+ * @properties={typeid:24,uuid:"7EC0215F-9139-4B31-A08E-BA857FFD8B33"}
+ */
+function onActionEdit(event,editing){
+	controller.readOnly = !editing;
+	elements.editMessage.visible = editing;
+}

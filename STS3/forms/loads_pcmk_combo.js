@@ -118,14 +118,14 @@ function onActionClearAll(event) {
  * @properties={typeid:24,uuid:"507DEF79-899B-413E-8AB4-6EEAD1EDA0B3"}
  */
 function onActionDeleteSelected(event,formName) {
-	globals.doDialog("Delete Selected Records","Delete the Selected Records?","Delete","Cancel");
-	if (globals.dialogResponse != "yes"){
+	globals.doDialog('Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
+	if (globals.dialogResponse != 'yes'){
 		//application.output('delete cancelled');
 		return;
 	}
 	//application.output('ask second question');
-	globals.doDialog("Delete Selected Records","This is a permanent delete. Continue with deletion?","Cancel","Delete");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog('Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
+	if (globals.dialogResponse == 'yes'){
 		//application.output('delete aborted');
 		return;
 	}
@@ -239,4 +239,18 @@ function onActionRefreshTable(event) {
 	//return;
 	//globals.dsBrowse.createDataSource();
 	null;
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"7D0A1F3F-293C-4265-88A4-F16EAADDA1A5"}
+ */
+function onActionPrint(event) {
+	var formName = event.getFormName();
+	var topForm = forms[formName].elements.split.getLeftForm();
+	var topFormName = topForm.controller.getName();
+	forms[topFormName].controller.print(false,true);
 }

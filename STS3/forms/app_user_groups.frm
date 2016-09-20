@@ -23,6 +23,7 @@ uuid:"BE69ACDE-4D64-4345-B203-AE2E78471FA4"
 ],
 location:"5,5",
 name:"split",
+onChangeMethodID:"3A0FA441-B43D-40D0-BA06-96C0872D71C7",
 printable:false,
 size:"403,352",
 tabOrientation:-3,

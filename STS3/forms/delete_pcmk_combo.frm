@@ -4,6 +4,7 @@ items:[
 {
 extendsID:"BBCFCD10-D88E-4A69-92F2-767A48874802",
 location:"287,429",
+text:"+/-",
 typeid:7,
 uuid:"08F88A3C-B471-4E9D-8F37-E9A32E80AAAB"
 },
@@ -41,6 +42,7 @@ uuid:"578592E6-56C5-4AEA-86EF-065884158A1C"
 {
 extendsID:"32C27CAC-2195-4B9A-8D52-197B70AC9144",
 location:"117,430",
+text:"Settings Bottom",
 typeid:7,
 uuid:"6D1A21DF-A90D-494A-8EAF-1E10022CC194"
 },
@@ -67,6 +69,7 @@ uuid:"BC9719FB-CE1E-4351-8DE0-A8168DEE3F14"
 {
 extendsID:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8",
 location:"5,430",
+text:"Settings Top",
 typeid:7,
 uuid:"C18369D0-AAB3-4781-A208-4723BA5C103D"
 }

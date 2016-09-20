@@ -466,6 +466,12 @@ var stsCustomerNum = "STS";
  */
 var smallMadeInFont = true;
 
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"22289A00-4BA5-4BAE-9246-FDA87996C2D4",variableType:4}
+ */
+var maxColumnShow = 15;
 //PO Info preferences -----------------------------------------------------------------
 
 /**
@@ -610,7 +616,10 @@ var loadCreate = "Job Number Specific";
  * @properties={typeid:35,uuid:"F4809046-5AFC-4928-BC23-ED76E5AEB981"}
  */
 var startLoadNum = "0";
-
+/**
+ * @properties={typeid:35,uuid:"36646994-6DDB-42CC-B4E2-53602E9666AE",variableType:-4}
+ */
+var screenFull = false;
 //Data Path Settings preferences -----------------------------------------------------------------
 
 /**
@@ -1502,18 +1511,18 @@ function onElementFocusLost(event) {
  * @properties={typeid:24,uuid:"3218661F-609A-45FA-8A8D-12DF3DBEED6B"}
  */
 function onActionUpdatePrefs(event) {
-	// for globals, user_id = -1, tenant_uuid= main tenant, field_name = index, value_type, value_string
+	// for globals, user_uuid = 'FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF', tenant_uuid= main tenant, field_name = index, value_type, value_string
 	var prefs = scopes.prefs;
 	prefType = (event.getFormName().search('printer') != -1) ? 'Printer' : 'Prefs';
 	var description = "Global Preference";
 	if (prefType == "Printer"){
 		prefs = scopes.printer;
 		description = "Global Printer";
-		forms.preferences_printer.errorMessage = "Saving preferences.";
+		forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
 	}
 	application.updateUI();
 	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
-	var user_id = -1;
+	var user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 	var tenant = globals.secCurrentTenantID;
 	var variable = "";
 	var variableSetting = "";
@@ -1529,7 +1538,7 @@ function onActionUpdatePrefs(event) {
 		variableSetting +="";
 		saveRec = false;
 		if (fs.find()){
-			fs.user_id = -1;
+			fs.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 			fs.tenant_uuid = tenant;
 			fs.field_name = variable;
 			if (fs.search() > 0){
@@ -1547,10 +1556,10 @@ function onActionUpdatePrefs(event) {
 			} else {
 				var recNum = fs.newRecord();
 				rec = fs.getRecord(recNum);
-				if (!user_id) {
-					rec.user_id = -1;
+				if (!user_uuid) {
+					rec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 				} else {
-					rec.user_id = user_id;
+					rec.user_uuid = user_uuid;
 				}
 				rec.tenant_uuid = tenant;
 				rec.field_name = variable;
@@ -1562,7 +1571,7 @@ function onActionUpdatePrefs(event) {
 		}
 		
 		if (saveRec){databaseManager.saveData(rec)}
-		//application.output(index+" = "+prefs[index]+" user_id: "+-1+" tenant_uuid "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
+		//application.output(index+" = "+prefs[index]+" user_uuid: "+-1+" tenant_uuid "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
 	}
 	//application.output("update count "+updateCount);
 	if (prefType == "Printer"){
@@ -1723,7 +1732,8 @@ function onActionFormTemplate(event) {
 	var pathNameMeta = plugins.file.convertToJSFile(reports);
 
 	if (!pathNameMeta.exists()){
-		plugins.dialogs.showErrorDialog('STS ERROR: Reports Folder is Invalid.','Reports Folder is Invalid. Verify under Preferences/Data Paths/Report Folder Path.');
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('sts.txt.reports.folder.invalid'),
+			i18n.getI18NMessage('sts.txt.reports.folder.invalid.msg'));
 		return; // path does not exist
 	}
 	var fileMeta = plugins.file.convertToJSFile(pathName);
@@ -1821,9 +1831,10 @@ function onActionPrintLabels(event) {
  */
 function bartenderPrint(event,txtString){
 	null;
+	var versionForm = globals.getInstanceForm(event);
 	var formName = event.getFormName();
 	var reportPth = scopes.prefs.reportpath;
-	var btwFile = reportPth+"\\"+forms['barcode_idlabel'].printingLabel;
+	var btwFile = reportPth+"\\"+forms['barcode_idlabel'+versionForm].printingLabel;
 	var line = "";
 	var fileName = reportPth+"\\barcodelabel.txt";
 	///var data = "";
@@ -1836,11 +1847,13 @@ function bartenderPrint(event,txtString){
 	plugins.file.copyFile(fileName,randFileName);
 	null;
 	if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
-		plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
+		globals.errorDialog('952');
+		//plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
 		return;
 	}
 	var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
 	if (!com || !com.isJACOBLoaded()) {
+		globals.errorDialog('953');
 		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
 		return;
 	}

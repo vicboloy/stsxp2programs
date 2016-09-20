@@ -160,6 +160,9 @@ var jobFound = false;
  * @properties={typeid:24,uuid:"E1F92F98-A7A7-46F0-BDD7-FD0D51942170"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	scopes.jobs.getJobsList();
 	scopes.jobs.getCustomersList();
 	application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
@@ -224,9 +227,9 @@ function onActionDeleteWindow(event) {
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
 	var yOrigin = controller.getWindow().getY();
-	var win = application.createWindow("Job Piecemark Remove", JSWindow.MODAL_DIALOG);
+	var win = application.createWindow('Job Piecemark Remove', JSWindow.MODAL_DIALOG);
 	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
-	win.title = "Job Piecemark Remove";
+	win.title = 'Job Piecemark Remove';
 
 	win.show(forms.remove_record_actual);
 	scopes.jobs.removeFormHist('remove_pcmk_combo_table');}

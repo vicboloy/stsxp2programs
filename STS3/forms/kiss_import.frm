@@ -90,6 +90,12 @@ typeid:7,
 uuid:"C1BCC528-D6F9-4EFA-9EB1-BEE19F95F5B9"
 },
 {
+extendsID:"E2825F7A-0DA1-4691-BA1B-0739BBF3CF8E",
+size:"140,260",
+typeid:4,
+uuid:"CA53F675-4030-4028-BBDD-B640C77FB2B8"
+},
+{
 dataProviderID:"selectedCust",
 displayType:2,
 editable:false,

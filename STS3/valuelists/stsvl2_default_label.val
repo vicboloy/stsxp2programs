@@ -1,7 +1,7 @@
 addEmptyValue:1,
-customValues:"ID Label Default\r
-Part Label Default\r
-System Default",
+customValues:"i18n:sts.txt.id.label.default\r
+i18n:sts.txt.part.label.default\r
+i18n:sts.txt.system.label.default",
 name:"stsvl2_default_label",
 returnDataProviders:1,
 showDataProviders:1,

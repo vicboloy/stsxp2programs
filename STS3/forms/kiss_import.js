@@ -18,12 +18,13 @@ function fileReceipt(file){
 	var scope = scopes.jobs;
 	var job = scopes.jobs.importJob;
 	scopes.jobs.readKissTextFile(file);
+
 	scopes.jobs.appendQuantityToIdfile = null; // zero out append values array list
 	//establish error-free or dialog with errors, correct column count, mapping, 
 	var headerLine = [];
 	for (var index=0;index<40;index++){
-		if (scopes.jobs.importResults.results[index][0] == "H"){
-			headerLine = scopes.jobs.importResults.results[index];
+		if (scopes.jobs.importResults[index][0] == "H"){
+			headerLine = scopes.jobs.importResults[index];
 			break;
 		}
 	}
@@ -68,24 +69,27 @@ function fileReceipt(file){
 			}
 			//scopes.globals.kissJobRf = jobsFS.getRecord(1).rf_interface;//save rf interface to show/noshow buttons
 			rec = jobsFS.getRecord(1);
+			job.customerId = rec.customer_id;
 			var custRec = rec.sts_job_to_customer2;
 
 			if (!custRec.barcode_prefix || 
-					// might not need to check this !custRec.barcode_fixed_length || 
-					!custRec.barcode_include_prefix || 
-					!custRec.barcode_job_length ||
-					custRec.barcode_prefix.length != 2){
-				plugins.dialogs.showErrorDialog('STS ERROR: Customer barcode incomplete.','Customer '+rec.customer_number+' barcode is incomplete.  Please review the barcode setup using the \'Edit Customer Information\' button under the Edit/Add Tab.');
+				// might not need to check this !custRec.barcode_fixed_length || 
+				!custRec.barcode_include_prefix || 
+				!custRec.barcode_job_length ||
+				custRec.barcode_prefix.length != 2){
+				var errMsg = i18n.getI18NMessage('sts.txt.barcode.incomplete.msg').replace('XXX',rec.customer_number);
+				plugins.dialogs.showErrorDialog('STS ERROR: Customer barcode incomplete.',errMsg);
 				return;
 			}
 			scopes.jobs.jobUnderCustomer = rec.job_id;
-			application.output('job record id'+rec.job_id);
+			if (application.isInDeveloper()){application.output('job record id'+rec.job_id)}
 			var win = application.createWindow("KISS Import", JSWindow.DIALOG);
 			win.title = "KISS Import";
 			win.show(forms.kiss_option_import);
 		} else {
-			application.output('job not found');
-			plugins.dialogs.showErrorDialog('STS ERROR: Job does not exist.','Job Number '+jobNumber+' does not exist.  Please setup the job using the \'Edit Job Information\' Window under the Edit/Add Tab.');
+			if (application.isInDeveloper()){application.output('job not found')}
+			errMsg = i18n.getI18NMessage('sts.txt.job.does.not.exist.msg').replace('XXX',jobNumber);
+			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('sts.txt.job.does.not.exist'),errMsg);
 			return;
 			//show dialog for customers
 		}
@@ -208,6 +212,9 @@ function xxxunusedonDataChangeCustomer(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"D7B53EDF-884A-4CFA-9DCB-374EF0C391F0"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	elements.chooseCust.visible = false;
 	elements.chooseCustSelect.visible = false;
 	selectedCust = "";

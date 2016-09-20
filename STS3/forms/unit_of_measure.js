@@ -15,6 +15,9 @@ var selectedUOMIndex = 0;
  * @properties={typeid:24,uuid:"36033168-4C98-4CC2-87E0-FD49B6946777"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	controller.readOnly = true;
 	if (controller.getMaxRecordIndex() == 0){
 		controller.newRecord();
@@ -41,8 +44,8 @@ function onActionAdd(event){
  * @properties={typeid:24,uuid:"2E41F535-CE15-4213-B79C-20B4F4122D6D"}
  */
 function onActionDelete(event) {
-	globals.doDialog("Remove UOM","Delete this UOM?","Delete","Cancel");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog('Remove UOM','Delete this UOM?','Delete','Cancel');
+	if (globals.dialogResponse == 'yes'){
 			controller.deleteRecord();
 		}
 

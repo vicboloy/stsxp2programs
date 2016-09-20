@@ -10,6 +10,7 @@ uuid:"131AC538-2132-4924-8C37-E942DF84EF8F"
 ],
 name:"divisions2",
 namedFoundSet:"separate",
+onRecordSelectionMethodID:"2C641C7A-4431-4221-91A5-9C122DBE91C7",
 styleName:"sts_one",
 typeid:3,
 uuid:"00AF59BC-27CA-4FF5-96A2-C0001983D657"

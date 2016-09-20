@@ -55,7 +55,13 @@ function onShow(firstShow, event) {
 	elements.btn_Okay.enabled = false;
 	updateUI(null);
 	createPermissTable(event,form_name);
-	elements.form_name.requestFocus();
+	var elValue = elements.form_name.getDataProviderID();
+	
+	if (!forms[event.getFormName()][elValue]){
+		elements.form_name.requestFocus();
+	} else {
+		elements.btn_Cancel.requestFocus();
+	}
 	return _super.onShow(firstShow, event)
 }
 
@@ -150,7 +156,7 @@ function createPermissTable(event,formName){
 	if (fs.find()){
 		fs.form_name = formName;
 		fs.tenant_uuid = globals.secCurrentTenantID;
-		fs.key_id = key_id;
+		fs.key_uuid = key_uuid;
 		fs.search();
 		for (var index = 1;index <= fs.getSize();index++){
 			var rec = fs.getRecord(index);
@@ -162,7 +168,7 @@ function createPermissTable(event,formName){
 			var elSettingsArray = elSettings[elName];
 			var elSetting = {visible : rec.is_visible, 
 								enabled :rec.is_accessible,
-								keyId :rec.key_id};
+								keyId :rec.key_uuid};
 			elSettingsArray.push(elSetting);
 		}
 	}
@@ -180,7 +186,7 @@ function createPermissTable(event,formName){
 
 	var localDataSrc = databaseManager.createEmptyDataSet();
 	localDataSrc.addColumn('element_name',1,JSColumn.TEXT);
-	localDataSrc.addColumn('key_id',2,JSColumn.TEXT);
+	localDataSrc.addColumn('key_uuid',2,JSColumn.TEXT);
 	localDataSrc.addColumn('is_visible',3,JSColumn.TEXT);
 	localDataSrc.addColumn('is_enabled',4,JSColumn.TEXT);
 	localDataSrc.addColumn('is_ignored',5,JSColumn.TEXT);
@@ -231,10 +237,10 @@ function createPermissTable(event,formName){
 		}
 	}
 	//application.output('data source '+localDataSrc);
-	var localSrc = localDataSrc.createDataSource('formElementNames',[JSColumn.TEXT,JSColumn.INTEGER,JSColumn.INTEGER,JSColumn.INTEGER,JSColumn.INTEGER,JSColumn.INTEGER]);
+	var localSrc = localDataSrc.createDataSource('formElementNames',[JSColumn.TEXT,JSColumn.TEXT,JSColumn.INTEGER,JSColumn.INTEGER,JSColumn.INTEGER,JSColumn.INTEGER]);
 	newForm.dataSource = localSrc;
 	newForm.getField('elementName').dataProviderID = 'element_name';
-	newForm.getField('keyId').dataProviderID = 'key_id';
+	newForm.getField('keyId').dataProviderID = 'key_uuid';
 	newForm.getField('checkVisible').dataProviderID = 'is_visible';
 	newForm.getField('checkEnabled').dataProviderID = 'is_enabled';
 	newForm.getField('checkIgnore').dataProviderID = 'is_ignored';
@@ -274,19 +280,19 @@ function saveEdits(event, record, stopEdit) {
 	}
 	/** @type {JSFoundSet} */
 	var formFs = null;
-	var currentKey = forms.app_key_list.key_id;
+	var currentKey = forms.app_key_list.key_uuid;
 	if (forms['element_list']){
 		formFs = forms['element_list'].foundset;
 		for (index = 1;index <= formFs.getSize();index++){
 			/** @type {JSRecord}  */
-			var formRec = {element_name : "", is_ignored : 0, is_enabled : 0, is_visible : 0, permission_id : 0};
+			var formRec = {element_name : "", is_ignored : 0, is_enabled : 0, is_visible : 0, permission_uuid : null};
 			formRec = formFs.getRecord(index);
 			/** @type {JSFoundSet<db:/stsservoy/permissions>} */
 			var fs = databaseManager.getFoundSet('stsservoy','permissions');
 			if (fs.find()){
 				fs.element_name = formRec.element_name;
 				fs.form_name = form_name;
-				fs.key_id = currentKey;
+				fs.key_uuid = currentKey;
 				fs.tenant_uuid = globals.secCurrentTenantID;
 				if (fs.search()){
 					var searchRec = fs.getRecord(1);
@@ -316,9 +322,9 @@ function saveEdits(event, record, stopEdit) {
 						var newRec = fs.getRecord(index2);
 						newRec.edit_date = new Date();
 						if (forms['element_list']){
-							newRec.key_id = key_id;
+							newRec.key_uuid = key_uuid;
 						} else {
-							newRec.key_id = null;
+							newRec.key_uuid = null;
 						}
 						newRec.element_name = formRec.element_name;
 						newRec.form_name = form_name;
@@ -342,7 +348,7 @@ function saveEdits(event, record, stopEdit) {
 			fs2.application_id = application_id;
 			fs2.form_name = form_name;
 			fs2.element_name = element_name;
-			fs2.permission_id = '!'+permission_id;
+			fs2.permission_uuid = '!'+permission_uuid;
 			var count = fs2.search();
 			if (count){
 				var record2 = fs2.getRecord(1);
@@ -376,12 +382,12 @@ function onRecordSelection2(event) {
 			fs.is_accessible = (selRec.is_enabled == 1);
 			fs.is_visible = (selRec.is_visible == 1);
 		}
-		fs.key_id = "!null";
+		fs.key_uuid = "!null";
 		if (fs.search()){
 			var record = fs.getRecord(1);
-			forms.app_permiss_detail.foundset.selectRecord(record.permission_id);
+			forms.app_permiss_detail.foundset.selectRecord(record.permission_uuid);
 			null;
-			/**var pk = fs.permission_id;
+			/**var pk = fs.permission_uuid;
 			var fs2 = forms.app_permiss_detail.foundset.duplicateFoundSet();
 			var index = fs.getSelectedIndex();
 			forms.app_permiss_detail.controller.setSelectedIndex(index);*/

@@ -198,7 +198,243 @@ var vJobSequences = [];
  */
 var windowList = "";
 /**
- * @param event System selection event
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B10AB474-E82E-47DD-AEE6-DF410D2D22F9"}
+ */
+var multiSelectFieldEntry = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"796FCFAE-9E1D-472A-B491-093382663E58"}
+ */
+var multiSelectFieldName = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B310D21E-0353-473C-99D2-94C1DDDDB74B"}
+ */
+var vCustNum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"6F150B51-B54A-4E23-9E1E-1B1538EB528A"}
+ */
+var vCustomerName = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B6F122F0-6A5D-4902-93AD-3636B1129969"}
+ */
+var vCustomerID = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B76AD2E1-42DC-486C-B0AB-5F942F582806"}
+ */
+var vJobNum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"A72DFBAD-3E2D-4E2F-BACF-252E0FAD8145"}
+ */
+var vJobName = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"979948AD-F482-4859-8FC2-3E334CD18D5F"}
+ */
+var vJobID = "";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"7320B37D-56BF-4AEE-B9E8-2949D56A56D7",variableType:4}
+ */
+var vLabIDNums = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"874F4C18-0074-4A81-835C-B0F79D13818B",variableType:4}
+ */
+var vLabTotPieces = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"119B9EBE-C45B-4DD9-B037-C49429C74B3B",variableType:4}
+ */
+var vLabTotalWt = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"A9CBD3FA-3F94-47C8-A19B-79320C21D96A",variableType:4}
+ */
+var vLabNumPcmks = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F8436914-334E-42C8-8BED-977084578620"}
+ */
+var vSeqNum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"4176ACC7-92C9-4300-8A12-C793031F7A94"}
+ */
+var vSheetNum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"7CFBD1DA-B33B-4A8D-8A58-546CAB5E9CB0"}
+ */
+var vSONum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"DCD9BFD6-D9B1-454D-9AEB-FAB88886C7F1"}
+ */
+var vLoadNum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C5764897-06C5-42ED-A25D-B503AD9D948D"}
+ */
+var vLotNum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"AE9FDAD5-FADE-4228-AD4E-0ED076D149C3"}
+ */
+var vPkgNum = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F4B355F7-D00F-4865-9D8B-FF64B566CB62"}
+ */
+var vLoadAll = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"995392F6-76B9-4CC5-B979-43101FA3999F"}
+ */
+var vLoadRel = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"DA128724-5C77-419B-A063-929DBF4E92DB"}
+ */
+var vPiecemark = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"ADD4DD4B-64C9-485C-A00B-9ECA5CDC23F9"}
+ */
+var vPcmkRel = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"8A2E64D8-7DEE-47C8-A046-ED13D9ED4C31"}
+ */
+var vFabShop = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"65CF7F96-ED6A-4368-9B68-4BB724463B57"}
+ */
+var vJobRel = ""
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"D6D1D9DC-459F-46D0-B76E-20AC5136952B"}
+ */
+var vArea = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"867064CC-6F83-4D39-BF0B-E2CEC512C93F"}
+ */
+var vBatch = "";
+/**
+* @type {String}
+*
+* @properties={typeid:35,uuid:"44A21C28-539E-4027-998E-8641EFB05954"}
+*/
+var vIDNumber = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"9B37AA97-925A-4739-B236-CBC602FE8BDC"}
+ */
+var vUnits = "";
+/**
+* @type {Number}
+*
+* @properties={typeid:35,uuid:"71B36958-6662-4FF1-93C2-B6153BC48412",variableType:4}
+*/
+var vIncludeMinor = 0;
+/**
+ * @properties={typeid:35,uuid:"369405D9-82C5-4D9C-AB31-32E47364A2DD",variableType:-4}
+ */
+var vJobMetric = true;
+/**
+ * @properties={typeid:35,uuid:"6F5566F4-1B80-42DD-B3EF-69FBA7B4739C",variableType:-4}
+ */
+var jobFound = false;
+/**
+* @type {String}
+*
+* @properties={typeid:35,uuid:"ECED53FD-A984-4294-9332-DDF63A940F9E"}
+*/
+var printingLabel = "";
+/**
+* @type {String}
+*
+* @properties={typeid:35,uuid:"E4C4E59D-EBC8-4420-82AC-82EC00C92172"}
+*/
+var labelPrintOrder = 'Piece Mark';
+/**
+* @type {String}
+*
+* @properties={typeid:35,uuid:"3CFF75CE-30C3-4E55-88E8-E7A14EF92B76"}
+*/
+var versionForm = "";
+/**
+* @type {String}
+*
+* @properties={typeid:35,uuid:"333D4767-06AE-4639-8635-E066BD5F53C6"}
+*/
+var vDrawingNum = "";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"384EEB4B-A0AA-4533-9516-97360238888A",variableType:4}
+ */
+var vPercentByQty = 0;
+/**
+* @properties={typeid:35,uuid:"4F667565-2EBF-4336-BB38-496C99EA5852",variableType:-4}
+*/
+var jobIdData = {
+	job_id : null,
+	sheet_nums : null,
+	sheet_ids : null
+};
+/**
+ * @properties={typeid:35,uuid:"4BB1A477-E902-46F3-8743-74B5817A541C",variableType:-4}
+ */
+var criteria = {};
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C1B7BA32-C064-4C56-A072-5192412814A4"}
+ */
+var vFilteredCount = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C6697CA6-332A-4DF6-8554-ACECAB1B107D"}
+ */
+var baseForm;
+/**
+ * @param {JSEvent} event System selection event
  * @param windowTitle Window bar title
  * @param formName Main form name for button selection
  * @param xOrigin Top form corner for displayed form
@@ -210,20 +446,27 @@ var windowList = "";
  * @properties={typeid:24,uuid:"AB5FA848-1D56-44C8-8B74-23EA4659F2D3"}
  * @AllowToRunInFind
  * @SuppressWarnings(wrongparameters)
+ * @SuppressWarnings(unused)
  */
 function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
 	//application.output(windowTitle);
 	var formNameNew = formName;
+	var baseWinName = windowTitle.replace(' View','');// added 201608 for 'view' forms of 'edit' forms
 	var extension = "_";
 	var winNumber = 1;
 	if (multiWindow){
-		while (application.getWindow(windowTitle+extension+winNumber) != null){
+		while (application.getWindow(baseWinName+extension+winNumber) != null ||
+			application.getWindow(baseWinName+' View'+extension+winNumber) != null){
 			winNumber++;
 		}
 		windowTitle = windowTitle+extension+winNumber;
 		formNameNew = formNameNew+extension+winNumber;
 		// make a clone/copy from it
-		createFormClone(formName,winNumber);
+		var newForm = createFormClone(formName,winNumber);
+		
+		/**for (var els in newForm.elements){
+			null;
+		}*/
 	}
 	scopes.globals.logger(true,windowTitle+' started.');
 	globals.setWindowOpened(windowTitle);
@@ -234,6 +477,7 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
 	var yEnd = yOrigin+yHeight;
 	win.setInitialBounds(xBeg, yBeg, xEnd, yEnd);
 	win.title = windowTitle;
+	databaseManager.nullColumnValidatorEnabled = false;databaseManager.setAutoSave(false);
 	win.show(formNameNew);
 	addWindowList(windowTitle);	
 }
@@ -247,7 +491,7 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
  * @properties={typeid:24,uuid:"027567CC-C0C7-43F6-8F87-7A8878ED6B55"}
  */
 function onActionClickCustomer(event) {
-	onActionClickMainButton(event,"Customers",'customers',10,10,890,550,false);
+	onActionClickMainButton(event,'Customers','customers',10,10,890,556,true);
 }
 
 /**
@@ -256,7 +500,7 @@ function onActionClickCustomer(event) {
  * @properties={typeid:24,uuid:"B0C80879-16DA-4098-8801-18C1D7F24E96"}
  */
 function onActionClickEmployee(event) {
-	onActionClickMainButton(event,"Employees",'employees_pre',50,50,920,505,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.employees'),'employees_pre',50,50,920,505,true);
 }
 
 /**
@@ -265,7 +509,7 @@ function onActionClickEmployee(event) {
  * @properties={typeid:24,uuid:"AE5DFB87-E846-4DFB-9C25-E57140EC29C3"}
  */
 function onActionClickCarrier(event) {
-	onActionClickMainButton(event,"Carriers",'carriers',50, 50, 620, 500,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.carriers'),'carriers',50, 50, 620, 500,true);
 }
 
 /**
@@ -276,7 +520,7 @@ function onActionClickCarrier(event) {
  * @properties={typeid:24,uuid:"C61C110C-151B-4C9D-B0AB-FA32D9401D16"}
  */
 function onActionClickEmployeeClass(event) {
-	onActionClickMainButton(event,"Employee Class",'emp_class_code',50,50,610,270,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.employee.class'),'emp_class_code',50,50,610,270,false);
 }
 /**
  * @param event
@@ -284,7 +528,7 @@ function onActionClickEmployeeClass(event) {
  * @properties={typeid:24,uuid:"BFF5857C-588C-4703-B859-CF9A5A1BF8B9"}
  */
 function onActionClickUOM(event) {
-	onActionClickMainButton(event,"Units of Measure",'unit_of_measure',50,50,610,330,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.units.of.measure'),'unit_of_measure',50,50,610,330,false);
 }
 /**
  * @param event
@@ -292,7 +536,7 @@ function onActionClickUOM(event) {
  * @properties={typeid:24,uuid:"9BFE2D4E-D359-4CAD-A84F-F94DC119456F"}
  */
 function onActionClickCOW(event) {
-	onActionClickMainButton(event,"Cost of Work",'cost_of_work',50,50,700,600,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.cost.of.work'),'cost_of_work',50,50,700,600,false);
 }
 /**
  * @param event
@@ -300,7 +544,7 @@ function onActionClickCOW(event) {
  * @properties={typeid:24,uuid:"23EBA98D-FA40-4997-9BC9-730473CF4B54"}
  */
 function onActionClickMapping(event) {
-	onActionClickMainButton(event,"Import Mapping",'mappings',50,50,860,530,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.import.mapping'),'mappings',50,50,860,530,false);
 }
 
 /**
@@ -309,7 +553,7 @@ function onActionClickMapping(event) {
  * @properties={typeid:24,uuid:"994929DE-14ED-4426-A743-D0A7169117EA"}
  */
 function onActionClickEP(event) {
-	onActionClickMainButton(event,"End Conditions",'end_conditions',50,50,610,330,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.end.conditions'),'end_conditions',50,50,610,330,false);
 }
 
 /**
@@ -318,7 +562,7 @@ function onActionClickEP(event) {
  * @properties={typeid:24,uuid:"B5B3AFA8-95D7-49CD-AB3E-256306625504"}
  */
 function onActionClickSC(event) {
-	onActionClickMainButton(event,"Status Codes",'status_descriptions',50,50,745,515,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.status.codes'),'status_descriptions',50,50,745,515,false);
 }
 /**
  * @param event
@@ -326,7 +570,7 @@ function onActionClickSC(event) {
  * @properties={typeid:24,uuid:"81C230BD-F337-45A5-9638-883D435E9B82"}
  */
 function onActionClickViewLoads(event) {
-	onActionClickMainButton(event,"View Loads",'loads_tabs',50,50,750,595,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.view.loads'),'loads_tabs',50,50,750,595,true);
 }
 /**
  * @param event
@@ -334,7 +578,7 @@ function onActionClickViewLoads(event) {
  * @properties={typeid:24,uuid:"07737279-0F0A-4070-AB7F-0641608439AF"}
  */
 function onActionClickDeleteRecords(event) {
-	onActionClickMainButton(event,"Delete Records",'delete_records_tabs',50,50,750,595,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.delete.records'),'delete_records_tabs',50,50,750,595,false);
 }
 /**
  * @param event
@@ -342,7 +586,7 @@ function onActionClickDeleteRecords(event) {
  * @properties={typeid:24,uuid:"D5C82166-64DE-47A8-81FA-2D5650D833F4"}
  */
 function onActionClickRecallDeletes(event) {
-	onActionClickMainButton(event,"Recall Records",'recall_records_tabs',50,50,750,595,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.recall.records'),'recall_records_tabs',50,50,750,595,false);
 }
 /**
  * @param event
@@ -350,7 +594,7 @@ function onActionClickRecallDeletes(event) {
  * @properties={typeid:24,uuid:"2741B877-A129-4000-AF67-AABDE93623BF"}
  */
 function onActionClickRemoveRecords(event) {
-	onActionClickMainButton(event,"Remove Deleted Records",'remove_deletes_tabs',50,50,750,595,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.remove.deleted.records'),'remove_deletes_tabs',50,50,750,595,false);
 }
 
 /**
@@ -359,7 +603,7 @@ function onActionClickRemoveRecords(event) {
  * @properties={typeid:24,uuid:"CCC7C093-1A7B-4EC7-A8E7-1E0A2B0DC5ED"}
  */
 function onActionClickPref(event) {
-	onActionClickMainButton(event,"Preferences",'preferences_main',50,50,700,580,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.preferences'),'preferences_main',50,50,700,580,false);
 }
 /**
  * @param event
@@ -367,7 +611,7 @@ function onActionClickPref(event) {
  * @properties={typeid:24,uuid:"26F19DD0-BB10-443A-849E-43064F850D75"}
  */
 function onActionClickPrinter(event) {
-	onActionClickMainButton(event,"Printers",'preferences_printer',50,50,650,475,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.printers'),'preferences_printer',50,50,650,475,false);
 }
 /**
  * @param event
@@ -380,7 +624,7 @@ function onActionClickKISS(event) {
 	if (success){
 		var success2 = solutionModel.removeForm('kiss_barcode_request');
 	}
-	onActionClickMainButton(event,"Import KISS",'kiss_import',50,50,610,330,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.import.kiss'),'kiss_import',50,50,610,330,false);
 }
 /**
  * @param event
@@ -388,7 +632,7 @@ function onActionClickKISS(event) {
  * @properties={typeid:24,uuid:"F0E82BB1-3030-4DD4-973C-75E91FBA179A"}
  */
 function onActionRoutings(event) {
-	onActionClickMainButton(event,"Routings",'routing_codes',50,50,630,435,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.routings'),'routing_codes',50,50,630,435,false);
 }
 /**
  * @param event
@@ -396,7 +640,7 @@ function onActionRoutings(event) {
  * @properties={typeid:24,uuid:"CE4DD060-E710-49BA-9DAB-0760EE82DF4B"}
  */
 function onActionJobs(event) {
-	onActionClickMainButton(event,"Job Information",'jobs_tabs',50,50,960,450,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.job.information'),'jobs_tabs',50,50,960,450,false);
 }
 /**
  * @param event
@@ -404,7 +648,7 @@ function onActionJobs(event) {
  * @properties={typeid:24,uuid:"3CD18375-D0A0-466D-A181-6D585BEE8E70"}
  */
 function onActionTenantDivisions(event) {
-	onActionClickMainButton(event,"Department and Division Management",'tenant_divisions_m',50,50,750,350,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.license.division.management'),'tenant_divisions_m',50,50,750,350,false);
 }
 /**
  * @param event
@@ -412,7 +656,7 @@ function onActionTenantDivisions(event) {
  * @properties={typeid:24,uuid:"62683739-AB1C-4C81-9DD8-C03DD2959842"}
  */
 function onActionLogonUserManage(event) {
-	onActionClickMainButton(event,"Logon User Management",'logons_m',50,50,750,330,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.logon.user.management'),'logons_m',50,50,750,330,false);
 }
 /**
  * @param event
@@ -420,7 +664,7 @@ function onActionLogonUserManage(event) {
  * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
  */
 function onActionSTSLogonManage(event) {
-	onActionClickMainButton(event,"STS Logon Employees",'tenant_users_m',50,50,890,410,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.logon.user.management'),'tenant_users_m',50,50,890,410,false);
 }
 /**
  * @param event
@@ -428,7 +672,7 @@ function onActionSTSLogonManage(event) {
  * @properties={typeid:24,uuid:"AF952016-58E9-4E89-8F5F-857177470611"}
  */
 function onActionViewLog(event) {
-	onActionClickMainButton(event,"RF Transaction Log",'view_log',50,50,370,315,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.rf.transaction.log'),'view_log',50,50,370,315,false);
 }
 
 /**
@@ -437,7 +681,7 @@ function onActionViewLog(event) {
  * @properties={typeid:24,uuid:"5E1968E2-1C90-4ED2-B0AC-C8860E10B2A4"}
  */
 function onActionUserss(event) {
-	onActionClickMainButton(event,"Users",'users',50,50,700,470,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.users'),'users',50,50,700,470,false);
 }
 /**
  * @param event
@@ -446,7 +690,7 @@ function onActionUserss(event) {
  * @properties={typeid:24,uuid:"5426D223-B48C-4FF8-B12D-AAE9F4FDD1FA"}
  */
 function onActionPermissions(event) {
-	onActionClickMainButton(event,"Application Permissions",'app_permissions',50,50,640,500,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.application.permissions'),'app_permissions',50,50,640,500,false);
 }
 /**
  * @param event
@@ -454,7 +698,7 @@ function onActionPermissions(event) {
  * @properties={typeid:24,uuid:"8378DB0B-1F09-430A-84C3-D34DCCAD8B59"}
  */
 function onActionBarcodeLabels(event) {
-	onActionClickMainButton(event,"Bar Code ID Labels",'barcode_print',50,50,620,490,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.bar.code.id.labels'),'barcode_print',50,50,620,490,true);
 }
 /**
  * @param {String} formName
@@ -463,8 +707,12 @@ function onActionBarcodeLabels(event) {
  * 
  *
  * @properties={typeid:24,uuid:"BA71A19F-6165-4C1E-A3A6-0184BEAB240F"}
+ * @AllowToRunInFind
  */
 function createFormClone(formName, extension) {
+	while (globals.formsToRemove.length != 0){
+		removeFormClone(globals.formsToRemove.pop());
+	}
 	var cloneName = formName+"_"+extension;
 	if (!forms[formName])
 		throw new Error('Can\'t create a clone of form ' + formName + ' because that form does not exist.')
@@ -473,6 +721,22 @@ function createFormClone(formName, extension) {
 		throw new Error('Can\'t create a cloned form called ' + cloneName + ' because a form by that name already exists in the runtime model.')
 	
 	var clonedForm = solutionModel.cloneForm(cloneName, solutionModel.getForm(formName));
+	if (!clonedForm.getVariable('baseForm')){clonedForm.newVariable('baseForm',JSVariable.TEXT,"");}
+	if (!clonedForm.getVariable('versionForm')){clonedForm.newVariable('versionForm',JSVariable.TEXT,"");}
+	if (!clonedForm.getVariable('jobIdData')){clonedForm.newVariable('jobIdData',JSVariable.TEXT,"");}
+	// adjust multiWindow valuelists with version
+	for (var el in forms[formName].elements){
+		if (forms[formName].elements[el].getElementType().search('LIST') == -1){continue}
+		var oldVlName = forms[formName].elements[el].getValueListName();
+		if (oldVlName){
+			var newVlName = oldVlName+"_"+extension;
+			var newVl = solutionModel.getValueList(newVlName);
+			if (!newVl){
+				newVl = solutionModel.newValueList(newVlName,solutionModel.getValueList(oldVlName).valueListType);
+			}
+			clonedForm.getField(el).valuelist = newVl;
+		}
+	}
 	//clonedForm.namedFoundSet = JSForm.SEPARATE_FOUNDSET;
 
 	// Now we will do a depth-first traversal through all the tabs in all the tabpanels of the original form (formName),
@@ -482,10 +746,8 @@ function createFormClone(formName, extension) {
 	for (var i in aTabPanels) {
 		var aTabs = aTabPanels[i].getTabs()
 		for (var j in aTabs) {
-			//var tabName = aTabs[j].name
 			var tabForm = aTabs[j].containsForm
 			var clonedTabForm = createFormClone(tabForm.name, extension);
-			//clonedTabForm.namedFoundSet = JSForm.SEPARATE_FOUNDSET;
   			aTabs[j].containsForm = clonedTabForm;
 		}
 	}
@@ -562,6 +824,7 @@ function addWindowList(windowName){
  * @properties={typeid:24,uuid:"29F2DCD5-FF81-47D9-B83B-8D0064EB5A43"}
  * @AllowToRunInFind
  * @SuppressWarnings(unused)
+ * @SuppressWarnings(unused)
  */
 function focusWindow(){
 	//var winList = application.getValueListArray('stvl_nav_windows');
@@ -629,15 +892,7 @@ function windowRev(event){
  */
 function onActionClickViewLicense(event) {
 	globals.showViewDetail = true;
-	onActionClickMainButton(event,"Logon License Info",'view_license',50,50,650,535,false);
-}
-/**
- * @param event
- *
- * @properties={typeid:24,uuid:"8A4328F0-1952-4599-ACB4-006052830407"}
- */
-function onActionClickPiecemark(event) {
-	onActionClickMainButton(event,"View Piecemark",'piecemark',50,50,650,400,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.logon.license.info'),'view_license',50,50,650,535,false);
 }
 /**
  * @param event
@@ -646,7 +901,7 @@ function onActionClickPiecemark(event) {
  */
 function onActionClickViewWhoAmI(event) {
 	globals.showViewDetail = false;
-	onActionClickMainButton(event,"Who Am I",'view_license',50,50,650,505,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.who.am.i'),'view_license',50,50,650,505,false);
 }
 /**
  * @properties={typeid:24,uuid:"2070E1C5-8086-4302-8279-F9FAE3148F11"}
@@ -685,10 +940,468 @@ function scopesJobsExec(functionName){
 	return returnVal;
 }
 /**
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"3E4015D3-73DC-4CC9-B7B6-8085C022F99D"}
+ */
+function removeFormClone(formName){
+	//if (!formName){return}
+	var tabPanels = solutionModel.getForm(formName).getTabPanels();
+	for (var p in tabPanels) {
+		var tabs = tabPanels[p].getTabs();
+		for (var t in tabs) {
+			var tabFormX = tabs[t].containsForm;
+			removeFormClone(tabFormX.name);
+		}
+	}
+	scopes.jobs.removeFormHist(formName);
+}
+/**
+ * upon entry into field, save the field name to 
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"7A4014D5-3AF4-4850-A54C-00823F390FF0"}
+ * @AllowToRunInFind
+ */
+function onActionElementPicks(event) {
+	var eventType = event.getType();
+	var formName = event.getFormName();
+	var buttonName = event.getElementName();
+	if (buttonName.search('btn') == 0){
+		var elementName = buttonName.replace('btn','frm');
+	} else {
+		elementName = buttonName.replace('lbl','frm');
+	}
+	if (forms[formName] && forms[formName].elements['frmJobNum']){
+		var jobNumDP = forms[formName][forms[formName].elements['frmJobNum'].getDataProviderID()];
+		if (!jobNumDP){
+			forms[formName].elements['frmJobNum'].requestFocus();
+			return true;
+		}
+	}
+	var arrayInUse = [];
+	var topForm = application.getActiveWindow().controller.getName();
+	var jobInfo = forms[topForm].jobIdData;
+	var activeEl = setActiveElement(elementName);
+	var returnInfo = null;
+	switch (activeEl){
+		case "Seq" :
+			scopes.jobs.jobSequenceNumbers(topForm);
+			arrayInUse = jobInfo.sequence_nums;	
+			break;
+		case "Sheet":
+			scopes.jobs.jobSheetAndDrawingNumbers(topForm);
+			arrayInUse = jobInfo.sheet_nums;
+			break;
+		case "Lot":
+			scopes.jobs.jobLotNumbers(topForm);
+			arrayInUse = jobInfo.lot_nums;
+			break;
+		case "Draw":
+			scopes.jobs.jobSheetAndDrawingNumbers(topForm);
+			arrayInUse = jobInfo.ref_drawings;
+			break;
+		case "Area":
+			scopes.jobs.jobIdfileMiscInfo(topForm);
+			arrayInUse = jobInfo.area_names;
+			break;
+		case "Batch":
+			scopes.jobs.jobIdfileMiscInfo(topForm);
+			arrayInUse = jobInfo.batch_names;
+			break;
+		case "SO":
+			scopes.jobs.jobIdfileMiscInfo(topForm);
+			arrayInUse = jobInfo.shoporder_nums;
+			break;
+		case "PcmkRel":
+			scopes.jobs.jobIdfileMiscInfo(topForm);
+			arrayInUse = jobInfo.pcmk_rels;
+			break;
+		case "FabShop":
+			scopes.jobs.jobStations(topForm); //jobIdfileMiscInfo(topForm);
+			arrayInUse = jobInfo.stations; //active_stations;
+			break;
+		case "Pkg":
+			scopes.jobs.jobIdfileMiscInfo(topForm);
+			arrayInUse = jobInfo.package_nums;
+			break;
+		case "LoadRel":
+			scopes.jobs.jobLoadsAndReleases(topForm);
+			arrayInUse = jobInfo.load_rels;
+			break;
+		case "LoadNum":
+			scopes.jobs.jobLoadsAndReleases(topForm);
+			arrayInUse = jobInfo.load_nums;
+			break;
+		default:
+			
+	}
+	if (forms[formName].elements.btn_Info){
+		forms[formName].elements.btn_Info.enabled = true;
+	}
+	if (eventType == JSEvent.FOCUSLOST){
+		var dataProv = forms[formName].elements[elementName].getDataProviderID();
+		var itemList = [];
+		if (!forms[formName][dataProv]){return true;}
+		/** @type {String} */
+		var items = forms[formName][dataProv];
+		items = items.replace(/\,[ ]*/g,', ');
+		itemList = items.split(", ");
+		var labelNames = forms[formName].elements[elementName].getLabelForElementNames();
+		// see if there is an onAction method for the label and there is an empty array
+		// if there is an onAction for the label, then we are looking at a set of criteria
+		// otherwise, it is a free form field, or a barcode entry, that will need to be addressed as well
+		// CURRENT move this one up for focuslost, not this function because it doesn't need the f2 list
+		for (var index = 0;index < itemList.length;index++){
+			if (arrayInUse.indexOf(itemList[index]) == -1){
+				forms[formName][dataProv] = "";
+				forms[formName].elements[elementName].requestFocus();
+				//errormessage
+				return false;
+			}
+		}
+		return true;
+	}
+	if (arrayInUse && (arrayInUse.length > 0 || (arrayInUse[0] == " " && arrayInUse.length == 1))){
+		forms[formName].elements[elementName].bgcolor = 'white';
+		multiSelectFieldName = elementName;
+		forms[formName].elements.frmMultiSelect.visible = true;
+		forms[formName].elements.frmMultiSelect.requestFocus();
+		application.setValueListItems('vl_barcode_idlabel_multiselect'+forms[formName].versionForm,arrayInUse);
+		//forms[formName].elements.frmMultiSelect.requestFocus();
+		forms[formName].controller.focusField('frmMultiSelect',false);
+		var elementVar = forms[formName].elements[multiSelectFieldName].getDataProviderID();
+		multiSelectFieldEntry = forms[formName][elementVar].replace(', ','\n');
+		multiSelectFieldEntry = multiSelectFieldEntry.replace(',','\n');
+	} else {
+		forms[formName].elements[elementName].bgcolor = '#F0F0F0';
+	}
+	return true;
+}
+/**
+ * When multiSelect loses focus, save the contents in a comma-delimited format to the calling field.
+ * Use a global variable, since this is a single pass entry.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F08E11A7-2086-46B1-AE29-5D2E7C321C3B"}
+ */
+function onFocusLostMultiSelect(event) {
+	var formName = event.getFormName();
+	var elementVar = forms[formName].elements[multiSelectFieldName].getDataProviderID();
+	multiSelectFieldName = "";
+	forms[formName].elements.frmMultiSelect.visible = false;
+	if (multiSelectFieldEntry){
+		forms[formName][elementVar] = multiSelectFieldEntry.replace(/\n/g,', ');
+	}
+}
+/**
+ * Handle focus gained event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"DBE47440-2000-460D-A428-7CAD3C5110A6"}
+ */
+function onFocusGainedMultiSelect(event) {
+	var formName = event.getFormName();
+	var elName = event.getElementName();
+	forms[formName].elements[elName].visible = true;
+	/** @type Array */
+	var labelName = forms[formName].elements[multiSelectFieldName].getLabelForElementNames();
+	if (labelName.length >0){
+		forms[formName].elements['frmMultiSelectLabel'].text = forms[formName].elements[labelName[0]].text;
+	} else {
+		forms[formName].elements['frmMultiSelectLabel'].text = "Choose multiple items:";
+	}
+}
+/**
+ * Check entries on focus lost
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"6CA28272-0EFD-4034-8AD0-2735B715A73A"}
+ * @AllowToRunInFind
+ */
+function onFocusLostElement(event) {
+	var elementName = event.getElementName();
+	var formName = event.getFormName();
+	forms[formName]['vFilteredCount'] = scopes.globals.collectCriteria2(event);
+	var dataProvPcmk = "";
+	if (elementName.search(/Piecemark/)){
+		// check for piecemark entry
+
+		if (forms[formName].elements['btn_Print']){
+			dataProvPcmk = forms[formName].elements['frmPiecemark'].getDataProviderID();
+			forms[formName].elements['btn_Print'].enabled = (forms[formName][dataProvPcmk] != "");
+		}
+		return true;
+	} else if (elementName.search(/IdNumber/)){
+		// check for full idnumber
+		return true;
+	} else {
+		// check for element picks action or process lost element
+		return onActionElementPicks(event);
+	}
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"84F851D9-D505-454C-B669-A87AC0EA0996"}
+ */
+function onActionNull(event){
+	null;
+}
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"CD722128-FBA7-4F86-A587-E7D8C0586733"}
+ */
+function onShow(firstShow, event) {
+	versionForm = globals.getInstanceForm(event);
+	baseForm = event.getFormName().replace(versionForm,'');
+	globals.setUserFormPermissions(event);
+	return _super.onShow(firstShow, event)
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"0209A2A6-4955-4A59-8AF6-E4BEE47B2B7C"}
+ * @AllowToRunInFind
+ */
+function syncI18N(event) {
+	/** @type {QBSelect<db:/stsservoy/messages>} */
+	var q = databaseManager.createSelect('db:/stsservoy/messages');
+	q.result.add(q.columns.message_num);
+	q.result.add(q.columns.message_text);
+	var resultQ = databaseManager.getFoundSet(q);
+	var index = 1;
+	while (index <= resultQ.getSize()){
+		var rec = resultQ.getRecord(index);
+		/** @type {JSFoundSet<db:/stsservoy/i18n_table>} */
+		var fs = databaseManager.getFoundSet('stsservoy','i18n_table');
+		if (fs.find()){
+			fs.message_key = rec.message_num;
+			fs.message_language = null;
+			if (false && fs.search()){
+				application.output('message '+rec.message_num+' '+rec.message_text);
+				var newIdx = fs.newRecord();
+				var newRec = fs.getRecord(newIdx);
+				newRec.message_key = rec.message_num;
+				newRec.message_value = rec.message_text;
+				newRec.message_language = "en";
+			}
+		}
+		index++;
+	}
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param elementName
+ *
+ * @properties={typeid:24,uuid:"3287C8DD-C8F4-4A55-8579-1AF3A92314B5"}
+ */
+function setActiveElement(elementName){
+	var activeEl = "";
+	if (elementName.search("Seq") != -1){activeEl = "Seq"}
+	else if (elementName.search("Sheet") != -1){activeEl = "Sheet"}
+	else if (elementName.search("Lot") != -1){activeEl = "Lot"}
+	else if (elementName.search("Drawing") != -1){activeEl = "Draw"}
+	else if (elementName.search("Area") != -1){activeEl = "Area"}
+	else if (elementName.search("Batch") != -1){activeEl = "Batch"}
+	else if (elementName.search("SONum") != -1){activeEl = "SO"}
+	else if (elementName.search("PcmkRel") != -1){activeEl = "PcmkRel"}
+	else if (elementName.search("FabShop") != -1){activeEl = "FabShop"}
+	else if (elementName.search("Pkg") != -1){activeEl = "Pkg"}
+	else if (elementName.search("Load") != -1){
+		if (elementName.search("Rel") != -1){
+			activeEl = "LoadRel";
+		} else {
+			activeEl = "LoadNum"
+		}
+	}// deal with items that aren't using pre-selected criteria also
+	return activeEl;
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
+ */
+function onActionClickDeveloper(event) {
+	if (!application.isInDeveloper()){return}
+	var response = "Update Zips";
+	switch (response){
+		case 'Update Zips':{
+			scopes.globals.loadZipCodeFile(event);
+			break;
+		}
+		case 'Update User':{
+			/** @type {JSFoundSet<db:/stsservoy/users>} */
+			perms = databaseManager.getFoundSet('db:/stsservoy/users');
+			perms.loadRecords();
+			index = 1;
+			while (index <= perms.getSize()){
+				rec = perms.getRecord(index);
+				if (!rec.user_uuid){
+					rec.user_uuid = application.getUUID();
+				}
+				index++;
+			}
+			databaseManager.saveData(perms);
+			break;
+		}
+		case 'Update Permissions':{
+			var keys = [];
+			/** @type {JSFoundSet<db:/stsservoy/keys>} */
+			perms = databaseManager.getFoundSet('db:/stsservoy/keys');
+			perms.loadRecords();
+			index = 1;
+			while (index <= perms.getSize()){
+				rec = perms.getRecord(index);
+				if (!rec.key_uuid){
+					rec.key_uuid = application.getUUID();
+				}
+				index++;
+				keys[rec.key_id] = rec.key_uuid;
+			}
+			databaseManager.saveData(perms);
+
+			var groups = [];
+			/** @type {JSFoundSet<db:/stsservoy/groups>} */
+			perms = databaseManager.getFoundSet('db:/stsservoy/groups');
+			perms.loadRecords();
+			index = 1;
+			while (index <= perms.getSize()){
+				rec = perms.getRecord(index);
+				if (!rec.group_uuid){
+					rec.group_uuid = application.getUUID();
+				}
+				index++;
+				groups[rec.group_id] = rec.group_uuid;
+			}
+			databaseManager.saveData(perms);
+			
+			var permissions = [];
+			/** @type {JSFoundSet<db:/stsservoy/permissions>} */
+			var perms = databaseManager.getFoundSet('db:/stsservoy/permissions');
+			perms.loadRecords();
+			var index = 1;
+			while (index <= perms.getSize()){
+				var rec = perms.getRecord(index);
+				if (!rec.permission_uuid){
+					rec.permission_uuid = application.getUUID();
+				}
+				permissions[rec.permission_uuid] = rec.permission_uuid;
+				rec.key_uuid = keys[rec.key_id]
+				index++;
+			}
+			databaseManager.saveData(perms);
+
+			var groupKeys = [];
+			/** @type {JSFoundSet<db:/stsservoy/group_keys>} */
+			perms = databaseManager.getFoundSet('db:/stsservoy/group_keys');
+			perms.loadRecords();
+			index = 1;
+			while (index <= perms.getSize()){
+				rec = perms.getRecord(index);
+				if (!rec.group_key_uuid){
+					rec.group_key_uuid = application.getUUID();
+				}
+				groupKeys[rec.group_key_uuid] = rec.group_key_uuid;
+				rec.group_uuid = groups[rec.group_id];
+				rec.key_uuid = keys[rec.key_id];
+				index++;
+			}
+			databaseManager.saveData(perms);
+			
+			/** @type {JSFoundSet<db:/stsservoy/user_groups>} */
+			perms = databaseManager.getFoundSet('db:/stsservoy/user_groups');
+			perms.loadRecords();
+			index = 1;
+			while (index <= perms.getSize()){
+				rec = perms.getRecord(index);
+				if (!rec.user_group_uuid){
+					rec.user_group_uuid = application.getUUID();
+				}
+				rec.group_uuid = groups[rec.group_id];
+				index++;
+			}
+			databaseManager.saveData(perms);
+			break;
+		}
+		case "Delete Tablesxx":{
+			var tablesToClear = ['addresses','carrier','cow_xref','cowcodes','customers','employee','employee_class','end_conditions',
+			'heats','id_serial_numbers','idfiles','jobs','labor_codes','labor_department','last_id_serial','loads','lots',
+			'piecemarks','preferences2','rf_transactions','route_detail','routings','sequences','sheets','status_description',
+			'transactions','uom_types'
+			]
+			// 'mapping', 'users', 'groups','applications','associations','barcode_test','group_keys','i18n_table',
+			// 'ref_types','messages','tenant_list','user_groups','zipcodes','valuelists'
+			for (index = 0;index < tablesToClear.length;index++){
+				var fs = databaseManager.getFoundSet('stsservoy',tablesToClear[index]);
+				if (application.isInDeveloper() && fs.getSize() > 0){application.output('Deleting table '+tablesToClear[index])}
+				fs.loadRecords();
+				while (fs.getSize() != 0){
+					fs.deleteAllRecords();
+				}
+			}
+			break;
+		}
+		default:{
+			
+		}
+	}
+}
+/**
+ * @param {JSEvent} event
+ *
+ *
+ * @properties={typeid:24,uuid:"782B1B8B-AC48-4EEA-B9E2-0E8BB278828F"}
+ */
+function onActionClickCarrierView(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.carriers.view'),'carriers_view',50, 50, 620, 500,true);
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"852B4329-115A-4894-81E9-A3D426380A8F"}
+ */
+function onActionClickCustomerView(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.customers.view'),'customers_view',10,10,890,556,true);
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"5684AD90-4015-4018-B0FB-A2024F1728CE"}
+ */
+function onActionClickEmployeeView(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.employees.view'),'employees_view',50,50,920,505,true);
+}
+/**
  * @param event
  *
  * @properties={typeid:24,uuid:"CFF48241-D9CB-43D9-85B1-44E13D99CBD0"}
  */
-function onActionClickPiecemarkEntry(event) {
-	onActionClickMainButton(event,"Piecemark Entry",'piecemark_entry',50,50,650,400,true);
+function onActionClickPiecemark(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.piecemark'),'piecemark',50,50,650,400,true);
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"8FDE0BCB-E5CF-4160-8511-7C8F9670A2D6"}
+ */
+function onActionClickPiecemarkView(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.piecemark.view'),'piecemark_view',50,50,700,400,true);
 }

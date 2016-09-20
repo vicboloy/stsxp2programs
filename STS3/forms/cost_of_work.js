@@ -57,6 +57,11 @@ function onActionClose(event) {
 	forms.cost_of_work_category.editStatus(false);
 	//forms.cost_of_work_category.controller.readOnly = true;
 	forms.cost_of_work_category.elements.jobNumberEntry.enabled = true;
+	var tabCount = elements.tabless.getMaxTabIndex();
+	for (var index = 1;index <= tabCount;index++){
+		var tabFormName = elements.tabless.getTabFormNameAt(index);
+		if (forms[tabFormName].onActionClose){forms[tabFormName].onActionClose(event)}
+	}
 
 	globals.stopWindowTrack();
 	globals.mainWindowFront();

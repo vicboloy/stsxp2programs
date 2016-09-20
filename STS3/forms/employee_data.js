@@ -1,4 +1,10 @@
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"3DBD4B76-9F9D-480F-B30E-33A160F4B553",variableType:4}
+ */
+var activeLogin = 0;
+/**
  * @AllowToRunInFind
  * 
  *
@@ -10,9 +16,6 @@
  */
 function onDataChange(oldValue, newValue, event) {
 	databaseManager.nullColumnValidatorEnabled = false;
-	if (employee_number == null){
-		employee_number = "Employee Number Required";
-	}
 	databaseManager.setAutoSave(true);
 	if (globals.newEmployeeRecord == null){
 		globals.newEmployeeRecord = employee_id;
@@ -38,4 +41,35 @@ function onDataChange(oldValue, newValue, event) {
 	databaseManager.setAutoSave(true);
 	//forms.employee_specs.onEdit(event,false);
 	return true
+}
+/**
+ * @param {JSEvent} event
+ * @param {Boolean} editing
+ *
+ *
+ * @properties={typeid:24,uuid:"C9FE0EA4-4662-4FB3-AD98-048BAF5FD6CB"}
+ */
+function onActionEdit(event,editing){
+	controller.readOnly = !editing;
+	elements.editMessage.visible = editing;
+}
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @private
+ *
+ * @properties={typeid:24,uuid:"C32FDF51-8D3F-4607-A4C4-A8BA6B76B1BD"}
+ * @AllowToRunInFind
+ */
+function onRecordSelection(event) {
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	var userFS = databaseManager.getFoundSet('stsservoy','users');
+	if (userFS.find()){
+		userFS.employee_id = employee_id;
+		if (userFS.search()){
+			activeLogin = userFS.is_account_active;
+		}
+	}
 }

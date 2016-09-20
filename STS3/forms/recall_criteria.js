@@ -212,9 +212,9 @@ function onActionDeleteWindow(event) {
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
 	var yOrigin = controller.getWindow().getY();
-	var win = application.createWindow("Job Piecemark Recall", JSWindow.MODAL_DIALOG);
+	var win = application.createWindow('Job Piecemark Recall', JSWindow.MODAL_DIALOG);
 	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
-	win.title = "Job Piecemark Recall";
+	win.title = 'Job Piecemark Recall';
 
 	win.show(forms.recall_record_actual);
 	scopes.jobs.removeFormHist('recall_pcmk_combo_table');

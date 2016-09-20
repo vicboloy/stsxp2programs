@@ -73,7 +73,7 @@ function onActionDelete(event) {
 	
 	//show dialog
 	// addresses #50 part 3 ticket
-	if (globals.DIALOGS.showQuestionDialog('Delete','Delete?',"Delete","Cancel") == 'Delete'){
+	if (globals.DIALOGS.showQuestionDialog('Delete','Delete?','Delete','Cancel') == 'Delete'){
 		addOnActionDelete();
 		delete_flag = 99;
 		foundset.loadRecords();
@@ -198,7 +198,7 @@ function onActionSaveEdit(event) {
 		databaseManager.saveData(foundset);
 	}
 	catch (e) {
-		application.output("No code entered to save.");
+		application.output('No code entered to save.');
 		controller.deleteRecord();
 	}
 	//databaseManager.setAutoSave(true);
@@ -398,16 +398,16 @@ function removeWindowTrack(){
 	if (winName == null){return}
 	winName = winName.replace(/_/g," ");
 	var tempArray = new Array;
-	application.output('array '+tempArray+' remove '+winName);
+	if (application.isInDeveloper()){application.output('array '+tempArray+' remove '+winName)}
 	var length = globals.aTrackWindows.length;
 	for (var index = 0; index < length; index++){
 		application.output(winName+' '+globals.aTrackWindows[index]);
 		if (globals.aTrackWindows[index] != winName){
 			tempArray.push(globals.aTrackWindows[index]);
-			application.output('add '+globals.aTrackWindows[index]);
+			if (application.isInDeveloper()){application.output('add '+globals.aTrackWindows[index])}
 		}
 	}
 	globals.aTrackWindows = tempArray;
-	application.output(tempArray);
+	if (application.isInDeveloper()){application.output(tempArray)}
 	application.setValueListItems('stsvl_nav_windows',tempArray);
 }

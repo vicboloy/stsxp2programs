@@ -8,7 +8,7 @@ location:"27,432",
 onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-text:"Settings",
+text:"i18n:sts.btn.settings",
 typeid:7,
 uuid:"1632631D-EA92-4C15-B0B5-2DE17159D22A"
 },
@@ -31,7 +31,7 @@ location:"127,433",
 onActionMethodID:"F8DA2C40-ECF1-4137-9F4E-1778F13040AE",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-text:"Exit",
+text:"i18n:sts.btn.exit",
 typeid:7,
 uuid:"E718B53C-D7A2-4B6C-97A6-86C822241F72"
 }

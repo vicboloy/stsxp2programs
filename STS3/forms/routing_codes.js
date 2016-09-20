@@ -95,6 +95,7 @@ function onShowLoadData(firstShow, event) {
 	if (firstShow) {
 		onEdit(event,false);
 	}
+	globals.setUserFormPermissions(event);
 	setRouteCodesLists();
 	elements.orderUp.enabled = false;
 	elements.orderDown.enabled = false;
@@ -265,8 +266,8 @@ function setRouteCodesLists(){
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
 	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
 	var fs = sts_route_status_codes;
-	fs.sort('route_order asc');
 	if (fs != null) {
+		fs.sort('route_order asc');
 		for(var index=1;index<=fs.getSize();index++){
 			var record = fs.getRecord(index);
 			//var fabShopsList = globals.mobFabShops;
@@ -279,7 +280,7 @@ function setRouteCodesLists(){
 			}
 			var fsAndS = fabShopAndStatus.split(',');
 			var routeItem = globals.aMobAssocs[fsAndS[0]]+", "+fsAndS[1];
-application.output('route item '+routeItem+" "+record.status_code);
+//application.output('route item '+routeItem+" "+record.status_code);
 			if (aRouteCodes.indexOf(routeItem) == -1){
 				aRouteCodes.push(routeItem);
 				aStatusCodes = removeElementFromArray(aStatusCodes,routeItem);
@@ -303,7 +304,7 @@ application.output('route item '+routeItem+" "+record.status_code);
 function onActionMoveUp(event,sortDirection) {
 	var code = elements.selectedCodes.getSelectedElements()[0];
 	if (code == null){
-		application.output("No item selected.");
+		application.output('No item selected.');
 		return;
 	}
 	var length = aRouteCodes.length;

@@ -30,6 +30,9 @@ var localStations = [];
  * @AllowToRunInFind
  */
 function onShowStatusDescr(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	controller.loadRecords(sts_status_code_container);
 	//var dataset = controller.getFormContext().getValue(1,2);
 	//application.output('employee class list form parent on show '+dataset);
@@ -86,9 +89,9 @@ function onActionAdd(event){
  * @properties={typeid:24,uuid:"2BD445F0-CAC3-47A9-8209-748004C6544E"}
  */
 function onActionDelete(event,itemDescription) {
-	var itemDescr = "Remove "+itemDescription;
-	globals.doDialog(itemDescr,"Delete?","Delete","Cancel");
-	if (globals.dialogResponse == "yes"){
+	var itemDescr = 'Remove '+itemDescription;
+	globals.doDialog(itemDescr,'Delete?','Delete','Cancel');
+	if (globals.dialogResponse == 'yes'){
 		//controller.deleteRecord();
 		///var index = controller.getSelectedIndex();
 		//application.output('index '+index);
@@ -275,7 +278,7 @@ function onDataChangeStatus(oldValue, newValue, event) {
  */
 function onActionOverwrite(event) {
 	globals.currentStatusCodeSequence = status_sequence;
-	var windowTitle = "Overwritable Status Codes by this code...";
+	var windowTitle = 'Overwritable Status Codes by this code...';
 	var win = application.createWindow(windowTitle, JSWindow.MODAL_DIALOG);
 	/* var xBeg = xOrigin;
 	var yBeg = yOrigin;
@@ -475,7 +478,7 @@ function getStatusList(){
  * @properties={typeid:24,uuid:"115F40D6-82D8-49F6-AF54-9CDED48265C2"}
  */
 function getRecollectStatusDescription(event){
-	tempStation = association_id+", "+status_code;
+	tempStation = association_id+', '+status_code;
 	var eventName = event.getElementName();
 	application.output('element name '+eventName);
 	switch( eventName ) {

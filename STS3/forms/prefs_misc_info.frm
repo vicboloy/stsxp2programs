@@ -255,6 +255,14 @@ typeid:7,
 uuid:"9078B4B2-3FA8-47CE-A87D-C5EAF4D44389"
 },
 {
+location:"414,60",
+size:"216,20",
+text:"Total Columns to Show in Tables",
+transparent:true,
+typeid:7,
+uuid:"952555F8-D45D-4774-A7C1-D02E4574A707"
+},
+{
 labelFor:"madeIn",
 location:"379,325",
 name:"madeIn_label",
@@ -378,6 +386,15 @@ text:"Receiver Zip File Name:",
 transparent:true,
 typeid:7,
 uuid:"C5F7C43E-785E-49EF-AF3E-79B944C35476"
+},
+{
+dataProviderID:"scopes.prefs.maxColumnShow",
+horizontalAlignment:4,
+location:"361,60",
+onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
+size:"48,20",
+typeid:4,
+uuid:"C95091CD-3C65-4C91-BE23-C42B4A3E7691"
 },
 {
 labelFor:"stsInstalled",

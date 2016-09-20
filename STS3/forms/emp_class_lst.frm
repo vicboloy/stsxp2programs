@@ -22,6 +22,7 @@ uuid:"237FD4D3-6124-45D1-83F5-5540A413F323"
 {
 anchors:11,
 dataProviderID:"class_code",
+editable:false,
 location:"5,25",
 name:"class_code",
 size:"95,20",
@@ -43,6 +44,7 @@ uuid:"4F0F9A65-192D-4092-A8EB-DB02A05F10C6"
 {
 anchors:11,
 dataProviderID:"class_description",
+editable:false,
 location:"110,25",
 name:"class_description",
 size:"202,20",

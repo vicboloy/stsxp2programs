@@ -82,6 +82,7 @@ function onActionSaveButton(event) {
  * @properties={typeid:24,uuid:"084017E5-6438-4B5D-AC2D-852C848DEAC2"}
  */
 function onShow(firstShow, event) {
+	globals.setUserFormPermissions(event);
 	startEditing(event);
 	application.setValueListItems('stsvl_mapping_tables',mappingTables);
 
@@ -167,7 +168,7 @@ function onActionClearRepeating(event) {
  */
 function duplicateRecord(event, index, location, changeSelection) {
 	if (mapped_field == null){
-		errorMessage = 'Duplications only made on complete records, mapped_field.';
+		errorMessage = i18n.getI18NMessage('sts.txt.duplication.on.complete.mapped.records');
 		return}
 	//startEditing(event);
 	var indexNew = _super.duplicateRecord(event, index, location, changeSelection) 

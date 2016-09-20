@@ -2,15 +2,6 @@ dataSource:"db:/stsservoy/addresses",
 extendsID:"E6818EAD-F587-4B8F-AA52-012EE881207A",
 items:[
 {
-location:"389,5",
-name:"editMessage",
-text:"EDITING",
-transparent:true,
-typeid:7,
-uuid:"38E190B5-F66E-4A0F-B5E8-061F3324C536",
-visible:false
-},
-{
 extendsID:"9A52E448-89AE-4C86-BA24-6FF9311BE913",
 items:[
 {
@@ -27,12 +18,14 @@ uuid:"5C07726C-D7DB-4307-BE5A-CD32340FDC55"
 {
 extendsID:"474CA866-D448-4C4F-AE2E-9C9333931A21",
 location:"374,374",
+text:"Add Address",
 typeid:7,
 uuid:"6015AA61-1F1C-4418-A36F-62674E84D0B3"
 },
 {
 extendsID:"EA135DB5-01F8-453F-8168-1F88617C527D",
 format:"|U",
+text:"Address Type",
 typeid:4,
 uuid:"77074FCD-8B52-4DCA-A513-3B2B7B90B826",
 valuelistID:"F620E06E-885F-45E8-8FFE-F3DA001E558F"

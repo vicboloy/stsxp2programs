@@ -342,7 +342,7 @@ function loadResetForm(){
 	vMetricJob = 0; //false
 	vPORelease = "";
 	vProjectYear = null;
-	vRFInterface = "<None>";
+	vRFInterface = '<None>';
 	vFTProjectID = null;
 }
 /**
@@ -386,8 +386,9 @@ function onShow(firstShow, event) {
 	if (firstShow){
 		elements.ft_projectid.enabled = (scopes.prefs.lFabtrolInstalled == 1);
 		elements.third_party_job_num.enabled = (scopes.prefs.lFabsuiteInstalled==1||scopes.prefs.lFabtrolInstalled==1||scopes.prefs.lRomacInstalled==1);
-		vJobWeightUnits = (metric_job==1) ? "kgs" : "lbs";
+		vJobWeightUnits = (metric_job==1) ? 'kgs' : 'lbs';
 	}
+	globals.setUserFormPermissions(event);
 	onActionHeats(event);
 	foundset.loadAllRecords();
 	var path = scopes.prefs.reportpath;

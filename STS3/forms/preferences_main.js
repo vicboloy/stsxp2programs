@@ -15,7 +15,9 @@ var errorMessage = "";
  * @properties={typeid:24,uuid:"46471F9F-18E4-4ECA-BFB0-3DB75F4EC181"}
  */
 function onShow(firstShow, event) {
-	
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	//for (var index=0;index < globals.aStatusTypes.length;index++){
 	//	application.output("index Status Types "+index+" "+globals.aStatusTypes[index]);
 	//}
@@ -30,19 +32,19 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onActionUpdatePrefs(event, prefType) {
-	// for globals, user_id = -1, tenant_uuid= main tenant, field_name = index, value_type, value_string
-	errorMessage = "Saving preferences.";
+	// for globals, user_uuid = -1, tenant_uuid= main tenant, field_name = index, value_type, value_string
+	errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
 	application.updateUI();
 	var prefs = scopes.prefs;
-	if (prefType == "Printer"){
+	if (prefType == 'Printer'){
 		prefs = scopes.printer;
 	}
 	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
-	user_id = -1;
+	user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 	var tenant = globals.secCurrentTenantID;
 	var variable = "";
 	var variableSetting = "";
-	var description = "Global Preference";
+	var description = 'Global Preference';
 	var saveRec = false;
 	var rec = null;
 	//var updateCount = 0;
@@ -54,7 +56,7 @@ function onActionUpdatePrefs(event, prefType) {
 		variableSetting +="";
 		saveRec = false;
 		if (fs.find()){
-			fs.user_id = -1;
+			fs.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 			fs.tenant_uuid = tenant;
 			fs.field_name = variable;
 			if (fs.search() > 0){
@@ -72,10 +74,10 @@ function onActionUpdatePrefs(event, prefType) {
 			} else {
 				var recNum = fs.newRecord();
 				rec = fs.getRecord(recNum);
-				if (!user_id) {
-					rec.user_id = -1;
+				if (!user_uuid) {
+					rec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 				} else {
-					rec.user_id = user_id;
+					rec.user_uuid = user_uuid;
 				}
 				rec.tenant_uuid = tenant;
 				rec.field_name = variable;
@@ -87,7 +89,7 @@ function onActionUpdatePrefs(event, prefType) {
 		}
 		
 		if (saveRec){databaseManager.saveData(rec)}
-		//application.output(index+" = "+prefs[index]+" user_id: "+-1+" tenant_uuid "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
+		//application.output(index+" = "+prefs[index]+" user_uuid: "+-1+" tenant_uuid "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
 	}
 	//application.output("update count "+updateCount);
 	errorMessage = "";

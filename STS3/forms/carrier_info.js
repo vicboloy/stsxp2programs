@@ -9,8 +9,11 @@ var editCarrierFlag = false;
  * @properties={typeid:24,uuid:"E064DA2E-782E-474C-86F5-D602473B1173"}
  */
 function delCarrierRecordAndAddress(event) {
-	globals.doDialog("Remove Carrier Record","Delete this Carrier?","Delete","Cancel");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.record'),
+			i18n.getI18NMessage('sts.txt.delete.this.carrier'),
+			i18n.getI18NMessage('sts.txt.delete'),
+			i18n.getI18NMessage('sts.txt.cancel'));
+	if (globals.dialogResponse == 'yes'){
 			controller.deleteRecord();
 		}
 	}
@@ -23,7 +26,7 @@ function delCarrierRecordAndAddress(event) {
  * @properties={typeid:24,uuid:"B9AB506A-3288-47F8-8A1A-0F33D772766A"}
  */
 function onRenderCarrierButton(event) {
-	elements.btn_Delete.text = 'Delete \''+carrier_name+'\'';
+	elements.btn_Delete.text = i18n.getI18NMessage('sts.btn.delete');
 }
 /**
  *
@@ -33,16 +36,18 @@ function onRenderCarrierButton(event) {
  * @properties={typeid:24,uuid:"E3D11FE7-21BB-4673-BA26-ECA02C3B8401"}
  */
 function onEditCarrier(event,editStatus){
-		forms.carriers.controller.readOnly = !editStatus;
-		forms.carriers_lst.controller.enabled = !editStatus;
-		editCarrierFlag = editStatus;
-		forms.carriers_rec.elements.btn_New.visible = !editStatus;
-		forms.carrier_info.elements.btn_Delete.visible = !editStatus;
-		forms.carrier_info.elements.btn_Cancel.visible = editStatus;
-		forms.carrier_info.elements.btn_Save.visible = editStatus;
-		forms.carrier_info.elements.btn_Edit.visible = !editStatus;
+	if (foundset.getSize() == 0){return}
+	var instanceForm = globals.getInstanceForm(event);
+	forms['carriers'+instanceForm].controller.readOnly = !editStatus;
+	//forms.carriers_lst.controller.enabled = !editStatus;
+	editCarrierFlag = editStatus;
+	forms['carriers_rec'+instanceForm].elements.btn_New.visible = !editStatus;
+	forms['carrier_info'+instanceForm].elements.btn_Delete.visible = !editStatus;
+	forms['carrier_info'+instanceForm].elements.btn_Cancel.visible = editStatus;
+	forms['carrier_info'+instanceForm].elements.btn_Save.visible = editStatus;
+	forms['carrier_info'+instanceForm].elements.btn_Edit.visible = !editStatus;
 		
-	}
+}
 
 	/**
  *
@@ -64,7 +69,7 @@ function onActionEditCarrier(event) {
 function onActionCancelEditCarrier(event) {
 		onEditCarrier(event,false);
 		databaseManager.revertEditedRecords(foundset);
-		databaseManager.setAutoSave(true);
+		//databaseManager.setAutoSave(true);
 	}
 
 	/**
@@ -77,7 +82,7 @@ function onActionSaveEditCarrier(event){
 		tenant_uuid = globals.secCurrentTenantID;
 		onEditCarrier(event,false);
 		databaseManager.saveData(foundset);
-		databaseManager.setAutoSave(true);
+		//databaseManager.setAutoSave(true);
 	}
 
 /**

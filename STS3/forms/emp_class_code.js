@@ -18,6 +18,9 @@ var editFlag = false;
  * @properties={typeid:24,uuid:"E47D7FF2-8473-4AD4-AD69-AC99BA008846"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
+	globals.setUserFormPermissions(event);
 	controller.getFormContext().getValue(1,2);
 
 	controller.readOnly = true;
@@ -47,8 +50,8 @@ function onActionAdd(event){
  * @properties={typeid:24,uuid:"0F0E5A77-AE9D-496C-B320-6F45FB46FE36"}
  */
 function onActionDelete(event) {
-	globals.doDialog("Remove Employee Class","Delete this Class?","Delete","Cancel");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog('Remove Employee Class','Delete this Class?','Delete','Cancel');
+	if (globals.dialogResponse == 'yes'){
 			controller.deleteRecord();
 		}
 

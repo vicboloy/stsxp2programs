@@ -60,7 +60,7 @@ function deleteRecord(event, index) {
 	/** @type {JSFoundSet<db:/stsservoy/group_keys>} * /
 	var fs = databaseManager.getFoundSet('stsservoy','group_keys');
 	if (fs.find()){
-		fs.key_id = key_id;
+		fs.key_uuid = key_uuid;
 		if (fs.search()){
 			globals.DIALOGS.showErrorDialog('Cannot delete Permission','Permission Key already used within Permission Group.');
 			return true;

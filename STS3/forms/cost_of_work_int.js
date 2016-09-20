@@ -6,14 +6,16 @@
  */
 function editStatus(edit){
 	controller.readOnly = !edit;
-	elements.btn_New.visible = !edit;
+	//elements.btn_New.visible = !edit;
 	elements.btn_New_2.enabled = !edit;
 	elements.btn_Cancel.visible = edit;
-	elements.btn_Delete.visible = !edit;
-	elements.btn_Edit.visible = !edit;
 	elements.btn_Save.visible = edit;
-	elements.tabless.enabled = !edit;
-	elements.tabless_1.enabled = !edit;
+	//elements.tabless.enabled = !edit;
+	//elements.tabless_1.enabled = !edit;
+	//elements.btn_Delete.visible = false;
+	//elements.btn_Edit.visible = false;
+	elements.btn_Delete.visible = (!edit && (foundset.getSize() != 0));
+	elements.btn_Edit.visible = (!edit && (foundset.getSize() != 0));
 }
 /**
  * Perform the element default action.
@@ -40,6 +42,8 @@ function deleteRecord(event, index) {
 function saveEdits(event, record, stopEdit) {
 	editStatus(false);
 	edit_date = new Date();
+	tenant_uuid = globals.secCurrentTenantID;
+	databaseManager.saveData(foundset);
 	return _super.saveEdits(event, record, stopEdit)
 }
 
@@ -124,4 +128,12 @@ function onDataChangeCow(oldValue, newValue, event) {
 		}
 	}
 	return true;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"A329C813-4465-4A55-8435-5AB2B9B84CEE"}
+ */
+function onActionClose(event){
+	databaseManager.revertEditedRecords(foundset);
 }

@@ -64,6 +64,7 @@ uuid:"D55C63C3-B116-4024-823D-D1A7120EF486"
 }
 ],
 name:"corporation",
+onShowMethodID:"C7B497FC-CBFD-4FC8-B153-1265CA024A33",
 showInMenu:true,
 size:"601,480",
 typeid:3,

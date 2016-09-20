@@ -7,6 +7,7 @@ items:[
 {
 containsFormID:"0C4278AF-CDEA-4B7E-A9F5-9CB2290F9761",
 location:"5,66",
+relationName:"sts_carrier_container",
 text:"carriers_lst",
 typeid:15,
 uuid:"9D884C42-BD6E-4E0E-8C8C-E8D17F78E056"
@@ -29,7 +30,7 @@ onActionMethodID:"FA29E187-8F22-43AD-B141-BE6934214905",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"131,26",
-text:"Add New Carrier",
+text:"i18n:sts.btn.add.new.carrier",
 typeid:7,
 uuid:"A0AD04C7-6027-474B-A1DB-9EE2FECD3333"
 },

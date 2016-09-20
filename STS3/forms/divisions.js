@@ -21,6 +21,12 @@ var licenseMobile = 0;
  */
 var existingDivisions = [];
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"5252B434-08B3-4A93-A6DE-A8B0E7953CAB"}
+ */
+var errorMessage2 = "";
+/**
  *
  * @param {Number} [index] 
  *
@@ -73,15 +79,20 @@ function newRecord(event, location, changeSelection) {
  * @properties={typeid:24,uuid:"AC37FB18-D1DB-4306-A285-BC004019CEB7"}
  */
 function onShow(firstShow, event) {
+	globals.setUserFormPermissions(event);
 	showLicensing();
 	editInactive(event);
 	return _super.onShow(firstShow, event);
 }
 /**
  * @properties={typeid:24,uuid:"11AFB06B-9040-47F5-A0AC-C8FD6F298797"}
+ * @AllowToRunInFind
  */
 function showLicensing(){
 	totalLicenses = scopes.globals.getTenantUsedLicenses();
+	if (totalLicenses.search('-') != -1){
+		globals.errorDialogMobile(null,'1073','','');//1073 license count exceeded
+	}
 }
 /**
  * Perform the element default action.
@@ -92,10 +103,11 @@ function showLicensing(){
  */
 function onActionCompanyRename(event) {
 	var formName = event.getFormName();
-	var elName = event.getElementName();
-	var provider = forms[formName].elements[elName].getDataProviderID();
+	//var elName = event.getElementName();
+	var provider = forms[formName].elements['companyName'].getDataProviderID();
 	var oldName = controller.getDataProviderValue(provider);
-	var newName = plugins.dialogs.showInputDialog('Rename Company?','New name for '+oldName+'?',oldName);
+	var newMsg = i18n.getI18NMessage('sts.txt.rename.company.msg').replace('XXX',oldName);
+	var newName = plugins.dialogs.showInputDialog(i18n.getI18NMessage('sts.txt.rename.company'),newMsg,oldName);
 	if (!newName || newName == "" || newName.toUpperCase() == oldName.toUpperCase()){return}
 	newName = newName.toUpperCase();
 	forms[formName].controller.setDataProviderValue(provider,newName);
@@ -127,7 +139,9 @@ function editInactive(event){
  */
 function buttonsEnabled(enabled){
 	elements.btn_Check.enabled = enabled;
-	elements.companyName.enabled = enabled;
+	elements.btn_Office.enabled = enabled;
+	elements.btn_Rename.enabled = enabled;
+	elements.btn_Rename.visible = enabled;
 	elements.btn_Delete.enabled = enabled;
 	elements.desktop.editable = enabled;
 	elements.mobile.editable = enabled;
@@ -146,13 +160,40 @@ function buttonsEnabled(enabled){
  * @properties={typeid:24,uuid:"10C60271-78D6-4A88-A00B-CA1E56B9C75C"}
  */
 function onDataChangeDivision(oldValue, newValue, event) {
-	if (existingDivisions.indexOf(newValue) != -1){
+	if (existingDivisions.indexOf(newValue) != -1 || oldValue == ""){ // Do not rename an admin division
 		var elName = event.getElementName();
 		var formName = event.getFormName();
 		var provider = forms[formName].elements[elName].getDataProviderID();
 		forms[formName].controller.setDataProviderValue(provider,oldValue);
-		application.output('division old:'+oldValue+' new:'+newValue)
+		if (application.isInDeveloper()){application.output('division old:'+oldValue+' new:'+newValue)}
 		return false;
 	}
 	return true
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ * @param {Number} index
+ *
+ * @properties={typeid:24,uuid:"E7F20FC9-205F-4531-86E3-859F92A9D93B"}
+ * @AllowToRunInFind
+ */
+function deleteRecord(event, index) {
+	var rec = foundset.getSelectedRecord();
+	if (rec.association_uuid == rec.tenant_group_uuid){return} // Do not delete an admin association
+	if (foundset.getSize() == 2){return} // Do not delete an admin account and the only association
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var jobFS = databaseManager.getFoundSet('stsservoy','jobs');
+	if (jobFS.find()){
+		jobFS.tenant_uuid = globals.secCurrentTenantID;
+		jobFS.association_id = rec.association_uuid;
+		if (jobFS.search()){
+			globals.errorDialogMobile(event,'1071','',''); //1071, record has data. will not be deleted.
+			//globals.DIALOGS.showErrorDialog(i18n.getI18NMessage(''),message)
+			return;   // Do not delete association that is attached to a job
+		}
+	}
+	return _super.deleteRecord(event, index)
 }

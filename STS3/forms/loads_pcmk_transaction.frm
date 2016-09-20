@@ -114,7 +114,7 @@ uuid:"3A725B46-C728-4C26-81B3-4C6180EC46F5"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"worker_id",
+dataProviderID:"sts_transactions_to_employee.employee_number",
 location:"308,20",
 name:"worker_id",
 size:"78,20",
@@ -281,7 +281,7 @@ uuid:"592E95BC-E77C-4249-8D5C-ED41FA51DED8"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"sts_status_code_container.sts_status_description_to_associations.association_name",
+dataProviderID:"sts_transactions_to_status_description.sts_status_description_to_associations.association_name",
 location:"154,20",
 name:"association_name",
 size:"78,20",
@@ -355,7 +355,7 @@ uuid:"6BD82E2E-5134-4E76-A85F-1E26DD4DE0CE"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"worker5_id",
+dataProviderID:"sts_transactions_to_employee5.employee_number",
 location:"616,20",
 name:"worker5_id",
 size:"78,20",
@@ -390,7 +390,7 @@ uuid:"78C130E4-C2E6-4AD3-96E4-76ECF4EF2E5F"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"worker3_id",
+dataProviderID:"sts_transactions_to_employee3.employee_number",
 location:"462,20",
 name:"worker3_id",
 size:"78,20",
@@ -448,7 +448,7 @@ uuid:"9122E457-2695-4B9B-B88A-E89C6A1A0E34"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"worker4_id",
+dataProviderID:"sts_transactions_to_employee4.employee_number",
 location:"539,20",
 name:"worker4_id",
 size:"78,20",
@@ -577,7 +577,7 @@ uuid:"CD90FC96-1B83-40EE-B84C-7383E7C7A115"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"worker2_id",
+dataProviderID:"sts_transactions_to_employee2.employee_number",
 location:"385,20",
 name:"worker2_id",
 size:"78,20",

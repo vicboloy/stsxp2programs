@@ -1,10 +1,12 @@
 dataSource:"db:/stsservoy/users",
 extendsID:"75DFEFBE-D100-4082-8005-E5C62B4BC2BC",
+initialSort:"user_name asc",
 items:[
 {
 anchors:11,
 extendsID:"70DDA6D3-CC4C-4C41-B4A9-4D9B0462CB70",
 location:"399,0",
+text:"Tenant Uuid",
 typeid:7,
 uuid:"13C4ED6E-1E29-454F-8772-26C1FD6BCFB7"
 },
@@ -12,6 +14,7 @@ uuid:"13C4ED6E-1E29-454F-8772-26C1FD6BCFB7"
 anchors:11,
 extendsID:"DDCD4059-0075-4A05-A393-FDAF122048A4",
 location:"298,0",
+text:"i18n:table.associations.association_name",
 typeid:7,
 uuid:"3343CDB5-633E-4804-A447-8E1588735D9C"
 },
@@ -19,6 +22,7 @@ uuid:"3343CDB5-633E-4804-A447-8E1588735D9C"
 anchors:11,
 extendsID:"790C7D03-3A56-4666-85CB-1B42541F1505",
 location:"29,0",
+text:"i18n:table.users.user_name",
 typeid:7,
 uuid:"6584C6BA-DCE9-46D3-8679-5C353D3DAB19"
 },
@@ -36,6 +40,7 @@ uuid:"6E5F2C03-5882-4E2F-B0F7-43427CE4208D"
 anchors:11,
 extendsID:"BF32A037-3719-4892-9894-37C2EEC30613",
 location:"29,20",
+text:null,
 typeid:4,
 uuid:"6EE896A9-D4BD-4C2C-A346-0FCE4392608B"
 },
@@ -48,6 +53,7 @@ uuid:"7EDF8B3A-596F-4205-8C2E-9BF10559DA46"
 {
 extendsID:"B936652C-D7EF-4DB1-8F0B-4367B076C14F",
 location:"497,0",
+text:"i18n:sts.col.label.delete.record",
 typeid:7,
 uuid:"8196EFF1-5994-4D4D-95AA-C525E6E544BD"
 },
@@ -55,6 +61,7 @@ uuid:"8196EFF1-5994-4D4D-95AA-C525E6E544BD"
 anchors:11,
 extendsID:"32E5A5B3-5C81-4592-B3F7-135384CED889",
 location:"199,20",
+text:"Name First",
 typeid:4,
 uuid:"82D4A7D6-A950-4C34-ACEC-9AAA0FF6EB82"
 },
@@ -62,6 +69,7 @@ uuid:"82D4A7D6-A950-4C34-ACEC-9AAA0FF6EB82"
 anchors:11,
 extendsID:"65303B5B-C3CF-4D9E-AC6B-A59CF6A26921",
 location:"399,20",
+text:"Tenant Uuid",
 typeid:4,
 uuid:"905427DA-7009-4EAA-BF2E-AA4E019D9AA6"
 },
@@ -69,13 +77,14 @@ uuid:"905427DA-7009-4EAA-BF2E-AA4E019D9AA6"
 anchors:11,
 extendsID:"8AA4A740-0474-4AC8-ADF2-71CB7A1D24CB",
 size:"28,20",
-text:"Active",
+text:"i18n:table.users.is_account_active",
 typeid:7,
 uuid:"9866C8B6-8161-4F80-A006-FA2A905B8FBC"
 },
 {
 extendsID:"F0F5A1FD-D5F4-4AE8-9794-9119B391F9C0",
 location:"497,20",
+text:"button",
 typeid:7,
 uuid:"CACC5F9E-6DA0-4F09-9458-8750016DCED7"
 },
@@ -83,6 +92,7 @@ uuid:"CACC5F9E-6DA0-4F09-9458-8750016DCED7"
 anchors:11,
 extendsID:"6496C1F2-D822-4C6D-985D-76C5C6A37D92",
 location:"199,0",
+text:"i18n:table.users.name_first",
 typeid:7,
 uuid:"D4775AF0-D494-4815-9A1E-9BC8D39084FD"
 },
@@ -90,6 +100,7 @@ uuid:"D4775AF0-D494-4815-9A1E-9BC8D39084FD"
 anchors:11,
 extendsID:"A19D56AF-CA7C-4B26-8349-F85F7D96A0B5",
 location:"298,20",
+text:"Company Name",
 typeid:4,
 uuid:"EFDE9738-C3FC-4EAF-AD8D-D122A3F6B8FA"
 }

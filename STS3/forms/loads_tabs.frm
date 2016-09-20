@@ -1,6 +1,19 @@
 dataSource:"db:/stsservoy/jobs",
-extendsID:"-1",
+extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
+{
+enabled:false,
+extendsID:"B7976ACA-D234-49B8-81B0-248D58AE9A6F",
+typeid:7,
+uuid:"002CB0A5-BCE7-442E-B111-C72109B5E9F2"
+},
+{
+editable:false,
+enabled:false,
+extendsID:"E2825F7A-0DA1-4691-BA1B-0739BBF3CF8E",
+typeid:4,
+uuid:"34DD50CB-964B-4875-901A-C73B368BCAC3"
+},
 {
 anchors:6,
 horizontalAlignment:0,
@@ -16,8 +29,8 @@ typeid:7,
 uuid:"6F4C6935-1E63-439A-A720-FD90133F5F39"
 },
 {
+extendsID:"B8264F35-3B2C-445D-8057-07A22DF67C55",
 height:506,
-partType:5,
 typeid:19,
 uuid:"A8D24E17-F7AC-4767-B9C3-690950F9AC05"
 },
@@ -43,18 +56,10 @@ uuid:"BD0609D8-77A0-43E6-B71E-BA5B469711A4"
 anchors:15,
 items:[
 {
-containsFormID:"E0EA52C4-C8B6-4C18-8DFD-A281A388D877",
-location:"334,35",
-name:"Print",
-text:"Loads Print",
-typeid:15,
-uuid:"4C682278-F51D-47D6-9AFC-425CD95E2D59"
-},
-{
-containsFormID:"5C290A0E-1C68-4456-9264-677606987220",
+containsFormID:"03B971AF-4EE9-463D-AA21-FCD759058D24",
 location:"210,35",
 name:"View_Summary_Info",
-text:"Load Summary Info",
+text:"Summary Info",
 typeid:15,
 uuid:"D56F9949-9E9E-4A9F-97D9-E5A3465C18CA"
 },
@@ -70,7 +75,7 @@ uuid:"E2A0EA9D-329A-471F-8634-0F737971A06E"
 containsFormID:"DAF8C9D7-E9AD-4EA3-9BAD-7480746A877E",
 location:"86,35",
 name:"Piecemark_Info",
-text:"Loads Piecemark Info",
+text:"Piecemark Information",
 typeid:15,
 uuid:"EC5AF20F-F943-4FAF-ADC9-C2F9A31B47BF"
 }
@@ -88,6 +93,7 @@ uuid:"C4762117-D834-49E9-A40D-A2915463EA8D"
 name:"loads_tabs",
 navigatorID:"-1",
 onHideMethodID:"CDF05C92-0C43-4374-B061-85022694CCCA",
+onShowMethodID:"72A46CC9-F788-4D46-AF86-02D765A64619",
 scrollbars:36,
 size:"512,503",
 styleName:"sts_one",

@@ -14,6 +14,7 @@ function newRecord(event, location, changeSelection) {
 	if (typeof tenant_uuid !== "undefined" && tenant_uuid === null && globals.secCurrentTenantID !== undefined){
 		tenant_uuid = globals.secCurrentTenantID;
 	}
+	forms.app_key_details.elements.display_name.requestFocus();
 	return rec;
 }
 
@@ -27,6 +28,8 @@ function newRecord(event, location, changeSelection) {
  */
 function onShow(firstShow, event) {
 	//foundset.loadAllRecords();
+	foundset.sort('key_name asc');
+	//if (application.isInDeveloper()){application.output('application '+application_id);}
 	return _super.onShow(firstShow, event)
 }
 
@@ -43,7 +46,7 @@ function deleteRecord(event, index) {
 	/** @type {JSFoundSet<db:/stsservoy/group_keys>} */
 	var fs = databaseManager.getFoundSet('stsservoy','group_keys');
 	if (fs.find()){
-		fs.key_id = key_id;
+		fs.key_uuid = key_uuid;
 		if (fs.search()){
 			globals.DIALOGS.showErrorDialog('Cannot delete Permission','Permission Key already used within Permission Group.');
 			return true;
@@ -51,3 +54,4 @@ function deleteRecord(event, index) {
 	}
 	return _super.deleteRecord(event, index);
 }
+

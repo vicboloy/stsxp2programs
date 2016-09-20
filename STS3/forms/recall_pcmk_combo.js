@@ -43,12 +43,12 @@ function onActionRecallSelected(event) {
 		scopes.globals.purgeBarcodeRecords = [];
 	}
 	var blowCodes = scopes.globals.purgeBarcodeRecords;
-	globals.doDialog("Recall Selected Records","Recall the Selected Records?","Recall","Cancel");
-	if (globals.dialogResponse != "yes"){
+	globals.doDialog('Recall Selected Records','Recall the Selected Records?','Recall','Cancel');
+	if (globals.dialogResponse != 'yes'){
 		return;
 	}
-	globals.doDialog("Recall Selected Records","This recalls records and may result in conflicts. Continue with RECALL?","Cancel","RECALL");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog('Recall Selected Records','This recalls records and may result in conflicts. Continue with RECALL?','Cancel','RECALL');
+	if (globals.dialogResponse == 'yes'){
 		return;
 	}
     if (formName == null){

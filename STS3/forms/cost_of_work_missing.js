@@ -178,3 +178,11 @@ function onActionApply(event) {
 function onRecordSelection(event) {
 	return _super.onRecordSelection(event)
 }
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"85F662E9-4BE5-41B9-9A3E-0AD37A355B9D"}
+ */
+function onActionClose(event){
+	databaseManager.revertEditedRecords(foundset);
+}

@@ -7,5 +7,6 @@
  * @properties={typeid:24,uuid:"E61F731B-9316-4238-BC44-6BDF10D2A191"}
  */
 function onLoad(event) {
-	elements.split.dividerLocation = 285.0;
+	//elements.split.dividerLocation = 285.0;
+	scopes.globals.onTabChangeSplitSet(event);
 }

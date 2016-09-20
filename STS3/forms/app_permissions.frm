@@ -8,7 +8,7 @@ items:[
 containsFormID:"F9BF05D3-03D4-4B0D-86D8-1C3F0FB6FBE4",
 location:"125,93",
 relationName:"sts_application",
-text:"Group Keys",
+text:"i18n:sts.tab.permissions.group.keys",
 typeid:15,
 uuid:"3BD94FF2-FF09-44A5-9952-721E5C4F4886"
 },
@@ -16,7 +16,7 @@ uuid:"3BD94FF2-FF09-44A5-9952-721E5C4F4886"
 containsFormID:"31E5E8CB-B508-4AD3-8B69-A2B0079B56FF",
 location:"225,120",
 relationName:"sts_application",
-text:"Permission Groups",
+text:"i18n:sts.tab.permissions.permission.groups",
 typeid:15,
 uuid:"6831BC83-97B6-4099-8917-B6D58078C84B"
 },
@@ -24,7 +24,7 @@ uuid:"6831BC83-97B6-4099-8917-B6D58078C84B"
 containsFormID:"EB7D6ADE-D726-461D-8984-46223237C197",
 location:"5,60",
 relationName:"applications_to_permissions",
-text:"General Permissions",
+text:"i18n:sts.tab.permissions.general",
 typeid:15,
 uuid:"82F41797-043E-4885-BB5C-061988DF7BE0"
 }
@@ -48,7 +48,7 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
 tabSeq:-2,
-text:"Close",
+text:"i18n:sts.btn.close",
 typeid:7,
 uuid:"43C63CAB-D66F-479F-957F-EF860A7C0EC9"
 },
@@ -78,11 +78,46 @@ uuid:"4D479881-EF82-43FB-AC50-1A016CD04F79"
 {
 fontType:"Arial,3,16",
 location:"5,5",
-size:"269,20",
-text:"STS Permissions",
+size:"143,20",
+text:"i18n:sts.label.permissions.sts",
 transparent:true,
 typeid:7,
 uuid:"627D4746-D2A5-4993-8AC0-D91EFA7C0A8B"
+},
+{
+anchors:6,
+horizontalAlignment:0,
+location:"339,480",
+name:"btn_Edit",
+onActionMethodID:"8BD00EEA-9B56-4860-9DB2-AB7CB69D2E2C",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"80,26",
+text:"i18n:sts.btn.edit",
+typeid:7,
+uuid:"7A3F5DFF-59B6-4026-8BDF-59B5161EB3D9"
+},
+{
+anchors:6,
+horizontalAlignment:0,
+location:"339,480",
+name:"btn_Done",
+onActionMethodID:"3482DAE1-3AA8-4BFF-8C84-57BAE8802433",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"80,26",
+text:"i18n:sts.btn.done",
+typeid:7,
+uuid:"D0AA9625-5B72-4BBE-81FF-C3C5B1074268",
+visible:false
+},
+{
+location:"159,5",
+size:"263,20",
+text:"i18n:sts.label.changes.immediate",
+transparent:true,
+typeid:7,
+uuid:"E1A33BBC-607D-4F94-96E4-B6A6410BC946"
 }
 ],
 name:"app_permissions",

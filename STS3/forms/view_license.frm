@@ -3,7 +3,7 @@ items:[
 {
 horizontalAlignment:4,
 location:"31,171",
-text:"IP Address:",
+text:"i18n:sts.label.login.ip.address",
 transparent:true,
 typeid:7,
 uuid:"2BAF8654-78BD-45CE-94E1-879F1AD41AD7"
@@ -12,7 +12,7 @@ uuid:"2BAF8654-78BD-45CE-94E1-879F1AD41AD7"
 fontType:"Arial,1,13",
 location:"5,11",
 size:"199,20",
-text:"This session's login credentials:",
+text:"i18n:sts.txt.this.session.login.credentials",
 transparent:true,
 typeid:7,
 uuid:"34FD1331-2D2C-4CC4-9349-B7C4A7413376"
@@ -32,14 +32,14 @@ onActionMethodID:"E041540E-F117-403E-A1A9-1DF37BCB986B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
-text:"Refresh",
+text:"i18n:sts.btn.refresh",
 typeid:7,
 uuid:"53BCE64B-E42C-4E3F-BE85-658761BE2447"
 },
 {
 horizontalAlignment:4,
 location:"31,46",
-text:"Employee:",
+text:"i18n:sts.label.employee",
 transparent:true,
 typeid:7,
 uuid:"599912D4-7727-45D3-B3D9-EBFBC4C4F98A"
@@ -47,7 +47,7 @@ uuid:"599912D4-7727-45D3-B3D9-EBFBC4C4F98A"
 {
 horizontalAlignment:4,
 location:"31,71",
-text:"Login Name:",
+text:"i18n:sts.label.login.name",
 transparent:true,
 typeid:7,
 uuid:"5B06638B-501B-45EB-9CE9-2647D8C89D12"
@@ -63,7 +63,7 @@ uuid:"5C694EFD-993E-4F81-AB38-A41F826E4CFA"
 {
 horizontalAlignment:4,
 location:"234,46",
-text:"Employee#:",
+text:"i18n:sts.label.employee.number",
 transparent:true,
 typeid:7,
 uuid:"63A1CFC5-6D05-4D7E-9434-A268C3566B20"
@@ -107,7 +107,7 @@ uuid:"705DB5D4-DE95-4E14-9670-49EEE4983DFF"
 {
 horizontalAlignment:4,
 location:"31,96",
-text:"Login Date:",
+text:"i18n:sts.label.login.date",
 transparent:true,
 typeid:7,
 uuid:"7354F160-87CF-4E17-A0CC-F97B03413A6F"
@@ -115,7 +115,7 @@ uuid:"7354F160-87CF-4E17-A0CC-F97B03413A6F"
 {
 horizontalAlignment:4,
 location:"234,171",
-text:"SessionID:",
+text:"i18n:sts.label.session.id",
 transparent:true,
 typeid:7,
 uuid:"75765865-2D2C-433B-8892-9D5D8349FD12"
@@ -131,7 +131,7 @@ uuid:"83719735-BFDE-4D9D-B17A-D837C9DCC039"
 {
 horizontalAlignment:4,
 location:"31,121",
-text:"Plant:",
+text:"i18n:sts.label.association",
 transparent:true,
 typeid:7,
 uuid:"85B4C3CE-9D1B-4A8E-ADB1-2EAB81F3C1B9"
@@ -148,7 +148,7 @@ uuid:"87D8180C-BCF6-4F22-AAD4-3A64EB182D58"
 {
 horizontalAlignment:4,
 location:"31,146",
-text:"Program:",
+text:"i18n:sts.label.login.program",
 transparent:true,
 typeid:7,
 uuid:"8D2E0A1D-19F5-4DB3-A2B4-30E83F385648"
@@ -186,7 +186,7 @@ uuid:"98CB341A-21C1-43F6-8A82-D5D7B2AD0AC4"
 {
 horizontalAlignment:4,
 location:"234,71",
-text:"Login ID:",
+text:"i18n:sts.label.login.id",
 transparent:true,
 typeid:7,
 uuid:"99C5C26D-93FF-45B1-9BB3-33EE9FE5171F"
@@ -194,6 +194,7 @@ uuid:"99C5C26D-93FF-45B1-9BB3-33EE9FE5171F"
 {
 dataProviderID:"userLoginID",
 location:"320,71",
+size:"298,20",
 text:"type",
 transparent:true,
 typeid:7,
@@ -202,8 +203,9 @@ uuid:"9FA1B501-AC25-4694-8E30-EBE1E1048B14"
 {
 fontType:"Arial,1,13",
 location:"5,206",
+name:"lbl_who",
 size:"239,20",
-text:"Current active and inactive sessions:",
+text:"i18n:sts.label.current.and.inactive.sessions",
 transparent:true,
 typeid:7,
 uuid:"A90F6C8F-81A6-4AE6-AAB7-BAB5520F4E7A"
@@ -244,7 +246,7 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
 tabSeq:1,
-text:"Close",
+text:"i18n:sts.btn.close",
 typeid:7,
 uuid:"FE8751A6-591E-4A85-A379-FF1B336E094A"
 }

@@ -1,9 +1,25 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"86B1BBDC-C00A-4344-86D5-86E0AA780A1A"}
+ */
+var controlsForm = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"73B6F7B9-1BB8-414F-B25A-9543823FE807"}
+ */
+var formFunc = "Edit Employees";
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"A2C35F3A-4320-4226-9262-1EC9EC09B149",variableType:8}
  */
 var currentIndex = 1;
+/**
+ * @properties={typeid:35,uuid:"918467E9-5D53-4FA6-B89D-998B14EE2F67",variableType:-4}
+ */
+var saveTheseRecs = [];
 /**
  * Callback method for when form is shown.
  *

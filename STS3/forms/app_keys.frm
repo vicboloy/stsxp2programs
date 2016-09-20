@@ -17,7 +17,7 @@ uuid:"8AA65289-7AF2-4D49-9893-F200B6706E21"
 fontType:"Arial,1,13",
 location:"5,2",
 size:"375,20",
-text:"Grouped Permissions (to be added to Permission Groups)",
+text:"i18n:sts.label.permissions.msg.group.add",
 transparent:true,
 typeid:7,
 uuid:"EA6128C9-11A6-456D-8B8F-68809D920925"
@@ -44,6 +44,7 @@ uuid:"EA3D8884-E7A0-4C1B-9B11-EE81DE0010D1"
 ],
 location:"5,25",
 name:"split",
+onChangeMethodID:"3A0FA441-B43D-40D0-BA06-96C0872D71C7",
 printable:false,
 size:"492,259",
 tabOrientation:-3,
@@ -54,6 +55,7 @@ uuid:"F0415FD6-71F1-4F94-A065-DA183E4ECB31"
 }
 ],
 name:"app_keys",
+onHideMethodID:"3763D30A-9123-4CD4-ADD6-F624561871DC",
 scrollbars:32,
 showInMenu:false,
 size:"502,288",

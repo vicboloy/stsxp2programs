@@ -33,12 +33,12 @@ function onActionRemoveSelected(event) {
 	}
 	/** @type {Array} */
 	var blowCodes = scopes.globals.purgeBarcodeRecords;
-	globals.doDialog("Remove Selected Records","Remove the Selected Records?","Remove","Cancel");
-	if (globals.dialogResponse != "yes"){
+	globals.doDialog('Remove Selected Records','Remove the Selected Records?','Remove','Cancel');
+	if (globals.dialogResponse != 'yes'){
 		return;
 	}
-	globals.doDialog("Remove Selected Records","This permanently purges/removes records. \nContinue with REMOVE?","Cancel","REMOVE");
-	if (globals.dialogResponse == "yes"){
+	globals.doDialog('Remove Selected Records','This permanently purges/removes records. \nContinue with REMOVE?','Cancel','REMOVE');
+	if (globals.dialogResponse == 'yes'){
 		return;
 	}
 	/** @type {String} */

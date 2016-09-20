@@ -9,6 +9,25 @@
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+		scopes.globals.onTabChangeSplitSet(event);
+	}
+	//foundset.loadAllRecords();
 	permissionForm = 'app_keys';
+	foundset.sort('display_name asc');
 	return _super.onShow(firstShow, event)
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"3763D30A-9123-4CD4-ADD6-F624561871DC"}
+ */
+function onHide(event) {
+	stopEditing(event);
+	return _super.onHide(event)
 }

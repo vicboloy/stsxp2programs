@@ -62,6 +62,7 @@ function onLoadEmployees(event) {
 function onShow(firstShow, event) {
 	//if (firstShow){foundset.loadAllRecords();}
 	onLoadCreateRecord(event);
+	globals.setUserFormPermissions(event);
 	
 }
 /**

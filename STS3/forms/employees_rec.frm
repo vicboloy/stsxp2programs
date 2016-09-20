@@ -2,7 +2,7 @@ dataSource:"db:/stsservoy/employee",
 extendsID:"-1",
 items:[
 {
-height:337,
+height:338,
 partType:5,
 typeid:19,
 uuid:"1A1E97F5-B67D-47C4-AD09-A10BFA7117FA"
@@ -38,7 +38,7 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"148,26",
 tabSeq:-2,
-text:"Add New Employee",
+text:"i18n:sts.btn.add.new.employee",
 typeid:7,
 uuid:"DD849FC7-FEF4-4EB9-9AC3-FB30D4B47D7C"
 },
@@ -51,14 +51,15 @@ onRightClickMethodID:"-1",
 size:"48,26",
 text:"rf",
 typeid:7,
-uuid:"E86C3C2F-9E4A-4016-9D3E-6792CA6CF91E"
+uuid:"E86C3C2F-9E4A-4016-9D3E-6792CA6CF91E",
+visible:false
 }
 ],
 name:"employees_rec",
 navigatorID:"-1",
 onShowMethodID:"-1",
 scrollbars:32,
-size:"216,337",
+size:"215,337",
 styleName:"sts_one",
 transparent:false,
 typeid:3,

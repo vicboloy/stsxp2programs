@@ -8,6 +8,8 @@
  * @properties={typeid:24,uuid:"112F7418-7209-41CE-9A6C-06D5C540D45D"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+	}
 	globals.setUserFormPermissions(event);
 	return _super.onShow(firstShow, event)
 }

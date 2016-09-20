@@ -16,6 +16,7 @@ uuid:"200A9D1B-4089-4863-AAFB-7B877D94308C"
 {
 anchors:3,
 dataProviderID:"field_order",
+editable:false,
 location:"224,46",
 name:"field_order",
 size:"23,20",
@@ -31,6 +32,7 @@ uuid:"6941A8C1-9A03-4751-A879-04706F5DC104"
 {
 anchors:11,
 dataProviderID:"calcShowFieldOnly",
+editable:false,
 location:"245,46",
 name:"mapped_field",
 size:"74,20",
@@ -51,6 +53,7 @@ uuid:"9F73CF3C-7A0E-4330-B4A6-AB33731119EE"
 {
 anchors:11,
 dataProviderID:"field_name",
+editable:false,
 location:"109,46",
 name:"field_name",
 size:"116,20",
@@ -122,6 +125,7 @@ uuid:"E1A1B29D-1E8A-4919-A179-D75D1579572D"
 },
 {
 dataProviderID:"mapping_key",
+editable:false,
 location:"70,46",
 name:"mapping_key",
 size:"39,20",
@@ -131,6 +135,7 @@ uuid:"F27A2A3F-B19C-4E3D-BDB4-B587E3AB57AA"
 {
 anchors:11,
 dataProviderID:"mapped_format",
+editable:false,
 location:"0,46",
 name:"mapped_format",
 size:"70,20",

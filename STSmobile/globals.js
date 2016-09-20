@@ -7,14 +7,17 @@ var statusId = "";
 /**
  * @properties={typeid:24,uuid:"0DB64EC0-13B7-49D6-93FA-FA6B2C780503"}
  * @AllowToRunInFind
+ * @SuppressWarnings(wrongparameters)
  */
 function onSolutionOpen(){
-	plugins.UserManager.updateClientInfo();
-	application.output('license mobile '+plugins.UserManager.getSettingsProperty('license.0.licenses'));
+	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STSmobile/globals.js');}
+	plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
+	//plugins.UserManager.updateClientInfo();
+	if (application.isInDeveloper()){application.output('license mobile '+plugins.UserManager.getSettingsProperty('license.0.licenses'))}
 	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		var mobileURL = application.getServerURL()+'/servoy-webclient/ss/s/STSmobile';
 		var status = application.showURL(mobileURL,'_blank','height=320,width=240,kiosk=yes,status=no,toolbar=no,menubar=no,location=no,resizable=no,titlebar=no');
-		application.output('create url '+status);
+		if (application.isInDeveloper()){application.output('create url '+status)}
 	}
 	//secSetCurrentApplication(secGetApplicationID(APPLICATION_NAME));
 	secCurrentUserID = security.getUserUID();
@@ -47,7 +50,7 @@ function onSolutionOpen(){
 	session.login = security.getUserName();
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.tenant_uuid = sec_current_user.tenant_uuid;
-	session.loginId = sec_current_user.user_id;
+	session.loginId = sec_current_user.user_uuid;
 	session.loginUserNum = sec_current_user.user_name;
 	session.loginUser = sec_current_user.name_first;
 	session.associationId = globals.secGetAssocID(session.login);//check for use of secGetAssociationID
@@ -73,7 +76,7 @@ function onSolutionOpen(){
 	globals.DIALOGS.setDialogWidth(200);
 	globals.DIALOGS.setDialogHeight(200);
 	null;
-	application.output("-----------------------");
+	if (application.isInDeveloper()){application.output("-----------------------")}
 	//rfGetLocalStorage('deviceName');
 	//rfGetLocalStorage('deviceName');
 	//rfGetLocalStorage('deviceName');

@@ -176,7 +176,7 @@ function resetWorkerCode(){
  * @AllowToRunInFind
  */
 function onShowForm(firstShow,event) {
-	application.output('fs size '+foundset.getSize());
+	if (application.isInDeveloper()){application.output('fs size '+foundset.getSize())}
 	requiredFields = [];
 	var formName = event.getFormName();
 	var tabSequence = [];
@@ -192,7 +192,7 @@ function onShowForm(firstShow,event) {
 	statusLocation = "";
 	statusWorker = "";
 	foundset.clear();
-	application.output('foundset '+foundset);
+	if (application.isInDeveloper()){application.output('foundset '+foundset)}
 	globals.rfClearMobDetails();
 	globals.mobWeightUnits = (globals.isJobMetric(forms[formName].jobNumber)) ? " kgs" : " lbs";
 	globals.mobLengthUnits = (globals.isJobMetric(forms[formName].jobNumber)) ? " mm" : " ins";
@@ -277,7 +277,7 @@ function onShowForm(firstShow,event) {
 			elements.status.requestFocus();
 			controller.focusField('status',false);
 			*/
-	application.output('fs size '+foundset.getSize());
+	if (application.isInDeveloper()){application.output('fs size '+foundset.getSize())}
 
 }
 
@@ -289,7 +289,7 @@ function onShowForm(firstShow,event) {
  * @properties={typeid:24,uuid:"3162C58C-4A45-4E6F-A266-8247A8DA4939"}
  */
 function onActionKeys(event) {
-	application.output('key pressed '+event.getType());
+	if (application.isInDeveloper()){application.output('key pressed '+event.getType())}
 	
 }
 

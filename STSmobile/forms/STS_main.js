@@ -16,10 +16,11 @@ function onLoad(event) {
 			'<button type="button" onClick="alert(\'alert\')">TEST</button>'+
 			'</body></html>';
 		globals.rfHtml = markup;
-		application.output('test on load callback '+globals.rfHtml);
+		if (application.isInDeveloper()){application.output('test on load callback '+globals.rfHtml);}
 		//application.output(plugins.file.getDefaultUploadLocation());
 	}
-	var newArray = globals.locationList();
+	//var newArray = 
+	globals.locationList();
 	
 }
 
@@ -36,7 +37,7 @@ function onActionTemp(event) {
 	var fs = databaseManager.getFoundSet('db:/stsservoy/messages');
 		// This selects only files ('1'), previous dir must be used ('null'), no multiselect ('false') and
 		// the filter "JPG and GIF" should be used: ('new Array("JPG and GIF","jpg","gif")').
-		/** @type {JSFile} */
+		// ** @type {JSFile} */
 		var f = plugins.file.showFileOpenDialog(1);
 		null;
 		var txt = plugins.file.readTXTFile(f);
@@ -61,8 +62,8 @@ function onActionTemp(event) {
 function onShow(firstShow, event) {
 	globals.mobForm = "STS_main";
 	globals.mobProg = "Main";
-	var licCount = plugins.UserManager.Server().getSettingsProperty('license.0.licenses');
-	plugins.dialogs.showErrorDialog('Message','License count'+licCount);
+	//var licCount = plugins.UserManager.Server().getSettingsProperty('license.0.licenses');
+	//plugins.dialogs.showErrorDialog('Message','License count'+licCount);
 	//globals.rfGetLocalStorage('deviceName'); //JOE DISABLE
 
 }

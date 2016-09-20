@@ -1,4 +1,3 @@
-encapsulation:60,
 items:[
 {
 dataProviderID:"scopes.globals.rfF2Division",

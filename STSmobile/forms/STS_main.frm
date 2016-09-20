@@ -15,7 +15,7 @@ location:"0,0",
 name:"title",
 onActionMethodID:"FF4938C6-CE14-47A9-9AF6-582042030578",
 size:"188,20",
-text:"Main STS Menu Selection",
+text:"i18n:sts.btn.main.menu.selection",
 transparent:true,
 typeid:7,
 uuid:"397A5CDE-98B0-485A-8C88-14407FF80A3D"

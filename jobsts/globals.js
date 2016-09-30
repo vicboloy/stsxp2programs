@@ -7972,11 +7972,8 @@ function killClient(event){
 	var response = globals.DIALOGS.showQuestionDialog('Kill off client?','Kill client?','No','Yes');
 	if (response == "Yes"){
 		var client = plugins.UserManager.getClientByUID(clientId);
-		application.output('client '+client+' clientId '+clientId);
-		//client.sendMessage('Session ended.');
 		client.shutdown();
-		//plugins.UserManager.getClientByUID(clientId).shutdown();
-		//plugins.UserManager.getClientByUID(clientId).executeMethod(executeClient);
+		//client.executeMethod(globals.closeClient,null);
 	}
 	//forms['view_license'].refreshLicenseTable();
 	//client.closeSolution();
@@ -8430,4 +8427,11 @@ function onDataChangeAssocType(oldValue, newValue, event) {
 	databaseManager.revertEditedRecords();
 	scopes.globals.errorDialogMobile(event,'1168',null,'');//Division already used in jobs/status/user
 	return true;
+}
+/**
+ * @properties={typeid:24,uuid:"9FFA00B1-B43F-4500-9C4D-6F4BC7C8055C"}
+ */
+function closeClient(){
+	//application.output('testing execute functions');
+	application.exit();
 }

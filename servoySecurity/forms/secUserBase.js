@@ -133,7 +133,7 @@ function validatePassword(event){
 	}
 	if (this.updatePassword){
 		updatePassword(false);
-		updateFields();
+		updateFields(event);
 	}
 	//forms[event.getFormName()].elements.btn_Update.enabled = false;
 	return true;

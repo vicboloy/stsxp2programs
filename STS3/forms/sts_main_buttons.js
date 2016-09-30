@@ -144,7 +144,7 @@ function onActionLogout(event) {
  */
 function onShow(firstShow, event) {
 	if (firstShow){
-		plugins.UserManager.updateClientInfo();
+		//plugins.UserManager.updateClientInfo();
 	}
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		application.output('web app alert');

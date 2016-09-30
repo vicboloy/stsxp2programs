@@ -664,7 +664,7 @@ function onActionLogonUserManage(event) {
  * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
  */
 function onActionSTSLogonManage(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.logon.user.management'),'tenant_users_m',50,50,890,410,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.logon.user.management'),'tenant_users_m',50,50,920,410,false);
 }
 /**
  * @param event

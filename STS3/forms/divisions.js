@@ -179,6 +179,7 @@ function onDataChangeDivision(oldValue, newValue, event) {
  *
  * @properties={typeid:24,uuid:"E7F20FC9-205F-4531-86E3-859F92A9D93B"}
  * @AllowToRunInFind
+ * @SuppressWarnings(wrongparameters)
  */
 function deleteRecord(event, index) {
 	var rec = foundset.getSelectedRecord();

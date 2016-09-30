@@ -847,7 +847,10 @@ var formsToRemove = [];
  */
 function onSolutionOpen() {
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STS3/globals.js')}
-	plugins.UserManager.updateClientInfo();
+	var registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
+	application.output('Client Registered '+registered);
+	plugins.UserManager.getRegistration();
+	//plugins.UserManager.updateClientInfo();
 	APPLICATION_NAME = application.getSolutionName();
 	secCreateApplication('STSmobile');
 	var mobileID = secGetApplicationID('STSmobile');

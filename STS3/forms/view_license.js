@@ -136,7 +136,7 @@ function onHide(event) {
  */
 function createLicenseTable(event){
 	var canKill = false;
-	if (globals.checkUserPermissions(globals.session.userId)){
+	if (globals.checkUserPermissions(globals.session.loginId)){
 		canKill = true;
 	}
 	var clients = plugins.UserManager.getClients();

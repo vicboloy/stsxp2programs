@@ -4134,12 +4134,12 @@ function onActionHelp(event) {
  * @properties={typeid:24,uuid:"138D6C44-7A06-4841-B9A7-409FF1B186A0"}
  */
 function onActionMainMenu(event) {
-	if (mobMenuProvider == ""){return} // 20150402 executing twice for some reason unknown
+	if (!mobMenuProvider){return} // 20150402 executing twice for some reason unknown
 	var progList = application.getValueListArray('rfProgramList');
 	var form = event.getFormName();
 	var elName = forms[form].elements.mainMenu.getSelectedElements()[0];
 	var elIndex = progList.indexOf(elName);
-	progList[elIndex] = elName;
+	//progList[elIndex] = elName; Not sure why this is done...
 	var prog = mobMenuProvider.trim(); // forms[form].elements.mainMenu.getSelectedElements()[0].trim();
 	session.program = prog;
 	mobProg = prog;

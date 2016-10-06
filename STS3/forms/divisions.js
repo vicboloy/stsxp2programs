@@ -163,10 +163,21 @@ function onDataChangeDivision(oldValue, newValue, event) {
 	if (existingDivisions.indexOf(newValue) != -1 || oldValue == ""){ // Do not rename an admin division
 		var elName = event.getElementName();
 		var formName = event.getFormName();
-		var provider = forms[formName].elements[elName].getDataProviderID();
-		forms[formName].controller.setDataProviderValue(provider,oldValue);
+		var rec = foundset.getSelectedRecord();
+		foundset.deleteRecord(rec);
+		/** @type {QBSelect<db:/stsservoy/associations>} */
+		var a = databaseManager.createSelect('db:/stsservoy/associations');
+		a.result.add(a.columns.association_uuid);
+		a.where.add(a.columns.association_name.eq(newValue));
+		a.where.add(a.columns.delete_flag.isNull);
+		a.where.add(a.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		var A = databaseManager.getFoundSet(a);
+		rec = A.getRecord(1);
+		foundset.selectRecord(rec.association_uuid);
+		//var provider = forms[formName].elements[elName].getDataProviderID();
+		//forms[formName].controller.setDataProviderValue(provider,oldValue);
 		if (application.isInDeveloper()){application.output('division old:'+oldValue+' new:'+newValue)}
-		return false;
+		//return false;
 	}
 	return true
 }

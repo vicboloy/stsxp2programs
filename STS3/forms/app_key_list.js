@@ -55,3 +55,55 @@ function deleteRecord(event, index) {
 	return _super.deleteRecord(event, index);
 }
 
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"CDCF8DC0-0C42-4D44-A686-39ECD89F35D3"}
+ */
+function onActionDupe(event) {
+	// Make a copy of the current key set
+	var currentRec = foundset.getSelectedRecord();
+	var dupeIdx = foundset.duplicateRecord(false);
+	/** @type {JSRecord<db:/stsservoy/keys>} */
+	var dupeRec = foundset.getRecord(dupeIdx);
+	dupeRec.edit_date = new Date();
+	var newKeyName = currentRec.key_name;
+	
+	/** @type {QBSelect<db:/stsservoy/keys>} */
+	var q = databaseManager.createSelect('db:/stsservoy/keys');
+	q.result.add(q.columns.key_name);
+	q.where.add(q.columns.key_name.eq(currentRec.key_name));
+	q.where.add(q.columns.tenant_uuid.eq(currentRec.tenant_uuid));
+	var Q = databaseManager.getFoundSet(q);
+	var existNames = [];
+	for (var index = 1;index <= Q.getSize();index++){
+		/** @type {JSRecord<db:/stsservoy/keys>} */
+		var rec = Q.getRecord(index);
+		existNames.push(rec.key_name);
+	}
+	index = 1;
+	while (existNames.indexOf(newKeyName+' Copy '+index) != -1){
+		index++;
+	}
+	dupeRec.key_name = newKeyName+' Copy '+index;
+	databaseManager.saveData(dupeRec);
+	/** @type {QBSelect<db:/stsservoy/permissions>} */
+	var s = databaseManager.createSelect('db:/stsservoy/permissions');
+	s.result.add(s.columns.key_uuid);
+	s.where.add(s.columns.tenant_uuid.eq(currentRec.tenant_uuid));
+	s.where.add(s.columns.key_uuid.eq(currentRec.key_uuid));
+	var S = databaseManager.getFoundSet(s);
+	var Ssize = S.getSize();
+	for (index = 1;index <= Ssize;index++){
+		/** @type {JSRecord<db:/stsservoy/permissions>} */
+		S.setSelectedIndex(index);
+		var dupedIdx = S.duplicateRecord(false);
+		var dupedRec = S.getRecord(dupedIdx);
+		dupedRec.edit_date = new Date();
+		dupedRec.key_uuid = dupeRec.key_uuid;
+	}
+	databaseManager.saveData(S);
+}

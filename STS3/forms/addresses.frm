@@ -69,10 +69,10 @@ uuid:"4B6AC9A0-B921-4B6B-83BC-51BA7E0DEAAD"
 {
 dataProviderID:"state",
 displayType:10,
-format:"|#(2)",
+format:"|U[2]",
 location:"95,125",
 name:"state",
-size:"174,20",
+size:"59,20",
 tabSeq:5,
 text:"State",
 typeid:4,
@@ -220,7 +220,7 @@ visible:false
 {
 dataProviderID:"zip_postal_code",
 displayType:10,
-location:"279,125",
+location:"159,125",
 name:"zip_postal_code",
 onDataChangeMethodID:"2D2C9CB6-BC69-4956-A0EF-ED3990541D03",
 placeholderText:"i18n:sts.label.zip.code",

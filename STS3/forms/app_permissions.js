@@ -72,6 +72,7 @@ function onEdit(event,editing){
 	elements.btn_Edit.visible = !editing;
 	forms.app_key_list.elements.btn_Delete.enabled = editing;
 	forms.app_key_list.elements.btn_New.enabled = editing;
+	forms.app_key_list.elements.btn_Dupe.enabled = editing;
 	forms.app_key_list.elements.btn_Delete.enabled = editing;
 	forms.app_key_details.elements.display_name.editable = editing;
 	forms.app_key_details.elements.description.editable = editing;
@@ -83,6 +84,7 @@ function onEdit(event,editing){
 	forms.app_permiss_general.elements.display_resource.enabled = editing;
 	forms.app_permiss_general.elements.display_resource.enabled = editing;
 	forms.app_user_group_list.elements.btn_Delete.enabled = editing;
+	forms.app_user_group_list.elements.btn_Dupe.enabled = editing;
 	forms.app_user_group_list.elements.btn_New.enabled = editing;
 	forms.app_user_group_detail.elements.description.editable = editing;
 	forms.app_user_group_detail.elements.group_name.editable = editing;

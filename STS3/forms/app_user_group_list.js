@@ -63,3 +63,56 @@ function onShow(firstShow, event) {
 	//foundset.loadAllRecords();
 	return _super.onShow(firstShow, event)
 }
+
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F345CEBC-F682-4A06-8D58-221CECC0A46F"}
+ */
+function onActionDupe(event) {
+	var currentRec = foundset.getSelectedRecord();
+	var dupeIdx = foundset.duplicateRecord(false);
+	/** @type {JSRecord<db:/stsservoy/groups>} */
+	var dupeRec = foundset.getRecord(dupeIdx);
+	dupeRec.edit_date = new Date();
+	// dup user group - table 'groups' - create new groups uuid with 
+	var newGroupName = currentRec.group_name;
+	
+	/** @type {QBSelect<db:/stsservoy/groups>} */
+	var q = databaseManager.createSelect('db:/stsservoy/groups');
+	q.result.add(q.columns.group_name);
+	q.where.add(q.columns.group_name.eq(currentRec.group_name));
+	q.where.add(q.columns.tenant_uuid.eq(currentRec.tenant_uuid));
+	var Q = databaseManager.getFoundSet(q);
+	var existNames = [];
+	for (var index = 1;index <= Q.getSize();index++){
+		/** @type {JSRecord<db:/stsservoy/groups>} */
+		var rec = Q.getRecord(index);
+		existNames.push(rec.group_name);
+	}
+	index = 1;
+	while (existNames.indexOf(newGroupName+' Copy '+index) != -1){
+		index++;
+	}
+	dupeRec.group_name = newGroupName+' Copy '+index;
+	databaseManager.saveData(dupeRec);
+	/** @type {QBSelect<db:/stsservoy/group_keys>} */
+	var s = databaseManager.createSelect('db:/stsservoy/group_keys');
+	s.result.add(s.columns.group_key_uuid);
+	s.where.add(s.columns.tenant_uuid.eq(currentRec.tenant_uuid));
+	s.where.add(s.columns.group_uuid.eq(currentRec.group_uuid));
+	var S = databaseManager.getFoundSet(s);
+	var Ssize = S.getSize();
+	for (index = 1;index <= Ssize;index++){
+		/** @type {JSRecord<db:/stsservoy/group_keys>} */
+		S.setSelectedIndex(index);
+		var dupedIdx = S.duplicateRecord(false);
+		var dupedRec = S.getRecord(dupedIdx);
+		dupedRec.edit_date = new Date();
+		dupedRec.group_uuid = dupeRec.group_uuid;
+	}
+	databaseManager.saveData(S);
+}

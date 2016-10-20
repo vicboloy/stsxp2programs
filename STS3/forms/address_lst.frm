@@ -98,6 +98,7 @@ uuid:"A11B4C56-E04F-47C3-8D8C-79A1CF29C17F"
 anchors:11,
 dataProviderID:"state",
 editable:false,
+format:"|U[2]",
 location:"285,20",
 name:"state",
 size:"37,20",

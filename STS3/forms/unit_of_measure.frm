@@ -72,7 +72,7 @@ uuid:"2BA7821C-0D26-4BD9-BE36-B33504B3F45F"
 },
 {
 dataProviderID:"uom_code_description",
-format:"|U[30]",
+format:"|#(30)",
 location:"349,90",
 name:"uom_code_description",
 printSliding:16,

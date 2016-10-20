@@ -15,8 +15,10 @@ function mainWindowFront(){
  * @properties={typeid:24,uuid:"FA29E187-8F22-43AD-B141-BE6934214905"}
  */
 function addCarrierRecord(event) {
-	forms.carriers_lst.controller.newRecord();
-	forms.carrier_info.onEditCarrier(event,true);
+	var instance = globals.getInstanceForm(event);
+	forms['carriers_lst'+instance].controller.newRecord();
+	forms['carrier_info'+instance].onEditCarrier(event,true);
+	forms['carrier_info'+instance].elements.carrier_number.requestFocus();
 }
 
 /**

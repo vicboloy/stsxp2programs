@@ -18,16 +18,11 @@ var editFlag = false;
  * @properties={typeid:24,uuid:"E47D7FF2-8473-4AD4-AD69-AC99BA008846"}
  */
 function onShow(firstShow, event) {
-	if (firstShow){
-	}
 	globals.setUserFormPermissions(event);
 	controller.getFormContext().getValue(1,2);
 
 	controller.readOnly = true;
-	if (controller.getMaxRecordIndex() == 0){
-		controller.newRecord();
-	}
-	elements.btn_Delete.text = 'Delete class \''+class_code+'\'';
+	elements.btn_Delete.visible = (foundset.getSize() == 0);
 }
 
 /**
@@ -41,6 +36,8 @@ function onActionAdd(event){
 	onEdit(event,true);
 	controller.newRecord();
 	globals.newRecordKey = employee_clas_id;
+	edit_date = new Date();
+	tenant_uuid = globals.session.tenant_uuid;
 }
 /**
  * Perform the element default action.
@@ -50,11 +47,13 @@ function onActionAdd(event){
  * @properties={typeid:24,uuid:"0F0E5A77-AE9D-496C-B320-6F45FB46FE36"}
  */
 function onActionDelete(event) {
-	globals.doDialog('Remove Employee Class','Delete this Class?','Delete','Cancel');
+	globals.doDialog(i18n.getI18NMessage('sts.txt.remove.employee.class'),
+		i18n.getI18NMessage('sts.txt.remove.employee.class.delete'),
+		i18n.getI18NMessage('sts.txt.delete'),
+		i18n.getI18NMessage('sts.txt.cancel'));
 	if (globals.dialogResponse == 'yes'){
-			controller.deleteRecord();
-		}
-
+		controller.deleteRecord();
+	}
 }
 
 /**
@@ -65,7 +64,7 @@ function onActionDelete(event) {
  * @properties={typeid:24,uuid:"76EF827F-5EBC-488E-AF0B-920AE2FC2807"}
  */
 function onRecordSelection(event) {
-	elements.btn_Delete.text = 'Delete class \''+class_code+'\'';
+	elements.btn_Delete.visible = (foundset.getSize() > 0) && (!elements.btn_Save.visible);
 }
 
 /**
@@ -94,8 +93,9 @@ function onEdit(event,editStatus){
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Cancel.visible = editStatus;
 	elements.btn_Edit.visible = !editStatus;
-	elements.btn_Delete.visible = !editStatus;
+	//elements.btn_Delete.visible = !editStatus;
 	elements.tablessX.enabled = !editStatus;
+	elements.btn_Delete.visible = (foundset.getSize() > 0) && !editStatus;
 }
 
 /**
@@ -108,7 +108,6 @@ function onEdit(event,editStatus){
 function onActionCancelEdit(event) {
 	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
-	databaseManager.setAutoSave(true);
 }
 
 /**
@@ -119,9 +118,8 @@ function onActionCancelEdit(event) {
  * @properties={typeid:24,uuid:"79A78EA7-A841-4268-9B58-8F4C44C432EB"}
  */
 function onActionSaveEdit(event) {
-	onEdit(event,false);
 	databaseManager.saveData(foundset);
-	databaseManager.setAutoSave(true);
+	onEdit(event,false);
 }
 
 /**
@@ -137,31 +135,23 @@ function onActionSaveEdit(event) {
  * @AllowToRunInFind
  */
 function onDataChange(oldValue, newValue, event) {
-	databaseManager.nullColumnValidatorEnabled = false;
-	databaseManager.setAutoSave(true);
-	var fs = foundset.find();
-	if (fs) //find will fail if autosave is disabled and there are unsaved records
-	{
-		class_code = newValue;
-		foundset.search();
-		var count = databaseManager.getFoundSetCount(foundset);
-		if (count > 1){
-			var record = null;
-			for (var index = 1;index <= foundset.getSize(); index++){
-				record = foundset.getRecord(index);
-				if (record.employee_clas_id == globals.newRecordKey){
-					foundset.deleteRecord(record);
-				}
-			}
-			onEdit(event,false);
-		}
-		foundset.sts_employee_class_container.loadAllRecords();
-		foundset.setSelectedIndex(globals.selectedEmpClassIndex);
-		
+	var currentRec = foundset.getSelectedRecord();
+	/** @type {QBSelect<db:/stsservoy/employee_class>} */
+	var q = databaseManager.createSelect('db:/stsservoy/employee_class');
+	q.result.add(q.columns.class_code);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.class_code.eq(newValue));
+	var Q = databaseManager.getFoundSet(q);
+	var qSize = Q.getSize();
+	if (qSize > 0){
+		foundset.deleteRecord(currentRec);
+		var idx = foundset.getRecordIndex(Q.getRecord(1));
+		foundset.setSelectedIndex(idx);
+		onEdit(event,false);
 	}
-	databaseManager.setAutoSave(true);
+
 	globals.newRecordKey = "";
-	return true
+	return true;
 }
 
 

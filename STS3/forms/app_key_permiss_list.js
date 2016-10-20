@@ -48,3 +48,15 @@ function onShow(firstShow, event) {
 	//foundset.loadAllRecords();
 	return _super.onShow(firstShow, event)
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"FF6CC4E9-735D-445F-BD17-8B4AB1C8A102"}
+ */
+function onActionDupe(event) {
+	var currentRec = foundset.getSelectedRecord();
+	application.output('current '+currentRec);
+}

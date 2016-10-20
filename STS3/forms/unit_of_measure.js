@@ -15,15 +15,8 @@ var selectedUOMIndex = 0;
  * @properties={typeid:24,uuid:"36033168-4C98-4CC2-87E0-FD49B6946777"}
  */
 function onShow(firstShow, event) {
-	if (firstShow){
-	}
 	globals.setUserFormPermissions(event);
 	controller.readOnly = true;
-	if (controller.getMaxRecordIndex() == 0){
-		controller.newRecord();
-	} else {
-		elements.btn_Delete.text = 'Delete UOM \''+uom_code+'\'';
-	}
 }
 
 /**
@@ -36,6 +29,8 @@ function onActionAdd(event){
 	onEdit(event,true);
 	controller.newRecord();
 	globals.newRecordKey =  uom_id;
+	tenant_uuid = globals.session.tenant_uuid;
+	edit_date = new Date();
 }
 
 /**
@@ -44,11 +39,13 @@ function onActionAdd(event){
  * @properties={typeid:24,uuid:"2E41F535-CE15-4213-B79C-20B4F4122D6D"}
  */
 function onActionDelete(event) {
-	globals.doDialog('Remove UOM','Delete this UOM?','Delete','Cancel');
+	globals.doDialog(i18n.getI18NMessage('sts.txt.units.of.measure.remove'),
+		i18n.getI18NMessage('sts.txt.units.of.measure.remove.delete'),
+		i18n.getI18NMessage('sts.txt.delete'),
+		i18n.getI18NMessage('sts.txt.cancel'));
 	if (globals.dialogResponse == 'yes'){
-			controller.deleteRecord();
-		}
-
+		controller.deleteRecord();
+	}
 }
 
 /**
@@ -95,7 +92,6 @@ function onEdit(event,editStatus){
 function onActionCancelEdit(event) {
 	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
-	databaseManager.setAutoSave(true);
 }
 
 /**
@@ -104,9 +100,8 @@ function onActionCancelEdit(event) {
  * @properties={typeid:24,uuid:"EB19EADC-193D-44C9-9455-8EC9DC5D406A"}
  */
 function onActionSaveEdit(event) {
-	onEdit(event,false);
 	databaseManager.saveData(foundset);
-	databaseManager.setAutoSave(true);
+	onEdit(event,false);
 }
 
 /**
@@ -119,29 +114,22 @@ function onActionSaveEdit(event) {
  * @properties={typeid:24,uuid:"E76BFEA2-E89F-4F46-B86C-021B8EC86E2F"}
  */
 function onDataChange(oldValue, newValue, event) {
-	databaseManager.nullColumnValidatorEnabled = false;
-	databaseManager.setAutoSave(true);
-	var fs = foundset.find();
-	if (fs) //find will fail if autosave is disabled and there are unsaved records
-	{
-		uom_code = newValue;
-		foundset.search();
-		var count = databaseManager.getFoundSetCount(foundset);
-		if (count > 1){
-			var record = null;
-			for (var index = 1;index <= foundset.getSize(); index++){
-				record = foundset.getRecord(index);
-				if (record.uom_id == globals.newRecordKey){
-					foundset.deleteRecord(record);
-				}
-			}
-			onEdit(event,false);
-		}
-		foundset.sts_units_of_measure.loadAllRecords();
-		foundset.setSelectedIndex(globals.selectedUOMIndex);
-		
+	/** @type {QBSelect<db:/stsservoy/uom_types>} */
+	var q = databaseManager.createSelect('db:/stsservoy/uom_types');
+	q.result.add(q.columns.uom_code);
+	q.where.add(q.columns.uom_code.eq(newValue));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var Q = databaseManager.getFoundSet(q);
+	var size = Q.getSize();
+	if (size > 0){
+		var rec = Q.getRecord(1);
+		foundset.deleteRecord();
+		var record = null;
+		var recIndex = foundset.getRecordIndex(rec);
+		foundset.setSelectedIndex(recIndex);
+		onEdit(event,false);
 	}
-	databaseManager.setAutoSave(true);
+
 	globals.newRecordKey = "";
 	return true
 }

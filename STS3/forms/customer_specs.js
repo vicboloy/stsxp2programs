@@ -58,6 +58,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"3F935FD7-0489-42AA-A670-C26F73B09E0C"}
  */
 function onActionEdit(event,editStatus){
+	var instance = globals.getInstanceForm(event);
 	var tabCount = elements.tabs.getMaxTabIndex();
 	for (var index = 1;index <= tabCount;index++){
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
@@ -67,7 +68,7 @@ function onActionEdit(event,editStatus){
 	elements.btn_Delete.visible = !editStatus;
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Edit.visible = !editStatus;
-	forms.customers_rec.controller.enabled = !editStatus;
+	forms['customers_rec'+instance].controller.enabled = !editStatus;
 	editCustomerFlag = editStatus;
 	databaseManager.setAutoSave(false);
 }

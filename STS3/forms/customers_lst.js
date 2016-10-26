@@ -24,4 +24,5 @@ function onRecordSelection(event) {
 	globals.selectedCustomerID = customer_id; 
 	forms['customer_specs'+instance].elements.btn_Delete.enabled =  (globals.checkCustEmpty(customer_id)) && (forms.customers_rec.elements.btn_New.visible);
 	forms['customer_specs'+instance].elements.btn_Edit.enabled = true;
+	forms['customer_barcode'+instance].calcBarcode();
 }

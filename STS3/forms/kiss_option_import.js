@@ -292,19 +292,33 @@ function onShow(firstShow, event) {
 	jobDate = job.date;
 	jobMetric = job.metricFlag;
 	///var customerArray = [];
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var j = databaseManager.createSelect('db:/stsservoy/jobs');
+	j.result.add(j.columns.job_id);
+	j.where.add(j.columns.job_number.eq(scopes.jobs.importJob.jobNumber));
+	j.where.add(j.columns.customer_id.eq(scopes.jobs.importJob.customerId));
+	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var J = databaseManager.getFoundSet(j);
+	/** @type {JSRecord<db:/stsservoy/jobs>} */
+	var jobRec;
+	if (J.getSize() > 0){
+		jobRec = J.getRecord(1);
+		scopes.jobs.importJob.customerId = jobRec.customer_id;
+	}
+	
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} 
 	if (foundset.find()){
 		job_number = scopes.jobs.importJob.jobNumber;
 		customer_id = scopes.jobs.importJob.customerId;
 		tenant_uuid = globals.session.tenant_uuid;
 		/**index = jobNums.indexOf(jobNumber);
-		customer_id = custIds[index];*/
+		customer_id = custIds[index];* /
 		///var count = foundset.search();
 		foundset.search();
 		foundset.setSelectedIndex(1);
 		var jobRec = foundset.getSelectedRecord();
 		//scopes.jobs.jobIDs.push(jobRec.job_id);
-	}
+	} */
 	elements.btn_Import.enabled = false;
 	elements.btn_Apply.enabled = true;
 	var enableDrawing = true;

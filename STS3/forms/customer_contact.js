@@ -55,8 +55,6 @@ function onDataChange(oldValue, newValue, event) {
  * @AllowToRunInFind
  */
 function onDataChangeCustomerNumber(oldValue, newValue, event) {
-	//databaseManager.setAutoSave(true);
-	databaseManager.nullColumnValidatorEnabled = false;
 	if (globals.newCustomerRecord != null){
 		globals.newCustomerRecord = customer_id;
 	}
@@ -64,31 +62,20 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	var q = databaseManager.createSelect('db:/stsservoy/customers');
 	q.result.add(q.columns.customer_number);
 	q.where.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	q.where.add(q.columns.customer_number.eq(newValue));
 	var fsQ = databaseManager.getFoundSet(q);
-	/** var fs = foundset.find();
-	if (fs) //find will fail if autosave is disabled and there are unsaved records
-	{
-		customer_number = newValue;
-		foundset.search();
-		var count = databaseManager.getFoundSetCount(foundset);
-		if (count > 1){
-			var record = null;
-			for (var index = 1;index <= foundset.getSize(); index++){	
-				record = foundset.getRecord(index);
-				if (!record.name){
-					foundset.deleteRecord();
-				}
-			}
-		}
-		foundset.sts_customer_container.loadAllRecords();
-		foundset.setSelectedIndex(globals.selectedCustomerIndex);
-	}*/
-	//databaseManager.setAutoSave(true);
-	databaseManager.saveData(foundset);
-	if (fsQ.getSize() == 0){
-		return false;
-	}else {
-		elements.name.requestFocus();
+	if (!oldValue && fsQ.getSize() > 0){
+		var rec = fsQ.getRecord(1);
+		var idx = foundset.getSelectedIndex();
+		foundset.deleteRecord(idx);
+		idx = foundset.getRecordIndex(rec);
+		foundset.setSelectedIndex(idx);
+		var instance = globals.getInstanceForm(event);
+		forms['customer_specs'+instance].onActionCancelEdit(event);
+		onActionEdit(event,false);
+	} else {
+		var instance = globals.getInstanceForm(event);
+		forms['customer_specs'+instance].elements.btn_Save.enabled = (!barcode_prefix || !customer_number) ? false : true;
 	}
 	return true;
 }
@@ -127,4 +114,26 @@ function onRecordSelection(event) {
 	if (!customer_number){
 		elements.customer_number.requestFocus();
 	}
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param oldValue old value
+ * @param newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"335D4639-1D51-4A5B-81B7-6F96A93C57EE"}
+ */
+function onDataChangeBarCodePrefix(oldValue, newValue, event) {
+	barcode_include_prefix = i18n.getI18NMessage('i18n:sts.txt.barcode.include.prefix');
+	barcode_job_length = 3;
+	barcode_job_start = i18n.getI18NMessage('i18n:sts.txt.barcode.first.characters');
+	barcode_preamble_length = 5;
+	barcode_fixed_length = 0;
+	var instance = globals.getInstanceForm(event);
+	forms['customer_specs'+instance].elements.btn_Save.enabled = (!barcode_prefix || !customer_number) ? false : true;
+	return true;
 }

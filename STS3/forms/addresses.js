@@ -63,7 +63,15 @@ function addNewAddress(event) {
 function onDataChangeZipCode(oldValue, newValue, event) {
 	if (!utils.hasRecords(sts_addresses_to_zip)){
 		globals.errorDialogMobile(event,"7001",zip_postal_code,"");
-		return false
+		var response = globals.DIALOGS.showQuestionDialog(
+			i18n.getI18NMessage('sts.txt.use.this.entry.anyway'),
+			i18n.getI18NMessage('sts.txt.use.this.entry.anyway'),
+			[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
+		if (response == "Yes"){
+			return true;
+		} else {
+			return false
+		}
 	} else {
 		if(!city){
 			city = sts_addresses_to_zip.primary_city;
@@ -199,18 +207,19 @@ function onShow(firstShow, event) {
 	}
 	//controller.setSelectedIndex(selIndex);
 	
-	var tempArray = []; var count = 0;
-	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
-	var fs = databaseManager.getFoundSet('stsservoy','addresses');
-	if (fs.find()){
-		fs.tenant_uuid = globals.session.tenant_uuid;
-		fs.customer_id = currentID;
-		count = fs.search();
-		for (var index = 1;index <= count;index++){
-			var rec = fs.getRecord(index);
-			if (tempArray.indexOf(rec.address_type) == -1){
-				tempArray.push(rec.address_type);
-			}
+	var tempArray = [];
+	/** @type {QBSelect<db:/stsservoy/addresses>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/addresses');
+	fs.result.add(fs.columns.address_type);
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.customer_id.eq(currentID));
+	var A = databaseManager.getFoundSet(fs);
+	var count = A.getSize();
+	for (var index = 1;index <= count;index++){
+		/** @type {JSRecord<db:/stsservoy/addresses>} */
+		var rec = A.getRecord(index);
+		if (tempArray.indexOf(rec.address_type) == -1){
+			tempArray.push(rec.address_type);
 		}
 	}
 	application.setValueListItems('stsvl_address_types',tempArray);

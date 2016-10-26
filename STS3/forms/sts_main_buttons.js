@@ -153,5 +153,7 @@ function onShow(firstShow, event) {
 		application.output('web app alert 2 '+alert);
 		//plugins.WebClientUtils.executeClientSideJS('localStorage.MainWin = window.self;alert("win "+window.self);');
 	}
-	null;
+	elements.split.rightFormMinSize = 40;
+	elements.split.dividerLocation = 0.80;
+
 }

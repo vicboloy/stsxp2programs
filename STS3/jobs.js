@@ -568,6 +568,7 @@ var jobPiecesCount = 0;
  */
 var jobPcmkCount = 0;
 /**
+ * @type {JSRecord<db:/stsservoy/customers>}
  * Holds the current customer record for import.
  * @properties={typeid:35,uuid:"7BC883A5-863E-4975-B6AF-801A0C32CABC",variableType:-4}
  */
@@ -2495,17 +2496,14 @@ function createSequenceNumbers(){
  */
 function createBarCodePrefix(){
 	if (barcodePrefix == ""){
-		///var tenantID = scopes.globals.secCurrentTenantID;
-		/** @type {JSFoundSet<db:/stsservoy/customers>} */
-		var custFS = databaseManager.getFoundSet('stsservoy','customers');
-		if (custFS.find()){
-			custFS.customer_id = scopes.jobs.customerIDs[0];
-			custFS.delete_flag = null;
-			if (custFS.search()){
-				///var size = custFS.getSize();//should be one, get first
-				custRec = custFS.getRecord(1);
-			}
-		}
+		/** @type {QBSelect<db:/stsservoy/customers>} */
+		var custFS = databaseManager.createSelect('db:/stsservoy/customers');
+		custFS.result.add(custFS.columns.customer_id);
+		custFS.where.add(custFS.columns.customer_id.eq(scopes.jobs.importJob.customerId));
+		custFS.where.add(custFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		custFS.where.add(custFS.columns.delete_flag.isNull);
+		var Cust = databaseManager.getFoundSet(custFS);
+		custRec = Cust.getRecord(1);
 		/** 
 		 * load customer barcode specs
 		 * field.barcode_include_prefix(include,exclude)
@@ -2520,19 +2518,22 @@ function createBarCodePrefix(){
 		var barcode_preamble_length = custRec.barcode_preamble_length;
 		var barcode_job_start = custRec.barcode_job_start;
 		var barcode_fixed_length = custRec.barcode_fixed_length;
-		///var barcode_job_length = custRec.barcode_job_length;
 		var jobNumber = jobName;
-		///var serial = barcodeLast; //SSSSSS, length=6
-		
-		///var barcodeLength = scopes.prefs.barcodeLength;//fixed unless changed in preferences
+		// If prefix is not two characters, pad with "P"
+		if (barcode_prefix_label.length == 1){barcode_prefix_label = "P"+barcode_prefix_label}
+		// Pad job number if too short
+		var lengthJobNeeded = 0;
+		lengthJobNeeded = (barcode_preamble_length == 4) ? 2 : 3;
+		lengthJobNeeded = (barcode_include_prefix == i18n.getI18NMessage('sts.label.barcode.include.prefix')) ? lengthJobNeeded : lengthJobNeeded*1 + 2;
+		while (jobNumber.length < lengthJobNeeded){
+			jobNumber = "0"+jobNumber; // #76 pad job number for barcode creation
+		}
+
 		var bPrefix = barcode_include_prefix == i18n.getI18NMessage('sts.txt.barcode.include.prefix') ? true : false;
 		var begStr,endStr;
 		var jobNameLength = bPrefix ? barcode_preamble_length-2 : barcode_preamble_length;
-		///var serialLength = barcodeLength-barcode_preamble_length;
 		var jobStrLength = jobNumber.length;
-		//barcode_fixed_length - adjust for string position start = 0
-		///var lastSerial = barcodeLast;//save to barcode table
-		///var barcode = "";
+
 		var jobPrefix = "";
 		if (barcode_job_start == i18n.getI18NMessage('sts.txt.barcode.last.characters')) {
 			begStr = jobStrLength-jobNameLength;
@@ -2570,16 +2571,10 @@ function createBarCodeNextNumber(){
  * @properties={typeid:24,uuid:"BCCE02C0-1777-4531-885F-A15D1AB4B98F"}
  */
 function numbersUp(){
-	application.output("ZZY999 "+countUpNumbers("ZZY999"));
-	application.output("000000 "+countUpNumbers("000000"));
-	application.output("999999 "+countUpNumbers("999999"));
-	application.output("ZR0000 "+countUpNumbers("ZR0000"));
-	application.output("M90001 "+countUpNumbers("M90001"));
-	application.output("M99998 "+countUpNumbers("M99998"));
-	application.output("M99999 "+countUpNumbers("M99999"));
-	application.output("ZZY000 "+countUpNumbers("ZZY000"));
-	application.output("ZZY999 "+countUpNumbers("ZZY999"));
-
+	var serials = ['ZZZZZZ','ZZZY999','000000','000001','999999','Z99999','ZY9999','ZR0000','M90801','M99998','ZZY000','ZZY999','ZZZY999','00000','99999','ZR000','M0801','M9998','ZZY00','ZY999'];
+	for (var index = 0;index < serials.length;index++){
+		application.output(serials[index]+' next bc '+countUpNumbers(serials[index]));
+	}
 }
 /**
  * @param {String} formula
@@ -3086,7 +3081,11 @@ function fracToDec(fraction){
  * @properties={typeid:24,uuid:"A7DD2FA9-39E5-4123-A543-A41E6D4B63F0"}
  */
 function countUpNumbers(serial){
-	var serialLength = scopes.prefs.barcodeLength-custRec.barcode_preamble_length;
+	if (!custRec){
+		var serialLength = serial.length;
+	} else {
+		serialLength = scopes.prefs.barcodeLength-custRec.barcode_preamble_length;
+	}
 	var padZeroes = "000000000000000000000000000000";
 	///var numLength = serialLength-custRec.barcode_preamble_length; // zero is prefix length
 	var matched = serial.match(/[A-Z]+/);
@@ -3117,6 +3116,7 @@ function countUpNumbers(serial){
 	numS = numS.slice(numS.length-numSLen,numS.length);
 	//application.output(serial+' matched '+letS+' num '+numS);
 	barcodeLast = letS+numS;
+	if (barcodeLast.length != serialLength){barcodeLast = "000000000".substr(0,serialLength)} //wrap to all zeroes
 	return barcodeLast;
 }
 /**
@@ -3195,21 +3195,24 @@ function importAmendQuantities(){
  */
 function createBarCodeSerial(){
 	if (barcodePrefix == "") {return}
-	/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} */
-	var bcFS = databaseManager.getFoundSet('stsservoy','last_id_serial');
+	/** @type {JSRecord<db:/stsservoy/last_id_serial>} */
 	var rec = null;
-	if (bcFS.find()){
-		bcFS.tenant_uuid = globals.secCurrentTenantID;
-		bcFS.prefix = barcodePrefix;
-		if (bcFS.search() == 0){
-			var recIndex = bcFS.newRecord();
-			rec = bcFS.getRecord(recIndex);
-			rec.serial = 0;
-			rec.tenant_uuid = globals.session.tenant_uuid;
-			rec.prefix = barcodePrefix;
-		} else {
-			rec = bcFS.getRecord(1);
-		}
+	/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
+	var b = databaseManager.createSelect('db:/stsservoy/last_id_serial');
+	b.result.add(b.columns.last_id_serial_id);
+	b.where.add(b.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	b.where.add(b.columns.prefix.eq(barcodePrefix));
+	var B = databaseManager.getFoundSet(b);
+	if (B.getSize() > 0){
+		rec = B.getRecord(1);
+	} else {
+		var recIndex = B.newRecord();
+		rec = B.getRecord(recIndex);
+		rec.serial = 0;
+		rec.tenant_uuid = globals.session.tenant_uuid;
+		rec.prefix = barcodePrefix;
+		rec.edit_date = new Date();
+		databaseManager.saveData(rec);
 	}
 	barcodeLast = rec.serial;
 }
@@ -3219,7 +3222,23 @@ function createBarCodeSerial(){
  */
 function saveBarCodeSerial(){
 	if (scopes.jobs.barcodePrefix == "") {return}
-	/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} */
+	/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
+	var s = databaseManager.createSelect('db:/stsservoy/last_id_serial');
+	s.result.add(s.columns.last_id_serial_id);
+	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	s.where.add(s.columns.prefix.eq(barcodePrefix));
+	s.where.add(s.columns.delete_flag.isNull);
+	var S = databaseManager.getFoundSet(s);
+	if (S.getSize() > 0){
+		/** @type {JSRecord<db:/stsservoy/last_id_serial>} */
+		var rec = S.getRecord(1);
+		rec.serial = barcodeLast;
+		rec.edit_date = new Date();
+	} else {
+		// raise error message
+	}
+	
+	/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} * /
 	var bcFS = databaseManager.getFoundSet('stsservoy','last_id_serial');
 	if (bcFS.find()){
 		bcFS.tenant_uuid = globals.secCurrentTenantID;
@@ -3235,7 +3254,7 @@ function saveBarCodeSerial(){
 			rec = bcFS.getRecord(1);
 			rec.serial = barcodeLast;
 		}
-	}
+	} */
 	//get last barcode serial for this customer
 }
 /**
@@ -3577,6 +3596,7 @@ function createValidBarcode(){
 	var barRec = barsFS.getRecord(recIndex);
 	barRec.id_serial_number = createBarCodeNextNumber(); 
 	barRec.tenant_uuid = globals.session.tenant_uuid;
+	barRec.edit_date = new Date();
 	createdRecords++;
 	//databaseManager.saveData(barRec);
 	return barRec;
@@ -5303,7 +5323,7 @@ function importRecordsAlt(){
 	//forms.kiss_option_import.controller.enabled = true;
 	saveBarCodeSerial();
 	warningsMessage('Save remaining records.',true);
-	databaseManager.setAutoSave(true);//
+	//databaseManager.setAutoSave(true);//
 	var duration = new Date().getTime()-beginTime;
 	application.output('Total import time minutes '+duration/1000/60+ 'saving at record count: '+commitRecAt);
 	warningsMessage('Total import time minutes '+duration/1000/60+ 'saving at record count: '+commitRecAt,true);
@@ -5319,7 +5339,7 @@ function importRecordsAlt(){
 	} else {
 		databaseManager.saveData();
 	}
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 }
 /**
  * @param {String} message

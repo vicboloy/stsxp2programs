@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onRecordSelectionMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/customers",
 encapsulation:0,
 extendsID:"-1",
@@ -180,7 +186,7 @@ uuid:"CE2D0310-BC47-40AE-94A2-0AC468B2D257"
 name:"customer_specs",
 navigatorID:"-1",
 onLoadMethodID:"-1",
-onRecordSelectionMethodID:"5BB2B9B2-B03F-4F60-8A17-4D87A56ED311",
+onRecordSelectionMethodID:"-1",
 onShowMethodID:"6B4C0C75-68C1-4903-A9B5-F49D0FF64BFF",
 scrollbars:12,
 size:"529,507",

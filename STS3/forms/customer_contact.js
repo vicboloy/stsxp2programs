@@ -19,7 +19,6 @@ function onDataChange(oldValue, newValue, event) {
 	if (globals.newCustomerRecord == null){
 		globals.newCustomerRecord = customer_id;
 	}
-	//databaseManager.setAutoSave(true);
 	var fs = foundset.find();
 	if (fs) //find will fail if autosave is disabled and there are unsaved records
 	{
@@ -40,8 +39,7 @@ function onDataChange(oldValue, newValue, event) {
 	}
 	forms.customer_specs.elements.tabs.tabIndex = 2;
 
-	//databaseManager.setAutoSave(true);
-	return true
+	return true;
 }
 /**
  * 

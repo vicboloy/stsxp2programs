@@ -4,20 +4,6 @@
 var editCustomerFlag = false;
 
 /**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"151F2A9C-680D-46DB-BD08-DD42E8F893BA"}
- */
- function unuseddelDialog(event) {
-		globals.doDialog('Delete Record','Delete this Customer?','Delete','Cancel');
-		if (globals.dialogResponse == 'yes'){
-			controller.deleteRecord();
-		}
-}
-
-/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -28,7 +14,7 @@ var editCustomerFlag = false;
  */
 function onShow(firstShow, event) {
 	//set this up for edit, save, cancel
-	onActionEdit(event,false);
+	//onActionEdit(event,false);//#task01
 	//controller.readOnly = true;
 	globals.setUserFormPermissions(event);
 }
@@ -88,7 +74,6 @@ function onActionCancelEdit(event) {
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
 		if (forms[tabFormName].onActionCancelEdit){forms[tabFormName].onActionCancelEdit(event)}
 	}
-	//databaseManager.setAutoSave(true);
 }
 /**
  *
@@ -107,7 +92,6 @@ function onActionSaveEdit(event){
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
 		if (forms[tabFormName].onActionSaveEdit){forms[tabFormName].onActionSaveEdit(event)}
 	}
-	//databaseManager.setAutoSave(true);
 }
 
 /**
@@ -128,13 +112,3 @@ function onActionClose(event) {
 	globals.mainWindowFront();
 }
 
-/**
- * Handle record selected.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"5BB2B9B2-B03F-4F60-8A17-4D87A56ED311"}
- */
-function onRecordSelection(event) {
-	
-}

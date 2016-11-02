@@ -22,7 +22,11 @@ function onRecordSelection(event) {
 	var instance = globals.getInstanceForm(event);
 	globals.selectedCustomerIndex = controller.getSelectedIndex(); 
 	globals.selectedCustomerID = customer_id; 
-	forms['customer_specs'+instance].elements.btn_Delete.enabled =  (globals.checkCustEmpty(customer_id)) && (forms.customers_rec.elements.btn_New.visible);
-	forms['customer_specs'+instance].elements.btn_Edit.enabled = true;
+	var windowName = application.getActiveWindow().getName();
+	application.output('windowname is '+windowName);
+	if (forms['customers_rec'+instance].elements.btn_New.enabled){ //#task01
+		forms['customer_specs'+instance].elements.btn_Delete.enabled =  (globals.checkCustEmpty(customer_id)) && (forms.customers_rec.elements.btn_New.visible);
+		forms['customer_specs'+instance].elements.btn_Edit.enabled = true;
+	}
 	forms['customer_barcode'+instance].calcBarcode();
 }

@@ -87,7 +87,6 @@ function onActionCancelEdit(event) {
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
 		if (forms[tabFormName].onActionCancelEdit){forms[tabFormName].onActionCancelEdit(event)}
 	}
-	//databaseManager.setAutoSave(true);
 }
 
 /**
@@ -178,8 +177,11 @@ function onActionClose(event) {
  */
 function onShow(firstShow, event) {
 	//set this up for edit, save, cancel
-	onActionEdit(event,false);
-	elements.btn_Delete.visible =  (employee_number != "P2"); // protect admin account
+	var instance = globals.getInstanceForm(event); //#task01
+	if (forms['employees_rec'+instance].elements.btn_New.enabled){
+		onActionEdit(event,false);
+		elements.btn_Delete.visible =  (employee_number != "P2"); // protect admin account
+	}
 	//globals.setUserFormPermissions(event);
 }
 
@@ -193,8 +195,11 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"B95D8BF7-792E-41C5-83FE-76D7127C9670"}
  */
 function onRecordSelection(event) {
+	var instance = globals.getInstanceForm(event);
 	employeeFullName = employee_firstname+' '+employee_middlename+' '+employee_lastname;
-	elements.btn_Delete.visible =  (employee_number != "P2") // protect admin account
+	if (forms['employees_rec'+instance].elements.btn_New.enabled){ //#task01
+		elements.btn_Delete.visible =  (employee_number != "P2") // protect admin account
+	}
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
 	u.where.add(u.columns.employee_id.eq(employee_id));

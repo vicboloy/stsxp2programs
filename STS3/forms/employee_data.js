@@ -16,31 +16,32 @@ var activeLogin = 0;
  */
 function onDataChange(oldValue, newValue, event) {
 	databaseManager.nullColumnValidatorEnabled = false;
-	databaseManager.setAutoSave(true);
+
 	if (globals.newEmployeeRecord == null){
 		globals.newEmployeeRecord = employee_id;
 	}
-	var fs = foundset.find();
-	if (fs) //find will fail if autosave is disabled and there are unsaved records
-	{
-		employee_number = newValue;
-		foundset.search();
-		var count = databaseManager.getFoundSetCount(foundset);
-		if (count > 1){
-			var record = null;
-			for (var index = 1;index <= foundset.getSize(); index++){
-				record = foundset.getRecord(index);
-				if (record.employee_firstname == null || record.employee_lastname == null){
-					foundset.deleteRecord(index);
-				}
+	
+	/** @type {QBSelect<db:/stsservoy/employee>} */
+	var e = databaseManager.createSelect('db:/stsservoy/employee'); //#task02
+	e.result.add(e.columns.employee_id);
+	e.where.add(e.columns.employee_number.eq(newValue));
+	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var E = databaseManager.getFoundSet(e);
+	if (E.getSize() > 1){
+		/** @type {JSRecord<db:/stsservoy/employee>} */
+		var record;
+		for (var index = 1;index <= foundset.getSize(); index++){
+			record = E.getRecord(index);
+			if (record.employee_firstname == null || record.employee_lastname == null){
+				E.deleteRecord(index);
 			}
 		}
-		foundset.sts_employee_container.loadAllRecords();
-		foundset.setSelectedIndex(globals.selectedEmployeeIndex);
 	}
-	databaseManager.setAutoSave(true);
-	//forms.employee_specs.onEdit(event,false);
-	return true
+	record = E.getRecord(1);
+	foundset.sts_employee_container.loadRecords();
+	foundset.setSelectedIndex(foundset.getRecordIndex(record));
+	
+	return true;
 }
 /**
  * @param {JSEvent} event

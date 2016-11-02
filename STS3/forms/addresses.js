@@ -165,7 +165,6 @@ function onActionSaveEdit(event) {
 function onActionCancelEdit(event) {
 	onActionEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
-	databaseManager.setAutoSave(true);
 }
 /**
  * Perform the element default action.

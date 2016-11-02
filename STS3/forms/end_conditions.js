@@ -95,7 +95,7 @@ function onEdit(event,editStatus){
 function onActionCancelEdit(event) {
 	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 }
 
 /**
@@ -108,7 +108,7 @@ function onActionSaveEdit(event) {
 	edit_date = new Date();
 	databaseManager.saveData(foundset);
 	onEdit(event,false);
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 }
 
 /**

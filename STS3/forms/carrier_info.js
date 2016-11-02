@@ -8,15 +8,27 @@ var editCarrierFlag = false;
  *
  * @properties={typeid:24,uuid:"E064DA2E-782E-474C-86F5-D602473B1173"}
  */
-function delCarrierRecordAndAddress(event) {
+function delCarrierRecordAndAddress(event) { //#task04, #task03
+	/** @type {QBSelect<db:/stsservoy/loads>} */
+	var l = databaseManager.createSelect('db:/stsservoy/loads');
+	l.result.add(l.columns.carrier_number);
+	l.where.add(l.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	l.where.add(l.columns.carrier_number.eq(carrier_number));
+	l.where.add(l.columns.delete_flag.isNull);
+	var L = databaseManager.getFoundSet(l);
+	if (L.getSize() > 0){
+		scopes.globals.errorDialogMobile(event,'1071',null,null);
+		return;
+	}
 	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.record'),
 			i18n.getI18NMessage('sts.txt.delete.this.carrier'),
 			i18n.getI18NMessage('sts.txt.delete'),
 			i18n.getI18NMessage('sts.txt.cancel'));
 	if (globals.dialogResponse == 'yes'){
-			controller.deleteRecord();
-		}
+			delete_flag = 99;
+			edit_date = new Date();
 	}
+}
 
 /**
  * Called before the form component is rendered.
@@ -57,7 +69,7 @@ function onEditCarrier(event,editStatus){
  */
 function onActionEditCarrier(event) {
 		onEditCarrier(event,true);
-		databaseManager.setAutoSave(false);
+		//databaseManager.setAutoSave(false); //#task02
 	}
 
 	/**
@@ -69,7 +81,6 @@ function onActionEditCarrier(event) {
 function onActionCancelEditCarrier(event) {
 		onEditCarrier(event,false);
 		databaseManager.revertEditedRecords(foundset);
-		//databaseManager.setAutoSave(true);
 	}
 
 	/**
@@ -80,9 +91,9 @@ function onActionCancelEditCarrier(event) {
  */
 function onActionSaveEditCarrier(event){
 		tenant_uuid = globals.secCurrentTenantID;
+		edit_date = new Date();
+		databaseManager.saveData(foundset.getSelectedRecord());
 		onEditCarrier(event,false);
-		databaseManager.saveData(foundset);
-		//databaseManager.setAutoSave(true);
 	}
 
 /**
@@ -95,4 +106,44 @@ function onActionSaveEditCarrier(event){
 function onActionClose(event) {
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"954AB831-FCE3-477B-9DF1-A5B72004B795"}
+ */
+function onDataChangeCarrierName(oldValue, newValue, event) { //#task03
+	/** @type {QBSelect<db:/stsservoy/carrier>} */
+	var c = databaseManager.createSelect('db:/stsservoy/carrier');
+	c.result.add(c.columns.carrier_id);
+	c.where.add(c.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	c.where.add(c.columns.delete_flag.isNull);
+	c.where.add(c.columns.carrier_number.eq(newValue));
+	var C = databaseManager.getFoundSet(c);
+	if (C.getSize() > 0){
+		onActionCancelEditCarrier(event);
+	}
+	return true;
+}
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"DB785183-C273-4686-9517-00D36B84B139"}
+ */
+function onShow(firstShow, event) {
+	if (foundset.getSize() == 0){
+		elements.btn_Delete.visible = false;
+	}
+	return _super.onShow(firstShow, event)
 }

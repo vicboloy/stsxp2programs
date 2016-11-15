@@ -21,31 +21,16 @@ function onSolutionOpen(){
 	}
 	//secSetCurrentApplication(secGetApplicationID(APPLICATION_NAME));
 	secCurrentUserID = security.getUserUID();
-	/**if (sec_current_user == null){
-		/ * * @type {JSFoundSet<db:/stsservoy/users>} * /
-		sec_current_user = databaseManager.getFoundSet('db:/stsservoy/users');
-		if (sec_current_user.find()){
-			sec_current_user.user_id = secCurrentUserID;
-			sec_current_user.search();
-		}
-	}*/
 	globals.secCurrentTenantID = sec_current_user.tenant_uuid;
 	globals.mobTenantId = globals.secCurrentTenantID;
 	globals.secCurrentAssociationID = globals.secGetAssociationID(secCurrentTenantID);
 	globals.mobAssocId = globals.secCurrentAssociationID;
 	globals.getAssociation(mobAssocId); //aMobAssocs[assocID];
-	///globals.rfGetStationCodes();
-	//application.setValueListItems('stsvlg_status_codes',globals.session.statusCodes);
-	//secSetCurrentApplication(17); // 17 is already STS, could be anything
 	
 	globals.getMappings();
 	///globals.secCurrentUserName = security.getUserName();
 	secSetCurrentTenant(secCurrentTenantID);
-	//getTablesFilters(secCurrentTenantID);
-	//globals.workersList();
-	//application.setValueListItems('stsvlg_workers',globals.workersList())
-	// set session id varibles
-	///scopes.globals.getLoggedEmployee(secCurrentUserID);
+
 	session.program = "STS Mobile";
 	session.login = security.getUserName();
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
@@ -63,7 +48,7 @@ function onSolutionOpen(){
 	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association
 	//application.output()
 	application.setValueListItems('stsvlg_status_codes',globals.m.statusCodesDiv[session.associationId]); // status codes for this association
-	globals.logger(true,'STS Mobile opened.');
+	globals.logger(true,i18n.getI18NMessage('sts.txt.application.opened.mobile'));
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
 	globals.getMenuList();
 	globals.onStartLoadPrefs();

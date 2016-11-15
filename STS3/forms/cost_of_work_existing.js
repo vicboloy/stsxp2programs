@@ -17,6 +17,10 @@ var vKeepCostsShipped = 0;
  */
 var vShowDetail = 0;
 /**
+ * @properties={typeid:35,uuid:"0F7D1E65-2614-4438-B95A-B9F401380CCE",variableType:-4}
+ */
+var nullo = null;
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -64,52 +68,64 @@ function onActionMarked(event) {
 function onActionCalcCost(event) {
 	var skipShipped = (vKeepCostsShipped == 1);
 	var skipCostsExisting = (vKeepExistingCosts == 1);
-	var shippedMarks = [];
-	var lastIndex = controller.getSelectedIndex();
+	
+	var piecemarkArray = [];
 	var count = foundset.getSize();
-	if (skipShipped){
-		//get list of idfile_id's by checking idfiles.id_status
-		for (var index = 1;index <= count;index++){
-			controller.setSelectedIndex(index);
-			if (id_status.toUpperCase().search('SHIP') != -1){
-				shippedMarks.push(idfile_id);
-			}
-		}
-	}
-	// Collect piecemark_id for all piecemarks to set
-	var custCowToFormula = [];
-	for (index = 1;index <= count;index++){
+	for (var index = 0;index <= count;index++){
 		controller.setSelectedIndex(index);
-		if (skipCostsExisting && st2_idfiles_to_piecemarks.cost_each == 0){continue}
-		if (skipShipped && shippedMarks.length > 0 && shippedMarks.indexOf(piecemark_id) == -1){continue}
-		var cow = st2_idfiles_to_piecemarks.cost_of_work_code;
+		if (skipCostsExisting && costEach != 0){continue}
+		piecemarkArray.push(piecemark_id);
+	}
+	
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
+	i.result.add(i.columns.idfile_id);
+	i.where.add(i.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	i.where.add(i.columns.delete_flag.isNull);
+	i.where.add(i.columns.piecemark_id.isin(piecemarkArray));
+	if (skipShipped){
+		i.where.add(i.columns.ship_load_id.isNull);
+	}
+	var I = databaseManager.getFoundSet(i);
+	
+	var custCowToFormula = [];
+	index = 1;
+	while (index <= I.getSize()){
+		var rec = I.getRecord(index);
+		var idx = foundset.getRecordIndex(rec);
+		foundset.setSelectedIndex(idx);
+		var cow = cost_of_work_code;
 		if (custCowToFormula.indexOf(cow+'value') == -1){
-			var valueFormula = st2_idfiles_to_piecemarks.sts_piecemark_cowxref.sts_cowxref_cowcode.sts_cowcode_uomtype.uom_to_get_value;
-			var weightFormula = st2_idfiles_to_piecemarks.sts_piecemark_cowxref.sts_cowxref_cowcode.sts_cowcode_uomtype.uom_to_get_wt;
+			var valueFormula = rec.sts_piecemark_cowxref.sts_cowxref_cowcode.sts_cowcode_uomtype.uom_to_get_value;
+			var weightFormula = sts_piecemark_cowxref.sts_cowxref_cowcode.sts_cowcode_uomtype.uom_to_get_wt;
 			custCowToFormula[cow+'weight'] = weightFormula;
 			custCowToFormula[cow+'value'] = valueFormula;
-			custCowToFormula[cow+'money'] = st2_idfiles_to_piecemarks.sts_piecemark_cowxref.uom_dollar;
+			custCowToFormula[cow+'money'] = sts_piecemark_cowxref.uom_dollar;
 		}
 		var cowMoney = custCowToFormula[cow+'money'];
+		/** @type {String} */
 		var formHalves = custCowToFormula[cow+'value'].split("=");
 		var uom = formHalves[0].trim().split("/")[1];
-		var formula = formHalves[1].trim();
+		if (uom){
+			var formula = formHalves[1].trim();
+		} else {
+			formula = "";
+		}
 		//application.output('material '+st2_idfiles_to_piecemarks.material+' cow '+cow+' uom '+uom+' formulas '+formula);
-		st2_idfiles_to_piecemarks.piecemark_unit_of_measure = uom;
-		st2_idfiles_to_piecemarks.piecemark_uom_dollars = cowMoney;
-		st2_idfiles_to_piecemarks.cost_each; // is this item's cost
-		st2_idfiles_to_piecemarks.cost_of_work_quantity; // is the weight divided by UOM
-		var length = st2_idfiles_to_piecemarks.item_length;
-		var width = st2_idfiles_to_piecemarks.item_width;
-		var weight = st2_idfiles_to_piecemarks.item_weight;
+		piecemark_unit_of_measure = uom;
+		piecemark_uom_dollars = cowMoney;
+		cost_each; // is this item's cost
+		cost_of_work_quantity; // is the weight divided by UOM
+		var length = item_length;
+		var width = item_width;
+		var weight = item_weight;
 		var quantity = 1; //resolve this later
 		var uomFormula = scopes.jobs.convertUomToFormula(formula,cowMoney,quantity,length,width,weight)
 		var costEach = eval(uomFormula);
-		st2_idfiles_to_piecemarks.cost_each = costEach;
-		st2_idfiles_to_piecemarks.cost_of_work_quantity = (cowMoney == 0) ? 0 : costEach/cowMoney;
-		//application.output(eval(uomFormula));
+		cost_each = costEach;
+		cost_of_work_quantity = (cowMoney == 0) ? 0 : costEach/cowMoney;
 	}
-	controller.setSelectedIndex(lastIndex);
+	index++;
 }
 /**
  * Perform the element default action.
@@ -120,70 +136,90 @@ function onActionCalcCost(event) {
  * @SuppressWarnings(wrongparameters)
  */
 function onActionRefresh(event) {
+	var idx = 1; var codes = [];
+	var fs = forms.cost_of_work_category.foundset;
+	while (idx <= fs.getSize()){
+		/** @type {JSRecord<db:/stsservoy/cow_xref>} */
+		var rec = fs.getRecord(idx);
+		if (!rec.cust_cow_code){continue}
+		codes.push(rec.cust_cow_code);
+		idx++;
+	}
+	
+	databaseManager.revertEditedRecords(foundset);
+	var showPcmk = (forms.cost_of_work_missing.vShowByPiecemark == 1);
+	var showSheet = (forms.cost_of_work_missing.vShowBySheet == 1);
 	var detail = (vShowDetail == 1);
 	forms.cost_of_work_existlist.elements.item_weight.visible = detail;
 	forms.cost_of_work_existlist.elements.item_length.visible = detail;
 	forms.cost_of_work_existlist.elements.item_width.visible = detail;
-	forms.cost_of_work_existlist.elements.piecemark.visible = detail;
+	forms.cost_of_work_existlist.elements.piecemark.visible = showPcmk;
 	forms.cost_of_work_existlist.elements.length_char.visible = detail;
+	forms.cost_of_work_existlist.elements.sheet_number.visible = showSheet;
 	//forms.cost_of_work_existlist.elements. .visible = detail;
-	
-	var count = foundset.getSize();
-	for (var index = count;index > 0;index--){
-		controller.setSelectedIndex(index);
-		freeCheck = 0;
-	}
-	//var localCode = "";
-	databaseManager.revertEditedRecords(foundset);
-	//var result = null;
+
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q =  databaseManager.createSelect("db:/stsservoy/sheets");
 	q.result.add(q.columns.sheet_id);
-	q.where.add(q.and
-				.add(q.columns.job_id.eq(globals.vJobIDXref))
-				.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
-				.add(q.columns.delete_flag.isNull));
+	q.where.add(q.columns.job_id.eq(globals.vJobIDXref));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.delete_flag.isNull);
 
 	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
 	var m =  databaseManager.createSelect('db:/stsservoy/piecemarks');
-	//m.result.distinct = true;
+	m.result.distinct = true;
 	m.result.add(m.columns.piecemark_id);
-	m.where.add(m.and
-			.add(m.columns.sheet_id.isin(q))
-			.add(m.columns.delete_flag.isNull)
-			.add(m.columns.cost_of_work_code.not.isNull)
-		);
-
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
-	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
-	var tempPcmksArray = [];
-	/** @type {JSDataSet} */
-	var tempResult = databaseManager.getDataSetByQuery(m,-1);
-	for (index = 1;index <= count;index++){
-		tempResult.rowIndex = index;
-		/** @type {*} */
-		tempPcmksArray.push(tempResult.piecemark_id);
+	m.result.add(m.columns.material);
+	m.where.add(m.columns.cost_of_work_code.isin(codes));
+	//if (showPcmk){m.result.add(m.columns.piecemark)}
+	//if (showSheet){m.result.add(m.columns.sheet_id)}
+	m.where.add(m.columns.sheet_id.isin(q));
+	m.where.add(m.columns.delete_flag.isNull)
+	if (vKeepExistingCosts){
+		m.where.add(m.columns.cost_each.not.eq(0));
 	}
-	i.result.add(i.columns.idfile_id);
-	i.where.add(i.columns.piecemark_id.isin(m));
-	var rezz = databaseManager.getDataSetByQuery(i,-1);
-	
-	result = databaseManager.getDataSetByQuery(m,-1);
-	foundset.loadRecords(rezz);
-	count = foundset.getSize();
+	m.groupBy.add(m.columns.material);
+	m.groupBy.add(m.columns.piecemark_id);
+	//if (showPcmk){m.groupBy.add(m.columns.piecemark)}
+	//if (showSheet){m.groupBy.add(m.columns.sheet_id)}
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var i = m.joins.add('db:/stsservoy/idfiles');
+	i.on.add(i.columns.piecemark_id.eq(m.columns.piecemark_id));
+	if (vKeepCostsShipped){
+		m.where.add(i.columns.ship_load_id.isNull);//this is not shipped
+	}
+	var result = databaseManager.getDataSetByQuery(m,-1);
+	foundset.loadRecords(result);
+	if (application.isInDeveloper()){application.output('resultfs '+foundset.getSize())}
+
+	if (showPcmk){
+		foundset.sort('material asc,piecemark asc');
+	} else if (showSheet){
+		foundset.sort('material asc,sheet_id asc');
+	} else if (showPcmk && showSheet){
+		foundset.sort('material asc,piecemark asc,sheet_id asc')
+	} else {
+		foundset.sort('material asc');
+	}
+	var test = foundset.getCurrentSort();
+	application.output(test);
+
+	var count = foundset.getSize();
 	var calced = [];
-	for (index = 1;index <= count;index++){
+	for (var index = 1;index <= count;index++){
 		var record = foundset.getRecord(index);
-		var length = record.st2_idfiles_to_piecemarks.item_length;
+		var length = record.item_length;
 		//var impLength = "";
 		if (calced.indexOf(length) == -1){
 			calced[length] = scopes.jobs.decToFeet(length);
 		}
 		if (length != 0) {
-			record.st2_idfiles_to_piecemarks.freeField = calced[length];
+			record.freeField = calced[length];
 		}
 	}
 	scopes.jobs.tablePrefsLoad('cost_of_work_existing');
+	forms.cost_of_work_existlist.elements.piecemark.visible = showPcmk;
+	forms.cost_of_work_existlist.elements.sheet_number.visible = showSheet;
 }
 
 /**

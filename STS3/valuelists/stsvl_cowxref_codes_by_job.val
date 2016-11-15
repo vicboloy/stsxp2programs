@@ -1,4 +1,3 @@
-addEmptyValue:1,
 dataProviderID1:"cust_cow_code",
 name:"stsvl_cowxref_codes_by_job",
 relationName:"sts_jobid_cowxref",

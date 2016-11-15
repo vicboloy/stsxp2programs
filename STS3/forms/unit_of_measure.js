@@ -15,7 +15,7 @@ var selectedUOMIndex = 0;
  * @properties={typeid:24,uuid:"36033168-4C98-4CC2-87E0-FD49B6946777"}
  */
 function onShow(firstShow, event) {
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,true);
 	controller.readOnly = true;
 }
 
@@ -26,9 +26,8 @@ function onShow(firstShow, event) {
  */
 function onActionAdd(event){
 	globals.selectedUOMIndex = controller.getSelectedIndex();
-	onEdit(event,true);
 	controller.newRecord();
-	globals.newRecordKey =  uom_id;
+	onEdit(event,true);
 	tenant_uuid = globals.session.tenant_uuid;
 	edit_date = new Date();
 }
@@ -44,7 +43,9 @@ function onActionDelete(event) {
 		i18n.getI18NMessage('sts.txt.delete'),
 		i18n.getI18NMessage('sts.txt.cancel'));
 	if (globals.dialogResponse == 'yes'){
-		controller.deleteRecord();
+		edit_date = new Date();
+		delete_flag = 99;
+		databaseManager.saveData(foundset);
 	}
 }
 
@@ -54,6 +55,8 @@ function onActionDelete(event) {
  * @properties={typeid:24,uuid:"8BFBB16C-B5EB-4D10-8E51-77728A017A2A"}
  */
 function onRecordSelection(event) {
+	elements.uom_to_get_value.toolTipText = uom_to_get_value;
+	elements.uom_to_get_wt.toolTipText = uom_to_get_wt;
 	//elements.btn_Delete.text = 'Delete UOM \''+uom_code+'\'';
 }
 
@@ -79,8 +82,10 @@ function onEdit(event,editStatus){
 	elements.btn_New.visible = !editStatus;
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Cancel.visible = editStatus;
-	elements.btn_Edit.visible = !editStatus;
-	elements.btn_Delete.visible = !editStatus;
+	if (foundset.getSize() > 0){
+		elements.btn_Edit.visible = !editStatus;
+		elements.btn_Delete.visible = !editStatus;
+	}
 }
 
 
@@ -90,8 +95,8 @@ function onEdit(event,editStatus){
  * @properties={typeid:24,uuid:"3675CD88-2B85-4DA5-AA05-B005CA40B258"}
  */
 function onActionCancelEdit(event) {
-	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
+	onEdit(event,false);
 }
 
 /**
@@ -123,15 +128,11 @@ function onDataChange(oldValue, newValue, event) {
 	var size = Q.getSize();
 	if (size > 0){
 		var rec = Q.getRecord(1);
-		foundset.deleteRecord();
-		var record = null;
+		onActionCancelEdit(event);
 		var recIndex = foundset.getRecordIndex(rec);
 		foundset.setSelectedIndex(recIndex);
-		onEdit(event,false);
 	}
-
-	globals.newRecordKey = "";
-	return true
+	return true;
 }
 
 /**
@@ -142,6 +143,7 @@ function onDataChange(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"8BB8E60D-76B2-4108-A501-802EDE589148"}
  */
 function onActionClose(event) {
+	onActionCancelEdit(event);
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
 }

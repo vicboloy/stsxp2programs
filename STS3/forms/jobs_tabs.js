@@ -12,3 +12,19 @@ function onShow(firstShow, event) {
 	}
 	globals.setUserFormPermissions(event);		
 }
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"CD1FF1AF-533A-43FC-AB64-095DE546C55C"}
+ */
+function onHide(event) {
+	forms.jobs_general.onActionCancelEdit(event);
+	scopes.prefs.mainWindowFront();
+	scopes.prefs.stopWindowTrack();
+	return true
+}

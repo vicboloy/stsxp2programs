@@ -31,11 +31,10 @@ var localStations = [];
  */
 function onShowStatusDescr(firstShow, event) {
 	if (firstShow){
+		getFabShops(event);
 	}
 	globals.setUserFormPermissions(event);
-	controller.loadRecords(sts_status_code_container);
-	//var dataset = controller.getFormContext().getValue(1,2);
-	//application.output('employee class list form parent on show '+dataset);
+	//controller.loadRecords(sts_status_code_container);
 	globals.initLaborCodes();
 	//globals.initStatusCodes();
 	var assocs = []; //assocs.push(''); no blank fabshops
@@ -69,16 +68,24 @@ function onShowStatusDescr(firstShow, event) {
  * @properties={typeid:24,uuid:"91BAAD22-DC07-4128-BB22-7E3F0002F1A0"}
  */
 function onActionAdd(event){
-	selectedIndex = controller.getSelectedIndex();
 	databaseManager.setAutoSave(false);
-	onEdit(event,true);
-	var created = foundset.newRecord();
-	newRec = foundset.getRecord(1);
-	application.output('created record '+created);
-	globals.newRecordKey = newRec.status_description_id;
-	newRec.tenant_uuid = globals.secCurrentTenantID;
-	//elements.deleteButton.visible = true;
-	//elements.editButton.visible = true;
+	foundset.newRecord();
+	onActionEdit(event);
+	tenant_uuid = globals.secCurrentTenantID;
+	edit_date = new Date();
+	var shops = application.getValueListArray('stsvl_fab_shops');
+	var index = 0;
+	var firstShop = "";
+	for (var shop in shops){
+		index++;
+		if (!firstShop){firstShop = shop}
+	}
+	if (index > 1){
+		elements.fab_shop.requestFocus();
+	} else {
+		association_id = shops[firstShop];
+		elements.status_code.requestFocus();
+	}
 }
 /**
  * Perform the element default action.
@@ -89,23 +96,19 @@ function onActionAdd(event){
  * @properties={typeid:24,uuid:"2BD445F0-CAC3-47A9-8209-748004C6544E"}
  */
 function onActionDelete(event,itemDescription) {
-	var itemDescr = 'Remove '+itemDescription;
-	globals.doDialog(itemDescr,'Delete?','Delete','Cancel');
+	if (!deletableStatus()){
+		globals.errorDialogMobile(event,1071,'','');
+		return;
+	}
+	var itemDescr = i18n.getI18NMessage('sts.txt.remove.x',new Array(status_code));
+	globals.doDialog(itemDescr,
+			i18n.getI18NMessage('sts.txt.delete')+'?',
+			i18n.getI18NMessage('sts.btn.delete'),
+			i18n.getI18NMessage('sts.btn.cancel'));
 	if (globals.dialogResponse == 'yes'){
-		//controller.deleteRecord();
-		///var index = controller.getSelectedIndex();
-		//application.output('index '+index);
 		delete_flag = 99;
 		edit_date = new Date();
 		databaseManager.saveData(foundset.getRecord(controller.getSelectedIndex()));
-		//controller.loadRecords();
-		//forms.status_description_lst.controller.loadRecords();
-		//foundset.loadRecords();
-		//forms.status_description_lst.sts_status_code_container;
-		//forms.status_description_lst.foundset.loadRecords();
-		//application.updateUI();
-		//if (index == 1){index = 2}else{index = 1}
-		//controller.setSelectedIndex(index);
 	}
 }
 
@@ -170,7 +173,7 @@ function onActionCancelEdit(event) {
 		controller.deleteRecord();
 		globals.newRecordKey = null
 	}
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 }
 
 /**
@@ -200,7 +203,7 @@ function onActionSaveEdit(event) {
 	}
 	onEdit(event,false);
 	databaseManager.saveData(foundset);
-	databaseManager.setAutoSave(true);
+	//databaseManager.setAutoSave(true);
 }
 /**
  * Handle changed data.
@@ -235,35 +238,23 @@ function onDataChangeProcess(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"B6ABBA02-E6AC-434D-9F92-E50C12FD5FE4"}
  */
 function onDataChangeStatus(oldValue, newValue, event) {
-	if (newValue.toUpperCase() != newValue){
-		newValue = newValue.toUpperCase();
-		status_code = newValue;
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var s = databaseManager.createSelect('db:/stsservoy/status_description');
+	s.result.add(s.columns.status_description_id);
+	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	s.where.add(s.columns.delete_flag.isNull);
+	s.where.add(s.columns.status_code.eq(newValue));
+	var S = databaseManager.getFoundSet(s);
+	
+	if (S.getSize() > 0){
+		var rec = S.getRecord(1);
+		onActionCancelEdit(event);
+		var idx = foundset.getRecordIndex(rec);
+		foundset.setSelectedIndex(idx);
 	}
-	if (newValue == "" || newValue == null){
-		return false;
-	}
-	newValue = newValue.toUpperCase();
-	changeToStation(event);
-	/**var status = onActionCheckStatusFabShop(event);
-	if (!status){
-		return false;
-	}
-	//databaseManager.setAutoSave(true);
-	//globals.newRecordKey = "";
-	var statusCodesTemp = application.getValueListArray('stsvl_status_codes');
-	var statusCodes = [];
-	for (var index in statusCodesTemp){
-		statusCodes.push(statusCodesTemp[index]);
-	}
-	if (statusCodes.indexOf(newValue) == -1){
-		statusCodes.push(newValue);
-		application.setValueListItems('stsvl_status_codes',statusCodes);
-	}
-	index = onEntryStatusCode(newValue);
-	if (index != -1){
-		status_type = globals.aStatusTypes[index];
-	}*/
-	return true
+	//newValue = newValue.toUpperCase();
+	//changeToStation(event);
+	return true;
 }
 
 
@@ -325,54 +316,6 @@ function onActionClose(event) {
 	globals.mainWindowFront();
 }
 /**
- * @properties={typeid:24,uuid:"FCD33A7F-ACF1-4899-82AD-7E0B5DB5794A"}
- * @AllowToRunInFind
- */
-function onActionCheckStatusFabShop(event){
-	var currLocation = association_id;
-	var currStatus = status_code;
-	if (currLocation == null || currStatus == null){
-		return true;
-	}
-	databaseManager.saveData(foundset);
-	//var record = null;
-	if (foundset.find()) { //find will fail if autosave is disabled and there are unsaved records
-		association_id = currLocation;
-		status_code = currStatus;
-		tenant_uuid = globals.secCurrentTenantID;
-		var selectRec = null;
-		var count = foundset.search();
-		if (count > 1){
-			if (globals.newRecordKey == null){return false}
-			for (var index = 1;index <= foundset.getSize(); index++){
-				var record = foundset.getRecord(index);
-				if (count != 1 && record.status_description_id == globals.newRecordKey){
-					foundset.deleteRecord(record);
-					globals.newRecordKey = null;
-				} else {
-					selectRec = record;
-				}
-			}
-			onEdit(event,false);
-			foundset.sts_status_code_container.loadAllRecords();
-			foundset.setSelectedIndex(foundset.getRecordIndex(selectRec));
-			globals.newRecordKey = null;
-			return true;
-		}
-		if (count == 1){
-			foundset.sts_status_code_container.loadAllRecords();
-			globals.newRecordKey = null;
-			return true;
-		}
-		if (count == 0){
-			return false;
-		}
-		
-	}
-	return true;
-}
-
-/**
  * Handle changed data.
  *
  * @param {String} oldValue old value
@@ -388,15 +331,9 @@ function onDataChangeFabShop(oldValue, newValue, event) {
 	if (newValue == "" || newValue == null){
 		return false;
 	}
-	changeToStation(event);
+	//changeToStation(event);
 	getStatusList();
 	return true;
-	/**var checkStatus = onActionCheckStatusFabShop(event);
-	if (checkStatus){
-		var arrayS = globals.m.statusCodesDiv[newValue];
-		application.setValueListItems('stsvl_status_code',arrayS);
-	}
-	return checkStatus;*/
 }
 /**
  * @param index
@@ -414,7 +351,7 @@ function changeToStation(event){
 	//if (association_id == null && status_code == null){return}
 	var thisStationId = association_id+", "+status_code;
 	var currIndex = controller.getSelectedIndex();
-	application.output('currently '+currIndex);
+	if (application.isInDeveloper()){application.output('currently '+currIndex)}
 	if (localStations.indexOf(thisStationId) != -1){
 		var stationId = association_id;
 		var statusCode = status_code;
@@ -426,7 +363,7 @@ function changeToStation(event){
 			if (currIndex == index){continue}
 			forms.status_description_lst.controller.setSelectedIndex(index);
 			//if (!rec == newRec){continue}
-			application.output(association_id +"=="+ stationId +","+ status_code +"=="+ statusCode)
+			if (application.isInDeveloper()){application.output(association_id +"=="+ stationId +","+ status_code +"=="+ statusCode)}
 			if (association_id == stationId && status_code == statusCode){
 				databaseManager.revertEditedRecords(foundset);
 				break
@@ -519,4 +456,107 @@ function addOtherChangeFunctions(){
  */
 function onRecordSelection(event, buttonTextSrc) {
 	return _super.onRecordSelection(event, buttonTextSrc)
+}
+/**
+ * Handle focus gained event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"0E93FB09-7337-4A7E-BE4F-8B5B6DA9DE2A"}
+ */
+function onFocusGainedFabShop(event) {
+}
+
+/**
+ * Handle focus gained event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"6B9A6B62-20A3-4CF8-BFCD-587DABD493B7"}
+ */
+function onFocusGainedStatusCode(event) {
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var s = databaseManager.createSelect('db:/stsservoy/status_description');
+	s.result.add(s.columns.status_description_id);
+	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	s.where.add(s.columns.delete_flag.isNull);
+	s.where.add(s.columns.association_id.eq(association_id));
+	s.sort.add(s.columns.status_code);
+	var S = databaseManager.getFoundSet(s);
+	
+	var codes = [];
+	for (var index = 1;index <= S.getSize();index++){
+		/** @type {JSRecord<db:/stsservoy/status_description>} */
+		var rec = S.getRecord(index);
+		codes.push(rec.status_code);
+	}
+	application.setValueListItems('stsvl_status_code',codes);
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"67A16A6B-8B36-4C23-B5A4-65204B5D7FE0"}
+ */
+function getFabShops(event){
+	/** @type {QBSelect<db:/stsservoy/associations>} */
+	var a = databaseManager.createSelect('db:/stsservoy/associations');
+	a.result.add(a.columns.association_uuid);
+	a.where.add(a.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	a.where.add(a.columns.delete_flag.isNull);
+	a.where.add(a.columns.logic_flag.isNull);
+	var A = databaseManager.getFoundSet(a);
+	
+	var assocID = [];
+	var assocName = [];
+	A.loadRecords();
+	for (var index = 1;index <= A.getSize();index++){
+		/** @type {JSRecord<db:/stsservoy/associations>} */
+		var rec = A.getRecord(index);
+		assocID.push(rec.association_uuid);
+		assocName.push(rec.association_name);
+	}
+	application.setValueListItems('stsvl_fab_shops',assocName,assocID);
+}
+/**
+ * @properties={typeid:24,uuid:"84DAE2F9-7FEC-40A0-872F-99118057D76F"}
+ */
+function deletableStatus(){
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var s = databaseManager.createSelect('db:/stsservoy/status_description');
+	s.result.add(s.columns.status_description_id);
+	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	s.where.add(s.columns.delete_flag.isNull);
+	s.where.add(s.columns.end_for_status.eq(status_description_id));
+	var S = databaseManager.getFoundSet(s);
+	if (S.getSize() > 0){return false}
+	
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var t = databaseManager.createSelect('db:/stsservoy/transactions');
+	t.result.add(t.columns.trans_id);
+	t.where.add(t.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	t.where.add(t.columns.delete_flag.isNull);
+	t.where.add(t.columns.status_description_id.eq(status_description_id));
+	var T = databaseManager.getFoundSet(s);
+	if (T.getSize() > 0){return false}
+
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
+	i.result.add(i.columns.idfile_id);
+	i.where.add(i.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	i.where.add(i.columns.delete_flag.isNull);
+	i.where.add(i.columns.status_description_id.eq(status_description_id));
+	var I = databaseManager.getFoundSet(i);
+	if (I.getSize() > 0){return false}
+	
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var j = databaseManager.createSelect('db:/stsservoy/idfiles');
+	j.result.add(j.columns.idfile_id);
+	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.delete_flag.isNull);
+	j.where.add(j.columns.status_description_id.eq(status_description_id));
+	var J = databaseManager.getFoundSet(j);
+	if (J.getSize() > 0){return false}
+	
+	return true;
+
 }

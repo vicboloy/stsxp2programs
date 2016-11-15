@@ -5,7 +5,7 @@
  * @param {Boolean} firstShow form is shown first time after load
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"4BBA8123-E902-4C5A-A90E-D3E469558098"}
+ * @properties={typeid:24,uuid:"25605883-A2FE-498C-884D-C0F309F05695"}
  */
 function onShow(firstShow, event) {
 	if (firstShow){
@@ -13,5 +13,4 @@ function onShow(firstShow, event) {
 		var formName = event.getFormName();
 		formName = formName.replace(version,'');
 		scopes.jobs.tablePrefsLoad(formName);
-	}
-}
+	}}

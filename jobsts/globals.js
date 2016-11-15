@@ -9,50 +9,50 @@ var jobIDmobile = "";
  */
 var statusTypes = [
 i18n.getI18NMessage('sts.status.none'),
-'Fab Raw Received',
-'Fab Receive',
-'Fab Cut',
-'Fab Beam Line',
-'Fab Blased',
-'Fab Drilled',
-'Fab Layout',
-'Fab Fitup',
-'Fab Welded',
-'Fab 1stInspect',
-'Fab 2ndInspect',
-'Fab 3rdInspect',
-'Fab 4thInspect',
-'Fab Inspected',
-'Fab Fabricated',
-'Fab Paint',
-'Fab Bundled',
-'Fab Move',
-'Fab Transfer',
-'Fab Loading',
-'Fab Loaded',
-'Fab LoadVerify',
-'Fab Ship',
-'Galvanizer Received',
-'Galvanizer Shipped',
-'Galvan LoadVerify',
-'Painter Received',
-'Painter Shipped',
-'Paint LoadVerify',
-'FireProofer Received',
-'FireProofer Shipped',
-'FireProof LoadVerify',
-'Other Received',
-'Other Shipped',
-'Other LoadVerify',
-'Jobsite Received',
-'Jobsite Shipped',
-'Jobsite LoadVerify',
-'Jobsite Inspected',
-'Jobsite Painted',
-'Jobsite Field Work',
-'Jobsite Move',
-'Jobsite Issued',
-'Jobsite Erected'
+i18n.getI18NMessage('sts.status.fab.raw.received'),//'Fab Raw Received',
+i18n.getI18NMessage('sts.status.fab.receive'),//'Fab Receive',
+i18n.getI18NMessage('sts.status.fab.cut'),//'Fab Cut',
+i18n.getI18NMessage('sts.status.fab.beam.line'),//'Fab Beam Line',
+i18n.getI18NMessage('sts.status.fab.blasted'),//'Fab Blasted',
+i18n.getI18NMessage('sts.status.fab.drilled'),//'Fab Drilled',
+i18n.getI18NMessage('sts.status.fab.layout'),//'Fab Layout',
+i18n.getI18NMessage('sts.status.fab.fitup'),//'Fab Fitup',
+i18n.getI18NMessage('sts.status.fab.weldup'),//'Fab Welded',
+i18n.getI18NMessage('sts.status.fab.1stinspect'),//'Fab 1stInspect',
+i18n.getI18NMessage('sts.status.fab.2ndinspect'),//'Fab 2ndInspect',
+i18n.getI18NMessage('sts.status.fab.3rdinspect'),//'Fab 3rdInspect',
+i18n.getI18NMessage('sts.status.fab.4thinspect'),//'Fab 4thInspect',
+i18n.getI18NMessage('sts.status.fab.inspected'),//'Fab Inspected',
+i18n.getI18NMessage('sts.status.fab.fabricated'),//'Fab Fabricated',
+i18n.getI18NMessage('sts.status.fab.painted'),//'Fab Paint',
+i18n.getI18NMessage('sts.status.fab.bundled'),//'Fab Bundled',
+i18n.getI18NMessage('sts.status.fab.move'),//'Fab Move',
+i18n.getI18NMessage('sts.status.fab.transfer'),//'Fab Transfer',
+i18n.getI18NMessage('sts.status.fab.loading'),//'Fab Loading',
+i18n.getI18NMessage('sts.status.fab.loaded'),//'Fab Loaded',
+i18n.getI18NMessage('sts.status.fab.loadverify'),//'Fab LoadVerify',
+i18n.getI18NMessage('sts.status.fab.ship'),//'Fab Ship',
+i18n.getI18NMessage('sts.status.galavanizer.received'),//'Galvanizer Received',
+i18n.getI18NMessage('sts.status.galavanizer.shipped'),//'Galvanizer Shipped',
+i18n.getI18NMessage('sts.status.galavanizer.loadverify'),//'Galvan LoadVerify',
+i18n.getI18NMessage('sts.status.painter.received'),//'Painter Received',
+i18n.getI18NMessage('sts.status.painter.shipped'),//'Painter Shipped',
+i18n.getI18NMessage('sts.status.painter.loadverify'),//'Paint LoadVerify',
+i18n.getI18NMessage('sts.status.fireproofer.received'),//'FireProofer Received',
+i18n.getI18NMessage('sts.status.fireproofer.shipped'),//'FireProofer Shipped',
+i18n.getI18NMessage('sts.status.fireproofer.loadverify'),//'FireProof LoadVerify',
+i18n.getI18NMessage('sts.status.other.received'),//'Other Received',
+i18n.getI18NMessage('sts.status.other.shipped'),//'Other Shipped',
+i18n.getI18NMessage('sts.status.other.loadverify'),//'Other LoadVerify',
+i18n.getI18NMessage('sts.status.jobsite.received'),//'Jobsite Received',
+i18n.getI18NMessage('sts.status.jobsite.shipped'),//'Jobsite Shipped',
+i18n.getI18NMessage('sts.status.jobsite.loadverify'),//'Jobsite LoadVerify',
+i18n.getI18NMessage('sts.status.jobsite.inspected'),//'Jobsite Inspected',
+i18n.getI18NMessage('sts.status.jobsite.painted'),//'Jobsite Painted',
+i18n.getI18NMessage('sts.status.jobsite.field.work'),//'Jobsite Field Work',
+i18n.getI18NMessage('sts.status.jobsite.move'), //'Jobsite Move',
+i18n.getI18NMessage('sts.status.jobsite.issued'), //'Jobsite Issued',
+i18n.getI18NMessage('sts.status.jobsite.erected') //'Jobsite Erected'
 ]
 
 /**
@@ -298,12 +298,108 @@ var mob = {
 /**
  * @properties={typeid:35,uuid:"156699CD-41A6-4A0A-80BB-F1DC66692C4B",variableType:-4}
  */
-var processCodes = {
-	all : ['None','Fab Raw Received','Fab Receive','Fab Rel2Fab','Fab Cut','Fab Beam Line','Fab Blasted','Fab Drilled','Fab Layout','Fab Fitup','Fab Welded','Fab 1stInspect','Fab 2ndInspect','Fab 3rdInspect','Fab 4thInspect','Fab Inspected','Fab Fabricated','Fab Paint','Fab Bundled','Fab Move','Fab Transfer','Fab Loading','Fab Loaded','Fab LoadVerify','Fab Ship','Galvanizer Received','Galvanizer Shipped','Galvan LoadVerify','Painter Received','Painter Shipped','Paint LoadVerify','FireProofer Received','FireProofer Shipped','FireProof LoadVerify','Other Received','Other Shipped','Other LoadVerify','Jobsite Received','Jobsite Shipped','Jobsite LoadVerify','Jobsite Inspected','Jobsite Painted','Jobsite Field Work','Jobsite Move','Jobsite Issued','Jobsite Erected'],
-	shipping : ['Fab Transfer','Fab Loading','Fab Loaded','Fab LoadVerify','Fab Ship','Galvanizer Shipped','Galvan LoadVerify','Painter Shipped','Paint LoadVerify','FireProofer Shipped','FireProof LoadVerify','Other Shipped','Other LoadVerify','Jobsite Shipped','Jobsite LoadVerify'],
-	receiving : ['Fab Raw Received','Fab Receive','Galvanizer Received','Painter Received','FireProofer Received','Other Received','Jobsite Received'],
-	transactions : ['Fab Rel2Fab','Fab Cut','Fab Beam Line','Fab Blasted','Fab Drilled','Fab Layout','Fab Fitup','Fab Welded','Fab Fabricated','Fab Paint','Fab Bundled','Fab Move','Jobsite Painted','Jobsite Field Work','Jobsite Move','Jobsite Issued','Jobsite Erected'],
-	inspections : ['Fab 1stInspect','Fab 2ndInspect','Fab 3rdInspect','Fab 4thInspect','Fab Inspected','Jobsite Inspected']
+var processCodes = {	all : [
+		i18n.getI18NMessage('sts.status.none'),
+		i18n.getI18NMessage('sts.status.fab.raw.received'),//'Fab Raw Received',
+		i18n.getI18NMessage('sts.status.fab.receive'),//'Fab Receive',
+		i18n.getI18NMessage('sts.status.fab.rel2fab'),//'Release2Fab,
+		i18n.getI18NMessage('sts.status.fab.cut'),//'Fab Cut',
+		i18n.getI18NMessage('sts.status.fab.beam.line'),//'Fab Beam Line',
+		i18n.getI18NMessage('sts.status.fab.blasted'),//'Fab Blasted',
+		i18n.getI18NMessage('sts.status.fab.drilled'),//'Fab Drilled',
+		i18n.getI18NMessage('sts.status.fab.layout'),//'Fab Layout',
+		i18n.getI18NMessage('sts.status.fab.fitup'),//'Fab Fitup',
+		i18n.getI18NMessage('sts.status.fab.weldup'),//'Fab Welded',
+		i18n.getI18NMessage('sts.status.fab.1stinspect'),//'Fab 1stInspect',
+		i18n.getI18NMessage('sts.status.fab.2ndinspect'),//'Fab 2ndInspect',
+		i18n.getI18NMessage('sts.status.fab.3rdinspect'),//'Fab 3rdInspect',
+		i18n.getI18NMessage('sts.status.fab.4thinspect'),//'Fab 4thInspect',
+		i18n.getI18NMessage('sts.status.fab.inspected'),//'Fab Inspected',
+		i18n.getI18NMessage('sts.status.fab.fabricated'),//'Fab Fabricated',
+		i18n.getI18NMessage('sts.status.fab.painted'),//'Fab Paint',
+		i18n.getI18NMessage('sts.status.fab.bundled'),//'Fab Bundled',
+		i18n.getI18NMessage('sts.status.fab.move'),//'Fab Move',
+		i18n.getI18NMessage('sts.status.fab.transfer'),//'Fab Transfer',
+		i18n.getI18NMessage('sts.status.fab.loading'),//'Fab Loading',
+		i18n.getI18NMessage('sts.status.fab.loaded'),//'Fab Loaded',
+		i18n.getI18NMessage('sts.status.fab.loadverify'),//'Fab LoadVerify',
+		i18n.getI18NMessage('sts.status.fab.ship'),//'Fab Ship',
+		i18n.getI18NMessage('sts.status.galavanizer.received'),//'Galvanizer Received',
+		i18n.getI18NMessage('sts.status.galavanizer.shipped'),//'Galvanizer Shipped',
+		i18n.getI18NMessage('sts.status.galavanizer.loadverify'),//'Galvan LoadVerify',
+		i18n.getI18NMessage('sts.status.painter.received'),//'Painter Received',
+		i18n.getI18NMessage('sts.status.painter.shipped'),//'Painter Shipped',
+		i18n.getI18NMessage('sts.status.painter.loadverify'),//'Paint LoadVerify',
+		i18n.getI18NMessage('sts.status.fireproofer.received'),//'FireProofer Received',
+		i18n.getI18NMessage('sts.status.fireproofer.shipped'),//'FireProofer Shipped',
+		i18n.getI18NMessage('sts.status.fireproofer.loadverify'),//'FireProof LoadVerify',
+		i18n.getI18NMessage('sts.status.other.received'),//'Other Received',
+		i18n.getI18NMessage('sts.status.other.shipped'),//'Other Shipped',
+		i18n.getI18NMessage('sts.status.other.loadverify'),//'Other LoadVerify',
+		i18n.getI18NMessage('sts.status.jobsite.received'),//'Jobsite Received',
+		i18n.getI18NMessage('sts.status.jobsite.shipped'),//'Jobsite Shipped',
+		i18n.getI18NMessage('sts.status.jobsite.loadverify'),//'Jobsite LoadVerify',
+		i18n.getI18NMessage('sts.status.jobsite.inspected'),//'Jobsite Inspected',
+		i18n.getI18NMessage('sts.status.jobsite.painted'),//'Jobsite Painted',
+		i18n.getI18NMessage('sts.status.jobsite.field.work'),//'Jobsite Field Work',
+		i18n.getI18NMessage('sts.status.jobsite.move'), //'Jobsite Move',
+		i18n.getI18NMessage('sts.status.jobsite.issued'), //'Jobsite Issued',
+		i18n.getI18NMessage('sts.status.jobsite.erected') //'Jobsite Erected'
+	],
+	
+	shipping : [//'Fab Transfer','Fab Loading','Fab Loaded','Fab LoadVerify','Fab Ship','Galvanizer Shipped','Galvan LoadVerify','Painter Shipped','Paint LoadVerify','FireProofer Shipped','FireProof LoadVerify','Other Shipped','Other LoadVerify','Jobsite Shipped','Jobsite LoadVerify'],
+		i18n.getI18NMessage('sts.status.fab.transfer'),//'Fab Transfer',
+		i18n.getI18NMessage('sts.status.fab.loading'),//'Fab Loading',
+		i18n.getI18NMessage('sts.status.fab.loaded'),//'Fab Loaded',
+		i18n.getI18NMessage('sts.status.fab.loadverify'),//'Fab LoadVerify',
+		i18n.getI18NMessage('sts.status.fab.ship'),//'Fab Ship',
+		i18n.getI18NMessage('sts.status.galavanizer.shipped'),//'Galvanizer Shipped',
+		i18n.getI18NMessage('sts.status.galavanizer.loadverify'),//'Galvan LoadVerify',
+		i18n.getI18NMessage('sts.status.painter.shipped'),//'Painter Shipped',
+		i18n.getI18NMessage('sts.status.painter.loadverify'),//'Paint LoadVerify',
+		i18n.getI18NMessage('sts.status.fireproofer.shipped'),//'FireProofer Shipped',
+		i18n.getI18NMessage('sts.status.fireproofer.loadverify'),//'FireProof LoadVerify',
+		i18n.getI18NMessage('sts.status.other.shipped'),//'Other Shipped',
+		i18n.getI18NMessage('sts.status.other.loadverify'),//'Other LoadVerify',
+		i18n.getI18NMessage('sts.status.jobsite.shipped'),//'Jobsite Shipped',
+		i18n.getI18NMessage('sts.status.jobsite.loadverify'),//'Jobsite LoadVerify',
+	],
+	receiving : [//'Fab Raw Received','Fab Receive','Galvanizer Received','Painter Received','FireProofer Received','Other Received','Jobsite Received'],
+		i18n.getI18NMessage('sts.status.fab.raw.received'),//'Fab Raw Received',
+		i18n.getI18NMessage('sts.status.fab.receive'),//'Fab Receive',
+		i18n.getI18NMessage('sts.status.galavanizer.received'),//'Galvanizer Received',
+		i18n.getI18NMessage('sts.status.painter.received'),//'Painter Received',
+		i18n.getI18NMessage('sts.status.fireproofer.received'),//'FireProofer Received',
+		i18n.getI18NMessage('sts.status.other.received'),//'Other Received',
+		i18n.getI18NMessage('sts.status.jobsite.received')//'Jobsite Received',
+	],
+	transactions : [//'Fab Rel2Fab','Fab Cut','Fab Beam Line','Fab Blasted','Fab Drilled','Fab Layout','Fab Fitup','Fab Welded','Fab Fabricated','Fab Paint','Fab Bundled','Fab Move','Jobsite Painted','Jobsite Field Work','Jobsite Move','Jobsite Issued','Jobsite Erected'],
+		i18n.getI18NMessage('sts.status.fab.rel2fab'),//'Release2Fab,
+		i18n.getI18NMessage('sts.status.fab.cut'),//'Fab Cut',
+		i18n.getI18NMessage('sts.status.fab.beam.line'),//'Fab Beam Line',
+		i18n.getI18NMessage('sts.status.fab.blasted'),//'Fab Blasted',
+		i18n.getI18NMessage('sts.status.fab.drilled'),//'Fab Drilled',
+		i18n.getI18NMessage('sts.status.fab.layout'),//'Fab Layout',
+		i18n.getI18NMessage('sts.status.fab.fitup'),//'Fab Fitup',
+		i18n.getI18NMessage('sts.status.fab.weldup'),//'Fab Welded',
+		i18n.getI18NMessage('sts.status.fab.fabricated'),//'Fab Fabricated',
+		i18n.getI18NMessage('sts.status.fab.painted'),//'Fab Paint',
+		i18n.getI18NMessage('sts.status.fab.bundled'),//'Fab Bundled',
+		i18n.getI18NMessage('sts.status.fab.move'),//'Fab Move',
+		i18n.getI18NMessage('sts.status.jobsite.painted'),//'Jobsite Painted',
+		i18n.getI18NMessage('sts.status.jobsite.field.work'),//'Jobsite Field Work',
+		i18n.getI18NMessage('sts.status.jobsite.move'), //'Jobsite Move',
+		i18n.getI18NMessage('sts.status.jobsite.issued'), //'Jobsite Issued',
+		i18n.getI18NMessage('sts.status.jobsite.erected') //'Jobsite Erected'
+	],
+	inspections : [//'Fab 1stInspect','Fab 2ndInspect','Fab 3rdInspect','Fab 4thInspect','Fab Inspected','Jobsite Inspected']
+		i18n.getI18NMessage('sts.status.fab.1stinspect'),//'Fab 1stInspect',
+		i18n.getI18NMessage('sts.status.fab.2ndinspect'),//'Fab 2ndInspect',
+		i18n.getI18NMessage('sts.status.fab.3rdinspect'),//'Fab 3rdInspect',
+		i18n.getI18NMessage('sts.status.fab.4thinspect'),//'Fab 4thInspect',
+		i18n.getI18NMessage('sts.status.fab.inspected'),//'Fab Inspected',
+		i18n.getI18NMessage('sts.status.jobsite.inspected')//'Jobsite Inspected',
+	]
 }
 /**
  * @properties={typeid:35,uuid:"931CE413-8017-4A46-96D6-14D1874745B6",variableType:-4}
@@ -1158,11 +1254,9 @@ function getStatusDescriptions(){
 	q.result.add(q.columns.association_id);
 	q.result.add(q.columns.status_code);
 	q.sort.add(q.columns.status_sequence);
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	
 	var resultQ = databaseManager.getFoundSet(q);
 	for (var index = 1;index <= resultQ.getSize();index++){
 		/** @type {JSFoundSet<db:/stsservoy/status_description>} */
@@ -1591,11 +1685,8 @@ function getRouteLegs(){
 	q.result.add(q.columns.status_description_id);
 	q.result.add(q.columns.route_order);
 	q.sort.add(q.columns.route_order);
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID));
 	/** @type {JSFoundSet<db:/stsservoy/route_detail>} */
 	var resultQ = databaseManager.getFoundSet(q);
 	for (var index = 1;index <= resultQ.getSize();index++){
@@ -2016,12 +2107,14 @@ function rfCheckRouteOrder(){
 	}*/
 	///var stationScanned = (mob.transactionList.indexOf(stationId) != -1);
 	//var stationLastId = mob.idfile.status_description_id+"";
-	if (routeId != null) {
+	if (mob.piecemark.e_route_code_id) {
 		checkLegs = l.routeLegs[routeId];
 	}
 	// route legs are checked with status_description_id.UUID
 	///var writeTransRecord = (!allowMultiScan && stationLastId+"" == stationId+"") ||	(routeId == null);
-	var allowInRoute = (checkLegs.indexOf(session.stationId) != -1);
+
+	var allowInRoute = true;
+	if (checkLegs > 0){allowInRoute = (checkLegs.indexOf(session.stationId) != -1)}
 	/**if (m.stationsTimedEnds[stationId]){//if it is a timed end station, then allow it in the route too
 		allowInRoute = (checkLegs.indexOf(m.stationsTimedEnds[stationId]+"") != -1);//implicit route membership for timed status
 	}*/
@@ -2699,20 +2792,25 @@ function onSetCurrentFocus(event){
  * @properties={typeid:24,uuid:"C23097C7-0091-41B2-8224-026404DC4274"}
  */
 function getMenuList(){
+	var office = isOfficeFunction(null);
 	var progList = new Array;
-	progList.push(i18n.getI18NMessage('sts.mobile.inspections'));
-	progList.push(i18n.getI18NMessage('sts.mobile.inspections.w.revs'));//Inspections w/Rev's
-	progList.push(i18n.getI18NMessage('sts.mobile.shipping'));//Shipping
-	progList.push(i18n.getI18NMessage('sts.mobile.transactions'));//Transactions
-	progList.push(i18n.getI18NMessage('sts.mobile.transactions.w.revs'));//Transactions w/Rev's
-	progList.push(i18n.getI18NMessage('sts.mobile.receiving'));//Receiving
-	progList.push(i18n.getI18NMessage('sts.mobile.sample'));//Sample
-	progList.push(i18n.getI18NMessage('sts.mobile.build.bundles'));//Build Bundles
-	progList.push(i18n.getI18NMessage('sts.mobile.saw'));//Saw
+	if (!office){
+		progList.push(i18n.getI18NMessage('sts.mobile.inspections'));
+		progList.push(i18n.getI18NMessage('sts.mobile.inspections.w.revs'));//Inspections w/Rev's
+		progList.push(i18n.getI18NMessage('sts.mobile.shipping'));//Shipping
+		progList.push(i18n.getI18NMessage('sts.mobile.transactions'));//Transactions
+		progList.push(i18n.getI18NMessage('sts.mobile.transactions.w.revs'));//Transactions w/Rev's
+		progList.push(i18n.getI18NMessage('sts.mobile.receiving'));//Receiving
+		progList.push(i18n.getI18NMessage('sts.mobile.sample'));//Sample
+		progList.push(i18n.getI18NMessage('sts.mobile.build.bundles'));//Build Bundles
+		progList.push(i18n.getI18NMessage('sts.mobile.saw'));//Saw
+	}
 	progList.push(i18n.getI18NMessage('sts.mobile.status'));//Status
 	progList.push(i18n.getI18NMessage('sts.mobile.find.piece.marks'));//Find Piece Marks
-	progList.push(i18n.getI18NMessage('sts.mobile.final.ship'));//Final Ship
-	progList.push(i18n.getI18NMessage('sts.mobile.ship.by.sequence'));//Ship By Sequence
+	if (!office){
+		progList.push(i18n.getI18NMessage('sts.mobile.final.ship'));//Final Ship
+		progList.push(i18n.getI18NMessage('sts.mobile.ship.by.sequence'));//Ship By Sequence
+	}
 	progList.sort();
 	progList.push(i18n.getI18NMessage('sts.mobile.exit'));//'Exit'
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
@@ -3119,19 +3217,17 @@ function rfGetTransactions(){
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
 	q.result.add(q.columns.trans_id);
-	q.result.add(q.columns.location);
+	/**q.result.add(q.columns.location);
 	q.result.add(q.columns.status_description_id);
 	q.result.add(q.columns.transaction_date);
 	q.result.add(q.columns.trans_code);
 	q.result.add(q.columns.transaction_start);
-	q.result.add(q.columns.transaction_end);
+	q.result.add(q.columns.transaction_end); */
 	q.sort.add(q.columns.transaction_date.desc);
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
-		.add(q.columns.idfile_id.eq(mob.idfile.idfile_id))
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.idfile_id.eq(mob.idfile.idfile_id));
+
 	mob.transactions = databaseManager.getFoundSet(q);
 }
 /**
@@ -3316,9 +3412,9 @@ function rfTimed(){
 			var rec = transacts.getRecord(index);
 			//application.output(rec);
 			if (rec.trans_status == mob.timedBegStat){ // begin with null end
-				globals.logger(true,'start timed status '+mob.timedBegStat);
+				globals.logger(true,i18n.getI18NMessage('sts.txt.timed.cycle.start')+mob.timedBegStat);
 				if (rec.transaction_end == null){
-					globals.logger(true,'start timed status '+mob.timedBegStat+' already started');
+					globals.logger(true,i18n.getI18NMessage('mob.timedBegStat+',new Array(mob.timedBegStat)));
 					mob.timedError = "1133"; // status not yet ended
 					return true;
 				}
@@ -3340,6 +3436,7 @@ function rfTimed(){
 		//x cannot end once ended
 		//x cannot end if not started
 		mob.timedTotalMin = 0;
+		transacts = mob.transactions;
 		for (index = 1;index <= transacts.getSize();index++){
 			/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 			rec = transacts.getRecord(index);
@@ -3363,10 +3460,19 @@ function rfTimed(){
 					mob.timedTargetRec = rec;
 					mob.timedError = "";
 					mob.percent = 0;
-					var message = 'Total Min:'+Math.ceil((mob.timedTotalMin+0.005)*100)/100+'\nCycle Min:'+Math.ceil((mob.timedDuration*1+0.005)*100)/100+'\nComplete?';
+					var message = i18n.getI18NMessage('sts.txt.total.min')+
+										Math.ceil((mob.timedTotalMin+0.005)*100)/100+
+										'\n'+i18n.getI18NMessage('sts.txt.total.max')+
+										Math.ceil((mob.timedDuration*1+0.005)*100)/100+
+										'\n'+i18n.getI18NMessage('sts.txt.complete')+'?';
 					globals.DIALOGS.setDialogWidth(200);
 					globals.DIALOGS.setDialogHeight(200);
-					var response = globals.DIALOGS.showQuestionDialog('End of Timed Cycle', message, 'NO', 'yes');
+					var response = globals.DIALOGS.showQuestionDialog(
+						i18n.getI18NMessage('sts.txt.end.of.timed.cycle'),
+						message,
+						i18n.getI18NMessage('sts.btn.no'),
+						i18n.getI18NMessage('sts.btn.yes'));
+					//	'End of Timed Cycle', message, 'NO', 'yes');
 					if (response == 'yes'){
 						mob.percent = 100;
 					}
@@ -3420,8 +3526,11 @@ function rfTransCode(){
 	 * FABRICATOR FAB
 	 */
 	var activity = rfActivity(); // returns activity related to formName
-	var installedAt = scopes.prefs.stsInstalled.toUpperCase();
-	//var installedAt = 'FABRICATOR'; // JOEJOEJOE 20150217
+	var installedAt = scopes.prefs.stsInstalled;
+	if (!installedAt){
+		installedAt = 'FABRICATOR'; // JOEJOEJOE 20150217
+	}
+	installedAt = installedAt.toUpperCase();
 	var action = "";
 	switch (activity) {
 		case 'S': action = "SH"; break;
@@ -3653,7 +3762,7 @@ function rfSetIdfileTimedStatus(idfileId){
 	);
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() != 1){
-		globals.logger(true,'Transactions '+resultQ.getSize()+' for idfile '+idfileId);
+		globals.logger(true,i18n.getI18NMessage('sts.txt.transactions.failed',new Array(resultQ.getSize(),idfileId)));
 		return null;
 	}
 	return resultQ.getRecord(1);
@@ -3673,7 +3782,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	//rfGetTransactionList(globals.mob.idfile);
 	//var routeOK = rfCheckRouteOrder(statusId);
 	//application.output('save scan transaction');
-	globals.logger(true,'Save scan transaction operation.');
+	globals.logger(true,i18n.getI18NMessage('sts.txt.transactions.save.scan'));
 	//worker_id,worker2_id,worker3_id,worker4_id,worker5_id, tenant_uuid, employee_id,fabshop_id (guids)
 	//location, status, code, edit_date
 	//transaction_date,transaction_duration,transaction_start,transaction_end
@@ -3785,7 +3894,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 		var rec = recordsToSave.pop();
 		var status = databaseManager.saveData(rec);
 		/**if (!status){
-			globals.logger(true,'save of record failed');
+			globals.logger(true,i18n.getI18NMessage('sts.txt.record.save.failed'));
 		}*/
 	}
 	if (routeOK){
@@ -3849,11 +3958,11 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			rec = recordsToSave.pop();
 			status = databaseManager.saveData(rec);
 			if (!status){
-				globals.logger(true,'save of record failed');
+				globals.logger(true,i18n.getI18NMessage('sts.txt.record.save.failed'));
 			}
 		}
 	} else {
-		globals.logger(true,'Route not ok for this status');
+		globals.logger(true,i18n.getI18NMessage('431'));
 	}
 	return routeOK;
 }
@@ -4035,7 +4144,7 @@ function errorDialogMobile(event,errorNum,returnField,additionalMsg){
 	if (mobile){
 		globals.rfErrorShow(errorMessage);
 	} else {
-		DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.error')+errorNum,errorMessage);
+		DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.error.number', new Array(errorNum)),errorMessage);
 	}
 	scopes.globals.logger(false,errorMessage);
 }
@@ -4190,14 +4299,14 @@ function rfProcessBarcode(event){
 	if (!barcodeAttached()){
 		if (application.isInDeveloper()){application.output('ERROR: Database inconsistent with barcode');}//errortypeneeded
 		errorDialogMobile(event,'6002','current');//6002 This item has no associated piecemark.
-		logger(true,'No idfiles for this barcode.');
+		logger(true,i18n.getI18NMessage('sts.txt.barcode.no.idfiles'));
 		rfWindowLastInfoClear();
 		return true;
 	}
 	var onHold = barcodeOnHold(); //first check 1/29/2015 pp 
 	if (onHold){
 		errorDialogMobile(event,'1050','current');//1050 One or more of the ID Numbers are on Hold.
-		logger(true,'Idfile reports item on hold.');
+		logger(true,i18n.getI18NMessage('1050'));
 		return true;
 	}
 	rfGetMobIdfile();
@@ -4205,7 +4314,7 @@ function rfProcessBarcode(event){
 	rfGetMobPiecemark(); // Get piecemark record
 	if (!barcodePlant()){
 		errorDialogMobile(event,'6001','current');//6001 This item doesn't belong to this Division.
-		logger(true,'Piecemark is in the wrong plant.');
+		logger(true,i18n.getI18NMessage('6001'));
 		return true;
 	}
 	var bundle = barcodeIsBundle(mob.barcode);
@@ -4215,6 +4324,7 @@ function rfProcessBarcode(event){
 	rfGetJobUnits();
 	rfGetSpecsItem();
 	switch (formName){
+		/**
 		case 'rf_transactions':
 		case 'rf_transactions_rev':
 		case 'rf_inspections':
@@ -4230,7 +4340,7 @@ function rfProcessBarcode(event){
 			var routeOK = rfCheckRouteOrder(); // route checks out 
 			if (!routeOK){
 				if (application.isInDeveloper()){application.output('Routing not ok');}
-				errorDialogMobile('rf_transactions.current','405','current',missing);//405 
+				errorDialogMobile('rf_transactions.current','405','current','missing');//405 
 				return true;
 			}
 			var shipStat = barcodeShip();
@@ -4277,10 +4387,11 @@ function rfProcessBarcode(event){
 			forms[formName].totalPieces = mob.bundle.pieces;
 			forms[formName].totalWeight = mob.bundle.weight;
 			break;
-		}
+		}*/
 		case 'rf_mobile_view': {
 			switch (session.program){
-				case 'Build Bundles2':
+				//case 'Build Bundles2':
+				case i18n.getI18NMessage('sts.mobile.build.bundles')://Bundles
 					rfMobileViewNextField(event);
 					if (application.isInDeveloper()){application.output('add to bundle');}
 					if (flagF8){
@@ -4308,7 +4419,8 @@ function rfProcessBarcode(event){
 					forms[formName].totalPieces = mob.bundle.pieces;
 					forms[formName].totalWeight = mob.bundle.weight;
 					break;
-				case 'Receiving':
+				//case 'Receiving':
+				case i18n.getI18NMessage('sts.mobile.receiving')://Receiving
 					rfWindowLastInfoDisplay(event);
 					rfGetPreviousStatusLocation(); // set previous status
 					routeOK = rfCheckRouteOrder(); // route checks out 
@@ -4320,11 +4432,14 @@ function rfProcessBarcode(event){
 					shipStat = barcodeShip();
 					shipped = barcodeShipped();
 					break;
-				case 'Transactions2':
-				case 'Transactions2 w/Rev\'s2':
-				case 'Inspections2':
-				case 'Transactions2 w/Rev\'s2':
-				case 'Shipping':
+				case i18n.getI18NMessage('sts.mobile.transactions')://Transactions
+				case i18n.getI18NMessage('sts.mobile.transactions.w.revs')://Transactions w/Rev's
+				case i18n.getI18NMessage('sts.mobile.inspections'):
+				case i18n.getI18NMessage('sts.mobile.inspections.w.revs')://Inspections w/Rev's
+				case i18n.getI18NMessage('sts.mobile.shipping')://Shipping
+				case i18n.getI18NMessage('sts.mobile.sample')://Sample
+				case i18n.getI18NMessage('sts.mobile.saw')://Saw
+				
 					if (flagF8){
 						rfF8ReversalPrep();
 						rfF8ReversalTransaction();
@@ -4360,7 +4475,8 @@ function rfProcessBarcode(event){
 					rfWindowLastInfoDisplay(event);
 					rfGetLocationStats2(forms[formName].id_location);
 					break;
-				case 'Status' :
+				case i18n.getI18NMessage('sts.mobile.status')://Status
+				case i18n.getI18NMessage('sts.mobile.find.piece.marks')://Find Piece Marks
 					rfWindowLastInfoDisplay(event);
 					rfGetLocationStats2(forms[formName].id_location);
 					break;
@@ -4727,9 +4843,15 @@ function onDataChangeBundle(oldValue, bundle, event) {
 		// create bundle id code, no response on input, so create next bundleId
 		// dialog to accept next bundle number
 		bundleCreateValid();
-		var message = 'Do you wish to use the new Bundle Number: '+session.bundlePrefix+session.bundleSuffix;
-		var response = globals.DIALOGS.showQuestionDialog('New Bundle Number?', message, 'NO', 'yes');
-		if (response == 'NO'){
+		var message = i18n.getI18NMessage('sts.txt.use.new.bundle.number')+
+				session.bundlePrefix+session.bundleSuffix;
+		var response = globals.DIALOGS.showQuestionDialog(
+			i18n.getI18NMessage('sts.txt.new.bundle.number'),
+			message,
+			i18n.getI18NMessage('sts.btn.no'),
+			i18n.getI18NMessage('sts.btn.yes'));
+			// 'New Bundle Number?', message, 'NO', 'yes');
+		if (response == 'No'){
 			mob.bundle.Id = "";
 			onFocusClear(event);
 			return true;
@@ -5115,8 +5237,12 @@ function rfF4BundleClear(){
 	 * set all idfiles with bundle id to empty string
 	 * set all transactions for idfiles to FABDB
 	 */
-	var deleteBundle = globals.DIALOGS.showQuestionDialog('Delete Bundle?','YES','no');
-	if (deleteBundle == "no"){
+	var deleteBundle = globals.DIALOGS.showQuestionDialog(
+		i18n.getI18NMessage('sts.txt.bundle.delete'),
+		i18n.getI18NMessage('sts.btn.yes'),
+		i18n.getI18NMessage('sts.btn.no'));
+		// 'Delete Bundle?','YES','no');
+	if (deleteBundle == "No"){
 		flagFunction = null;
 		return;
 	}
@@ -5560,14 +5686,19 @@ function loadNumberCheck(loadNumber){
 		case 'Receiving':
 			// error message that must use existing load number, number does not exist
 			globals.errorDialogMobile(null,301,'loadnumber',null);//301 This Load was not found.
-			globals.logger(true,'Load Number does not exist.');
+			globals.logger(true,i18n.getI18NMessage('sts.txt.load.does.not.exist'));
 			return true;
 			break;
 		default:
 			session.loadNextNumber++;
-			var message = 'Do you wish to use the new Load Number: '+session.loadNextNumber;
-			var response = globals.DIALOGS.showQuestionDialog('New Load Number?', message, 'NO', 'yes');
-			if (response == 'NO'){
+			var message = i18n.getI18NMessage('sts.txt.load.use.new.number')+session.loadNextNumber;
+			var response = globals.DIALOGS.showQuestionDialog(
+				i18n.getI18NMessage('sts.txt.load.new.number'),
+				message,
+				i18n.getI18NMessage('sts.btn.no'),
+				i18n.getI18NMessage('sts.btn.yes'));
+				//'New Load Number?', message, 'NO', 'yes');
+			if (response == 'No'){
 				session.loadId = null;
 				session.loadNextNumber = 0;
 				//onFocusClear(event);
@@ -5874,7 +6005,7 @@ function ftDecToString(convertType, decimal, length, returnType){
 				while (base > 0){
 					number2 = Math.floor(fraction * base);
 					number16 = Math.round(fraction * base);//init16 = ROUND((FRAC * BASE),0)
-					if (application.isInDeveloper()){application.output(number16+"/"+base);}
+					//if (application.isInDeveloper()){application.output(number16+"/"+base);}
 					if (number16/2 != Math.floor(number16/2)){
 						break;
 					}
@@ -6356,13 +6487,18 @@ function onDataChangeHeat(oldValue, newValue, event) {
 	/** @type {JSFoundSet<db:/stsservoy/heats>} */
 	var fs3 = databaseManager.getFoundSet(s);
 	if (fs3.getSize() == 0){
-		globals.logger(true,newValue+' heat not found on this job# '+session.jobNumber);
+		globals.logger(true,i18n.getI18NMessage('sts.txt.heat.not.found.this.job',new Array(newValue,session.jobNumber)));
 		var message = 'Do you wish to use the new HEAT Number: '+newValue;
-		var response = globals.DIALOGS.showQuestionDialog('New HEAT Number?', message, 'NO', 'yes');
-		if (response == 'NO'){//JOEJOEJOE
+		var response = globals.DIALOGS.showQuestionDialog(
+			i18n.getI18NMessage('sts.txt.heat.new.number',new Array(newValue)),
+			i18n.getI18NMessage('sts.txt.heat.new.number',new Array(newValue)),
+			i18n.getI18NMessage('sts.btn.no'),
+			i18n.getI18NMessage('sts.btn.yes'));
+			//'New HEAT Number?', message, 'NO', 'yes');
+		if (response == 'No'){//JOEJOEJOE
 			newValue = oldValue;
 		} else {
-			globals.logger(true,newValue+' heat created for job# '+session.jobNumber);
+			globals.logger(true,i18n.getI18NMessage('sts.txt.heat.created.for.job.number',new Array(newValue),session.jobNumber));
 			var fs = databaseManager.getFoundSet('stsservoy','heats');
 			/** @type {JSFoundSet<db:/stsservoy/heats>} */
 			var rec = fs.newRecord();
@@ -7864,22 +8000,30 @@ function checkUserPermissions(userId){
  * @properties={typeid:24,uuid:"559ACDBC-A3F4-4D8A-A75F-1D8EF93AB6EA"}
  */
 function getCustomerList(){
-	var sql = "select customer_number,name,customer_id from customers where delete_flag IS NULL and tenant_uuid = '"+session.tenant_uuid+"'";
-	/**
-	/ ** @type {QBSelect<db:/stsservoy/customers>} * /
+	/** @type {QBSelect<db:/stsservoy/customers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/customers');
 	q.result.add(q.columns.customer_id);
 	q.result.add(q.columns.customer_number);
+	q.result.add(q.columns.name);
 	q.result.distinct = true;
-	q.where.add(
-		q.and
-			.add(q.columns.delete_flag.isNull)
-			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		);
-	var resultQ = databaseManager.getFoundSet(q);*/
+	q.sort.add(q.columns.name);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	/** @type {JSFoundSet<db:/stsservoy/customers>} */
+	var resultQ = databaseManager.getFoundSet(q);
+
+	
 	var nameArray = [];
 	var idArray = [];
-	/** @type {JSFoundSet<db:/stsservoy/customers>} */
+	var index = 1;
+	while (index <= resultQ.getSize()){
+		/** @type {JSRecord<db:/stsservoy/customers>} */
+		var rec = resultQ.getRecord(index);
+		idArray.push(rec.customer_id);
+		nameArray.push(rec.name+' #'+rec.customer_number);
+		index++;
+	}
+	/** @type {JSFoundSet<db:/stsservoy/customers>} * /
 	var ds = databaseManager.getDataSetByQuery('stsservoy',sql,[],-1);
 	ds.sort(2,true);
 	for (var index = 1;index <= ds.getMaxRowIndex();index++){
@@ -7889,8 +8033,8 @@ function getCustomerList(){
 		
 		nameArray.push(ds.customer_number+' | '+ds.name);
 		nameArray.push(ds.name+' | '+ds.customer_number);
-	}
-	application.setValueListItems('stsvlt_customers',nameArray,idArray);
+	} */
+	application.setValueListItems('stsvl_customerNumberAndName',nameArray,idArray);
 	//return ds;
 }
 /**
@@ -7928,8 +8072,13 @@ function onFocusGainedCustomer(event) {
  * @properties={typeid:24,uuid:"9253D321-FD2B-4B8A-98DF-DEEB44B94028"}
  */
 function addCustomer(event){
-	var addCust = globals.DIALOGS.showQuestionDialog('Customer Not Found','Add New Customer?','Add Customer','Cancel');
-	if (addCust == 'Add Customer'){
+	var addCust = globals.DIALOGS.showQuestionDialog(
+	i18n.getI18NMessage('sts.txt.customer.not.found'),
+	i18n.getI18NMessage('sts.txt.customer.new'),
+	i18n.getI18NMessage('sts.btn.yes'),
+	i18n.getI18NMessage('sts.btn.no'));
+		// 'Customer Not Found','Add New Customer?','Add Customer','Cancel');
+	if (addCust == 'Yes'){
 		forms.MWBase.onActionClickCustomer(event);
 	}
 }
@@ -7948,7 +8097,7 @@ function getUserNames(){
 	q.where.add(
 		q.and
 			.add(q.columns.delete_flag.isNull)
-			.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+			.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid))
 			.add(q.columns.delete_flag.eq(null))
 		);
 	var resultQ = databaseManager.getFoundSet(q);
@@ -7969,7 +8118,12 @@ function killClient(event){
 	var clientId = forms[event.getFormName()].client_id;
 	if (currentId+"" == clientId+""){return}
 	//forms['view_license'].elements.tabless.removeAllTabs();
-	var response = globals.DIALOGS.showQuestionDialog('Kill off client?','Kill client?','No','Yes');
+	var response = globals.DIALOGS.showQuestionDialog(
+		i18n.getI18NMessage('sts.txt.kill.off.client'),
+		i18n.getI18NMessage('sts.txt.kill.client'),
+		i18n.getI18NMessage('sts.btn.no'),
+		i18n.getI18NMessage('sts.btn.yes'));
+		//'Kill off client?','Kill client?','No','Yes');
 	if (response == "Yes"){
 		var client = plugins.UserManager.getClientByUID(clientId);
 		client.shutdown();
@@ -8434,4 +8588,20 @@ function onDataChangeAssocType(oldValue, newValue, event) {
 function closeClient(){
 	//application.output('testing execute functions');
 	application.exit();
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"1F1EA2FF-213C-49B0-B007-92C3CD804EAF"}
+ */
+function isOfficeFunction(event){
+	/** @type {QBSelect<db:/stsservoy/associations>} */
+	var aa = databaseManager.createSelect('db:/stsservoy/associations');
+	aa.result.add(aa.columns.association_uuid);
+	aa.where.add(aa.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	aa.where.add(aa.columns.association_uuid.eq(globals.session.associationId));
+	var A = databaseManager.getFoundSet(aa);
+	/** @type {JSRecord<db:/stsservoy/associations>} */
+	var rec = A.getRecord(1);
+	return (rec.logic_flag == 1);
 }

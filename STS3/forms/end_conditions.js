@@ -16,12 +16,11 @@ var selectedIndex = 0;
  * @properties={typeid:24,uuid:"16DA5ADC-AD41-4B59-93B4-EBB53F37C097"}
  */
 function onShow(firstShow, event) {
-	if (firstShow){
-	}
 	globals.setUserFormPermissions(event);
 	controller.readOnly = true;
-	if (controller.getMaxRecordIndex() == 0){
-		controller.newRecord();
+	loadFoundset();
+	if (foundset.getSize() < 0){
+		elements.btn_Edit.enabled = false;
 	}
 }
 
@@ -32,8 +31,10 @@ function onShow(firstShow, event) {
  */
 function onActionAdd(event){
 	globals.selectedEndPrepIndex = controller.getSelectedIndex();
-	onEdit(event,true);
 	controller.newRecord();
+	onEdit(event,true);
+	edit_date = new Date();
+	tenant_uuid = globals.session.tenant_uuid;
 	globals.newRecordKey = end_condition_id;
 }
 
@@ -43,11 +44,18 @@ function onActionAdd(event){
  * @properties={typeid:24,uuid:"CDFF9131-9C62-44EC-9FB4-AD364EEAA176"}
  */
 function onActionDelete(event) {
-	globals.doDialog('Remove End Condition','Delete this End Condition?','Delete','Cancel');
+	var response = globals.doDialog(i18n.getI18NMessage('sts.txt.delete.record'),
+		i18n.getI18NMessage('sts.txt.delete.this.end.condition'),
+		i18n.getI18NMessage('sts.txt.delete'),
+		i18n.getI18NMessage('sts.txt.cancel'));
+		//'Remove End Condition','Delete this End Condition?','Delete','Cancel');
 	if (globals.dialogResponse == 'yes'){
-			controller.deleteRecord();
-		}
-
+		delete_flag = 99;
+		edit_date = new Date();
+		databaseManager.saveData(foundset);
+		loadFoundset();
+		onEdit(event,false);
+	}
 }
 
 /**
@@ -66,7 +74,6 @@ function onRecordSelectionEP(event) {
  */
 function onActionEdit(event) {
 	onEdit(event,true);
-	databaseManager.setAutoSave(false);	
 }
 
 /**
@@ -76,13 +83,15 @@ function onActionEdit(event) {
  * @properties={typeid:24,uuid:"BE307F94-F375-403F-8A60-7CD895058CF8"}
  */
 function onEdit(event,editStatus){
+	var records = (foundset.getSize() > 0);
+	elements.btn_Edit.visible = !editStatus && records;
+	elements.btn_Delete.visible = !editStatus && records;
+	//if (!records){return}
 	editFlag = editStatus;
 	controller.readOnly = !editStatus;
 	elements.btn_New.visible = !editStatus;
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Cancel.visible = editStatus;
-	elements.btn_Edit.visible = !editStatus;
-	elements.btn_Delete.visible = !editStatus;
 	elements.tablessX.enabled = !editStatus;
 }
 
@@ -93,8 +102,9 @@ function onEdit(event,editStatus){
  * @properties={typeid:24,uuid:"A6202325-9051-40BE-B2D6-7474956362B2"}
  */
 function onActionCancelEdit(event) {
-	onEdit(event,false);
 	databaseManager.revertEditedRecords(foundset);
+	onEdit(event,false);
+	loadFoundset();
 	//databaseManager.setAutoSave(true);
 }
 
@@ -122,34 +132,23 @@ function onActionSaveEdit(event) {
  * @properties={typeid:24,uuid:"CF0DAAF4-CED6-447C-8442-F3F050C78726"}
  */
 function onDataChange(oldValue, newValue, event) {
-	databaseManager.nullColumnValidatorEnabled = false;
-	databaseManager.setAutoSave(true);
-	var fs = foundset.find();
-	if (fs) //find will fail if autosave is disabled and there are unsaved records
-	{
-		end_prep = newValue;
-		foundset.search();
-		var index = 0;
-		var count = databaseManager.getFoundSetCount(foundset);
-		if (count > 1){
-			var record = null;
-			for (index = 1;index <= foundset.getSize(); index++){
-				record = foundset.getRecord(index);
-				if (record.end_condition_id == globals.newRecordKey){
-					foundset.deleteRecord(record);
-				}
-			}
-			onEdit(event,false);
-		}
-		foundset.sts_end_conditions.loadAllRecords();
-		foundset.setSelectedIndex(globals.newRecordIndex);
+	/** @type {JSFoundSet<db:/stsservoy/end_conditions>} */
+	/** @type {QBSelect<db:/stsservoy/end_conditions>} */
+	var e = databaseManager.createSelect('db:/stsservoy/end_conditions');
+	e.result.add(e.columns.end_condition_id);
+	e.where.add(e.columns.delete_flag.isNull);
+	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	e.where.add(e.columns.end_prep.eq(newValue));
+	var E = databaseManager.getFoundSet(e);
+	if (E.getSize() > 0){
+		onActionCancelEdit(event);
+		var rec = E.getRecord(1);
+		var recIndex = foundset.getRecordIndex(rec);
+		foundset.setSelectedIndex(recIndex);
 	}
-	for (index = 1; index <= foundset.getSize(); index++){
-		if (foundset.getRecord(index).end_prep == newValue){
-			controller.setSelectedIndex(index);
-		}
-	}
-	databaseManager.setAutoSave(true);
+	onActionEdit(event);
+	//foundset.sts_end_conditions.loadAllRecords();
+
 	globals.newRecordKey = "";
 	return true
 }
@@ -162,6 +161,19 @@ function onDataChange(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"0776FE40-F23B-4ECA-9DB8-009284BFA9E6"}
  */
 function onActionClose(event) {
+	onActionCancelEdit(event);
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
+}
+/**
+ * @properties={typeid:24,uuid:"F8C719B4-53B2-491C-B582-F96AE633DEE7"}
+ */
+function loadFoundset(){
+	/** @type {QBSelect<db:/stsservoy/end_conditions>} */
+	var e = databaseManager.createSelect('db:/stsservoy/end_conditions');
+	e.result.add(e.columns.end_condition_id);
+	e.where.add(e.columns.delete_flag.isNull);
+	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var E = databaseManager.getFoundSet(e);
+	foundset.loadRecords(E);
 }

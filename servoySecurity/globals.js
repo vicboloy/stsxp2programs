@@ -624,7 +624,7 @@ function secLogin(userID){
 	var users;															//	The users foundset
 	
 	if(!userID){ //	validate input
-		scopes.globals.secLogger('No such user ID '+userID);
+		scopes.globals.secLogger(i18n.getI18NMessage('sts.txt.user.no.such.animal',new Array(userID)));
 		return false;
 	}
 	if (userID == "NEW"){
@@ -635,11 +635,11 @@ function secLogin(userID){
 	if (application.isInDeveloper()){application.output('before logical login');}
 	if(users.loadRecords(userID) && users.is_account_active){ 			//	load user record, check if active account
 		users.last_login = new Date();									//	reset last login date & login user
-		secLogger('User '+userID+' login.');
+		secLogger(i18n.getI18NMessage('sts.txt.user.login',new Array(userID)));
 		return security.login(users.user_name,users.user_uuid,[SEC_ADMINISTRATORS]);
 	}
 	if (application.isInDeveloper()){application.output('after logical login');}
-	if (users.is_account_active){scopes.globals.secLogger('User '+users.user_name+' is inactive.')}
+	if (users.is_account_active){scopes.globals.secLogger(i18n.getI18NMessage('sts.txt.user.inactive',new Array(users.user_name)))}
 	return null;  //added to return some value JOE
 }
 
@@ -916,7 +916,7 @@ function secGetUserID2(userName, tenantID) {
 			return users.user_uuid;										//	return the ID
 		}
 	}
-	scopes.globals.secLogger('UserName '+userName+' invalid.');
+	scopes.globals.secLogger(i18n.getI18NMessage('sts.txt.user.invalid',new Array(userName)));
 	return null;														//	could not get user
 }
 /**
@@ -1103,7 +1103,7 @@ function secGetTenantID2(userName,companyName){
 		if (company.search()){
 			tenantID = company.tenant_uuid;
 		} else {
-			scopes.globals.secLogger('No such company '+companyName+' for login'+userName+'.');
+			scopes.globals.secLogger(i18n.getI18NMessage('sts.txt.user.no.such.company',new Array(companyName,userName)));
 			return false;
 		}
 	}
@@ -1124,7 +1124,7 @@ function secGetTenantID2(userName,companyName){
 		if (companyName != ""){
 			users.tenant_uuid = tenantID;
 		} else {
-			scopes.globals.secLogger('Company '+companyName+" doesn't have a user "+userName);
+			scopes.globals.secLogger(i18n.getI18NMessage('sts.txt.company.no.such.user',new Array(companyName,userName)));
 			null;
 			
 		}
@@ -1154,7 +1154,7 @@ function secGetTenantID2(userName,companyName){
 			}
 		}
 	}
-	scopes.globals.secLogger('Company '+companyName+' not found.');
+	scopes.globals.secLogger(i18n.getI18NMessage('sts.txt.company.not.found',new Array(companyName)));
 	return null;														//	could not find tenant
 }
 

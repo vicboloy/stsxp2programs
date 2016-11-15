@@ -1453,7 +1453,6 @@ function tableHideField(fieldName,formName){
  * @properties={typeid:24,uuid:"6F0DC9D2-F762-48DB-8986-1B959B8F4C8B"}
  */
 function tablePrefsLoad(formx){
-	if (application.isInDeveloper()){application.output('tablePrefsLoad table '+formy+' table prefs '+prefsFormName)}
 	if (!formx || formx == ""){
 		formx = application.getActiveWindow().controller.getName();
 	}
@@ -1462,6 +1461,7 @@ function tablePrefsLoad(formx){
 		version = forms[formx].versionForm;
 	}
 	version = globals.getInstanceForm(formx);
+	var formy = null;
 	if (forms[formx].elements.tabless){
 		var formy = forms[formx].elements.tabless.getTabFormNameAt(1);
 	} else {
@@ -1470,37 +1470,46 @@ function tablePrefsLoad(formx){
 	var prefsFormName = formy.replace(version,"");
 	globals.a.tempHiddenColumns[formy] = [];
 	var elems = forms[formy].elements;
-	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
+	
+	
+	if (application.isInDeveloper()){application.output('xxx tablePrefsLoad table '+formy.replace(version,"")+'_table')}
 	for (var index in elems){
 		var colName = elems[index].getName();
 		var vis = (elems[index].isVisible()) ? 1 : 0;
 		var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+vis;
-		if (prefsFS.find()) {
-			prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-			prefsFS.form_name = formy.replace(version,"");
-			prefsFS.field_name = colName;
-			prefsFS.tenant_uuid = globals.secCurrentTenantID;
-			var index2 = prefsFS.search();
-			if (index2 > 0) {
-				var sets = prefsFS.field_value.split(",");
-				if (prefsFS.field_value != colDims){
-					//application.output('field '+colName+" dims "+colDims+" prefs "+prefsFS.field_value);
-					elems[index].setLocation(sets[0],sets[1]);
-					elems[index].setSize(sets[2],elems[index].getHeight());
-					if (sets[3]){
-						//application.output('entering visible '+sets[3]);
-						elems[index].visible = (sets[3] == 1);
-					}
-				}
-				if (sets[3] && sets[3] == 0 && globals.a.tempHiddenColumns[formy].indexOf(colName) == -1){
-					globals.a.tempHiddenColumns[formy].push(colName);
+		/** @type {QBSelect<db:/stsservoy/preferences2>} */
+		var pp = databaseManager.createSelect('db:/stsservoy/preferences2');
+		pp.result.add(pp.columns.preferences2_id);
+		pp.where.add(pp.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		pp.where.add(pp.columns.user_uuid.eq(application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF')));
+		pp.where.add(pp.columns.form_name.eq(formy.replace(version,"")+'_table'));
+		pp.where.add(pp.columns.field_name.eq(colName));
+		var PP = databaseManager.getFoundSet(pp);
+		//application.output('element '+colName+' formy '+formy + ' get size '+PP.getSize());
+		
+
+		if (PP.getSize() > 0) {
+			/** @type {JSRecord<db:/stsservoy/preferences2>} */
+			var rec = PP.getRecord(1);
+			//application.output('element '+colName+' field value '+rec.field_value);
+			var sets = rec.field_value.split(",");
+			if (rec.field_value != colDims){
+				//application.output('field '+colName+" dims "+colDims+" prefs "+prefsFS.field_value);
+				elems[index].setLocation(sets[0],sets[1]);
+				elems[index].setSize(sets[2],elems[index].getHeight());
+				if (sets[3]){
+					//application.output('entering visible '+sets[3]);
+					elems[index].visible = (sets[3] == 1);
 				}
 			}
+			if (sets[3] && sets[3] == 0 && globals.a.tempHiddenColumns[formy].indexOf(colName) == -1){
+				globals.a.tempHiddenColumns[formy].push(colName);
+			}
+		} else {
+
+			elems[index].visible = tableHideField(colName,formy);
 		}
-		elems[index].visible = tableHideField(colName,formy);
 	}
-	//application.output('hiding '+globals.a.tempHiddenColumns.length);
 }
 /**
  * @param jobId
@@ -1672,6 +1681,7 @@ function tablePrefsSave(event){
 			i18n.getI18NMessage('sts.txt.save.or.modify.table.preferences'),
 			[i18n.getI18NMessage('sts.btn.save'),i18n.getI18NMessage('sts.btn.modify')]);
 	if (response == null){return}
+	var blankUID = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 	var buttonName = event.getElementName();
 	var leftPanel = (buttonName.search('Right') == -1);
 	
@@ -1685,7 +1695,16 @@ function tablePrefsSave(event){
 	/** @type String */
 	var formy = null;
 	if (forms[formx].elements.tabless){
-		formy = forms[formx].elements.tabless.getTabFormNameAt(1);
+		var tabIdx = forms[formx].elements.tabless.tabIndex;
+		//if (application.isInDeveloper()){application.output('Tab active at '+tabIdx)}
+		formy = forms[formx].elements.tabless.getTabFormNameAt(tabIdx);
+		if (forms[formy].elements.tabless){
+			formy = forms[formy].elements.tabless.getTabFormNameAt(1);
+		}
+		if (formy.search('list|list') == 0){
+			var tabIdx2 = forms[formy].elements.tabless.tabIndex;
+			formy = forms[formy].elements.tabless.getTabFormNameAt(tabIdx2);
+		}
 		formsInUse.push(formy);
 	}
 	if (forms[formx].elements.split){
@@ -1699,32 +1718,28 @@ function tablePrefsSave(event){
 	//while (formsInUse.length > 0){
 	//formy = formsInUse.pop();
 	generalTableOrderTableName = formy;
-	if (response == "Save"){
+	if (response == i18n.getI18NMessage('sts.btn.save')){
 		warningsYes();
 		if (application.isInDeveloper()){application.output('saving '+formy.replace(versionForm,""))}
-		/** @type {JSFoundset<db:/stsservoy/preferences2>} */
-		var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-		if (prefsFS.find()) {
-			prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-			prefsFS.form_name = formy.replace(versionForm,"");
-			//prefsFS.field_name = colName;
-			prefsFS.tenant_uuid = globals.secCurrentTenantID;
-			//prefsFS.value_material = rec.shape;
-			var index2 = prefsFS.search();
-		}
+
 		var savedElems = new Array();savedElems.push("");
-		var index1 = 1;
-		while (index1 <= prefsFS.getSize()){
-			var rec =  prefsFS.getRecord(index1);
-			savedElems.push(rec.field_name);
-			index1++;
-		}
+
 		var elems = forms[formy].elements;
 		databaseManager.startTransaction();
 		for (var index in elems){
+
 			warningsMessage(i18n.getI18NMessage('sts.txt.saving.column.settings'),false);
 			var colName = elems[index].getName();
-			if (colName == ""){application.output('skip');continue}//sometimes a blank entry after array and value list manip
+			if (colName == ""){continue}//sometimes a blank entry after array and value list manip
+			/** @type {QBSelect<db:/stsservoy/preferences2>} */
+			var pp = databaseManager.createSelect('db:/stsservoy/preferences2');
+			pp.result.add(pp.columns.preferences2_id);
+			pp.where.add(pp.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+			pp.where.add(pp.columns.field_name.eq(colName));
+			//pp.where.add(pp.columns.user_uuid.eq(blankUID));
+			pp.where.add(pp.columns.form_name.eq(formy.replace(versionForm,"")+'_table'));
+			var PP = databaseManager.getFoundSet(pp);
+
 			var visible = (elems[index].visible) ? 1 : 0;
 			if (visible){
 				var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+visible;
@@ -1732,24 +1747,24 @@ function tablePrefsSave(event){
 				colDims = "0,0,"+elems[index].getWidth()+",0";
 			}
 			//var colDims = elems[index].getLocationX()+","+0+",110";
-			index2 = savedElems.indexOf(colName);
-			if (index2 != -1) {
+			var rec = null;
+			if (PP.getSize() > 0){
+				rec = PP.getRecord(1);
+			}
+			if (rec) {
 				if (application.isInDeveloper()){application.output('found '+colName)}
 				///var maxIndex = prefsFS.getSize();
-				rec = prefsFS.getRecord(index2);
 				if (rec.field_value != colDims){
 					rec.field_value = colDims;
 					rec.edit_date = new Date();
-					//status = databaseManager.saveData(rec);
-					//application.output('save status change '+status);
 				}
 			} else {
-				application.output('create '+colName);
-				var newDex = prefsFS.newRecord();
-				var newRec = prefsFS.getRecord(newDex);
-				newRec.tenant_uuid = globals.secCurrentTenantID;
-				newRec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-				newRec.form_name = formy.replace(versionForm,"");
+				if (application.isInDeveloper()){application.output('form '+ formy+' create '+colName)}
+				var newDex = PP.newRecord();
+				var newRec = PP.getRecord(newDex);
+				newRec.tenant_uuid = globals.session.tenant_uuid;
+				//newRec.user_uuid = blankUID;
+				newRec.form_name = formy.replace(versionForm,"")+'_table';
 				newRec.field_name = colName;
 				//newRec.value_material = rec.shape;
 				newRec.field_value = colDims;
@@ -1759,7 +1774,7 @@ function tablePrefsSave(event){
 			}
 		}
 
-		commitTransactions();
+		//commitTransactions();
 		databaseManager.commitTransaction();
 		forms[formx].errorMessage = i18n.getI18NMessage('sts.txt.column.ordering.saved');
 		warningsMessage(i18n.getI18NMessage('sts.txt.column.ordering.saved'),true);
@@ -5683,7 +5698,7 @@ function collectCriteria(){
  * @SuppressWarnings(unused)
  * @SuppressWarnings(wrongparameters)
  */
-function tablePrefsSaveDb(){
+function unusedtablePrefsSaveDb(){
 	application.output('inside tablePrefsSaveDb');
 	var formName = generalTableOrderTableName;
 	var elems = forms[formName].elements;
@@ -5758,19 +5773,21 @@ function tablePrefsPreLoad(formx){
 	if (application.isInDeveloper()){application.output('tablePrefsPreLoad')}
 	var thisVersion = scopes.globals.getInstanceForm(null);
 	var tableArray = [];
-	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-	//var colDims = elems[index].getLocationX()+","+0+","+elems[index].getWidth()+","+vis;
-	if (prefsFS.find()) {
-		prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-		prefsFS.form_name = formx.replace(thisVersion,"");
-		//prefsFS.field_name = colName;
-		prefsFS.tenant_uuid = globals.secCurrentTenantID;
-		var count = prefsFS.search();
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var pp = databaseManager.createSelect('db:/stsservoy/preferences2');
+	pp.result.add(pp.columns.preferences2_id);
+	pp.where.add(pp.columns.user_uuid.eq(application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF')));
+	pp.where.add(pp.columns.form_name.eq(formx.replace(thisVersion,"")));
+	pp.where.add(pp.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var PP = databaseManager.getFoundSet(pp);
+
+	if (PP.getSize() > 0) {
+		var count = PP.getSize();
 		if (count > 0) {
-			var index = 1;var maxIndex = 0;
-			while (index <= prefsFS.getSize()){
-				var record = prefsFS.getRecord(index);
+			var index = 1;//var maxIndex = 0;
+			while (index <= PP.getSize()){
+				/** @type {JSRecord<db:/stsservoy/preferences2>} */
+				var record = PP.getRecord(index);
 				var position = record.field_value.split(",");
 				if (position.length != 4){position = new Array(0,0,scopes.prefs.defaultColumnWidth,0)}
 				//var sortOrd = "00000"+position[0].substring(position[0].length)+","+record.field_name;
@@ -5925,18 +5942,19 @@ function tablePrefsPreOrderFields(formName,version,fieldStr){
 	if (application.isInDeveloper()){application.output('PREFS: table '+formName+' table prefs '+prefsFormName);}
 	//if (1==1){return}
 	var FLD2 = "";
-	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-	if (prefsFS.find()) {
-		prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-		prefsFS.form_name = prefsFormName+"_table";
-		prefsFS.tenant_uuid = globals.secCurrentTenantID;
-		prefsFS.search();
-		//prefsFS.sort(fldOrderSort);
-	}
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var pp = databaseManager.createSelect('db:/stsservoy/preferences2');
+	pp.result.add(pp.columns.preferences2_id);
+	pp.where.add(pp.columns.user_uuid.eq(application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF')));
+	pp.where.add(pp.columns.form_name.eq(prefsFormName+"_table"));
+	pp.where.add(pp.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var PP = databaseManager.getFoundSet(pp);
+	
+
 	var orderedList = [];
-	for (var index3 = 1;index3 <= prefsFS.getSize();index3++){
-		var rec = prefsFS.getRecord(index3);
+	for (var index3 = 1;index3 <= PP.getSize();index3++){
+		/** @type {JSRecord<db:/stsservoy/preferences2>} */
+		var rec = PP.getRecord(index3);
 		//if (application.isInDeveloper()){application.output(rec.field_name+" "+rec.field_value);}
 		var name = rec.field_name;
 		if (orderedList.indexOf(name) == -1){orderedList.push(name)}

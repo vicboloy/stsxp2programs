@@ -16,3 +16,33 @@ function onDataChangeCOW(oldValue, newValue, event) {
 	}
 	return true
 }
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"044309D4-FEF3-43E8-885F-4FDACEE61BF4"}
+ */
+function onShow(firstShow, event) {
+	if (firstShow){
+		var version = globals.getInstanceForm(event);
+		var formName = event.getFormName();
+		formName = formName.replace(version,'');
+		scopes.jobs.tablePrefsLoad(formName);
+	}
+}
+
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"382E543C-368B-4A2D-987E-B6AB1F20B195"}
+ */
+function onRecordSelection(event) {
+	var sel = foundset.getSelectedIndexes();
+	if (sel){
+		forms.cost_of_work_missing.elements.btn_MultiSelect.enabled = (sel.length > 1);
+	}
+}

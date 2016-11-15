@@ -52,7 +52,7 @@ function onRecordSelection(event) {
 function onActionHideNoFront(event) {
 	var win = application.getActiveWindow();
 	var winName = win.title;
-	scopes.globals.logger(true,winName+' closed.');
+	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.opened',new Array(winName)));
 	win.hide();
 	application.output('closing browse');
 }

@@ -468,7 +468,7 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
 			null;
 		}*/
 	}
-	scopes.globals.logger(true,windowTitle+' started.');
+	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.opened',new Array(windowTitle)));
 	globals.setWindowOpened(windowTitle);
 	var win = application.createWindow(windowTitle, JSWindow.WINDOW);
 	var xBeg = xOrigin;
@@ -856,7 +856,7 @@ function focusWindow(){
 function removeWindowTrack(){
 	var win = application.getActiveWindow();
 	var formName = win.title;
-	scopes.globals.logger(true,formName+' closed.');
+	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.closed',new Array(formName)));
 	//var formName = controller.getName();
 	var tempArray = new Array;
 	//tempArray = globals.aTrackWindows;

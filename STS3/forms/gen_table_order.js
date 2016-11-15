@@ -529,7 +529,6 @@ function onActionApply(event) {
 		/** @type {Array} */ var tempArray = globals.a.tempHiddenColumns[form];
 		tempArray.push(hideArray[index]);
 	}
-	//scopes.jobs.tablePrefsSaveDb();
 }
 /**
  * @properties={typeid:24,uuid:"087925C3-B29C-4B22-BD62-FB5911B08BC9"}

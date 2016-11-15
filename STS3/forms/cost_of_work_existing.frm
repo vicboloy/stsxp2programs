@@ -1,4 +1,4 @@
-dataSource:"db:/stsservoy/idfiles",
+dataSource:"db:/stsservoy/piecemarks",
 encapsulation:60,
 extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
 items:[
@@ -60,7 +60,7 @@ items:[
 {
 containsFormID:"E0E3BEF4-BDB6-4707-992F-9C52A0C2CE78",
 location:"5,35",
-relationName:"sts_idfiles",
+relationName:"sts_piecemark",
 text:"cost_of_work_existlist",
 typeid:15,
 uuid:"ABB75DB3-C3BB-4FD3-82BC-4668FEBE7709"
@@ -103,6 +103,7 @@ uuid:"E6C70BCF-6A07-404A-9E74-1DCB350E22FE"
 }
 ],
 name:"cost_of_work_existing",
+namedFoundSet:"separate",
 onShowMethodID:"0286DA98-9CFD-4826-9A7F-8D5FB12D9924",
 showInMenu:true,
 size:"726,314",

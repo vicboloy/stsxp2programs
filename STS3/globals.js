@@ -1020,7 +1020,7 @@ function stopWindowTrack(){
 	globals.setWindowClosed("");
 	var win = application.getActiveWindow();
 	var winName = win.title;
-	scopes.globals.logger(true,winName+' closed.');
+	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.closed',new Array(winName)));
 	var formName = win.controller.getName();
 	application.output('win '+win);
 	try {

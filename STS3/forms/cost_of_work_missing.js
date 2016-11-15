@@ -58,10 +58,9 @@ function refreshFoundset(pcmk, sheet){
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q =  databaseManager.createSelect("db:/stsservoy/sheets");
 	q.result.add(q.columns.sheet_id);
-	q.where.add(q.and
-				.add(q.columns.job_id.eq(globals.vJobIDXref))
-				.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
-				.add(q.columns.delete_flag.isNull));
+	q.where.add(q.columns.job_id.eq(globals.vJobIDXref));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.delete_flag.isNull);
 	//application.output('Job ID '+globals.vJobIDXref);
 	sheetQuery = q;
 
@@ -72,11 +71,9 @@ function refreshFoundset(pcmk, sheet){
 	m.result.add(m.columns.material);
 	if (pcmk){m.result.add(m.columns.piecemark)}
 	if (sheet){m.result.add(m.columns.sheet_id)}
-	m.where.add(m.and
-			.add(m.columns.sheet_id.isin(q))
-			.add(m.columns.delete_flag.isNull)
-			.add(m.columns.cost_of_work_code.isNull)
-		);
+	m.where.add(m.columns.sheet_id.isin(q))
+	m.where.add(m.columns.delete_flag.isNull)
+	m.where.add(m.columns.cost_of_work_code.isNull);
 	m.groupBy.add(m.columns.material);
 	if (pcmk){m.groupBy.add(m.columns.piecemark)}
 	if (sheet){m.groupBy.add(m.columns.sheet_id)}
@@ -134,13 +131,13 @@ function onActionApply(event) {
 	}
 	for (index = count;index > 0;index--){
 		controller.setSelectedIndex(index);
-		application.output(controller.getMaxRecordIndex())
+		//application.output(controller.getMaxRecordIndex())
 		var vCowCode = cowSet[index];
 		if (vCowCode == "" || vCowCode == null){continue}
 		var vSheetNum = sheet_id;
 		var vPiecemark = piecemark;
 		var vMaterial = material;
-	    application.output(index+' '+vMaterial+' '+vPiecemark+' '+vSheetNum+' '+vCowCode);
+	    //application.output(index+' '+vMaterial+' '+vPiecemark+' '+vSheetNum+' '+vCowCode);
 		/** @type {QBSelect<db:/stsservoy/piecemarks>} */
 		var m =  databaseManager.createSelect('db:/stsservoy/piecemarks');
 		//m.result.distinct = true;
@@ -163,7 +160,6 @@ function onActionApply(event) {
 		var fsUpdater = databaseManager.getFoundSetUpdater(fs);
 		fsUpdater.setColumn('cost_of_work_code',vCowCode);
 		fsUpdater.performUpdate();
-		application.output(result);
 		onActionRefresh(event);
 	}
 }
@@ -185,4 +181,27 @@ function onRecordSelection(event) {
  */
 function onActionClose(event){
 	databaseManager.revertEditedRecords(foundset);
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"1E484773-C644-4F7E-9EF0-EF916DFD097D"}
+ */
+function onActionMuliSelect(event) {
+	var cows = application.getValueListArray('stsvl_cowxref_codes_by_job');
+	var codeList = new Array();
+	for (var code in cows){
+		codeList.push(cows[code]);
+	}
+	var coded = plugins.dialogs.showSelectDialog(i18n.getI18NMessage('sts.txt.cow.select.code'),
+		i18n.getI18NMessage('sts.txt.cow.select.code'),
+		codeList);
+	var recIndexes = foundset.getSelectedIndexes();
+	for (var index = 0;index < recIndexes.length;index++){
+		/** @type {JSRecord<db:/stsservoy/piecemarks>} */
+		var rec = foundset.getRecord(recIndexes[index]);
+		rec.freeField = coded;
+	}
 }

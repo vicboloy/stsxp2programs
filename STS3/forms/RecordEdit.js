@@ -68,12 +68,12 @@ function onActionAddForm(event){
  * @properties={typeid:24,uuid:"30AE3F2F-AA0B-4BC4-9E02-96FFD937D512"}
  */
 function onActionDelete(event) {
-	///var itemDescription;
-	///var itemDescr = "Remove ";
-	
-	//show dialog
 	// addresses #50 part 3 ticket
-	if (globals.DIALOGS.showQuestionDialog('Delete','Delete?','Delete','Cancel') == 'Delete'){
+	if (globals.DIALOGS.showQuestionDialog(
+		i18n.getI18NMessage('sts.txt.delete.record'),
+		i18n.getI18NMessage('sts.txt.delete')+'?',
+		i18n.getI18NMessage('sts.txt.delete'),
+		i18n.getI18NMessage('sts.txt.cancel')) == 'Delete'){
 		addOnActionDelete();
 		delete_flag = 99;
 		foundset.loadRecords();
@@ -180,7 +180,7 @@ function onActionCancelEdit(event) {
  */
 function onActionClose(event) {
 	onActionCancelEdit(event);
-	editStatus(false);
+	//editStatus(false);
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
 }

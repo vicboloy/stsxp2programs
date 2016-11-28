@@ -261,7 +261,7 @@ location:"5,80",
 name:"lblFabShop",
 onActionMethodID:"7A4014D5-3AF4-4850-A54C-00823F390FF0",
 showClick:false,
-text:"i18n:sts.label.fab.shop_",
+text:"i18n:sts.label.status_",
 transparent:true,
 typeid:7,
 uuid:"B16D0010-29D6-499D-81EB-4CE291602C9C"

@@ -1,0 +1,10 @@
+*.backup
+*.bak
+*.data
+*.jasper
+*.log
+*.orig
+*.orig~
+*.pdf
+*.tmp
+.gitignore~

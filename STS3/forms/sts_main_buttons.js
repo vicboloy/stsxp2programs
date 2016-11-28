@@ -49,6 +49,8 @@ function onActionMenu(event,tabName){
 			elements.split.setLeftForm(forms.sts_nav_default,null);
 	}
 	replaceTabIcon(tabName);
+	elements.split.rightFormMinSize = 40;
+	elements.split.dividerLocation = 0.80;
 }
 /**
  * @param tabName

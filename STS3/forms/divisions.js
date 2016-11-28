@@ -193,19 +193,21 @@ function onDataChangeDivision(oldValue, newValue, event) {
  * @SuppressWarnings(wrongparameters)
  */
 function deleteRecord(event, index) {
+	// update to qbselect 20161121
 	var rec = foundset.getSelectedRecord();
 	if (rec.association_uuid == rec.tenant_group_uuid){return} // Do not delete an admin association
 	if (foundset.getSize() == 2){return} // Do not delete an admin account and the only association
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var jobFS = databaseManager.getFoundSet('stsservoy','jobs');
-	if (jobFS.find()){
-		jobFS.tenant_uuid = globals.secCurrentTenantID;
-		jobFS.association_id = rec.association_uuid;
-		if (jobFS.search()){
-			globals.errorDialogMobile(event,'1071','',''); //1071, record has data. will not be deleted.
-			//globals.DIALOGS.showErrorDialog(i18n.getI18NMessage(''),message)
-			return;   // Do not delete association that is attached to a job
-		}
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var jobFS = databaseManager.createSelect('db:/stsservoy/jobs');
+	jobFS.result.add(jobFS.columns.job_id);
+	jobFS.where.add(jobFS.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	jobFS.where.add(jobFS.columns.delete_flag.isNull);
+	jobFS.where.add(jobFS.columns.association_id.eq(scopes.globals.session.associationId));
+	var J = databaseManager.getFoundSet(jobFS);
+	if (J.getSize() == 0){
+		globals.errorDialogMobile(event,'1071','',''); //1071, record has data. will not be deleted.
+		//globals.DIALOGS.showErrorDialog(i18n.getI18NMessage(''),message)
+		return;   // Do not delete association that is attached to a job
 	}
 	return _super.deleteRecord(event, index)
 }

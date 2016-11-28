@@ -83,20 +83,24 @@ function editStatus(edit){
  * @AllowToRunInFind
  */
 function onDataChangeJob(oldValue, newValue, event) {
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var fs = databaseManager.getFoundSet('stsservoy','jobs');
-	if (fs.find()){
-		fs.job_number = vJobNumber;
-		if (fs.search()){
-			vCustomerName = fs.sts_job_to_customer.name;
-			vCustomerNumber = fs.sts_job_to_customer.customer_number;
-			vPONumber = fs.customer_po;
+	// Change to QBSelect from find() 20161121
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/jobs');
+	fs.result.add(fs.columns.job_id);
+	fs.where.add(fs.columns.job_number.eq(vJobNumber));
+	fs.where.add(fs.columns.delete_flag.isNull);
+	fs.where.add(fs.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	var FS = databaseManager.getFoundSet(fs);
+		if (FS.getSize() > 0){
+			vCustomerName = FS.sts_job_to_customer.name;
+			vCustomerNumber = FS.sts_job_to_customer.customer_number;
+			vPONumber = FS.customer_po;
 			forms.cost_of_work.customerName = vCustomerName;
 			forms.cost_of_work.customerNumber = vCustomerNumber;
 			forms.cost_of_work.jobNumber = newValue;
-			forms.cost_of_work.jobID = fs.job_id;
-			forms.cost_of_work.customerID = fs.customer_id;
-			scopes.globals.vJobIDXref = fs.job_id;
+			forms.cost_of_work.jobID = FS.job_id;
+			forms.cost_of_work.customerID = FS.customer_id;
+			scopes.globals.vJobIDXref = FS.job_id;
 			foundset.removeFoundSetFilterParam('job_cowxref');
 			foundset.addFoundSetFilterParam('job_id','=',globals.vJobIDXref,'job_cowxref');
 			foundset.loadAllRecords();
@@ -110,7 +114,6 @@ function onDataChangeJob(oldValue, newValue, event) {
 			forms.cost_of_work.jobChangeE = true;
 			forms.cost_of_work.jobchangeM = true;
 		}
-	}
 	return true
 }
 /**

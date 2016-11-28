@@ -339,3 +339,16 @@ function collectAndTab(formName){
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	null;
 }
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"AECB3B66-3CCF-4241-95C7-C566B344A6A3"}
+ */
+function onActionJobNumberList(event) {
+	// Populate type ahead with all tenant jobs regardless of association ID
+	var jobArray = scopes.jobs.getAllTenantJobs();
+	application.setValueListItems('stsvl_jobs_by_cust',jobArray);//#95 populate jobs list
+	elements.frmJobNum.requestFocus(false);
+}

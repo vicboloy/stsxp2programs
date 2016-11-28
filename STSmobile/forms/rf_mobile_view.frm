@@ -16,9 +16,9 @@ uuid:"02AC39A5-DE09-49CA-A8A1-897E079CD214",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"sts_idfile_to_pcmks.sts_pcmks_to_sheet.sheet_number",
 formIndex:40,
+horizontalAlignment:4,
 location:"135,233",
 name:"sheetnumber",
 size:"105,20",
@@ -130,9 +130,9 @@ uuid:"121BA923-88A2-4F94-92D0-2B2AF57BD278",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"scopes.globals.mobPreviousStatus",
 formIndex:28,
+horizontalAlignment:4,
 location:"135,233",
 name:"loadnumber",
 size:"105,20",
@@ -195,9 +195,9 @@ uuid:"18204D2D-AEF1-4D72-B87B-96ED6036E085",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"sts_idfile_to_statusdescrip.status_code",
 formIndex:44,
+horizontalAlignment:4,
 location:"135,233",
 name:"status",
 size:"105,20",
@@ -209,7 +209,8 @@ visible:false
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
 formIndex:59,
-location:"200,175",
+horizontalAlignment:4,
+location:"201,175",
 name:"jobweightunits",
 size:"40,20",
 text:"type",
@@ -309,7 +310,6 @@ uuid:"328720D9-E114-4825-98B2-9C9C9BA4725E",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"scopes.globals.mobLoadPieces",
 formIndex:31,
 horizontalAlignment:2,
@@ -383,9 +383,9 @@ uuid:"4BC5863C-F8D1-4D79-B3D0-0184D7B1E98E",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"sts_idfile_to_sequence.sequence_number",
 formIndex:69,
+horizontalAlignment:4,
 location:"135,233",
 name:"seqnumber",
 size:"105,20",
@@ -395,9 +395,9 @@ uuid:"4DF665A3-CC7B-418E-9263-5018E5F3F54F",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"sts_idfile_to_pcmks.piecemark",
 formIndex:45,
+horizontalAlignment:4,
 location:"135,233",
 name:"piecemark",
 size:"105,20",
@@ -421,6 +421,7 @@ visible:false
 },
 {
 formIndex:35,
+horizontalAlignment:4,
 location:"135,233",
 name:"ps",
 size:"105,20",
@@ -473,7 +474,8 @@ visible:false
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
 formIndex:13,
-location:"191,175",
+horizontalAlignment:4,
+location:"206,175",
 name:"receiveweightunits",
 size:"35,20",
 text:"type",
@@ -506,9 +508,9 @@ uuid:"6CC78AE5-7BE8-4863-AF31-D84BCBA28791",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"sts_idrepfile_idfile.shop_order",
 formIndex:39,
+horizontalAlignment:4,
 location:"135,233",
 name:"shoporder",
 size:"105,20",
@@ -518,9 +520,9 @@ uuid:"71A939E5-B57C-4572-B7F8-10603B55FAD4",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_number",
 formIndex:90,
+horizontalAlignment:4,
 location:"135,233",
 name:"jobnumber",
 size:"105,20",
@@ -559,7 +561,6 @@ uuid:"7B8BCAD0-C104-467D-881C-D9B7C271ED3D",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"scopes.globals.mobPreviousStatus",
 formIndex:30,
 horizontalAlignment:2,
@@ -598,7 +599,6 @@ typeid:16,
 uuid:"8037A2FA-9084-41AC-90EE-40E4FB4D579A"
 },
 {
-anchors:11,
 dataProviderID:"sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_weight",
 formIndex:89,
 location:"135,175",
@@ -610,9 +610,9 @@ uuid:"80BABB3C-2D72-43DD-AD5B-A0B9C41BB478",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"scopes.globals.mobLocationPieces",
 formIndex:6,
+horizontalAlignment:4,
 location:"135,233",
 name:"locationpieces",
 size:"105,20",
@@ -630,6 +630,7 @@ uuid:"83CCC5F1-1738-4321-8064-C3546517FF30"
 },
 {
 formIndex:34,
+horizontalAlignment:4,
 location:"135,233",
 name:"heat",
 size:"105,20",
@@ -677,7 +678,8 @@ visible:false
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
 formIndex:58,
-location:"200,175",
+horizontalAlignment:4,
+location:"201,175",
 name:"locationweightunits",
 size:"40,20",
 text:"type",
@@ -698,9 +700,9 @@ uuid:"94833537-3F3C-4A7B-8C53-E15FCA246430",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"scopes.globals.mobLocationPiecemarks",
 formIndex:7,
+horizontalAlignment:4,
 location:"135,233",
 name:"pcmksatlocation",
 size:"105,20",
@@ -728,9 +730,9 @@ uuid:"98B641BE-B0BE-4709-97B8-C2B0B00614E3",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"scopes.globals.mobPreviousStatus",
 formIndex:38,
+horizontalAlignment:4,
 location:"135,233",
 name:"prevstatus",
 size:"105,20",
@@ -771,7 +773,6 @@ uuid:"9B1C8F67-0989-4C5F-9291-38CD1F692E2D",
 visible:false
 },
 {
-anchors:11,
 formIndex:92,
 location:"135,208",
 name:"spacer",
@@ -784,7 +785,8 @@ visible:false
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
 formIndex:10,
-location:"200,175",
+horizontalAlignment:4,
+location:"201,175",
 name:"itemweightunits",
 size:"40,20",
 text:"type",
@@ -808,7 +810,8 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobLengthUnits",
-location:"200,175",
+horizontalAlignment:4,
+location:"201,175",
 name:"itemlengthunits",
 size:"40,20",
 text:"type",
@@ -901,9 +904,9 @@ uuid:"B776C3F0-5C5F-4245-AF06-601347C8AFDE",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"sts_idfile_to_pcmks.material",
 formIndex:32,
+horizontalAlignment:4,
 location:"135,233",
 name:"material",
 size:"105,20",
@@ -934,9 +937,9 @@ uuid:"BD7453AC-98FF-492B-BCDE-B45136EC3E3C",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"scopes.globals.mobPreviousLocation",
 formIndex:91,
+horizontalAlignment:4,
 location:"135,233",
 name:"prevlocation",
 size:"105,20",
@@ -968,6 +971,7 @@ uuid:"CF89993A-1B9E-43BE-AAFB-CE8A869F537D"
 {
 dataProviderID:"sts_idrepfile_idfile.sts_idfile_to_pcmks.grade",
 formIndex:33,
+horizontalAlignment:4,
 location:"135,233",
 name:"grade",
 size:"105,20",
@@ -1060,9 +1064,9 @@ uuid:"E2903C03-338C-4445-AF23-72C82F7B9536",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"id_location",
 formIndex:43,
+horizontalAlignment:4,
 location:"135,233",
 name:"location",
 size:"105,20",
@@ -1100,7 +1104,8 @@ visible:false
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
 formIndex:12,
-location:"199,175",
+horizontalAlignment:4,
+location:"201,175",
 name:"bundleweightunits",
 size:"40,20",
 text:"type",
@@ -1149,9 +1154,9 @@ uuid:"EB7B17CE-0D1D-45DF-8E35-A4B44EEE9BEA",
 visible:false
 },
 {
-anchors:11,
 dataProviderID:"scopes.globals.mobPiecesStatus",
 formIndex:29,
+horizontalAlignment:4,
 location:"135,233",
 name:"pcsstatcount",
 size:"105,20",
@@ -1205,6 +1210,7 @@ visible:false
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
 formIndex:14,
+horizontalAlignment:4,
 location:"206,175",
 name:"shipweightunits",
 size:"35,20",

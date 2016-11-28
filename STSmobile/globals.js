@@ -27,11 +27,11 @@ function onSolutionOpen(){
 	globals.mobAssocId = globals.secCurrentAssociationID;
 	globals.getAssociation(mobAssocId); //aMobAssocs[assocID];
 	
-	globals.getMappings();
 	///globals.secCurrentUserName = security.getUserName();
 	secSetCurrentTenant(secCurrentTenantID);
 
 	session.program = "STS Mobile";
+	session.appName = "STSmobile";
 	session.login = security.getUserName();
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
 	session.tenant_uuid = sec_current_user.tenant_uuid;
@@ -42,9 +42,10 @@ function onSolutionOpen(){
 	if (session.associationId == null){
 		session.associationId = secGetAssocID(secCurrentUserName);
 	}
-	session.association = m.assocs[session.associationId];
 	getLoggedEmployee(session.loginId);
 	mobLoggedEmployeeId = session.employeeId; //globals.getLoggedEmployee(secCurrentUserID);
+	globals.getMappings();
+	session.association = m.assocs[session.associationId];
 	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association
 	//application.output()
 	application.setValueListItems('stsvlg_status_codes',globals.m.statusCodesDiv[session.associationId]); // status codes for this association

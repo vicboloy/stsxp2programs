@@ -1,6 +1,6 @@
 firstFormID:"DD530A04-FFAF-42A6-9AA0-A07D94A28512",
 i18nDataSource:"db:/stsservoy/i18n_table",
-modulesNames:"servoyCommons,servoySecurity,servoySecurityAuthenticator,servoySecurityLogin,jobsts,mod_datejs",
+modulesNames:"servoyCommons,servoySecurity,servoySecurityAuthenticator,servoySecurityLogin,jobsts",
 onOpenMethodID:"D0109E13-1A5A-42E8-91A7-1211E35A99EC",
 typeid:43,
 uuid:"4D8730E4-6B12-4E72-87ED-0775CE5F45AB"

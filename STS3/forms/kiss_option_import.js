@@ -1198,6 +1198,8 @@ function createKISSForm (){	// create table in form
 	 	var altColumn = headerKissNames[columnNames[index]];
 	 	if (headerKissNames[columnNames[index]]) {
 	 		last.text = altColumn; 
+	 	} else if (scopes.jobs.i18nColumnNames[columnNames[index]]){
+	 		last.text = scopes.jobs.i18nColumnNames[columnNames[index]];
 	 	}
 	 	offset += 80;
 	}

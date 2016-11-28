@@ -216,7 +216,7 @@ function onActionRefreshTable(event) {
 	var args = [];
 	//args.push(scopes.jobs.browseJobID);
 	//var fs = databaseManager.getFoundSet(forms.loads_pcmk_combo_table.controller.getDataSource());
-	scopes.jobs.browseFS2[versionForm] = databaseManager.getDataSetByQuery('stsservoy', scopes.jobs.dsQuery, args , -1);
+	scopes.jobs.browseFS2[versionForm] = databaseManager.getDataSetByQuery('stsservoy', scopes.jobs.dsQuery[versionForm], args , -1);
 	scopes.jobs.viewBTableRemoveColumnArray();
 	scopes.jobs.viewBTableRemoveRows();
 	scopes.jobs.browseDatasource = scopes.jobs.browseFS[versionForm].createDataSource('loads_pcmk_combo_browse',scopes.jobs.browseArray);

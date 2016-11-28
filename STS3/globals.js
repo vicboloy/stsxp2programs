@@ -918,6 +918,7 @@ function onSolutionOpen() {
 	if (globals.SEC_ASSOCIATION_FILTER && session.corporate){
 		databaseManager.removeTableFilterParam('stsservoy',globals.SEC_ASSOCIATION_FILTER);
 	}
+	scopes.jobs.i18nTableColumns();
 }
 
 /**

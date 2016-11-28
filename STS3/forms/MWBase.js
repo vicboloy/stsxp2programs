@@ -1239,7 +1239,7 @@ function setActiveElement(elementName){
  */
 function onActionClickDeveloper(event) {
 	if (!application.isInDeveloper()){return}
-	var response = "Update Zips";
+	var response = "blah";
 	switch (response){
 		case 'Update Zips':{
 			scopes.globals.loadZipCodeFile(event);
@@ -1404,4 +1404,13 @@ function onActionClickPiecemark(event) {
  */
 function onActionClickPiecemarkView(event) {
 	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.piecemark.view'),'piecemark_view',50,50,700,400,true);
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"3D55B20E-1121-48D4-94AD-46F4726D62FF"}
+ */
+function onActionClickI18nView(event){
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.i18n.view'),'i18n_edit',50,50,700,400,false);
+
 }

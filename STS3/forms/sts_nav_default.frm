@@ -157,6 +157,17 @@ size:"207,23",
 text:"i18n:sts.default.btn.about",
 typeid:7,
 uuid:"B0E9EB41-0C89-47C7-AE57-9F101EF1FA98"
+},
+{
+location:"10,413",
+name:"btn_Developerc",
+onActionMethodID:"3D55B20E-1121-48D4-94AD-46F4726D62FF",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"239,23",
+text:"i18n:sts.btn.i18n",
+typeid:7,
+uuid:"D96E7934-C694-4C43-B2F1-76201222111B"
 }
 ],
 name:"sts_nav_default",

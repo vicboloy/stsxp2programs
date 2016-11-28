@@ -236,7 +236,7 @@ var mob = {
 	barcode : "", 		// barcode id.TXT
 	barcodeId : "", 	// barcode_id_id.UUID
 	bundle : {
-		weight: 0, 
+		weight: 0.0, 
 		pieces: 0, 
 		Id : "", 
 		transFs : null}, // single bundleInfo
@@ -268,14 +268,14 @@ var mob = {
 	locationArea : "", 	// user location.TXT
 	locationPrev : "",	// previous user enterred location.TXT
 	load :  {
-		weight: 0, 
+		weight: 0.0, 
 		pieces: 0, 
 		Id : "", transFs : null, 
 		number : "",
 		currentId : "", 
 		shipId : "", 
 		receiveId : ""}, // single loadInfo
-	locationValues : {pieces : 0, weight : 0, piecemarks : 0}, // total values added for location
+	locationValues : {pieces : 0, weight : 0.0, piecemarks : 0}, // total values added for location
 	idValues : {total : 0, complete : 0},
 	statusRemove : "", // status on a reversal
 	status : "",
@@ -511,12 +511,13 @@ var mobPreviousLocation = "";
  * @properties={typeid:35,uuid:"1D6AF8C6-26F7-4F94-A32C-6CDB4226C442"}
  */
 var mobItemPieces = "";
+
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"F512D8CF-3BE4-4BD3-80F4-5CBA412483C7",variableType:4}
+ * @properties={typeid:35,uuid:"DEB358BD-3EB6-4F05-83A7-9E4751A42D0D",variableType:8}
  */
-var mobLocationWeight = 0;
+var mobLocationWeight = 0.0;
 /**
  * @type {Number}
  *
@@ -607,6 +608,7 @@ var rfF2Division = "";
  * @properties={typeid:35,uuid:"FA84497D-3A0F-4CFB-A875-BB561B2B2CFA",variableType:-4}
  */
 var session = {
+	appName : "STS3",
 	capture : false,
 	corporate : false,
 	browser : "", //navigator.userAgent response from browser
@@ -1125,8 +1127,15 @@ var mobLoadPiecemarks = 0;
  */
 var mobUnits = "";
 /**
- * @properties={typeid:24,uuid:"739123F9-8C1E-4AAC-819B-81074033078C"}
+ * @properties={typeid:35,uuid:"63904BF5-9EB3-48A5-B0F2-A47AB67D515E",variableType:-4}
+ */
+var mobileWindows = [];//see getI18nWindowNames
+/**
  * @AllowToRunInFind
+ * 
+ * @param assocID
+ *
+ * @properties={typeid:24,uuid:"4118695F-605D-4EF0-883C-8E3BBD5E837D"}
  */
 function getAssociation(assocID){
 	if (aMobAssocs.length == 0){
@@ -1591,14 +1600,16 @@ function rfF3(){
 		win = application.createWindow('Transaction List',JSWindow.MODAL_DIALOG);
 		win.setLocation(0,0);
 		win.setSize(240,300);
-		win.show('rf_list_trans');
+		win.show('trans_history');
+		//win.show('rf_list_trans');
 	} else {
 		if (win.isVisible()){
 			//flagFunction = false;
 			win.hide();
 			onReturnFromFunction();
 		} else {
-			win.show('rf_list_trans');
+			win.show('trans_history');
+			//win.show('rf_list_trans');
 		}
 	}
 }
@@ -2166,95 +2177,73 @@ function rfCheckRouteOrder(){
  */
 function rfChangeWindow(event,winName){
 	var currWin = application.getActiveWindow();
+	if (!mobileWindows[winName]){
+		getI18nWindowName(winName);
+	}
+	winName = mobileWindows[winName];
 	switch(winName)	{
-	case 'Inspections':
-		session.program = 'Inspections';
+	case i18n.getI18NMessage('sts.mobile.inspections'):
+		session.program = i18n.getI18NMessage('sts.mobile.inspections');//'Inspections'
 		currWin.show('rf_mobile_view');
 		break;
-	case "Inspections w/Rev's":
-		session.program = "Inspections w/Rev's";
+	case i18n.getI18NMessage('sts.mobile.inspections.w.revs')://"Inspections w/Rev's"
+		session.program = i18n.getI18NMessage('sts.mobile.inspections.w.revs');
 		currWin.show('rf_mobile_view');
 		break;
-	case "Transactions w/Rev's":
-		session.program = 'Transactions w/Rev\'s';
+	case i18n.getI18NMessage('sts.mobile.transactions.w.revs')://"Transactions w/Rev's":
+		session.program = i18n.getI18NMessage('sts.mobile.transactions.w.revs');
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Transactions':
-		session.program = 'Transactions';
+	case i18n.getI18NMessage('sts.mobile.transactions')://'Transactions':
+		session.program = i18n.getI18NMessage('sts.mobile.transactions');//'Transactions';
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Receiving':
-		session.program = 'Receiving';
+	case i18n.getI18NMessage('sts.mobile.receiving')://'Receiving':
+		session.program = i18n.getI18NMessage('sts.mobile.receiving');
 		currWin.show('rf_mobile_view'); // check globals.rfViews, invisible fields
 		break;
-	case 'Sample':
-		session.program = 'Sample';
+	case i18n.getI18NMessage('sts.mobile.sample')://'Sample':
+		session.program = i18n.getI18NMessage('sts.mobile.sample');
 		currWin.show('rf_mobile_view');
 		break;
 		
-	case 'Build Bundles':
-		session.program = 'Build Bundles';
+	case i18n.getI18NMessage('sts.mobile.build.bundles')://'Build Bundles':
+		session.program = i18n.getI18NMessage('sts.mobile.build.bundles');
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Saw':
-		session.program = 'Saw';
+	case i18n.getI18NMessage('sts.mobile.saw')://'Saw':
+		session.program = i18n.getI18NMessage('sts.mobile.saw');
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Status':
-		session.program = 'Status';
+	case i18n.getI18NMessage('sts.mobile.status')://'Status':
+		session.program = i18n.getI18NMessage('sts.mobile.status');
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Find Piece Marks':
-		session.program = 'Find Piece Marks';
+	case i18n.getI18NMessage('sts.mobile.find.piece.marks')://'Find Piece Marks':
+		session.program = i18n.getI18NMessage('sts.mobile.find.piece.marks');
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Shipping':
-		session.program = 'Shipping';
+	case i18n.getI18NMessage('sts.mobile.shipping')://'Shipping':
+		session.program = i18n.getI18NMessage('sts.mobile.shipping');
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Final Ship':
-		session.program = 'Final Ship';
+	case i18n.getI18NMessage('sts.mobile.final.ship')://'Final Ship':
+		session.program = i18n.getI18NMessage('sts.mobile.final.ship');
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Ship By Sequence':
-		session.program = 'Ship By Sequence';
+	case i18n.getI18NMessage('sts.mobile.ship.by.sequence')://'Ship By Sequence':
+		session.program = i18n.getI18NMessage('sts.mobile.ship.by.sequence');
 		currWin.show('rf_mobile_view');
 		break;
-	case 'Exit': 
+	case i18n.getI18NMessage('sts.mobile.exit')://'Exit': 
 		//globals.rfExitMobileClient();
 		showExecLogout();
 		if (application.isInDeveloper()){application.output('exiting')}
 		break;
 	default:
-		session.program = 'Sample';
+		session.program = i18n.getI18NMessage('sts.mobile.sample');
 		currWin.show('rf_mobile_view');
 	}
-	/**
-	case 'Inspections':
-		session.program = 'Inspections';
-		currWin.show('rf_inspections');
-		break;
-	case "Transactions w/Rev's":
-		session.program = 'TransactionsRevs';
-		currWin.show('rf_transactions_rev');
-		break;
-	case 'Transactions':
-		session.program = 'Transactions';
-		currWin.show('rf_transactions');
-		break;
-	case 'Shipping':
-		session.program = 'Shipping';
-		currWin.show('rf_shipping');
-		break;
-	case 'Build Bundles':
-		session.program = 'Build Bundles';
-		currWin.show('rf_bundles');
-		break;
-	case "Inspections w/Rev's":
-		session.program = 'InspectionsRevs';
-		currWin.show('rf_inspections_rev');
-		break;
-*/
 }
 /**
  * @properties={typeid:24,uuid:"D0DA619C-1A75-492A-9C70-DEA26DC77D95"}
@@ -2314,80 +2303,85 @@ function rfFunctionKeys(screen){
 	plugins.window.createShortcut('F1','globals.showHelp');
 	plugins.window.createShortcut('F10','globals.showExecLogout');
 	functionKeyProcedure[10] = 'globals.showExecLogout';
-	functionKeyDescrip = ['Help Selection or use FKey','F1 - Help','F2 - ','F3 - ','F4 - ','F5 - ','F6 - ','F7 - ','F8 - ','F9 - ','F10 - Exit','11','12'];
+	functionKeyDescrip = [
+		i18n.getI18NMessage('sts.fkey.info'),
+		i18n.getI18NMessage('sts.fkey.f1.help'),
+		'F2 - ','F3 - ','F4 - ','F5 - ','F6 - ','F7 - ','F8 - ','F9 - ',
+		i18n.getI18NMessage('sts.fkey.f10'),
+		'11','12'];
 	dex = 11;
-	functionKeyDescrip[dex] = 'xxx Logout';
+	functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.logout');
 	functionKeyProcedure[dex] = 'globals.rfLogout';
 	dex = 12;
-	functionKeyDescrip[dex] = 'xxx Return to OS';
+	functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.return.os');
 	functionKeyProcedure[dex] = 'globals.rfExitBrowser';
 	//functionKeyProcedure[3] = '';
 	//functionKeyProcedure[8] = '';
 	//functionKeyProcedure[9] = '';
 	switch( screen )
 	{
-		case 'Main':
+		case i18n.getI18NMessage('sts.mobile.main')://'Main':
 			globals.mobForm = "STS_main";
 			break;
-		case 'rf_transactions':
-		case 'Transactions':
-		case 'Transactions2':
-		case "Transactions w/Rev's":
-		case "Transactions w/Rev's2":
+		//case i18n.getI18NMessage('')://'rf_transactions':
+		case i18n.getI18NMessage('sts.mobile.transactions')://'Transactions':
+		//case i18n.getI18NMessage('')://'Transactions2':
+		//case i18n.getI18NMessage('')://"Transactions w/Rev's":
+		case i18n.getI18NMessage('sts.mobile.transactions.w.revs')://"Transactions w/Rev's2":
 			globals.mobForm = "rf_transactions";
 			dex = 2;
-			functionKeyDescrip[dex] = 'F2 - Switch Plants';
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
 			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
 			plugins.window.createShortcut('F2',functionKeyProcedure[dex]);
 			dex = 3;
-			functionKeyDescrip[dex] = 'F3 - List History'
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f3.history.list');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF3';
 			plugins.window.createShortcut('F3',functionKeyProcedure[dex]);
 			dex = 8;
-			functionKeyDescrip[dex] = 'F8 - Remove Status'
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f8.status.reverse');//'F8 - Remove Status'
 			functionKeyProcedure[dex] = 'globals.rfF8Reversal';
 			plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
 			dex = 9;
-			functionKeyDescrip[dex] = 'F9 - Inspection Doc'
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f9.inspection.doc');//'F9 - Inspection Doc'
 			break;
-		case 'rf_bundles':
-		case 'Build Bundles':
-		case 'Build Bundles2':
+		case i18n.getI18NMessage('sts.mobile.build.bundles')://'rf_bundles':
+		//case i18n.getI18NMessage('')://'Build Bundles':
+		//case i18n.getI18NMessage('')://'Build Bundles2':
 			globals.mobForm = "rf_bundles";
 			dex = 2;
-			functionKeyDescrip[dex] = 'F2 - Switch Plants';
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
 			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
 			plugins.window.createShortcut('F2',functionKeyProcedure[dex]);
 			dex = 4;
-			functionKeyDescrip[dex] = 'F4 - Clear Bundle Pieces';
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f4.bundle.clear.pieces');//'F4 - Clear Bundle Pieces';
 			functionKeyProcedure[dex] = 'globals.rfF4BundleClear';
 			plugins.window.createShortcut('F4',functionKeyProcedure[dex]);
 			dex = 5;
-			functionKeyDescrip[dex] = 'F5 - Print Bndl Labels';
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f5.bundle.labels.print');//'F5 - Print Bndl Labels';
 			//functionKeyProcedure[dex] = 'globals.rfF5BundlePrint';
 			plugins.window.createShortcut('F5',functionKeyProcedure[dex]);
 			dex = 6;
-			functionKeyDescrip[dex] = 'F6 - Print Bundle List';
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f6.bundle.print.list');//'F6 - Print Bundle List';
 			//functionKeyProcedure[dex] = 'globals.rfF6BundlePrintList';
 			plugins.window.createShortcut('F6',functionKeyProcedure[dex]);
 			dex = 8;
-			functionKeyDescrip[dex] = 'F8 - Remove From Bundle';
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f8.bundle.remove.from');//'F8 - Remove From Bundle';
 			functionKeyProcedure[dex] = 'globals.rfF8BundleRemoveFrom';
 			plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
 			break;
-		case 'Shipping2':
-		case 'Shipping':
+		case i18n.getI18NMessage('sts.mobile.shipping')://'Shipping2':
+		//case i18n.getI18NMessage('')://'Shipping':
 			globals.mobForm = "rf_mobile_view";
 			dex = 2;
-			functionKeyDescrip[dex] = 'F2 - Switch Plants';
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
 			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
 			plugins.window.createShortcut('F2',functionKeyProcedure[dex]);
 			dex = 3;
-			functionKeyDescrip[dex] = 'F3 - List History'
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f3.history.list');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF3';
 			plugins.window.createShortcut('F3',functionKeyProcedure[dex]);
 			dex = 8;
-			functionKeyDescrip[dex] = 'F8 - Remove Status'
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f8.status.reverse');//'F8 - Remove Status'
 			functionKeyProcedure[dex] = 'globals.rfF8Reversal';
 			plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
 			break;
@@ -2522,7 +2516,7 @@ function rfGetLocationStats(sLocation){
 	q.where.add(
 	q.and
 		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 		.add(q.columns.location.eq(sLocation))
 	);
 	///var resultQ = databaseManager.getFoundSet(q);
@@ -2538,7 +2532,7 @@ function rfGetLocationStats(sLocation){
 	r.where.add(
 	r.and
 		.add(r.columns.delete_flag.isNull)
-		.add(r.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(r.columns.tenant_uuid.eq(session.tenant_uuid))
 		.add(r.columns.idfile_id.isin(q))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
@@ -2567,7 +2561,7 @@ function rfGetLocationStats(sLocation){
 	w.where.add(
 	w.and
 		.add(w.columns.delete_flag.isNull)
-		.add(w.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(w.columns.tenant_uuid.eq(session.tenant_uuid))
 		.add(w.columns.idfile_id.isin(idfileList))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
@@ -2598,9 +2592,9 @@ function rfGetLocationStats(sLocation){
 	// grab weight for each idfile and add to total weight
 	index = 1; var totWeight = 0;
 	while(index <= resultW.getSize()){
-		rec = resultW.getRecord(index);
-		resultS.loadRecords(databaseManager.convertToDataSet(rec.piecemark_id));
-		var weight = (mob.job.metric) ? resultS.item_weight : resultS.item_weight_lbs;
+		var rec2 = resultW.getRecord(index);
+		resultS.loadRecords(databaseManager.convertToDataSet(rec2.piecemark_id));
+		var weight = (mob.job.metric) ? resultS.item_weight : resultS.item_weight_lbs;//#97 gives 'Value list does not match key list in set condition'
 		totWeight = totWeight + weight*rec.summed_quantity;
 		index++;
 	}
@@ -2620,61 +2614,64 @@ function rfGetLocationStats2(sLocation){
 	mob.locationValues.pieces = 0;
 	mob.locationValues.weight = 0;
 	mob.locationValues.piecemarks = 0;
-	var piecemarkList = [];
+	//var piecemarkList = [];
 	if (!sLocation || sLocation == "") {return}
 	// get piecemarks for location, above was only a count by idfiles with that transaction location
+	// ticket #95 changed from 7.1 to 7.4. key list condition set
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var w = databaseManager.createSelect('db:/stsservoy/idfiles');
 	w.result.add(w.columns.idfile_id);
 	w.result.add(w.columns.piecemark_id);
-	w.result.add(w.columns.summed_quantity);
-	w.where.add(
-	w.and
-		.add(w.columns.delete_flag.isNull)
-		.add(w.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(w.columns.id_location.eq(sLocation))
-	);
+	w.result.distinct;
+	w.where.add(w.columns.delete_flag.isNull);
+	w.where.add(w.columns.tenant_uuid.eq(session.tenant_uuid));
+	w.where.add(w.columns.id_location.eq(sLocation));
+	w.groupBy.add(w.columns.piecemark_id);
+	w.groupBy.add(w.columns.idfile_id);
 	var resultW = databaseManager.getFoundSet(w);
-	var index = 1;
-	while(index <= resultW.getSize()){
-		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-		var rec = resultW.getRecord(index++);
-		if (piecemarkList.indexOf(rec.piecemark_id+"") == -1){piecemarkList.push(rec.piecemark_id+"")}
-	}
-	mob.locationValues.piecemarks = piecemarkList.length;
-	// get piecemarks for idfileList
-	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
-	var s = databaseManager.createSelect('db:/stsservoy/piecemarks');
-	s.result.add(s.columns.piecemark_id);
-	s.result.add(s.columns.item_weight);
-	s.result.add(s.columns.item_weight_lbs);
-	s.result.distinct = true;
-	s.where.add(
-	s.and
-		.add(s.columns.delete_flag.isNull)
-		.add(s.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(s.columns.piecemark_id.isin(piecemarkList))
-	);
-	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
-	var resultS = databaseManager.getFoundSet(s);
-	mob.locationValues.piecemarks = resultS.getSize();
+	mob.locationValues.piecemarks = resultW.getSize();
+
+	// get total piece count
 	
-	// grab weight for each idfile and add to total weight
-	index = 1; var totWeight = 0; var totPieces = 0;
-	while(index <= resultW.getSize()){
-		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-		var rec2 = resultW.getRecord(index++);
-		
-		resultS.loadRecords(databaseManager.convertToDataSet(rec2.piecemark_id));
-		var weight = (mob.job.metric) ? resultS.item_weight : resultS.item_weight_lbs;
-		var quant = (rec2.summed_quantity == 0) ? rec2.original_quantity : rec2.summed_quantity;
-		totWeight = totWeight*1 + weight*quant;
-		totPieces = totPieces*1 + quant*1;
-		//application.output(index+' '+'#' + quant+ ' weight '+weight+' piecemark '+resultS.piecemark+' pcmkid '+rec2.piecemark_id);
-		//index++;
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
+	i.result.add(i.columns.summed_quantity.sum,'total_pieces');
+	i.result.distinct = true;
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var p = i.joins.add('db:/stsservoy/piecemarks');
+	p.on.add(p.columns.piecemark_id.eq(i.columns.piecemark_id));
+	i.where.add(i.columns.delete_flag.isNull);
+	i.where.add(i.columns.tenant_uuid.eq(session.tenant_uuid));
+	i.where.add(i.columns.id_location.eq(sLocation));
+	var resultQuan = databaseManager.getDataSetByQuery(i,-1).getValue(1,1);
+	mob.locationValues.pieces = resultQuan;
+	
+
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var i2 = databaseManager.createSelect('db:/stsservoy/idfiles');
+	i2.result.clear();
+	i2.result.distinct = true;
+	i2.where.add(i2.columns.delete_flag.isNull);
+	i2.where.add(i2.columns.tenant_uuid.eq(session.tenant_uuid));
+	i2.where.add(i2.columns.id_location.like(sLocation));
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var p2 = i2.joins.add('db:/stsservoy/piecemarks',JSRelation.INNER_JOIN);
+	p2.on.add(p2.columns.piecemark_id.eq(i2.columns.piecemark_id));
+	p2.root.result.distinct = true;
+	if (mob.job.metric){
+		i2.result.add(i2.columns.summed_quantity.multiply(p2.columns.item_weight).sum,'total_weight');
+	} else {
+		i2.result.add(i2.columns.summed_quantity.multiply(p2.columns.item_weight_lbs).sum,'total_weight');
 	}
-	mob.locationValues.weight = totWeight;
-	mob.locationValues.pieces = totPieces;
+	var ds1 = databaseManager.getDataSetByQuery(i2,-1);
+	if (ds1.getMaxRowIndex() > 0){
+		var resultTotWeight = databaseManager.getDataSetByQuery(i2,-1)[1,1];//#97 is here????
+	} else {
+		resultTotWeight = 0.0;
+	}
+	
+	mob.locationValues.weight = resultTotWeight;
+
 	mobLocationWeight = mob.locationValues.weight;
 	mobLocationPieces = mob.locationValues.pieces;
 	mobLocationPiecemarks = mob.locationValues.piecemarks;
@@ -3138,7 +3135,7 @@ function saveScanTransaction(){
 	var status = rfSaveScanTransaction(mob.barcode,session.stationId,mob.locationArea);
 	if (status){globals.loggerDev(this,'rf Save transaction fail.')}
 	currentID = '';
-	rfGetLocationStats(mob.locationArea);
+	rfGetLocationStats2(mob.locationArea);//Value list does not match key list in set condition
 	rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea);
 	mobPreviousLocation = mob.locationPrev;
 	mobPreviousStatus = mob.statusPrev;
@@ -3438,7 +3435,7 @@ function rfTimed(){
 		mob.timedTotalMin = 0;
 		transacts = mob.transactions;
 		for (index = 1;index <= transacts.getSize();index++){
-			/** @type {JSFoundSet<db:/stsservoy/transactions>} */
+			/** @type {JSRecord<db:/stsservoy/transactions>} */
 			rec = transacts.getRecord(index);
 			//if (application.isInDeveloper()){application.output(rec);}
 			if (rec.trans_status != mob.timedEndStat){continue}
@@ -3912,7 +3909,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			q.where.add(
 			q.and
 				.add(q.columns.delete_flag.isNull)
-				.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+				.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 				.add(q.columns.idfile_id.isin(mob.idfiles))
 			);
 			resultQ = databaseManager.getFoundSet(q);
@@ -3994,6 +3991,14 @@ function showHelp(){
 	forms[formName].elements.elHelp.visible = !vis;
 	forms[formName].elements.elHelp.enabled = !vis;
 	if (vis){return}
+	if (!mobileWindows[formName]){
+		/** @type {QBSelect<db:/stsservoy/i18n_table>} */
+		var i18 = databaseManager.createSelect('db:/stsservoy/i18n_table');
+		i18.result.add(i18.columns.i18n_table_id);
+		i18.where.add(i18.columns.message_value.eq(formName));
+		var I18 = databaseManager.getFoundSet(i18);
+	}
+	
 	rfFunctionKeys(formName);
 	//var win = application.getActiveWindow();
 	//win.show('rf_help');
@@ -4227,11 +4232,13 @@ function onActionHelp(event) {
 	var elName = event.getElementName();
 	var actionName = functionKeyProvider;
 	var funcIndex = functionKeyDescrip.indexOf(actionName);
+	if (!functionKeyProcedure[funcIndex]){return}
 	var progEx = functionKeyProcedure[funcIndex]+'()';
 	forms[form].elements[elName].visible = false;
 	forms[form].elements[elName].enabled = false;
 	functionKeyProvider = "";
 	if (actionName == ""){return}
+	
 	eval(progEx);
 }
 
@@ -4312,9 +4319,10 @@ function rfProcessBarcode(event){
 	rfGetMobIdfile();
 	forms[formName].controller.loadRecords(mob.idfilesFS);
 	rfGetMobPiecemark(); // Get piecemark record
-	if (!barcodePlant()){
-		errorDialogMobile(event,'6001','current');//6001 This item doesn't belong to this Division.
-		logger(true,i18n.getI18NMessage('6001'));
+	if (!barcodePlant() && !scopes.globals.isOfficeFunction(event)){
+		var assocName = ' ('+barcode_to_idfile.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.sts_job_to_assoc.association_name+')';
+		errorDialogMobile(event,'6001','current',assocName);//6001 This item doesn't belong to this Division.
+		logger(true,i18n.getI18NMessage('6001')+assocName);
 		return true;
 	}
 	var bundle = barcodeIsBundle(mob.barcode);
@@ -4324,70 +4332,6 @@ function rfProcessBarcode(event){
 	rfGetJobUnits();
 	rfGetSpecsItem();
 	switch (formName){
-		/**
-		case 'rf_transactions':
-		case 'rf_transactions_rev':
-		case 'rf_inspections':
-		case 'rf_inspections_rev':
-		case 'rf_shipping':
-			if (flagF8){
-				rfF8ReversalPrep();
-				rfF8ReversalTransaction();
-				return true;
-			}
-			rfWindowLastInfoDisplay(event);
-			rfGetPreviousStatusLocation(); // set previous status
-			var routeOK = rfCheckRouteOrder(); // route checks out 
-			if (!routeOK){
-				if (application.isInDeveloper()){application.output('Routing not ok');}
-				errorDialogMobile('rf_transactions.current','405','current','missing');//405 
-				return true;
-			}
-			var shipStat = barcodeShip();
-			var shipped = barcodeShipped();
-			if (shipped){
-				if (application.isInDeveloper()){application.output('Barcode already shipped.');}
-				errorDialogMobile('rf_shipping.current','708','current');//405 
-				return true;
-			}
-			if (barcodeInAnotherLoad()){
-				if (application.isInDeveloper()){application.output('Barcode already on another load.')}
-				errorDialogMobile('rf_shipping.current','951','current');//405 
-				return true;				
-			}
-			if (rfTimed() && (mob.timedError != "")){
-					errorDialogMobile(event,mob.timedError,'current');
-					logger(true,'Timed status error'+mob.timedError);
-					return true;
-			}
-			saveScanTransaction(); // moved to inside rfTimed where the form query on timed end is located
-			rfGetLocationStats(mob.locationArea);
-			break;
-		case 'rf_bundles': {
-			if (flagF8){
-				if (!bundleCheckIdInside()){
-					errorDialogMobile(event,'701','current',null); // 701 This ID Number Was Not Found.
-					return true;
-				}
-				bundleGetIdfilesByBarcode();
-				bundleGetTransactions();
-				bundleIdsSaveTo(null);
-				bundleDebundle(mob.bundle.transFs);
-				//mob.bundle.Id = '';
-				forms['rf_bundles'].clearForm('bundle');
-				forms['rf_bundles'].piecemark = "** removed **";
-				rfGetSpecsBundle();
-				mobBundlePieces = mob.bundle.pieces;
-				mobBundleWeight = mob.bundle.weight;
-				return true;
-			}
-			// add to bundle
-			bundleSaveTo(event);
-			rfGetSpecsBundle();
-			forms[formName].totalPieces = mob.bundle.pieces;
-			forms[formName].totalWeight = mob.bundle.weight;
-			break;
-		}*/
 		case 'rf_mobile_view': {
 			switch (session.program){
 				//case 'Build Bundles2':
@@ -4506,7 +4450,7 @@ function rfWindowLastInfoDisplay(event){
 	var formName = event.getFormName();
 	switch (formName){
 		case 'skip':
-			rfGetLocationStats(mob.locationArea);
+			rfGetLocationStats2(mob.locationArea);//Value list does not match key list in set condition
 			rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea);
 			mobPreviousLocation = mob.locationPrev;
 			mobPreviousStatus = mob.statusPrev;
@@ -4552,7 +4496,7 @@ function rfGetPreviousStatusLocation(){
 	q.where.add(
 	q.and
 		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 		.add(q.columns.idfile_id.isin(mob.idfiles))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
@@ -4694,6 +4638,7 @@ function onReturnFromFunction(){
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"0A91B122-3B40-440A-9B48-96C8A1DBA659"}
+ * @AllowToRunInFind
  */
 function onDataChangeJob(oldValue, newJob, event) {
 	if (onDataChangeFixEntry(oldValue,newJob,event)){return true;}
@@ -4708,7 +4653,11 @@ function onDataChangeJob(oldValue, newJob, event) {
 		forms[formName].controller.focusField(fieldName,true);
 		return true;
 	}
-	if (!rfJobCheck(newJob,session.associationId)){
+	var assocID = session.associationId;//#94 permit OFFICE to find piecmarks and status
+	if (session.appName.search('STSmobile') != -1 && scopes.globals.isOfficeFunction(event)){
+		assocID = null;
+	}
+	if (!rfJobCheck(newJob,assocID)){
 		//onFocusClear(event);
 		// 101 This job number was not found.
 		errorDialogMobile(event,101,fieldName,null);
@@ -4799,7 +4748,7 @@ function rfJobCheck(jobNumber,associationId){
 		if (application.isInDeveloper()){application.output('Multiple job numbers.  Should not happen')}
 	}
 	session.jobNumber = jobNumber;
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	/** @type {JSRecord<db:/stsservoy/jobs>} */
 	var rec = resultQ.getRecord(1);
 	session.jobId = rec.job_id;
 	session.jobLoads = null;
@@ -6261,7 +6210,7 @@ function isJobMetric(jobNumber){
 		if (application.isInDeveloper()){application.output('Multiple job numbers.  Should not happen');}
 	}
 	session.jobNumber = jobNumber;
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	/** @type {JSRecord<db:/stsservoy/jobs>} */
 	var rec = resultQ.getRecord(1);
 	mob.job.metric = (rec.metric_job == 1);
 	return (rec.metric_job == 1);
@@ -7024,45 +6973,43 @@ function getCustomersByJob(){
 	if (baseForm.search('piecemark') == -1){return null}
 	if (application.isInDeveloper()){application.output('job '+formName)}
 	var jobNum = forms[formName].vJobNumber;
-	// Look in session.jobId
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var fs = databaseManager.getFoundSet('stsservoy','jobs');
 	var custNum = [];
 	var custId = [];
-	var custIds = "";
-	if (fs.find()){
-		//if (jobNum){
-			fs.job_number = jobNum;
-		//}
-		fs.association_id = session.associationId;
-		var count = fs.search();
-		if (count == 0){return null}
-		for (var index = 1;index <= count;index++){
-			var rec = fs.getRecord(index);
-			custIds = custIds + rec.customer_id;
-			if (index != count){
-				custIds = custIds + "||";
-			}
+	var custIds = [];
+	// Look in session.jobId
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var j = databaseManager.createSelect('db:/stsservoy/jobs');
+	j.result.add(j.columns.job_id);
+	j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
+	j.where.add(j.columns.delete_flag.isNull);
+	j.where.add(j.columns.job_number.eq(jobNum));
+	j.where.add(j.columns.association_id.eq(session.associationId));
+	var J = databaseManager.getFoundSet(j);
+	if (J.getSize() > 0){
+		var index = 1;
+		while (index <= J.getSize()){
+			/** @type {JSRecord<db:/stsservoy/jobs>} */
+			var rec = J.getRecord(index);
+			custIds.push(rec.customer_id);
+			index++;
 		}
-		/** @type {JSFoundSet<db:/stsservoy/customers>} */
-		var fs2 = databaseManager.getFoundSet('stsservoy','customers');
-		if (fs2.find()){
-			fs2.customer_id = custIds;
-			var count2 = fs2.search();
-			for (index = 1;index <= count2;index++){
-				rec = fs2.getRecord(index);
-				custId.push(rec.customer_id);
-				custNum.push(rec.customer_number);
-			}
+		/** @type {QBSelect<db:/stsservoy/customers>} */
+		var c = databaseManager.createSelect('db:/stsservoy/customers');
+		c.result.add(c.columns.customer_id);
+		c.where.add(c.columns.delete_flag.isNull);
+		c.where.add(c.columns.tenant_uuid.eq(session.tenant_uuid));
+		c.where.add(c.columns.customer_id.isin(custIds));
+		var C = databaseManager.getFoundSet(c);
+		index = 1;
+		while (index <= C.getSize()){
+			/** @type {JSRecord<db:/stsservoy/customers>} */
+			var rec2 = C.getRecord(index);
+			custId.push(rec2.customer_id);
+			custNum.push(rec2.customer_number);
 		}
+
 		var ds = databaseManager.convertToDataSet(fs2,['customer_number','customer_id']);
-		//for (var index = 1;index <= ds.getMaxRowIndex();index++){
-		//	ds.rowIndex = index;
-		//	application.output('ds '+ds.rowIndex);
-		//}
-		//application.output('ds '+ds)
 		return ds;
-		//application.setValueListItems('stsvlt_custIdByJob',custNum,custId);
 	}
 	return null;
 }
@@ -7072,22 +7019,25 @@ function getCustomersByJob(){
  * @properties={typeid:24,uuid:"B86D58A1-B549-4E54-A8CC-DFA9033F8520"}
  */
 function getJobsByAssoc(){
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var fs = databaseManager.getFoundSet('stsservoy','jobs');
+	// change to QBSelect 20161121
 	var jobNum = [];
 	var jobId = [];
-	var assocId = session.associationId;
-	if (fs.find()){
-		fs.association_id = assocId;
-		var count = fs.search();
-		for (var index = 1;index <= count;index++){
-			var rec = fs.getRecord(index);
-			jobId.push(rec.job_id);
-			jobNum.push(rec.job_number);
-		}
-		//application.setValueListItems('stsvlg_jobsByAssoc',jobNum,jobId);
-		application.setValueListItems('stsvlg_jobsByAssoc',jobNum);
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var j = databaseManager.createSelect('db:/stsservoy/jobs');
+	j.result.add(j.columns.job_id);
+	j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
+	j.where.add(j.columns.delete_flag.isNull);
+	j.where.add(j.columns.association_id.eq(session.associationId));
+	var J = databaseManager.getFoundSet(j);
+	var count = 1;
+	while (count <= J.getSize()){
+		/** @type {JSRecord<db:/stsservoy/jobs>} */
+		var rec = J.getRecord(count);
+		jobId.push(rec.job_id);
+		jobNum.push(rec.job_number);
+		count++;
 	}
+	application.setValueListItems('stsvlg_jobsByAssoc',jobNum);
 }
 /**
  * @properties={typeid:24,uuid:"487002D5-DE71-42EF-9A1D-198696CC88EA"}
@@ -8604,4 +8554,34 @@ function isOfficeFunction(event){
 	/** @type {JSRecord<db:/stsservoy/associations>} */
 	var rec = A.getRecord(1);
 	return (rec.logic_flag == 1);
+}
+/**
+ * @properties={typeid:24,uuid:"D8C7F913-E0FD-4936-BBA0-66A3B9A54944"}
+ */
+function getI18nWindowName(currWinName){
+	
+	//keep array of windowNames for rfView case selection into english function, etc
+	/** @type {QBSelect<db:/stsservoy/i18n_table>} */
+	var i = databaseManager.createSelect('db:/stsservoy/i18n_table');
+	i.result.add(i.columns.i18n_table_id);
+	i.where.add(i.columns.message_value.eq(currWinName));
+	i.where.add(i.columns.message_key.cast(QUERY_COLUMN_TYPES.TYPE_STRING).like('sts.mobile.%'));
+	var I = databaseManager.getFoundSet(i);
+	var rec = I.getRecord(1);
+	var key = rec.message_key;
+
+	/** @type {QBSelect<db:/stsservoy/i18n_table>} */
+	var ii = databaseManager.createSelect('db:/stsservoy/i18n_table');
+	ii.result.add(ii.columns.i18n_table_id);
+	ii.where.add(ii.columns.message_language.like('en'));
+	ii.where.add(ii.columns.message_key.eq(key));
+	var II = databaseManager.getFoundSet(ii);
+	if (II.getSize() > 0){
+		/** @type {JSRecord<db:/stsservoy/i18n_table>} */
+		var rec2 = II.getRecord(1);
+		mobileWindows[currWinName] = rec2.message_value;
+	} else {
+		mobileWindows[currWinName] = '';
+	}
+	
 }

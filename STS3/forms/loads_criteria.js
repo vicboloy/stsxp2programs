@@ -63,39 +63,39 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"105C8AB5-9447-48F1-ABFB-5BB900A1338C"}
- * @AllowToRunInFind
  */
 function onDataChangeJobNumber(oldValue, newValue, event) {
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var fs = sts_jobs.duplicateFoundSet();
-	fs.loadAllRecords();
-	if (fs.find()){
-		fs.job_number = newValue;
-		var count = fs.search();
-		if (count > 0){
-			jobFound = true;
-			var rec = fs.getRecord(1);
-			vJobName = rec.job_title;
-			vJobID = rec.job_id;
-			vJobMetric = (rec.metric_job == 1);
-			var vCustId = rec.customer_id;
-			vCustNum = rec.sts_job_to_customer2.customer_number;
-			vCustomerName = rec.sts_job_to_customer2.name;
-			scopes.jobs.browseJobID = rec.job_id;
-			var status = true;
-			vLabIDNums = 0;//idfile count
-			vLabTotPieces = 0;//totalpieces
-			vLabTotalWt = 0;//totalweight
-			vLabNumPcmks = 0;//total piecemarks
-			browseInfoEnable();
-			scopes.jobs.onGetInformation(event,false);
-			controller.focusField('frmSeqNum',true);
-		} else {
-			jobFound = false;
-			status = false;
-		}
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/jobs');
+	fs.result.add(fs.columns.job_id);
+	fs.where.add(fs.columns.job_number.like(newValue));
+	fs.where.add(fs.columns.delete_flag.isNull);
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var FS = databaseManager.getFoundSet(fs);
+
+	if (FS.getSize() > 0){
+		jobFound = true;
+		/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+		var rec = FS.getRecord(1);
+		vJobName = rec.job_title;
+		vJobID = rec.job_id;
+		vJobMetric = (rec.metric_job == 1);
+		vCustomerID = rec.customer_id;
+		vCustNum = rec.sts_job_to_customer2.customer_number;
+		vCustomerName = rec.sts_job_to_customer2.name;
+		scopes.jobs.browseJobID = rec.job_id;
+		vLabIDNums = 0;//idfile count
+		vLabTotPieces = 0;//totalpieces
+		vLabTotalWt = 0;//totalweight
+		vLabNumPcmks = 0;//total piecemarks
+		browseInfoEnable();
+		scopes.jobs.onGetInformation(event,false);
+		controller.focusField('frmSeqNum',true);
+	} else {
+		vJobNum = null;
+		return false;
 	}
-	return status;
+	return true;
 }
 /**
  * @properties={typeid:24,uuid:"7A941D9A-5D56-4B77-BC2C-165EC3F8DE8B"}
@@ -221,84 +221,6 @@ function onActionClear(event) {
 	jobFound = false;
 	browseInfoEnable();
 }
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"8206E21B-8B05-4261-90FE-94191969C2A0"}
- */
-function xxxunusedonGetInformation(event) {
-	if (!jobFound) {return}
-	//scopes.jobs.loadCountsJobId = job_id;
-	var queryWeight =  'select sum(item_weight*item_quantity) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '
-		+ ' and sheets.delete_flag IS NULL'
-		+ ' and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL and piecemarks.piecemark = piecemarks.parent_piecemark '
-		+ ' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL'
-	var queryIdfiles =  'select count(*) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id \
-		and sheets.delete_flag IS NULL \
-		and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL \
-		inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL \
-		inner join sequences on idfiles.sequence_id = sequences.sequence_id and sequences.delete_flag IS NULL';
-	queryIdfiles =  'select count(*) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '+
-	' and sheets.job_id = ? AND sheets.tenant_uuid = ? AND sheets.delete_flag IS null '+
-	' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id AND idfiles.delete_flag IS null '+
-	' inner join sequences on sequences.sequence_id = idfiles.sequence_id inner join '+
-	' id_serial_numbers on id_serial_numbers.id_serial_number_id = idfiles.id_serial_number_id ';
-	var queryBarcodes = 'select count (distinct id_serial_number) id_serial_number from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id \
-		and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL \
-		inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL \
-		inner join id_serial_numbers on id_serial_numbers.id_serial_number_id = idfiles.id_serial_number_id';
-	var queryPiecemarks = 'SELECT count(*) FROM piecemarks INNER JOIN sheets ON piecemarks.sheet_id = sheets.sheet_id ' + 
-		' AND sheets.delete_flag IS NULL ' + 
-		' AND sheets.job_id = ? AND sheets.tenant_uuid = ? AND piecemarks.delete_flag IS NULL';
-	var maxReturnedRows = -1;
-	var args = [];
-	args.push(vJobID.toString());
-	args.push(globals.secCurrentTenantID);
-	//var args = [job_id,globals.secCurrentTenantID];
-	vLabNumPcmks = databaseManager.getDataSetByQuery('stsservoy', queryPiecemarks, args , maxReturnedRows)[0][0];
-	vLabIDNums = databaseManager.getDataSetByQuery('stsservoy', queryBarcodes, args , maxReturnedRows)[0][0];
-	vLabTotPieces = databaseManager.getDataSetByQuery('stsservoy', queryIdfiles, args , maxReturnedRows)[0][0];
-	vLabTotalWt = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , maxReturnedRows)[0][0];
-}
-/**
- * @param jobID
- *
- * @properties={typeid:24,uuid:"0F6D8D82-0FEA-441A-A4CB-60A1DEA4B89E"}
- * @SuppressWarnings(wrongparameters)
- * @SuppressWarnings(unused)
- */
-function xxxtestBuildFS(jobID){
-	/**
-	query = 'select random()*1000000 AS "browsing_id",0 AS "selection",* from piecemarks p '+
-	' right join routings rt on rt.routing_id = p.e_route_code_id '+
-	' inner join sheets s on p.sheet_id = s.sheet_id SHT '+
-	' and s.job_id = ? AND s.delete_flag IS null PCMK '+
-	' inner join idfiles i on i.piecemark_id = p.piecemark_id AND i.delete_flag FLAG SONUM FABS AREA PCRL LDN COW LOT PKG'+
-	' inner join sequences ss on ss.sequence_id = i.sequence_id SEQN ' +
-	' inner join id_serial_numbers b on b.id_serial_number_id = i.id_serial_number_id ' +
-	' left join status_description sd on sd.status_description_id = i.status_description_id ' +
-	' left join loads l on l.load_id = i.current_load_id LDRR '+
-	' order by p.parent_piecemark, p.piecemark';
-
-	/** @type {QBSelect<db:/stsservoy/jobs>} * /
-	var q = databaseManager.createSelect('db:/stsservoy/jobs');
-	q.result.add(q.columns.job_id);
-	q.result.add(q.columns.job_number);
-	q.result.add(q.columns.metric_job);
-	q.result.distinct = true;
-	q.where.add(
-		q.and
-			.add(q.columns.delete_flag.isNull)
-			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(q.columns.job_number.eq(jobNumber))
-		);
-	var resultQ = databaseManager.getFoundSet(q);
-	null;
-	*/
-}
 /**
  * @param criteria
  * @param formName
@@ -314,7 +236,7 @@ function openBrowseTable(criteria){
  * @properties={typeid:24,uuid:"3261ECE1-7C4F-4E31-8D33-34561FEA55B6"}
  */
 function collectAndBrowse(){
-	var brDS = scopes.jobs.queryAssembly(criteria,null,'browse');
+	//var brDS = scopes.jobs.queryAssembly(criteria,null,'browse');
 	openBrowseTable(collectCriteria());
 }
 /**

@@ -58,7 +58,7 @@ uuid:"2BEB8B7F-8EC5-495A-A204-A54F065AA532"
 },
 {
 dataProviderID:"vLabTotPieces",
-horizontalAlignment:2,
+horizontalAlignment:4,
 location:"336,314",
 size:"105,20",
 transparent:true,
@@ -327,6 +327,7 @@ uuid:"78A68938-0F91-4197-A952-01FDB05C511B"
 },
 {
 dataProviderID:"vUnits",
+horizontalAlignment:2,
 location:"446,339",
 size:"47,20",
 transparent:true,
@@ -335,7 +336,7 @@ uuid:"84E0EABD-1A17-48FB-B615-A0E5C1A6C989"
 },
 {
 dataProviderID:"vLabIDNums",
-horizontalAlignment:2,
+horizontalAlignment:4,
 location:"336,289",
 size:"105,20",
 transparent:true,
@@ -364,7 +365,7 @@ horizontalAlignment:4,
 labelFor:"frmPiecemark",
 location:"15,264",
 name:"lblPiecemark",
-text:"i18n:sts.label.piecemark",
+text:"i18n:sts.label.piecemark_",
 transparent:true,
 typeid:7,
 uuid:"91D0EEC6-D9C9-4A70-95C4-95E12BB2599C"
@@ -382,8 +383,9 @@ uuid:"AED8D63C-66D1-40D8-BF76-49608BD58158"
 },
 {
 dataProviderID:"vLabNumPcmks",
-horizontalAlignment:2,
+horizontalAlignment:4,
 location:"336,364",
+size:"105,20",
 transparent:true,
 typeid:7,
 uuid:"B38F2373-026B-40DA-B952-F83FA99E0D07"

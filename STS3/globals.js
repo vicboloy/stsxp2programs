@@ -1490,12 +1490,15 @@ function formModeShow(event) {
 	
 	if (formEls['btn_Edit']){
 		formEls['btn_Edit'].visible = true;
+		formEls['btn_Edit'].enabled = true;
 	}
 	if (formEls['btn_Cancel']){
 		formEls['btn_Cancel'].visible = false;
+		formEls['btn_Cancel'].enabled = false;
 	}
 	if (formEls['btn_Save']){
 		formEls['btn_Save'].visible = false;
+		formEls['btn_Save'].enabled = false;
 	}
 }
 /**
@@ -1516,12 +1519,15 @@ function formModeEdit(event) {
 	
 	if (formEls['btn_Edit']){
 		formEls['btn_Edit'].visible = false;
+		formEls['btn_Edit'].enabled = false;
 	}
 	if (formEls['btn_Cancel']){
 		formEls['btn_Cancel'].visible = true;
+		formEls['btn_Cancel'].enabled = true;
 	}
 	if (formEls['btn_Save']){
 		formEls['btn_Save'].visible = true;
+		formEls['btn_Save'].enabled = true;
 	}
 }
 /**
@@ -1543,12 +1549,15 @@ function formModeCancel(event) {
 
 	if (formEls['btn_Edit']){
 		formEls['btn_Edit'].visible = true;
+		formEls['btn_Edit'].enabled = true;
 	}
 	if (formEls['btn_Cancel']){
 		formEls['btn_Cancel'].visible = false;
+		formEls['btn_Cancel'].enabled = false;
 	}
 	if (formEls['btn_Save']){
 		formEls['btn_Save'].visible = false;
+		formEls['btn_Save'].enabled = false;
 	}
 }
 /**

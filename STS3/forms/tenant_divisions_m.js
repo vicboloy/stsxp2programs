@@ -116,4 +116,10 @@ function onEdit(event,editing){
 	} else {
 		forms[tabFormName].editInactive(event);
 	}
+	elements.btn_Cancel.enabled = editing;
+	elements.btn_Cancel.visible = editing;
+	elements.btn_Edit.enabled = !editing;
+	elements.btn_Edit.visible = !editing;
+	elements.btn_Save.enabled = editing;
+	elements.btn_Save.visible = editing;
 }

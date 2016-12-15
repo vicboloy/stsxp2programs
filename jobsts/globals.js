@@ -7006,9 +7006,10 @@ function getCustomersByJob(){
 			var rec2 = C.getRecord(index);
 			custId.push(rec2.customer_id);
 			custNum.push(rec2.customer_number);
+			index++;//task08 infinite loop on job number change
 		}
 
-		var ds = databaseManager.convertToDataSet(fs2,['customer_number','customer_id']);
+		var ds = databaseManager.convertToDataSet(C,['customer_number','customer_id']);
 		return ds;
 	}
 	return null;
@@ -7733,7 +7734,9 @@ function onFocusTabsSTS(event) {
 	if (nonRfViews[elName] == 'R' && value == ""){
 		forms[formName].elements[elName].requestFocus();
 	} else {
-		form.elements[nextField].requestFocus();
+		if (form.elements[nextField]){
+			form.elements[nextField].requestFocus();
+		}
 	}
 }
 /**
@@ -8495,41 +8498,63 @@ function onTabChangeSplitSet(event) {
  * @properties={typeid:24,uuid:"4DCF6DBD-A889-4090-9D57-787FA7BA4D38"}
  */
 function onDataChangeAssocType(oldValue, newValue, event) {
+	//this is an office / shop setting.  if the item is already in use, then do NOT permit a change
+	//do NOT permit a change if there is only one of this item in the db
+	// ticket#65 check for office / shop setting for association
 	var formName = event.getFormName();
-	var element = event.getElementName();
-	var selectedAssoc = forms[formName].association_uuid;
-	/** @type {QBSelect<db:/stsservoy/users>} */
-	var u = databaseManager.createSelect('db:/stsservoy/users');
-	u.result.add(u.columns.user_uuid);
-	u.where.add(u.columns.tenant_uuid.eq(session.tenant_uuid));
-	u.where.add(u.columns.association_uuid.eq(selectedAssoc));
-	var U = databaseManager.getFoundSet(u);
-	U.loadRecords();
-	if (U.getSize() == 0){
-
-		/** @type {QBSelect<db:/stsservoy/jobs>} */
-		var j = databaseManager.createSelect('db:/stsservoy/jobs');
-		j.result.add(j.columns.job_id);
-		j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
-		j.where.add(j.columns.association_id.eq(selectedAssoc));
-		var J = databaseManager.getFoundSet(j);
-		J.loadRecords();
-		if (J.getSize() == 0){
-
-			/** @type {QBSelect<db:/stsservoy/status_description>} */
-			var s = databaseManager.createSelect('db:/stsservoy/status_description');
-			s.result.add(s.columns.status_description_id);
-			s.where.add(s.columns.tenant_uuid.eq(session.tenant_uuid));
-			s.where.add(s.columns.association_id.eq(selectedAssoc));
-			var S = databaseManager.getFoundSet(s);
-			S.loadRecords();
-			if (S.getSize() == 0){return true}
+	var officeFlag = oldValue;
+	/** @type {QBSelect<db:/stsservoy/associations>} */
+	var a = databaseManager.createSelect('db:/stsservoy/associations');
+	a.result.clear();
+	a.result.add(a.columns.association_uuid);
+	a.where.add(a.columns.association_uuid.eq(forms[formName].association_uuid));
+	a.where.add(a.columns.delete_flag.not.eq(99));
+	a.where.add(a.columns.tenant_uuid.eq(session.tenant_uuid));
+	var A = databaseManager.getFoundSet(a);
+	var existing = (A.getSize() != 0)
+	// if size is 1, then this is existing record.  if 0, new record
+	
+	/** @type {QBSelect<db:/stsservoy/associations>} */
+	var aa = databaseManager.createSelect('db:/stsservoy/associations');
+	aa.result.clear();
+	aa.result.add(aa.columns.association_uuid);
+	aa.where.add(aa.columns.delete_flag.not.eq(99));
+	aa.where.add(aa.columns.tenant_uuid.eq(session.tenant_uuid));
+	aa.where.add(aa.columns.logic_flag.eq(oldValue));//get existing office or shops
+	var AA = databaseManager.getFoundSet(aa);
+	if (((!existing) || (existing && AA.getSize() > 1)) &&
+		(forms[formName].tenant_group_uuid != forms[formName].tenant_uuid)){//second test is main OFFICE division
+		var selectedAssoc = forms[formName].association_uuid;
+		/** @type {QBSelect<db:/stsservoy/users>} */
+		var u = databaseManager.createSelect('db:/stsservoy/users');
+		u.result.add(u.columns.user_uuid);
+		u.where.add(u.columns.tenant_uuid.eq(session.tenant_uuid));
+		u.where.add(u.columns.association_uuid.eq(selectedAssoc));
+		var U = databaseManager.getFoundSet(u);
+		U.loadRecords();
+		if (U.getSize() == 0){
+			// Check for jobs using association ticket#65 , not allocated to a user
+			/** @type {QBSelect<db:/stsservoy/jobs>} */
+			var j = databaseManager.createSelect('db:/stsservoy/jobs');
+			j.result.add(j.columns.job_id);
+			j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
+			j.where.add(j.columns.association_id.eq(selectedAssoc));
+			var J = databaseManager.getFoundSet(j);
+			J.loadRecords();
+			if (J.getSize() == 0){ // check for status use of association
+				/** @type {QBSelect<db:/stsservoy/status_description>} */
+				var s = databaseManager.createSelect('db:/stsservoy/status_description');
+				s.result.add(s.columns.status_description_id);
+				s.where.add(s.columns.tenant_uuid.eq(session.tenant_uuid));
+				s.where.add(s.columns.association_id.eq(selectedAssoc));
+				var S = databaseManager.getFoundSet(s);
+				S.loadRecords();
+				if (S.getSize() == 0){return true}
+			}
 		}
 	}
-
-	var rec = forms[formName].foundset.getSelectedRecord();
-	databaseManager.revertEditedRecords();
-	scopes.globals.errorDialogMobile(event,'1168',null,'');//Division already used in jobs/status/user
+	databaseManager.revertEditedRecords(forms[formName].foundset);
+	scopes.globals.errorDialogMobile(event,1168,'','');//Division already used in jobs/status/user
 	return true;
 }
 /**

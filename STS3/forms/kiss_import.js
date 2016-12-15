@@ -39,61 +39,62 @@ function fileReceipt(file){
 	job.title = headerLine[jobTitleIndex];
 	job.name = headerLine[jobNameIndex];
 	job.date = headerLine[jobDateIndex];
-	job.associationId = scopes.globals.session.associationId;application.output('assoc'+ globals.secCurrentAssociationID);
+	job.associationId = scopes.globals.session.associationId;
+	if (application.isInDeveloper()){application.output('assoc'+ globals.secCurrentAssociationID)}
 	scopes.jobs.jobName = jobNumber;
 	foundset.loadAllRecords();
 	scopes.jobs.custNums = [];/** @type {Array} */ var custNums = scopes.jobs.custNums;
 	scopes.jobs.jobNums = []; /** @type {Array} */ var jobNums = scopes.jobs.jobNums;
 	scopes.jobs.custIds = []; /** @type {Array} */ var custIds = scopes.jobs.custIds;
 	scopes.jobs.jobIds = []; /** @type {Array} */ var jobIds = scopes.jobs.jobIds;
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var jobsFS = databaseManager.getFoundSet('stsservoy','jobs');
-	if (jobsFS.find()){
-		jobsFS.job_number = jobNumber;
-		var count = jobsFS.search();
-		if (count > 0){
-			if (count > 1){
-				application.output('>>> jobs '+count);
-				for (var index2 = 1;index2 <= count;index2++){
-					var rec = jobsFS.getRecord(index2);
-					custIds.push(rec.customer_id);
-					jobIds.push(rec.job_id);
-					custNums.push(rec.st2_jobs_to_customers.customer_number);
-					jobNums.push(rec.job_number);
-				}
-				elements.chooseCust.text = 'Job Number '+jobNumber+' is under multiple customers. Choose customer number:';
-				elements.chooseCust.visible = true;
-				elements.chooseCustSelect.visible = true;
-				application.setValueListItems('stsvl_kiss_custList',custNums);
-				return;
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var jobsFS = databaseManager.createSelect('db:/stsservoy/jobs');
+	jobsFS.result.add(jobsFS.columns.job_id);
+	jobsFS.where.add(jobsFS.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	jobsFS.where.add(jobsFS.columns.job_number.eq(jobNumber));
+	var JFS = databaseManager.getFoundSet(jobsFS);
+	var count = JFS.getSize();
+	if (count > 0){
+		if (count > 1){
+			//application.output('>>> jobs '+count);
+			for (var index2 = 1;index2 <= count;index2++){
+				var rec = JFS.getRecord(index2);
+				custIds.push(rec.customer_id);
+				jobIds.push(rec.job_id);
+				custNums.push(rec.st2_jobs_to_customers.customer_number);
+				jobNums.push(rec.job_number);
 			}
-			//scopes.globals.kissJobRf = jobsFS.getRecord(1).rf_interface;//save rf interface to show/noshow buttons
-			rec = jobsFS.getRecord(1);
-			job.customerId = rec.customer_id;
-			var custRec = rec.sts_job_to_customer2;
-
-			if (!custRec.barcode_prefix || 
-				// might not need to check this !custRec.barcode_fixed_length || 
-				!custRec.barcode_include_prefix || 
-				!custRec.barcode_job_length ||
-				custRec.barcode_prefix.length != 2){
-				var errMsg = i18n.getI18NMessage('sts.txt.barcode.incomplete.msg').replace('XXX',rec.customer_number);
-				plugins.dialogs.showErrorDialog('STS ERROR: Customer barcode incomplete.',errMsg);
-				return;
-			}
-			scopes.jobs.jobUnderCustomer = rec.job_id;
-			if (application.isInDeveloper()){application.output('job record id'+rec.job_id)}
-			var win = application.createWindow("KISS Import", JSWindow.DIALOG);
-			win.title = "KISS Import";
-			win.show(forms.kiss_option_import);
-		} else {
-			if (application.isInDeveloper()){application.output('job not found')}
-			errMsg = i18n.getI18NMessage('sts.txt.job.does.not.exist.msg').replace('XXX',jobNumber);
-			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('sts.txt.job.does.not.exist'),errMsg);
+			elements.chooseCust.text = 'Job Number '+jobNumber+' is under multiple customers. Choose customer number:';
+			elements.chooseCust.visible = true;
+			elements.chooseCustSelect.visible = true;
+			application.setValueListItems('stsvl_kiss_custList',custNums);
 			return;
-			//show dialog for customers
 		}
-	} 
+		//scopes.globals.kissJobRf = jobsFS.getRecord(1).rf_interface;//save rf interface to show/noshow buttons
+		rec = JFS.getRecord(1);
+		job.customerId = rec.customer_id;
+		var custRec = rec.sts_job_to_customer2;
+			if (!custRec.barcode_prefix || 
+			// might not need to check this !custRec.barcode_fixed_length || 
+			!custRec.barcode_include_prefix || 
+			!custRec.barcode_job_length ||
+			custRec.barcode_prefix.length != 2){
+			var errMsg = i18n.getI18NMessage('sts.txt.barcode.incomplete.msg').replace('XXX',rec.customer_number);
+			plugins.dialogs.showErrorDialog('STS ERROR: Customer barcode incomplete.',errMsg);
+			return;
+		}
+		scopes.jobs.jobUnderCustomer = rec.job_id;
+		if (application.isInDeveloper()){application.output('job record id'+rec.job_id)}
+		var win = application.createWindow("KISS Import", JSWindow.DIALOG);
+		win.title = "KISS Import";
+		win.show(forms.kiss_option_import);
+	} else {
+		if (application.isInDeveloper()){application.output('job not found')}
+		errMsg = i18n.getI18NMessage('sts.txt.job.does.not.exist.msg').replace('XXX',jobNumber);
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('sts.txt.job.does.not.exist'),errMsg);
+		return;
+		//show dialog for customers
+	}
 }
 /**
  * @param {JSEvent} event

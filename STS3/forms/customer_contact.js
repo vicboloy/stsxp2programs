@@ -128,7 +128,7 @@ function onRecordSelection(event) {
 function onDataChangeBarCodePrefix(oldValue, newValue, event) {
 	barcode_include_prefix = i18n.getI18NMessage('i18n:sts.txt.barcode.include.prefix');
 	barcode_job_length = 3;
-	barcode_job_start = i18n.getI18NMessage('i18n:sts.txt.barcode.first.characters');
+	barcode_job_start = i18n.getI18NMessage('sts.txt.barcode.last.characters');
 	barcode_preamble_length = 5;
 	barcode_fixed_length = 0;
 	var instance = globals.getInstanceForm(event);

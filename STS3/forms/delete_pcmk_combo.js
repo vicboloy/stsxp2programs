@@ -54,13 +54,21 @@ function onActionClearAll(event) {
  * @properties={typeid:24,uuid:"6588863C-C211-45FD-B32C-4FFCA0CA9711"}
  */
 function onActionDeleteSelected(event,formName) {
-	globals.doDialog('Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
+	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.records.selected'),
+		i18n.getI18NMessage('sts.txt.delete.records.selected'),
+		i18n.getI18NMessage('sts.txt.delete'),
+		i18n.getI18NMessage('sts.txt.cancel'));
+		//'Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
 	if (globals.dialogResponse != 'yes'){
 		//application.output('delete cancelled');
 		return;
 	}
 	//application.output('ask second question');
-	globals.doDialog('Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
+	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.records.selected'),
+			i18n.getI18NMessage('sts.txt.delete.record.permanent'),
+			i18n.getI18NMessage('sts.txt.cancel'),
+			i18n.getI18NMessage('sts.txt.delete'));
+	//'Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
 	if (globals.dialogResponse == 'yes'){
 		//application.output('delete aborted');
 		return;
@@ -72,7 +80,7 @@ function onActionDeleteSelected(event,formName) {
 	var fs = forms[formName+'_table'].foundset;
 	var omitList = [];
 	var i = 1;
-	while (i <= fs.getSize()){
+	while (i <= fs.getSize()){ // collect selected record idfile id's
 		var rec = fs.getRecord(i++);
 		if (rec.selection == 0){continue}
 		var idfileId = rec.idfile_id;

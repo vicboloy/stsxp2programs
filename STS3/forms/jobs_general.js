@@ -165,11 +165,15 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	c.where.add(c.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	c.where.add(c.columns.delete_flag.isNull);
 	c.where.add(c.columns.customer_id.eq(newValue));
+	/** @type {JSFoundSet<db:/stsservoy/customers>} */
 	var C = databaseManager.getFoundSet(c);
 	if (C.getSize() == 0){
 		globals.addCustomer(event);
 		return false;
 	}
+	/** @type {JSRecord<db:/stsservoy/customers>} */
+	var rec = C.getRecord(1);
+	barcode_form = rec.customer_id;//addresses ticket #87
 	if (1==1){return true}
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');

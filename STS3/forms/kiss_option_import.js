@@ -304,6 +304,8 @@ function onShow(firstShow, event) {
 	if (J.getSize() > 0){
 		jobRec = J.getRecord(1);
 		scopes.jobs.importJob.customerId = jobRec.customer_id;
+		scopes.jobs.importJob.jobId = jobRec.job_id;
+		scopes.jobs.importJob.bcFormId = jobRec.barcode_form;//#87ticket#87
 	}
 	
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} 

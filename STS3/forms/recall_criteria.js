@@ -219,3 +219,27 @@ function onActionDeleteWindow(event) {
 	win.show(forms.recall_record_actual);
 	scopes.jobs.removeFormHist('recall_pcmk_combo_table');
 }
+/**
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"C6F23B81-45AB-49E1-BD96-015B55A1F88B"}
+ */
+function collectAndTab(formName){
+	criteria = collectCriteria();
+	//scopes.jobs.viewBTableSQL2(criteria,formName);
+	scopes.jobs.viewBTableSQLSummary(criteria,formName);
+	//var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
+	//var summaryForm = 'loads_summary_info'+versionForm;
+	//var removeFormName = summaryForm+'_table';
+	//forms[summaryForm].elements.tabless.removeAllTabs();
+	//scopes.jobs.removeFormHist(removeFormName);
+	//scopes.jobs.createRouteSummaryForm(summaryQuery,formName.replace('piecemark','summary'));
+
+	forms['recall_piecemark_info'+versionForm].elements.tabless.removeAllTabs();
+	if (forms[formName+"_table"] && forms[formName+"_table"].hide){forms[formName+"_table"].hide();}
+	scopes.jobs.removeFormHist(formName+"_table");
+	scopes.jobs.browseJobID = vJobID;
+	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
+	null;
+}

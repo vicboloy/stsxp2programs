@@ -3,22 +3,21 @@ extendsID:"BD43913E-A4D2-4697-A6D8-CFD792E86D80",
 items:[
 {
 extendsID:"3E64E9AC-BB3A-4E5C-9527-D7106004A669",
-text:"Select Records to Recall",
+text:"i18n:sts.btn.record.selection.recall",
 typeid:7,
 uuid:"2F4CA135-F526-42C0-829F-F42CB97CA284"
 },
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"true\"
-]
-}
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:[\
+null,\
+\"true\"\
+]\
+}\
 }",
 extendsID:"386A923E-2D96-456D-BF91-E7A5922EEADA",
 onActionMethodID:"99D86CE4-07A3-4625-8174-9F332A538ACD",
-text:"Get Information",
 typeid:7,
 uuid:"96BF518D-6837-4F6A-BC9D-CA2A0FE647FA"
 }

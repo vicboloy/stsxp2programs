@@ -38,12 +38,38 @@ function onShow(firstShow, event) {
 	scopes.jobs.removeFormHist(formNameTable);
 	//var success = history.removeForm(formNameTable);
 	//var success2 = solutionModel.removeForm(formNameTable);
-	forms[formCriteria].collectCriteria(formCombo);
+	//forms[formCriteria].collectCriteria(formCombo);
+	scopes.jobs.viewBTableToFormQB(forms[formCriteria].collectCriteria(formCombo),formCombo);
+
 	forms[formCombo].elements.split.setRightForm(formPrefix+'_pcmk_transaction','sts_idfile_to_transactions');
 //	scopes.jobs.hideEmptyColumns(event,1);
-	var bot = forms[formCombo].elements.split.getRightForm().controller.getName();
-	var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
+	var rightForm = forms[formCombo].elements.split.getRightForm();
+	var leftForm = forms[formCombo].elements.split.getLeftForm();
+	if (rightForm){
+		var bot = forms[formCombo].elements.split.getRightForm().controller.getName();
+	}
+	if (leftForm){
+		var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
+	}
 	forms[formOverview].elements.tabless.addTab(formNameTable);
-	scopes.jobs.tablePrefsLoad(top);
-	scopes.jobs.tablePrefsLoad(bot);
+	if (top){scopes.jobs.tablePrefsLoad(top)}
+	if (bot){scopes.jobs.tablePrefsLoad(bot)}
+}
+/**
+ * @properties={typeid:24,uuid:"0257FA0B-56ED-464D-BF0F-D9A274E25857"}
+ */
+function collectAndBrowse(){
+	var brDS = scopes.jobs.queryAssembly(criteria,null,'browse');
+	openBrowseTable(collectCriteria());
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param criteria
+ *
+ * @properties={typeid:24,uuid:"4D6010F5-DFFA-4D60-8E67-C95622363BF9"}
+ */
+function openBrowseTable(criteria){
+	var formName = 'loads_pcmk_combo'+versionForm;
+	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	onActionShowWindow();
 }

@@ -6,21 +6,21 @@ items:[
 {
 containsFormID:"78A98DBC-933F-4F3E-9459-0C96CD41A9C0",
 location:"0,30",
-text:"FabSuite Preferences",
+text:"i18n:sts.tabs.applications.fabsuite.prefs",
 typeid:15,
 uuid:"526DB211-F106-40C8-B895-16619CB246C4"
 },
 {
 containsFormID:"588C2176-255F-4CC3-8760-DE55E5D7F377",
-location:"264,30",
-text:"Romac",
+location:"271,77",
+text:"i18n:sts.tabs.applications.romac.prefs",
 typeid:15,
 uuid:"76BB59B5-657A-4A4D-BE75-8143CEDCA3E1"
 },
 {
 containsFormID:"8FA5F489-E54C-40E0-A6D5-0BB3C269C433",
-location:"132,28",
-text:"FabTrol Preferences",
+location:"131,50",
+text:"i18n:sts.tabs.applications.fabtrol.prefs",
 typeid:15,
 uuid:"B62E4AE2-1AF5-41A6-AD35-AA55EB271870"
 }

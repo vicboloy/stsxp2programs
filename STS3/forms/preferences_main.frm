@@ -15,7 +15,7 @@ items:[
 {
 containsFormID:"54A817D1-7A4A-48E3-ADA0-C38AB0A83F39",
 location:"196,96",
-text:"Misc Info.",
+text:"i18n:sts.tab.misc.info",
 typeid:15,
 uuid:"0526F7C3-8172-4273-98FA-742FD62C2B88"
 },
@@ -23,21 +23,21 @@ uuid:"0526F7C3-8172-4273-98FA-742FD62C2B88"
 containsFormID:"5F749D42-A7CF-48A1-850B-853E5C31758E",
 location:"7,30",
 name:"data_paths",
-text:"Data Paths",
+text:"i18n:sts.tab.data.paths",
 typeid:15,
 uuid:"09C98220-9502-4E8B-8DFC-3AD99E1CC801"
 },
 {
 containsFormID:"D70BB16B-D1C8-40B2-8FF9-B0F0CED4B12E",
 location:"307,144",
-text:"Material Type Settings",
+text:"i18n:sts.tab.material.type.settings",
 typeid:15,
 uuid:"24317BD1-DF17-4B94-BAFE-0BA3DBB6AB23"
 },
 {
 containsFormID:"204F21F0-5721-47FC-AE91-E6D5122D9BD9",
 location:"264,124",
-text:"RF Settings",
+text:"i18n:sts.tab.rf.settings",
 typeid:15,
 uuid:"34082775-FC80-4527-8FE9-A30B59729B97"
 },
@@ -45,21 +45,21 @@ uuid:"34082775-FC80-4527-8FE9-A30B59729B97"
 containsFormID:"DF7F6C5B-E087-4365-B0D2-A4EFB497B4B9",
 location:"100,65",
 name:"display_settings",
-text:"Display Settings",
+text:"i18n:sts.tab.display.settings",
 typeid:15,
 uuid:"371AC415-B8ED-41D9-BBAD-E1ED61EB30FF"
 },
 {
 containsFormID:"4B00C8DD-33E8-4575-A7C7-4E1C347544D9",
 location:"165,81",
-text:"P.O. Info.",
+text:"i18n:sts.tab.po.info",
 typeid:15,
 uuid:"6E40234E-CAA5-493B-92E4-9A1E63C3EB3B"
 },
 {
 containsFormID:"3AD632B7-04AD-4EE8-897E-5116F1BE7B53",
 location:"230,109",
-text:"Sounds",
+text:"i18n:sts.tab.sounds",
 typeid:15,
 uuid:"746F3257-1AC0-4EBB-864D-A63009A3815C"
 },
@@ -67,21 +67,21 @@ uuid:"746F3257-1AC0-4EBB-864D-A63009A3815C"
 containsFormID:"147F8275-D530-4B97-9762-FB775C02B534",
 location:"38,47",
 name:"hardware_settings",
-text:"Hardware Settings",
+text:"i18n:sts.tab.hardware.settings",
 typeid:15,
 uuid:"87B851A0-D57F-40B6-BCAE-461023F62532"
 },
 {
 containsFormID:"AFA286CD-7451-49C2-A2BE-48E8FCF2CCA1",
 location:"474,184",
-text:"RF Screen Settings",
+text:"i18n:sts.tab.rf.screen.settings",
 typeid:15,
 uuid:"950813DD-C31F-4775-9DFE-DB40B900A440"
 },
 {
 containsFormID:"0ABA9A34-522B-4564-BEC6-282A67EC1E25",
 location:"409,164",
-text:"Other Applications",
+text:"i18n:sts.tab.other.applications",
 typeid:15,
 uuid:"95194F15-85E2-4BDC-9E9A-CBF4B9A2510E"
 }
@@ -97,7 +97,6 @@ uuid:"432ECEF6-E563-4EAF-B0F5-86ACECD59B6B"
 {
 extendsID:"5B49B297-92DC-4A2C-998D-3D4E4307B5BD",
 location:"410,506",
-text:"Update",
 typeid:7,
 uuid:"4C7E837F-B306-4487-9F15-3ABEA3B4293B"
 },
@@ -114,6 +113,7 @@ onActionMethodID:"0F7CB54B-C3AC-4211-9A81-5E931253B58C",
 showClick:false,
 showFocus:false,
 size:"78,31",
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"55ECC2A1-13C1-43E3-BE5C-79D8F9BED371"
@@ -128,14 +128,12 @@ uuid:"99ED9E50-1BAD-49DC-BCC6-0B4AD2715B34"
 extendsID:"972D517B-35BD-4774-BD37-3A830BC03702",
 horizontalAlignment:0,
 location:"509,506",
-text:"Session",
 typeid:7,
 uuid:"F29DCEBA-1BDF-4B7F-B12F-08B7BAEB7D44"
 },
 {
 extendsID:"523118C1-7958-4892-88F6-C2D96975FEA1",
 location:"608,506",
-text:"Cancel",
 typeid:7,
 uuid:"FB6AAB19-037F-4063-8BE5-5EDAB33A76E5"
 }

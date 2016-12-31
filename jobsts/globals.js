@@ -247,6 +247,8 @@ var mob = {
 	//bundleWeight : 0.0,	// weight of items in a bundle
 	bundlesJobs : [], // bundles per job
 	currentRevision : "", // current revision setting
+	completeAsk : false, // ask if cycle is complete for timed operation
+	completeStatus : 0, // Status is 100%
 	idfiles : [], 		// idfile_id list
 	idfileIds : [],		// idfileId array for grabbing with databaseManager.getFoundset.
 	idfilesFS : null, 	// idfiles foundset
@@ -910,7 +912,7 @@ var rfViews = {
 		locationpieces: 'V', //comma extends line with next data field after this one
 		locationweight: 'V'
 	},
-	'Transactions w/Rev\'s' : {
+	'Transactions w/Revs' : {
 		statusin : 'R',
 		locationin : 'O',
 		workerin : 'O',
@@ -944,7 +946,7 @@ var rfViews = {
 		locationweight: 'V'
 		
 	},
-	'Inspections w/Rev\'s' : {
+	'Inspections w/Revs' : {
 		statusin : 'R',
 		locationin : 'O',
 		workerin : 'O',
@@ -1251,6 +1253,7 @@ function getStatusDescriptions(){
 	l.statusCodes = [];
 	l.routeDefault = [];
 	l.stationsMultiScan = [];
+	l.promptComplete = [];//ticket #103 timed ops
 	m.stations = [];
 	m.statusCodesDiv = [];
 	m.stationSeq = [];
@@ -1281,6 +1284,9 @@ function getStatusDescriptions(){
 		}
 		if (l.statusCodes.indexOf(status) == -1){ // get list of all org status codes
 			l.statusCodes.push(status);
+		}
+		if (record.prompt_complete == 1){
+			l.promptComplete.push(status); // ticket #103 timed ops
 		}
 		m.stationSeq[descripId] = record.status_sequence;
 		if (!m.statusCodesDiv[assocId]){ //status codes by division
@@ -1735,7 +1741,7 @@ function getLoggedEmployee(userId){
 	e.result.add(e.columns.employee_lastname);
 	e.result.add(e.columns.employee_id);
 	e.result.add(e.columns.employee_number);
-	e.where.add(e.columns.user_uuid.eq(userId));
+	e.where.add(e.columns.employee_id.eq(userRec.employee_id));
 	//e.where.add(e.columns.employee_id.eq(userRec.employee_id));
 	var resultE = databaseManager.getFoundSet(e);
 	if (resultE.getSize() != 0){
@@ -1744,6 +1750,7 @@ function getLoggedEmployee(userId){
 		session.fullName = rec.employee_firstname+" "+rec.employee_lastname;
 		session.employeeId = rec.employee_id;
 		session.employeeNum = rec.employee_number;
+		if (application.isInDeveloper()){application.output('session '+session)}
 		session.capture = (!rec.employee_rf_logging) ? true : false; // logging enabled for current user
 		//session.userId = rec.user_uuid;
 	} else {
@@ -3417,6 +3424,12 @@ function rfTimed(){
 				}
 			}
 			if (rec.trans_status == mob.timedEndStat){
+				if (rec.quantity == 100){
+					mob.timedError = "1130"; // this is in saying that the status is already 100% complete, so no more this status
+					return true;
+				}
+			}
+			if (rec.trans_status == mob.timedEndStat){
 				if (rec.trailer_labor_percentage >= 100){
 					mob.timedError = "414"; // cannot start timed transaction once labor is at 100%, was 1122
 					return true;
@@ -3457,21 +3470,24 @@ function rfTimed(){
 					mob.timedTargetRec = rec;
 					mob.timedError = "";
 					mob.percent = 0;
-					var message = i18n.getI18NMessage('sts.txt.total.min')+
-										Math.ceil((mob.timedTotalMin+0.005)*100)/100+
-										'\n'+i18n.getI18NMessage('sts.txt.total.max')+
-										Math.ceil((mob.timedDuration*1+0.005)*100)/100+
-										'\n'+i18n.getI18NMessage('sts.txt.complete')+'?';
-					globals.DIALOGS.setDialogWidth(200);
-					globals.DIALOGS.setDialogHeight(200);
-					var response = globals.DIALOGS.showQuestionDialog(
-						i18n.getI18NMessage('sts.txt.end.of.timed.cycle'),
-						message,
-						i18n.getI18NMessage('sts.btn.no'),
-						i18n.getI18NMessage('sts.btn.yes'));
-					//	'End of Timed Cycle', message, 'NO', 'yes');
-					if (response == 'yes'){
-						mob.percent = 100;
+					if (l.promptComplete.indexOf(mob.statusCode)){//ticket #103 timed ops
+						var message = i18n.getI18NMessage('sts.txt.total.min')+
+											Math.ceil((mob.timedTotalMin+0.005)*100)/100+
+											'\n'+i18n.getI18NMessage('sts.txt.total.max')+
+											Math.ceil((mob.timedDuration*1+0.005)*100)/100+
+											'\n'+i18n.getI18NMessage('sts.txt.complete')+'?';
+						globals.DIALOGS.setDialogWidth(200);
+						globals.DIALOGS.setDialogHeight(200);
+						var response = globals.DIALOGS.showQuestionDialog(
+							i18n.getI18NMessage('sts.txt.end.of.timed.cycle'),
+							message,
+							i18n.getI18NMessage('sts.btn.no'),
+							i18n.getI18NMessage('sts.btn.yes'));
+						//	'End of Timed Cycle', message, 'NO', 'yes');
+						if (response == 'Yes'){
+							mob.percent = 100;//labor
+							mob.completeStatus = 1;//process complete
+						}
 					}
 					if (application.isInDeveloper()){application.output('message '+message+' response '+response);}
 					return true;
@@ -3811,7 +3827,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	);
 	var resultQ = databaseManager.getFoundSet(r);
 	var resultSize = resultQ.getSize();
-	if (resultSize != 0 && !rfScanAgainOk()) {
+	if (resultSize != 0 && !rfScanAgainOk() && !rfProcessComplete(resultQ)) {//addresses ticket #103
 		errorDialogMobile('rf_transactions.current','403','current');
 		if (application.isInDeveloper()){application.output('Status code has already been captured.');}
 		//forms['rf_transactions'].elements.current.requestFocus();
@@ -3860,6 +3876,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 				newRecB.transaction_duration = mob.timedDuration;
 				if (mob.percent > 0){newRecB.trailer_labor_percentage = mob.percent}
 				if (mob.percent == 100.0){newRecB.trailer_labor_quantity = 1}
+				if (mob.completeStatus == 1){newRecB.quantity = 100;mob.completeStatus = 0}//Set up as per ticket #103
 			}
 			for (var index2 = 0; index2 < currentWorkers.length; index2++) {
 				switch (index2) {
@@ -4370,7 +4387,7 @@ function rfProcessBarcode(event){
 					routeOK = rfCheckRouteOrder(); // route checks out 
 					if (!routeOK){
 						if (application.isInDeveloper()){application.output('Routing not ok');}
-						errorDialogMobile('rf_transactions.current','405','current',missing);//405 
+						errorDialogMobile('rf_transactions.current','405','current',null);//405 
 						return true;
 					}
 					shipStat = barcodeShip();
@@ -4612,6 +4629,7 @@ function rfStatusCheck(newStatus){
 		return null;
 	}
 	mob.statusCode = newStatus;
+	mob.completeAsk = (l.promptComplete.indexOf(newStatus));//ticket #103
 	session.stationId = m.stations[session.associationId+', '+mob.statusCode];
 	return newStatus;
 }
@@ -8588,17 +8606,18 @@ function getI18nWindowName(currWinName){
 	//keep array of windowNames for rfView case selection into english function, etc
 	/** @type {QBSelect<db:/stsservoy/i18n_table>} */
 	var i = databaseManager.createSelect('db:/stsservoy/i18n_table');
-	i.result.add(i.columns.i18n_table_id);
-	i.where.add(i.columns.message_value.eq(currWinName));
+	i.result.add(i.columns.message_key);
+	i.where.add(i.columns.message_value.like(currWinName.replace("'","%")));
 	i.where.add(i.columns.message_key.cast(QUERY_COLUMN_TYPES.TYPE_STRING).like('sts.mobile.%'));
 	var I = databaseManager.getFoundSet(i);
+	/** @type {JSFoundSet<db:/stsservoy/i18n_table>} */
 	var rec = I.getRecord(1);
 	var key = rec.message_key;
 
 	/** @type {QBSelect<db:/stsservoy/i18n_table>} */
 	var ii = databaseManager.createSelect('db:/stsservoy/i18n_table');
 	ii.result.add(ii.columns.i18n_table_id);
-	ii.where.add(ii.columns.message_language.like('en'));
+	ii.where.add(ii.columns.message_language.isNull);
 	ii.where.add(ii.columns.message_key.eq(key));
 	var II = databaseManager.getFoundSet(ii);
 	if (II.getSize() > 0){
@@ -8609,4 +8628,18 @@ function getI18nWindowName(currWinName){
 		mobileWindows[currWinName] = '';
 	}
 	
+}
+/**
+ * @param {JSFoundSet<db:/stsservoy/transactions>} transactions
+ *
+ * @properties={typeid:24,uuid:"5CAD4792-F681-4B3B-947D-DDB652CEEA74"}
+ */
+function rfProcessComplete(transactions){
+	var index = 1;
+	transactions.sort('desc quantity');
+	while (index <= transactions.getSize()){
+		if (transactions.quantity == 100){return true}
+		index++;
+	}
+	return false;
 }

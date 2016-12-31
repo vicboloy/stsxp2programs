@@ -1766,8 +1766,12 @@ function onGetInformation(event,flaggedDeleted) {
 		formXPrefix = formXName.split("_")[0];
 		oldFormName = formXPrefix+'_piecemark_info';
 		newFormName = oldFormName+versionForm;
+		if (application.isInDeveloper()){application.output('oldformname '+oldFormName)}
 		if (!forms[newFormName]){
 			solutionModel.cloneForm(newFormName,solutionModel.getForm(oldFormName));
+		}
+		if (forms[newFormName+'_table']){
+			removeFormHist(newFormName+'_table');
 		}
 		formX.collectAndTab(newFormName); //table dataset is built within
 	//}
@@ -3995,9 +3999,11 @@ function deleteIdfiles(){
 	///var piecemarkRec = null;
 	if (scopes.jobs.idfilesToDelete.length == 0){return}
 
+	//databaseManager.startTransaction();
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
-	i.result.add(i.columns.id_serial_number_id);
+	i.result.add(i.columns.idfile_id);
+	//i.result.add(i.columns.id_serial_number_id);
 	i.result.distinct = true;
 	i.where.add(i.columns.idfile_id.isin(scopes.jobs.idfilesToDelete));
 	i.where.add(i.columns.delete_flag.isNull);
@@ -4015,7 +4021,7 @@ function deleteIdfiles(){
 	j.result.add(j.columns.deleted_date);
 	j.where.add(j.columns.id_serial_number_id.isin(subIdfiles));//get associated idfiles
 	
-	var resultI = databaseManager.getFoundSet(j);
+	var resultI = databaseManager.getFoundSet(i);
 	var resultII = resultI.duplicateFoundSet();
 	index = 1;
 	while (index <= resultI.getSize()){
@@ -4044,7 +4050,7 @@ function deleteIdfiles(){
 		pp.result.add(pp.columns.trans_id);
 		pp.result.add(pp.columns.delete_flag);
 		pp.result.add(pp.columns.edit_date);
-		pp.where.add(pp.columns.idfile_id.isin(idfilesToDelete));
+		pp.where.add(pp.columns.idfile_id.isin(i));
 		var resultT = databaseManager.getFoundSet(pp);
 		
 		/** piecemarksCheck[] holds all piecemark that have had piecemarks deleted
@@ -4100,27 +4106,29 @@ function deleteIdfiles(){
 		var delIdfiles = databaseManager.getFoundSetUpdater(resultII);
 		delIdfiles.setColumn('delete_flag',99);
 		delIdfiles.setColumn('deleted_date',deleteDate);
-		delIdfiles.performUpdate();
+		var status = delIdfiles.performUpdate();
+		if (application.isInDeveloper()){application.output('updated '+status)}
 		scopes.jobs.idfilesToDelete = [];
 	}
-	if (resultB.getSize() > 0){
+	if (false && resultB.getSize() > 0){
 		var delBarcodes = databaseManager.getFoundSetUpdater(resultB);
 		delBarcodes.setColumn('delete_flag',99);
 		delBarcodes.setColumn('edit_date',deleteDate);
 		delBarcodes.performUpdate();
 	}
-	if (resultT.getSize() > 0){
+	if (false && resultT.getSize() > 0){
 		var delTrans = databaseManager.getFoundSetUpdater(resultT);
 		delTrans.setColumn('delete_flag',99);
 		delTrans.setColumn('edit_date',deleteDate);
 		delTrans.performUpdate();
 	}
 	var delPms = databaseManager.getFoundSetUpdater(resultP);
-	if (piecemarksDelete.length > 0){
+	if (false && piecemarksDelete.length > 0){
 		delPms.setColumn('delete_flag',99);
 		delPms.setColumn('edit_date',deleteDate);
 		delPms.performUpdate();
 	}
+	//databaseManager.commitTransaction();
 }
 /**
  *
@@ -4136,13 +4144,9 @@ function recallDeletedBarcodes(){
  * @properties={typeid:24,uuid:"F824C0EF-A3A4-4F93-813F-CAED4FC5BE36"}
  * @SuppressWarnings(wrongparameters)
  */
-function purgeDeletedBarcodes(recall){
-	var message = "Removing/purging";
-	if (recall){
-		message = "Recalling";
-	}
+function purgeDeletedIdfiles(){
 	warningsYes();
-	warningsMessage(message+' Barcode information.');
+	warningsMessage('Purging Idfile information.');
 	///var purgeRecordList = [];
 	/* 
 	 * id_serial_number_id*, idfile_id*, transaction_id*, piecemark_id^, lot_id*, sequence_id*, sheet_id*, job_id 
@@ -4153,14 +4157,13 @@ function purgeDeletedBarcodes(recall){
 	/** @type {Array} */
 	var purgeCodes = scopes.globals.purgeBarcodeRecords;
 	if (purgeCodes.length == 0){return}
-	//application.output('purgeBarcodeRecords has '+purgeCodes.length+' items '+purgeCodes);
 	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
 	var b =  databaseManager.createSelect("db:/stsservoy/id_serial_numbers");
 	b.result.add(b.columns.id_serial_number_id);
 	b.result.add(b.columns.delete_flag);
 	b.where.add(b.columns.id_serial_number_id.isin(purgeCodes));
 	var resultB = databaseManager.getFoundSet(b);
-	application.output('barcodes '+resultB.getSize());
+	if (application.isInDeveloper()){application.output('barcodes '+resultB.getSize())}
 	if (recall){
 		var recallable = databaseManager.getFoundSetUpdater(resultB);
 		recallable.setColumn('delete_flag',null);
@@ -4178,6 +4181,7 @@ function purgeDeletedBarcodes(recall){
 	var i =  databaseManager.createSelect("db:/stsservoy/idfiles");
 	i.result.add(i.columns.idfile_id);
 	i.result.add(i.columns.delete_flag);
+	i.result.add(i.columns.deleted_date);
 	i.result.add(i.columns.piecemark_id);
 	i.result.add(i.columns.lot_id);
 	i.result.add(i.columns.sequence_id);
@@ -5740,6 +5744,8 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 
 	if (J.getSize() > 0){
 		forms[formName].jobFound = true;
+		application.output('formformform '+formName);
+		if (forms[formName].browseInfoEnable){forms[formName].browseInfoEnable(formName)}
 		/** @type {JSRecord<db:/stsservoy/jobs>} */
 		var rec = J.getRecord(1);
 		forms[formName].vJobName = rec.job_title;
@@ -5748,7 +5754,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		forms[formName].vCustId = rec.customer_id;
 		forms[formName].vCustNum = rec.sts_job_to_customer2.customer_number;
 		forms[formName].vCustomerName = rec.sts_job_to_customer2.name;
-		forms[formName].vFabShop = rec.sts3_job_to_assoc.association_name;
+		//forms[formName].vFabShop = rec.sts3_job_to_assoc.association_name;
 		scopes.jobs.browseJobID = rec.job_id;
 		var status = true;
 		forms[formName].vLabIDNums = 0;//idfile count
@@ -5757,7 +5763,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		forms[formName].vLabNumPcmks = 0;//total piecemarks
 		var info = getJobIdInfo(newValue);
 		forms[info.topForm].jobIdData = info;
-		if (formName.search("barcode_idlabel") == -1 || formName.search('recall') != -1){
+		if (formName.search("barcode_idlabel") == -1 || formName.search(/(recall|remove)/) != -1){
 			browseInfoEnable(event);
 			scopes.jobs.onGetInformation(event,false);
 			forms[formName].controller.focusField('frmArea',false);
@@ -6553,8 +6559,7 @@ function viewBTableSQLSummary(criteria,formName){
 	var pmDS = databaseManager.createDataSourceByQuery('PM'+newDsName,queryPM,-1);
 	var pmFS = databaseManager.getFoundSet(pmDS);
 	pmFS.loadAllRecords();
-	var tableFilters = databaseManager.getTableFilterParams('stsservoy');
-	databaseManager.removeTableFilterParam('stsservoy','deletedRecords');
+	//var tableFilters = databaseManager.getTableFilterParams('stsservoy');//#task07
 	var index = 1;
 	while (index < pmFS.getSize()){
 		index = pmFS.getSize();
@@ -7633,4 +7638,29 @@ function getAllTenantJobs(){
 		index++;
 	}
 	return jobArray;
+}
+/**
+ * @properties={typeid:24,uuid:"A8854056-61DC-4FB5-A55F-59EBEE85E28F"}
+ */
+function recallIdfiles(){
+	warningsYes();
+	warningsMessage('Recalling idfiles information.');
+	var purgeCodes = scopes.globals.purgeBarcodeRecords;
+	if (purgeCodes.length == 0){return}
+	//application.output('purgeBarcodeRecords has '+purgeCodes.length+' items '+purgeCodes);
+
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var i =  databaseManager.createSelect("db:/stsservoy/idfiles");
+	i.result.add(i.columns.idfile_id);
+	i.result.add(i.columns.delete_flag);
+	i.result.add(i.columns.deleted_date);
+	i.where.add(i.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+	i.where.add(i.columns.idfile_id.isin(purgeCodes))
+	i.where.add(i.columns.delete_flag.eq(99))
+	var I = databaseManager.getFoundSet(i);
+	var updateI = databaseManager.getFoundSetUpdater(I);
+	updateI.setColumn('delete_flag',null);
+	updateI.setColumn('deleted_date',null);
+	updateI.performUpdate();
+	warningsX();
 }

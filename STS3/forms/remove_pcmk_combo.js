@@ -33,11 +33,19 @@ function onActionRemoveSelected(event) {
 	}
 	/** @type {Array} */
 	var blowCodes = scopes.globals.purgeBarcodeRecords;
-	globals.doDialog('Remove Selected Records','Remove the Selected Records?','Remove','Cancel');
+	globals.doDialog(i18n.getI18NMessage('sts.window.purge.selected'),
+						i18n.getI18NMessage('sts.txt.purge.record.selected'),
+						i18n.getI18NMessage('sts.txt.remove'),
+						i18n.getI18NMessage('sts.txt.cancel'));
+		//'Remove Selected Records','Remove the Selected Records?','Remove','Cancel');
 	if (globals.dialogResponse != 'yes'){
 		return;
 	}
-	globals.doDialog('Remove Selected Records','This permanently purges/removes records. \nContinue with REMOVE?','Cancel','REMOVE');
+	globals.doDialog(i18n.getI18NMessage('sts.window.purge.selected'),
+						i18n.getI18NMessage('sts.txt.purge.permanent'),
+						i18n.getI18NMessage('sts.txt.cancel'),
+						i18n.getI18NMessage('sts.txt.remove'));
+		//'Remove Selected Records','This permanently purges/removes records. \nContinue with REMOVE?','Cancel','REMOVE');
 	if (globals.dialogResponse == 'yes'){
 		return;
 	}
@@ -64,5 +72,5 @@ function onActionRemoveSelected(event) {
 		forms[formTable].controller.omitRecord();
 	}
 	var purge = true;
-	scopes.jobs.purgeDeletedBarcodes(purge);
+	scopes.jobs.purgeDeletedIdfiles();
 }

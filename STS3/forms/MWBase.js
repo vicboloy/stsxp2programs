@@ -594,7 +594,7 @@ function onActionClickRecallDeletes(event) {
  * @properties={typeid:24,uuid:"2741B877-A129-4000-AF67-AABDE93623BF"}
  */
 function onActionClickRemoveRecords(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.remove.deleted.records'),'remove_deletes_tabs',50,50,750,595,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.remove.deleted.records'),'remove_records_tabs',50,50,750,595,false);
 }
 
 /**
@@ -847,6 +847,8 @@ function focusWindow(){
 	//application.setValueListItems('stvl_nav_windows',windowArray);
 	globals.winTrackProvider = " ";
 	globals.winTrackProvider = "";
+	plugins.window.maximize(windowx.title);
+	plugins.window.maximize(windowName);
 	windowx.toFront();
 }
 /**

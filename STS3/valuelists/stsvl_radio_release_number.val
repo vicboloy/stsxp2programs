@@ -1,9 +1,0 @@
-addEmptyValue:1,
-customValues:"Use The Job Release #\r
-Use The Load Release #\r
-Use the Piece Release #",
-name:"stsvl_radio_release_number",
-returnDataProviders:1,
-showDataProviders:1,
-typeid:34,
-uuid:"B91D8C4B-6FD1-4783-982A-0AFBFD336E04"

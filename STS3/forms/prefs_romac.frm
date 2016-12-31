@@ -1,13 +1,13 @@
 extendsID:"-1",
 items:[
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"'romacRootPath'\"
-]
-}
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:[\
+null,\
+\"'romacRootPath'\"\
+]\
+}\
 }",
 horizontalAlignment:0,
 location:"576,57",
@@ -16,7 +16,7 @@ onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"24,20",
-text:"...",
+text:"i18n:sts.btn.continuation",
 typeid:7,
 uuid:"2134E286-5A93-4A14-804B-F3EDAC230A0F"
 },
@@ -36,8 +36,8 @@ displayType:4,
 location:"160,22",
 name:"lRomacInstalled",
 onActionMethodID:"17D85BA2-FF21-4F2C-B6CB-DA8F23A36AC8",
-size:"135,20",
-text:"Romac Installation",
+size:"164,20",
+text:"i18n:sts.txt.applications.romac.installation",
 transparent:true,
 typeid:4,
 uuid:"41F2E103-F046-4BAC-839C-22CE3B0D3212"
@@ -49,7 +49,7 @@ location:"159,92",
 name:"lRomacPassWorker",
 onActionMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"252,20",
-text:"Pass Worker Empl Number to Romac",
+text:"i18n:sts.txt.applications.romac.pass.worker.emp.number.to.romac",
 transparent:true,
 typeid:4,
 uuid:"8DF8FB1B-D723-45C0-9B3A-63A031D33FB3"
@@ -62,7 +62,7 @@ name:"lRomacImportOnly",
 onActionMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 onDataChangeMethodID:"-1",
 size:"203,20",
-text:"Use Settings For Imports Only",
+text:"i18n:sts.txt.applications.romac.use.settings.for.imports.only",
 transparent:true,
 typeid:4,
 uuid:"A9F8B193-26D4-4173-AFAF-E28E11D33061"
@@ -73,7 +73,7 @@ labelFor:"romacRootPath",
 location:"26,57",
 name:"romacRootPath_label",
 size:"119,20",
-text:"Romac Root Path:",
+text:"i18n:sts.label.applications.romac.root.path",
 transparent:true,
 typeid:7,
 uuid:"B3530355-1364-4134-B8D4-DE019DC2470A"

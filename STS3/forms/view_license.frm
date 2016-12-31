@@ -62,7 +62,8 @@ uuid:"5C694EFD-993E-4F81-AB38-A41F826E4CFA"
 },
 {
 horizontalAlignment:4,
-location:"234,46",
+location:"214,46",
+size:"130,20",
 text:"i18n:sts.label.employee.number",
 transparent:true,
 typeid:7,
@@ -81,7 +82,7 @@ uuid:"63ED1A81-A1B0-492C-9503-54D5D7E4AC8D"
 {
 dataProviderID:"userEmployeeName",
 location:"116,46",
-size:"114,20",
+size:"93,20",
 text:"type",
 transparent:true,
 typeid:7,
@@ -100,6 +101,7 @@ showClick:false,
 showFocus:false,
 size:"78,31",
 tabSeq:-2,
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"705DB5D4-DE95-4E14-9670-49EEE4983DFF"
@@ -122,7 +124,7 @@ uuid:"75765865-2D2C-433B-8892-9D5D8349FD12"
 },
 {
 dataProviderID:"userEmployeeNum",
-location:"320,46",
+location:"349,46",
 text:"type",
 transparent:true,
 typeid:7,

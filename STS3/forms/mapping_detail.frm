@@ -18,7 +18,7 @@ displayType:4,
 location:"181,169",
 name:"field_required",
 size:"140,20",
-text:"Required",
+text:"i18n:sts.label.map.required",
 typeid:4,
 uuid:"12FF6DD3-EC2F-42EB-A7DE-8FFE19670890"
 },
@@ -26,7 +26,7 @@ uuid:"12FF6DD3-EC2F-42EB-A7DE-8FFE19670890"
 formIndex:6,
 horizontalAlignment:4,
 location:"15,25",
-text:"Map:",
+text:"i18n:sts.label.map",
 transparent:true,
 typeid:7,
 uuid:"199AFA31-3206-4D2E-BF3A-6CB736F3DDA7"
@@ -72,10 +72,10 @@ uuid:"2F209044-0B4E-4E4F-AA3F-CD8629CC289A"
 {
 horizontalAlignment:4,
 labelFor:"field_order",
-location:"61,119",
+location:"10,119",
 name:"field_order_label",
-size:"110,20",
-text:"Field Order:",
+size:"161,20",
+text:"i18n:sts.label.map.field.order",
 transparent:true,
 typeid:7,
 uuid:"30CF6BF6-6DD7-48B7-8E53-2685ABFF8063"
@@ -91,10 +91,10 @@ uuid:"36C14530-52CB-4243-9F95-3CCB4B0EE6B8"
 {
 horizontalAlignment:4,
 labelFor:"mapping_line",
-location:"15,409",
+location:"5,409",
 name:"mapping_line_label",
-size:"110,20",
-text:"Mapping Line:",
+size:"120,20",
+text:"i18n:sts.label.map.mapping.line",
 transparent:true,
 typeid:7,
 uuid:"3958168F-E959-4F41-BE0A-8EBAE712CC6B"
@@ -102,10 +102,10 @@ uuid:"3958168F-E959-4F41-BE0A-8EBAE712CC6B"
 {
 horizontalAlignment:4,
 labelFor:"field_name",
-location:"61,144",
+location:"10,144",
 name:"field_name_label",
-size:"110,20",
-text:"Field Name:",
+size:"161,20",
+text:"i18n:sts.label.map.field.name",
 transparent:true,
 typeid:7,
 uuid:"4419DBE7-26E6-48C7-B9B1-EF0466F04721"
@@ -114,16 +114,16 @@ uuid:"4419DBE7-26E6-48C7-B9B1-EF0466F04721"
 formIndex:2,
 horizontalAlignment:4,
 labelFor:"mappingLine",
-location:"15,46",
+location:"5,46",
 name:"mappingLine_label",
-size:"80,20",
-text:"Mappingline:",
+size:"90,20",
+text:"i18n:sts.label.mapping.line",
 transparent:true,
 typeid:7,
 uuid:"48FE8BAC-AF9F-4A0F-8B14-85F9CAD60D51"
 },
 {
-borderType:"TitledBorder,Repeating Fields,4,0",
+borderType:"TitledBorder,i18n:sts.label.map.repeating.fields,4,0,Segoe UI,0,12,#000000",
 lineSize:1,
 location:"0,0",
 size:"262,99",
@@ -143,6 +143,7 @@ onActionMethodID:"0F7CB54B-C3AC-4211-9A81-5E931253B58C",
 showClick:false,
 showFocus:false,
 size:"78,31",
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"632FCDE5-1EC7-4403-817B-05561D4A41F3"
@@ -150,10 +151,10 @@ uuid:"632FCDE5-1EC7-4403-817B-05561D4A41F3"
 {
 horizontalAlignment:4,
 labelFor:"field_value_type",
-location:"61,219",
+location:"10,219",
 name:"field_value_type_label",
-size:"110,20",
-text:"Field Value Type:",
+size:"161,20",
+text:"i18n:sts.label.map.field.value.type",
 transparent:true,
 typeid:7,
 uuid:"7143A6F9-2777-47FC-8ECF-B01EED9EFAA0"
@@ -166,9 +167,9 @@ uuid:"7156BFA4-7B06-4E65-9D9F-64090F5BF99A"
 },
 {
 horizontalAlignment:4,
-location:"61,354",
-size:"110,20",
-text:"Map to Column:",
+location:"10,354",
+size:"161,20",
+text:"i18n:sts.label.map.to.column",
 transparent:true,
 typeid:7,
 uuid:"7236E911-8D8D-4B94-ADB2-E174F267AD75"
@@ -195,10 +196,10 @@ uuid:"7A88CC61-AB7E-4DDF-95AC-56624A3A3DD7"
 {
 formIndex:1,
 labelFor:"mapping_key",
-location:"15,70",
+location:"5,70",
 name:"mapping_key_label",
-size:"80,20",
-text:"Mapping Key:",
+size:"90,20",
+text:"i18n:sts.label.map.mapping.key",
 transparent:true,
 typeid:7,
 uuid:"7C8A7B8A-B22C-43B0-BDEC-6962915A1E0B"
@@ -206,10 +207,10 @@ uuid:"7C8A7B8A-B22C-43B0-BDEC-6962915A1E0B"
 {
 horizontalAlignment:4,
 labelFor:"field_value_length",
-location:"61,244",
+location:"10,244",
 name:"field_value_length_label",
-size:"110,20",
-text:"Field Value Length:",
+size:"161,20",
+text:"i18n:sts.label.map.field.value.length",
 transparent:true,
 typeid:7,
 uuid:"7E0AE310-B993-40FB-A48A-2A813843D230"
@@ -234,10 +235,10 @@ uuid:"9393EB50-01C7-4B5C-BB11-5FCA4D3B516E"
 {
 horizontalAlignment:4,
 labelFor:"mapped_format",
-location:"15,384",
+location:"5,384",
 name:"mapped_format_label",
-size:"110,20",
-text:"Mapped Format:",
+size:"120,20",
+text:"i18n:sts.label.mapped.format",
 transparent:true,
 typeid:7,
 uuid:"972B068F-9808-4C61-AFBA-826EE1A18009"
@@ -264,9 +265,9 @@ uuid:"A24C4AF5-E6B3-41E8-B41D-B12734ACFFB6"
 {
 formIndex:8,
 horizontalAlignment:4,
-location:"61,304",
-size:"110,20",
-text:"Current Mapping:",
+location:"10,304",
+size:"161,20",
+text:"i18n:sts.label.map.current.mapping",
 transparent:true,
 typeid:7,
 uuid:"A7727A87-FA71-4606-91DC-B1E4C47BC704"
@@ -301,9 +302,9 @@ uuid:"C7BF3F49-0D37-461A-BE74-C37802121DDA"
 },
 {
 horizontalAlignment:4,
-location:"61,329",
-size:"110,20",
-text:"Map to Table:",
+location:"10,329",
+size:"161,20",
+text:"i18n:sts.label.map.to.table",
 transparent:true,
 typeid:7,
 uuid:"CE350D7C-568D-491A-8C10-F8E30AAB5CFC"
@@ -311,10 +312,10 @@ uuid:"CE350D7C-568D-491A-8C10-F8E30AAB5CFC"
 {
 horizontalAlignment:4,
 labelFor:"field_comment",
-location:"61,269",
+location:"10,269",
 name:"field_comment_label",
-size:"110,20",
-text:"Field Comment:",
+size:"161,20",
+text:"i18n:sts.label.map.field.comment",
 transparent:true,
 typeid:7,
 uuid:"E0718E47-92D9-430B-AFF6-19CDD5FC40EA"
@@ -378,10 +379,10 @@ uuid:"F1707762-9718-40C0-B18C-1F56F0782694"
 {
 horizontalAlignment:4,
 labelFor:"field_value",
-location:"61,194",
+location:"10,194",
 name:"field_value_label",
-size:"110,20",
-text:"Field Value:",
+size:"161,20",
+text:"i18n:sts.label.map.field.value",
 transparent:true,
 typeid:7,
 uuid:"F94DC2AA-537C-4FEB-8D03-4B72BAA09982"
@@ -391,7 +392,7 @@ formIndex:15,
 horizontalAlignment:4,
 location:"234,119",
 size:"63,20",
-text:"Position:",
+text:"i18n:sts.label.map.position",
 transparent:true,
 typeid:7,
 uuid:"FC91CB6C-74CD-4D11-BE3F-9519B8AF9D54"

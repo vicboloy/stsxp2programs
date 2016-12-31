@@ -1,15 +1,13 @@
 addEmptyValue:1,
-customValues:"4 Line Mars MEQ - Original\r
-4 Line Mars MEQ - SO\r
-4 Line Mars MEQ - Status SO\r
-Symbol 38xx - SO\r
-Symbol 38xx - Job\r
-Symbol 38xx - Status SO\r
-Symbol 38xx - Status Job\r
-Intermec DOS\r
-MCL Windows CE",
+customValues:"i18n:sts.txt.rfsettings.portable.type.1\r\
+i18n:sts.txt.rfsettings.portable.type.2\r\
+i18n:sts.txt.rfsettings.portable.type.3\r\
+i18n:sts.txt.rfsettings.portable.type.4\r\
+i18n:sts.txt.rfsettings.portable.type.5\r\
+i18n:sts.txt.rfsettings.portable.type.6\r\
+i18n:sts.txt.rfsettings.portable.type.7\r\
+i18n:sts.txt.rfsettings.portable.type.8\r\
+i18n:sts.txt.rfsettings.portable.type.9",
 name:"stsvl_portableType",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"7CCAFE71-BEBB-4C35-86E9-66F710540763"

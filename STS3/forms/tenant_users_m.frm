@@ -1,5 +1,5 @@
-customProperties:"design:{
-corporate:\"true\"
+customProperties:"design:{\
+corporate:\"true\"\
 }",
 dataSource:"db:/stsservoy/users",
 encapsulation:32,
@@ -83,6 +83,7 @@ showClick:false,
 showFocus:false,
 size:"78,31",
 tabSeq:-2,
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"D2AFF154-F05A-42DC-8425-51E5285448D6"

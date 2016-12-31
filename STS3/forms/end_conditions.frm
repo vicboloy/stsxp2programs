@@ -155,6 +155,7 @@ showClick:false,
 showFocus:false,
 size:"78,31",
 tabSeq:-2,
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"CC5EF0AC-0DD2-48F5-9A46-5617A4F72882"

@@ -1,10 +1,8 @@
 addEmptyValue:1,
-customValues:"Both Reports\r
-Detail Report\r
-Prompt for Type\r
-Summary Report",
+customValues:"i18n:sts.txt.rfsettings.pack.list.both.reports\r\
+i18n:sts.txt.rfsettings.pack.list.detail.report\r\
+i18n:sts.txt.rfsettings.pack.list.prompt.for.type\r\
+i18n:sts.txt.rfsettings.pack.list.summary.report",
 name:"stsvl_rf_packing_list",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"50FF6632-C919-4D7A-9893-221C06FCFEC8"

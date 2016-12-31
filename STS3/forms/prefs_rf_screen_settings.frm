@@ -1,17 +1,20 @@
 extendsID:"-1",
 items:[
 {
+horizontalAlignment:0,
 location:"47,131",
+name:"btn_Add",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-text:"Add",
+text:"i18n:sts.btn.add",
 typeid:7,
 uuid:"07323FAB-B52E-4927-A238-9DD1590E6302"
 },
 {
 location:"42,57",
-text:"RF Window",
+size:"202,20",
+text:"i18n:sts.label.screen.settings.rf.window",
 transparent:true,
 typeid:7,
 uuid:"5D754643-8C31-4E53-8792-9D8607A4498D"
@@ -25,7 +28,7 @@ uuid:"C8D1370E-0F2D-4133-9F08-E6F50C760B2C"
 {
 location:"42,194",
 size:"248,20",
-text:"On/Off - Checked is On.",
+text:"i18n:sts.txt.screen.settings.status.check",
 transparent:true,
 typeid:7,
 uuid:"D3192535-8AF0-4A1C-9036-B4562D834E34"
@@ -40,7 +43,7 @@ uuid:"E70223A6-0D98-4782-8964-6DBAC704EBD0"
 {
 location:"42,219",
 size:"248,20",
-text:"Order - Order on Window (Unchangeable).",
+text:"i18n:sts.txt.screen.settings.status.order.unchangeable",
 transparent:true,
 typeid:7,
 uuid:"F2F755F4-15FF-4612-9939-02E90BB2787A"

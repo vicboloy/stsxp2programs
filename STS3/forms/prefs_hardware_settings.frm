@@ -17,7 +17,7 @@ location:"479,95",
 name:"lRecvLoad",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"55,20",
-text:"(Y/N)",
+text:"i18n:sts.label.hardware.yes.no",
 typeid:4,
 uuid:"08B0E2E2-1754-464D-9FDE-AA89704FDE8A"
 },
@@ -54,7 +54,7 @@ labelFor:"mcLinkPath",
 location:"276,302",
 name:"mcLinkPath_label",
 size:"166,20",
-text:"MCL Link Application Path",
+text:"i18n:sts.label.hardware.mcl.link.app.path",
 transparent:true,
 typeid:7,
 uuid:"25AC7C4F-2CFC-43E8-AB7C-DC3EDD3266BB"
@@ -66,7 +66,7 @@ location:"480,160",
 name:"lTranTrak",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"55,20",
-text:"(Y/N)",
+text:"i18n:sts.label.hardware.yes.no",
 transparent:true,
 typeid:4,
 uuid:"35A0B342-44D9-46E1-9AC8-B0F6F00777D1"
@@ -77,7 +77,7 @@ labelFor:"lLoadCopy",
 location:"324,190",
 name:"lLoadCopy_label",
 size:"146,20",
-text:"Copy Previous Load Info:",
+text:"i18n:sts.label.hardware.copy.previous.load.info",
 transparent:true,
 typeid:7,
 uuid:"366EFB59-ED4F-4278-9074-F6CAFDDB7BD1"
@@ -88,7 +88,7 @@ labelFor:"lShipLoad",
 location:"333,125",
 name:"lShipLoad_label",
 size:"136,20",
-text:"Load # = Ship Load #:",
+text:"i18n:sts.label.hardware.load.eq.shipped",
 transparent:true,
 typeid:7,
 uuid:"48488DE3-B83B-48FC-BA22-1FE697DBCA23"
@@ -109,19 +109,19 @@ labelFor:"portableType",
 location:"324,15",
 name:"portableType_label",
 size:"128,20",
-text:"Batch Portable Type",
+text:"i18n:sts.label.hardware.batch.portable.type",
 transparent:true,
 typeid:7,
 uuid:"50BD871F-04E4-4E0F-870D-9B6B5DDE4FAE"
 },
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"'mcLinkPath'\"
-]
-}
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:[\
+null,\
+\"'mcLinkPath'\"\
+]\
+}\
 }",
 dataProviderID:"scopes.prefs.mcLinkPath",
 formIndex:4,
@@ -152,7 +152,7 @@ labelFor:"idBLine1",
 location:"15,75",
 name:"idBLine1_label",
 size:"200,20",
-text:"1st Line of ID Bar Code Label",
+text:"i18n:sts.label.hardware.line.1.barcode.label",
 transparent:true,
 typeid:7,
 uuid:"86BA27B5-4BDF-40E8-91A5-53CA6C1ADE9E"
@@ -163,7 +163,7 @@ labelFor:"startLoadNum",
 location:"118,355",
 name:"startLoadNum_label",
 size:"104,20",
-text:"Starting Number",
+text:"i18n:sts.label.hardware.load.calculation.auto.starting.number",
 transparent:true,
 typeid:7,
 uuid:"9AA76DD5-59DC-446B-B93C-D7DF43C2CFD1"
@@ -171,7 +171,7 @@ uuid:"9AA76DD5-59DC-446B-B93C-D7DF43C2CFD1"
 {
 location:"324,75",
 size:"172,20",
-text:"When Shipping or Receiving",
+text:"i18n:sts.label.hardware.when.shipping.receiving",
 transparent:true,
 typeid:7,
 uuid:"A1D21365-915A-4312-BD0E-5C1F317AD86B"
@@ -216,7 +216,7 @@ labelFor:"lTranTrak",
 location:"286,160",
 name:"lTranTrak_label",
 size:"184,20",
-text:"Activate Transaction Tracking:",
+text:"i18n:sts.label.hardware.activate.trans.tracking",
 transparent:true,
 typeid:7,
 uuid:"C435F406-A5EB-4E5E-A972-36B922BCFE35"
@@ -235,7 +235,7 @@ labelFor:"idBLine2",
 location:"15,160",
 name:"iDbLine2_label",
 size:"200,20",
-text:"2nd Line of ID Bar Code Label",
+text:"i18n:sts.label.hardware.line.2.barcode.label",
 transparent:true,
 typeid:7,
 uuid:"C768B7A2-5743-4E21-BD9A-F3C41C90E5F1"
@@ -247,7 +247,7 @@ location:"479,125",
 name:"lShipLoad",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"55,20",
-text:"(Y/N)",
+text:"i18n:sts.label.hardware.yes.no",
 typeid:4,
 uuid:"C800AA3E-E8F4-422F-8276-B5810A68E55D"
 },
@@ -269,14 +269,14 @@ location:"480,190",
 name:"lLoadCopy",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"55,20",
-text:"(Y/N)",
+text:"i18n:sts.label.hardware.yes.no",
 typeid:4,
 uuid:"E193BC33-5204-465D-B738-893B872BBDD3"
 },
 {
 location:"36,245",
 size:"186,20",
-text:"Auto Load Number Calculation",
+text:"i18n:sts.label.hardware.load.calculation.auto",
 transparent:true,
 typeid:7,
 uuid:"E7EDB6E5-A62A-4949-95CB-6DDF204C465D"
@@ -297,7 +297,7 @@ labelFor:"lRecvLoad",
 location:"333,95",
 name:"lRecvLoad_label",
 size:"136,20",
-text:"Load # = Recv. Load #:",
+text:"i18n:sts.label.hardware.load.eq.received",
 transparent:true,
 typeid:7,
 uuid:"F4C1915D-705A-433B-AFEC-0262A20F8C9A"
@@ -320,7 +320,7 @@ labelFor:"ignoreBatchJobLoadQty",
 location:"276,235",
 name:"ignoreBatchJobLoadQty_label",
 size:"193,47",
-text:"<html>Ignore Job#, Load# & Qty At<br>Receipt On The Batch Scanner:",
+text:"i18n:sts.label.hardware.ignore.info.on.receipt",
 transparent:true,
 typeid:7,
 uuid:"FFC26102-D4D0-43E3-B260-F39B80D105A9"

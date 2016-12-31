@@ -57,12 +57,12 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		vJobNum = null;
 		return false;
 	}
-	var formName = 'delete_piecemark_info';
+	var formName = formName.split('_')[0]+'_piecemark_info';
 	if (forms[formName]){
 		forms[formName].elements.tabless.removeAllTabs();
 		scopes.jobs.removeFormHist(formName+"_table");
 	}
-	browseInfoEnable(null);
+	browseInfoEnable(formName);
 	return true;
 }
 /**
@@ -149,16 +149,21 @@ function collectCriteria(){
 	//scopes.jobs.viewBTableToForm(criteria,formName);
 }
 /**
+ * @param {JSEvent} event
+ * @param {String} altEnable
+ * 
  * @properties={typeid:24,uuid:"C475BEBD-83D4-4676-828B-D6C8AB673616"}
  */
-function browseInfoEnable(altEnable){
-	if (jobFound || altEnable){
+function browseInfoEnable(formName){
+	var prefix = formName.split('_')[0];
+	if (application.isInDeveloper()){application.output('tst '+prefix+'_piecemark_info')}
+	if (jobFound){
 		elements.btn_Info.enabled = true;
+		forms[prefix+'_records_tabs'].elements.tabs.setTabEnabledAt(2,true);
 	} else {
-		if (!altEnable){
-			elements.btn_Browse.enabled = false;
-			elements.btn_Info.enabled = false;	
-		}
+		elements.btn_Browse.enabled = false;
+		elements.btn_Info.enabled = false;	
+		forms[prefix+'_records_tabs'].elements.tabs.setTabEnabledAt(2,false);
 	}
 }
 
@@ -192,11 +197,22 @@ function onActionClear(event,formName) {
 		}
 	}
 	jobFound = false;
-	if (forms.delete_piecemark_info){
+	switch (formPrefix){
+	case 'delete':
+		//	if (formName.search(/delete/) != -1){
 		forms.delete_piecemark_info.elements.tabless.removeAllTabs();
+		history.removeForm(formNameTable);
+		break;
+	case 'recall':
+	case 'remove':
+		//if (formName.search(/(recall|remove)/) != -1){
+		forms[formPrefix+'_piecemark_info'].elements.tabless.removeAllTabs();
+		forms[formPrefix+'_records_tabs'].elements.tabs.setTabEnabledAt(2,false);
+		history.removeForm(formNameTable);
+		break;
+	default:
 	}
-	scopes.jobs.removeFormHist(formNameTable);
-	browseInfoEnable(null);
+	browseInfoEnable(formName);
 }
 /**
  * Perform the element default action.

@@ -8,7 +8,7 @@ items:[
 {
 containsFormID:"757E5A68-1604-49B6-9F8D-3BA4E7003D93",
 extendsID:"F1556AEC-00F0-4387-8DFD-6033BE3CBB82",
-text:"Permanent Removal Criteria",
+text:"i18n:sts.tab.remove.criteria",
 typeid:15,
 uuid:"6043EC5B-5760-4B95-B9AB-64247876CE43"
 },
@@ -16,7 +16,6 @@ uuid:"6043EC5B-5760-4B95-B9AB-64247876CE43"
 containsFormID:"4456A4C2-2D79-4AE4-B1B5-1AD165CD68A0",
 extendsID:"BBD5F69E-41CF-4A2C-8FB5-82EC9F576C5C",
 location:"166,34",
-text:"Piecemark Information",
 typeid:15,
 uuid:"F6440420-656A-43ED-97CE-1E2B4C0EAD19"
 }
@@ -37,7 +36,7 @@ typeid:19,
 uuid:"ACA82CBE-78DA-44CF-AB90-B054B3D9BFC2"
 }
 ],
-name:"remove_deletes_tabs",
+name:"remove_records_tabs",
 showInMenu:true,
 styleName:"sts_one",
 typeid:3,

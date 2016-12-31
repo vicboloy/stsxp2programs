@@ -424,6 +424,7 @@ showClick:false,
 showFocus:false,
 size:"78,31",
 tabSeq:-2,
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"D6DB792E-3573-48EB-850C-4FCB3F91EA7C"
@@ -488,4 +489,5 @@ onUnLoadMethodID:"-1",
 size:"778,545",
 styleName:"sts_one",
 typeid:3,
-uuid:"24DDD857-1423-40C0-A1D8-2B9BB788A8CF"
+uuid:"24DDD857-1423-40C0-A1D8-2B9BB788A8CF",
+view:5

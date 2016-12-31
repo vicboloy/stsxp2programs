@@ -77,26 +77,43 @@ function onActionDeleteSelected(event,formName) {
     if (formName == null){
     	formName = event.getFormName();
     }
-	var fs = forms[formName+'_table'].foundset;
+    var formPrefix = formName.split("_")[0];
+	var formTable = formPrefix+'_pcmk_combo_table';
+	var fs = forms[formTable].foundset;
 	var omitList = [];
 	var i = 1;
 	while (i <= fs.getSize()){ // collect selected record idfile id's
-		var rec = fs.getRecord(i++);
-		if (rec.selection == 0){continue}
-		var idfileId = rec.idfile_id;
-		if (scopes.jobs.idfilesToDelete.indexOf(idfileId+"") == -1){
-			scopes.jobs.idfilesToDelete.push(idfileId+"");
+		var rec = fs.getRecord(i);
+		if (rec.selection == 1){
+			//var idfileId = rec.idfile_id;
+			scopes.jobs.idfilesToDelete.push(rec.idfile_id+"");
+			//fs.omitRecord(i);
+			omitList.push(i);
 		}
-		omitList.push(i-1); //selection is array, which is zero-based, records are one-based
-		//application.output('id '+idfileId+' index '+i);
-	}
-	while (omitList.length > 0){
-		forms.delete_pcmk_combo_table.controller.setSelectedIndex(omitList.pop());
-		//application.output('index '+forms.delete_pcmk_combo_table.selectedIndex);
-		forms.delete_pcmk_combo_table.controller.omitRecord();
-		
+		i++;
 	}
 	scopes.jobs.deleteIdfiles();
+	while (omitList.length != 0){
+		//fs.setSelectedIndex(omitList.pop());
+		fs.omitRecord(omitList.pop());
+	}
+	/**i = 1;
+	while (i <= fs.getSize()){ // collect selected record idfile id's
+		var rec = fs.getRecord(i);
+		if (rec.selection == 1){
+			var idfileId = rec.idfile_id;
+			scopes.jobs.idfilesToDelete.push(idfileId+"");
+			fs.omitRecord(i);
+		}
+		i++;
+	}*/
+	scopes.jobs.idfilesToDelete = new Array();
+	//while (omitList.length > 0){
+		//fs.setSelectedIndexes(omitList);
+		//fs.omitRecord();
+		
+	//}
+	//scopes.jobs.deleteIdfiles();
 }
 
 /**

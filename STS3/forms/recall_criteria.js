@@ -243,3 +243,29 @@ function collectAndTab(formName){
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	null;
 }
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"15EEF96D-BA13-4ADA-AA8F-7880A02D8A93"}
+ */
+function onShow(firstShow, event) {
+	databaseManager.removeTableFilterParam('stsservoy','deletedRecords');//#task07
+	return _super.onShow(firstShow, event)
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"3BF32102-256C-48EE-9259-B9F232561DA1"}
+ */
+function onHide(event) {
+	databaseManager.addTableFilterParam('stsservoy',null,'delete_flag',"^||!=",99,'deletedRecords');//#task07
+	return _super.onHide(event)
+}

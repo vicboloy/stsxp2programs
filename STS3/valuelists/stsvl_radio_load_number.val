@@ -1,9 +1,7 @@
 addEmptyValue:1,
-customValues:"Job Number Specific\r
-System Wide Specific\r
-None",
+customValues:"i18n:sts.label.hardware.load.calculation.auto.job.specific\r\
+i18n:sts.label.hardware.load.calculation.auto.system.wide.specific\r\
+i18n:sts.label.hardware.load.calculation.auto.none",
 name:"stsvl_radio_load_number",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"3CA5059C-422D-4E9F-BE8A-035EEF776F4F"

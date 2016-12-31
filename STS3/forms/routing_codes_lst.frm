@@ -1,10 +1,10 @@
-customProperties:"methods:{
-onRecordSelectionMethodID:{
-arguments:[
-null,
-\"'route_code'\"
-]
-}
+customProperties:"methods:{\
+onRecordSelectionMethodID:{\
+arguments:[\
+null,\
+\"'route_code'\"\
+]\
+}\
 }",
 dataSource:"db:/stsservoy/routings",
 encapsulation:60,
@@ -17,7 +17,7 @@ labelFor:"route_code",
 location:"0,0",
 name:"route_code_label",
 size:"140,20",
-text:"Route Code",
+text:"i18n:table.routings.route_code",
 transparent:true,
 typeid:7,
 uuid:"60428F99-9183-4A70-B034-4DF627CAC0BF"

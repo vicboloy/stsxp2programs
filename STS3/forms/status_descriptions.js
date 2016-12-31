@@ -203,6 +203,7 @@ function onActionSaveEdit(event) {
 	}
 	onEdit(event,false);
 	databaseManager.saveData(foundset);
+	//forms.status_description_lst.foundset.loadRecords();
 	//databaseManager.setAutoSave(true);
 }
 /**

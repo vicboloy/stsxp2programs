@@ -141,9 +141,10 @@ function onActionRefresh(event) {
 	while (idx <= fs.getSize()){
 		/** @type {JSRecord<db:/stsservoy/cow_xref>} */
 		var rec = fs.getRecord(idx);
+		idx++;
 		if (!rec.cust_cow_code){continue}
 		codes.push(rec.cust_cow_code);
-		idx++;
+		//idx++; resolves ticket #104 Cost of Work Bug
 	}
 	
 	databaseManager.revertEditedRecords(foundset);

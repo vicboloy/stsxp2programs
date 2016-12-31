@@ -24,7 +24,7 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
 tabSeq:-2,
-text:"Close",
+text:"i18n:sts.btn.close",
 typeid:7,
 uuid:"6F4C6935-1E63-439A-A720-FD90133F5F39"
 },
@@ -48,6 +48,7 @@ showClick:false,
 showFocus:false,
 size:"78,31",
 tabSeq:-2,
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"BD0609D8-77A0-43E6-B71E-BA5B469711A4"
@@ -59,7 +60,7 @@ items:[
 containsFormID:"03B971AF-4EE9-463D-AA21-FCD759058D24",
 location:"210,35",
 name:"View_Summary_Info",
-text:"Summary Info",
+text:"i18n:sts.tab.load.summary.info",
 typeid:15,
 uuid:"D56F9949-9E9E-4A9F-97D9-E5A3465C18CA"
 },
@@ -67,7 +68,7 @@ uuid:"D56F9949-9E9E-4A9F-97D9-E5A3465C18CA"
 containsFormID:"C62B01DE-47E1-4CA8-9F7C-BF4299FD7D19",
 location:"5,35",
 name:"View_Load_Criteria",
-text:"Load Criteria",
+text:"i18n:sts.tab.load.criteria",
 typeid:15,
 uuid:"E2A0EA9D-329A-471F-8634-0F737971A06E"
 },
@@ -75,7 +76,7 @@ uuid:"E2A0EA9D-329A-471F-8634-0F737971A06E"
 containsFormID:"DAF8C9D7-E9AD-4EA3-9BAD-7480746A877E",
 location:"86,35",
 name:"Piecemark_Info",
-text:"Piecemark Information",
+text:"i18n:sts.tab.piecemark.info",
 typeid:15,
 uuid:"EC5AF20F-F943-4FAF-ADC9-C2F9A31B47BF"
 }

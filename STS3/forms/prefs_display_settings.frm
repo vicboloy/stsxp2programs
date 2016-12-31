@@ -11,13 +11,13 @@ typeid:4,
 uuid:"21EE06FE-ED34-465E-A9F6-5371EEB194FB"
 },
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"'iconFile'\"
-]
-}
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:[\
+null,\
+\"'iconFile'\"\
+]\
+}\
 }",
 horizontalAlignment:0,
 location:"579,100",
@@ -25,14 +25,14 @@ onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
-text:"...",
+text:"i18n:sts.btn.continuation",
 typeid:7,
 uuid:"367C68D4-0FBF-43F8-BC80-EEA6F6790190"
 },
 {
 location:"176,70",
 size:"35,20",
-text:"(Y/N)",
+text:"i18n:sts.label.hardware.yes.no",
 transparent:true,
 typeid:7,
 uuid:"51727A54-BBA7-48B0-9DF2-4CECFE0A457F"
@@ -43,7 +43,7 @@ labelFor:"winTitle",
 location:"46,160",
 name:"winTitle_label",
 size:"94,20",
-text:"Window Title:",
+text:"i18n:sts.label.display.window.title",
 transparent:true,
 typeid:7,
 uuid:"66E8370E-C46E-4F2A-B859-652A41EEE0D8"
@@ -59,13 +59,13 @@ typeid:4,
 uuid:"853594EC-D7C7-49DE-A087-797EE1C8A415"
 },
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"'bmpFile'\"
-]
-}
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:[\
+null,\
+\"'bmpFile'\"\
+]\
+}\
 }",
 horizontalAlignment:0,
 location:"579,130",
@@ -73,7 +73,7 @@ onActionMethodID:"F0DF3CC2-DF4F-46AF-BCFA-8C913799762C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"30,20",
-text:"...",
+text:"i18n:sts.btn.continuation",
 typeid:7,
 uuid:"B05888E3-7F03-4606-87A2-8C4339755F49"
 },
@@ -110,7 +110,7 @@ labelFor:"iconFile",
 location:"60,100",
 name:"iconFile_label",
 size:"80,20",
-text:"Icon File:",
+text:"i18n:sts.label.display.logo.icon.file",
 transparent:true,
 typeid:7,
 uuid:"E5BA7535-E82E-4EDB-BB68-568F5F81E5BE"
@@ -121,7 +121,7 @@ labelFor:"bmpFile",
 location:"15,130",
 name:"bmpFile_label",
 size:"125,20",
-text:"Wall Paper File:",
+text:"i18n:sts.label.display.wall.paper.file",
 transparent:true,
 typeid:7,
 uuid:"E6362602-307A-47E0-96D3-F83C0F46617F"
@@ -129,7 +129,7 @@ uuid:"E6362602-307A-47E0-96D3-F83C0F46617F"
 {
 horizontalAlignment:4,
 location:"60,70",
-text:"Display Logo:",
+text:"i18n:sts.label.display.logo",
 transparent:true,
 typeid:7,
 uuid:"E64AB4C7-ACEE-48FD-A982-5957F32AFCB9"

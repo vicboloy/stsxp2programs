@@ -27,6 +27,7 @@ onActionMethodID:"0F7CB54B-C3AC-4211-9A81-5E931253B58C",
 showClick:false,
 showFocus:false,
 size:"78,31",
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"3B1802BB-814C-4558-8F57-37FF1A3B91C5"

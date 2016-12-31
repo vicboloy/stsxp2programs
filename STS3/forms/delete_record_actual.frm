@@ -4,7 +4,6 @@ items:[
 {
 extendsID:"4928A2BA-2F1E-4951-ADBF-37E8B1BCDD67",
 onActionMethodID:"BE8F0471-C806-499B-8D2E-177695E7B4C8",
-text:"Close",
 typeid:7,
 uuid:"1C365A36-A63C-444F-BC59-54D601F31861"
 },
@@ -16,14 +15,14 @@ items:[
 containsFormID:"7A915350-5F17-4C63-8F6F-3626CC5B7EC0",
 extendsID:"BBD5F69E-41CF-4A2C-8FB5-82EC9F576C5C",
 location:"116,32",
-text:"ID & Piecemark Info",
+text:"i18n:sts.tab.piecemark.and.id.info",
 typeid:15,
 uuid:"85F5C311-3734-4052-91DB-0E12909D2687"
 },
 {
 containsFormID:"D42BCB02-00A6-4235-8BEB-2546FF37593E",
 extendsID:"F1556AEC-00F0-4387-8DFD-6033BE3CBB82",
-text:"Piecemark Combo",
+text:"i18n:sts.tab.piecemark.combo",
 typeid:15,
 uuid:"C502011C-7AB1-4D3C-85AA-B553C38AAF8F"
 }

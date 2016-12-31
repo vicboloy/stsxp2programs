@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 encapsulation:60,
 extendsID:"BD43913E-A4D2-4697-A6D8-CFD792E86D80",
 items:[
@@ -27,17 +33,16 @@ typeid:4,
 uuid:"173D53E3-5B84-44EA-82E4-EC96BD367ED2"
 },
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"'remove_piecemark_info'\"
-]
-}
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:[\
+null,\
+\"'remove_piecemark_info'\"\
+]\
+}\
 }",
 extendsID:"18E453D3-1551-44B8-9AC6-3C29B3C8DC91",
 onActionMethodID:"24AD80C5-DC06-4258-9587-54CFAAF778EE",
-text:"Clear",
 typeid:7,
 uuid:"17DEEE65-8FB2-4BD8-B4A0-39755A25E3E7"
 },
@@ -85,7 +90,7 @@ uuid:"6FC527A9-697A-400F-AD6C-6FE31E488F01"
 },
 {
 extendsID:"3E64E9AC-BB3A-4E5C-9527-D7106004A669",
-text:"Select Records to Remove",
+text:"i18n:sts.btn.record.selection.purge",
 typeid:7,
 uuid:"734ECB87-1230-424F-BA50-B1A2EF15C9B2"
 },
@@ -96,17 +101,17 @@ typeid:4,
 uuid:"77A6F3C8-50C2-4010-ADCB-17E9C3399206"
 },
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"true\"
-]
-}
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:[\
+null,\
+\"true\"\
+]\
+}\
 }",
 extendsID:"386A923E-2D96-456D-BF91-E7A5922EEADA",
 onActionMethodID:"99D86CE4-07A3-4625-8174-9F332A538ACD",
-text:"Get Information",
+text:"i18n:sts.btn.get.information",
 typeid:7,
 uuid:"7BF5B9A8-31B6-408B-B043-6CA87B362C89"
 },
@@ -154,6 +159,7 @@ uuid:"C5F0DB1C-A70A-41C4-A163-43C4D6AB4546"
 }
 ],
 name:"remove_criteria",
+onHideMethodID:"A6BF7D79-A1FC-4A1B-9FCE-57F300B0ED47",
 showInMenu:true,
 styleName:"sts_one",
 typeid:3,

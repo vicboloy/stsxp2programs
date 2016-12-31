@@ -8,19 +8,19 @@ name:"lFsLocnBatch",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"361,20",
-text:"Location Field Data Represents Batch ID Information.",
+text:"i18n:sts.txt.applications.fs.location.field.data.reps.batch.id.info",
 typeid:4,
 uuid:"26C962DE-8696-4F1E-8A3F-32148AAB75FF"
 },
 {
-customProperties:"methods:{
-onActionMethodID:{
-arguments:[
-null,
-\"'fabsuiteRootPath'\",
-\"'Prefs'\"
-]
-}
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:[\
+null,\
+\"'fabsuiteRootPath'\",\
+\"'Prefs'\"\
+]\
+}\
 }",
 horizontalAlignment:0,
 location:"557,58",
@@ -29,7 +29,7 @@ onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"21,20",
-text:"...",
+text:"i18n:sts.btn.continuation",
 typeid:7,
 uuid:"329A71E7-BED2-497D-AE4B-1E560D79A0E9"
 },
@@ -39,18 +39,18 @@ displayType:4,
 location:"156,28",
 name:"lFabsuiteInstalled",
 onActionMethodID:"FC48C4DA-1691-4F14-9A7D-1AE283AA5FFE",
-size:"161,20",
-text:"FabSuite Installation",
+size:"179,20",
+text:"i18n:sts.txt.applications.fs.installation",
 typeid:4,
 uuid:"407BAFE3-1051-4F8C-87A8-9DEBE7819A49"
 },
 {
 horizontalAlignment:4,
 labelFor:"fabsuitepassword",
-location:"311,168",
+location:"302,168",
 name:"fabsuitepassword_label",
-size:"71,20",
-text:"Password:",
+size:"104,20",
+text:"i18n:sts.label.applications.fs.password",
 transparent:true,
 typeid:7,
 uuid:"53DD5EFF-7091-4EFB-8DFB-DDD903963480"
@@ -58,10 +58,10 @@ uuid:"53DD5EFF-7091-4EFB-8DFB-DDD903963480"
 {
 horizontalAlignment:4,
 labelFor:"fabsuiteServerName",
-location:"38,148",
+location:"5,148",
 name:"fabsuiteServerName_label",
-size:"117,20",
-text:"Server IP Address:",
+size:"150,20",
+text:"i18n:sts.label.applications.fs.server.ip",
 transparent:true,
 typeid:7,
 uuid:"6F69FFEE-1384-4DC3-9041-CE5CB5071D30"
@@ -74,7 +74,7 @@ name:"lFabsuitePassWorker",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"256,20",
-text:"Pass Worker Empl Number to FabSuite",
+text:"i18n:sts.txt.applications.fs.pass.worker.emp.number.to.fs",
 transparent:true,
 typeid:4,
 uuid:"712B0C35-BE36-46FD-B23F-5E7AE4DF8053"
@@ -97,8 +97,8 @@ location:"156,123",
 name:"lFabsuiteSqlVersion",
 onActionMethodID:"3FB93242-8CDD-4EA6-976B-02AB7F207559",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
-size:"114,20",
-text:"SQL Version",
+size:"256,20",
+text:"i18n:sts.txt.applications.fs.sql.version",
 transparent:true,
 typeid:4,
 uuid:"951B8E2A-88B8-447D-921E-83FF6FF865D9"
@@ -109,7 +109,7 @@ labelFor:"fabsuiteRootPath",
 location:"5,58",
 name:"fabsuiteRootPath_label",
 size:"150,20",
-text:"FabSuite Root Path:",
+text:"i18n:sts.label.applications.fs.root.path",
 transparent:true,
 typeid:7,
 uuid:"AFE1113E-E5A1-4B03-BEFA-8162CC89D349"
@@ -123,7 +123,7 @@ uuid:"B0B041EF-CCF0-4546-A4FA-3AB5DFDAE997"
 {
 dataProviderID:"scopes.prefs.fabsuitepassword",
 displayType:6,
-location:"383,168",
+location:"407,168",
 name:"fabsuitepassword",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -135,10 +135,10 @@ uuid:"B9447A72-B86D-4C50-8E56-790EBB990A31"
 {
 horizontalAlignment:4,
 labelFor:"fabsuiteUserid",
-location:"311,146",
+location:"302,146",
 name:"fabsuiteUserid_label",
-size:"71,20",
-text:"User ID:",
+size:"104,20",
+text:"i18n:sts.label.applications.fs.user.id",
 transparent:true,
 typeid:7,
 uuid:"C1390AD9-DD31-48D1-A596-0635D8DB1046"
@@ -151,14 +151,14 @@ name:"lFsAllowNonSerial",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"381,20",
-text:"Allow Audit Scans of Serial Numbers Not In FabSuite or STS.",
+text:"i18n:sts.txt.applications.fs.allow.audit.scans.of.serials.not.in.fs.or.sts",
 typeid:4,
 uuid:"D0E4226F-4955-4E74-B2F8-42A88F5A86D7"
 },
 {
 dataProviderID:"scopes.prefs.fabsuiteUserid",
 displayType:6,
-location:"383,146",
+location:"407,146",
 name:"fabsuiteUserid",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -186,7 +186,7 @@ name:"lFabsuiteImportOnly",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"212,20",
-text:"Use Settings For Imports Only",
+text:"i18n:sts.txt.applications.fs.use.settings.for.imports.only",
 transparent:true,
 typeid:4,
 uuid:"E49C9E2F-F0C2-429B-9DED-D1867842607D"
@@ -204,10 +204,10 @@ uuid:"EE726093-9823-4A7B-8647-7445B8A04334"
 {
 horizontalAlignment:4,
 labelFor:"fabsuiteDatabase",
-location:"97,168",
+location:"64,168",
 name:"fabsuiteDatabase_label",
-size:"58,20",
-text:"Port #:",
+size:"91,20",
+text:"i18n:sts.label.applications.fs.port.number",
 transparent:true,
 typeid:7,
 uuid:"FAAAFF50-05C3-405C-86E1-72FBDF36477C"

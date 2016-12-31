@@ -43,11 +43,19 @@ function onActionRecallSelected(event) {
 		scopes.globals.purgeBarcodeRecords = [];
 	}
 	var blowCodes = scopes.globals.purgeBarcodeRecords;
-	globals.doDialog('Recall Selected Records','Recall the Selected Records?','Recall','Cancel');
+	globals.doDialog(i18n.getI18NMessage('sts.txt.recall.selected.records'),
+					i18n.getI18NMessage('sts.txt.recall.selected.records')+'?',
+					i18n.getI18NMessage('sts.btn.recall.selected'),
+					i18n.getI18NMessage('sts.txt.cancel'));
+		//'Recall Selected Records','Recall the Selected Records?','Recall','Cancel');
 	if (globals.dialogResponse != 'yes'){
 		return;
 	}
-	globals.doDialog('Recall Selected Records','This recalls records and may result in conflicts. Continue with RECALL?','Cancel','RECALL');
+	globals.doDialog(i18n.getI18NMessage('sts.txt.recall.selected.records'),
+		i18n.getI18NMessage('sts.txt.recall.selected.conflicts'),
+		i18n.getI18NMessage('sts.txt.cancel'),
+		i18n.getI18NMessage('sts.btn.recall.selected'));
+		//'Recall Selected Records','This recalls records and may result in conflicts. Continue with RECALL?','Cancel','RECALL');
 	if (globals.dialogResponse == 'yes'){
 		return;
 	}
@@ -60,15 +68,27 @@ function onActionRecallSelected(event) {
 	var recoverList = [];
 	var i = 1;
 	while (i <= fs.getSize()){
-		var rec = fs.getRecord(i++);
-		if (rec.selection == 0){continue}
-		var idfileId = rec.idfile_id;
-		blowCodes.push(rec.id_serial_number_id+"");
-		scopes.jobs.recallDeletedBarcodes();
-		recoverList.push(i-1); //selection is array, which is zero-based, records are one-based
+		var rec = fs.getRecord(i);
+		if (rec.selection == 1){
+			blowCodes.push(rec.idfile_id+"");
+			//fs.omitRecord(i);
+			recoverList.push(i);
+		}
+		i++;
 	}
-	while (recoverList.length > 0){
-		forms[formTable].controller.setSelectedIndex(recoverList.pop());
-		forms[formTable].controller.omitRecord();
+	scopes.jobs.recallIdfiles();
+	while (recoverList.length != 0){
+		fs.setSelectedIndex(recoverList.pop());
+		fs.omitRecord(recoverList.pop());
 	}
+	/** i = 1;
+	while (i <= fs.getSize()){
+		var rec = fs.getRecord(i);
+		if (rec.selection == 1){
+			blowCodes.push(rec.idfile_id+"");
+			fs.omitRecord(i);
+		}
+		i++;
+	}*/
+	scopes.globals.purgeBarcodeRecords = new Array();
 }

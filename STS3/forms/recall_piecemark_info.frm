@@ -4,7 +4,6 @@ items:[
 {
 extendsID:"A3D4B7DF-E17B-4B1E-AB13-34DE0FD6E96E",
 location:"670,428",
-text:"Close",
 typeid:7,
 uuid:"0341A0AA-DB1F-4C91-B115-330282383953"
 },

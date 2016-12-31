@@ -10,7 +10,7 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
 tabSeq:-2,
-text:"Close",
+text:"i18n:sts.btn.close",
 typeid:7,
 uuid:"4928A2BA-2F1E-4951-ADBF-37E8B1BCDD67"
 },
@@ -21,14 +21,14 @@ items:[
 containsFormID:"BA0661EF-BB47-4EC5-BC28-E4BB464FCB6F",
 location:"85,35",
 name:"piecemark_info",
-text:"Piecemark Information",
+text:"i18n:sts.tab.piecemark.info",
 typeid:15,
 uuid:"BBD5F69E-41CF-4A2C-8FB5-82EC9F576C5C"
 },
 {
 containsFormID:"BD43913E-A4D2-4697-A6D8-CFD792E86D80",
 location:"5,35",
-text:"Delete Criteria",
+text:"i18n:sts.tab.delete.criteria",
 typeid:15,
 uuid:"F1556AEC-00F0-4387-8DFD-6033BE3CBB82"
 }
@@ -62,6 +62,7 @@ showClick:false,
 showFocus:false,
 size:"78,31",
 tabSeq:-2,
+toolTipText:"i18n:sts.btn.home.return",
 transparent:true,
 typeid:7,
 uuid:"EA72C5A8-7E76-4F95-8C9A-30130B2A4B3A"

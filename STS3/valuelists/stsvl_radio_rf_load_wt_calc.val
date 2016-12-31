@@ -1,8 +1,6 @@
 addEmptyValue:1,
-customValues:"Net difference On Each Scan\r
-Recalculate w/Each Scan",
+customValues:"i18n:sts.txt.rfsettings.net.difference.on.each.scan\r\
+i18n:sts.txt.rfsettings.recalculate.w.each.scan",
 name:"stsvl_radio_rf_load_wt_calc",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"EB78E1C8-FB43-4707-9AEF-9D28D337EE76"

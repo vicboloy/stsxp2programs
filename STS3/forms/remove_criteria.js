@@ -160,8 +160,7 @@ var jobFound = false;
  * @properties={typeid:24,uuid:"E1F92F98-A7A7-46F0-BDD7-FD0D51942170"}
  */
 function onShow(firstShow, event) {
-	if (firstShow){
-	}
+	databaseManager.removeTableFilterParam('stsservoy','deletedRecords');//#task07
 	globals.setUserFormPermissions(event);
 	scopes.jobs.getJobsList();
 	scopes.jobs.getCustomersList();
@@ -233,3 +232,77 @@ function onActionDeleteWindow(event) {
 
 	win.show(forms.remove_record_actual);
 	scopes.jobs.removeFormHist('remove_pcmk_combo_table');}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"A6BF7D79-A1FC-4A1B-9FCE-57F300B0ED47"}
+ */
+function onHide(event) {
+	databaseManager.addTableFilterParam('stsservoy',null,'delete_flag',"^||!=",99,'deletedRecords');//#task07
+	return _super.onHide(event)
+}
+/**
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"32544F3F-97A8-4637-9AD6-EB724614058F"}
+ */
+function collectAndTab(formName){
+	criteria = collectCriteria();
+	var prefix = formName.split('_')[0];
+	scopes.jobs.viewBTableSQLSummary(criteria,formName);
+	forms[prefix+'_piecemark_info'+versionForm].elements.tabless.removeAllTabs();
+	if (forms[formName+"_table"] && forms[formName+"_table"].hide){forms[formName+"_table"].hide();}
+	scopes.jobs.removeFormHist(formName+"_table");
+	scopes.jobs.browseJobID = vJobID;
+	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	null;
+}
+/**
+ * @properties={typeid:24,uuid:"62526548-A6DD-424B-B064-F0D05F26B372"}
+ */
+function collectCriteria(){
+	versionForm = globals.getInstanceForm(null);
+	// feeds jobs.viewBTableToForm()
+	if (vLoadAll){
+		var loadAll = null;
+	} else {
+		loadAll = scopes.globals.arrayToString(vLoadNum);
+	}
+	
+	criteria = {
+		area: scopes.globals.arrayToString(vArea),
+		areaa: scopes.globals.csvToArray(vArea),
+		batch: scopes.globals.arrayToString(vBatch),
+		batcha: scopes.globals.csvToArray(vBatch),
+		cowcode: scopes.globals.arrayToString(vCowCode),
+		cowcodea:scopes.globals.csvToArray(vCowCode),
+		fabshop: scopes.globals.arrayToString(vFabShop),
+		fabshopa: scopes.globals.csvToFabshopID(vFabShop),
+		jobid : vJobID,
+		loadall : loadAll,
+		loadalla : scopes.globals.csvToArray(vLoadAll),
+		loadrel : scopes.globals.convertLoadToId(vLoadRel),
+		loadrela : scopes.globals.csvToArray(vLoadRel),
+		lotnum : scopes.globals.convertLotToId(vLotNum), //ticket#7
+		lotnuma : scopes.globals.csvToArray(vLotNum),
+		pcmkrel : scopes.globals.arrayToString(vPcmkRel),
+		pcmkrela : scopes.globals.csvToArray(vPcmkRel),
+		piecemark : vPiecemark,
+		piecemarka : scopes.globals.csvToArray(vPiecemark),
+		pkgnum : scopes.globals.arrayToString(vPkgNum), //ticket#7, currently pkgNum is a FabTrol reference number,
+		pkgnuma : scopes.globals.csvToArray(vPkgNum),
+		seqnum : scopes.globals.arrayToString(vSeqNum),
+		seqnuma : scopes.globals.csvToArray(vSeqNum),
+		sheetnum : scopes.globals.arrayToString(vSheetNum),
+		sheetnuma : scopes.globals.csvToArray(vSheetNum),
+		statusa : scopes.globals.csvToFabCodes(vFabShop),
+		sonum : scopes.globals.arrayToString(vSONum),
+		sonuma : scopes.globals.csvToArray(vSONum)
+	}
+	return criteria;
+}

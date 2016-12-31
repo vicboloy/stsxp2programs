@@ -1,0 +1,7 @@
+addEmptyValue:1,
+customValues:"i18n:sts.txt.poinfo.use.job.release.num\r\
+i18n:sts.txt.poinfo.use.load.release.num\r\
+i18n:sts.txt.poinfo.use.pcmk.release.num",
+name:"istsvl_radio_release_number",
+typeid:34,
+uuid:"B91D8C4B-6FD1-4783-982A-0AFBFD336E04"

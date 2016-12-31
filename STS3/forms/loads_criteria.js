@@ -24,7 +24,7 @@ function onShow(firstShow, event) {
  *
  * @properties={typeid:24,uuid:"0C78BB23-5954-4E47-B68D-7717DD49BAD0"}
  */
-function onDataChangeCustomerNumber(oldValue, newValue, event) {
+function xxxunusedonDataChangeCustomerNumber(oldValue, newValue, event) {
 	globals.lookupItem = newValue;
 	var fs = sts_customernum_to_name;
 	var status = true;
@@ -185,15 +185,22 @@ function arrayToString(itemCSV){
 	return arrayStr;
 }
 /**
+ * @param {JSEvent} event the event that triggered the action
  * @properties={typeid:24,uuid:"FC21F138-6A2E-4046-9408-12838403079D"}
  */
-function browseInfoEnable(){
+function browseInfoEnable(event){
+	var instance = scopes.globals.getInstanceForm(event);
+	
 	if (jobFound){
 		elements.btn_Browse.enabled = true;
 		elements.btn_Info.enabled = true;
+		forms['loads_tabs'+instance].elements.tabs.setTabEnabledAt(2,true);
+		forms['loads_tabs'+instance].elements.tabs.setTabEnabledAt(3,true);
 	} else {
 		elements.btn_Browse.enabled = false;
 		elements.btn_Info.enabled = false;		
+		forms['loads_tabs'+instance].elements.tabs.setTabEnabledAt(2,false);
+		forms['loads_tabs'+instance].elements.tabs.setTabEnabledAt(3,false);
 	}
 }
 /**
@@ -219,7 +226,7 @@ function onActionClear(event) {
 	}
 	form.elements['frmJobNum'].requestFocus();
 	jobFound = false;
-	browseInfoEnable();
+	browseInfoEnable(event);
 }
 /**
  * @param criteria

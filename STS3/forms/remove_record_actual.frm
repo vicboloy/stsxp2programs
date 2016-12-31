@@ -8,7 +8,6 @@ items:[
 {
 containsFormID:"A3F0D465-3C28-4B8F-986B-4A835DEDFE8A",
 extendsID:"F1556AEC-00F0-4387-8DFD-6033BE3CBB82",
-text:"Piecemark Combo",
 typeid:15,
 uuid:"11EC7963-CA90-413A-83FB-CACB3FC4C361"
 },

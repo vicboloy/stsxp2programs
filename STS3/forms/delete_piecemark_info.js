@@ -11,8 +11,9 @@
 function onHide(event) {
 	var formName = event.getFormName();
 	var formNameTable = formName+'_table';
-	var status = history.removeForm(formNameTable);
-	var status2 = solutionModel.removeForm(formNameTable);
+	scopes.jobs.removeFormHist(formNameTable);
+	//var status = history.removeForm(formNameTable);
+	//var status2 = solutionModel.removeForm(formNameTable);
 
 	return _super.onHide(event)
 }

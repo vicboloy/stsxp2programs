@@ -82,7 +82,9 @@ function onActionClear(event) {
 function onShow(firstShow, event) {
 	var formName = event.getFormName().replace('piecemark','summary');
 	formName = formName +"_table";
-	forms[formName].controller.loadAllRecords();
+	if (forms[formName]){
+		forms[formName].controller.loadAllRecords();
+	}
 	return _super.onShow(firstShow, event)
 }
 

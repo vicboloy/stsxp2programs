@@ -1,8 +1,6 @@
 addEmptyValue:1,
-customValues:"Use The Job P.O. Number\r
-Use the Load P.O. Number",
+customValues:"i18n:sts.txt.poinfo.use.job.po.number\r\
+i18n:sts.txt.poinfo.use.load.po.number",
 name:"stsvl_radio_purchase_order_number",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"16E184D8-7C10-47C2-8627-2502F6547807"

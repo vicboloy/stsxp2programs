@@ -12,7 +12,7 @@ var editAddressFlag = false;
  */
 function delSelectedAddress(event) {
 	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.record'),i18n.getI18NMessage('sts.txt.delete.this.address.question'),i18n.getI18NMessage('sts.txt.delete'),i18n.getI18NMessage('sts.txt.cancel'));
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		delete_flag = 99;
 		edit_date = new Date();
 		var rec = foundset.getSelectedRecord();
@@ -66,8 +66,9 @@ function onDataChangeZipCode(oldValue, newValue, event) {
 		var response = globals.DIALOGS.showQuestionDialog(
 			i18n.getI18NMessage('sts.txt.use.this.entry.anyway'),
 			i18n.getI18NMessage('sts.txt.use.this.entry.anyway'),
-			[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
-		if (response == "Yes"){
+			[i18n.getI18NMessage('sts.btn.yes'),
+			i18n.getI18NMessage('sts.btn.no')]);
+		if (response == i18n.getI18NMessage('sts.btn.yes')){
 			return true;
 		} else {
 			return false
@@ -91,31 +92,42 @@ function onDataChangeZipCode(oldValue, newValue, event) {
 }
 
 /**
+ * @param {JSEvent} event
  * @param oldValue
  * @param newValue
- * @param event
  *
  * @properties={typeid:24,uuid:"EC5EA9E7-95A5-4380-A18D-20EDCE050212"}
  * @AllowToRunInFind
  */
-function onAddressTypeChange(oldValue, newValue, event) {
-	//TODO Address should have only one in each Address Type, per Job
-	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
-	var fs = databaseManager.getFoundSet('stsservoy','addresses');
-	if(fs.find()){
-		fs.customer_id = customer_id;
-		fs.tenant_uuid = globals.secCurrentTenantID;
-		fs.address_type = address_type;
-		var count = fs.search();
-		if (count > 0) {
-			controller.deleteRecord();
-			globals.selectedAddressIndex = controller.getSelectedIndex();
-			controller.setSelectedIndex(2);
-			onActionCancelEdit(event);
-		}
+function onAddressTypeChange(event, oldValue, newValue) {
+	var formName = event.getFormName();
+	var instance = globals.getInstanceForm(event);
+	var isCustAddr = (formName.search('Cust') != -1);
+	var isEmpAddr = (formName.search('Emp') != -1);
+	if (isCustAddr){//#task11 change to QBSelect, also 
+		var entityId = forms['customers_rec'+instance].customer_id;
 	}
-	//forms.addresses.controller.loadRecords(fs);
-	//forms.addresses.controller.loadAllRecords();
+	if (isEmpAddr){
+		entityId = forms['employees_rec'+instance].employee_id;
+	}
+	
+	/** @type {QBSelect<db:/stsservoy/addresses>} */
+	var e = databaseManager.createSelect('db:/stsservoy/addresses');
+
+	e.result.add(e.columns.address_id);
+	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	e.where.add(e.columns.delete_flag.isNull);
+	e.where.add(e.columns.address_type.eq(address_type.trim()));
+	e.where.add(e.columns.customer_id.eq(entityId));
+	var E = databaseManager.getFoundSet(e);
+	if (E.getSize() > 0){
+		/** @type {JSFoundSet<db:/stsservoy/addresses>} */
+		var rec = E.getRecord(1);
+		databaseManager.revertEditedRecords(foundset);
+		var index = foundset.getRecordIndex(rec);
+		controller.setSelectedIndex(index);
+		onActionCancelEdit(event);
+	}
  	return true
 }
 /**
@@ -150,9 +162,21 @@ function onActionEdit(event, editStatus) {
  * @param event
  *
  * @properties={typeid:24,uuid:"FF7606F7-99DE-4C97-8E9E-385A230040D9"}
+ * @AllowToRunInFind
  */
 function onActionSaveEdit(event) {
 	//onActionEdit(event, false);
+	var formName = application.getActiveWindow().getName();
+	var instance = globals.getInstanceForm(event);
+	var isCustAddr = (formName.search('Cust') != -1);
+	var isEmpAddr = (formName.search('Emp') != -1);
+	if (isCustAddr){
+		var entityId = forms['customers_rec'+instance].customer_id;
+	}
+	if (isEmpAddr){
+		entityId = forms['employees_rec'+instance].employee_id;
+	}
+	customer_id = entityId; //Saving to address record, but customer_id represents both employee and customer, but primary keys differ
 	databaseManager.saveData(foundset);
 	databaseManager.setAutoSave(false);
 }

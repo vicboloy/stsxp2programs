@@ -18,25 +18,34 @@ function onDataChange(oldValue, newValue, event) {
 	}
 	if (globals.newCustomerRecord == null){
 		globals.newCustomerRecord = customer_id;
-	}
-	var fs = foundset.find();
-	if (fs) //find will fail if autosave is disabled and there are unsaved records
-	{
-		name = newValue;
-		foundset.search();
-		var count = databaseManager.getFoundSetCount(foundset);
-		if (count > 1){
-			var record = "";
-			for (var index = 1;index <= foundset.getSize(); index++){	
-				record = foundset.getRecord(index);
-				if (record.name == 'Name Required' || record.customer_number == 'Number Required'){
-					foundset.deleteRecord();
-				}
+	} // #task 11 remove Servoy find
+	/** @type {QBSelect<db:/stsservoy/customers>} */
+	var f = databaseManager.createSelect('db:/stsservoy/customers');
+	f.result.add(f.columns.customer_id);
+	f.where.add(f.columns.name.eq(newValue));
+	f.where.add(f.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	f.where.add(f.columns.delete_flag.isNull);
+	
+	var F = databaseManager.getFoundSet(f);
+	if (F.getSize() > 1){
+		/** @type {JSRecord<db:/stsservoy/customers>} */
+		var rec = "";
+		var index = 1;
+		while (rec = F.getRecord(index++)){
+			if (rec.name == 'Name Required' || rec.customer_number == 'Number Required'){
+				foundset.deleteRecord(rec);
 			}
 		}
-		foundset.sts_customer_container.loadAllRecords();
-		foundset.setSelectedIndex(globals.selectedCustomerIndex);
+		foundset.sts_customer_container.loadRecords();
 	}
+	if (F.getSize() > 0){
+		//var variabl = event.getElementName();
+		//forms[variabl] = oldValue;
+		databaseManager.revertEditedRecords(foundset);
+		rec = F.getRecord(1);
+		foundset.setSelectedIndex(foundset.getRecordIndex(rec));
+	}
+	
 	forms.customer_specs.elements.tabs.tabIndex = 2;
 
 	return true;
@@ -72,7 +81,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 		forms['customer_specs'+instance].onActionCancelEdit(event);
 		onActionEdit(event,false);
 	} else {
-		var instance = globals.getInstanceForm(event);
+		instance = globals.getInstanceForm(event);
 		forms['customer_specs'+instance].elements.btn_Save.enabled = (!barcode_prefix || !customer_number) ? false : true;
 	}
 	return true;

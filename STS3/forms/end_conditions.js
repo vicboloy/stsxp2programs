@@ -49,9 +49,11 @@ function onActionDelete(event) {
 		i18n.getI18NMessage('sts.txt.delete'),
 		i18n.getI18NMessage('sts.txt.cancel'));
 		//'Remove End Condition','Delete this End Condition?','Delete','Cancel');
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		delete_flag = 99;
 		edit_date = new Date();
+		var rec = foundset.getSelectedRecord();
+		databaseManager.saveData(rec);
 		databaseManager.saveData(foundset);
 		loadFoundset();
 		onEdit(event,false);

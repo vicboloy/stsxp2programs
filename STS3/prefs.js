@@ -1521,62 +1521,66 @@ function onActionUpdatePrefs(event) {
 		forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
 	}
 	application.updateUI();
-	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
+	//var fs = databaseManager.getFoundSet('stsservoy','preferences2');
 	var user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 	var tenant = globals.secCurrentTenantID;
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/preferences2');
+	fs.result.add(fs.columns.preferences2_id);
+	fs.where.add(fs.columns.user_uuid.eq(user_uuid));
+	fs.where.add(fs.columns.tenant_uuid.eq(tenant));
+	var FS = databaseManager.getFoundSet(fs);
 	var variable = "";
 	var variableSetting = "";
-	var saveRec = false;
+	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
 	var rec = null;
-	//var updateCount = 0;
+	databaseManager.startTransaction();
 	for (var index in prefs){
 		variable = index;
 		variableSetting = prefs[index];
 		var variableType = typeof(variableSetting);
 		if (variableType === 'function'){continue}
-		var fieldType = typeof(prefs[index]);
+		//var fieldType = typeof(prefs[index]);
 		variableSetting +="";
-		saveRec = false;
-		if (fs.find()){
-			fs.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-			fs.tenant_uuid = tenant;
-			fs.field_name = variable;
-			if (fs.search() > 0){
-				rec = fs.getRecord(1);
-				if (rec.field_value != variableSetting){
-					rec.field_value = variableSetting;saveRec = true;
-				}
-				if (rec.value_description != description){
-					rec.value_description = description;saveRec = true;
-				}
-				if (rec.field_type != variableType){
-					rec.field_type = variableType;saveRec = true;
-				}
-				//application.output('changed record '+variable);
-			} else {
-				var recNum = fs.newRecord();
-				rec = fs.getRecord(recNum);
-				if (!user_uuid) {
-					rec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-				} else {
-					rec.user_uuid = user_uuid;
-				}
-				rec.tenant_uuid = tenant;
-				rec.field_name = variable;
-				rec.field_value = variableSetting;
-				rec.field_type = variableType;
-				rec.value_description = description;
-				saveRec = true;
-			}
+		var fsIndex = 1;var foundIt = false;
+		while (rec = FS.getRecord(fsIndex++)){
+			if (rec.field_name == variable){foundIt = true;break}
 		}
-		
-		if (saveRec){databaseManager.saveData(rec)}
-		//application.output(index+" = "+prefs[index]+" user_uuid: "+-1+" tenant_uuid "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
+			//fs.field_name = variable;
+		if (foundIt){
+			//rec = fs.getRecord(1);
+			if (rec.field_value != variableSetting){
+				rec.field_value = variableSetting;
+			}
+			if (rec.value_description != description){
+				rec.value_description = description;
+			}
+			if (rec.field_type != variableType){
+				rec.field_type = variableType;
+			}
+		} else {
+			var recNum = FS.newRecord(false);
+			rec = FS.getRecord(recNum);
+			if (!user_uuid) {
+				rec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+			} else {
+				rec.user_uuid = user_uuid;
+			}
+			rec.tenant_uuid = tenant;
+			rec.field_name = variable;
+			rec.field_value = variableSetting;
+			rec.field_type = variableType;
+			rec.value_description = description;
+		}
 	}
-	//application.output("update count "+updateCount);
 	if (prefType == "Printer"){
 		forms.preferences_printer.errorMessage = "";
 	}
+	var committed = false;
+	if (databaseManager.saveData(FS)){
+		committed = databaseManager.commitTransaction();
+	}
+	if (application.isInDeveloper()){application.output('comitted '+committed)}
 	setPrefsClean(event,prefType);
 	globals.onActionCancelButton(event);
 	application.updateUI();

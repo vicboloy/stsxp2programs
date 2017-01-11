@@ -124,7 +124,7 @@ function delRecord(event) {
 			i18n.getI18NMessage('sts.txt.delete.this.employee'),
 			i18n.getI18NMessage('sts.btn.remove'),
 			i18n.getI18NMessage('sts.btn.cancel'));
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		try {
 		controller.deleteRecord(); } catch (e) {}
 		//var sortOrder = foundset.getCurrentSort();

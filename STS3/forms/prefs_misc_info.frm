@@ -135,7 +135,8 @@ onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"140,20",
 text:"Yournumber",
 typeid:4,
-uuid:"390808A1-59A8-4A21-BD0D-81CEF517BCB9"
+uuid:"390808A1-59A8-4A21-BD0D-81CEF517BCB9",
+valuelistID:"B53B74FF-081E-462E-BDBA-40249F200298"
 },
 {
 dataProviderID:"scopes.prefs.lCowPosPC",

@@ -182,30 +182,32 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"4B88F544-1F8C-4D00-8E25-B23DDEDDCB48"}
  */
 function onDataChangeJobNumber(oldValue, newValue, event) {
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var fs = sts_jobs.duplicateFoundSet();
-	fs.loadAllRecords();
-	if (fs.find()){
-		fs.job_number = newValue;
-		var count = fs.search();
-		if (count > 0){
-			jobFound = true;
-			var rec = fs.getRecord(1);
-			vJobName = rec.job_title;
-			vJobID = rec.job_id;
-			var vCustId = rec.customer_id;
-			vCustNum = rec.sts_job_to_customer2.customer_number;
-			vCustomerName = rec.sts_job_to_customer2.name;
-			scopes.jobs.browseJobIDrecall = rec.job_id;
-			var status = true;
-			vLabIDNums = 0;//idfile count
-			vLabTotPieces = 0;//totalpieces
-			vLabTotalWt = 0;//totalweight
-			vLabNumPcmks = 0;//total piecemarks
-		} else {
-			jobFound = false;
-			status = false;
-		}
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/jobs');
+	fs.result.add(fs.columns.job_id);
+	fs.where.add(fs.columns.delete_flag.isNull)
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.job_number.eq(newValue));
+	var J = databaseManager.getFoundSet(fs);
+	
+	if (J.getSize() > 0){
+		jobFound = true;
+		/** @type {JSRecord<db:/stsservoy/jobs>} */
+		var rec = J.getRecord(1);
+		vJobName = rec.job_title;
+		vJobID = rec.job_id;
+		//var vCustId = rec.customer_id;
+		vCustNum = rec.sts_job_to_customer2.customer_number;
+		vCustomerName = rec.sts_job_to_customer2.name;
+		scopes.jobs.browseJobIDrecall = rec.job_id;
+		var status = true;
+		vLabIDNums = 0;//idfile count
+		vLabTotPieces = 0;//totalpieces
+		vLabTotalWt = 0;//totalweight
+		vLabNumPcmks = 0;//total piecemarks
+	} else {
+		jobFound = false;
+		status = false;
 	}
 	var formName = 'remove_piecemark_info';
 	var formTable = 'remove_pcmk_combo_table'
@@ -286,9 +288,9 @@ function collectCriteria(){
 		jobid : vJobID,
 		loadall : loadAll,
 		loadalla : scopes.globals.csvToArray(vLoadAll),
-		loadrel : scopes.globals.convertLoadToId(vLoadRel),
+		loadrel : scopes.globals.convertLoadToId(vLoadRel,false),
 		loadrela : scopes.globals.csvToArray(vLoadRel),
-		lotnum : scopes.globals.convertLotToId(vLotNum), //ticket#7
+		lotnum : scopes.globals.convertLotToId(vLotNum,false), //ticket#7
 		lotnuma : scopes.globals.csvToArray(vLotNum),
 		pcmkrel : scopes.globals.arrayToString(vPcmkRel),
 		pcmkrela : scopes.globals.csvToArray(vPcmkRel),

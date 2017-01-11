@@ -65,12 +65,18 @@ function onActionEdit(event,editing){
  * @AllowToRunInFind
  */
 function onRecordSelection(event) {
-	/** @type {JSFoundSet<db:/stsservoy/users>} */
-	var userFS = databaseManager.getFoundSet('stsservoy','users');
-	if (userFS.find()){
-		userFS.employee_id = employee_id;
-		if (userFS.search()){
-			activeLogin = userFS.is_account_active;
-		}
+	/** @type {QBSelect<db:/stsservoy/users>} */
+	var userFS = databaseManager.createSelect('db:/stsservoy/users');
+	
+	userFS.result.add(userFS.columns.user_uuid);
+	userFS.where.add(userFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	userFS.where.add(userFS.columns.delete_flag.isNull);
+	userFS.where.add(userFS.columns.employee_id.eq(employee_id));
+	var U = databaseManager.getFoundSet(userFS);
+	/** @type {JSRecord<db:/stsservoy/users>} */
+	var rec = U.getRecord(1);
+	activeLogin = false;
+	if (rec){
+		activeLogin = rec.is_account_active;
 	}
 }

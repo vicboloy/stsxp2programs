@@ -51,7 +51,7 @@ function onActionDelete(event) {
 		i18n.getI18NMessage('sts.txt.remove.employee.class.delete'),
 		i18n.getI18NMessage('sts.txt.delete'),
 		i18n.getI18NMessage('sts.txt.cancel'));
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		controller.deleteRecord();
 	}
 }

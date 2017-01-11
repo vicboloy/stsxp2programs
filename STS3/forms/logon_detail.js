@@ -55,7 +55,6 @@ function refreshUsers(){
 	var userNames = [];
 	elements.user_name.editable = (!readOnly);
 	//usableIDs.push(globals.secCurrentUserID);
-	var userNames = [];
 	
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var qq = databaseManager.createSelect('db:/stsservoy/users');
@@ -257,6 +256,8 @@ function onFocusGainedDivision(event) {
 	if (foundset.getSize() == 0){
 		newRec = foundset.getRecord(foundset.newRecord());
 		newRec.delete_flag = 99;
+		var rec = foundset.getSelectedRecord();
+		databaseManager.saveData(rec);
 	}
 }
 
@@ -291,7 +292,7 @@ function onActionDisconnect(event) {
 	employee_id = null;
 	rec.user_uuid = null;
 	rec.is_account_active = 0;
-	var rec = foundset.getSelectedRecord();
+	rec = foundset.getSelectedRecord();
 	var formFunc = forms[application.getActiveWindow().controller.getName()].formFunc;
 	//var saveRecArray = forms[application.getActiveWindow().controller.getName()].saveTheseRecs;
 	databaseManager.saveData(rec);

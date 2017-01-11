@@ -24,9 +24,11 @@ function delCarrierRecordAndAddress(event) { //#task04, #task03
 			i18n.getI18NMessage('sts.txt.delete.this.carrier'),
 			i18n.getI18NMessage('sts.txt.delete'),
 			i18n.getI18NMessage('sts.txt.cancel'));
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 			delete_flag = 99;
 			edit_date = new Date();
+			var rec = foundset.getSelectedRecord();
+			databaseManager.saveData(rec);
 	}
 }
 

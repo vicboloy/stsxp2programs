@@ -38,7 +38,7 @@ function onActionRemoveSelected(event) {
 						i18n.getI18NMessage('sts.txt.remove'),
 						i18n.getI18NMessage('sts.txt.cancel'));
 		//'Remove Selected Records','Remove the Selected Records?','Remove','Cancel');
-	if (globals.dialogResponse != 'yes'){
+	if (globals.dialogResponse.toLowerCase() != 'yes'){
 		return;
 	}
 	globals.doDialog(i18n.getI18NMessage('sts.window.purge.selected'),
@@ -46,7 +46,7 @@ function onActionRemoveSelected(event) {
 						i18n.getI18NMessage('sts.txt.cancel'),
 						i18n.getI18NMessage('sts.txt.remove'));
 		//'Remove Selected Records','This permanently purges/removes records. \nContinue with REMOVE?','Cancel','REMOVE');
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		return;
 	}
 	/** @type {String} */

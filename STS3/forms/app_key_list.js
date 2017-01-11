@@ -43,14 +43,18 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function deleteRecord(event, index) {
-	/** @type {JSFoundSet<db:/stsservoy/group_keys>} */
-	var fs = databaseManager.getFoundSet('stsservoy','group_keys');
-	if (fs.find()){
-		fs.key_uuid = key_uuid;
-		if (fs.search()){
-			globals.DIALOGS.showErrorDialog('Cannot delete Permission','Permission Key already used within Permission Group.');
-			return true;
-		}
+	/** @type {QBSelect<db:/stsservoy/group_keys>} */
+	var g = databaseManager.createSelect('db:/stsservoy/group_keys');
+	g.result.add(g.columns.group_key_uuid);
+	g.where.add(g.columns.key_uuid.eq(key_uuid));
+	g.where.add(g.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var G = databaseManager.getFoundSet(g);
+	if (G.getSize() > 0){
+		globals.DIALOGS.showErrorDialog(
+			i18n.getI18NMessage('sts.txt.permission.cannot.delete'),
+			i18n.getI18NMessage('sts.txt.permission.already.used.in.group')			);
+			//'Cannot delete Permission','Permission Key already used within Permission Group.');
+		return true;
 	}
 	return _super.deleteRecord(event, index);
 }

@@ -48,7 +48,7 @@ function onActionRecallSelected(event) {
 					i18n.getI18NMessage('sts.btn.recall.selected'),
 					i18n.getI18NMessage('sts.txt.cancel'));
 		//'Recall Selected Records','Recall the Selected Records?','Recall','Cancel');
-	if (globals.dialogResponse != 'yes'){
+	if (globals.dialogResponse.toLowerCase() != 'yes'){
 		return;
 	}
 	globals.doDialog(i18n.getI18NMessage('sts.txt.recall.selected.records'),
@@ -56,7 +56,7 @@ function onActionRecallSelected(event) {
 		i18n.getI18NMessage('sts.txt.cancel'),
 		i18n.getI18NMessage('sts.btn.recall.selected'));
 		//'Recall Selected Records','This recalls records and may result in conflicts. Continue with RECALL?','Cancel','RECALL');
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		return;
 	}
     if (formName == null){

@@ -9,3 +9,4 @@ function addCustomerRecord(event) {
 	controller.newRecord();
 	foundset.loadAllRecords();
 }
+

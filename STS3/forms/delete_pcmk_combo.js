@@ -59,7 +59,7 @@ function onActionDeleteSelected(event,formName) {
 		i18n.getI18NMessage('sts.txt.delete'),
 		i18n.getI18NMessage('sts.txt.cancel'));
 		//'Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
-	if (globals.dialogResponse != 'yes'){
+	if (globals.dialogResponse.toLowerCase() != 'yes'){
 		//application.output('delete cancelled');
 		return;
 	}
@@ -69,7 +69,7 @@ function onActionDeleteSelected(event,formName) {
 			i18n.getI18NMessage('sts.txt.cancel'),
 			i18n.getI18NMessage('sts.txt.delete'));
 	//'Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		//application.output('delete aborted');
 		return;
 	}

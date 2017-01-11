@@ -197,7 +197,7 @@ var aLaborCodes = [];
  */
 function doLogout(event) {
 	globals.doDialog('Exit Steel Tracking System','Exit STS program?','Exit','Cancel');
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT) {
 			application.showURL("http://" + application.getHostName() + "/webclient.html", "_top");
 		}	    	  
@@ -993,24 +993,20 @@ function mainWindowFront(){
  * @properties={typeid:24,uuid:"BF5D68D1-CB2D-496A-8414-BE0D7E84040D"}
  */
 function loginUserInfo(userId){
-	application.output('useruseruser '+userId);
+	/** @type {QBSelect<db:/stsservoy/employee>} */
+	var u = databaseManager.createSelect('db:/stsservoy/employee');
+	u.result.add(u.columns.employee_id);
+	u.where.add(u.columns.delete_flag.isNull);
+	u.where.add(u.columns.tenant_uuid.eq(session.tenant_uuid));
+	u.where.add(u.columns.user_uuid.eq(userId));
+	var U = databaseManager.getFoundSet(u);
 	/** @type {JSFoundSet<db:/stsservoy/employee>} */
-	var fs = databaseManager.getFoundSet(globals.SEC_SERVER,'employee');
-	if (fs.find()){
-		fs.user_uuid = userId;
-		fs.search();
-		var rec = fs.getRecord(1);
-		if (rec){
-			session.loginUser = rec.employee_firstname;
-			session.loginUserNum = rec.employee_number;
-			//session.fullName = "";
-			//if (!rec.employee_firstname){session.fullName += rec.employee_firstname}
-			//if (!rec.employee_lastname){session.fullName += rec.employee_lastname}
-			session.logging = (rec.employee_rf_logging == 1) ? 0 : 1;
-			session.rfLogging = (rec.employee_save_rftransaction == 1) ? 0 : 1;
-		} else {
-			
-		}
+	var rec = U.getRecord(1);
+	if (rec){
+		session.loginUser = rec.employee_firstname;
+		session.loginUserNum = rec.employee_number;
+		session.logging = (rec.employee_rf_logging == 1) ? 0 : 1;
+		session.rfLogging = (rec.employee_save_rftransaction == 1) ? 0 : 1;
 	}
 }
 /**
@@ -1063,16 +1059,16 @@ function onActionFileOpenDialog(event,updateValue) {
 	var file = plugins.file.showFileOpenDialog(2, "\\", false, null);
 	if (file){globals.loggerDev(this,'File open diaglog failed.')}
 }
-/**
+/* *
  * @AllowToRunInFind
  *
  * @properties={typeid:24,uuid:"A6F4FD9B-D10C-4BFD-9ADB-89DAA8CBDCD7"}
- */
+ * /
 function unusedonStartLoadPrefs(){
 	//var prefs = scopes.prefs;
-	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
+	/ * * @type {JSFoundSet<db:/stsservoy/preferences2>} * /
 	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
-	if (fs.find()){
+	if (fs.fin d()){
 		fs.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 		fs.tenant_uuid = globals.secCurrentTenantID;
 		var recIndex = 1;
@@ -1091,7 +1087,8 @@ function unusedonStartLoadPrefs(){
 		}
 
 	}
-}
+	
+} */
 //----------------------------------------
 /**
  * @type {String}
@@ -1335,42 +1332,29 @@ function alphaSort(r1,r2){
  */
 function licenseCount() {
 	var number = 0;
-	var count = parseInt(plugins.UserManager.Server().getSettingsProperty('licenseManager.numberOfLicenses'), 10);
+	var count = 0;
+	var licenseInfo = plugins.UserManager.Server().getSettingsProperty('licenseManager.numberOfLicenses');
+	if (licenseInfo){
+		count = parseInt(licenseInfo, 10);
+	}
 	if(count) {
 		for (var i = 0; i < count; i++) {
 			if (parseInt(plugins.UserManager.Server().getSettingsProperty('license.' + i + '.product'), 10) == 1){continue}//developer license
 			number += parseInt(plugins.UserManager.Server().getSettingsProperty('license.' + i + '.licenses'), 10);
 		}
 	}
-	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
-	var tenantFS = getTenantFS();
-	if (tenantFS.getSize() > 1){
-		if (tenantFS.find()) {
-			tenantFS.tenant_uuid = globals.session.tenant_uuid;
-			if (tenantFS.search()){
-				number = tenantFS.licenses;
-			}
-		}
-	}
-	return number;
-}
-/**
- * @properties={typeid:24,uuid:"FEED84CF-DF1F-429D-BA95-A3B87E94AE80"}
- * @SuppressWarnings(wrongparameters)
- */
-function getTenantFS(){
 	/** @type {QBSelect<db:/stsservoy/tenant_list>} */
 	var q = databaseManager.createSelect('db:/stsservoy/tenant_list');
-	q.result.add(q.columns.company_name);
 	q.result.add(q.columns.tenant_uuid);
-	//q.result.add(q.columns)
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		//.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
-	);
-	var resultQ = databaseManager.getFoundSet(q);
-	return resultQ;
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	var T = databaseManager.getFoundSet(q);
+	if (T.getSize() > 0){
+		/** @type {JSRecord<db:/stsservoy/tenant_list>} */
+		var rec = T.getRecord(1);
+		number = rec.licenses;
+	}
+	return (!number) ? 0 : number;
 }
 /**
  * @properties={typeid:24,uuid:"E1C40A88-88CC-49CB-AE0A-1877E3053716"}
@@ -1391,11 +1375,8 @@ function getTenantUsedLicenses(){
 	q.result.add(q.columns.association_uuid);
 	q.result.add(q.columns.licenses_desktop);
 	q.result.add(q.columns.licenses_mobile);
-	q.where.add(
-		q.and
-		.add(q.columns.delete_flag.isin([null,0]))
-		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-	);
+	q.where.add(q.columns.delete_flag.isin([null,0]));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	var resultQ = databaseManager.getFoundSet(q);
 	usedLicenses = 0;
 	for (var index = 1;index <= resultQ.getSize();index++){

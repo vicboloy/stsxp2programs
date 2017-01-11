@@ -163,7 +163,7 @@ function deleteRecord(event, index, stopEdit) {
 		i18n.getI18NMessage('sts.txt.delete.record.permanent'),
 		i18n.getI18NMessage('servoy.button.cancel'),
 		i18n.getI18NMessage('sts.btn.delete'));
-	if (globals.dialogResponse == "yes"){
+	if (globals.dialogResponse.toLowerCase() == "yes"){
 		//application.output('delete aborted');
 		return;
 	}
@@ -171,7 +171,7 @@ function deleteRecord(event, index, stopEdit) {
 		i18n.getI18NMessage('1072'),
 		i18n.getI18NMessage('sts.btn.no'),
 		i18n.getI18NMessage('sts.btn.yes'));
-	if (globals.dialogResponse == "no"){
+	if (globals.dialogResponse.toLowerCase() == "no"){
 		return;
 	}
 	if(_super.deleteRecord(event, index)){									//	pass control to super for delete

@@ -68,14 +68,21 @@ function onActionAddForm(event){
  * @properties={typeid:24,uuid:"30AE3F2F-AA0B-4BC4-9E02-96FFD937D512"}
  */
 function onActionDelete(event) {
+	var joe = globals.DIALOGS.showQuestionDialog(
+	i18n.getI18NMessage('sts.txt.delete.record'),
+	i18n.getI18NMessage('sts.txt.delete')+'?',
+	i18n.getI18NMessage('sts.txt.delete'),
+	i18n.getI18NMessage('sts.txt.cancel'));
+	application.output('joe :'+joe+': :'+i18n.getI18NMessage('sts.txt.delete')+':');
 	// addresses #50 part 3 ticket
 	if (globals.DIALOGS.showQuestionDialog(
 		i18n.getI18NMessage('sts.txt.delete.record'),
 		i18n.getI18NMessage('sts.txt.delete')+'?',
 		i18n.getI18NMessage('sts.txt.delete'),
-		i18n.getI18NMessage('sts.txt.cancel')) == 'Delete'){
+		i18n.getI18NMessage('sts.txt.cancel')) == i18n.getI18NMessage('sts.txt.delete')){
 		addOnActionDelete();
 		delete_flag = 99;
+		databaseManager.saveData(foundset.getRecord(controller.getSelectedIndex()));
 		foundset.loadRecords();
 		elements.btn_Delete.visible = globals.checkJobEmpty(job_id);
 	}

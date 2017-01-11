@@ -13,29 +13,31 @@ function newRecord(event, location, changeSelection) {
 		errorMessage = i18n.getI18NMessage('sts.txt.please.enter.company.name');
 		return false;
 	}
-	var tenants = databaseManager.getFoundSet(globals.SEC_SERVER,globals.SEC_TABLE_TENANTS);  // get an association's foundset
-	if (tenants.find()){
-		tenants.company_name = company_name;
-		var tenCount = tenants.search();
-		if (tenCount == 0){
-			_super.newRecord(event, location, changeSelection)
-		} else {
-			var maxTenants = tenants.getSize();
-			if (maxTenants > 1){
-				errorMessage = i18n.getI18NMessage('sts.txt.multiple.company.ids');
-				return false;
-			}
-			var rec = tenants.getRecord(1);
-			if (rec.delete_flag == 1){
-				rec.delete_flag = 0;
-			} else {
-				return false;
-			}
-		}
-		foundset.loadRecords();
-		return true;
-	}
+	/** @type {QBSelect<db:/stsservoy/tenant_list>} */
+	var tenants = databaseManager.createSelect('db:/stsservoy/tenant_list');  // get an association's foundset
+	tenants.result.add(tenants.columns.tenant_uuid);
+	tenants.where.add(tenants.columns.delete_flag.isNull);
+	tenants.where.add(tenants.columns.company_name.eq(company_name));
+	var  T = databaseManager.getFoundSet(tenants);
 	
+	if (T.getSize() == 0){
+		_super.newRecord(event, location, changeSelection)
+	} else {
+		var maxTenants = T.getSize();
+		if (maxTenants > 1){
+			errorMessage = i18n.getI18NMessage('sts.txt.multiple.company.ids');
+			return false;
+		}
+		/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
+		var rec = T.getRecord(1);
+		if (rec.delete_flag == 1){
+			rec.delete_flag = 0;
+		} else {
+			return false;
+		}
+	}
+	foundset.loadRecords();
+	return true;
 }
 
 /**

@@ -1,12 +1,12 @@
 
-/**
+/* *
  *
  * @param event
  *
  * @properties={typeid:24,uuid:"16FB7385-D1C1-4E70-A59F-BBEE985AA926"}
  * @AllowToRunInFind
- */
-function onActionUpdateGroup(event) {
+ * /
+function xxxonActionUpdateGroup(event) {
 	//var updateArray = [];
 	var searchCount = 0;
 	var right = elements.split.getRightForm();
@@ -16,12 +16,12 @@ function onActionUpdateGroup(event) {
 	var masterName = left.association_name;
 	var count = right.foundset.getSize();
 	for (var index = 1;index<=count;index++){
-		/** @type {JSFoundset<db:/stsservoy/tenant_list>} */
+		/ ** @type {JSFoundset<db:/stsservoy/tenant_list>} * /
 		var rec = right.foundset.getRecord(index);
-		/** @type {JSFoundset<db:/stsservoy/associations>} */
+		/ ** @type {JSFoundset<db:/stsservoy/associations>}  * /
 		var assocs = databaseManager.getFoundSet(globals.SEC_SERVER,globals.SEC_TABLE_ASSOCIATIONS);
 		assocs.loadRecords();
-		if (assocs.find()){
+		if (assocs.find ()){
 			assocs.tenant_group_uuid = master;
 			assocs.tenant_uuid = rec.tenant_uuid;
 			searchCount = assocs.search(true);
@@ -48,7 +48,7 @@ function onActionUpdateGroup(event) {
 			
 		}
 	}
-}
+}*/
 /**
  * Callback method when form is (re)loaded.
  *

@@ -847,8 +847,8 @@ function focusWindow(){
 	//application.setValueListItems('stvl_nav_windows',windowArray);
 	globals.winTrackProvider = " ";
 	globals.winTrackProvider = "";
-	plugins.window.maximize(windowx.title);
-	plugins.window.maximize(windowName);
+	//plugins.window.maximize(windowx.title);
+	//plugins.window.maximize(windowName);
 	windowx.toFront();
 }
 /**
@@ -1183,24 +1183,24 @@ function syncI18N(event) {
 	q.result.add(q.columns.message_num);
 	q.result.add(q.columns.message_text);
 	var resultQ = databaseManager.getFoundSet(q);
-	var index = 1;
-	while (index <= resultQ.getSize()){
-		var rec = resultQ.getRecord(index);
-		/** @type {JSFoundSet<db:/stsservoy/i18n_table>} */
-		var fs = databaseManager.getFoundSet('stsservoy','i18n_table');
-		if (fs.find()){
-			fs.message_key = rec.message_num;
-			fs.message_language = null;
-			if (false && fs.search()){
-				application.output('message '+rec.message_num+' '+rec.message_text);
-				var newIdx = fs.newRecord();
-				var newRec = fs.getRecord(newIdx);
-				newRec.message_key = rec.message_num;
-				newRec.message_value = rec.message_text;
-				newRec.message_language = "en";
-			}
+	var idx = 1;
+	/** @type {JSRecord<db:/stsservoy/messages>} */
+	var rec = null;
+	while (rec = resultQ.getRecord(idx++)){
+		/** @type {QBSelect<db:/stsservoy/i18n_table>} */
+		var fs = databaseManager.createSelect('db:/stsservoy/i18n_table');
+		fs.result.add(fs.columns.i18n_table_id);
+		fs.where.add(fs.columns.message_key.eq(rec.message_num));
+		fs.where.add(fs.columns.message_language.isNull);
+		var I18 = databaseManager.getFoundSet(fs);
+		if (false && I18.getSize() > 0){
+			if (application.isInDeveloper()){application.output('message '+rec.message_num+' '+rec.message_text)}
+			var newIdx = I18.newRecord();
+			var newRec = I18.getRecord(newIdx);
+			newRec.message_key = rec.message_num;
+			newRec.message_value = rec.message_text;
+			newRec.message_language = "en";
 		}
-		index++;
 	}
 }
 /**

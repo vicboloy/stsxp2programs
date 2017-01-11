@@ -50,7 +50,7 @@ function xxxunusedonDataChangeCustomerNumber(oldValue, newValue, event) {
 	} else {
 		status = false;
 	}
-	browseInfoEnable();
+	browseInfoEnable(event);
 	return status;	
 }
 /**
@@ -88,7 +88,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		vLabTotPieces = 0;//totalpieces
 		vLabTotalWt = 0;//totalweight
 		vLabNumPcmks = 0;//total piecemarks
-		browseInfoEnable();
+		browseInfoEnable(event);
 		scopes.jobs.onGetInformation(event,false);
 		controller.focusField('frmSeqNum',true);
 	} else {
@@ -122,9 +122,9 @@ function collectCriteria(){
 		jobid : vJobID,
 		loadall : loadAll,
 		loadalla : scopes.globals.csvToArray(vLoadAll),
-		loadrel : scopes.globals.convertLoadToId(vLoadRel),
+		loadrel : scopes.globals.convertLoadToId(vLoadRel,false),
 		loadrela : scopes.globals.csvToArray(vLoadRel),
-		lotnum : scopes.globals.convertLotToId(vLotNum), //ticket#7
+		lotnum : scopes.globals.convertLotToId(vLotNum,false), //ticket#7
 		lotnuma : scopes.globals.csvToArray(vLotNum),
 		pcmkrel : scopes.globals.arrayToString(vPcmkRel),
 		pcmkrela : scopes.globals.csvToArray(vPcmkRel),
@@ -172,6 +172,7 @@ function onActionShowWindow(){
  * @properties={typeid:24,uuid:"3D134DB8-8264-4793-82B5-6F7ABED9EB1D"}
  */
 function arrayToString(itemCSV){
+	/** @type {Array} */
 	var arrayN = itemCSV.split(",");
 	var arrayStr = "(";
 	var comma = ",";
@@ -230,7 +231,6 @@ function onActionClear(event) {
 }
 /**
  * @param criteria
- * @param formName
  *
  * @properties={typeid:24,uuid:"691EE7E2-97CD-4BBB-B4A3-57C87D0E87B0"}
  */

@@ -167,31 +167,31 @@ var jobFound = false;
  * @properties={typeid:24,uuid:"4A4879B5-5968-4331-9C3D-B08C19E4437E"}
  */
 function onDataChangeJobNumber(oldValue, newValue, event) {
-	///var action = event.getFormName().split("_")[0];
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var fs = sts_jobs.duplicateFoundSet();
-	fs.loadAllRecords();
-	if (fs.find()){
-		fs.job_number = newValue;
-		var count = fs.search();
-		if (count > 0){
-			jobFound = true;
-			var rec = fs.getRecord(1);
-			vJobName = rec.job_title;
-			vJobID = rec.job_id;
-			var vCustId = rec.customer_id;
-			vCustNum = rec.sts_job_to_customer2.customer_number;
-			vCustomerName = rec.sts_job_to_customer2.name;
-			scopes.jobs.browseJobIDrecall = rec.job_id;
-			var status = true;
-			vLabIDNums = 0;//idfile count
-			vLabTotPieces = 0;//totalpieces
-			vLabTotalWt = 0;//totalweight
-			vLabNumPcmks = 0;//total piecemarks
-		} else {
-			jobFound = false;
-			status = false;
-		}
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/jobs');
+	fs.result.add(fs.columns.job_id);
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.delete_flag.isNull);
+	fs.where.add(fs.columns.job_number.eq(newValue));
+	var J = databaseManager.getFoundSet(fs);
+	if (J.getSize() > 0){
+		jobFound = true;
+		/** @type {JSRecord<db:/stsservoy/jobs>} */
+		var rec = J.getRecord(1);
+		vJobName = rec.job_title;
+		vJobID = rec.job_id;
+		var vCustId = rec.customer_id;
+		vCustNum = rec.sts_job_to_customer2.customer_number;
+		vCustomerName = rec.sts_job_to_customer2.name;
+		scopes.jobs.browseJobIDrecall = rec.job_id;
+		var status = true;
+		vLabIDNums = 0;//idfile count
+		vLabTotPieces = 0;//totalpieces
+		vLabTotalWt = 0;//totalweight
+		vLabNumPcmks = 0;//total piecemarks
+	} else {
+		jobFound = false;
+		status = false;
 	}
 	var formName = 'recall_piecemark_info';
 	var formTable = 'recall_pcmk_combo_table';

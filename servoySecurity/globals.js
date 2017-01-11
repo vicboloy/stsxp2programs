@@ -1087,6 +1087,7 @@ function secGetTenantID(companyName){
  * the main associaton is assumed and editing is for the local plant.
  * 
  * @param {String} userName The company name
+ * @param {String} companyName
  * @returns {UUID} The tenant id
  * @AllowToRunInFind
  *
@@ -1212,27 +1213,6 @@ function secDeleteTenant(tenantName){
 /**
  * @AllowToRunInFind
  * 
- * @param usernum
- *
- * @properties={typeid:24,uuid:"3D622E0A-C148-4D26-AE4C-61929955DC67"}
- */
-function getAssociationID2(usernum){
-	/** @type {JSFoundSet<db:/stsservoy/users>} */
-	var users;
-	if (usernum == null){return null}
-	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);
-	if (users.find()){
-		users.user_id = usernum
-		if (users.search()){
-			return users.association_uuid;
-		}
-	}
-	return null;
-}
-/**
- * @AllowToRunInFind
- * 
- * TODO generated, please specify type and doc for the params
  * @param {String} [assocName]
  *
  * @properties={typeid:24,uuid:"04BA1A04-95CA-49F8-B077-57CAA6B79423"}

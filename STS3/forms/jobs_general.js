@@ -171,9 +171,9 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 		globals.addCustomer(event);
 		return false;
 	}
-	/** @type {JSRecord<db:/stsservoy/customers>} */
-	var rec = C.getRecord(1);
-	barcode_form = rec.customer_id;//addresses ticket #87
+	// ** @type {JSRecord<db:/stsservoy/customers>} * /
+	//var rec = C.getRecord(1);
+	barcode_form = scopes.jobs.getDefaultCustomerIdForBc();//addresses ticket #87, ticket #79
 	if (1==1){return true}
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');

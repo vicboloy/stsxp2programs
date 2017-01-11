@@ -14,14 +14,14 @@ titleText:"i18n:table.preferences2.preferences2_id"
 allowNull:true,
 autoEnterSubType:3,
 autoEnterType:1,
-creationOrderIndex:8,
+creationOrderIndex:7,
 dataType:93,
 name:"edit_date",
 titleText:"i18n:table.general.edit_date"
 },
 {
 allowNull:true,
-creationOrderIndex:2,
+creationOrderIndex:1,
 dataType:12,
 length:40,
 name:"field_name",
@@ -29,7 +29,7 @@ titleText:"i18n:table.preferences2.field_name"
 },
 {
 allowNull:true,
-creationOrderIndex:4,
+creationOrderIndex:3,
 dataType:12,
 length:20,
 name:"field_type",
@@ -37,7 +37,7 @@ titleText:"i18n:table.preferences2.field_type"
 },
 {
 allowNull:true,
-creationOrderIndex:5,
+creationOrderIndex:4,
 dataType:12,
 length:100,
 name:"field_value",
@@ -45,7 +45,7 @@ titleText:"i18n:table.preferences2.field_value"
 },
 {
 allowNull:true,
-creationOrderIndex:3,
+creationOrderIndex:2,
 dataType:12,
 length:40,
 name:"form_name",
@@ -53,7 +53,7 @@ titleText:"i18n:table.preferences2.form_name"
 },
 {
 allowNull:false,
-creationOrderIndex:9,
+creationOrderIndex:8,
 dataType:12,
 flags:4,
 length:36,
@@ -61,14 +61,8 @@ name:"tenant_uuid",
 titleText:"i18n:table.general.tenant_uuid"
 },
 {
-allowNull:false,
-creationOrderIndex:1,
-dataType:4,
-name:"user_id"
-},
-{
 allowNull:true,
-creationOrderIndex:10,
+creationOrderIndex:9,
 dataType:12,
 flags:4,
 length:36,
@@ -76,7 +70,7 @@ name:"user_uuid"
 },
 {
 allowNull:true,
-creationOrderIndex:6,
+creationOrderIndex:5,
 dataType:12,
 length:400,
 name:"value_description",
@@ -85,7 +79,7 @@ titleText:"i18n:table.preferences2.value_description"
 {
 allowNull:true,
 compatibleColumnTypes:"[[-2,2147483647,0]]",
-creationOrderIndex:7,
+creationOrderIndex:6,
 dataType:-4,
 name:"value_media",
 titleText:"i18n:table.preferences2.value_media"

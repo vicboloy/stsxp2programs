@@ -86,7 +86,7 @@ uuid:"1954C50B-5025-4EA1-AB5E-F2ED31E29EF9"
 containsFormID:"4B0A4F42-885F-493A-AF55-DD6A25926088",
 location:"139,131",
 name:"employee_addresses",
-relationName:"sts_employee_container.sts_employee_to_address",
+relationName:"sts_employee_to_address",
 text:"i18n:sts.tab.customer.addresses",
 typeid:15,
 uuid:"69535606-5912-477D-80B1-F5EAA83FEBFE"

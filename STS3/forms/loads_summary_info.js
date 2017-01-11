@@ -23,9 +23,9 @@ function collectCriteria(){
 		jobid : vJobID,
 		loadall : loadAll,
 		loadalla : scopes.globals.csvToArray(vLoadAll),
-		loadrel : scopes.globals.convertLoadToId(vLoadRel),
+		loadrel : scopes.globals.convertLoadToId(vLoadRel,false),
 		loadrela : scopes.globals.csvToArray(vLoadRel),
-		lotnum : scopes.globals.convertLotToId(vLotNum), //ticket#7
+		lotnum : scopes.globals.convertLotToId(vLotNum,false), //ticket#7
 		lotnuma : scopes.globals.csvToArray(vLotNum),
 		pcmkrel : scopes.globals.arrayToString(vPcmkRel),
 		pcmkrela : scopes.globals.csvToArray(vPcmkRel),
@@ -66,7 +66,7 @@ function onActionClear(event) {
 	if (form.elements['frmJobNum']){
 		form.elements['frmJobNum'].requestFocus();
 		jobFound = false;
-		browseInfoEnable();
+		browseInfoEnable(event);
 	}
 }
 

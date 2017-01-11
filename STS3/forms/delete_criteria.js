@@ -71,42 +71,6 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 function collectCriteria(){
 	versionForm = globals.getInstanceForm(null);
 	// feeds jobs.viewBTableToForm()
-/**	var area = scopes.globals.arrayToString(vArea);
-	var batch = scopes.globals.arrayToString(vBatch);
-	var cowCode = scopes.globals.arrayToString(vCowCode);
-	var fabShop = scopes.globals.arrayToString(vFabShop);
-	var jobRel = scopes.globals.arrayToString(vJobRel);
-	if (vLoadAll){
-		var loadAll = null;
-	} else {
-		loadAll = scopes.globals.arrayToString(vLoadNum);
-	}
-	//application.output('vLoadRel '+vLoadRel);
-	var loadRel = scopes.globals.convertLoadToId(vLoadRel);
-	//application.output('loadRel '+loadRel);
-	var lotNum = scopes.globals.convertLotToId(vLotNum);//ticket#7
-	var pkgNum = scopes.globals.arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
-	var pcmkRel = scopes.globals.arrayToString(vPcmkRel);
-	var pmark = scopes.globals.arrayToString(vPiecemark);
-	var seqNum = scopes.globals.arrayToString(vSeqNum);
-	var sheetNum = scopes.globals.arrayToString(vSheetNum);
-	var soNum = scopes.globals.arrayToString(vSONum);
-	var criteria = {
-		area: area, 
-		batch: batch,
-		cowcode: cowCode,
-		fabshop: fabShop,
-		jobrel : jobRel,
-		loadall : loadAll,
-		loadrel : loadRel,
-		lotnum : lotNum,
-		pcmkrel : pcmkRel,
-		piecemark : pmark,
-		pkgnum : pkgNum,
-		seqnum : seqNum,
-		sheetnum : sheetNum,
-		sonum : soNum
-	}*/
 	if (vLoadAll){
 		var loadAll = null;
 	} else {
@@ -125,9 +89,9 @@ function collectCriteria(){
 		jobid : vJobID,
 		loadall : loadAll,
 		loadalla : scopes.globals.csvToArray(vLoadAll),
-		loadrel : scopes.globals.convertLoadToId(vLoadRel),
+		loadrel : scopes.globals.convertLoadToId(vLoadRel,false),
 		loadrela : scopes.globals.csvToArray(vLoadRel),
-		lotnum : scopes.globals.convertLotToId(vLotNum), //ticket#7
+		lotnum : scopes.globals.convertLotToId(vLotNum,false), //ticket#7
 		lotnuma : scopes.globals.csvToArray(vLotNum),
 		pcmkrel : scopes.globals.arrayToString(vPcmkRel),
 		pcmkrela : scopes.globals.csvToArray(vPcmkRel),
@@ -149,8 +113,7 @@ function collectCriteria(){
 	//scopes.jobs.viewBTableToForm(criteria,formName);
 }
 /**
- * @param {JSEvent} event
- * @param {String} altEnable
+ * @param {String} formName
  * 
  * @properties={typeid:24,uuid:"C475BEBD-83D4-4676-828B-D6C8AB673616"}
  */

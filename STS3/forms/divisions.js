@@ -184,9 +184,9 @@ function onDataChangeDivision(oldValue, newValue, event) {
 		var idx = foundset.getRecordIndex(rec);
 		foundset.setSelectedIndex(idx);
 	} else if (A.getSize() > 0){
-		var rec = A.getRecord(1);
+		rec = A.getRecord(1);
 		databaseManager.revertEditedRecords(foundset);
-		var idx = foundset.getRecordIndex(rec);
+		idx = foundset.getRecordIndex(rec);
 		foundset.setSelectedIndex(idx);
 	}
 	return true

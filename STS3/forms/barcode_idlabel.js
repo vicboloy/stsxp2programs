@@ -106,17 +106,17 @@ function collectCriteria(formName){
 	var area = scopes.globals.arrayToString(vArea);
 	var batch = scopes.globals.arrayToString(vBatch);
 	var cowCode = scopes.globals.arrayToString(vCowCode);
-	var fabShop = scopes.globals.convertFabShopToStatusDescripId(vFabShop);
+	var fabShop = scopes.globals.arrayToString(scopes.globals.convertFabShopToStatusDescripId(vFabShop,true));
 	var jobRel = scopes.globals.arrayToString(vJobRel);
 	if (vLoadAll){
 		var loadAll = null;
 	} else {
-		loadAll = scopes.globals.convertLoadToId(vLoadNum);
+		loadAll = scopes.globals.convertLoadToId(vLoadNum,true);
 	}
 	//application.output('vLoadRel '+vLoadRel);
-	var loadRel = scopes.globals.convertLoadToId(vLoadRel);
+	var loadRel = scopes.globals.convertLoadToId(vLoadRel,true);
 	//application.output('loadRel '+loadRel);
-	var lotNum = scopes.globals.convertLotToId(vLotNum);//ticket#7
+	var lotNum = scopes.globals.convertLotToId(vLotNum,true);//ticket#7
 	var pkgNum = scopes.globals.arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
 	var pcmkRel = scopes.globals.arrayToString(vPcmkRel);
 	var seqNum = scopes.globals.arrayToString(vSeqNum);
@@ -140,23 +140,6 @@ function collectCriteria(formName){
 		sheetnum : sheetNum,
 		sonum : soNum
 	}
-	/**switch (scopes.jobs.tmp_Print){
-		case (/ALL/):{
-			for (var item in criteria){
-				criteria[item] = null;
-			}
-			break;
-		}
-		case (/ID/):{
-			for (item in criteria){
-				if (item != 'idnum'){criteria[item] = null;}
-			}
-			break;
-		}
-		default:{
-			criteria['idnum'] = null;
-		}
-	}*/
 	scopes.jobs.removeFormHist(formName+"_table");
 	scopes.jobs.browseJobID = vJobID;
 	scopes.jobs.viewBTableToForm(criteria,formName); // here to generate sql

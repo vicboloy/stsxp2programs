@@ -83,37 +83,38 @@ function editStatus(edit){
  * @AllowToRunInFind
  */
 function onDataChangeJob(oldValue, newValue, event) {
-	// Change to QBSelect from find() 20161121
+	// Change to QBSelect from Servoy find 20161121
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/jobs');
 	fs.result.add(fs.columns.job_id);
 	fs.where.add(fs.columns.job_number.eq(vJobNumber));
 	fs.where.add(fs.columns.delete_flag.isNull);
 	fs.where.add(fs.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var FS = databaseManager.getFoundSet(fs);
-		if (FS.getSize() > 0){
-			vCustomerName = FS.sts_job_to_customer.name;
-			vCustomerNumber = FS.sts_job_to_customer.customer_number;
-			vPONumber = FS.customer_po;
-			forms.cost_of_work.customerName = vCustomerName;
-			forms.cost_of_work.customerNumber = vCustomerNumber;
-			forms.cost_of_work.jobNumber = newValue;
-			forms.cost_of_work.jobID = FS.job_id;
-			forms.cost_of_work.customerID = FS.customer_id;
-			scopes.globals.vJobIDXref = FS.job_id;
-			foundset.removeFoundSetFilterParam('job_cowxref');
-			foundset.addFoundSetFilterParam('job_id','=',globals.vJobIDXref,'job_cowxref');
-			foundset.loadAllRecords();
-			if (foundset.getSize() == 0){
-				clearForm();
-			}
-			var maxTabs = forms.cost_of_work.elements.tabless.getMaxTabIndex();
-			for (var index = 1;index <= maxTabs;index++){
-				forms.cost_of_work.elements.tabless.setTabEnabledAt(index,true);
-			}
-			forms.cost_of_work.jobChangeE = true;
-			forms.cost_of_work.jobchangeM = true;
+	if (FS.getSize() > 0){
+		vCustomerName = FS.sts_job_to_customer.name;
+		vCustomerNumber = FS.sts_job_to_customer.customer_number;
+		vPONumber = FS.customer_po;
+		forms.cost_of_work.customerName = vCustomerName;
+		forms.cost_of_work.customerNumber = vCustomerNumber;
+		forms.cost_of_work.jobNumber = newValue;
+		forms.cost_of_work.jobID = FS.job_id;
+		forms.cost_of_work.customerID = FS.customer_id;
+		scopes.globals.vJobIDXref = FS.job_id;
+		foundset.removeFoundSetFilterParam('job_cowxref');
+		foundset.addFoundSetFilterParam('job_id','=',globals.vJobIDXref,'job_cowxref');
+		foundset.loadAllRecords();
+		if (foundset.getSize() == 0){
+			clearForm();
 		}
+		var maxTabs = forms.cost_of_work.elements.tabless.getMaxTabIndex();
+		for (var index = 1;index <= maxTabs;index++){
+			forms.cost_of_work.elements.tabless.setTabEnabledAt(index,true);
+		}
+		forms.cost_of_work.jobChangeE = true;
+		forms.cost_of_work.jobchangeM = true;
+	}
 	return true
 }
 /**
@@ -182,21 +183,23 @@ function onShow(firstShow, event) {
 		foundset.addFoundSetFilterParam('job_id','=','','job_cowxref');
 	}
 	var cows = [];
-	/** @type {JSFoundSet<db:/stsservoy/cowcodes>} */
-	var fs = databaseManager.getFoundSet('stsservoy','cowcodes');
-	if (fs.find()){
-		fs.tenant_uuid = globals.secCurrentTenantID;
-		if (fs.search()){
-			var count = fs.getSize();
-			for (var index = 1;index <= count;index++){
-				var cowRec = fs.getRecord(index);
-				cows.push(cowRec.cow_code);
-				forms.cost_of_work.cowCodes[cowRec.cow_code] = cowRec.cowcode_id;
-				forms.cost_of_work.cowCodes[cowRec.cow_code+"Descrip"] = cowRec.cow_description;
-				forms.cost_of_work.cowCodes[cowRec.cow_code+"Value"] = cowRec.uom_dollar;
-			}
-		}
+	/** @type {QBSelect<db:/stsservoy/cowcodes>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/cowcodes');
+	fs.result.add(fs.columns.cowcode_id);
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.delete_flag.isNull);
+	var CW = databaseManager.getFoundSet(fs);
+	var idx = 1;
+	/** @type {JSRecord<db:/stsservoy/cowcodes>} */
+	var rec = null;
+	while (rec = CW.getRecord(idx++)){
+		cows.push(rec.cow_code);
+		forms.cost_of_work.cowCodes[rec.cow_code] = rec.cowcode_id;
+		forms.cost_of_work.cowCodes[rec.cow_code+"Descrip"] = rec.cow_description;
+		forms.cost_of_work.cowCodes[rec.cow_code+"Value"] = rec.uom_dollar;
+		
 	}
+
 	application.setValueListItems('stsvl_cow_codes_list',cows);
 	vUomCodeSpecific = (scopes.prefs.lCowCustSpc == 1);
 	elements.uomCodesSpecific.visible = vUomCodeSpecific;

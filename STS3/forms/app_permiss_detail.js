@@ -149,28 +149,27 @@ function createPermissTable(event,formName){
 
 	elements.tabless.visible = true;
 	var knownEls = [];
-	//var recordedEls = [];
 	var elSettings = [];
-	/** @type {JSFoundSet<db:/stsservoy/permissions>} */
-	var fs = databaseManager.getFoundSet('stsservoy','permissions');
-	if (fs.find()){
-		fs.form_name = formName;
-		fs.tenant_uuid = globals.secCurrentTenantID;
-		fs.key_uuid = key_uuid;
-		fs.search();
-		for (var index = 1;index <= fs.getSize();index++){
-			var rec = fs.getRecord(index);
-			var elName = rec.element_name;
-			knownEls.push(elName);
-			///application.output('formname element '+rec.element_name+' visible '+rec.is_visible+' enabled '+rec.is_accessible);
-			if (!elSettings[elName]){elSettings[elName] = [];}
-			/** @type {Array} */
-			var elSettingsArray = elSettings[elName];
-			var elSetting = {visible : rec.is_visible, 
-								enabled :rec.is_accessible,
-								keyId :rec.key_uuid};
-			elSettingsArray.push(elSetting);
-		}
+	/** @type {QBSelect<db:/stsservoy/permissions>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/permissions');
+	fs.result.add(fs.columns.permission_uuid);
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.form_name.eq(formName));
+	fs.where.add(fs.columns.key_uuid.eq(key_uuid));
+	var PRM = databaseManager.getFoundSet(fs);
+	/** @type {JSRecord<db:/stsservoy/permissions>} */
+	var rec = null;
+	while (rec = PRM.getRecord(idx++)){
+		var elName = rec.element_name;
+		knownEls.push(elName);
+		///application.output('formname element '+rec.element_name+' visible '+rec.is_visible+' enabled '+rec.is_accessible);
+		if (!elSettings[elName]){elSettings[elName] = [];}
+		/** @type {Array} */
+		var elSettingsArray = elSettings[elName];
+		var elSetting = {visible : rec.is_visible, 
+							enabled :rec.is_accessible,
+							keyId :rec.key_uuid};
+		elSettingsArray.push(elSetting);
 	}
 	
 	var newForm = solutionModel.cloneForm('element_list',solutionModel.getForm('app_permiss_detail_list'));
@@ -191,7 +190,7 @@ function createPermissTable(event,formName){
 	localDataSrc.addColumn('is_enabled',4,JSColumn.TEXT);
 	localDataSrc.addColumn('is_ignored',5,JSColumn.TEXT);
 	localDataSrc.addColumn('is_keyed',6,JSColumn.TEXT);
-	for (index = 0;index < buttons.length;index++){
+	for (var index = 0;index < buttons.length;index++){
 		elName = buttons[index].name;
 		if (!elName){continue}
 		if (knownEls.indexOf(elName) != -1){
@@ -287,56 +286,54 @@ function saveEdits(event, record, stopEdit) {
 			/** @type {JSRecord}  */
 			var formRec = {element_name : "", is_ignored : 0, is_enabled : 0, is_visible : 0, permission_uuid : null};
 			formRec = formFs.getRecord(index);
-			/** @type {JSFoundSet<db:/stsservoy/permissions>} */
-			var fs = databaseManager.getFoundSet('stsservoy','permissions');
-			if (fs.find()){
-				fs.element_name = formRec.element_name;
-				fs.form_name = form_name;
-				fs.key_uuid = currentKey;
-				fs.tenant_uuid = globals.secCurrentTenantID;
-				if (fs.search()){
-					var searchRec = fs.getRecord(1);
-					if (formRec.is_ignored == 1){
-						fs.deleteRecord(searchRec);
-
-					} else {
-						var saveRec = false;
-						if (searchRec.is_accessible != formRec.is_enabled){
-							searchRec.is_accessible = formRec.is_enabled;
-							saveRec = true;
-						}
-						if (searchRec.is_visible != formRec.is_visible){
-							searchRec.is_visible = formRec.is_visible;
-							saveRec = true;
-						}
-						if (saveRec){
-							///_super.saveEdits(event, newRec, false)
-							databaseManager.saveData(searchRec);
-						}
-					}
+			/** @type {QBSelect<db:/stsservoy/permissions>} */
+			var fs = databaseManager.createSelect('db:/stsservoy/permissions');
+			fs.result.add(fs.columns.permission_uuid);
+			fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+			fs.where.add(fs.columns.element_name.eq(formRec.element_name));
+			fs.where.add(fs.columns.form_name.eq(form_name));
+			fs.where.add(fs.columns.key_uuid.eq(currentKey));
+			var PRM = databaseManager.getFoundSet(fs);
+			if (PRM.getSize() > 0){
+				/** @type {JSRecord<db:/stsservoy/permissions>} */
+				var searchRec = PRM.getRecord(1);
+				if (formRec.is_ignored == 1){
+					PRM.deleteRecord(searchRec);
 				} else {
-					if (formRec.is_ignored == 1){
-						// ignore
-					} else {
-						var index2 = fs.newRecord();
-						var newRec = fs.getRecord(index2);
-						newRec.edit_date = new Date();
-						if (forms['element_list']){
-							newRec.key_uuid = key_uuid;
-						} else {
-							newRec.key_uuid = null;
-						}
-						newRec.element_name = formRec.element_name;
-						newRec.form_name = form_name;
-						newRec.is_accessible = formRec.is_enabled;
-						newRec.is_visible = formRec.is_visible;
-						newRec.tenant_uuid = globals.secCurrentTenantID;
-						newRec.permission_type = permission_type;
-						newRec.server_name = 'stsservoy';
-						databaseManager.saveData(newRec);
-						///_super.saveEdits(event, newRec, false)
-						//application.output('form name '+form_name+' element '+rec.element_name+' vis '+rec.is_visible+' enabled '+rec.is_accessible+' is_ignored '+rec.is_ignored);
+					var saveRec = false;
+					if (searchRec.is_accessible != formRec.is_enabled){
+						searchRec.is_accessible = formRec.is_enabled;
+						saveRec = true;
 					}
+					if (searchRec.is_visible != formRec.is_visible){
+						searchRec.is_visible = formRec.is_visible;
+						saveRec = true;
+					}
+					if (saveRec){
+						///_super.saveEdits(event, newRec, false)
+						databaseManager.saveData(searchRec);
+					}
+				}
+			} else {
+				if (formRec.is_ignored == 1){
+					// ignore
+				} else {
+					var index2 = PRM.newRecord();
+					var newRec = PRM.getRecord(index2);
+					newRec.edit_date = new Date();
+					if (forms['element_list']){
+						newRec.key_uuid = key_uuid;
+					} else {
+						newRec.key_uuid = null;
+					}
+					newRec.element_name = formRec.element_name;
+					newRec.form_name = form_name;
+					newRec.is_accessible = formRec.is_enabled;
+					newRec.is_visible = formRec.is_visible;
+					newRec.tenant_uuid = globals.secCurrentTenantID;
+					newRec.permission_type = permission_type;
+					newRec.server_name = 'stsservoy';
+					databaseManager.saveData(newRec);
 				}
 			}
 		}

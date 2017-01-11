@@ -115,28 +115,28 @@ function tablePrefsColumnsToHide(tableName){
 	/** @type {Array} */
 	var tempArray = globals.a.tempHiddenColumns[tableName];
 	var version = globals.getInstanceForm(tableName);
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
+	prefsFS.result.add(prefsFS.columns.preferences2_id);
+	prefsFS.where.add(prefsFS.columns.user_uuid.eq(application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF')));
+	prefsFS.where.add(prefsFS.columns.form_name.eq(tableName.replace(version,"")));
+	prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var P = databaseManager.getFoundSet(prefsFS);
+	
+	var index = 1;
 	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-	if (prefsFS.find()) {
-		prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-		prefsFS.form_name = tableName.replace(version,"");
-		prefsFS.tenant_uuid = globals.secCurrentTenantID;
-		if (prefsFS.search()){
-			var index = 1;
-			while (index <= prefsFS.getSize()){
-				var rec = prefsFS.getRecord(index);
-				if (existEl.indexOf(rec.field_name) == -1 || rec.field_name == 'selection'){index++;continue}
-				var columnSpec = rec.field_value.split(",");
-				if (columnSpec[3] == 0){
-					if (rec.field_name == 'selection'){
-						tempArray.unshift(rec.field_name);
-					} else {
-						if (tempArray.indexOf(rec.field_name) == -1){tempArray.push(rec.field_name);}
-					}
-				}
-				index++;
+	var rec = "";
+	while (rec = P.getRecord(index++)){
+		if (existEl.indexOf(rec.field_name) == -1 || rec.field_name == 'selection'){continue}
+		var columnSpec = rec.field_value.split(",");
+		if (columnSpec[3] == 0){
+			if (rec.field_name == 'selection'){
+				tempArray.unshift(rec.field_name);
+			} else {
+				if (tempArray.indexOf(rec.field_name) == -1){tempArray.push(rec.field_name);}
 			}
 		}
+		index++;
 	}
 }
 /**

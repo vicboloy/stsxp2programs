@@ -42,7 +42,7 @@ function onActionDelete(event) {
 		i18n.getI18NMessage('sts.txt.units.of.measure.remove.delete'),
 		i18n.getI18NMessage('sts.txt.delete'),
 		i18n.getI18NMessage('sts.txt.cancel'));
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		edit_date = new Date();
 		delete_flag = 99;
 		databaseManager.saveData(foundset);

@@ -31,7 +31,7 @@ function onShow(firstShow, event) {
 			i18n.getI18NMessage('sts.txt.delete.this.customer'),
 			i18n.getI18NMessage('sts.txt.delete'),
 			i18n.getI18NMessage('sts.txt.cancel'));
-		if (globals.dialogResponse == 'yes'){
+		if (globals.dialogResponse.toLowerCase() == 'yes'){
 			controller.deleteRecord();
 		}
 }

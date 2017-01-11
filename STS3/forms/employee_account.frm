@@ -224,6 +224,7 @@ uuid:"FE7E4D40-0B83-430F-876D-D9B2C6A14FF0"
 dataProviderID:"employee_workphone",
 format:"(###)###-####",
 location:"198,235",
+name:"employee_workphone",
 size:"140,20",
 text:"type",
 transparent:true,

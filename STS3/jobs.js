@@ -2330,37 +2330,38 @@ function getCustomersList(){
  */
 function getFieldDataMapping(columnName, content){
 	var fieldMap = "";
-	/** @type {JSFoundSet<db:/stsservoy/mapping>} */
-	var fs = databaseManager.getFoundSet('db:/stsservoy/mapping');
-	if (fs.find()){
-		fs[columnName] = content;
-		fs.mapped_format = "FabSuite";
-		if (fs.search() > 0){
-			var rec = fs.getSelectedRecord();
-			fieldMap = rec.mapping_key+","+rec.field_order;
-			return fieldMap;
-		} else {
-			return "";
-		}
+	/** @type {QBSelect<db:/stsservoy/mapping>} */
+	var m = databaseManager.createSelect('db:/stsservoy/mapping');
+	m.result.add(m.columns.mapping_id);
+	m.where.add(m.columns[columnName]);
+	m.where.add(m.columns.mapped_format.eq('FabSuite'));
+	var M = databaseManager.getFoundSet(m);
+	if (M.getSize() > 0){
+		/** @type {JSFoundSet<db:/stsservoy/mapping>} */
+		var rec = M.getRecord(1);
+		fieldMap = rec.mapping_key+","+rec.field_order;
+		return fieldMap;
+	} else {
+		return "";
 	}
-	return null;
 }
 /**
  * @properties={typeid:24,uuid:"A7AE0B04-B8F0-4939-A721-E2698FF530FA"}
  * @AllowToRunInFind
  */
 function existsJobNumber(jobNumber){
-	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
-	var fs = databaseManager.getFoundSet("db:/stsservoy/jobs");
-	if (fs.find()){
-		fs.job_number = jobNumber;
-		if (fs.search()){
-			return true;
-		} else {
-			return false;
-		}
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var j = databaseManager.getFoundSet('db:/stsservoy/jobs');
+	j.result.add(j.columns.job_id);
+	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.delete_flag.isNull);
+	j.where.add(j.columns.job_number.eq(jobNumber));
+	var J = databaseManager.getFoundSet(j);
+	if (J.getSize() > 0){
+		return true;
+	} else {
+		return false;
 	}
-	return true;
 }
 /**
  * Create idfile for piecemark
@@ -3405,9 +3406,9 @@ function saveBarCodeSerial(){
 		// raise error message
 	}
 	
-	/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} * /
+	/* * @type {JSFoundSet<db:/stsservoy/last_id_serial>} * /
 	var bcFS = databaseManager.getFoundSet('stsservoy','last_id_serial');
-	if (bcFS.find()){
+	if (bcFS.fin d()){
 		bcFS.tenant_uuid = globals.secCurrentTenantID;
 		bcFS.prefix = barcodePrefix;
 		var count = bcFS.search();
@@ -3478,30 +3479,25 @@ function readKissTextFile(file) {
  * @properties={typeid:24,uuid:"89287D7F-6E72-4A30-8E10-3D8F4268A46C"}
  */
 function loadKissMapping(){
-	/** @type {JSFoundSet<db:/stsservoy/mapping>} */
-	var fs5 = databaseManager.getFoundSet("db:/stsservoy/mapping");
 	var mappedFormat = 'FabSuite';
 	mappedFormatArray = [];
 	mappedFormatArrayDescrips = [];
-	///var mapLine = [];
-	if (fs5.find()){
-		fs5.mapped_format = mappedFormat;
-		///var oldMapTo = "";
-		var mapTo = "";
-		///var mapCount = 0;
-		if (fs5.search()){
-			fs5.sort('mapped_format asc, mapping_key asc, field_order asc');
-			var count = fs5.getSize();
-			for (var i6=1;i6 <= count;i6++){
-				var rec6 = fs5.getRecord(i6);
-				mapTo = rec6.mapping_key+','+rec6.field_order;
-				//if (mapTo == oldMapTo){mapCount++}else{mapCount = 0}
-				if (rec6.mapped_field == null){continue}  // skip null mappings, won't work
-				mappedFormatArray[mapTo] = rec6.mapped_field+'.'+rec6.field_sort_order;
-				mappedFormatArrayDescrips[mapTo] = rec6.field_name;
-				///oldMapTo = mapTo;
-			}
-		}
+	/** @type {QBSelect<db:/stsservoy/mapping>} */
+	var fs5 = databaseManager.createSelect('db:/stsservoy/mapping');
+	fs5.result.add(fs5.columns.mapping_id);
+	fs5.where.add(fs5.columns.mapped_format = mappedFormat);
+	var M5 = databaseManager.getFoundSet(fs5);
+	M5.sort('mapped_format asc, mapping_key asc, field_order asc');
+	var mapTo = "";
+	var i6 = 1;
+	/** @type {JSFoundSet<db:/stsservoy/mapping>} */
+	var rec6 = "";
+	while (rec6 = M5.getRecord(i6++)){
+		rec6 = M5.getRecord(i6);
+		mapTo = rec6.mapping_key+','+rec6.field_order;
+		if (rec6.mapped_field == null){continue}  // skip null mappings, won't work
+		mappedFormatArray[mapTo] = rec6.mapped_field+'.'+rec6.field_sort_order;
+		mappedFormatArrayDescrips[mapTo] = rec6.field_name;
 	}
 	// verify that all provided elements have been mapped, this is an error if any are missed from KISS file
 	// errors in mapping should cancel an import
@@ -3524,7 +3520,7 @@ function loadKissMapping(){
 			}
 		}
 	}
-	application.output('NOT MAPPED:'+needsMap);
+	if (application.isInDeveloper()){application.output('NOT MAPPED:'+needsMap)}
 	return needsMap.length == 0;
 }
 /**
@@ -3621,7 +3617,7 @@ function idHeaders(){
 	var data = importResults;
 	///var length = data.length;
 	if (data[0].length >2 && data[0][2].search("FabSuite") != -1){format = "FabSuite"}
-	application.output('File Format '+format);
+	if (application.isInDeveloper()){application.output('File Format '+format)}
 	var index = 1;
 	while (data[index][0] == "*"){ // get headers if 
 		//application.output(data[index][1]);
@@ -3635,29 +3631,29 @@ function idHeaders(){
 		}
 		for (var i3=1;i3 < headLineSize;i3++){
 			//create records for missing mapping fields under mapping format
-			/** @type {JSFoundset<db:/stsservoy/mapping>} */
-			var fs2 = databaseManager.getFoundSet("db:/stsservoy/mapping");
 			fieldName = data[index][i3].trim();
 			if (fieldName.search(RegExp('[A-Za-z]+')) == -1){fieldName = "UNDEFINED";}
 			var fieldPosition = i3;
-			if (fs2.find()){
-				fs2.mapped_format = format;
-				fs2.mapping_line = mappingLine;
-				fs2.field_name = fieldName;
-				if (!fs2.search()){
-					fs2.newRecord();
-					var rec = fs2.getSelectedRecord();
-					//application.output('rec '+rec);
-					rec.mapped_format = format;
-					rec.mapping_line = mappingLine;
-					rec.mapping_key = mappingKey;
-					if (mappingLine == fieldName){
-						rec.field_value = mappingKey;
-					}
-					rec.field_name = fieldName;
-					rec.field_order = fieldPosition-1;
-					databaseManager.saveData(rec);
+			/** @type {QBSelect<db:/stsservoy/mapping>} */
+			var fs2 = databaseManager.createSelect('db:/stsservoy/mapping');
+			fs2.result.add(fs2.columns.mapping_id);
+			fs2.where.add(fs2.columns.mapped_format.eq(format));
+			fs2.where.add(fs2.columns.mapping_line.eq(mappingLine));
+			fs2.where.add(fs2.columns.field_name.eq(fieldName));
+			var M2 = databaseManager.getFoundSet(fs2);
+			
+			if (M2.getSize() == 0){
+				var idx = M2.newRecord();
+				var rec = M2.getRecord(idx);
+				rec.mapped_format = format;
+				rec.mapping_line = mappingLine;
+				rec.mapping_key = mappingKey;
+				if (mappingLine == fieldName){
+					rec.field_value = mappingKey;
 				}
+				rec.field_name = fieldName;
+				rec.field_order = fieldPosition-1;
+				databaseManager.saveData(rec);
 			}
 		}
 		index++;		
@@ -3776,55 +3772,60 @@ function createValidBarcode(){
  * @properties={typeid:24,uuid:"518DA0F5-7B81-4E38-AAFC-374B2BC7424A"}
  */
 function insertAggregPcmk(table){
-	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
-	var pieceFS = databaseManager.getFoundSet('stsservoy','piecemarks');
-	/** @type {JSFoundSet<db:/stsservoy/sheets>} */
-	var sheetFS = databaseManager.getFoundSet('stsservoy','sheets');
 	var length = table.getMaxRowIndex();
 	var sheetID = "";
 	for (var index = 0;index < length;index++){
-			if (sheetFS.find()){
-				sheetFS.job_id = scopes.jobs.jobIDs[0];
-				sheetFS.sheet_number = table[index].sheet_number;
-				if (sheetFS.search()){
-					sheetID = sheetFS.sheet_id;
-				} else {
-					var newIndex = sheetFS.newRecord();
-					var newRec = sheetFS.getRecord(newIndex);
-					newRec.job_id = scopes.jobs.jobIDs[0];
-					newRec.sheet_number = table[index].sheet_number;
-					newRec.tenant_uuid = scopes.globals.secCurrentTenantID;
-					sheetID = newRec.sheet_id;
-					databaseManager.saveData(newRec);
-				}
-			}
-		if (pieceFS.find()){
-			pieceFS.piecemark = table[index].piecemark;
-			pieceFS.parent_piecemark = table[index].parent_piecemark;
-			pieceFS.sheet_id = sheetID;
-			pieceFS.grade = table[index].grade;
-			pieceFS.finish = table[index].finish;
-			var count = pieceFS.search();
-			if (count == 0){
-				newIndex = pieceFS.newRecord();
-				var newRecP = pieceFS.getRecord(newIndex);
-				newRecP.material = table[index].material;
-				newRecP.finish = table[index].finish;
-				newRecP.grade = table[index].grade;
-				newRecP.item_length = table[index].item_length*1;
-				newRecP.item_quantity = table[index].item_quantity;
-				newRecP.item_weight = table[index].item_weight*1;
-				newRecP.parent_piecemark = table[index].parent_piecemark
-				newRecP.piecemark = table[index].piecemark;
-				newRecP.sheet_id = sheetID;
-				newRecP.tenant_uuid = scopes.globals.secCurrentTenantID;
-				databaseManager.saveData(newRecP);
-			} else {
-				//overwrite but must match sequence
-			}
+		/** @type {QBSelect<db:/stsservoy/sheets>} */
+		var sheetFS = databaseManager.createSelect('db:/stsservoy/sheets');
+		sheetFS.result.add(sheetFS.columns.sheet_id);
+		sheetFS.where.add(sheetFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		sheetFS.where.add(sheetFS.columns.job_id.eq(scopes.jobs.jobIDs[0]));
+		sheetFS.where.add(sheetFS.columns.delete_flag.not.eq(99));
+		sheetFS.where.add(sheetFS.columns.sheet_number.eq(table[index].sheet_number));
+		var S = databaseManager.getFoundSet(sheetFS);
+		if (S.getSize() > 0){
+			/** @type {JSRecord<db:/stsservoy/sheets>} */
+			var rec = S.getRecord(1);
+			sheetID = rec.sheet_id;
+		} else {
+			var newIndex = S.newRecord();
+			/** @type {JSRecord<db:/stsservoy/sheets>} */
+			var newRec = S.getRecord(newIndex);
+			newRec.job_id = scopes.jobs.jobIDs[0];
+			newRec.sheet_number = table[index].sheet_number;
+			newRec.tenant_uuid = globals.session.tenant_uuid;
+			sheetID = newRec.sheet_id;
+			databaseManager.saveData(newRec);
+		}
+		/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+		var pieceFS = databaseManager.createSelect('db:/stsservoy/piecemarks>');
+		pieceFS.result.add(pieceFS.columns.piecemark_id);
+		pieceFS.where.add(pieceFS.columns.piecemark.eq(table[index].piecemark));
+		pieceFS.where.add(pieceFS.columns.parent_piecemark.eq(table[index].parent_piecemark));
+		pieceFS.where.add(pieceFS.columns.sheet_id.eq(sheetID));
+		pieceFS.where.add(pieceFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		pieceFS.where.add(pieceFS.columns.grade.eq(table[index].grade));
+		pieceFS.where.add(pieceFS.columns.finish.eq(table[index].finish));
+		var P = databaseManager.getFoundSet(pieceFS);
+		if (P.getSize() == 0){
+			newIndex = P.newRecord();
+			/** @type {JSRecord<db:/stsservoy/piecemarks>} */
+			var newRecP = P.getRecord(newIndex);
+			newRecP.material = table[index].material;
+			newRecP.finish = table[index].finish;
+			newRecP.grade = table[index].grade;
+			newRecP.item_length = table[index].item_length*1;
+			newRecP.item_quantity = table[index].item_quantity;
+			newRecP.item_weight = table[index].item_weight*1;
+			newRecP.parent_piecemark = table[index].parent_piecemark
+			newRecP.piecemark = table[index].piecemark;
+			newRecP.sheet_id = sheetID;
+			newRecP.tenant_uuid = scopes.globals.secCurrentTenantID;
+			databaseManager.saveData(newRecP);
+		} else {
+			//overwrite but must match sequence
 		}
 	}
-
 }
 /**
  * @properties={typeid:24,uuid:"5796C81D-F2E2-479E-8B71-616BC5ED206B"}
@@ -3858,17 +3859,17 @@ function deleteLotsJob(){
 function deleteSequencesJob(jobID){
 	var dsSequenceList = scopes.jobs.dsSequenceList;
 	var count2 = 0;
-	/** @type {JSFoundSet<db:/stsservoy/sequences>} */
-	var fs = databaseManager.getFoundSet('stsservoy','sequences');
-	if (fs.find()){
-		fs.job_id = jobID;
-		fs.tenant_uuid = globals.secCurrentTenantID;
-		if (fs.search() > 0){
-			count2 = fs.getSize();
-			deleteFoundSet(fs);
-		}
+	/** @type {QBSelect<db:/stsservoy/sequences>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/sequences');
+	fs.result.add(fs.columns.sequence_id);
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.job_id.eq(jobID));
+	var S = databaseManager.getFoundSet(fs);
+	if (S.getSize() > 0){
+		count2 = S.getSize();
+		deleteFoundSet(S);
 	}
-	application.output("Sequences to delete "+count2);
+	if (application.isInDeveloper()){application.output("Sequences to delete "+count2)}
 	dsSequences = null;
 	dsSequenceList = [];
 	dsSequenceArray = [];
@@ -4022,7 +4023,7 @@ function deleteIdfiles(){
 	j.where.add(j.columns.id_serial_number_id.isin(subIdfiles));//get associated idfiles
 	
 	var resultI = databaseManager.getFoundSet(i);
-	var resultII = resultI.duplicateFoundSet();
+	resultII = resultI.duplicateFoundSet();
 	index = 1;
 	while (index <= resultI.getSize()){
 		/** @type {JSRecord<db:/stsservoy/idfiles>} */
@@ -4147,6 +4148,7 @@ function recallDeletedBarcodes(){
 function purgeDeletedIdfiles(){
 	warningsYes();
 	warningsMessage('Purging Idfile information.');
+	var message = 'Purging ';
 	///var purgeRecordList = [];
 	/* 
 	 * id_serial_number_id*, idfile_id*, transaction_id*, piecemark_id^, lot_id*, sequence_id*, sheet_id*, job_id 
@@ -4164,7 +4166,7 @@ function purgeDeletedIdfiles(){
 	b.where.add(b.columns.id_serial_number_id.isin(purgeCodes));
 	var resultB = databaseManager.getFoundSet(b);
 	if (application.isInDeveloper()){application.output('barcodes '+resultB.getSize())}
-	if (recall){
+	if (typeof recall != 'undefined'){
 		var recallable = databaseManager.getFoundSetUpdater(resultB);
 		recallable.setColumn('delete_flag',null);
 		recallable.performUpdate();
@@ -4207,8 +4209,8 @@ function purgeDeletedIdfiles(){
 		if (lots.indexOf(lotID+"") == -1){lots.push(lotID+"")}
 		if (sequences.indexOf(seqID+"") == -1){sequences.push(seqID+"")}
 	}
-	application.output('idfile size '+resultI.getSize());
-	if (recall){
+	if (application.isInDeveloper()){application.output('idfile size '+resultI.getSize())}
+	if (typeof recall != 'undefined'){
 		recallable = databaseManager.getFoundSetUpdater(resultI);
 		recallable.setColumn('delete_flag',null);
 		recallable.performUpdate();
@@ -5274,17 +5276,18 @@ function importRecordChangeSheet(record,unique,sheetId){
 	//var unique = scopes.jobs.uniquePiecemark(record);
 	var piecemarkId = dsPiecemarkArray[unique];
 	dsPiecemarkList[unique]=null;//mark old piecemark index as BAD
-	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
-	var fs = databaseManager.getFoundSet('stsservoy','piecemarks');
-	if (fs.find()){
-		fs.piecemark_id = piecemarkId;
-		if (fs.search()){
-			fs.sheet_id = sheetId;
-			var unique2 = uniquePiecemark(fs);
-			dsPiecemarks[unique2] = fs.piecemark_id;
-			dsPiecemarkList.push(fs.piecemark_id);
-			//dsPiecemarkArray
-		}
+	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/piecemarks');
+	fs.result.add(fs.columns.tenant_uuid);
+	fs.where.add(fs.columns.piecemark_id.eq(piecemarkId));
+	var P = databaseManager.getFoundSet(fs);
+	if (P.getSize() > 0){
+		/** @type {JSRecord<db:/stsservoy/piecemarks>} */
+		var rec = P.getRecord(1);
+		P.sheet_id = sheetId;
+		var unique2 = uniquePiecemark(rec);
+		dsPiecemarks[unique2] = rec.piecemark_id;
+		dsPiecemarkList.push(rec.piecemark_id);
 	}
 }
 /**
@@ -5835,10 +5838,8 @@ function collectCriteria(){
 	} else {
 		loadAll = scopes.globals.arrayToString(vLoadNum);
 	}
-	//application.output('vLoadRel '+vLoadRel);
-	var loadRel = scopes.globals.convertLoadToId(vLoadRel);
-	//application.output('loadRel '+loadRel);
-	var lotNum = scopes.globals.convertLotToId(vLotNum);//ticket#7
+	var loadRel = scopes.globals.convertLoadToId(vLoadRel,true);
+	var lotNum = scopes.globals.convertLotToId(vLotNum,true);//ticket#7
 	var pkgNum = scopes.globals.arrayToString(vPkgNum);//ticket#7, currently pkgNum is a FabTrol reference number
 	var pcmkRel = scopes.globals.arrayToString(vPcmkRel);
 	var pmark = scopes.globals.arrayToString(vPiecemark);
@@ -5860,84 +5861,8 @@ function collectCriteria(){
 		sheetnum : sheetNum,
 		sonum : soNum
 	}
-	//scopes.jobs.xxxviewBTableAlt(criteria);
 	var formName = 'loads_pcmk_combo';
 	scopes.jobs.viewBTableToForm(criteria,formName);
-//application.output('before prefs load xyz');
-//	scopes.jobs.tablePrefsLoad(formName);
-//application.output('after prefs load xyz');
-	///onActionShowWindow();
-}
-/**
- * @AllowToRunInFind
- *
- * @properties={typeid:24,uuid:"7EA8420A-FA8D-438F-B9DC-714B4F8E971F"}
- * @SuppressWarnings(unused)
- * @SuppressWarnings(wrongparameters)
- */
-function unusedtablePrefsSaveDb(){
-	application.output('inside tablePrefsSaveDb');
-	var formName = generalTableOrderTableName;
-	var elems = forms[formName].elements;
-	/** @type {JSFoundset<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-	databaseManager.startTransaction();
-	application.output('vsrn form  '+versionForm);
-	var recChanges = 0;
-	for (var index in elems){
-		warningsMessage('Saving column settings '+formName);
-		var elem = elems[index];
-		var colName = elem.getName();
-		if (colName == ""){continue}//sometimes a blank entry after array and value list manip
-		var visible = (elem.visible) ? 1 : 0;
-		var colDims = elem.getLocationX()+","+0+","+elem.getWidth()+","+visible;
-		//var colDims = elems[index].getLocationX()+","+0+",110";
-		if (prefsFS.find()) {
-			prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-			prefsFS.form_name = formName.replace(versionForm,'');
-			prefsFS.field_name = colName;
-			prefsFS.tenant_uuid = globals.secCurrentTenantID;
-			//prefsFS.value_material = rec.shape;
-			var index2 = prefsFS.search();
-			if (index2 > 0) {
-				///var maxIndex = prefsFS.getSize();
-				var rec = prefsFS.getRecord(1);
-				if (prefsFS.field_value != colDims){
-					rec.field_value = colDims;
-					rec.edit_date = new Date();
-					//status = databaseManager.saveData(rec);
-					recChanges++;
-					//application.output('save status change '+status);
-				}
-			} else {
-				var newDex = prefsFS.newRecord();
-				var newRec = prefsFS.getRecord(newDex);
-				newRec.tenant_uuid = globals.secCurrentTenantID;
-				newRec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-				newRec.form_name = formName.replace(versionForm,'');
-				newRec.field_name = colName;
-				//newRec.value_material = rec.shape;
-				newRec.field_value = colDims;
-				newRec.edit_date = new Date();
-				recChanges++;
-				
-				//application.output('save status '+status);
-			}
-		}
-		if (recChanges > 20){
-			var status = databaseManager.commitTransaction();
-			databaseManager.startTransaction();
-		}
-		//var status = databaseManager.saveData(prefsFS);
-		warningsMessage('Column ordering SAVED. '+formName);
-		warningsX();
-		status = databaseManager.commitTransaction();
-		if (!status){
-			globals.loggerDev(this,'Save record failed');
-			databaseManager.rollbackTransaction();
-		}
-
-	}
 }
 /**
  * @AllowToRunInFind
@@ -6555,7 +6480,7 @@ function viewBTableSQLSummary(criteria,formName){
 		count++;
 	}
 
-	var queryPM = queryAssembly(criteria,formName,"piecemark"); 
+	var queryPM = queryAssembly(criteria,formName,"piecemark");
 	var pmDS = databaseManager.createDataSourceByQuery('PM'+newDsName,queryPM,-1);
 	var pmFS = databaseManager.getFoundSet(pmDS);
 	pmFS.loadAllRecords();
@@ -7663,4 +7588,21 @@ function recallIdfiles(){
 	updateI.setColumn('deleted_date',null);
 	updateI.performUpdate();
 	warningsX();
+}
+/**
+ * @properties={typeid:24,uuid:"A30CCE93-0A1C-408E-B7D9-E9DE282659C5"}
+ */
+function getDefaultCustomerIdForBc(){
+	/** @type {QBSelect<db:/stsservoy/customers>} */
+	var c = databaseManager.createSelect('db:/stsservoy/customers');
+	c.result.add(c.columns.customer_id);
+	c.where.add(c.columns.customer_number.eq(scopes.prefs.stsCustomerNum));
+	c.where.add(c.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var C = databaseManager.getFoundSet(c);
+	if (C.getSize() > 0){
+		/** @type {JSFoundSet<db:/stsservoy/customers>} */
+		var rec = C.getRecord(1);
+		return rec.customer_id;
+	}
+	return null;
 }

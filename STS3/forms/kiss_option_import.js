@@ -309,7 +309,7 @@ function onShow(firstShow, event) {
 	}
 	
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} 
-	if (foundset.find()){
+	if (foundset.find ()){
 		job_number = scopes.jobs.importJob.jobNumber;
 		customer_id = scopes.jobs.importJob.customerId;
 		tenant_uuid = globals.session.tenant_uuid;
@@ -337,38 +337,35 @@ function onShow(firstShow, event) {
 
 	var empArray = [];
 	var empArrayID = [];
-	/** @type {JSFoundSet<db:/stsservoy/employee>} */
-	var empFS = databaseManager.getFoundSet('stsservoy','employee');
-	if (empFS.find()){
-		empFS.tenant_uuid = globals.secCurrentTenantID;
-		empFS.delete_flag = null;
-		var empCount = empFS.search();
-		if (empCount > 0){
-			for (var index = 1;index <= empCount;index++){
-				var rec = empFS.getRecord(index);
-				empArray.push(rec.employee_number);
-				empArrayID.push(rec.employee_id);
-			}
-		}
+	/** @type {QBSelect<db:/stsservoy/employee>} */
+	var empFS = databaseManager.createSelect('db:/stsservoy/employee');
+	empFS.result.add(empFS.columns.employee_id);
+	empFS.where.add(empFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	empFS.where.add(empFS.columns.delete_flag.isNull);
+	var E = databaseManager.getFoundSet(empFS);
+	var idx = 1;
+	/** @type {JSRecord<db:/stsservoy/employee>} */
+	var rec = null;
+	while (rec = E.getRecord(idx++)){
+		empArray.push(rec.employee_number);
+		empArrayID.push(rec.employee_id);
 	}
 	if (application.isInDeveloper()){application.setValueListItems('stsvl_employee',empArray)}
 	employeeNumber = globals.session.loginUserNum;
 	if (application.isInDeveloper()){application.output('employee number '+employeeNumber)}
 	var jobRoutes = [];
 	var jobRouteIds = [];
-	/** @type {JSFoundSet<db:/stsservoy/routings>} */
-	var routes = databaseManager.getFoundSet('stsservoy','routings');
-	if (routes.find()){
-		routes.tenant_uuid = globals.secCurrentTenantID;
-		routes.delete_flag = null;
-		var routCount = routes.search();
-		if (routCount > 0){
-			for (index = 1;index <= routCount;index++){
-				rec = routes.getRecord(index);
-				jobRoutes.push(rec.route_code);
-				jobRouteIds.push(rec.routing_id);
-			}
-		}
+	/** @type {QBSelect<db:/stsservoy/routings>} */
+	var routes = databaseManager.createSelect('db:/stsservoy/routings');
+	routes.result.add(routes.columns.routing_id);
+	routes.where.add(routes.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	routes.where.add(routes.columns.delete_flag.isNull);
+	var R = databaseManager.getFoundSet(routes);
+	/** @type {JSRecord<db:/stsservoy/routings>} */
+	var rec2 = null;
+	while (rec2 = R.getRecord(idx++)){
+		jobRoutes.push(rec2.route_code);
+		jobRouteIds.push(rec2.routing_id);
 	}
 	if (application.isInDeveloper()){application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds)}
 	var window = controller.getWindow();
@@ -451,27 +448,30 @@ function loadImportLabelCounts(){
 function loadExclSumms() {
 	jobImportExc="";
 	jobImportSum="";
-	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
 	var formFS = forms.kiss_excludes_lst.foundset;
 	formFS.loadAllRecords();
 	var fsSize = formFS.getSize();
+	var uuidGen = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+	var formName = controller.getName();
 	for (var index = 1;index <= fsSize;index++){
 		var rec = formFS.getRecord(index);
-		if (prefsFS.find()) {
-			prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-			prefsFS.form_name = controller.getName();
-			prefsFS.field_name = 'excludeArray';
-			prefsFS.value_description = rec.shape;
-			prefsFS.tenant_uuid = globals.secCurrentTenantID;
-			if (prefsFS.search()) {
-				var prefRec = prefsFS.getRecord(1);
-				var newValue = prefRec.field_value.split(",");
-				rec.exclude = newValue[0];
-				if (rec.exclude == 1){jobImportExc+=" "+rec.shape+" "}
-				rec.summarize = newValue[1];
-				if (rec.summarize == 1){jobImportSum+=" "+rec.shape+" "}
-			}
+		/** @type {QBSelect<db:/stsservoy/preferences2>} */
+		var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
+		prefsFS.result.add(prefsFS.columns.preferences2_id);
+		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		prefsFS.where.add(prefsFS.columns.user_uuid.eq(uuidGen));
+		prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
+		prefsFS.where.add(prefsFS.columns.field_name.eq('excludeArray'));
+		prefsFS.where.add(prefsFS.columns.value_description.eq(rec.shape));
+		var P = databaseManager.getFoundSet(prefsFS);
+		if (P.getSize() > 0) {
+			/** @type {JSRecord<db:/stsservoy/preferences2>} */
+			var prefRec = P.getRecord(1);
+			var newValue = prefRec.field_value.split(",");
+			rec.exclude = newValue[0];
+			if (rec.exclude == 1){jobImportExc+=" "+rec.shape+" "}
+			rec.summarize = newValue[1];
+			if (rec.summarize == 1){jobImportSum+=" "+rec.shape+" "}
 		}
 	}
 }
@@ -485,44 +485,41 @@ function loadExclSumms() {
  */
 function saveExclSumms(){
 	//var excludedArray = [];
-	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.getFoundSet('stsservoy','preferences2');
-	//for (var joeI=0;joeI<columnNames.length;joeI++){
-	//	var columnName = transitionFS.getColumnName(joeI+1);
-	//	var cnIndex = fieldOrderTempTable[columnName];
-	//	var gotColumn = transitionFS.getColumnName(cnIndex+1);
-	//	var gotType = transitionFS.getColumnType(cnIndex+1);
-	//	//application.output("index "+joeI+" table column "+columnName+" columnNames index "+cnIndex+" columnName by index "+gotColumn+" type "+gotType);
-	//}
+	var uuidGen = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+	var formName = controller.getName();
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
+	prefsFS.result.add(prefsFS.columns.preferences2_id);
+	prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	prefsFS.where.add(prefsFS.columns.user_uuid.eq(uuidGen));
+	prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
+	prefsFS.where.add(prefsFS.columns.field_name.eq('excludeArray'));
+	prefsFS.where.add(prefsFS.columns.value_description.eq(rec.shape));
+	var P = databaseManager.getFoundSet(prefsFS);
 	var formFS = forms.kiss_excludes_lst.foundset;
 	for (var index = 1;index <= formFS.getSize();index++){
 		var rec = formFS.getRecord(index);
 		var newValue = rec.exclude+","+rec.summarize;
-		if (prefsFS.find()) {
-			prefsFS.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-			prefsFS.form_name = controller.getName();
-			prefsFS.field_name = 'excludeArray';
-			prefsFS.value_description = rec.shape;
-			var index2 = prefsFS.search();
-			if (index2 > 0) {
-				if (prefsFS.field_value != newValue){
-					prefsFS.field_value = newValue;
-					databaseManager.saveData(prefsFS);
-				}
-			} else {
-				var newDex = prefsFS.newRecord();
-				var newRec = prefsFS.getRecord(newDex);
-				newRec.tenant_uuid = globals.secCurrentTenantID;
-				newRec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-				newRec.form_name = controller.getName();
-				newRec.field_name = 'excludeArray';
-				newRec.value_description = rec.shape;
-				newRec.field_value = newValue;
-				databaseManager.saveData(newRec);
+		if (P.getSize() > 0) {
+			var exstRec = P.getRecord(1);
+			if (exstRec.field_value != newValue){
+				exstRec.field_value = newValue;
+				databaseManager.saveData(P);
 			}
+		} else {
+			var newDex = P.newRecord();
+			/** @type {JSRecord<db:/stsservoy/preferences2>} */
+			var newRec = P.getRecord(newDex);
+			newRec.tenant_uuid = globals.session.tenant_uuid;
+			newRec.user_uuid = uuidGen;
+			newRec.form_name = formName;
+			newRec.field_name = 'excludeArray';
+			newRec.value_description = rec.shape;
+			newRec.field_value = newValue;
+			databaseManager.saveData(newRec);
 		}
 	}
-	errorMessage = i18n.getI18NMessage('Exclude XXX and Summary YYY selections saved.').replace('XXX',jobImportExc).replace('YYY',jobImportSum);
+	errorMessage = i18n.getI18NMessage('sts.txt.import.exclusions.saved',new Array(jobImportExc,jobImportSum));
 }
 /**
  * Define the exclusion dataset for the foundset that holds records that are to be discarded

@@ -9,8 +9,14 @@ typeid:16,
 uuid:"0CCE4E42-1398-4AF6-AB7E-F3CF44228929"
 },
 {
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 extendsID:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8",
-onActionMethodID:"7EA8420A-FA8D-438F-B9DC-714B4F8E971F",
+onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
 typeid:7,
 uuid:"6DD1CDF7-1A68-4370-9C7C-1C7F83822354"
 },

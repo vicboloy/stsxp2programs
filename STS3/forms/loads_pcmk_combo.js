@@ -119,13 +119,13 @@ function onActionClearAll(event) {
  */
 function onActionDeleteSelected(event,formName) {
 	globals.doDialog('Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
-	if (globals.dialogResponse != 'yes'){
+	if (globals.dialogResponse.toLowerCase() != 'yes'){
 		//application.output('delete cancelled');
 		return;
 	}
 	//application.output('ask second question');
 	globals.doDialog('Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		//application.output('delete aborted');
 		return;
 	}

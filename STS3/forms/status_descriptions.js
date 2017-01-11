@@ -105,7 +105,7 @@ function onActionDelete(event,itemDescription) {
 			i18n.getI18NMessage('sts.txt.delete')+'?',
 			i18n.getI18NMessage('sts.btn.delete'),
 			i18n.getI18NMessage('sts.btn.cancel'));
-	if (globals.dialogResponse == 'yes'){
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		delete_flag = 99;
 		edit_date = new Date();
 		databaseManager.saveData(foundset.getRecord(controller.getSelectedIndex()));

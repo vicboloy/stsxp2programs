@@ -40,23 +40,6 @@ function onActionClose(event) {
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
-	///globals.listNamedElements();
-	//var fs = databaseManager.getFoundSet('stsservoy','applications');
-	//if (fs.find()){
-	//	fs.application_id = globals.secCurrentApplicationID;
-	//	fs.search();
-	//}
-	//foundset.loadAllRecords();
-	//var currentApp = application.getSolutionName();
-	//var appId = globals.secGetApplicationID('STSmobile');
-	//var appIdMobile = "";
-	
-	//application.output('currentApp '+currentApp+' valid '+validateApplicationName()+' app id '+appId);
-	//onDataChangeApplicationName(oldValue,newValue,event)
-	//foundset.loadAllRecords();
-	//applications_to_permissions.loadAllRecords();
-	//sts_application.loadAllRecords();
-	
 	globals.setUserFormPermissions(event);
 	stopEditing(event);
 	return _super.onShow(firstShow, event)

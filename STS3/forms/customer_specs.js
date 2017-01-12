@@ -84,7 +84,7 @@ function onActionCancelEdit(event) {
 function onActionSaveEdit(event){
 	onActionEdit(event,false);
 	var rec = foundset.getRecord(controller.getSelectedIndex());
-	rec.tenant_uuid = scopes.globals.secCurrentTenantID;
+	rec.tenant_uuid = scopes.globals.session.tenant_uuid;
 	databaseManager.saveData(rec);
 	application.setValueListItems('stsvlt_customers',globals.getCustomerList());
 	var tabCount = elements.tabs.getMaxTabIndex();

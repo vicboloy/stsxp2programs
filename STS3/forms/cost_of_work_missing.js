@@ -146,7 +146,7 @@ function onActionApply(event) {
 		m.where.add(m.and
 				.add(m.columns.delete_flag.isNull)
 				.add(m.columns.cost_of_work_code.isNull)
-				.add(m.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+				.add(m.columns.tenant_uuid.eq(globals.session.tenant_uuid))
 				.add(m.columns.material.eq(vMaterial))
 				.add(m.columns.sheet_id.isin(sheetQuery))
 			);

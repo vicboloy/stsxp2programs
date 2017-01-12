@@ -49,7 +49,7 @@ function onShow(firstShow, event) {
 		dummy = foundset.getRecord(1);
 	}
 	//if (foundset.getSize() > 0){
-		tenant_uuid = globals.secCurrentTenantID;
+		tenant_uuid = globals.session.tenant_uuid;
 		permission_type = globals.SEC_PERMISSION_TYPE_UI;
 	//}
 	elements.btn_Okay.enabled = false;
@@ -78,8 +78,8 @@ function newRecord(event, location, changeSelection) {
 	var rec = _super.newRecord(event, location, changeSelection);
 	if (typeof edit_date !== "undefined"){edit_date = new Date();}
 	if (typeof tenant_uuid === "undefined"){return rec}
-	if (tenant_uuid == null && globals.secCurrentTenantID != null){
-		tenant_uuid = globals.secCurrentTenantID;
+	if (tenant_uuid == null && globals.session.tenant_uuid != null){
+		tenant_uuid = globals.session.tenant_uuid;
 	}
 	return rec;
 }
@@ -330,7 +330,7 @@ function saveEdits(event, record, stopEdit) {
 					newRec.form_name = form_name;
 					newRec.is_accessible = formRec.is_enabled;
 					newRec.is_visible = formRec.is_visible;
-					newRec.tenant_uuid = globals.secCurrentTenantID;
+					newRec.tenant_uuid = globals.session.tenant_uuid;
 					newRec.permission_type = permission_type;
 					newRec.server_name = 'stsservoy';
 					databaseManager.saveData(newRec);

@@ -363,11 +363,12 @@ function onShow(firstShow, event) {
 	var R = databaseManager.getFoundSet(routes);
 	/** @type {JSRecord<db:/stsservoy/routings>} */
 	var rec2 = null;
+	idx = 1;
 	while (rec2 = R.getRecord(idx++)){
 		jobRoutes.push(rec2.route_code);
 		jobRouteIds.push(rec2.routing_id);
 	}
-	if (application.isInDeveloper()){application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds)}
+	application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds);
 	var window = controller.getWindow();
 	var height = window.getHeight();
 	window.setLocation(0, 0);
@@ -448,12 +449,14 @@ function loadImportLabelCounts(){
 function loadExclSumms() {
 	jobImportExc="";
 	jobImportSum="";
+	/** @type JSFoundSet<> */
 	var formFS = forms.kiss_excludes_lst.foundset;
 	formFS.loadAllRecords();
 	var fsSize = formFS.getSize();
 	var uuidGen = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 	var formName = controller.getName();
 	for (var index = 1;index <= fsSize;index++){
+		/** @type JSRecord<> */
 		var rec = formFS.getRecord(index);
 		/** @type {QBSelect<db:/stsservoy/preferences2>} */
 		var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
@@ -487,19 +490,19 @@ function saveExclSumms(){
 	//var excludedArray = [];
 	var uuidGen = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 	var formName = controller.getName();
-	/** @type {QBSelect<db:/stsservoy/preferences2>} */
-	var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
-	prefsFS.result.add(prefsFS.columns.preferences2_id);
-	prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	prefsFS.where.add(prefsFS.columns.user_uuid.eq(uuidGen));
-	prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
-	prefsFS.where.add(prefsFS.columns.field_name.eq('excludeArray'));
-	prefsFS.where.add(prefsFS.columns.value_description.eq(rec.shape));
-	var P = databaseManager.getFoundSet(prefsFS);
 	var formFS = forms.kiss_excludes_lst.foundset;
 	for (var index = 1;index <= formFS.getSize();index++){
 		var rec = formFS.getRecord(index);
 		var newValue = rec.exclude+","+rec.summarize;
+		/** @type {QBSelect<db:/stsservoy/preferences2>} */
+		var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
+		prefsFS.result.add(prefsFS.columns.preferences2_id);
+		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		prefsFS.where.add(prefsFS.columns.user_uuid.eq(uuidGen));
+		prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
+		prefsFS.where.add(prefsFS.columns.field_name.eq('excludeArray'));
+		prefsFS.where.add(prefsFS.columns.value_description.eq(rec.shape));
+		var P = databaseManager.getFoundSet(prefsFS);
 		if (P.getSize() > 0) {
 			var exstRec = P.getRecord(1);
 			if (exstRec.field_value != newValue){

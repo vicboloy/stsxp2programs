@@ -68,7 +68,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/customers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/customers');
 	q.result.add(q.columns.customer_number);
-	q.where.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.customer_number.eq(newValue));
 	var fsQ = databaseManager.getFoundSet(q);
 	if (!oldValue && fsQ.getSize() > 0){

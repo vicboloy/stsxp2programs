@@ -147,7 +147,7 @@ function onActionAddTenant(event) {
 	for (var i=1;i<=count;i++){
 		var rec = fs.getRecord(i);
 		if (rec.tenant_uuid == null){
-			rec.tenant_uuid = globals.secCurrentTenantID;
+			rec.tenant_uuid = globals.session.tenant_uuid;
 			var error = databaseManager.saveData(rec);
 		}
 	}

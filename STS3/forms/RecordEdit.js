@@ -39,7 +39,7 @@ function onActionAdd(event,recordKeyID){
 	selectedIndex = controller.getSelectedIndex();
 	onEdit(event,true);
 	newRecord = foundset.newRecord();
-	tenant_uuid = globals.secCurrentTenantID;
+	tenant_uuid = globals.session.tenant_uuid;
 	globals.newRecordKey = eval(recordKeyID);
 	if (elements.btn_Heats){
 		elements.btn_Heats.enabled = (validate_heats == 1);

@@ -22,8 +22,8 @@ function newRecord(event, location, changeSelection) {
 	var rec = _super.newRecord(event, location, changeSelection);
 	if (typeof edit_date !== "undefined"){edit_date = new Date();}
 	if (typeof tenant_uuid !== "undefined"){
-		if (tenant_uuid == null && globals.secCurrentTenantID != null){
-			tenant_uuid = globals.secCurrentTenantID;
+		if (tenant_uuid == null && globals.session.tenant_uuid != null){
+			tenant_uuid = globals.session.tenant_uuid;
 		}
 	}
 	return rec;

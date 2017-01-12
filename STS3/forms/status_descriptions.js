@@ -71,7 +71,7 @@ function onActionAdd(event){
 	databaseManager.setAutoSave(false);
 	foundset.newRecord();
 	onActionEdit(event);
-	tenant_uuid = globals.secCurrentTenantID;
+	tenant_uuid = globals.session.tenant_uuid;
 	edit_date = new Date();
 	var shops = application.getValueListArray('stsvl_fab_shops');
 	var index = 0;
@@ -389,7 +389,7 @@ function getStatusList(){
 	q.where.add(
 	q.and
 		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/status_description>} */
 	var resultQ = databaseManager.getFoundSet(q);

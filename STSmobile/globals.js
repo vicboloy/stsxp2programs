@@ -12,7 +12,6 @@ var statusId = "";
 function onSolutionOpen(){
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STSmobile/globals.js');}
 	plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
-	//plugins.UserManager.updateClientInfo();
 	if (application.isInDeveloper()){application.output('license mobile '+plugins.UserManager.getSettingsProperty('license.0.licenses'))}
 	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		var mobileURL = application.getServerURL()+'/servoy-webclient/ss/s/STSmobile';
@@ -27,7 +26,6 @@ function onSolutionOpen(){
 	globals.mobAssocId = globals.secCurrentAssociationID;
 	globals.getAssociation(mobAssocId); //aMobAssocs[assocID];
 	
-	///globals.secCurrentUserName = security.getUserName();
 	secSetCurrentTenant(secCurrentTenantID);
 
 	session.program = "STS Mobile";

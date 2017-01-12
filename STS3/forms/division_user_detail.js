@@ -41,7 +41,7 @@ function getEmployees(){
 	q.where.add(
 	q.and
 		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.secCurrentTenantID))
+		.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var resultQ = databaseManager.getFoundSet(q);
@@ -75,7 +75,7 @@ function getEmployees(){
 		empIds.push(rec.employee_id);
 	}
 	if (application.isInDeveloper()){	
-		application.output(globals.secCurrentTenantID);
+		application.output(globals.session.tenant_uuid);
 		application.output(loginIds);
 		application.output(logins);
 		application.output(emps);

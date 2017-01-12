@@ -92,7 +92,7 @@ function onActionCancelEditCarrier(event) {
  * @properties={typeid:24,uuid:"100B8F88-B23F-43E4-BC9F-2CB51D291148"}
  */
 function onActionSaveEditCarrier(event){
-		tenant_uuid = globals.secCurrentTenantID;
+		tenant_uuid = globals.session.tenant_uuid;
 		edit_date = new Date();
 		databaseManager.saveData(foundset.getSelectedRecord());
 		onEditCarrier(event,false);

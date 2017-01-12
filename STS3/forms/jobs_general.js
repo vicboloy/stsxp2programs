@@ -279,7 +279,7 @@ function onActionRecalcWeight(event) {
 	+ ' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL'
 	var args = [];
 	args.push(job_id.toString());
-	args.push(globals.secCurrentTenantID);
+	args.push(globals.session.tenant_uuid);
 	job_weight = databaseManager.getDataSetByQuery('stsservoy', queryWeight, args , -1)[0][0];
 }
 /**

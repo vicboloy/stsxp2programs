@@ -218,7 +218,7 @@ function initLaborCodes(){
 	//fs.loadRecords();
 	for (var index = 1;index <= fs.getSize();index++){
 		fs.setSelectedIndex(index);
-		if (fs.tenant_uuid != globals.secCurrentTenantID){continue}
+		if (fs.tenant_uuid != session.tenant_uuid){continue}
 		aLaborCodes.push(fs.labor_code);
 	}
 	application.setValueListItems('stsvl_labor_code',aLaborCodes);
@@ -243,7 +243,7 @@ function initStatusCodes(){
 	fs.loadAllRecords();
 	for (var index = 1;index <= fs.getSize();index++){
 		fs.setSelectedIndex(index);
-		if (fs.tenant_uuid != globals.secCurrentTenantID){continue}
+		if (fs.tenant_uuid != session.tenant_uuid){continue}
 		if (fs.association_id != globals.secCurrentAssociationID){continue}
 		if (aStatusCodes.indexOf(fs.status_code) == -1){
 			aStatusCodes.push(fs.status_code);
@@ -914,7 +914,7 @@ function onSolutionOpen() {
 	onStartLoadPrefs("");	
 	globals.getMappings();
 	application.setValueListItems('stsvl_fab_shop',l.assocs);
-	databaseManager.addTableFilterParam('stsservoy',null,'tenant_uuid','=',globals.secCurrentTenantID,'filterCurrentTenant');
+	databaseManager.addTableFilterParam('stsservoy',null,'tenant_uuid','=',session.tenant_uuid,'filterCurrentTenant');
 	if (globals.SEC_ASSOCIATION_FILTER && session.corporate){
 		databaseManager.removeTableFilterParam('stsservoy',globals.SEC_ASSOCIATION_FILTER);
 	}
@@ -1059,36 +1059,6 @@ function onActionFileOpenDialog(event,updateValue) {
 	var file = plugins.file.showFileOpenDialog(2, "\\", false, null);
 	if (file){globals.loggerDev(this,'File open diaglog failed.')}
 }
-/* *
- * @AllowToRunInFind
- *
- * @properties={typeid:24,uuid:"A6F4FD9B-D10C-4BFD-9ADB-89DAA8CBDCD7"}
- * /
-function unusedonStartLoadPrefs(){
-	//var prefs = scopes.prefs;
-	/ * * @type {JSFoundSet<db:/stsservoy/preferences2>} * /
-	var fs = databaseManager.getFoundSet('stsservoy','preferences2');
-	if (fs.fin d()){
-		fs.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-		fs.tenant_uuid = globals.secCurrentTenantID;
-		var recIndex = 1;
-		var recCount = fs.search();
-		recCount = databaseManager.getFoundSetCount(fs);
-		var record = null;
-		while (recCount > 0 && recIndex < recCount){
-			//while (recCount > 0 && recIndex <= recCount){
-			record = fs.getRecord(recIndex);
-			if (record.field_type == "boolean"){
-				scopes.prefs[record.field_name] = record.field_value == "true" ? true : false;
-			} else {
-				scopes.prefs[record.field_name] = record.field_value;
-			}
-			recIndex++;
-		}
-
-	}
-	
-} */
 //----------------------------------------
 /**
  * @type {String}
@@ -1352,7 +1322,10 @@ function licenseCount() {
 	if (T.getSize() > 0){
 		/** @type {JSRecord<db:/stsservoy/tenant_list>} */
 		var rec = T.getRecord(1);
-		number = rec.licenses;
+		var numberSet = rec.licenses;
+		if (numberSet != number){
+			rec.licenses = number;
+		}
 	}
 	return (!number) ? 0 : number;
 }
@@ -1378,10 +1351,11 @@ function getTenantUsedLicenses(){
 	q.where.add(q.columns.delete_flag.isin([null,0]));
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	var resultQ = databaseManager.getFoundSet(q);
-	usedLicenses = 0;
-	for (var index = 1;index <= resultQ.getSize();index++){
+	usedLicenses = 0; var index = 1;
+	/** @type {JSRecord<db:/stsservoy/associations>} */
+	var rec = null;
+	while (rec = resultQ.getRecord(index++)){
 		/** @type {JSFoundSet<db:/stsservoy/associations>} */
-		var rec = resultQ.getRecord(index);
 		usedLicenses += rec.licenses_desktop*1+rec.licenses_mobile*1;
 	}
 	var remaining = parseInt(totalLicenses-usedLicenses);

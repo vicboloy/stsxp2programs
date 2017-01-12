@@ -1523,7 +1523,7 @@ function onActionUpdatePrefs(event) {
 	application.updateUI();
 	//var fs = databaseManager.getFoundSet('stsservoy','preferences2');
 	var user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-	var tenant = globals.secCurrentTenantID;
+	var tenant = globals.session.tenant_uuid;
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/preferences2');
 	fs.result.add(fs.columns.preferences2_id);

@@ -195,7 +195,7 @@ function additionalSaveFunctions(){
 			//newFS.route_code = routeName.replace(/ /g,"");
 			//newFS.status_code = code;
 			newFS.status_description_id = fabShopsList[fabShop];
-			newFS.tenant_uuid = globals.secCurrentTenantID;
+			newFS.tenant_uuid = globals.session.tenant_uuid;
 			newFS.route_order = aCurrentSort[code];
 		}
 	}

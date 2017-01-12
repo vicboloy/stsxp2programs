@@ -11,8 +11,8 @@
 function newRecord(event, location, changeSelection) {
 	var rec = _super.newRecord(event, location, changeSelection);
 	if (typeof edit_date !== "undefined"){edit_date = new Date();}
-	if (typeof tenant_uuid !== "undefined" && tenant_uuid === null && globals.secCurrentTenantID !== undefined){
-		tenant_uuid = globals.secCurrentTenantID;
+	if (typeof tenant_uuid !== "undefined" && tenant_uuid === null && globals.session.tenant_uuid !== undefined){
+		tenant_uuid = globals.session.tenant_uuid;
 	}
 	forms.app_key_details.elements.display_name.requestFocus();
 	return rec;

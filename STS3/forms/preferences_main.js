@@ -40,7 +40,7 @@ function onActionUpdatePrefs(event, prefType) {
 		prefs = scopes.printer;
 	}
 	user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
-	var tenant = globals.secCurrentTenantID;
+	var tenant = globals.session.tenant_uuid;
 	var variable = "";
 	var variableSetting = "";
 	var description = 'Global Preference';
@@ -92,7 +92,7 @@ function onActionUpdatePrefs(event, prefType) {
 		//}
 		
 		//if (saveRec){databaseManager.saveData(rec)}
-		//application.output(index+" = "+prefs[index]+" user_uuid: "+-1+" tenant_uuid "+globals.secCurrentTenantID+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
+		//application.output(index+" = "+prefs[index]+" user_uuid: "+-1+" tenant_uuid "+globals.session.tenant_uuid+" field: "+index+" value: "+prefs[index]+" field type: "+fieldType);
 	}
 	if (databaseManager.saveData()){
 		databaseManager.commitTransaction();

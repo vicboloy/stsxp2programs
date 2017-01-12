@@ -49,7 +49,7 @@ function addNewAddress(event) {
 	}
 	_super.newRecord(event,null,true,true);
 	customer_id = entityId;
-	tenant_uuid = globals.secCurrentTenantID;
+	tenant_uuid = globals.session.tenant_uuid;
 	onActionEdit(event,true);
 }
 

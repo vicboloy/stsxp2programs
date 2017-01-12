@@ -9,7 +9,7 @@
 function newRecord(event) {
 	var newRec = _super.newRecord(event);
 	user_name = "";
-	tenant_uuid = globals.secCurrentTenantID;
+	tenant_uuid = globals.session.tenant_uuid;
 	forms.division_user_detail.startEditing(event);
 	elements.btn_New.enabled = false;
 	return newRec;

@@ -42,7 +42,7 @@ function deleteRecord(event, index) {
 function saveEdits(event, record, stopEdit) {
 	editStatus(false);
 	edit_date = new Date();
-	tenant_uuid = globals.secCurrentTenantID;
+	tenant_uuid = globals.session.tenant_uuid;
 	databaseManager.saveData(foundset);
 	return _super.saveEdits(event, record, stopEdit)
 }
@@ -56,7 +56,7 @@ function saveEdits(event, record, stopEdit) {
  */
 function startEditing(event) {
 	editStatus(true);
-	tenant_uuid = globals.secCurrentTenantID;
+	tenant_uuid = globals.session.tenant_uuid;
 	return _super.startEditing(event)
 }
 

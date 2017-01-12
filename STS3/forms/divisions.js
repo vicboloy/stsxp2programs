@@ -63,7 +63,7 @@ function newRecord(event, location, changeSelection) {
 	//newRec.tenant_group_uuid = globals.secCurrentAssociationMasterID;
 	logic_flag = 0;
 	edit_date = new Date();
-	tenant_uuid = globals.secCurrentTenantID;
+	tenant_uuid = globals.session.tenant_uuid;
 	elements.newEntry.requestFocus();
 	forms.tenant_divisions_m.onEdit(event,true);
 	return newRec;

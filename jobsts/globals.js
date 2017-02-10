@@ -223,6 +223,7 @@ var l = {
 	stationsMultiScan : [], // alow multiple scan for these stations
 	routeDefault : [],	// routeDefault = (status_descriptoin_id.UUID...) all status'
 	assocs : [],		// assocs[index] = (association_name.TXT...)
+	nonOffices : [],	//like assocs
 	stations : [],		// stations[]
 	statusCodes : [],	// statusCodes[]
 	workerList : [],
@@ -1239,6 +1240,9 @@ function getAssociations(){
 		var assocName = record.association_name;
 		if (l.assocs.indexOf(assocName) == -1){
 			l.assocs.push(assocName);
+			if (record.logic_flag != 1){
+				l.nonOffices.push(assocName);
+			}
 		}
 		m.assocs[assocId] = assocName;
 		m.assocs[assocName] = assocId;
@@ -1351,14 +1355,14 @@ function rfF2SwitchPlants(){
 	var thisFunction = thisFuncName(arguments.callee.toString());
 	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
 	if (thisFunction == flagFunction){return}
+	if (l.nonOffices.length == 1){return}
 	flagFunction = thisFunction;
 	var formName = application.getActiveWindow().controller.getName();
 	globals.mobDisableForm(true);
 	// More than one association?
-	if (l.assocs.length == 1){return}
 	var assocNames = [];
-	for (var index = 0;index < l.assocs.length;index++){
-		var assocName = l.assocs[index];
+	for (var index = 0;index < l.nonOffices.length;index++){
+		var assocName = l.nonOffices[index];
 		//if (assocName == currentAssocName){continue}
 		if (assocNames.indexOf(assocName) == -1){
 			assocNames.push(assocName);
@@ -1631,7 +1635,8 @@ function rfF2done(){
 	globals.mobDisableForm(false);
 	forms[formName].elements.elDivisionChg.visible = false;
 	forms[formName].elements.elDivisionChg.enabled = false;
-	forms[formName].setTransShop();
+	setTransShop();
+	//forms[formName].setTransShop();
 	var f2Status = rfStatusCheck(mob.statusCode);
 	if (f2Status == null){
 		forms[formName].statusCode = "";
@@ -2330,7 +2335,7 @@ function rfFunctionKeys(screen){
 	switch( screen )
 	{
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.main')]://'Main':
-			globals.mobForm = "STS_main";
+			globals.mobForm = i18n.getI18NMessage('sts.mobile.main');
 			break;
 		//case i18n.getI18NMessage('')://'rf_transactions':
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.transactions')]://'Transactions':
@@ -2338,6 +2343,7 @@ function rfFunctionKeys(screen){
 		//case i18n.getI18NMessage('')://"Transactions w/Rev's":
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.transactions.w.revs')]://"Transactions w/Rev's2":
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections.w.revs')]://"Transactions w/Rev's2":
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections')]://"Transactions w/Rev's2":
 			globals.mobForm = "rf_transactions";
 			dex = 2;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
@@ -4022,7 +4028,7 @@ function showHelp(){
  */
 function showMain(){
 	var win = application.getActiveWindow();
-	win.show('STS_main');
+	win.show(i18n.getI18NMessage('sts.mobile.main'));
 }
 /**
  * @param message
@@ -4211,14 +4217,14 @@ function showExecLogout(){
 	var formName = win.controller.getName();
 	//logger(true,'Exiting form '+formName);
 	switch (formName){
-		case "STS_main":
+		case i18n.getI18NMessage('sts.mobile.main'):
 			security.logout('STSmobile');
 			return;
 		default:
 			//if (foundset){foundset.clear();}
-			win.show('STS_main');
+			win.show(i18n.getI18NMessage('sts.mobile.main'));
 			//win.hide();
-			rfFunctionKeys('Main');
+			rfFunctionKeys(i18n.getI18NMessage('sts.mobile.main'));//was 'Main'
 	}
 }
 /**
@@ -4231,8 +4237,21 @@ function rfLogout(){
  * @properties={typeid:24,uuid:"07CE6DD4-F0D6-4AC1-9158-6F650E187E75"}
  */
 function rfExitBrowser(){
-	var jsToExecute = "application.quit();";
-	plugins.WebClientUtils.executeClientSideJS(jsToExecute);
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		var jsToExecute = "application.quit();";
+		try {
+			plugins.WebClientUtils.executeClientSideJS(jsToExecute);
+		} catch (e) {}
+	} else {
+		var response = globals.DIALOGS.showQuestionDialog(
+			i18n.getI18NMessage('sts.txt.new.bundle.number'),
+			i18n.getI18NMessage('sts.txt.logout.exit.query'),
+			i18n.getI18NMessage('sts.btn.no'),
+			i18n.getI18NMessage('sts.btn.yes'));
+		if (response == i18n.getI18NMessage('sts.btn.yes')){
+			application.exit();
+		}
+	}
 }
 /**
  * Perform the element default action.
@@ -4622,7 +4641,7 @@ function rfStatusCheck(newStatus){
 	///var statusCode = forms[formName].statusCode;
 	/** @type {Array} */
 	var statusCodes = m.statusCodesDiv[session.associationId];
-	if (statusCodes.indexOf(newStatus) == -1){
+	if (statusCodes && statusCodes.indexOf(newStatus) == -1){
 		return null;
 	}
 	mob.statusCode = newStatus;
@@ -4659,6 +4678,10 @@ function onDataChangeJob(oldValue, newJob, event) {
 	if (onDataChangeFixEntry(oldValue,newJob,event)){return true;}
 	session.userEntry = newJob;
 	var formName = event.getFormName();
+	if (formName != 'rf_mobile_view' && application.getActiveWindow().controller.getName().search(/View|view/) != -1){
+		var instance_form = globals.getInstanceForm(event);
+		formName = formName.replace(instance_form,'_view'+instance_form);
+	}
 	var baseForm = getBaseFormName(null);
 	//application.output('base form '+baseForm);
 	var fieldName = event.getElementName();
@@ -4684,10 +4707,11 @@ function onDataChangeJob(oldValue, newJob, event) {
 	
 	switch (baseForm){
 	case 'piecemark':
+	case 'piecemark_view':
 	case 'piecemark_entry':
 			//getCustomersByJob();
-	/** @type {JSFoundSet<db:/stsservoy/customers>} */
-	var ds = getCustomersByJob();
+			/** @type {JSFoundSet<db:/stsservoy/customers>} */
+			var ds = getCustomersByJob();
 			var custCount = ds.getMaxRowIndex();
 			if (custCount == 1){
 				var provider = forms[formName].elements['customer_number'].getDataProviderID();
@@ -5444,9 +5468,9 @@ function setTransShop(){
 	var win = application.getActiveWindow();
 	var formName = win.controller.getName();
 	if (globals.transShopText[formName] == undefined){
-		globals.transShopText[formName] = forms[formName].elements.transShop.text;
+		globals.transShopText[formName] = session.program;
 	}
-	forms[formName].elements.transShop.text = globals.transShopText[formName]+" "+globals.session.association;
+	forms[formName].viewTitle = session.program+" "+globals.session.association;
 	forms[formName].controller.focusField(session.errorElement,true);
 	//forms[formName].controller.focusField('status',true);
 	//elements.status.requestFocus();
@@ -6977,7 +7001,7 @@ function getCustomersByJob(){
 	j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
 	j.where.add(j.columns.delete_flag.isNull);
 	j.where.add(j.columns.job_number.eq(jobNum));
-	j.where.add(j.columns.association_id.eq(session.associationId));
+	//j.where.add(j.columns.association_id.eq(session.associationId));
 	var J = databaseManager.getFoundSet(j);
 	if (J.getSize() > 0){
 		var index = 1;
@@ -8371,6 +8395,7 @@ function makeFormReadOnly(event,formName,elName){
 				}
 				if (hideButtons.indexOf(el) != -1){
 					forms[formName].elements[el].enabled = false;
+					forms[formName].elements[el].visible = false; // ticket #117
 					if (application.isInDeveloper()){application.output('hiding '+formName+' button '+el)}
 				}
 			}
@@ -8538,14 +8563,20 @@ function isOfficeFunction(event){
 }
 /**
  * @properties={typeid:24,uuid:"D8C7F913-E0FD-4936-BBA0-66A3B9A54944"}
+ * @AllowToRunInFind
  */
 function getI18nWindowName(currWinName){
-	
+	if (application.isInDeveloper()){application.output('window name is '+currWinName.replace("'","%"))}
 	//keep array of windowNames for rfView case selection into english function, etc
 	/** @type {QBSelect<db:/stsservoy/i18n_table>} */
 	var i = databaseManager.createSelect('db:/stsservoy/i18n_table');
 	i.result.add(i.columns.message_key);
-	i.where.add(i.columns.message_value.like(currWinName.replace("'","%")));
+	if (currWinName.search('STS_main') != -1){
+		i.where.add(i.columns.message_key.eq('sts.mobile.main'));
+		i.where.add(i.columns.message_language.isNull);
+	} else {
+		i.where.add(i.columns.message_value.like(currWinName.replace("'","%")));
+	}
 	i.where.add(i.columns.message_key.cast(QUERY_COLUMN_TYPES.TYPE_STRING).like('sts.mobile.%'));
 	var I = databaseManager.getFoundSet(i);
 	/** @type {JSFoundSet<db:/stsservoy/i18n_table>} */

@@ -60,8 +60,8 @@ function onActionTemp(event) {
  * @properties={typeid:24,uuid:"B48A3328-0E53-428C-979D-FE0FA2E98598"}
  */
 function onShow(firstShow, event) {
-	globals.mobForm = "STS_main";
-	globals.mobProg = "Main";
+	globals.mobForm = i18n.getI18NMessage('sts.mobile.main');
+	globals.mobProg = i18n.getI18NMessage('sts.mobile.main');
 	//var licCount = plugins.UserManager.Server().getSettingsProperty('license.0.licenses');
 	//plugins.dialogs.showErrorDialog('Message','License count'+licCount);
 	//globals.rfGetLocalStorage('deviceName'); //JOE DISABLE

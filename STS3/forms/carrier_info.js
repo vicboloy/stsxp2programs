@@ -130,7 +130,10 @@ function onDataChangeCarrierName(oldValue, newValue, event) { //#task03
 	c.where.add(c.columns.carrier_number.eq(newValue));
 	var C = databaseManager.getFoundSet(c);
 	if (C.getSize() > 0){
+		var rec = C.getRecord(1);
 		onActionCancelEditCarrier(event);
+		var idx = foundset.getRecordIndex(rec);
+		foundset.setSelectedIndex(idx); //ticket #118 resolve record still showing and selection
 	}
 	return true;
 }

@@ -51,7 +51,7 @@ function onSolutionOpen(){
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
 	globals.getMenuList();
 	globals.onStartLoadPrefs();
-	globals.rfFunctionKeys("Main");
+	globals.rfFunctionKeys('STS_main');
 	//globals.functionKeyDescrip[0] = " ";
 	// see: http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html for more info
 	// add a job that runs every 20 minutes after the hour (0,20,40)

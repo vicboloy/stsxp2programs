@@ -497,7 +497,7 @@ typeid:7,
 uuid:"B9F2049E-2B08-486E-BAC6-835DF2658C55"
 },
 {
-dataProviderID:"job_number",
+dataProviderID:"jobNumber",
 editable:false,
 location:"78,3",
 tabSeq:-2,

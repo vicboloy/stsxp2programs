@@ -278,7 +278,7 @@ function onShow(firstShow, event) {
 	excludeFS = null; kissDataSheets = []; kissDatasink = null; kissDataSumm = null; kissExcludes = null;
 	var job = scopes.jobs.importJob;
 	if (databaseManager.hasTransaction()){
-		application.output('THERE ARE OPEN TRANSACTIONS');
+		if (application.isInDeveloper()){application.output('THERE ARE OPEN TRANSACTIONS')}
 	}
 	/**var headerLine = [];
 	for (var index=0;index<40;index++){
@@ -295,6 +295,8 @@ function onShow(firstShow, event) {
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.result.add(j.columns.job_id);
+	j.result.add(j.columns.customer_id);
+	j.result.add(j.columns.barcode_form);
 	j.where.add(j.columns.job_number.eq(scopes.jobs.importJob.jobNumber));
 	j.where.add(j.columns.customer_id.eq(scopes.jobs.importJob.customerId));
 	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
@@ -307,6 +309,8 @@ function onShow(firstShow, event) {
 		scopes.jobs.importJob.jobId = jobRec.job_id;
 		scopes.jobs.importJob.bcFormId = jobRec.barcode_form;//#87ticket#87
 	}
+	
+	scopes.jobs.tempGetIdfilesToBarcodeCount(jobRec.job_id);// test tempGetIdfilesToBarcodeCount // example get item record summed count on field
 	
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} 
 	if (foundset.find ()){
@@ -340,6 +344,7 @@ function onShow(firstShow, event) {
 	/** @type {QBSelect<db:/stsservoy/employee>} */
 	var empFS = databaseManager.createSelect('db:/stsservoy/employee');
 	empFS.result.add(empFS.columns.employee_id);
+	empFS.result.add(empFS.columns.employee_number);	
 	empFS.where.add(empFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	empFS.where.add(empFS.columns.delete_flag.isNull);
 	var E = databaseManager.getFoundSet(empFS);
@@ -380,15 +385,15 @@ function onShow(firstShow, event) {
 	//index;
 	///var custRec;
 	controller.enabled = true;
-	headerKissNames['item_quantity']='Total PcMarks Import Qty';
-	headerKissNames['sequence_quantity']='Import Qty';
-	headerKissNames['set_bc_qty']='Marks Full Label';
-	headerKissNames['total_label_qty']='Per Label Marks';
-	headerKissNames['last_bc_qty']='Remaining';
-	headerKissNames['barcode_qty']='Labels Needed';
-	headerKissNames['ext_wt_qty']='Label Weight';
-	headerKissNames['sheet_number']='Sheet';
-	headerKissNames['piecemark']='Piecemark';
+	headerKissNames['item_quantity']=i18n.getI18NMessage('table.kiss.marks.total.import.qty');//'Total PcMarks Import Qty';
+	headerKissNames['sequence_quantity']=i18n.getI18NMessage('table.kiss.sequence.qty');//'Import Qty';
+	headerKissNames['set_bc_qty']=i18n.getI18NMessage('table.kiss.marks.full.label');//'Marks Full Label';
+	headerKissNames['total_label_qty']=i18n.getI18NMessage('table.kiss.per.label.marks');//'Per Label Marks';
+	headerKissNames['last_bc_qty']=i18n.getI18NMessage('table.kiss.per.label.remaining');//'Remaining';
+	headerKissNames['barcode_qty']=i18n.getI18NMessage('table.kiss.labels.needed');//'Labels Needed';
+	headerKissNames['ext_wt_qty']=i18n.getI18NMessage('table.kiss.labels.weight');//'Label Weight';
+	headerKissNames['sheet_number']=i18n.getI18NMessage('table.kiss.sheet.number');//'Sheet';
+	headerKissNames['piecemark']=i18n.getI18NMessage('table.kiss.piecemark');//'Piecemark';
 	defineExclDataset();
 	loadExclSumms();
 	application.updateUI();
@@ -461,6 +466,7 @@ function loadExclSumms() {
 		/** @type {QBSelect<db:/stsservoy/preferences2>} */
 		var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
 		prefsFS.result.add(prefsFS.columns.preferences2_id);
+		prefsFS.result.add(prefsFS.columns.field_value);
 		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 		prefsFS.where.add(prefsFS.columns.user_uuid.eq(uuidGen));
 		prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
@@ -1130,7 +1136,7 @@ function createKISSForm (){	// create table in form
 	//application.output('kissFS '+kissFS.getSize());
 	//var checkForm = solutionModel.newForm('kiss_barcode_request',kissFS.getDataSource(),'sts_one',false,500,tempArray.length*80+10);
 	var checkForm = solutionModel.newForm('kiss_barcode_request',kissDatasource,'sts_one',false,500,tempArray.length*80+10);
-	checkForm.initialSort = 'piecemark asc';
+	checkForm.initialSort = 'material asc';
 	var colOrderPrefs = [];
 	colOrderPrefs =	scopes.jobs.tablePrefsPreLoad('kiss_barcode_request');
 	/** 
@@ -1139,63 +1145,74 @@ function createKISSForm (){	// create table in form
 	 * 				if (!rec.select_hidebool){rend.bgcolor="#daa520"}else{rend.bgcolor="yellow"}
 	 * 		if (changedQuant.indexOf(last) == -1){changedQuant.push(last)}
 	 */
-	checkForm.onRender = checkForm.newMethod('\
-	function onRender(event) {\
-		try {scopes.jobs.onRender2(event);} catch (e) {null;}\
-	}');	
-	var code1 = 'function mySortFunction(){\
-		forms.kiss_option_import.sortIndex(arguments[0]);\
-		if (globals.sortType){\
-			forms.kiss_option_import.transitionFS.sort(globals.numSort);\
-		}else{\
-			forms.kiss_option_import.transitionFS.sort(globals.alphaSort);\
-	}}';
-	checkForm.newMethod(code1);	sortIndex('item_quantity');	globals.sortColumn *= -1;
-	////transitionFS.sort(globals.numSort);
+	checkForm.onRender = checkForm.newMethod('function onRender(event) {\
+		try {scopes.jobs.onRender2(event);} catch (e) {null;}}');	
+	var code1 = 'function mySortFunction(dataP,asc,event){\
+					application.output("test sort output");\
+					forms.kiss_option_import.sortIndex(dataP);\
+					if (globals.sortType){\
+						forms.kiss_option_import.transitionFS.sort(globals.numSort);\
+					}else{\
+						forms.kiss_option_import.transitionFS.sort(globals.alphaSort);\
+					}\
+				}';
+	checkForm.newMethod(code1);
+	sortIndex('piecemark');	
+	globals.sortColumn *= -1;
+	transitionFS.sort(globals.numSort);
 	//checkForm.onSortCmd = checkForm.getMethod('mySortFunction');
+	checkForm.onSortCmd = checkForm.newMethod('function onSortCmd(dataProviderID, asc, event) { application.output("onSortCmd intercepted on " + event.getFormName() + ". data provider: " + dataProviderID + ". asc: " + asc); }');
 	var code = 'function onRecordSelection(event) {var index = controller.getSelectedIndex();}';
 	checkForm.onRecordSelection = checkForm.newMethod(code);
 	checkForm.navigator = SM_DEFAULTS.NONE;
 	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
+	
 	//		quant = item_quantity;\
 	
 	code = 'function onQtyVerify(last,current,event) {\
-		if (current*1<1||Math.floor(current)!=current){\
-		forms.kiss_option_import.errorMessage = i18n.getI18NMessage("sts.txt.label.quantity.entry.incorrect");\
-		return false;\
-		}\
-		var quant = 0;\
-		if (sequence_quantity && current*1>sequence_quantity){return false;}\
-		if (item_quantity && current*1>item_quantity*1){return false;}\
-		if (sequence_quantity&&sequence_quantity != ""){quant = sequence_quantity} else {quant = item_quantity}\
-		if (item_quantity && current*1>item_quantity*1){return false;}\
-		var bcNums = scopes.jobs.createBCnums(current,quant,item_weight);\
-		application.output("current "+current+" quant "+quant+" weight "+item_weight+"\\n bcNums "+bcNums);\
-		for (xitem in bcNums){\
-			application.output("bcNums."+xitem+": "+bcNums[xitem]);\
-		}\
-		set_bc_qty = Math.floor(bcNums.full);\
-		last_bc_qty = Math.floor(bcNums.last);\
-		total_label_qty = bcNums.per;\
-		ext_wt_qty = bcNums.totwt;\
-		if (last_bc_qty<0){return false}\
-		if (piecemark == ""){\
-		  var unique = material+grade+finish+sequence_number;\
-		 } else {\
-		  unique = piecemark+parent_piecemark+sheet_number+grade+finish+sequence_number;\
-		 }\
-		scopes.jobs.importLabelCounts[unique] = current;\
-		;\
-		return true;\
+		return forms.kiss_option_import.verifyImportQuants(last,current,event);\
 	}';
+	/**		if (current*1<1||Math.floor(current)!=current){\
+	forms.kiss_option_import.errorMessage = i18n.getI18NMessage("sts.txt.label.quantity.entry.incorrect");\
+	return false;\
+	}\
+	var quant = 0;\
+	if (sequence_quantity && current*1>sequence_quantity){return false;}\
+	if (item_quantity && current*1>item_quantity*1){return false;}\
+	if (sequence_quantity&&sequence_quantity != ""){quant = sequence_quantity} else {quant = item_quantity}\
+	if (item_quantity && current*1>item_quantity*1){return false;}\
+	var bcNums = scopes.jobs.createBCnums(current,quant,item_weight);\
+	application.output("current "+current+" quant "+quant+" weight "+item_weight+"\\n bcNums "+bcNums);\
+	for (xitem in bcNums){\
+		application.output("bcNums."+xitem+": "+bcNums[xitem]);\
+	}\
+	set_bc_qty = Math.floor(bcNums.full);\
+	last_bc_qty = Math.floor(bcNums.last);\
+	total_label_qty = bcNums.per;\
+	ext_wt_qty = bcNums.totwt;\
+	if (last_bc_qty<0){return false}\
+	if (piecemark == ""){\
+	  var unique = material+grade+finish+sequence_number;\
+	 } else {\
+	  unique = piecemark+parent_piecemark+sheet_number+grade+finish+sequence_number;\
+	 }\
+	scopes.jobs.importLabelCounts[unique] = current;\
+	;\
+	return true;\
+	*/	
 	checkForm.newMethod(code);
 	var last = ""; 
-	var offset = 0;
+	var offset = 0;//stop stop stop
 	for (var index = 0;index < columnNames.length;index++){
-	 	last = checkForm.newLabel(columnNames[index],offset,0,60,20)
+		if (columnNames[index].search(hides) != -1){
+			last = checkForm.newLabel(columnNames[index],offset,0,0,20);
+		} else {
+			last = checkForm.newLabel(columnNames[index],offset,0,60,20);
+		}
+	 	//last.showClick = true;last.enabled = true;last.showFocus=true;
 		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
 	 	last.labelFor=columnNames[index];
-	 	//last.name=columnNames[index]+'_label';
+	 	last.name=columnNames[index]+'_label';
 	 	last.toolTipText = last.labelFor;
 	 	var altColumn = headerKissNames[columnNames[index]];
 	 	if (headerKissNames[columnNames[index]]) {
@@ -1203,6 +1220,7 @@ function createKISSForm (){	// create table in form
 	 	} else if (scopes.jobs.i18nColumnNames[columnNames[index]]){
 	 		last.text = scopes.jobs.i18nColumnNames[columnNames[index]];
 	 	}
+		last.borderType = solutionModel.createLineBorder(1,'#000000');
 	 	offset += 80;
 	}
 	last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
@@ -1223,7 +1241,8 @@ function createKISSForm (){	// create table in form
 				//last.format = '#';
 			}
 		} else {
-			continue
+			last = checkForm.newField(columnNames[index],JSField.TEXT_FIELD,offset,20,60,20);//joejoewas 1
+			// was continue;
 		}
 	 	last.tabSeq = -2;
 		if (columnNames[index].search('weight') != -1){
@@ -1233,6 +1252,7 @@ function createKISSForm (){	// create table in form
 			last.onDataChange = checkForm.getMethod('onQtyVerify');
 			last.tabSeq = 0;
 			last.selectOnEnter = true;
+			last.editable = true;
 		}
 		if (columnNames[index].search('action') != -1){
 			//last.onDataChange = checkForm.getMethod('onQtyVerify');
@@ -1249,7 +1269,6 @@ function createKISSForm (){	// create table in form
 		}
 	}
 	last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
-
 	elements.tabless.addTab('kiss_barcode_request');
 	globals.firstTimeKISS = 0;
 }
@@ -1423,6 +1442,16 @@ function applyResetExclusions(){
  * @SuppressWarnings(wrongparameters)
  */
 function applyShapeSummary(sourceDb,destDb){
+	/** var tables = databaseManager.getTableNames('stsservoy');
+	for (var idxxx = 0;idxxx < tables.length;idxxx++ ){
+		var table = databaseManager.getTable('stsservoy',tables[idxxx]);
+		var tableColumns = table.getColumnNames();
+		for (var idxxx1 = 0;idxxx1 < tableColumns.length; idxxx1++){
+			var tableCol = table.getColumn(tableColumns[idxxx1]);
+			var tableVar = tableCol.getTypeAsString();
+			application.output(tables[idxxx]+'\t'+tableColumns[idxxx1]+'\t'+tableVar);
+		}
+	} */
 	// array of indices for summary records by 'material and length'
 	///var tempTotal=0;
 	var summedArray = [];
@@ -1459,7 +1488,16 @@ function applyShapeSummary(sourceDb,destDb){
 		itemCount = transitionFS.sequence_quantity;
 			///application.output('removing summaries index '+i1+' of '+srcLength+' ; '+descrip+' '+length+' '+grade+' '+finish+' '+itemCount);
 		if (excList.search(shape) != -1){continue} // shape already discarded
-		if (shape && (sumList.search(shape) != -1) && (transitionFS.piecemark != "")){
+		//if (shape && (sumList.search(shape) != -1) && (transitionFS.piecemark != "")){
+		var toBeSummed = false;
+		var sumListing = sumList.split(' ');
+		var sumIdx = 0;
+		while (sumIdx++ <= sumListing.length){
+			toBeSummed = (shape && (shape.search(' '+sumListing[sumIdx]+' ') != -1));
+			if (toBeSummed){break}
+		}
+		if (shape && toBeSummed && (transitionFS.piecemark != "")){
+			//if (shape && (shape.search(sumList) != -1) && (transitionFS.piecemark != "")){
 			if (!itemCount || itemCount == ""){itemCount = transitionFS.item_quantity}
 			summaryItem = descrip+grade+finish;
 			if (summaryItem in summedArray){
@@ -1467,6 +1505,7 @@ function applyShapeSummary(sourceDb,destDb){
 				var oldQuant =  forms.kiss_barcode_request.item_quantity;//transitionFS.getValue(i1,fieldOrderTempTable['item_quantity']+1);
 				var newQuant = itemCount*1+oldQuant*1;
 				forms.kiss_barcode_request.item_quantity = newQuant;
+				forms.kiss_barcode_request.sequence_quantity = newQuant;
 			} else {
 				summedArray[summaryItem] = transitionFS.getRowAsArray(i1);
 				for (var j=0;j<summedArray[summaryItem].length;j++){
@@ -1843,4 +1882,47 @@ function saveDetailRow2(){
 		sequenceArr = []; // sequences no longer apply for the next record
 		exitSequence = false;
 	}
+}
+/**
+ * @param last
+ * @param current
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"A682A513-CF73-44E7-A792-1BD6C1427D2A"}
+ */
+function verifyImportQuants(last,current,event){
+	/** @type {JSRecord<{sheet_number:String,parent_piecemark:String,sequence_number:Number,finish:String,grade:String,material:String,piecemark:String,ext_wt_qty:Number,total_label_qty:Number,last_bc_qty:Number,set_bc_qty:Number,item_weight:Number,item_quantity:Number,sequence_quantity:Number}>} */
+	var rec = forms[event.getFormName()].foundset.getSelectedRecord();
+	if (current*1<1||Math.floor(current)!=current){
+		forms.kiss_option_import.errorMessage = i18n.getI18NMessage("sts.txt.label.quantity.entry.incorrect");
+		return false;
+	}
+	var quant = 0;
+	if (rec.sequence_quantity && current*1>rec.sequence_quantity){return false;}
+	if (rec.item_quantity && current*1>rec.item_quantity*1){return false;}
+	if (rec.sequence_quantity&&rec.sequence_quantity != ""){
+		quant = rec.sequence_quantity
+	} else {
+		quant = rec.item_quantity
+	}
+	if (rec.item_quantity && current*1>rec.item_quantity*1){return false;}
+	var bcNums = scopes.jobs.createBCnums(current,quant,rec.item_weight);
+	if (application.isInDeveloper()){
+		application.output("current "+current+" quant "+quant+" weight "+rec.item_weight+"\\n bcNums "+bcNums)
+		for (var xitem in bcNums){
+			application.output("bcNums."+xitem+": "+bcNums[xitem]);
+		}
+	}
+	rec.set_bc_qty = Math.floor(bcNums.full);
+	rec.last_bc_qty = Math.floor(bcNums.last);
+	rec.total_label_qty = bcNums.per;
+	rec.ext_wt_qty = bcNums.totwt;
+	if (rec.last_bc_qty<0){return false}
+	if (rec.piecemark == ""){
+	 	var unique = rec.material+rec.grade+rec.finish+rec.sequence_number;
+	} else {
+		unique = rec.piecemark+rec.parent_piecemark+rec.sheet_number+rec.grade+rec.finish+rec.sequence_number;
+	}
+	scopes.jobs.importLabelCounts[unique] = current;
+	return true;
 }

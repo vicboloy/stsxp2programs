@@ -50,15 +50,19 @@ function fileReceipt(file){
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var jobsFS = databaseManager.createSelect('db:/stsservoy/jobs');
 	jobsFS.result.add(jobsFS.columns.job_id);
+	jobsFS.result.add(jobsFS.columns.customer_id);
+	jobsFS.result.add(jobsFS.columns.job_number);
 	jobsFS.where.add(jobsFS.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
 	jobsFS.where.add(jobsFS.columns.job_number.eq(jobNumber));
 	var JFS = databaseManager.getFoundSet(jobsFS);
 	var count = JFS.getSize();
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var rec = null;
 	if (count > 0){
 		if (count > 1){
 			//application.output('>>> jobs '+count);
 			for (var index2 = 1;index2 <= count;index2++){
-				var rec = JFS.getRecord(index2);
+				rec = JFS.getRecord(index2);
 				custIds.push(rec.customer_id);
 				jobIds.push(rec.job_id);
 				custNums.push(rec.st2_jobs_to_customers.customer_number);
@@ -71,6 +75,7 @@ function fileReceipt(file){
 			return;
 		}
 		//scopes.globals.kissJobRf = jobsFS.getRecord(1).rf_interface;//save rf interface to show/noshow buttons
+		/** @type {JSRecord<db:/stsservoy/jobs>} */
 		rec = JFS.getRecord(1);
 		job.customerId = rec.customer_id;
 		var custRec = rec.sts_job_to_customer2;
@@ -79,7 +84,7 @@ function fileReceipt(file){
 			!custRec.barcode_include_prefix || 
 			!custRec.barcode_job_length ||
 			custRec.barcode_prefix.length != 2){
-			var errMsg = i18n.getI18NMessage('sts.txt.barcode.incomplete.msg').replace('XXX',rec.customer_number);
+			var errMsg = i18n.getI18NMessage('sts.txt.barcode.incomplete.msg').replace('XXX',custRec.customer_number);
 			plugins.dialogs.showErrorDialog('STS ERROR: Customer barcode incomplete.',errMsg);
 			return;
 		}

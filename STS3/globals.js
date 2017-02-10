@@ -196,15 +196,19 @@ var aLaborCodes = [];
  * @properties={typeid:24,uuid:"C8E73EE3-0C3E-484C-ADE7-ECF0D06813E7"}
  */
 function doLogout(event) {
-	globals.doDialog('Exit Steel Tracking System','Exit STS program?','Exit','Cancel');
+	globals.doDialog(i18n.getI18NMessage('sts.txt.logout.exit'),
+		i18n.getI18NMessage('sts.txt.logout.exit.query'),
+		i18n.getI18NMessage('sts.btn.yes'),
+		i18n.getI18NMessage('sts.btn.cancel')
+		); // ticket #119 //'Exit Steel Tracking System','Exit STS program?','Exit','Cancel');
 	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT) {
 			application.showURL("http://" + application.getHostName() + "/webclient.html", "_top");
-		}	    	  
-	} else {
-		globals.secLogout('STS3','','');
+		} else {
+			globals.secLogout('STS3','','');
+		}
+		security.logout();
 	}
-	security.logout();
 }
 /**
  * @properties={typeid:24,uuid:"5F61D7B0-929D-4EF0-A151-60BA15B93690"}

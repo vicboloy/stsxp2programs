@@ -211,15 +211,27 @@ function onHide(event) {
  */
 function onActionRefreshTable(event) {
 	var versionForm = globals.getInstanceForm(event);
-	///var formName = event.getFormName();
+	var formName = event.getFormName();
+	forms[formName+'_table'].controller.getWindow().hide();
+	scopes.jobs.removeFormHist(formName+'_table');
+	forms[formName.replace('pcmk_combo','criteria')].collectAndBrowse();
 	///application.output('checking'+event);
-	var args = [];
+	//var args = [];
 	//args.push(scopes.jobs.browseJobID);
 	//var fs = databaseManager.getFoundSet(forms.loads_pcmk_combo_table.controller.getDataSource());
-	scopes.jobs.browseFS2[versionForm] = databaseManager.getDataSetByQuery('stsservoy', scopes.jobs.dsQuery[versionForm], args , -1);
-	scopes.jobs.viewBTableRemoveColumnArray();
-	scopes.jobs.viewBTableRemoveRows();
-	scopes.jobs.browseDatasource = scopes.jobs.browseFS[versionForm].createDataSource('loads_pcmk_combo_browse',scopes.jobs.browseArray);
+	/** {String} */
+	var dsName = 'tableDS';
+	var newDsName = dsName; var count = 1;
+	
+	while (databaseManager.dataSourceExists('mem:'+newDsName)){
+		newDsName = dsName+count++;
+	}
+	/** @type {QBSelect<>} */
+	///var query = scopes.jobs.dsQuerySave[formName];
+	///scopes.jobs.browseFS2[formName] = databaseManager.createDataSourceByQuery(newDsName, query, -1);
+	//scopes.jobs.viewBTableRemoveColumnArray();
+	//scopes.jobs.viewBTableRemoveRows();
+	//scopes.jobs.browseDatasource = scopes.jobs.browseFS2[formName].createDataSource('loads_pcmk_combo_browse',scopes.jobs.browseArray);
 
 	
 	//scopes.jobs.browseDatasource = scopes.jobs.dsBrowse.createDataSource('browsing',scopes.jobs.browseArray);

@@ -1520,6 +1520,7 @@ function onActionUpdatePrefs(event) {
 		description = "Global Printer";
 		forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
 	}
+	scopes.jobs.warningsYes();
 	application.updateUI();
 	//var fs = databaseManager.getFoundSet('stsservoy','preferences2');
 	var user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
@@ -1530,32 +1531,35 @@ function onActionUpdatePrefs(event) {
 	fs.where.add(fs.columns.user_uuid.eq(user_uuid));
 	fs.where.add(fs.columns.tenant_uuid.eq(tenant));
 	var FS = databaseManager.getFoundSet(fs);
-	var variable = "";
-	var variableSetting = "";
-	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
+	var fldDescrip = []; var fldValue = [];var fldType = [];var fldName = [];
+	var fsIndex = 1;
+	/** @type {JSRecord<db:/stsservoy/preferences2>} */
 	var rec = null;
+	while (rec = FS.getRecord(fsIndex)){
+		fldName[rec.field_name] = fsIndex;
+		
+		fldDescrip[fsIndex] = rec.value_description;
+		fldValue[fsIndex] = rec.field_value;
+		fldType[fsIndex] = rec.field_type;
+		fsIndex++;
+	}
+	var variableX = "";
+	var variableSetting = "";
 	databaseManager.startTransaction();
-	for (var index in prefs){
-		variable = index;
-		variableSetting = prefs[index];
+	for (variableX in prefs){
+		scopes.jobs.warningsMessage('sts.txt.saving.preferences',true);
+		//variableX = index;
+		variableSetting = prefs[variableX];
 		var variableType = typeof(variableSetting);
 		if (variableType === 'function'){continue}
 		//var fieldType = typeof(prefs[index]);
 		variableSetting +="";
-		var fsIndex = 1;var foundIt = false;
-		while (rec = FS.getRecord(fsIndex++)){
-			if (rec.field_name == variable){foundIt = true;break}
-		}
-			//fs.field_name = variable;
-		if (foundIt){
-			//rec = fs.getRecord(1);
-			if (rec.field_value != variableSetting){
+		if (fldName[variableX]){
+			fsIndex = fldName[variableX];
+			if (fldValue[fsIndex] != variableSetting){
+				rec = FS.getRecord(fsIndex);
 				rec.field_value = variableSetting;
-			}
-			if (rec.value_description != description){
 				rec.value_description = description;
-			}
-			if (rec.field_type != variableType){
 				rec.field_type = variableType;
 			}
 		} else {
@@ -1567,7 +1571,7 @@ function onActionUpdatePrefs(event) {
 				rec.user_uuid = user_uuid;
 			}
 			rec.tenant_uuid = tenant;
-			rec.field_name = variable;
+			rec.field_name = variableX;
 			rec.field_value = variableSetting;
 			rec.field_type = variableType;
 			rec.value_description = description;
@@ -1584,6 +1588,7 @@ function onActionUpdatePrefs(event) {
 	setPrefsClean(event,prefType);
 	globals.onActionCancelButton(event);
 	application.updateUI();
+	scopes.jobs.warningsX();
 }
 /**
  * @properties={typeid:24,uuid:"FAFD3720-4D08-4BE2-A2F6-BCAE870935A0"}

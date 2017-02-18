@@ -224,6 +224,7 @@ function deleteRecord(event, index) {
 	u.result.add(u.columns.user_uuid);
 	u.where.add(u.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
 	u.where.add(u.columns.association_uuid.eq(association_uuid));
+	u.where.add(u.columns.delete_flag.isNull);
 	var U = databaseManager.getFoundSet(u);
 	if (U.getSize() != 0){
 		globals.errorDialogMobile(event,'1071','',''); //1071, record has data. will not be deleted.
@@ -234,6 +235,7 @@ function deleteRecord(event, index) {
 	s.result.add(s.columns.status_description_id);
 	s.where.add(s.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
 	s.where.add(s.columns.association_id.eq(association_uuid));
+	s.where.add(s.columns.delete_flag.isNull);
 	var S = databaseManager.getFoundSet(s);
 	if (S.getSize() != 0){
 		globals.errorDialogMobile(event,'1071','',''); //1071, record has data. will not be deleted.

@@ -109,6 +109,7 @@ function onActionDelete(event,itemDescription) {
 		delete_flag = 99;
 		edit_date = new Date();
 		databaseManager.saveData(foundset.getRecord(controller.getSelectedIndex()));
+		getStatusList();
 	}
 }
 
@@ -203,6 +204,7 @@ function onActionSaveEdit(event) {
 	}
 	onEdit(event,false);
 	databaseManager.saveData(foundset);
+	getStatusList();
 	//forms.status_description_lst.foundset.loadRecords();
 	//databaseManager.setAutoSave(true);
 }
@@ -466,6 +468,7 @@ function onRecordSelection(event, buttonTextSrc) {
  * @properties={typeid:24,uuid:"0E93FB09-7337-4A7E-BE4F-8B5B6DA9DE2A"}
  */
 function onFocusGainedFabShop(event) {
+	getFabShops(event);
 }
 
 /**
@@ -504,7 +507,10 @@ function getFabShops(event){
 	a.result.add(a.columns.association_uuid);
 	a.where.add(a.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	a.where.add(a.columns.delete_flag.isNull);
-	a.where.add(a.columns.logic_flag.isNull);
+	a.where.add(a.or
+				.add(a.columns.logic_flag.isNull)
+				.add(a.columns.logic_flag.eq(0))
+				);
 	var A = databaseManager.getFoundSet(a);
 	
 	var assocID = [];

@@ -259,7 +259,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"718BC3DA-0399-48C1-B30B-4F89819F2C79"}
  */
 function onRecordSelection(event) {
-	if (!address_type){
+	if (!address_type && editAddressFlag){
 		elements.address_type.requestFocus();
 	}
 	return _super.onRecordSelection(event)

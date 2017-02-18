@@ -155,6 +155,10 @@ function onShow(firstShow, event) {
 		application.output('web app alert 2 '+alert);
 		//plugins.WebClientUtils.executeClientSideJS('localStorage.MainWin = window.self;alert("win "+window.self);');
 	}
+	var win = controller.getWindow();//ticket #128 add user login to base title
+	var title = win.title;
+	title = i18n.getI18NMessage('sts.txt.name.app.desktop') + ' (' + globals.session.login + ' - ' + globals.session.fullName + ', ' + i18n.getI18NMessage('sts.label.division')+ ' ' + globals.session.association +')';
+	win.title = title;
 	elements.split.rightFormMinSize = 40;
 	elements.split.dividerLocation = 0.80;
 

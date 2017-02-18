@@ -1,4 +1,10 @@
 borderType:"LineBorder,1,#000000",
+customProperties:"methods:{\
+onSortCmdMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/users",
 extendsID:"66E5E134-B5C4-43B3-B810-281E2BFF03C1",
 items:[
@@ -126,6 +132,7 @@ uuid:"FF2206C2-7E5E-4CCF-95A1-5F0145EBC166"
 }
 ],
 name:"division_users",
+onSortCmdMethodID:"0",
 scrollbars:32,
 size:"150,352",
 styleName:"sts_one",

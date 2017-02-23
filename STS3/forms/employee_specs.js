@@ -70,6 +70,21 @@ function onActionEdit(event, editStatus) {
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Edit.visible = !editStatus;
 	forms["employees_rec"+formRev].controller.enabled = !editStatus;
+	forms['employees_rec'+formRev].elements.btn_New.visible = !editStatus;
+	if (!editStatus && forms['employees_rec'+formRev].currentRecord){
+		forms['employees_rec'+formRev].refreshUsers(event);
+		var empId = forms['employees_rec'+formRev].currentRecord.employee_id;
+		var fs = forms['employees_lstB'+formRev].foundset;
+		for (var idx = 1;idx <= fs.getSize();idx++){
+			var rec = fs.getRecord(idx);
+			if (rec.employee_id.toString() == empId){
+				fs.setSelectedIndex(idx);
+				break;
+			}
+		}
+	}
+	forms['employees_rec'+formRev].currentRecord = foundset.getSelectedRecord();
+	
 	databaseManager.setAutoSave(false);
 }
 
@@ -120,17 +135,30 @@ function delRecord(event) {
 	//var formSplit = win.controller.getName().split("_");
 	//var formRev = formSplit[formSplit.length-1];
 
+	var rec = foundset.getSelectedRecord();
+	var okayDelete = globals.checkEmployeeDelete(event,rec);
+	if (!okayDelete){
+		scopes.globals.errorDialogMobile(event,'1071',null,null);
+		return;
+	}
 	globals.doDialog(i18n.getI18NMessage('sts.txt.remove.employee'),
 			i18n.getI18NMessage('sts.txt.delete.this.employee'),
 			i18n.getI18NMessage('sts.btn.remove'),
 			i18n.getI18NMessage('sts.btn.cancel'));
 	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		try {
-		controller.deleteRecord(); } catch (e) {}
+			delete_flag = 99;
+			edit_date = new Date();
+			var rec = foundset.getSelectedRecord();
+			databaseManager.saveData(rec);
+		//controller.deleteRecord(); 
+		} catch (e) {}
 		//var sortOrder = foundset.getCurrentSort();
 		//forms["employees_lst_"+formRev].foundset.sort(sortOrder);
 		//forms["employee_specs_"+formRev].foundset.sort(sortOrder);
 	}
+	scopes.jobs.createEmpAssocList(event);
+	onActionEdit(event,false);
 }
 
 /**

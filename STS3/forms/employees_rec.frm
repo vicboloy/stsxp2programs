@@ -13,7 +13,6 @@ items:[
 {
 containsFormID:"484358F8-036B-4052-8F9F-A7E48FDA886B",
 location:"20,65",
-relationName:"sts_employee_container",
 text:"employees_lst",
 typeid:15,
 uuid:"1B6DF221-4D24-4D19-A668-CE50870B2649"
@@ -57,7 +56,8 @@ visible:false
 ],
 name:"employees_rec",
 navigatorID:"-1",
-onShowMethodID:"-1",
+onHideMethodID:"57F51106-71C8-4F97-A3EF-6BE9C14DA5F6",
+onShowMethodID:"DF5ADCC5-1B09-4773-9D0C-0350BA5ECDE1",
 scrollbars:32,
 size:"215,337",
 styleName:"sts_one",

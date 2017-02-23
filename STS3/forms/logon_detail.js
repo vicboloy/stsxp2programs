@@ -73,7 +73,7 @@ function refreshUsers(){
 		}		
 	}
 	
-	userNames.sort();
+	//userNames.sort();
 	application.setValueListItems('stsvlg_userNames',userNames);
 }
 /**
@@ -86,23 +86,22 @@ function refreshUsers(){
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+		onEdit(true);
+	}
 	
 	var win = application.getActiveWindow();
 	var formName = win.controller.getName();
 	if (forms[formName].formFunc){
 		if (application.isInDeveloper()){application.output('form '+forms[formName].formFunc)}
-		elements.btn_Disconnect.visible = (forms[formName].formFunc != "CreateLogin" && forms[formName].employee_id != null);
+		elements.btn_Disconnect.visible = (!controller.readOnly && forms[formName].formFunc != "CreateLogin" && forms[formName].employee_id != null);
 		/** @type {QBSelect<db:/stsservoy/users>} */
 		var localFS = databaseManager.createSelect('db:/stsservoy/users');
 		localFS.where.add(localFS.columns.employee_id.eq(forms[formName].employee_id));
 		var resultLocalFS = databaseManager.getFoundSet(localFS);
-		if (resultLocalFS.getSize() != 0){
-		   //foundset.loadRecords(localFS);
-		   elements.btn_Disconnect.visible = (forms[formName].formFunc != "CreateLogin" && forms[formName].employee_id != null && user_name != "P"); // protect admin account
-		}
-	} else {
-		updateFields(event);
-	}
+	} //else {
+	//	updateFields(event);
+	//}
 	updateFields(event);
 	refreshUsers(); // show usernames with null employee_id in users table and current employee_id
 	return _super.onShow(firstShow, event)
@@ -142,13 +141,14 @@ function onDataChangeUserName(oldValue, newValue, event) {
 			user_uuid = user_uuid;
 			rec.employee_id = employee_id;
 			rec.association_uuid = assoc;
-			elements.btn_Disconnect.visible = true;
+			elements.btn_Disconnect.visible = (!controller.readOnly == true);
 			databaseManager.saveData(rec);
 			if (newRec){foundset.deleteRecord(newRec)} //created upon new record
 		} else {
 			var mainFormName = application.getActiveWindow().controller.getName();
 			user_name = newValue;
 			forms[mainFormName].onActionCancelEdit(event);//accept here iff it is a readonly
+			elements.btn_Disconnect.visible = false;
 		}
 		return true;
 	}
@@ -168,9 +168,9 @@ function onDataChangeUserName(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"3EE95260-0591-4998-94B5-17D7815153C6"}
  */
 function onRecordSelection(event) {
-	if (foundset.getSize() != 0){
+	if (foundset.getSize() != 0 && (employee_id && user_name && user_name != "P")){
 		/** @type {Boolean} */
-		var visButton = ((employee_id && employee_id != null) || (employee_id && name_first && name_first != "P"));  // protect admin account
+		var visButton = (employee_id && employee_id != null);
 		if (visButton == null){visButton = false}
 		elements.btn_Disconnect.visible = visButton;
 		if (user_uuid){
@@ -179,7 +179,10 @@ function onRecordSelection(event) {
 			assoc = "";
 		}
 		updateFields(event);
+	} else {  // protect admin account
+		elements.btn_Disconnect.visible = false;
 	}
+	elements.btn_Disconnect.enabled = (!controller.readOnly);
 	return _super.onRecordSelection(event)
 }
 /**
@@ -307,6 +310,7 @@ function onActionDisconnect(event) {
 function onActionEdit(event,editing){
 	controller.readOnly = !editing;
 	elements.editMessage.visible = editing;
+	onEdit(editing);
 }
 /**
  * Handle changed data.
@@ -344,4 +348,5 @@ function onEdit(editing){
 	if (editing && employee_id){
 		employeeID = employee_id;
 	}
+	elements.btn_Disconnect.enabled = (editing);
 }

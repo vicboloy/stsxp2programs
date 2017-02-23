@@ -7,7 +7,7 @@ parameters:null\
 dataSource:"db:/stsservoy/status_description",
 encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
-initialSort:"status_sequence asc",
+initialSort:"status_sequence asc, status_code asc",
 items:[
 {
 anchors:11,
@@ -75,6 +75,12 @@ typeid:4,
 uuid:"A2D540A4-BABA-4499-A830-2915C1ACEB2A"
 },
 {
+extendsID:"309DAEC2-F9E3-4DBF-8718-0884B5FE1FBF",
+height:62,
+typeid:19,
+uuid:"A7A396C0-F01A-4908-A69E-2FEEDEA3C0C9"
+},
+{
 anchors:11,
 dataProviderID:"status_code",
 editable:false,
@@ -90,6 +96,8 @@ name:"status_description_lst",
 navigatorID:"-1",
 onNewRecordCmdMethodID:"0",
 onRecordSelectionMethodID:"514DDB1A-4603-4296-9EDC-E58AC014716D",
+scrollbars:32,
+showInMenu:false,
 size:"191,404",
 styleName:"sts_one",
 typeid:3,

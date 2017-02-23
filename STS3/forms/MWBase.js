@@ -562,7 +562,7 @@ function onActionClickEP(event) {
  * @properties={typeid:24,uuid:"B5B3AFA8-95D7-49CD-AB3E-256306625504"}
  */
 function onActionClickSC(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.status.codes'),'status_descriptions',50,50,745,515,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.status.codes'),'status_descriptions',50,50,915,530,false);
 }
 /**
  * @param event

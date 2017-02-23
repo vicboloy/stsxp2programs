@@ -40,7 +40,20 @@ function onDataChange(oldValue, newValue, event) {
 	record = E.getRecord(1);
 	foundset.sts_employee_container.loadRecords();
 	foundset.setSelectedIndex(foundset.getRecordIndex(record));
-	
+
+	var instance = scopes.globals.getInstanceForm(event);
+	var rec = foundset.getSelectedRecord();
+	if (!rec){return}
+	var empId = rec.employee_id.toString();
+	var fs = forms['employees_lstB'+instance].foundset;
+	for (var idx = 1;idx <= fs.getSize();idx++){
+		var rec = fs.getRecord(idx);
+		if (rec.employee_id.toString() == empId){
+			fs.setSelectedIndex(idx);
+			break;
+		}
+	}
+
 	return true;
 }
 /**

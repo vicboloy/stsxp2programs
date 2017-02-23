@@ -139,51 +139,51 @@ var aTrackWindows = ['STS - Main'];
  */
 function initStatusTypes(){
 	if (aStatusTypes.length == 0){
-		aStatusTypes.push('None');
-		aStatusTypes.push('Fab Raw Received');
-		aStatusTypes.push('Fab Receive');
-		aStatusTypes.push('Fab Cut');
-		aStatusTypes.push('Fab Beam Line');
-		aStatusTypes.push('Fab Blased');
-		aStatusTypes.push('Fab Drilled');
-		aStatusTypes.push('Fab Layout');
-		aStatusTypes.push('Fab Fitup');
-		aStatusTypes.push('Fab Welded');
-		aStatusTypes.push('Fab 1stInspect');
-		aStatusTypes.push('Fab 2ndInspect');
-		aStatusTypes.push('Fab 3rdInspect');
-		aStatusTypes.push('Fab 4thInspect');
-		aStatusTypes.push('Fab Inspected');
-		aStatusTypes.push('Fab Fabricated');
-		aStatusTypes.push('Fab Paint');
-		aStatusTypes.push('Fab Bundled');
-		aStatusTypes.push('Fab Move');
-		aStatusTypes.push('Fab Transfer');
-		aStatusTypes.push('Fab Loading');
-		aStatusTypes.push('Fab Loaded');
-		aStatusTypes.push('Fab LoadVerify');
-		aStatusTypes.push('Fab Ship');
-		aStatusTypes.push('Galvanizer Received');
-		aStatusTypes.push('Galvanizer Shipped');
-		aStatusTypes.push('Galvan LoadVerify');
-		aStatusTypes.push('Painter Received');
-		aStatusTypes.push('Painter Shipped');
-		aStatusTypes.push('Paint LoadVerify');
-		aStatusTypes.push('FireProofer Received');
-		aStatusTypes.push('FireProofer Shipped');
-		aStatusTypes.push('FireProof LoadVerify');
-		aStatusTypes.push('Other Received');
-		aStatusTypes.push('Other Shipped');
-		aStatusTypes.push('Other LoadVerify');
-		aStatusTypes.push('Jobsite Received');
-		aStatusTypes.push('Jobsite Shipped');
-		aStatusTypes.push('Jobsite LoadVerify');
-		aStatusTypes.push('Jobsite Inspected');
-		aStatusTypes.push('Jobsite Painted');
-		aStatusTypes.push('Jobsite Field Work');
-		aStatusTypes.push('Jobsite Move');
-		aStatusTypes.push('Jobsite Issued');
-		aStatusTypes.push('Jobsite Erected');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.none'));//'None');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.raw.received'));//Fab Raw Received');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.receive'));//'Fab Receive');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.cut'));//'Fab Cut');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.beam.line'));//'Fab Beam Line');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.blasted'));//'Fab Blased');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.drilled'));//'Fab Drilled');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.layout'));//'Fab Layout');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.fitup'));//'Fab Fitup');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.weldup'));//'Fab Welded');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.1stinspect'));//'Fab 1stInspect');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.2ndinspect'));//'Fab 2ndInspect');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.3rdinspect'));//'Fab 3rdInspect');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.4thinspect'));//'Fab 4thInspect');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.inspected'));//'Fab Inspected');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.fabricated'));//'Fab Fabricated');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.painted'));//'Fab Paint');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.bundled'));//'Fab Bundled');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.move'));//'Fab Move');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.transfer'));//'Fab Transfer');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.loading'));//'Fab Loading');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.loaded'));//'Fab Loaded');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.loadverify'));//'Fab LoadVerify');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fab.ship'));//'Fab Ship');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.galavanizer.received'));//'Galvanizer Received');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.galavanizer.shipped'));//'Galvanizer Shipped');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.galavanizer.loadverify'));//'Galvan LoadVerify');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.painter.received'));//'Painter Received');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.painter.shipped'));//'Painter Shipped');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.painter.loadverify'));//'Paint LoadVerify');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fireproofer.received'));//'FireProofer Received');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fireproofer.shipped'));//'FireProofer Shipped');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.fireproofer.loadverify'));//'FireProof LoadVerify');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.other.received'));//'Other Received');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.other.shipped'));//'Other Shipped');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.other.loadverify'));//'Other LoadVerify');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.received'));//'Jobsite Received');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.shipped'));//'Jobsite Shipped');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.loadverify'));//'Jobsite LoadVerify');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.inspected'));//'Jobsite Inspected');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.painted'));//'Jobsite Painted');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.field.work'));//'Jobsite Field Work');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.move'));//'Jobsite Move');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.issued'));//'Jobsite Issued');
+		aStatusTypes.push(i18n.getI18NMessage('sts.status.jobsite.erected'));//'Jobsite Erected');
 	}
 }
 /**
@@ -1704,4 +1704,36 @@ function getAssocCorporate(assocId){
 		return false;
 	}
 	
+}
+/**
+ * @param {JSEvent} event
+ * @param {JSRecord} record
+ * 
+ * Return true if deletable emmployee_id
+ * @properties={typeid:24,uuid:"656EE83D-AAB6-41C9-9C99-56174C76274D"}
+ */
+function checkEmployeeDelete(event,record){
+	// see transactions and  users, return true if deletable
+	var okayToDelete = false;
+	var employeeId = record.employee_id;
+	/** @type {QBSelect<db:/stsservoy/users>} */
+	var ee = databaseManager.createSelect('db:/stsservoy/users');
+	ee.result.add(ee.columns.employee_id);
+	ee.where.add(ee.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	ee.where.add(ee.columns.delete_flag.isNull);
+	ee.where.add(ee.columns.employee_id.eq(employeeId));
+	var EE = databaseManager.getFoundSet(ee);
+	if (EE.getSize() == 0){
+		/** @type {QBSelect<db:/stsservoy/transactions>} */
+		var tr = databaseManager.createSelect('db:/stsservoy/transactions');
+		tr.result.add(tr.columns.trans_id);
+		tr.where.add(tr.columns.employee_id.eq(employeeId));
+		tr.where.add(tr.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		tr.where.add(tr.columns.delete_flag.isNull);
+		var TR = databaseManager.getFoundSet(tr);
+		if (TR.getSize() == 0){
+			return true;
+		}
+	}
+	return false;
 }

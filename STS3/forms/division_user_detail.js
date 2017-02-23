@@ -15,11 +15,11 @@ var populatedEmployees = [];
  */
 var association = "";
 /**
- * @type {Number}
+ * @type {String}
  *
- * @properties={typeid:35,uuid:"B20E308D-70AB-48EE-896D-7282640446CF",variableType:4}
+ * @properties={typeid:35,uuid:"B20E308D-70AB-48EE-896D-7282640446CF"}
  */
-var isAdminAccount = 0;
+var isAdminAccount = "";
 /**
  * @properties={typeid:24,uuid:"ABA5AEB5-9EA0-4D10-BAE9-AB3561481EEA"}
  * @SuppressWarnings(wrongparameters)
@@ -96,7 +96,7 @@ function onShow(firstShow, event) {
 	association = "";
 	getEmployees();
 	updateFields(event);
-	return _super.onShow(firstShow, event)
+	//return _super.onShow(firstShow, event)
 }
 
 /**
@@ -127,10 +127,10 @@ function onRecordSelection(event) {
 	var a = databaseManager.getFoundSet(assoc);
 	if (a.getSize() != 0){
 		var rec = a.getRecord(1);
-		isAdminAccount = rec.logic_flag;
+		isAdminAccount = (rec.logic_flag == 1) ? i18n.getI18NMessage('sts.txt.login.administrative') : i18n.getI18NMessage('sts.txt.login.shop');
 	}
 	updateFields(event);
-	return _super.onRecordSelection(event)
+	//return _super.onRecordSelection(event)
 }
 
 /**
@@ -199,7 +199,7 @@ function onEdit(event,editing){
 function startEditing(event) {
 	getEmployees();
 	onEdit(event,true);
-	return _super.startEditing(event)
+	//return _super.startEditing(event)
 }
 
 /**
@@ -212,7 +212,7 @@ function startEditing(event) {
 function stopEditing(event) {
 	databaseManager.revertEditedRecords(foundset);
 	onEdit(event,false);
-	return _super.stopEditing(event)
+	//return _super.stopEditing(event)
 }
 
 /**
@@ -244,7 +244,7 @@ function saveEdits(event, record, stopEdit) {
 	}
 	getEmployees();
 	stopEditing(event);
-	return _super.saveEdits(event, record, stopEdit)
+	//return _super.saveEdits(event, record, stopEdit)
 }
 
 /**
@@ -260,7 +260,7 @@ function onHide(event) {
 	databaseManager.revertEditedRecords(foundset);
 	onEdit(event,false);
 	forms.division_users.elements.btn_New.enabled = true;
-	return _super.onHide(event);
+	//return _super.onHide(event);
 }
 
 /**
@@ -312,4 +312,20 @@ function updateFields(event){
  */
 function updatePassword(event,oldValue,newValue){
 	elements.btn_Password.enabled = (newValue != "");
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"23BD5D49-3E45-4F3C-8F9B-698E95D75634"}
+ */
+function onDataChangeAccountType(oldValue, newValue, event) {
+	oldValue = newValue;
+	return true
 }

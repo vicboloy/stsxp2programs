@@ -7577,7 +7577,7 @@ function onDataChangeAssociation(oldValue, newValue, event) {
 		var a = databaseManager.getFoundSet(assoc);
 		/** @type {JSRecord<db:/stsservoy/associations>} */
 		var rec = a.getRecord(1);
-		forms.division_user_detail.isAdminAccount = rec.logic_flag;
+		forms.division_user_detail.isAdminAccount = (rec.logic_flag == 1) ? i18n.getI18NMessage('sts.txt.login.administrative') : i18n.getI18NMessage('sts.txt.login.shop');
 	}
 	return true
 }
@@ -7732,12 +7732,99 @@ function tempGetIdfilesToBarcodeCount(jobId){
 	var memSet = databaseManager.createDataSourceByQuery(memDS,idf,-1);
 	var res = databaseManager.getFoundSet(memSet);
 	res.loadRecords();
-	var idx = 1;
-	var rec = null;
-	while (rec = res.getRecord(idx++)){
-		if (true || rec.count > 1){
-			application.output('sample count '+ rec.piecemark+ ' ' +rec.max+'  '+rec.count);
+	//var idx = 1;
+	//var rec = null;
+	//while (rec = res.getRecord(idx++)){
+	//	if (true || rec.count > 1){
+	//		application.output('sample count '+ rec.piecemark+ ' ' +rec.max+'  '+rec.count);
+	//	}
+	//}
+	null;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"B9C8836E-3269-419C-9C8F-D971361F87FB"}
+ */
+function createEmpAssocList(event){
+	null;
+	/** @type {QBSelect<db:/stsservoy/associations>} */
+	var dv = databaseManager.createSelect('db:/stsservoy/associations');
+	dv.result.add(dv.columns.association_uuid);
+	dv.result.add(dv.columns.association_name);
+	dv.where.add(dv.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	dv.where.add(dv.columns.delete_flag.isNull);
+	var DV = databaseManager.getFoundSet(dv);
+	/** @type {JSDataSet<association_name:String,association_uuid:String>} */
+	var rec = null; var idx = 1; var divIds = []; var divNames = [];
+	while (rec = DV.getRecord(idx++)){
+		divIds.push(rec.association_uuid);
+		divNames.push(rec.association_name.replace(/ /g,'').toLowerCase());
+	}
+
+	/** @type {QBSelect<db:/stsservoy/employee>} */
+	var ee = databaseManager.createSelect('db:/stsservoy/employee');
+	ee.result.add(ee.columns.employee_id);
+	ee.result.add(ee.columns.employee_firstname);
+	ee.result.add(ee.columns.employee_lastname);
+	ee.result.add(ee.columns.employee_number);
+	for (idx = 0;idx < divIds.length;idx++){
+		/** @type {String} */
+		var divName = divNames[idx];
+		ee.result.addValue(0,divName);
+	}
+	ee.where.add(ee.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	ee.where.add(ee.columns.delete_flag.isNull);
+	/** @type {JSDataSet<employee_id:String>} */
+	var EE = databaseManager.getDataSetByQuery(ee, -1);
+
+	/** @type {QBSelect<db:/stsservoy/users>} */
+	var us = databaseManager.createSelect('db:/stsservoy/users');
+	us.result.add(us.columns.user_uuid);
+	us.result.add(us.columns.employee_id);
+	us.result.add(us.columns.association_uuid);
+	us.where.add(us.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	us.where.add(us.columns.delete_flag.isNull);
+	var US = databaseManager.getFoundSet(us);
+	/** @type {JSDataSet<association_uuid:String,employee_id:String>} */
+	var rec2 = null; idx = 1; var employeeUserAssocList = [];
+	while (rec2 = US.getRecord(idx++)){
+		if (!employeeUserAssocList[rec2.employee_id]){
+			employeeUserAssocList[rec2.employee_id] = [];
+		}
+		var divIdx = divIds.indexOf(rec2.association_uuid);
+		employeeUserAssocList[rec2.employee_id].push(divNames[divIdx]);
+	}
+
+	for (idx = 1;idx <= EE.getMaxRowIndex();idx++){
+		EE.rowIndex = idx;
+		if (employeeUserAssocList[EE.employee_id]){
+			while (divName = employeeUserAssocList[EE.employee_id].pop()){
+				EE[divName] = 1;
+			}
+
 		}
 	}
-	null;
+	EEDataSource = EE.createDataSource('employeeDivs');
+	//if (1==1){return}
+	//var newFS = databaseManager.getFoundSet(EEDataSource);
+	//newFS.loadRecords();
+	//forms['employees_lstB'].controller.loadRecords(newFS);
+	//if (application.isInDeveloper()){
+	//	for (idx = 1;idx <= newFS.getSize();idx++){
+	//		application.output('pig '+newFS.getRecord(idx));
+	//	}
+	//}
+}
+/**
+ * @param {JSRenderEvent} event
+ *
+ * @properties={typeid:24,uuid:"FB895424-A7F3-484E-A312-F3495F9449D2"}
+ */
+function onRenderSetLogical(event){
+	var rec = event.getRecord();
+	var fld = event.getRenderable();
+	if (rec && fld && rec[fld.getDataProviderID()] == 1){
+		fld.bgcolor = 'pink';
+	}
 }

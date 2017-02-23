@@ -147,7 +147,7 @@ function onEdit(event,editStatus){
 		forms[formName].elements.tablessX.enabled = !editFlag;
 	}
 	controller.readOnly = !editFlag;
-	elements.btn_New.visible = !editFlag;
+	forms.status_description_table.elements.btn_New.visible = !editFlag;
 	elements.btn_Cancel.visible = editFlag;
 	elements.btn_Save.visible = editFlag;
 	elements.btn_Delete.visible = false;

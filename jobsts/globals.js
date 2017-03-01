@@ -2461,14 +2461,13 @@ function rfGetBarcodeIdfiles(){
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
 	q.result.add(q.columns.idfile_id);
-	q.where.add(
-		q.and
-			.add(q.columns.delete_flag.isNull)
-			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(q.columns.id_serial_number_id.eq(mob.barcodeId))
-		);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.id_serial_number_id.eq(mob.barcodeId));
+
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var resultQ = databaseManager.getFoundSet(q);
+
 	mob.idfilesFS = resultQ;
 	scopes.globals.fsBarcodeIdfiles = resultQ;
 	idfileIdList = [];
@@ -2480,7 +2479,7 @@ function rfGetBarcodeIdfiles(){
 	}
 	mob.idfiles = idfileIdList;
 	null;
-	
+	if (application.isInDeveloper()){application.output('job id '+mob.job.Id)}
 	return (resultQ.getSize() > 0);
 }
 /**
@@ -2526,16 +2525,11 @@ function rfGetLocationStats(sLocation){
 	//get all transactions idfiles with location
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
-	//q.result.add(q.columns.trans_id);
 	q.result.add(q.columns.idfile_id);
 	q.result.distinct = true;
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(q.columns.location.eq(sLocation))
-	);
-	///var resultQ = databaseManager.getFoundSet(q);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.location.eq(sLocation));
 	
 	//get last transaction idfiles for location
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
@@ -2545,16 +2539,13 @@ function rfGetLocationStats(sLocation){
 	r.result.add(r.columns.location);
 	r.result.add(r.columns.transaction_date);
 	r.sort.add(r.columns.transaction_date.desc)
-	r.where.add(
-	r.and
-		.add(r.columns.delete_flag.isNull)
-		.add(r.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(r.columns.idfile_id.isin(q))
-	);
+	r.where.add(r.columns.delete_flag.isNull);
+	r.where.add(r.columns.tenant_uuid.eq(session.tenant_uuid));
+	r.where.add(r.columns.idfile_id.isin(q));
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var resultR = databaseManager.getFoundSet(r);
+
 	var index = 1;
-	///var loc = "";
 	var idfile = "";var idfileList = [];var piecemarkList = [];
 	while (index <= resultR.getSize()){
 		var rec = resultR.getRecord(index);
@@ -2574,12 +2565,10 @@ function rfGetLocationStats(sLocation){
 	w.result.add(w.columns.idfile_id);
 	w.result.add(w.columns.piecemark_id);
 	w.result.add(w.columns.summed_quantity);
-	w.where.add(
-	w.and
-		.add(w.columns.delete_flag.isNull)
-		.add(w.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(w.columns.idfile_id.isin(idfileList))
-	);
+	w.where.add(w.columns.delete_flag.isNull);
+	w.where.add(w.columns.tenant_uuid.eq(session.tenant_uuid));
+	w.where.add(w.columns.idfile_id.isin(idfileList));
+
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var resultW = databaseManager.getFoundSet(w);
 	index = 1;
@@ -2911,12 +2900,10 @@ function rfGetMobPiecemark(){
 	q.result.add(q.columns.cost_of_work_quantity);
 	q.result.add(q.columns.description);
 	q.result.add(q.columns.e_route_code_id);
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(q.columns.piecemark_id.eq(mob.idfile.piecemark_id))
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.piecemark_id.eq(mob.idfile.piecemark_id));
+
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() > 0){
 		mob.piecemark = resultQ.getRecord(1);
@@ -2936,40 +2923,43 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
 	q.result.add(q.columns.idfile_id);
 	q.result.add(q.columns.piecemark_id);
 	q.result.add(q.columns.original_quantity);
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(q.columns.piecemark_id.eq(piecemarkId))
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.piecemark_id.eq(piecemarkId));
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var resultQ = databaseManager.getFoundSet(q);
 	//var countPieces = 0;
 	var maxIndex = 1; var idfileList = [];
-	while (maxIndex < resultQ.getSize()){
+	while (maxIndex <= resultQ.getSize()){
 		/** @type {JSRecord} */
 		var rec = resultQ.getRecord(maxIndex);
 		if (idfileList.indexOf(rec.idfile_id) == -1){idfileList.push(rec.idfile_id)}
-		maxIndex = resultQ.getSize();
+		maxIndex++;
 	}
-	mob.idValues.total = maxIndex;
+	mob.idValues.total = resultQ.getSize();
 	
 	// over all idfiles, get transactions with this location and status.  that count will be total marked
+	// A Status with and End For Status is not complete until the End for Status ticket #139
+	var endStation = session.stationId;
+	var timed = (m.stationsTimed[endStation] || m.stationsTimedEnds[endStation]);
+	if (m.stationsTimed[endStation]){
+		endStation = application.getUUID(m.stationsTimed[endStation]); // ticket #139
+	}
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var r = databaseManager.createSelect('db:/stsservoy/transactions');
 	r.result.add(r.columns.trans_id);
 	r.result.add(r.columns.location);
 	r.result.add(r.columns.status_description_id);
-	//r.result.distinct = true;
-	r.where.add(
-	r.and
-		.add(r.columns.delete_flag.isNull)
-		.add(r.columns.idfile_id.isin(idfileList))
-		.add(r.columns.location.eq(sLocation))
-		.add(r.columns.status_description_id.eq(session.stationId))
-	);
+	r.where.add(r.columns.delete_flag.isNull);
+	r.where.add(r.columns.idfile_id.isin(idfileList));
+	///r.where.add(r.columns.location.eq(sLocation));
+	r.where.add(r.columns.status_description_id.eq(endStation));
+	if (timed){
+		var maxPercent = '100';
+		r.where.add(r.columns.quantity.eq(maxPercent));
+	}
 	var resultR = databaseManager.getFoundSet(r);
-	var index = 1;
+	var index = 0;
 	while (index < resultR.getSize()){
 		index = resultR.getSize();
 		rec = resultR.getRecord(resultR.getSize());
@@ -3146,7 +3136,7 @@ function saveScanTransaction(){
 	if (status){globals.loggerDev(this,'rf Save transaction fail.')}
 	currentID = '';
 	rfGetLocationStats2(mob.locationArea);//Value list does not match key list in set condition
-	rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea);
+	//rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea);
 	mobPreviousLocation = mob.locationPrev;
 	mobPreviousStatus = mob.statusPrev;
 	mobLocationPieces = mob.locationValues.pieces;
@@ -3200,14 +3190,13 @@ function rfGetTransactionList(idfileId){
 	q.result.add(q.columns.status_description_id);
 	q.result.add(q.columns.transaction_date);
 	q.sort.add(q.columns.transaction_date.desc);
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(q.columns.idfile_id.eq(mob.idfile.idfile_id))
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.idfile_id.eq(mob.idfile.idfile_id));
+
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var resultQ = databaseManager.getFoundSet(q);
+	forms['trans_history'].foundset.loadRecords(resultQ);//ticket #139
 	//application.output('DEBUG idfile transaction count '+resultQ.getSize());
 	for (var index = 1;index <= resultQ.getSize();index++){
 		var rec = resultQ.getRecord(index);
@@ -3414,10 +3403,9 @@ function rfTimed(){
 		//parse transactions for unended begin status
 		/** @type {JSFoundset} */
 		var transacts = mob.transactions;
-		for (var index = 1;index <= transacts.getSize();index++){
-			/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-			var rec = transacts.getRecord(index);
-			//application.output(rec);
+		/** @type {JSFoundSet<db:/stsservoy/transactions>} */
+		var rec = null; var index = 1;
+		while (rec = transacts.getRecord(index++)){
 			if (rec.trans_status == mob.timedBegStat){ // begin with null end
 				globals.logger(true,i18n.getI18NMessage('sts.txt.timed.cycle.start')+mob.timedBegStat);
 				if (rec.transaction_end == null){
@@ -3450,19 +3438,17 @@ function rfTimed(){
 		//x cannot end if not started
 		mob.timedTotalMin = 0;
 		transacts = mob.transactions;
-		for (index = 1;index <= transacts.getSize();index++){
-			/** @type {JSRecord<db:/stsservoy/transactions>} */
-			rec = transacts.getRecord(index);
-			//if (application.isInDeveloper()){application.output(rec);}
+		index = 1;
+		while (rec = transacts.getRecord(index++)){
 			if (rec.trans_status != mob.timedEndStat){continue}
 			if (rec.trailer_labor_percentage == 100.0){break}
 			if (application.isInDeveloper()){application.output('timed rec adding '+rec);}
 			mob.timedTotalMin = mob.timedTotalMin*1+rec.transaction_duration*1;
+			if (!mob.completeAsk){mob.percent = 100;mob.completeStatus = 1;} // ticket #139 there is no repeat operation for timed operations
 			if (application.isInDeveloper()){application.output('mob total min '+mob.timedTotalMin);}
 		}
-		for (index = 1;index <= transacts.getSize();index++){
-			/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-			rec = transacts.getRecord(index);
+		index = 1;
+		while (rec = transacts.getRecord(index++)){
 			if (application.isInDeveloper()){application.output('xxx transaction '+rec);} // look for all unfinished starts, not just ascending first
 			if (rec.trans_status == mob.timedBegStat){
 				if (rec.transaction_end == null){ // ok to end transaction
@@ -3473,25 +3459,31 @@ function rfTimed(){
 					mob.timedTargetRec = rec;
 					mob.timedError = "";
 					mob.percent = 0;
-					if (l.promptComplete.indexOf(mob.statusCode)){//ticket #103 timed ops
+					if (l.promptComplete.indexOf(mob.statusCode) != -1){//ticket #103 timed ops
 						var message = i18n.getI18NMessage('sts.txt.total.cycle.minutes')+
 											Math.ceil((mob.timedTotalMin+0.005)*100)/100+
 											'\n'+i18n.getI18NMessage('sts.txt.this.cycle.time')+
 											Math.ceil((mob.timedDuration*1+0.005)*100)/100+
 											'\n'+i18n.getI18NMessage('sts.txt.complete')+'?';
-						globals.DIALOGS.setDialogWidth(200);
-						globals.DIALOGS.setDialogHeight(200);
-						var response = globals.DIALOGS.showQuestionDialog(
-							i18n.getI18NMessage('sts.txt.end.of.timed.cycle'),
-							message,
-							i18n.getI18NMessage('sts.btn.no'),
-							i18n.getI18NMessage('sts.btn.yes'));
-						//	'End of Timed Cycle', message, 'NO', 'yes');
-						if (response == i18n.getI18NMessage('sts.btn.yes')){
-							mob.percent = 100;//labor
-							mob.completeStatus = 1;//process complete
+						if (mob.completeAsk){
+							globals.DIALOGS.setDialogWidth(200);
+							globals.DIALOGS.setDialogHeight(200);
+							var response = globals.DIALOGS.showQuestionDialog(
+								i18n.getI18NMessage('sts.txt.end.of.timed.cycle'),
+								message,
+								i18n.getI18NMessage('sts.btn.no'),
+								i18n.getI18NMessage('sts.btn.yes'));
+							//	'End of Timed Cycle', message, 'NO', 'yes');
+							if (response == i18n.getI18NMessage('sts.btn.yes')){
+								mob.percent = 100;//labor
+								mob.completeStatus = 1;//process complete
+							}
 						}
+					} else {
+						mob.percent = 100;//labor ticket #139
+						mob.completeStatus = 1;//process complete
 					}
+						
 					if (application.isInDeveloper()){application.output('message '+message+' response '+response);}
 					return true;
 				} else {
@@ -3756,26 +3748,11 @@ function rfSetIdfileTimedStatus(idfileId){
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
 	q.result.add(q.columns.trans_id);
-	q.result.add(q.columns.trans_code);
-	q.result.add(q.columns.transaction_end);
-	q.result.add(q.columns.transaction_duration);
-	q.result.add(q.columns.employee_id);
-	q.result.add(q.columns.idfile_id);
-	q.result.add(q.columns.trans_status);
-	q.where.add(
-		q.and
-			.add(q.columns.delete_flag.isNull)
-			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(q.columns.idfile_id.eq(idfileId))
-			.add(q.columns.trans_status.eq(mob.timedBegStat))
-			.add(q.columns.transaction_start.eq(mob.timedTargetRec.transaction_start))
-			/**.add(q.columns.transaction_start.hour.eq(hours))
-			.add(q.columns.transaction_start.minute.eq(minutes))
-			.add(q.columns.transaction_start.month.eq(month))
-			.add(q.columns.transaction_start.second.eq(seconds))
-			.add(q.columns.transaction_start.year.eq(year))
-			.add(q.columns.transaction_start.day.eq(date))*/
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.idfile_id.eq(idfileId));
+	q.where.add(q.columns.trans_status.eq(mob.timedBegStat));
+	q.where.add(q.columns.transaction_start.eq(mob.timedTargetRec.transaction_start));
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() != 1){
 		globals.logger(true,i18n.getI18NMessage('sts.txt.transactions.failed',new Array(resultQ.getSize(),idfileId)));
@@ -3795,9 +3772,6 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	// status out of order, then false
 	// if okay for other stations, then true
 	
-	//rfGetTransactionList(globals.mob.idfile);
-	//var routeOK = rfCheckRouteOrder(statusId);
-	//application.output('save scan transaction');
 	globals.logger(true,i18n.getI18NMessage('sts.txt.transactions.save.scan'));
 	//worker_id,worker2_id,worker3_id,worker4_id,worker5_id, tenant_uuid, employee_id,fabshop_id (guids)
 	//location, status, code, edit_date
@@ -3811,35 +3785,27 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	for (var index = 0; index < workers.length; index++) {
 		currentWorkers.push(m.workerList[workers[index]]);
 	}
-	var recordsToSave = [];
-	//var transIdfiles = [];
-	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-	var newFS = databaseManager.getFoundSet('db:/stsservoy/transactions');
 	if (application.isInDeveloper()){application.output('Updating ' + mob.idfiles.length + ' idfiles');}
-	//var newRecordCreated = false;
 	// status code already captured for this piece?
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var r = databaseManager.createSelect('db:/stsservoy/transactions');
 	r.result.add(r.columns.trans_id);
-	r.where.add(
-		r.and
-			.add(r.columns.delete_flag.isNull)
-			.add(r.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(r.columns.idfile_id.isin(mob.idfiles))
-			.add(r.columns.status_description_id.eq(session.stationId))
-	);
+	r.where.add(r.columns.delete_flag.isNull);
+	r.where.add(r.columns.tenant_uuid.eq(session.tenant_uuid));
+	r.where.add(r.columns.idfile_id.isin(mob.idfiles));
+	r.where.add(r.columns.status_description_id.eq(session.stationId));
+
 	var resultQ = databaseManager.getFoundSet(r);
 	var resultSize = resultQ.getSize();
 	if (resultSize != 0 && !rfScanAgainOk() && !rfProcessComplete(resultQ)) {//addresses ticket #103
 		errorDialogMobile('rf_transactions.current','403','current');
 		if (application.isInDeveloper()){application.output('Status code has already been captured.');}
-		//forms['rf_transactions'].elements.current.requestFocus();
 		return false;
 	}
+	databaseManager.startTransaction();
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var newRec = null;
 	for (index = 0; index < mob.idfiles.length; index++) {
-		//application.output('inside saving idfiles');
 		if (rfTransIsTimed()){
 			newRec = rfSetIdfileTimedStatus(mob.idfiles[index]);
 			if (newRec == null){
@@ -3852,18 +3818,16 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			if (application.isInDeveloper()){application.output('status trans rec found. updating');}
 			// dialog for completion of timed event
 			newRec.transaction_end = mob.timedEnd;
-			recordsToSave.push(newRec);
-		} //else {
+		}
 		if (routeOK){
 			if (application.isInDeveloper()){application.output('newRec created for status '+mob.statusCode);}
-			var newRecNum = newFS.newRecord();
+			var newRecNum = resultQ.newRecord();
 			if (newRecNum == -1){
 				if (application.isInDeveloper()){application.output('Creating new Record for transactions failed.');}
 			}
 			/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-			var newRecB = newFS.getRecord(newRecNum);
+			var newRecB = resultQ.getRecord(newRecNum);
 			newRecB.status_description_id = session.stationId;
-			//newFS.id_location = sLocation; // location is fabShop
 			newRecB.employee_id = session.employeeId; //globals.mobLoggedEmployeeId;//UUID
 			newRecB.idfile_id = mob.idfiles[index];
 			newRecB.location = mob.locationArea;
@@ -3901,82 +3865,49 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 				default:
 				}
 			}
-			recordsToSave.push(newRecB);
 		}
-		//}
-		//recordsToSave.push(newRec);
 	}
-	//globals.logger(true,'Saving '+recordsToSave.length+' trans records');
-	while (recordsToSave.length > 0){ // always save 'good' transactions 3/4/2015 pp all user entries are saved
-		var rec = recordsToSave.pop();
-		var status = databaseManager.saveData(rec);
-		/**if (!status){
-			globals.logger(true,i18n.getI18NMessage('sts.txt.record.save.failed'));
-		}*/
-	}
+	//var dbStatus = databaseManager.commitTransaction();
 	if (routeOK){
 		var updateIdfileStatus = rfCheckStatusIdfileMax();
-		//if (rfCheckStatusIdfileMax()){
-			/** @type {QBSelect<db:/stsservoy/idfiles>} */
-			var q = databaseManager.createSelect('db:/stsservoy/idfiles');
-			q.result.add(q.columns.idfile_id);
-			q.result.add(q.columns.current_load_id);
-			q.result.add(q.columns.ship_load_id);
-			q.result.add(q.columns.received_load_id);
-			q.result.add(q.columns.shipped_quantity);
-			q.result.add(q.columns.id_location);
-			q.result.add(q.columns.status_description_id);
-			q.where.add(
-			q.and
-				.add(q.columns.delete_flag.isNull)
-				.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-				.add(q.columns.idfile_id.isin(mob.idfiles))
-			);
-			resultQ = databaseManager.getFoundSet(q);
-			//logger(true,'Updating '+resultQ.getSize()+' idfiles.');
-			if (resultQ.getSize() > 0){
-				// set previous status and location
-				index = 1;
-				// Get previous status and location
-				/**var record = resultQ.getRecord(1);
-				if (!record.status_description_id){
-					mob.statusPrev = "";
-				} else {
-					mob.statusPrev = m.stations[record.status_description_id].split(',')[1];
-				}
-				mob.locationPrev = (!record.id_location) ? "" : record.id_location;*/
-				var saveRec = false;
-				while (index <= resultQ.getSize()){
-					/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-					var record = resultQ.getRecord(index);
-					if (session.loadId != null){
-						record.ship_load_id = session.loadId;
-					}
-					if (mobLoadNumber != "" && session.program == "Shipping"){
-						record.ship_load_id = session.loadId;
-					}
-					if (sLocation != "" && sLocation != null){
-						record.id_location = sLocation;
-						saveRec = true;
-					}
-					if (updateIdfileStatus){
-						record.status_description_id = statusId;
-						saveRec = true;
-					}
-					if (saveRec){recordsToSave.push(record)}
-					index++;
-				}
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+		q.result.add(q.columns.idfile_id);
+		q.result.add(q.columns.current_load_id);
+		q.result.add(q.columns.ship_load_id);
+		q.result.add(q.columns.received_load_id);
+		q.result.add(q.columns.shipped_quantity);
+		q.result.add(q.columns.id_location);
+		q.result.add(q.columns.status_description_id);
+		q.where.add(q.columns.delete_flag.isNull);
+		q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+		q.where.add(q.columns.idfile_id.isin(mob.idfiles));
+
+		resultQ = databaseManager.getFoundSet(q);
+		index = 1;
+		//databaseManager.startTransaction();
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var record = null;
+		while (record = resultQ.getRecord(index++)){
+			if (session.loadId != null){
+				record.ship_load_id = session.loadId;
 			}
-		/**} else {
-			//logger(true, 'Status code has already been captured.');
-			logger(true,'Status earlier in route. Idfile not updated.');
-		}*/
-		while (recordsToSave.length > 0){
-			rec = recordsToSave.pop();
-			status = databaseManager.saveData(rec);
-			if (!status){
-				globals.logger(true,i18n.getI18NMessage('sts.txt.record.save.failed'));
+			if (mobLoadNumber != "" && session.program == "Shipping"){
+				record.ship_load_id = session.loadId;
 			}
+			if (sLocation != "" && sLocation != null){
+				record.id_location = sLocation;
+			}
+			if (updateIdfileStatus){
+				record.status_description_id = statusId;
+			}
+		}
+		//logger(true, 'Status code has already been captured.');
+		//logger(true,'Status earlier in route. Idfile not updated.');
+		//if (databaseManager.hasRecordChanges(resultQ)){
+		var dbStatus = databaseManager.commitTransaction();
+		if (!dbStatus){
+			globals.logger(true,i18n.getI18NMessage('sts.txt.record.save.failed'));
 		}
 	} else {
 		globals.logger(true,i18n.getI18NMessage('431'));
@@ -3987,6 +3918,9 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
  * @properties={typeid:24,uuid:"33D9ACFB-D345-42E2-9BCE-C44A506F5078"}
  */
 function rfScanAgainOk(){
+	// multiscan allowed
+	// timed session ends - return false
+	// timed session ends AND scan request to 100% - return true
 	return (l.stationsMultiScan.indexOf(session.stationId) != -1) || 
 			(m.stationsTimedEnds[session.stationId]);
 }
@@ -4318,6 +4252,7 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
 		return true;
 	}
 	rfProcessBarcode(event);
+	application.updateUI();
 	return true;
 }
 /**
@@ -4449,8 +4384,9 @@ function rfProcessBarcode(event){
 							return true;
 					}
 					saveScanTransaction(); // moved to inside rfTimed where the form query on timed end is located
-					rfWindowLastInfoDisplay(event);
 					rfGetLocationStats2(forms[formName].id_location);
+					rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea);
+					rfWindowLastInfoDisplay(event);
 					break;
 				case i18n.getI18NMessage('sts.mobile.status')://Status
 				case i18n.getI18NMessage('sts.mobile.find.piece.marks')://Find Piece Marks
@@ -4463,6 +4399,7 @@ function rfProcessBarcode(event){
 		}
 		default:{}
 	}
+	rfGetTransactionList(mob.idfile); // second pass of same transaction list to include new transaction ticket #139
 	return null;
 }
 /**
@@ -4526,12 +4463,10 @@ function rfGetPreviousStatusLocation(){
 	q.result.add(q.columns.idfile_id);
 	q.result.add(q.columns.id_location);
 	q.result.add(q.columns.status_description_id);
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(q.columns.idfile_id.isin(mob.idfiles))
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.idfile_id.isin(mob.idfiles));
+
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() > 0){
@@ -4645,7 +4580,7 @@ function rfStatusCheck(newStatus){
 		return null;
 	}
 	mob.statusCode = newStatus;
-	mob.completeAsk = (l.promptComplete.indexOf(newStatus));//ticket #103
+	mob.completeAsk = (l.promptComplete.indexOf(newStatus) != -1);//ticket #103
 	session.stationId = m.stations[session.associationId+', '+mob.statusCode];
 	return newStatus;
 }
@@ -5081,10 +5016,10 @@ function rfSaveTransaction(event){
 	if (event.getFormName() == 'rf_bundles'){
 		routeOK = true;
 	}
-	var recordsToSave = [];
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var transFS = databaseManager.getFoundSet('db:/stsservoy/transactions');
 	var newRec = null;
+	databaseManager.startTransaction();
 	for (index = 0; index < mob.idfiles.length; index++) {
 		if (rfTransIsTimed()){
 			newRec = rfSetIdfileTimedStatus(mob.idfiles[index]);
@@ -5098,7 +5033,6 @@ function rfSaveTransaction(event){
 			if (application.isInDeveloper()){application.output('status trans rec found. updating');}
 			// dialog for completion of timed event
 			newRec.transaction_end = mob.timedEnd;
-			recordsToSave.push(newRec);
 		}
 		if (routeOK){
 			if (transFS.newRecord() == -1){
@@ -5143,15 +5077,10 @@ function rfSaveTransaction(event){
 				default:
 				}
 			}
-			recordsToSave.push(transFS);
 		}
 	}
-	while (recordsToSave.length > 0){
-		/** @type JSRecord */
-		var rec = recordsToSave.pop();
-		var status = databaseManager.saveData(rec);
-		if (!status){globals.loggerDev(this,'save of record failed')}
-	}
+	var dbStatus = databaseManager.commitTransaction();
+	if (!dbStatus){globals.loggerDev(this,'save of record failed')}
 }
 /**
  * @properties={typeid:24,uuid:"FDEB97E1-E7F9-47BB-B08D-96241F6740F0"}

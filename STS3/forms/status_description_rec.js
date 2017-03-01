@@ -354,6 +354,7 @@ function UNUSEDchangeToStation(event){
  * @SuppressWarnings(wrongparameters)
  */
 function getStatusList(){
+	var currentStation = status_description_id;
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var q = databaseManager.createSelect('db:/stsservoy/status_description');
 	q.result.add(q.columns.status_description_id);
@@ -375,7 +376,7 @@ function getStatusList(){
 		if (rec.association_id == association_id){
 			stationArrayId.push(rec.status_description_id);
 			statusArray.push(rec.status_code); // localize selections to current associationId
-			if (currProcessNumber >= rec.status_sequence){
+			if (currProcessNumber >= rec.status_sequence && rec.status_description_id != currentStation){ // ticket #147
 				endFors.push(rec.status_code);
 				endForStations.push(rec.status_description_id);
 			}
@@ -385,6 +386,7 @@ function getStatusList(){
 		var stationId = assocId+", "+statStatus;
 		localStations.push(stationId);
 	}
+	endFors.unshift('none');endForStations.unshift(null);
 	application.setValueListItems('stsvl_status_code',statusArray);
 	application.setValueListItems('stsvl_station_codes',endFors,endForStations);
 	//application.setValueListItems('stsvl_station_codes',statusArray,stationArrayId);
@@ -553,4 +555,16 @@ function deletableStatus(){
 function onFocusGainedEndFor(event) {
 	currProcessNumber = status_sequence;
 	getStatusList();
+}
+
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"CA1247B8-AEAD-4214-91CC-40AE41AA8A73"}
+ */
+function onRecordSelection(event) {
+	currProcessNumber = status_sequence;
+	getStatusList();	
 }

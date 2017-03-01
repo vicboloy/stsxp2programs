@@ -425,6 +425,7 @@ valuelistID:"4196E8E5-1962-42BB-B088-DF922EC3D281"
 ],
 name:"status_description_rec",
 navigatorID:"-1",
+onRecordSelectionMethodID:"CA1247B8-AEAD-4214-91CC-40AE41AA8A73",
 onShowMethodID:"77530877-5492-40E1-ACCD-687758F3DFB6",
 size:"541,523",
 styleName:"sts_one",

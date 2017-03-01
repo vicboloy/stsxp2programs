@@ -29,3 +29,16 @@ function onHide(event) {
 	forms.status_description_rec.onActionCancelEdit(event);
 	return true
 }
+
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ * @param {String} buttonTextSrc
+ *
+ * @properties={typeid:24,uuid:"37D3D7F3-6840-4F40-8539-006D1C22B1D3"}
+ */
+function onRecordSelection(event, buttonTextSrc) {
+	null;
+	return _super.onRecordSelection(event, buttonTextSrc)
+}

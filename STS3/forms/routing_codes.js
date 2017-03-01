@@ -122,23 +122,12 @@ function onActionSelectAvailable(event) {
 	var item = elements.availableCodes.getSelectedElements()[0];
 	if (item == undefined){return}
 	lastStatusAvail = item;
-	//var codeTemp = item.replace(/ /g,"");
-	//var codeAvail = lastStatusAvail;
-	//var codeRouted = lastStatusRouted;
-	//if (codeRouted == null){codeRouted = codeAvail;}
-	//adjust avail to different text, blanks are invisible so using blanks
-	//if (lastStatusAvail == codeTemp) {codeTemp = codeTemp+" "}
-	//lastStatusAvail == codeTemp;
 	aStatusCodes = removeElementFromArray(aStatusCodes,item);
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
 	
 	//now adjust routed codes
-	//codeTemp = item.replace(/ /g,"");
-	//if (lastStatusRouted == codeTemp){codeTemp = codeTemp+"  "}
-	//lastStatusRouted == codeTemp;
 	aRouteCodes = addElementToArray(aRouteCodes,item);
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
-	//return true;
 }
 /**
  * @param event
@@ -148,79 +137,12 @@ function onActionSelectAvailable(event) {
  * @properties={typeid:24,uuid:"4CD3262A-EBA4-431D-ACB6-1A742DD12980"}
  */
 function onActionUnselect(event) {
-	application.output("unselection");
 	var item = elements.selectedCodes.getSelectedElements()[0];
 	if (item == undefined){return}
 	aStatusCodes = addElementToArray(aStatusCodes,item);
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
 	aRouteCodes = removeElementFromArray(aRouteCodes,item);
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
-	return;
-}
-
-/**
- * @properties={typeid:24,uuid:"C645C427-648B-4362-AF3D-C9C60B9CCF4C"}
- */
-function additionalSaveFunctions(){
-	var fabShopsList = application.getValueListArray('stsvl_status_codes');
-	var routeUUID = routing_id;
-	//var routeName = route_code;
-	//var statusID = globals.aStatusCodes[]
-	var aCurrentSort = [];
-	var length = aRouteCodes.length;
-	var selectCodes = application.getValueListArray('stsvl_route_status_selected');
-	length = selectCodes.length;
-	// selected codes and order
-	///var maxSort = 0;
-	for (var index = 0; index < length; index++) {
-		//maxSort = maxSort + 10;
-		//aCurrentSort[aRouteCodes[index]] = maxSort;
-		aCurrentSort.push(selectCodes[index]);
-	}
-	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
-	var newFS = sts_route_to_status_code;
-	//add code to route
-	length = aRouteCodes.length;
-	///var routeOrd = 10;
-	for (index = 0; index < length; index++) {
-		var code = aRouteCodes[index];
-		if (elementIsInArray(aRouteCodesTemp,code)){continue}
-		if (aRouteCodes[index] != null){
-			newFS.newRecord();
-			newFS.e_route_code_id = routeUUID;
-			var fabShopIn = code.split(",");
-			var fabShopId = globals.aMobAssocs[fabShopIn[0]];
-			var stat = fabShopIn[1];
-			var fabShop = fabShopId+','+stat.trim();
-			//newFS.route_code = routeName.replace(/ /g,"");
-			//newFS.status_code = code;
-			newFS.status_description_id = fabShopsList[fabShop];
-			newFS.tenant_uuid = globals.session.tenant_uuid;
-			newFS.route_order = aCurrentSort[code];
-		}
-	}
-	//delete rest of routes
-	// have status_description_id == association_id, status == fabshopName, status
-	//  status_description == globals.aMobAssocs[assocID] = assocName 
-	//  [BF00BA53-8D07-4A70-B835-24D5BD5DAB91="NORTH SITE",FAA9BDE5-6B66-4930-981C-5AF0004EE1A4="SOUTH SITE"]
-	//  fabShopsList = ["BF00BA53-8D07-4A70-B835-24D5BD5DAB91,CUT"=024DEEF5-C8B9-44A2-916D-0C2FCC300E1A]
-	var maxIndex = newFS.getSize();
-	for (index = 1; index <= maxIndex; index++) {
-		newFS.setSelectedIndex(index);
-		var fabShopAndStatus = null;
-		for (fabShopAndStatus in fabShopsList){
-			if (fabShopsList[fabShopAndStatus]+"" == newFS.status_description_id+""){break}
-		}
-		var fsAndS = fabShopAndStatus.split(',');
-		var routeItem = globals.aMobAssocs[fsAndS[0]]+", "+fsAndS[1];
-		var index2 = aCurrentSort.indexOf(routeItem);
-		if (index2 != -1) {
-			newFS.route_order = (index2+1)*10;
-			//aCurrentSort[routeItem] = 0;
-		} else {
-			newFS.deleteRecord();
-		}
-	}
 }
 /**
  * @properties={typeid:24,uuid:"D2D53AB2-7D32-49B1-A929-1BDAB3AC0875"}
@@ -234,6 +156,7 @@ function additionalEditFunctions(){
 	elements.orderDown.enabled = editFlag;
 	elements.orderProcess.enabled = editFlag;
 	elements.orderProcess.visible = editFlag;
+	elements.route_code.requestFocus();
 	//elements.deselect.enabled = editFlag;
 }
 /**
@@ -264,27 +187,27 @@ function setRouteCodesLists(){
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
 	aRouteCodes = [];
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes,true);
+	/**@type {QBSelect<db:/stsservoy/route_detail>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/route_detail');
+	fs.result.add(fs.columns.route_detail_id);
+	fs.sort.add(fs.columns.route_order.asc);
+	fs.where.add(fs.columns.delete_flag.isNull);
+	fs.where.add(fs.columns.e_route_code_id.eq(foundset.routing_id));
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var FS = databaseManager.getFoundSet(fs);
 	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
-	var fs = sts_route_status_codes;
-	if (fs != null) {
-		fs.sort('route_order asc');
-		for(var index=1;index<=fs.getSize();index++){
-			var record = fs.getRecord(index);
-			//var fabShopsList = globals.mobFabShops;
-			var fabShopId = record.status_description_id;
-
-			
-			var fabShopAndStatus = null;
-			for (fabShopAndStatus in fabShopsList){
-				if (fabShopsList[fabShopAndStatus]+"" == fabShopId+""){break}
-			}
-			var fsAndS = fabShopAndStatus.split(',');
-			var routeItem = globals.aMobAssocs[fsAndS[0]]+", "+fsAndS[1];
-//application.output('route item '+routeItem+" "+record.status_code);
-			if (aRouteCodes.indexOf(routeItem) == -1){
-				aRouteCodes.push(routeItem);
-				aStatusCodes = removeElementFromArray(aStatusCodes,routeItem);
-			}
+	var rec = null; var index = 1;
+	while (rec = FS.getRecord(index++)){
+		var fabShopId = rec.status_description_id;
+		var fabShopAndStatus = null;
+		for (fabShopAndStatus in fabShopsList){
+			if (fabShopsList[fabShopAndStatus]+"" == fabShopId+""){break}
+		}
+		var fsAndS = fabShopAndStatus.split(',');
+		var routeItem = globals.aMobAssocs[fsAndS[0]]+", "+fsAndS[1];
+		if (aRouteCodes.indexOf(routeItem) == -1){
+			aRouteCodes.push(routeItem);
+			aStatusCodes = removeElementFromArray(aStatusCodes,routeItem);
 		}
 	}
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes,true);
@@ -410,6 +333,7 @@ function uniqueStatusRouteCode (name){
  * @properties={typeid:24,uuid:"C46BE9BB-7CC2-41D8-AB61-2A0BBE171134"}
  */
 function onActionClose(event) {
+	onActionCancelEdit(event);
 	globals.stopWindowTrack();
 	globals.mainWindowFront();
 }
@@ -422,7 +346,6 @@ function onActionClose(event) {
  * @properties={typeid:24,uuid:"174A28ED-90C3-408E-A0C0-F555186AD4C8"}
  */
 function onRecordSelection(event) {
-	//forms.routing_codes.controller.setSelectedIndex(forms.routing_codes_lst.controller.getSelectedIndex());
 	forms.routing_codes.setRouteCodesLists();
 	return _super.onRecordSelection(event);
 }
@@ -489,6 +412,72 @@ function onActionOrderByProcessAvailx(event) {
  * @properties={typeid:24,uuid:"93B16432-EF20-477C-B4D9-28C85C2B2894"}
  */
 function onActionSaveEdit(event) {
-	additionalSaveFunctions();
-	return _super.onActionSaveEdit(event)
+	if (!route_code){
+		globals.errorDialogMobile(event,433,'route_code','');
+		elements.route_code.requestFocus();
+		return;
+	}
+	var fabShopsList = application.getValueListArray('stsvl_status_codes');//fabShopsList[divisionId,StatusCode] = stationId ** [2B76B578-17F8-41EA-A3A6-9955DD6A5A8E,FIT:FC4FCF2A-BC06-406B-B15B-9648805E3939**
+	var aCurrentSort = [];var aCurrentStationIds = [];//to check against db saved route detail
+	var length = aRouteCodes.length;
+	var selectCodes = application.getValueListArray('stsvl_route_status_selected');// **"SHOP2, FIT"**
+	length = selectCodes.length;
+	// selected codes and order
+	for (var index = 0; index < length; index++) {
+		aCurrentSort.push(selectCodes[index]);
+		var fabShopIn = selectCodes[index].split(",");
+		var fabShopId = globals.aMobAssocs[fabShopIn[0]];
+		var stat = fabShopIn[1];
+		var fabShop = fabShopId+','+stat.trim();
+		aCurrentStationIds.push(application.getUUID(fabShopsList[fabShop]));
+	}
+
+	/**@type {QBSelect<db:/stsservoy/route_detail>} */
+	var rtDtl = databaseManager.createSelect('db:/stsservoy/route_detail');
+	rtDtl.result.add(rtDtl.columns.e_route_code_id);
+	rtDtl.where.add(rtDtl.columns.delete_flag.isNull);
+	rtDtl.where.add(rtDtl.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	rtDtl.where.add(rtDtl.columns.e_route_code_id.eq(routing_id));
+	var RTD = databaseManager.getFoundSet(rtDtl);
+	
+	databaseManager.startTransaction();
+	index = 1; var stationIdsDone = [];
+	/**@type {JSRecord<db:/stsservoy/route_detail>} */
+	var rec = null;
+	while (rec = RTD.getRecord(index++)){
+		var currIdx = aCurrentStationIds.indexOf(rec.status_description_id);
+		if (currIdx == -1){//station no longer in route
+			rec.delete_flag = 99;
+			rec.edit_date = new Date();
+		} else {//station still in route, update route order
+			var routeOrd = (currIdx + 1)*10;
+			if (rec.route_order != routeOrd){
+				rec.edit_date = new Date();
+				rec.route_order = routeOrd;
+			}
+		}
+		stationIdsDone.push(rec.status_description_id);
+	}
+	for (index = 0; index < length; index++) {
+		fabShopIn = selectCodes[index].split(",");
+		fabShopId = globals.aMobAssocs[fabShopIn[0]];
+		stat = fabShopIn[1];
+		fabShop = fabShopId+','+stat.trim();
+		var stationId = fabShopsList[fabShop];
+		if (stationIdsDone.indexOf(application.getUUID(stationId)) != -1){continue}
+		var idx = RTD.newRecord();
+		/**@type {JSRecord<db:/stsservoy/route_detail>} */
+		var rec2 = RTD.getRecord(idx);
+		rec2.route_code = route_code;
+		rec2.e_route_code_id = routing_id;
+		rec2.status_description_id = fabShopsList[fabShop];
+		rec2.tenant_uuid = globals.session.tenant_uuid;
+		rec2.route_order = (index + 1)*10;
+	}
+	var status = databaseManager.commitTransaction();
+	// have status_description_id == association_id, status == fabshopName, status
+	//  status_description == globals.aMobAssocs[assocID] = assocName 
+	//  [BF00BA53-8D07-4A70-B835-24D5BD5DAB91="NORTH SITE",FAA9BDE5-6B66-4930-981C-5AF0004EE1A4="SOUTH SITE"]
+	//  fabShopsList = ["BF00BA53-8D07-4A70-B835-24D5BD5DAB91,CUT"=024DEEF5-C8B9-44A2-916D-0C2FCC300E1A]
+	return _super.onActionSaveEdit(event);
 }

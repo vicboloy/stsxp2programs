@@ -7,17 +7,12 @@ var editCarrierFlag = false;
  * @param event
  *
  * @properties={typeid:24,uuid:"E064DA2E-782E-474C-86F5-D602473B1173"}
+ * @SuppressWarnings(wrongparameters)
  */
 function delCarrierRecordAndAddress(event) { //#task04, #task03
-	/** @type {QBSelect<db:/stsservoy/loads>} */
-	var l = databaseManager.createSelect('db:/stsservoy/loads');
-	l.result.add(l.columns.carrier_number);
-	l.where.add(l.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	l.where.add(l.columns.carrier_number.eq(carrier_number));
-	l.where.add(l.columns.delete_flag.isNull);
-	var L = databaseManager.getFoundSet(l);
-	if (L.getSize() > 0){
-		scopes.globals.errorDialogMobile(event,'1071',null,null);
+	var status = globals.checkCarrierEmpty(carrier_number);
+	if (status != ''){
+		scopes.globals.errorDialogMobile(event,'1071',null,status);
 		return;
 	}
 	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.record'),

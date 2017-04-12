@@ -1,66 +1,4 @@
 
-/* *
- *
- * @param event
- *
- * @properties={typeid:24,uuid:"16FB7385-D1C1-4E70-A59F-BBEE985AA926"}
- * @AllowToRunInFind
- * /
-function xxxonActionUpdateGroup(event) {
-	//var updateArray = [];
-	var searchCount = 0;
-	var right = elements.split.getRightForm();
-	var left = elements.split.getLeftForm();
-	//var group = left.tenant_group_uuid;
-	var master = left.association_uuid;
-	var masterName = left.association_name;
-	var count = right.foundset.getSize();
-	for (var index = 1;index<=count;index++){
-		/ ** @type {JSFoundset<db:/stsservoy/tenant_list>} * /
-		var rec = right.foundset.getRecord(index);
-		/ ** @type {JSFoundset<db:/stsservoy/associations>}  * /
-		var assocs = databaseManager.getFoundSet(globals.SEC_SERVER,globals.SEC_TABLE_ASSOCIATIONS);
-		assocs.loadRecords();
-		if (assocs.find ()){
-			assocs.tenant_group_uuid = master;
-			assocs.tenant_uuid = rec.tenant_uuid;
-			searchCount = assocs.search(true);
-			if (searchCount){
-				if (!rec.select){
-					assocs.delete_flag = 1;
-					databaseManager.saveData(assocs);
-				} else {
-					assocs.delete_flag = 0;
-					databaseManager.saveData(assocs);
-				}
-			} else {
-				if (rec.select){
-					var newIndex = assocs.newRecord(false);
-					var newRec = assocs.getRecord(newIndex);
-					newRec.tenant_group_uuid = master;
-					newRec.tenant_uuid = rec.tenant_uuid;
-					newRec.association_name = masterName;
-					newRec.delete_flag = 0;
-					newRec.edit_date = new Date();
-					databaseManager.saveData(newRec);
-				}
-			}
-			
-		}
-	}
-}*/
-/**
- * Callback method when form is (re)loaded.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- *
- * @properties={typeid:24,uuid:"AAA6E7E0-FD63-4AC4-BB01-645B730ED523"}
- */
-function onLoad(event) {
-	//elements.split.dividerLocation = 190.0;
-}
-
 /**
  * Handle hide window.
  *
@@ -96,9 +34,7 @@ function onActionClose(event) {
  * @properties={typeid:24,uuid:"DB85C56B-DE17-440E-9C99-8A52804E3DF5"}
  */
 function onShow(firstShow, event) {
-	if (firstShow){
-	}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	controller.loadRecords(st2_tenantid_associations);
 	return _super.onShow(firstShow, event)
 }
@@ -109,7 +45,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"A4708092-B1D2-4146-BED0-2C258BE4D434"}
  */
 function onEdit(event,editing){
-	var tab = event.getFormName();
+	//var tab = event.getFormName();
 	var tabFormName = elements.tabless.getTabFormNameAt(1);
 	if (editing){
 		forms[tabFormName].editActive(event);

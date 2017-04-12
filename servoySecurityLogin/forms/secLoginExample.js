@@ -31,6 +31,12 @@ var licenses = [];
  */
 var textAreaString = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"7CD207DB-B0DF-4637-95BE-3D7BF137E827"}
+ */
+var licenseErrorMessage = "";
+/**
  * Handle changed data.
  *
  * @param {String} oldValue old value
@@ -109,4 +115,26 @@ function onShow(firstShow, event) {
 	} else {
 		elements.userName.requestFocus();
 	}
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"903186DD-627C-454B-93AE-A6CED3BF7A1C"}
+ */
+function onActionLicenses(event) {
+	elements.btn_License.visible = false;
+}
+/**
+ * @param {String} message
+ *
+ * @properties={typeid:24,uuid:"583246F2-0BC2-495A-9468-544C9B639A61"}
+ */
+function enableLicenseWarn(message){
+	//application.output(message);//DEBUG
+	forms['secLoginExample'].licenseErrorMessage = message;
+	forms['secLoginExample'].elements.btn_License.visible = true;
+	forms['secLoginExample'].elements.btn_License.requestFocus();
 }

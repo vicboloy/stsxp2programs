@@ -1768,65 +1768,80 @@ function secDeleteTableInfo(){
  * @AllowToRunInFind
  */
 function secCheckLicense(solutionName,tenantID,userID){
-	plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
+	//plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
 	// get license info on load  for this tenant addreses ticket #45 unfuddle
-	var licenseInfo = [];
+	var licenseAvail = [];
 	var assocId = "";
+	
+	/** @type {QBSelect<db:/stsservoy/users>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/users');
+	fs.result.add(fs.columns.user_uuid);
+	fs.where.add(fs.columns.user_uuid.eq(application.getUUID(userID)));
+	fs.where.add(fs.columns.tenant_uuid.eq(tenantID));
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	var FS = databaseManager.getFoundSet(fs);
+	var rec = FS.getRecord(1);
+	/** @type {QBSelect<db:/stsservoy/associations>} */	
+	var as = databaseManager.createSelect('db:/stsservoy/associations');
+	as.result.add(as.columns.association_uuid);
+	as.where.add(as.columns.tenant_uuid.eq(tenantID));
+	as.where.add(as.columns.association_uuid.eq(rec.association_uuid));
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */	
+	var AS = databaseManager.getFoundSet(as);
+	var rec2 = AS.getRecord(1);
+	licenseAvail['STSmobile'] = rec2.licenses_mobile;
+	licenseAvail['STS3'] = rec2.licenses_desktop;
+	assocId = rec2.association_uuid;
+	
+
+	var allUsers = [];//allDivisionUsers
+	/** @type {QBSelect<db:/stsservoy/users>} */
+	fs = databaseManager.createSelect('db:/stsservoy/users');
+	fs.result.add(fs.columns.user_uuid);
+	fs.where.add(fs.columns.tenant_uuid.eq(tenantID));
+	fs.where.add(fs.columns.association_uuid.eq(application.getUUID(assocId)));
+	fs.where.add(fs.columns.delete_flag.isNull);
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	FS = databaseManager.getFoundSet(fs);
 	var licensed = "";
 	
-	/** @type {JSFoundSet<db:/stsservoy/users>} */
-	var fs = databaseManager.getFoundSet('stsservoy','users');
-	if (fs.find()){
-		fs.user_uuid = userID;
-		fs.tenant_uuid = tenantID;
-		fs.search();
-		var rec = fs.getRecord(1);
-		assocId = rec.association_uuid;
-		
-		/** @type {JSFoundSet<db:/stsservoy/associations>} */
-		var fs2 = databaseManager.getFoundSet('stsservoy','associations');
-		if (fs2.find()){
-			fs2.association_uuid = assocId;
-			fs2.search();
-			rec = fs2.getRecord(1);
-			licenseInfo['STSmobile'] = rec.licenses_mobile;
-			licenseInfo['STS3'] = rec.licenses_desktop;
-		}
-	}
+	index = 1;
+	var rec3 = null;
+	while (rec3 = FS.getRecord(index++)){
+		allUsers.push(rec3.user_uuid+"");
+	}		
 
-	var allUsers = [];
-	/** @type {JSFoundSet<db:/stsservoy/users>} */
-	fs = databaseManager.getFoundSet('stsservoy','users');
-	if (fs.find()){
-		fs.tenant_uuid = tenantID;
-		fs.association_uuid = assocId;
-		fs.search();
-		index = 1;
-		while (index <= fs.getSize()){
-			rec = fs.getRecord(index++);
-			allUsers.push(rec.user_uuid+"");
-		}		
-	}
-	var solutionNames = [];
-	solutionNames['STS3'] = 0; solutionNames['STSmobile'] = 0; solutionNames['servoySecurityLogin'] = 0; solutionNames['servoySecurityAuthenticator'] = 0; 
+	var licensesInUse = [];
+	licensesInUse['STS3'] = 0; licensesInUse['STSmobile'] = 0; licensesInUse['servoySecurityLogin'] = 0; licensesInUse['servoySecurityAuthenticator'] = 0; 
 	var clientArray = plugins.UserManager.getClients();
 
+	//licensed += ' clients '+clientArray.length;
 	for (var index = 0;index < clientArray.length;index++){
 		var client = clientArray[index];
 		client = client.clientId;
 		var clientInfo = plugins.UserManager.getClientByUID(client);
-		if (allUsers.indexOf(clientInfo.userUid+"") == -1){continue} // not in this company
 		var clientSolution = clientInfo.solutionName;
-		if (!solutionNames[clientSolution]){solutionNames[clientSolution] = 0}
-		solutionNames[clientSolution] =  parseInt(solutionNames[clientSolution]) + 1;
-		//var clientIdle = clientInfo.idle;
-		//var beginTime = clientIdle.getTime();
-		//var idleMillis = Math.floor((currentTime - beginTime)/100);
+		
+		if (allUsers.indexOf(clientInfo.userUid+"") == -1){continue} // not in this company
+		//if (!licensesInUse[clientSolution]){licensesInUse[clientSolution] = 0}
+		if (clientSolution.search('mobile') != -1){
+			licensesInUse['STSmobile'] =  licensesInUse['STSmobile']*1 + 1*1;			
+		}
+		if (clientSolution.search('3') != -1){
+			licensesInUse['STS3'] =  licensesInUse['STS3']*1 + 1*1;			
+		}
+		if (clientSolution.search('ogin') != -1){
+			licensesInUse['servoySecurityLogin'] =  licensesInUse['servoySecurityLogin']*1 + 1*1;			
+		}
 	}
-	licensed = "L"+solutionNames['servoySecurityLogin']+" D"+solutionNames['STS3']+" M"+solutionNames['STSmobile'];
-	if (solutionNames[solutionName] && solutionNames[solutionName] == licenseInfo[solutionName]){
-		licensed += " OUTOFLICENSE";
+	var licAvail = 0;
+	if (solutionName.search('mobile') != -1){
+		licAvail = licenseAvail['STSmobile'] - licensesInUse['STSmobile'];
 	}
+	if (solutionName.search('STS3') != -1){
+		licAvail = licenseAvail['STS3'] - licensesInUse['STS3'];		
+	}
+	licensed += "License:"+licAvail+":"+licenseAvail[solutionName]+":"+licensesInUse[solutionName];
 
 	return licensed;
 }

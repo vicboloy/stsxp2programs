@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onLoadMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/associations",
 extendsID:"2FE2D88B-0E43-4246-8AEE-1BBF9C7D9D31",
 items:[
@@ -60,11 +66,11 @@ visible:false
 anchors:15,
 items:[
 {
-containsFormID:"00AF59BC-27CA-4FF5-96A2-C0001983D657",
+containsFormID:"8B09D889-B2FF-4ED0-81E5-5A559CB16EFD",
 location:"5,60",
 name:"Tenant_Members",
 relationName:"sec_associations",
-text:"divisions2",
+text:"divisions",
 typeid:15,
 uuid:"8F5107F7-4671-43B0-BEEF-EF0F1C9176E4"
 }
@@ -105,8 +111,9 @@ uuid:"F3A9DCA2-BB3E-405D-B777-1E5A102E26B5"
 ],
 name:"tenant_divisions_m",
 onHideMethodID:"3D2BE672-8F9A-4905-9686-C38325E09AED",
-onLoadMethodID:"AAA6E7E0-FD63-4AC4-BB01-645B730ED523",
+onLoadMethodID:"-1",
 onShowMethodID:"DB85C56B-DE17-440E-9C99-8A52804E3DF5",
+showInMenu:false,
 size:"410,337",
 styleName:"sts_one",
 typeid:3,

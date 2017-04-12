@@ -32,7 +32,8 @@ uuid:"06B7FF50-6D30-4EF0-81CE-42DCD33D2F0F"
 },
 {
 dataProviderID:"codesAvail",
-displayType:12,
+displayType:11,
+enabled:false,
 location:"187,144",
 name:"availableCodes",
 onActionMethodID:"-1",
@@ -111,7 +112,7 @@ uuid:"434CAF6E-1BD7-4CFE-99B4-428757208916"
 horizontalAlignment:0,
 location:"414,417",
 name:"btn_Edit",
-onActionMethodID:"5A03D84F-63FE-439C-908A-54F4839CD8F2",
+onActionMethodID:"B9579998-9104-429F-81B6-C756CA4A5C41",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
@@ -132,7 +133,7 @@ null,\
 enabled:false,
 horizontalAlignment:0,
 location:"555,144",
-name:"orderUp",
+name:"btn_OrderUp",
 onActionMethodID:"2454B75A-0C1B-4C08-847D-3EC92DF8DF03",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -146,7 +147,7 @@ uuid:"62B33A11-B3E4-48B2-B42E-2EB22D2FE859"
 horizontalAlignment:0,
 location:"215,417",
 name:"btn_Delete",
-onActionMethodID:"30AE3F2F-AA0B-4BC4-9E02-96FFD937D512",
+onActionMethodID:"01D79346-EDF3-4722-BE2F-FAD61CAF043B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"114,26",
@@ -156,18 +157,11 @@ typeid:7,
 uuid:"645FEE64-844A-432B-8689-7D0655494DCF"
 },
 {
-customProperties:"methods:{\
-onActionMethodID:{\
-arguments:[\
-null,\
-\"'routing_id'\"\
-]\
-}\
-}",
+customProperties:"",
 horizontalAlignment:0,
 location:"10,10",
 name:"btn_New",
-onActionMethodID:"1C48C95D-A375-495D-9D45-70364F986DDB",
+onActionMethodID:"11524862-D6AD-4E30-A220-00540A2C5154",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"148,26",
@@ -200,7 +194,7 @@ visible:false
 horizontalAlignment:0,
 location:"412,417",
 name:"btn_Cancel",
-onActionMethodID:"C9F5DFA1-D2EA-414C-87B3-A158BD655AB1",
+onActionMethodID:"7580CA30-7A07-4567-9825-96292FE0115B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
@@ -245,7 +239,7 @@ null,\
 enabled:false,
 horizontalAlignment:0,
 location:"555,177",
-name:"orderDown",
+name:"btn_OrderDown",
 onActionMethodID:"2454B75A-0C1B-4C08-847D-3EC92DF8DF03",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -296,9 +290,10 @@ null,\
 ]\
 }\
 }",
+enabled:false,
 horizontalAlignment:0,
 location:"547,210",
-name:"orderProcess",
+name:"btn_OrderProcess",
 onActionMethodID:"C0AA9949-83EF-4DE7-ADE0-D7095BD075E2",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
@@ -311,6 +306,7 @@ uuid:"F883F3ED-879A-4D72-9DCB-48EA4815AA59"
 {
 dataProviderID:"codesSelect",
 displayType:11,
+enabled:false,
 location:"372,144",
 name:"selectedCodes",
 onActionMethodID:"-1",

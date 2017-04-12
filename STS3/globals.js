@@ -194,16 +194,36 @@ var aLaborCodes = [];
  * @param event
  *
  * @properties={typeid:24,uuid:"C8E73EE3-0C3E-484C-ADE7-ECF0D06813E7"}
+ * @AllowToRunInFind
  */
 function doLogout(event) {
-	globals.doDialog(i18n.getI18NMessage('sts.txt.logout.exit'),
+	var response = globals.DIALOGS.showQuestionDialog(i18n.getI18NMessage('sts.txt.logout.exit'),
 		i18n.getI18NMessage('sts.txt.logout.exit.query'),
 		i18n.getI18NMessage('sts.btn.yes'),
-		i18n.getI18NMessage('sts.btn.cancel')
-		); // ticket #119 //'Exit Steel Tracking System','Exit STS program?','Exit','Cancel');
-	if (globals.dialogResponse.toLowerCase() == 'yes'){
+		i18n.getI18NMessage('sts.btn.cancel')); // ticket #119 //'Exit Steel Tracking System','Exit STS program?','Exit','Cancel');))	
+	//globals.doDialog(i18n.getI18NMessage('sts.txt.logout.exit'),
+	//	i18n.getI18NMessage('sts.txt.logout.exit.query'),
+	//	i18n.getI18NMessage('sts.btn.yes'),
+	//	i18n.getI18NMessage('sts.btn.cancel')
+	//	); // ticket #119 //'Exit Steel Tracking System','Exit STS program?','Exit','Cancel');
+	if (response == i18n.getI18NMessage('sts.btn.yes')){
 		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT) {
 			application.showURL("http://" + application.getHostName() + "/webclient.html", "_top");
+			//application.output('sesson.appName '+session.appName);
+			//go through and remove ALL windows besides main
+			/** var windowArray = globals.aTrackWindows;
+			for (var index = 1;index < windowArray.length;index++){
+				var windowName = windowArray[index];
+				if (windowName == null){return}
+				if (windowName == " "){return}
+				if (windowName.search('STS') == 0){continue}//cannot bring main to front, so ignore
+				var windowx = application.getWindow(windowName.trim());
+				windowx.setSize(30,30);
+				application.sleep(10);
+				windowx.hide();
+				application.sleep(4);
+				//windowx.destroy();
+			} */
 		} else {
 			globals.secLogout('STS3','','');
 		}
@@ -852,7 +872,7 @@ var formsToRemove = [];
 function onSolutionOpen() {
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STS3/globals.js')}
 	var registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
-	application.output('Client Registered '+registered);
+	//application.output('Client Registered '+registered);
 	plugins.UserManager.getRegistration();
 	//plugins.UserManager.updateClientInfo();
 	APPLICATION_NAME = application.getSolutionName();
@@ -1706,34 +1726,10 @@ function getAssocCorporate(assocId){
 	
 }
 /**
- * @param {JSEvent} event
- * @param {JSRecord} record
- * 
- * Return true if deletable emmployee_id
- * @properties={typeid:24,uuid:"656EE83D-AAB6-41C9-9C99-56174C76274D"}
+ * @param namedVar
+ *
+ * @properties={typeid:24,uuid:"873B0310-62CA-4B0A-BC08-C07DEF16BC6A"}
  */
-function checkEmployeeDelete(event,record){
-	// see transactions and  users, return true if deletable
-	var okayToDelete = false;
-	var employeeId = record.employee_id;
-	/** @type {QBSelect<db:/stsservoy/users>} */
-	var ee = databaseManager.createSelect('db:/stsservoy/users');
-	ee.result.add(ee.columns.employee_id);
-	ee.where.add(ee.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	ee.where.add(ee.columns.delete_flag.isNull);
-	ee.where.add(ee.columns.employee_id.eq(employeeId));
-	var EE = databaseManager.getFoundSet(ee);
-	if (EE.getSize() == 0){
-		/** @type {QBSelect<db:/stsservoy/transactions>} */
-		var tr = databaseManager.createSelect('db:/stsservoy/transactions');
-		tr.result.add(tr.columns.trans_id);
-		tr.where.add(tr.columns.employee_id.eq(employeeId));
-		tr.where.add(tr.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-		tr.where.add(tr.columns.delete_flag.isNull);
-		var TR = databaseManager.getFoundSet(tr);
-		if (TR.getSize() == 0){
-			return true;
-		}
-	}
-	return false;
+function trackURL(namedVar){
+	application.output('tracked URL is '+namedVar);
 }

@@ -54,20 +54,19 @@ function assocListCount(){
 function newRecord(event, location, changeSelection) {
 	existingDivisions = [];
 	var newFS = foundset.duplicateFoundSet();
-	for (var index = 1;index <= newFS.getSize();index++){
-		var rec = newFS.getRecord(index);
+	/** @type {JSFoundSet<db:/stsservoy/associations>} */
+	var rec = null; var index = 1;
+	while (rec = newFS.getRecord(index++)){
 		existingDivisions.push(rec.association_name);
 	}
 	/** @type {JSFoundset<db:/stsservoy/tenant_list>} */
 	var newRec = _super.newRecord(event, location, changeSelection);
-	//newRec.tenant_group_uuid = globals.secCurrentAssociationMasterID;
 	logic_flag = 0;
 	edit_date = new Date();
 	tenant_uuid = globals.session.tenant_uuid;
 	elements.newEntry.requestFocus();
 	forms.tenant_divisions_m.onEdit(event,true);
 	return newRec;
-	//return _super.newRecord(event, location, changeSelection)
 }
 
 
@@ -88,11 +87,14 @@ function onShow(firstShow, event) {
 /**
  * @properties={typeid:24,uuid:"11AFB06B-9040-47F5-A0AC-C8FD6F298797"}
  * @AllowToRunInFind
+ * @SuppressWarnings(wrongparameters)
  */
 function showLicensing(){
 	totalLicenses = scopes.globals.getTenantUsedLicenses();
 	if (totalLicenses.search('-') != -1){
-		globals.errorDialogMobile(null,'1073','','');//1073 license count exceeded
+		if (application.getApplicationType() == APPLICATION_TYPES.SMART_CLIENT){
+			globals.errorDialogMobile(null,'1073','','');//1073 license count exceeded
+		}
 	}
 }
 /**
@@ -104,7 +106,6 @@ function showLicensing(){
  */
 function onActionCompanyRename(event) {
 	var formName = event.getFormName();
-	//var elName = event.getElementName();
 	var provider = forms[formName].elements['companyName'].getDataProviderID();
 	var oldName = controller.getDataProviderValue(provider);
 	var newMsg = i18n.getI18NMessage('sts.txt.rename.company.msg').replace('XXX',oldName);
@@ -112,7 +113,6 @@ function onActionCompanyRename(event) {
 	if (!newName || newName == "" || newName.toUpperCase() == oldName.toUpperCase()){return}
 	newName = newName.toUpperCase();
 	forms[formName].controller.setDataProviderValue(provider,newName);
-	//change company name
 }
 /**
  *
@@ -204,42 +204,11 @@ function onDataChangeDivision(oldValue, newValue, event) {
  */
 function deleteRecord(event, index) {
 	// update to qbselect 20161121
-	var rec = foundset.getSelectedRecord();
-	if (rec.association_uuid == rec.tenant_group_uuid){return} // Do not delete an admin association
-	if (foundset.getSize() == 2){return} // Do not delete an admin account and the only association
-	/** @type {QBSelect<db:/stsservoy/jobs>} */
-	var jobFS = databaseManager.createSelect('db:/stsservoy/jobs');
-	jobFS.result.add(jobFS.columns.job_id);
-	jobFS.where.add(jobFS.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
-	jobFS.where.add(jobFS.columns.delete_flag.isNull);
-	jobFS.where.add(jobFS.columns.association_id.eq(scopes.globals.session.associationId));
-	var J = databaseManager.getFoundSet(jobFS);
-	if (J.getSize() != 0){
-		globals.errorDialogMobile(event,'1071','',''); //1071, record has data. will not be deleted.
-		//globals.DIALOGS.showErrorDialog(i18n.getI18NMessage(''),message)
-		return;   // Do not delete association that is attached to a job
-	}
-	/** @type {QBSelect<db:/stsservoy/users>} */
-	var u = databaseManager.createSelect('db:/stsservoy/users');
-	u.result.add(u.columns.user_uuid);
-	u.where.add(u.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
-	u.where.add(u.columns.association_uuid.eq(association_uuid));
-	u.where.add(u.columns.delete_flag.isNull);
-	var U = databaseManager.getFoundSet(u);
-	if (U.getSize() != 0){
-		globals.errorDialogMobile(event,'1071','',''); //1071, record has data. will not be deleted.
-		return;   // Do not delete association that is attached to a job		
-	}
-	/** @type {QBSelect<db:/stsservoy/status_description>} */
-	var s = databaseManager.createSelect('db:/stsservoy/status_description');
-	s.result.add(s.columns.status_description_id);
-	s.where.add(s.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
-	s.where.add(s.columns.association_id.eq(association_uuid));
-	s.where.add(s.columns.delete_flag.isNull);
-	var S = databaseManager.getFoundSet(s);
-	if (S.getSize() != 0){
-		globals.errorDialogMobile(event,'1071','',''); //1071, record has data. will not be deleted.
-		return;   // Do not delete association that is attached to a job		
+
+	var status = globals.checkAssociationsEmpty(association_uuid);
+	if (status != ''){
+		globals.errorDialogMobile(event,'1071','',status); //1071, record has data. will not be deleted.
+		return false;   // Do not delete association that is attached to a job				
 	}
 	forms.tenant_divisions_m.onEdit(event,true);
 	return _super.deleteRecord(event, index);

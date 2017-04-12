@@ -325,7 +325,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"96D0E7FA-8490-4C31-95D5-2F1E3514219D"}
  */
 function onRecordSelection(event, buttonTextSrc) {
-	elements.btn_Delete.visible = elements.btn_New.visible && globals.checkJobEmpty(job_id);
+	elements.btn_Delete.visible = (elements.btn_New.visible && globals.checkJobEmpty(job_id) == '');
 	//vCustomerNumber = (st2_jobs_to_customers) ? sts_job_to_customer.customer_number : "";
 	//application.setValueListItems('stsvlt_customers',[]);
 	vCustomerId = customer_id;
@@ -384,4 +384,10 @@ function loadFoundset(){
 function onActionEdit(event) {
 	elements.job_number.requestFocus();
 	return _super.onActionEdit(event)
+}
+/**
+ * @properties={typeid:24,uuid:"087AEC21-D6C3-4058-A495-E85A4ECA352F"}
+ */
+function 	additionalEditCancelFunctions(){
+	vCustomerId = customer_id;
 }

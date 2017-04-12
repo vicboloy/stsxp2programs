@@ -31,9 +31,9 @@ uuid:"0EE55360-F14A-4C9B-A4CE-17776E801148"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"employee_id",
+dataProviderID:"sts_transactions_to_employee.employee_number",
 location:"2002,20",
-name:"employee_id",
+name:"employee_number",
 size:"78,20",
 transparent:true,
 typeid:7,
@@ -42,9 +42,9 @@ uuid:"12ABA7B2-4950-4031-9DBE-557A1D4C8CA5"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-labelFor:"employee_id",
+labelFor:"employee_number",
 location:"2002,0",
-name:"employee_id_label",
+name:"employee_number_label",
 size:"78,20",
 text:"i18n:table.general.employee_id",
 toolTipText:"i18n:table.general.employee_id",

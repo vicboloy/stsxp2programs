@@ -19,6 +19,17 @@ function onLoad(event) {
 		if (application.isInDeveloper()){application.output('test on load callback '+globals.rfHtml);}
 		//application.output(plugins.file.getDefaultUploadLocation());
 	}
+	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		callback = plugins.WebClientUtils.generateCallbackScript(globals.rfExitPage, [], true);
+		script = 'function rfExitPage(){' + callback + '}';
+		markup = '<html><head><script type="text/javascript">var deviceName = "device";' + script +
+		'captureKey(false,68);' + // F10 is decimal 68
+		'</script></head><body onload="rfExitPage()">' +
+		//'<script type="text/javascript" charset="utf-8" src="ebapi-modules.js"></script>'+
+		'</body></html>';
+	globals.rfHtml = markup;
+		
+	}
 	//var newArray = 
 	globals.locationList();
 	
@@ -60,11 +71,19 @@ function onActionTemp(event) {
  * @properties={typeid:24,uuid:"B48A3328-0E53-428C-979D-FE0FA2E98598"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+		var width = application.getScreenWidth();
+		if (width > 400){
+			var win = application.getActiveWindow();
+			win.setSize(330,win.getHeight());
+			
+		}
+		
+	}
 	globals.mobForm = i18n.getI18NMessage('sts.mobile.main');
 	globals.mobProg = i18n.getI18NMessage('sts.mobile.main');
 	//var licCount = plugins.UserManager.Server().getSettingsProperty('license.0.licenses');
 	//plugins.dialogs.showErrorDialog('Message','License count'+licCount);
 	//globals.rfGetLocalStorage('deviceName'); //JOE DISABLE
-
 }
 

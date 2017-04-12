@@ -107,6 +107,55 @@ function fileReceipt(file){
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
 function getKissFile(event){
+	if (scopes.prefs.lFabsuiteInstalled){
+		var getFskiss = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.kiss.fabsuite'),i18n.getI18NMessage('sts.txt.kiss.fabsuite'),[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')])
+		globals.errorDialogMobile(event,'sts.txt.kiss.fabsuite',null,getFskiss);
+		if (getFskiss == i18n.getI18NMessage('sts.btn.yes')){
+			application.output('test get fs kiss');
+			
+			var attachTo = plugins.fabsuite.fsSetLib('E:\\p2programs\\javaCom\\FabSuiteXMLInterface.dll');
+			application.output('attached to fslib '+attachTo);
+			var xmlQuery = '<FabSuiteXMLRequest>\
+							<Connect>\
+								<IPAddress>localhost</IPAddress>\
+								<PortNumber>3306</PortNumber>\
+								<Username>admin</Username>\
+								<Password>fab</Password>\
+							</Connect>\
+						</FabSuiteXMLRequest>';
+			var response = plugins.fabsuite.fsXML(xmlQuery);
+			application.output('fs xml response '+response);
+			var test0 = plugins.fabsuite.fsSetLib('C:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\FabSuiteXMLInterface.dll');
+			var xmlConnect = '<FabSuiteXMLRequest>\
+									<Connect>\
+										<IPAddress>localhost</IPAddress>\
+										<PortNumber>3306</PortNumber>\
+										<Username>admin</Username>\
+										<Password>fab</Password>\
+									</Connect>\
+								</FabSuiteXMLRequest>';
+
+			var test = plugins.fabsuite.fsXML(xmlConnect);
+			application.output('test fs interface '+test);
+			var xmlConn2 = '	<FabSuiteXMLRequest>\
+									<Version/>\
+								</FabSuiteXMLRequest>';
+			test = plugins.fabsuite.fsXML(xmlConn2);
+			application.output('test fs interface '+test);//two jobs in FabSuite Sample1 and FabSuite2
+			var xmlConn3 = '	<FabSuiteXMLRequest>\
+				<ExportJob>\
+					<JobNumber>FabSuite2</JobNumber>\
+					<FileName>04030testjob.kss</FileName>\
+					<IncludeLotNumbers>true</IncludeLotNumbers>\
+				</ExportJob>\
+			</FabSuiteXMLRequest>';
+			test = plugins.fabsuite.fsXML(xmlConn3);
+			application.output('test '+test);
+		} else {
+			return;			
+		}
+		return;
+	}
 	scopes.jobs.appendQuantityToIdfile = null; //import append data
 	var success = history.removeForm('kiss_barcode_request');
 	if (success){

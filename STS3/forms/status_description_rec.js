@@ -75,8 +75,9 @@ function onShowStatusDescr(firstShow, event) {
  * @properties={typeid:24,uuid:"8A5C87F2-70B2-42A6-8ACB-8109CDFEB443"}
  */
 function onActionDelete(event,itemDescription) {
-	if (!deletableStatus()){
-		globals.errorDialogMobile(event,1071,'','');
+	var status = globals.checkStatusEmpty(status_description_id);
+	if (status != ''){
+		globals.errorDialogMobile(event,1071,'',status);
 		return;
 	}
 	var itemDescr = i18n.getI18NMessage('sts.txt.remove.x',new Array(status_code));
@@ -501,49 +502,6 @@ function getFabShops(event){
 		assocName.push(rec.association_name);
 	}
 	application.setValueListItems('stsvl_fab_shops',assocName,assocID);
-}
-/**
- * @properties={typeid:24,uuid:"A306ECC1-E3DE-4C1D-B1E3-B05FE18E807C"}
- */
-function deletableStatus(){
-	/** @type {QBSelect<db:/stsservoy/status_description>} */
-	var s = databaseManager.createSelect('db:/stsservoy/status_description');
-	s.result.add(s.columns.status_description_id);
-	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	s.where.add(s.columns.delete_flag.isNull);
-	s.where.add(s.columns.end_for_status.eq(status_description_id));
-	var S = databaseManager.getFoundSet(s);
-	if (S.getSize() > 0){return false}
-	
-	/** @type {QBSelect<db:/stsservoy/transactions>} */
-	var t = databaseManager.createSelect('db:/stsservoy/transactions');
-	t.result.add(t.columns.trans_id);
-	t.where.add(t.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	t.where.add(t.columns.delete_flag.isNull);
-	t.where.add(t.columns.status_description_id.eq(status_description_id));
-	var T = databaseManager.getFoundSet(s);
-	if (T.getSize() > 0){return false}
-
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
-	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
-	i.result.add(i.columns.idfile_id);
-	i.where.add(i.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	i.where.add(i.columns.delete_flag.isNull);
-	i.where.add(i.columns.status_description_id.eq(status_description_id));
-	var I = databaseManager.getFoundSet(i);
-	if (I.getSize() > 0){return false}
-	
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
-	var j = databaseManager.createSelect('db:/stsservoy/idfiles');
-	j.result.add(j.columns.idfile_id);
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	j.where.add(j.columns.delete_flag.isNull);
-	j.where.add(j.columns.status_description_id.eq(status_description_id));
-	var J = databaseManager.getFoundSet(j);
-	if (J.getSize() > 0){return false}
-	
-	return true;
-
 }
 /**
  * Handle focus gained event of the element.

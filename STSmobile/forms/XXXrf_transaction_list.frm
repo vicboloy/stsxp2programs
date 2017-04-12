@@ -217,7 +217,7 @@ typeid:7,
 uuid:"FD2B5B02-8545-4AFB-9A15-6AC8C23A5481"
 }
 ],
-name:"rf_transaction_list",
+name:"XXXrf_transaction_list",
 navigatorID:"-1",
 onShowMethodID:"-1",
 showInMenu:true,

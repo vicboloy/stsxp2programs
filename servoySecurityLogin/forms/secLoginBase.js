@@ -131,8 +131,8 @@ function login(){
 			
 			if (application.isInDeveloper()){application.output('passcheck '+passCheck+' '+password+' '+tenantID);}
 			checkLicense = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[application.getSolutionName(),tenantID,userID]);
-			if (application.isInDeveloper()){application.output('license use '+checkLicense)}
-			if(passCheck && checkLicense.search('OUT') == -1){
+			//application.output('license use '+checkLicense);
+			if(passCheck && checkLicense.split(':')[1] > 0){
 				if (security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 					globals.secCurrentUserID = userID;
 					globals.secCurrentUserName = userName;
@@ -151,7 +151,9 @@ function login(){
 						if (seconds.length == 0) {seconds = "0"+seconds}
 						var mobileDate = "systemTime.setLocal = '"+date.getFullYear()+"-"+month+"-"+days+"T"+hours+"-"+minutes+"-"+seconds+"';";
 						if (application.isInDeveloper()){application.output('date '+mobileDate)}
-						plugins.WebClientUtils.executeClientSideJS(mobileDate);
+						try {
+							plugins.WebClientUtils.executeClientSideJS(mobileDate);
+						} catch (e) {}
 					}
 					return true;
 				}
@@ -160,16 +162,24 @@ function login(){
 	} else {
 		if (application.isInDeveloper()){application.output('No Tenant ID')}
 	}
-	//application.output('user id '+userID);
-	var message = "Login Failed ";
-	if (checkLicense.search('OUT') != -1){
-		message += '. '+checkLicense; // only add license info if login failure license-related
+	var licExceeded = i18n.getI18NMessage('sts.txt.license.exceeded');
+	var message = "\n"+i18n.getI18NMessage('sts.txt.login.failed');
+	var licenseData = checkLicense.split(':');
+	var licRemain = licenseData[1];
+	var licAvail = licenseData[2];
+	message += '.\n'+i18n.getI18NMessage('sts.txt.license.available',[application.getSolutionName(),licRemain,licAvail]); // only add license info if login failure license-related
+	//var licTotal = licenseData[2];
+	//var licUsed = licenseData[3];
+	if (licRemain <= 0 && passCheck){
+		message += '.\n'+i18n.getI18NMessage('sts.txt.license.error');
+		errorMessage = licExceeded;
 	}
-	//application.output('message '+message+' text '+errorMessage+'xx');
-	if (errorMessage == message){
+	forms.secLoginExample.enableLicenseWarn(message);
+	
+	if (message && errorMessage == message){
 		message = message +"!";
 	}
-	errorMessage = message;
+	errorMessage = i18n.getI18NMessage('sts.txt.login.failed');
 	return null;
 	//var licenses = globals.secCheckLicense();
 	//licenses = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[userName]);
@@ -190,6 +200,7 @@ function callError(msg){
  * @properties={typeid:24,uuid:"A3E09D87-2EED-4CA4-8E02-C5014E5AA356"}
  */
 function onLoad(event) {
+
 	textAreaString = "";
 	for (var item in plugins){
 		if (application.isInDeveloper()){application.output('loaded '+item)}
@@ -210,7 +221,7 @@ function onLoad(event) {
 		if (application.isInDeveloper()){application.output(application.getSolutionName())}
 		var solutionName = application.getSolutionName(); // addresses #45
 
-		var clientArray = plugins.UserManager.getClients();
+		var clientArray = new Array();//plugins.UserManager.getClients();
 		var licenses = licenseCount();
 		licenseTotal = licenses;
 		var currentTime = new Date().getTime();
@@ -288,10 +299,10 @@ var debugText = "";
  * @properties={typeid:24,uuid:"0FB115A9-BF63-405C-9C73-6BED2239EA8E"}
  */
 function licenseCount() {
-	for (var index = 0;index < 5;index++){
-		if (application.isInDeveloper()){application.output('index '+index+': '+plugins.UserManager.Server().getSettingsProperty('license.' + index + '.licenses'))}
+	for (var index = 0;index < 0;index++){
+		//if (application.isInDeveloper()){application.output('index '+index+': '+plugins.UserManager.Server().getSettingsProperty('license.' + index + '.licenses'))}
 	}
-	if (application.isInDeveloper()){application.output('URL '+plugins.UserManager.getSettingsProperty('server.0.URL'))}
+	//if (application.isInDeveloper()){application.output('URL '+plugins.UserManager.getSettingsProperty('server.0.URL'))}
 	   var _nTotal = 0;
 	   var _nCount = parseInt(plugins.UserManager.Server().getSettingsProperty('licenseManager.numberOfLicenses'), 10);
 	   if (application.isInDeveloper()){application.output('licenses call '+plugins.UserManager.getSettingsProperty('licenseManager.numberOfLicenses'))}

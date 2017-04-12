@@ -90,15 +90,13 @@ var codesSelect = "";
  *
  * @properties={typeid:24,uuid:"01A10811-600F-47BB-9936-2B301CB8668A"}
  */
-function onShowLoadData(firstShow, event) {
+function onShow(firstShow, event) {
 	// disable form on entry. Must hit edit
 	if (firstShow) {
 		onEdit(event,false);
 	}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,null);
 	setRouteCodesLists();
-	elements.orderUp.enabled = false;
-	elements.orderDown.enabled = false;
 }
 /**
  * @properties={typeid:24,uuid:"FA9BA21D-6B8A-45D9-9468-FFC8F13645FF"}
@@ -120,13 +118,15 @@ function getAvailableCodes(){
 function onActionSelectAvailable(event) {
 	//get last code selected in each list, cannot repeat name or locks it up
 	var item = elements.availableCodes.getSelectedElements()[0];
-	if (item == undefined){return}
+	if (!item){return}
 	lastStatusAvail = item;
+	aStatusCodes = application.getValueListArray('stsvl_route_status_avail');
 	aStatusCodes = removeElementFromArray(aStatusCodes,item);
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
 	
 	//now adjust routed codes
 	aRouteCodes = addElementToArray(aRouteCodes,item);
+	onActionOrderByProcess(null,'stsvl_route_status_avail');
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
 }
 /**
@@ -141,6 +141,7 @@ function onActionUnselect(event) {
 	if (item == undefined){return}
 	aStatusCodes = addElementToArray(aStatusCodes,item);
 	application.setValueListItems('stsvl_route_status_avail',aStatusCodes);
+	onActionOrderByProcess(event,'stsvl_route_status_avail');
 	aRouteCodes = removeElementFromArray(aRouteCodes,item);
 	application.setValueListItems('stsvl_route_status_selected',aRouteCodes);
 }
@@ -148,34 +149,17 @@ function onActionUnselect(event) {
  * @properties={typeid:24,uuid:"D2D53AB2-7D32-49B1-A929-1BDAB3AC0875"}
  */
 function additionalEditFunctions(){
-	aStatusCodesTemp = aStatusCodes;
-	aRouteCodesTemp = aRouteCodes;
-	aStatusCodesTemp = application.getValueListArray('stsvl_route_status_avail');
-	aRouteCodesTemp = application.getValueListArray('stsvl_route_status_selected');
-	elements.orderUp.enabled = editFlag;
-	elements.orderDown.enabled = editFlag;
-	elements.orderProcess.enabled = editFlag;
-	elements.orderProcess.visible = editFlag;
-	elements.route_code.requestFocus();
 	//elements.deselect.enabled = editFlag;
 }
 /**
  * @properties={typeid:24,uuid:"1FCC8418-4959-4FE3-A91E-0FEB1C5EDCB3"}
  */
 function additionalEditCancelFunctions(){
-	application.setValueListItems('stsvl_route_status_selected',aRouteCodesTemp,true);
-	application.setValueListItems('stsvl_route_status_avail',aStatusCodesTemp,true);
-	aStatusCodes = aStatusCodesTemp;
-	aRouteCodes = aRouteCodesTemp;
-	elements.orderUp.enabled = editFlag;
-	elements.orderDown.enabled = editFlag;
-	//elements.deselect.enabled = editFlag;
 }
 /**
  * @properties={typeid:24,uuid:"32AB060D-1D0C-4B46-8DF7-46E47EE4B3D5"}
  */
 function additionalActionAddFunctions(){
-	getAvailableCodes();
 }
 /**
  * @properties={typeid:24,uuid:"59830BC0-4CBF-4733-A15B-119A2150F088"}
@@ -261,8 +245,8 @@ function onActionMoveUp(event,sortDirection) {
 function onActionSelect(event) {
 	//var selection = "";
 	moveNoMove = !moveNoMove;
-	elements.orderUp.enabled = moveNoMove;
-	elements.orderDown.enabled = moveNoMove;
+	elements.btn_OrderDown.enabled = moveNoMove;
+	elements.btn_OrderUp.enabled = moveNoMove;
 }
 /**
  * @param name
@@ -346,22 +330,9 @@ function onActionClose(event) {
  * @properties={typeid:24,uuid:"174A28ED-90C3-408E-A0C0-F555186AD4C8"}
  */
 function onRecordSelection(event) {
-	forms.routing_codes.setRouteCodesLists();
-	return _super.onRecordSelection(event);
+	setRouteCodesLists();
+	return _super.onRecordSelection(event,null);
 }
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"66376CF4-6BB9-4439-B3E2-FA9C7FE5E2F9"}
- */
-function xxxunusedonActionProcessOrder(event) {
-	/**elements.orderDown.visible = !lUseStsProcessOrder;
-	elements.orderUp.visible = !lUseStsProcessOrder;*/
-}
-
 /**
  * Perform the element default action.
  *
@@ -370,11 +341,19 @@ function xxxunusedonActionProcessOrder(event) {
  * @properties={typeid:24,uuid:"C0AA9949-83EF-4DE7-ADE0-D7095BD075E2"}
  */
 function onActionOrderByProcess(event,valuelist) {
-	var fs = sts_status_code_container;
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var fs1 = databaseManager.createSelect('db:/stsservoy/status_description');
+	fs1.result.add(fs1.columns.status_description_id);
+	fs1.where.add(fs1.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs1.where.add(fs1.columns.delete_flag.isNull);
+	fs1.sort.add(fs1.columns.status_sequence.asc);
+	var fs = databaseManager.getFoundSet(fs1);
 	var newSelect = [];
 	var selectArray = application.getValueListArray(valuelist);
-	for (var index = 1;index <= fs.getSize();index++){
-		var record = fs.getRecord(index);
+	var index = 1;
+	/** @type {JSRecord<db:/stsservoy/status_description>} */
+	var record = null;
+	while (record = fs.getRecord(index++)){
 		var fabShopName = globals.aMobAssocs[record.association_id];
 		var stat = record.status_code;
 		var fabShop = fabShopName+', '+stat;
@@ -412,6 +391,7 @@ function onActionOrderByProcessAvailx(event) {
  * @properties={typeid:24,uuid:"93B16432-EF20-477C-B4D9-28C85C2B2894"}
  */
 function onActionSaveEdit(event) {
+	onEdit(event,false);
 	if (!route_code){
 		globals.errorDialogMobile(event,433,'route_code','');
 		elements.route_code.requestFocus();
@@ -463,6 +443,7 @@ function onActionSaveEdit(event) {
 		fabShopId = globals.aMobAssocs[fabShopIn[0]];
 		stat = fabShopIn[1];
 		fabShop = fabShopId+','+stat.trim();
+		/** @type {String} */
 		var stationId = fabShopsList[fabShop];
 		if (stationIdsDone.indexOf(application.getUUID(stationId)) != -1){continue}
 		var idx = RTD.newRecord();
@@ -479,5 +460,89 @@ function onActionSaveEdit(event) {
 	//  status_description == globals.aMobAssocs[assocID] = assocName 
 	//  [BF00BA53-8D07-4A70-B835-24D5BD5DAB91="NORTH SITE",FAA9BDE5-6B66-4930-981C-5AF0004EE1A4="SOUTH SITE"]
 	//  fabShopsList = ["BF00BA53-8D07-4A70-B835-24D5BD5DAB91,CUT"=024DEEF5-C8B9-44A2-916D-0C2FCC300E1A]
-	return _super.onActionSaveEdit(event);
+	_super.onActionSaveEdit(event);
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ * @param {string} recordKeyID
+ *
+ * @properties={typeid:24,uuid:"11524862-D6AD-4E30-A220-00540A2C5154"}
+ */
+function onActionAdd(event, recordKeyID) {
+	onEdit(event,true);
+	getAvailableCodes();
+	return _super.onActionAdd(event, recordKeyID)
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"7580CA30-7A07-4567-9825-96292FE0115B"}
+ */
+function onActionCancelEdit(event) {
+	onEdit(event,false);
+	setRouteCodesLists();
+	return _super.onActionCancelEdit(event)
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"B9579998-9104-429F-81B6-C756CA4A5C41"}
+ */
+function onActionEdit(event) {
+	onEdit(event,true);
+	return _super.onActionEdit(event)
+}
+/**
+ * @param {JSEvent} event
+ * @param {Boolean} editing
+ *
+ * @properties={typeid:24,uuid:"21B84385-BF35-4479-BDEC-C18D88269D3D"}
+ */
+function onEdit(event, editing){
+	elements.btn_Cancel.enabled = editing;
+	elements.btn_Cancel.visible = editing;
+	elements.btn_Delete.enabled = !editing;
+	elements.btn_Delete.visible = !editing;
+	elements.btn_Edit.enabled = !editing;
+	elements.btn_New.enabled = !editing;
+	elements.btn_Save.enabled = editing;
+	elements.btn_Save.visible = editing;
+	elements.btn_OrderDown.enabled = editing;
+	elements.btn_OrderUp.enabled = editing;
+	elements.btn_OrderProcess.enabled = editing;
+	forms.routing_codes_lst.controller.enabled = !editing;
+	elements.availableCodes.enabled = editing;
+	elements.selectedCodes.enabled = editing;
+	elements.allow_more_codes.enabled = editing;
+	elements.route_code.enabled = editing;
+	elements.route_description.enabled = editing;
+	codesAvail = null;
+	codesSelect = null;
+	
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"01D79346-EDF3-4722-BE2F-FAD61CAF043B"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function onActionDelete(event) {
+	var routeId = routing_id;
+	var status = globals.checkRoutingCodesEmpty(routeId);
+	if (status != ''){
+		scopes.globals.errorDialogMobile(event,'1071','',status); //1071, record has data. will not be deleted.
+		return false;
+	}
+	return _super.onActionDelete(event);
 }

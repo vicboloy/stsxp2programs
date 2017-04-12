@@ -15,7 +15,6 @@ var windowName = "Employee Edit";
  */
 var employeeFullName = "";
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"EA67BADD-A0DE-431B-990E-658FFA0FB68F"}
@@ -76,6 +75,7 @@ function onActionEdit(event, editStatus) {
 		var empId = forms['employees_rec'+formRev].currentRecord.employee_id;
 		var fs = forms['employees_lstB'+formRev].foundset;
 		for (var idx = 1;idx <= fs.getSize();idx++){
+			/** @type {JSFoundSet<db:/stsservoy/employee>} */
 			var rec = fs.getRecord(idx);
 			if (rec.employee_id.toString() == empId){
 				fs.setSelectedIndex(idx);
@@ -129,6 +129,7 @@ function onActionSaveEdit(event){
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"F545C75F-A84C-43DF-BA74-1AB91158C183"}
+ * @SuppressWarnings(wrongparameters)
  */
 function delRecord(event) {
 	//var win = application.getActiveWindow();
@@ -136,9 +137,9 @@ function delRecord(event) {
 	//var formRev = formSplit[formSplit.length-1];
 
 	var rec = foundset.getSelectedRecord();
-	var okayDelete = globals.checkEmployeeDelete(event,rec);
-	if (!okayDelete){
-		scopes.globals.errorDialogMobile(event,'1071',null,null);
+	var status = globals.checkEmployeeEmpty(event,rec);
+	if (status != ''){
+		scopes.globals.errorDialogMobile(event,'1071',null,status);
 		return;
 	}
 	globals.doDialog(i18n.getI18NMessage('sts.txt.remove.employee'),
@@ -149,7 +150,7 @@ function delRecord(event) {
 		try {
 			delete_flag = 99;
 			edit_date = new Date();
-			var rec = foundset.getSelectedRecord();
+			rec = foundset.getSelectedRecord();
 			databaseManager.saveData(rec);
 		//controller.deleteRecord(); 
 		} catch (e) {}
@@ -234,6 +235,7 @@ function onRecordSelection(event) {
 	var uFs = databaseManager.getFoundSet(u);
 	uFs.loadRecords();
 	if (uFs.getSize() != 0){
+		/** @type {JSRecord<db:/stsservoy/users>} */
 		var rec = uFs.getRecord(1);
 		user_uuid = rec.user_uuid;
 	}

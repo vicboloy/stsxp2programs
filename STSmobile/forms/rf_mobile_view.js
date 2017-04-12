@@ -177,6 +177,9 @@ function resetWorkerCode(){
  */
 function onShowForm(firstShow,event) {
 	if (application.isInDeveloper()){application.output('fs size '+foundset.getSize())}
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+
+	}
 	requiredFields = [];
 	var formName = event.getFormName();
 	var tabSequence = [];
@@ -261,38 +264,7 @@ function onShowForm(firstShow,event) {
 	forms[formName].elements[focusFirst].requestFocus();
 	controller.setTabSequence(tabSequence);
 	forms[formName].elements[focusFirst].requestFocus();
-
-
-			/**
-			application.output('elements'+elements);
-			globals.session.errorElement = 'job';
-			currentLoad = "";
-			currentJob = "";
-			elements.job.requestFocus();
-			controller.focusField('job',false);
-			pcsStatCount = "/";
-			locationWeight = 0;
-			locationPieces = 0;
-			globals.session.errorElement = 'status';
-			elements.status.requestFocus();
-			controller.focusField('status',false);
-			*/
-	if (application.isInDeveloper()){application.output('fs size '+foundset.getSize())}
-
 }
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"3162C58C-4A45-4E6F-A266-8247A8DA4939"}
- */
-function onActionKeys(event) {
-	if (application.isInDeveloper()){application.output('key pressed '+event.getType())}
-	
-}
-
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.
  *
@@ -378,4 +350,51 @@ function clearForm(){
 function onHide(event) {
 	foundset.clear();
 	return true
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D7E529C3-3D6F-473F-858F-F9308C91C8DD"}
+ * @AllowToRunInFind
+ */
+function onActionBundle(event) {
+	if (!currentBundle || currentBundle.length == 0 || currentBundle == "L"){
+		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && elements.errorWindow && elements.errorWindow.visible){
+			//globals.rfErrorHide(event);
+			return false;
+		}
+		scopes.globals.rfCreateBundle(event);
+		return false;
+	} else {
+		return true;
+	}
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"C2F92EE1-BC2D-4469-8B66-C8962D79B9EA"}
+ */
+function onActionOptional(event) {
+	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	var tabOrder = tabFieldOrder;
+	var index = tabOrder.indexOf(elementName);
+	index = (index < tabOrder.length-1) ? index+1 : index;
+	if (requiredFields.indexOf(elementName) == -1){
+		var entry = event.getSource().getDataProviderID();
+		var form = forms[formName];
+		var value = form[entry];
+		//if (!value ||  value == ""){
+			index = tabOrder.indexOf(elementName)*1+1;
+			//return true;
+		//}
+	}
+	forms[formName].elements[tabOrder[index]].requestFocus();
+	forms.rf_mobile_view.controller.focusField(tabOrder[index],true);
+	return true;
 }

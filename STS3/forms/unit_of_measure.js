@@ -36,8 +36,14 @@ function onActionAdd(event){
 * @param event
  *
  * @properties={typeid:24,uuid:"2E41F535-CE15-4213-B79C-20B4F4122D6D"}
+ * @SuppressWarnings(wrongparameters)
  */
 function onActionDelete(event) {
+	var status = '';
+	if (status != ''){
+		scopes.globals.errorDialogMobile(event,'1071',null,status);
+		return;
+	}
 	globals.doDialog(i18n.getI18NMessage('sts.txt.units.of.measure.remove'),
 		i18n.getI18NMessage('sts.txt.units.of.measure.remove.delete'),
 		i18n.getI18NMessage('sts.txt.delete'),

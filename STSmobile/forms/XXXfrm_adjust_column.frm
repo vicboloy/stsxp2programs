@@ -7,7 +7,7 @@ typeid:19,
 uuid:"793C62AB-0535-41CC-AD85-0D079D536B07"
 }
 ],
-name:"frm_adjust_column",
+name:"XXXfrm_adjust_column",
 showInMenu:true,
 styleName:"sts_one",
 typeid:3,

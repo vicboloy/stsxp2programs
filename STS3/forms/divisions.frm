@@ -168,7 +168,6 @@ uuid:"ABB948A9-8566-4B02-9F2A-417C7AE5AA8A"
 anchors:11,
 dataProviderID:"association_name",
 editable:false,
-enabled:false,
 location:"27,91",
 name:"company_name",
 onDataChangeMethodID:"E5DE0617-7A12-4660-BCE7-52FBF6BCA1A8",

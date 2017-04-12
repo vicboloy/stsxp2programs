@@ -66,14 +66,20 @@ function onActionAddForm(event){
  *
  *
  * @properties={typeid:24,uuid:"30AE3F2F-AA0B-4BC4-9E02-96FFD937D512"}
+ * @SuppressWarnings(wrongparameters)
  */
 function onActionDelete(event) {
+	var status = globals.checkJobEmpty(job_id);
+	if (status != ''){
+		scopes.globals.errorDialogMobile(event,'1071',null,status);
+		return;
+	}
 	var joe = globals.DIALOGS.showQuestionDialog(
 	i18n.getI18NMessage('sts.txt.delete.record'),
 	i18n.getI18NMessage('sts.txt.delete')+'?',
 	i18n.getI18NMessage('sts.txt.delete'),
 	i18n.getI18NMessage('sts.txt.cancel'));
-	application.output('joe :'+joe+': :'+i18n.getI18NMessage('sts.txt.delete')+':');
+	//application.output('joe :'+joe+': :'+i18n.getI18NMessage('sts.txt.delete')+':');
 	// addresses #50 part 3 ticket
 	if (globals.DIALOGS.showQuestionDialog(
 		i18n.getI18NMessage('sts.txt.delete.record'),
@@ -84,7 +90,7 @@ function onActionDelete(event) {
 		delete_flag = 99;
 		databaseManager.saveData(foundset.getRecord(controller.getSelectedIndex()));
 		foundset.loadRecords();
-		elements.btn_Delete.visible = globals.checkJobEmpty(job_id);
+		elements.btn_Delete.visible = (globals.checkJobEmpty(job_id) == '');
 	}
 }
 /**
@@ -112,7 +118,6 @@ function onRecordSelection(event,buttonTextSrc) {
  */
 function onActionEdit(event) {
 	newRecord = null;
-	//databaseManager.setAutoSave(false);
 	var count = databaseManager.getFoundSetCount(foundset);
 	if (count > 0){
 		onEdit(event,true);
@@ -305,6 +310,7 @@ function getParentForm() {
  * @properties={typeid:24,uuid:"2884B6C8-F0D4-4EB9-8833-76D9526872D4"}
  */
 function addElementToArray(array,element){
+	if (!element){return}
 	varvchkElement = element.replace(/ /g,"");
 	/** @type {Array} [newArray] */
 	var newArray = new Array;
@@ -321,6 +327,7 @@ function addElementToArray(array,element){
  * @properties={typeid:24,uuid:"07EC411E-09A8-46D6-B6A5-B97DCF38EAA3"}
  */
 function removeElementFromArray(array,element){
+	if (!element){return}
 	element = element.replace(/ /g,"");
 	var newArray = [];
 	var length = array.length;

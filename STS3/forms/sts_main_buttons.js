@@ -146,9 +146,13 @@ function onActionLogout(event) {
  */
 function onShow(firstShow, event) {
 	if (firstShow){
+		//var width = solutionModel.getForm('sts_main_buttons').width;
+		var win = application.getActiveWindow();
+		win.setSize(1000,800);
 		//plugins.UserManager.updateClientInfo();
 	}
-	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		// more web storage alert stuff
 		application.output('web app alert');
 		var alert = 'alert("here in start"+localStorage.WinMain);';
 		plugins.WebClientUtils.executeClientSideJS(alert);

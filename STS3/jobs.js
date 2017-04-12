@@ -7828,3 +7828,84 @@ function onRenderSetLogical(event){
 		fld.bgcolor = 'pink';
 	}
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param jobNumber
+ *
+ * @properties={typeid:24,uuid:"4E64BE25-E780-477B-AC43-6538C0F424B8"}
+ */
+function resetSampleData(jobNumber){
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var j = databaseManager.createSelect('db:/stsservoy/jobs');
+	j.result.add(j.columns.job_id)
+	j.where.add(j.columns.job_number.eq(jobNumber));
+	j.where.add(j.columns.delete_flag.isNull);
+	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var J = databaseManager.getFoundSet(j);
+	if (J.getSize() == 0){
+		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.job.not.found',jobNumber),i18n.getI18NMessage('sts.txt.job.not.found',jobNumber));
+		return;
+	}
+	var jobRec = J.getRecord(1);
+	var jobId = jobRec.job_id;
+	// get sheets, get piecemarks, act on idfiles, act on transactions of idfiles
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var sh = databaseManager.createSelect('db:/stsservoy/sheets');
+	sh.where.add(sh.columns.delete_flag.isNull);
+	sh.where.add(sh.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	sh.where.add(sh.columns.job_id.eq(jobId));
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var pm = sh.joins.add('db:/stsservoy/piecemarks');
+	pm.on.add(pm.columns.sheet_id.eq(pm.columns.sheet_id));
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var id = sh.joins.add('db:/stsservoy/idfiles');
+	id.on.add(id.columns.piecemark_id.eq(pm.columns.piecemark_id));
+	sh.result.add(id.columns.idfile_id);
+	sh.groupBy.add(id.columns.idfile_id);
+	sh.result.distinct = true;
+	/** @type {JSDataSet<idfile_id:String>} */
+	var ID = databaseManager.getDataSetByQuery(sh,-1);
+	var idfileIdList = [];
+	for (var index = 1;index <= ID.getMaxRowIndex();index++){
+		ID.rowIndex = index;
+		//if (idfileIdList.indexOf(ID.idfile_id) == -1){
+			idfileIdList.push(ID.idfile_id);
+		//}
+		//application.output('rec '+ID.idfile_id);
+	}
+	null;
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var id2 = databaseManager.createSelect('db:/stsservoy/idfiles');
+	id2.result.add(id2.columns.idfile_id);
+	id2.where.add(id2.columns.idfile_id.isin(idfileIdList));
+	var ID2 = databaseManager.getFoundSet(id2);
+	
+	if (ID2.getSize() > 0){ // update idfiles
+		var up2 = databaseManager.getFoundSetUpdater(ID2);
+		up2.setColumn('status_description_id',null);
+		up2.setColumn('id_location',null);
+		up2.setColumn('bundle_id',null);
+		up2.setColumn('heat_id',null);
+		up2.setColumn('id_on_hold',0);
+		up2.setColumn('shipped_quantity',0);
+		up2.setColumn('ship_load_id',null);
+		up2.setColumn('received_load_id',null);
+		up2.setColumn('current_load_id',null);
+		up2.setColumn('delete_flag',null);
+		up2.setColumn('deleted_date',null);
+		up2.setColumn('edit_date',new Date());
+		up2.performUpdate();
+	}
+	
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var id4 = databaseManager.createSelect('db:/stsservoy/transactions');
+	id4.result.add(id4.columns.trans_id);
+	id4.where.add(id4.columns.idfile_id.isin(idfileIdList));
+	id4.where.add(id4.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var ID4 = databaseManager.getFoundSet(id4);
+	
+	if (ID4.getSize() > 0){ //delete all transactions, purged from database
+		ID4.deleteAllRecords();
+	}
+}

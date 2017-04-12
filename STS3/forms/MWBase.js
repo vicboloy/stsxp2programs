@@ -818,6 +818,10 @@ function addWindowList(windowName){
 	}
 	globals.aTrackWindows.push(windowName);
 	application.setValueListItems('stsvl_nav_windows',globals.aTrackWindows);
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT) {
+		forms.sts_nav_window.updateUI();
+		
+	}
 }
 /**
  *
@@ -1415,4 +1419,15 @@ function onActionClickPiecemarkView(event) {
 function onActionClickI18nView(event){
 	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.i18n.view'),'i18n_edit',50,50,700,400,false);
 
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"20CD4D80-A640-49BF-AF27-B4FFEBC2D404"}
+ */
+function onActionClickSampleDataReset(event){
+	var response = globals.DIALOGS.showQuestionDialog(i18n.getI18NMessage('sts.btn.sample.data'),i18n.getI18NMessage('sts.btn.sample.data')+'?',i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no'));
+	if (response == i18n.getI18NMessage('sts.btn.yes')){
+		scopes.jobs.resetSampleData('04030');
+	}
 }

@@ -1621,19 +1621,32 @@ function rfF3(){
 	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
 	var inProgress = (thisFunction == flagFunction); // toggle function
 	flagFunction = (inProgress) ? null : thisFunction;
-	var win = application.getWindow('Transaction List');
-	if (!win){
-		win = application.createWindow('Transaction List',JSWindow.MODAL_DIALOG);
-		win.setLocation(0,0);
-		win.setSize(240,300);
-		win.show('trans_history');
+
+	var form = forms.rf_mobile_view;//ticket #151 regarding MC9690 navigation with arrow keys
+	if (form.elements.tablessHistory.visible){
+		forms.rf_mobile_view.elements.tablessHistory.tabIndex = 1;
+		form.elements.tablessHistory.visible = false;
+		form.elements.tablessHistory.enabled = false;
+		//plugins.window.removeShortcut('UP');
+		//plugins.window.removeShortcut('DOWN');
+		//plugins.window.removeShortcut('RIGHT');
+		//plugins.window.removeShortcut('LEFT');
+		forms.trans_history.foundset.setSelectedIndex = 1;
+		//onReturnFromFunction();
 	} else {
-		if (win.isVisible()){
-			win.hide();
-			onReturnFromFunction();
-		} else {
-			win.show('trans_history');
+		form.elements.tablessHistory.visible = true;
+		form.elements.tablessHistory.enabled = true;
+		if (!globals.shortcutsSet){
+			plugins.window.createShortcut('UP',globals.rfRecordUp,'rf_mobile_view');
+			plugins.window.createShortcut('DOWN',globals.rfRecordDown,'rf_mobile_view');
+			plugins.window.createShortcut('RIGHT',globals.rfRecordDetail,'rf_mobile_view');
+			plugins.window.createShortcut('LEFT',globals.rfRecordDetailClose,'rf_mobile_view');
+			shortcutsSet = true;
 		}
+		
+	
+		//form.elements.tablessHistory.requestFocus();
+		//plugins.window.createShortcut(shortcut,method)
 	}
 	null;
 }
@@ -2345,7 +2358,8 @@ function rfFunctionKeys(screen){
 	//functionKeyProcedure[3] = '';
 	//functionKeyProcedure[8] = '';
 	//functionKeyProcedure[9] = '';
-	switch( screen )
+	if (application.isInDeveloper()){application.output('screen function keys '+screen)}
+	switch( screen.replace(/\'/g,"") )//i18n screen issue with embedded i18n quotes
 	{
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.main')]://'Main':
 			globals.mobForm = i18n.getI18NMessage('sts.mobile.main');
@@ -8561,6 +8575,8 @@ function getI18nWindowName(currWinName){
 		/** @type {JSRecord<db:/stsservoy/i18n_table>} */
 		var rec2 = II.getRecord(1);
 		mobileWindows[currWinName] = rec2.message_value;
+		var altCurrWin = currWinName.replace(/\'/g,"\\'");
+		mobileWindows[altCurrWin] = altCurrWin;//ticket #151 single quotes in i18n
 	} else {
 		mobileWindows[currWinName] = '';
 	}
@@ -8869,4 +8885,55 @@ function rfCreateBundle(event){
 		forms[event.getFormName()].currentBundle = mob.bundle.Id;
 	}
 	forms[event.getFormName()].onElementFocusLost(event);
+}
+/**
+ * @properties={typeid:24,uuid:"C7949C53-B416-4E01-8EF2-1FCB63ADB4EB"}
+ */
+function rfRecordUp(){
+	var fs = forms.trans_history.foundset;
+	var index = fs.getSelectedIndex();
+	if (index == 1){
+		return;
+	}
+	fs.setSelectedIndex(--index);
+	application.updateUI();
+	return true;
+	//forms.trans_history.elements.trans_status.requestFocus();
+}
+/**
+ * @properties={typeid:24,uuid:"028F95C0-9C9D-4E2D-A8E2-ACD5D42DB647"}
+ */
+function rfRecordDown(){
+	var fs = forms.trans_history.foundset;
+	var index = fs.getSelectedIndex();
+	if (index == fs.getSize()){
+		return;
+	}
+	fs.setSelectedIndex(++index);
+	application.updateUI();
+	return true;
+}
+/**
+ * @properties={typeid:24,uuid:"41C43FD0-F644-47D9-BE42-3ADB855EC84F"}
+ */
+function rfRecordDetail(){
+	forms.trans_history.onActionDetail();
+	application.updateUI();
+	return true;
+}
+/**
+ * @properties={typeid:24,uuid:"7B86E057-772F-4D25-87BB-FFC6C24194AA"}
+ */
+function rfRecordDetailClose(){
+	forms.trans_history.onActionCloseDetail();
+	application.updateUI();
+	return true;
+}
+/**
+ * @param i18nText
+ *
+ * @properties={typeid:24,uuid:"4E0FDB84-3EBC-493D-9FC1-AE61A2D42AE8"}
+ */
+function i18nSanify(i18nText){
+	return i18n.getI18NMessage(i18nText).replace(/\'/g,"\\'");//ticket #151 i18n embedded single quote issue
 }

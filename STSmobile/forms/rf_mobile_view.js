@@ -176,6 +176,10 @@ function resetWorkerCode(){
  * @AllowToRunInFind
  */
 function onShowForm(firstShow,event) {
+	if (firstShow){
+		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(1,true);
+		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(2,true);
+	}
 	if (application.isInDeveloper()){application.output('fs size '+foundset.getSize())}
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 

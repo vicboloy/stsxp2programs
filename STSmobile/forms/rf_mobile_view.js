@@ -4,7 +4,6 @@
  * @properties={typeid:35,uuid:"C76F50CA-737E-4472-BAFA-AAFBF5300E79",variableType:-4}
  */
 var stayField = false;
-
 /**
  * @type {String}
  *

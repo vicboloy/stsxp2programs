@@ -401,4 +401,3 @@ function onActionOptional(event) {
 	forms.rf_mobile_view.controller.focusField(tabOrder[index],true);
 	return true;
 }
-//This is a test of manual push of git. Added x.

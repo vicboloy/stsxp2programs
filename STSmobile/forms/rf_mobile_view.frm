@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onElementFocusLostMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/idfiles",
 encapsulation:0,
 extendsID:"72E0B299-FCCD-4C42-8A48-15F726CE17F1",
@@ -1099,6 +1105,7 @@ location:"99,52",
 name:"bundlein",
 onActionMethodID:"D7E529C3-3D6F-473F-858F-F9308C91C8DD",
 onDataChangeMethodID:"7A558DA6-FB57-40FA-AA5A-D44A5091208E",
+onFocusLostMethodID:"-1",
 placeholderText:"i18n:sts.txt.bundle.list",
 selectOnEnter:true,
 tabSeq:2,
@@ -1268,7 +1275,7 @@ visible:false
 ],
 name:"rf_mobile_view",
 onElementFocusGainedMethodID:"2F820D1B-B581-4085-BC49-6524CF069E3B",
-onElementFocusLostMethodID:"-1",
+onElementFocusLostMethodID:"A9A81B38-47EA-441D-9F69-4FBB6818A58C",
 onHideMethodID:"C23785CE-89F6-40F2-B99F-2ABB6EE05902",
 onLoadMethodID:"-1",
 onRenderMethodID:"-1",

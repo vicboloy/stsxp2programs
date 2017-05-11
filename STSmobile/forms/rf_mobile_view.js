@@ -1,9 +1,29 @@
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"C76F50CA-737E-4472-BAFA-AAFBF5300E79",variableType:-4}
+ * @properties={typeid:35,uuid:"C76F50CA-737E-4472-BAFA-AAFBF5300E79"}
  */
-var stayField = false;
+var stayField = '';
+/**
+ * @properties={typeid:35,uuid:"A9E241CD-9D14-4332-A936-2F48EFB92CD9",variableType:-4}
+ */
+var fieldBadEntry = false;
+/**
+ * @properties={typeid:35,uuid:"039D460E-945E-490C-BB44-AFE440B34CA8",variableType:-4}
+ */
+var fieldErroredIndex = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"2C0CD9AE-ACA9-4FF9-910A-02BCB7E41811"}
+ */
+var currentField = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"31BE79E9-C17C-4F46-A21F-CEC76AA55BB5"}
+ */
+var fieldErroredName = '';
 /**
  * @type {String}
  *
@@ -68,6 +88,28 @@ var loadNumber = "";
  * @properties={typeid:35,uuid:"E0ADF44D-B8F1-4DE2-AB91-FE3DDAED3364"}
  */
 var currentBundle = "";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"EAAF2D65-72BB-45D6-9826-F5F371F6C957",variableType:4}
+ */
+var dc = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"98986AC8-0155-41DF-A4BF-2FEDCB94DA62"}
+ */
+var focusLost = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F6DCF346-D576-40F1-80BB-CD14F815D1BE"}
+ */
+var focusGain = '';
+/**
+ * @properties={typeid:35,uuid:"FF87A397-F569-4B79-BF92-38AA539398CB",variableType:-4}
+ */
+var focusSkipFlag = false;
 /**
  * @properties={typeid:24,uuid:"CC386C84-184A-40DA-B592-66A5398ADC06"}
  */
@@ -178,6 +220,7 @@ function onShowForm(firstShow,event) {
 	if (firstShow){
 		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(1,true);
 		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(2,true);
+		fieldErroredName = '';
 	}
 	if (application.isInDeveloper()){application.output('fs size '+foundset.getSize())}
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
@@ -264,16 +307,18 @@ function onShowForm(firstShow,event) {
 				//elementUnits.putClientProperty('tabSeq',-1);
 			}
 	}
-	forms[formName].elements[focusFirst].requestFocus();
+	//forms[formName].elements[focusFirst].requestFocus();
 	controller.setTabSequence(tabSequence);
-	forms[formName].elements[focusFirst].requestFocus();
+	if (firstShow){
+		application.output(' REM rf_mobile_view show focus');
+		forms[formName].elements[focusFirst].requestFocus();
+	}
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"A9A81B38-47EA-441D-9F69-4FBB6818A58C"}
  * @AllowToRunInFind
@@ -281,20 +326,59 @@ function onShowForm(firstShow,event) {
 function onElementFocusLost(event) {
 	var formName = event.getFormName();
 	var elementName = event.getElementName();
-	var tabOrder = tabFieldOrder;
-	var index = tabOrder.indexOf(elementName);
-	index = (index < tabOrder.length-1) ? index+1 : index;
-	if (requiredFields.indexOf(elementName) != -1){
-		var entry = event.getSource().getDataProviderID();
-		var variable = forms[formName];
-		var value = variable[entry];
-		if (!value ||  value == ""){
-			index = tabOrder.indexOf(elementName);
-			//return true;
-		}
+	focusLost = elementName;
+	application.output(dc++ +' -REM Focus Lost -'+elementName+'\n stayfield:'+stayField+'\n focusGain:'+focusGain+'\n focusLost:'+focusLost+'\n fieldErroredName:'+fieldErroredName);
+	if (elements.errorWindow.visible == true){
+		controller.focusField('errorWindow',false);
+		application.output(dc++ +' -REM error window showing Focus Lost field:'+elementName);
+		focusSkipFlag = true;
+		return;
 	}
-	forms[formName].elements[tabOrder[index]].requestFocus();
-	return true;
+	if (focusSkipFlag){//assume this loss is intentional
+		//focusSkipFlag = false;
+		return;
+	}
+
+	var gain = tabFieldOrder.indexOf(focusGain);
+	var lose = tabFieldOrder.indexOf(elementName);
+	if (lose != -1 && gain != -1 && gain < lose){
+		application.output(dc++ +' -REM move to lower tab, gain '+gain+' lose '+lose);
+		// clear out higher tabs
+		for (var index = lose;index > gain;index--){
+			var fieldName = tabFieldOrder[index];
+			var provId = forms.rf_mobile_view.elements[fieldName].getDataProviderID();
+			forms.rf_mobile_view[provId] = '';
+		}
+		//stayField = ''; //clear out, this required-field complete
+		return;
+	}
+	if (stayField != '' && fieldErroredName == ''){//control tabbing out of required field
+		var dataProv = elements[elementName].getDataProviderID();
+		application.output(dc++ +' -REM tab out required field with /'+forms.rf_mobile_view[dataProv]+'/')
+		application.output('REM does forms.rf_mobile_view[dataProv] !=  \'\''+(forms.rf_mobile_view[dataProv] != '')+' length '+forms.rf_mobile_view[dataProv].length)
+		if (forms.rf_mobile_view[dataProv].length > 1){
+			stayField = ''; //clear out, this required-field complete
+			elements[getNextTabbed(elementName,false)].requestFocus();
+			return;
+		}
+
+		stayField = elementName;
+		fieldErroredName = elementName;
+		return;
+	}
+	if (fieldErroredName != '' && fieldErroredName != elementName){
+		application.output(dc++ +' -REM FL field name focus to '+fieldErroredName)
+		elements[fieldErroredName].requestFocus();
+		return;
+	}
+
+	var dataProv = elements[elementName].getDataProviderID();
+	if (0==1 && this[dataProv] == '' && fieldErroredName != elementName){
+		application.output(dc++ +' -REM FL data provider empty')
+		elements[elementName].requestFocus();
+		stayField = true;
+	}
+	return;
 }
 
 /**
@@ -302,33 +386,95 @@ function onElementFocusLost(event) {
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"2F820D1B-B581-4085-BC49-6524CF069E3B"}
  */
 function onElementFocusGained(event) {
 	var formName = event.getFormName();
 	var elementName = event.getElementName();
+	var fieldStayFlag = entryRequired(elementName);
+	focusGain = elementName;
+	application.output(dc++ + ' +REM Focus Gain +field:'+elementName+'\n stayfield:'+stayField+'\n focusGain:'+focusGain+'\n focusLost:'+focusLost+'\n fieldErroredName:'+fieldErroredName);
 	globals.session.errorForm = formName;
 	globals.session.errorElement = elementName;
-	if (forms['rf_mobile_view'].elements.errorWindow.visible == true){
-		forms['rf_mobile_view'].controller.focusField('errorWindow',false);
+
+	if (focusSkipFlag){
+		elements[focusLost].requestFocus();
+		if (entryRequired(focusLost)){
+			fieldErroredName = focusLost;
+			stayField = focusLost;
+			focusLost = focusLost;
+			focusGain = focusLost;
+		}
+		focusSkipFlag = false;
 		return;
 	}
-	var indexCurrent = tabFieldOrder.indexOf(elementName);
-	for (var index = 0;index < indexCurrent;index++){
-		var prevField = tabFieldOrder[index];
-		if (requiredFields.indexOf(prevField) != -1){
-			var entry = forms[formName].elements[prevField].getDataProviderID();
-			var variable = forms[formName];
-			var value = variable[entry];
-			if (!value ||  value == ""){
-				forms[formName].elements[prevField].requestFocus();
-				return true;
-			}
+	if (forms['rf_mobile_view'].elements.errorWindow.visible == true){
+		forms['rf_mobile_view'].controller.focusField('errorWindow',false);
+		application.output(dc++ + ' +REM error window showing Focus Gain field:'+elementName)
+		return;
+	}
+	if (stayField != '' && elementName != stayField){//control tabbing out of required field
+	// focus new field if field complete, or to earlier field, or is last field
+		application.output(dc++ + ' +REM stayfield Focus Gain')
+		if ( tabFieldOrder.indexOf(elementName) < tabFieldOrder.indexOf(stayField)
+				|| (tabFieldOrder.indexOf(stayField) == tabFieldOrder.length-1)
+				|| (fieldErroredName == '')){
+				//|| (tabFieldOrder.indexOf(elementName) != 0)){
+			application.output(dc++ + ' +REM stayfield no fld change Focus Gain')
+			fieldErroredName = (fieldStayFlag) ? elementName : '';
+			stayField = (fieldStayFlag) ? elementName : '';
+			provId = elements[elementName].getDataProviderID();
+			forms[formName][provId] = '';
+			return;
+		} else {
+			var provId = elements[stayField].getDataProviderID();
+			//forms[formName][provId] = '';
+			//focusSkipFlag = true;
+			application.output(dc++ + ' +REM stayfield fld change:'+stayField+' Focus Gain')
+			elements[stayField].requestFocus();
+			return;
 		}
 	}
-	return true;
+	if (tabFieldOrder.indexOf(focusGain) < tabFieldOrder.indexOf(focusLost)){
+		application.output(dc++ + ' +REM change to lower field Focus Gain')
+		// clear out higher tabs
+		for (var index = tabFieldOrder.indexOf(focusLost);index >= tabFieldOrder.indexOf(focusGain);index--){
+			var fieldName = tabFieldOrder[index];
+			application.output(dc++ +' +REM clearing field '+fieldName);
+			var provId = forms.rf_mobile_view.elements[fieldName].getDataProviderID();
+			forms.rf_mobile_view[provId] = '';
+		}
+		//currentField = focusGain;
+		//focusSkipFlag = true;
+		if (entryRequired(focusGain)){
+			forms[formName].fieldErroredName = focusGain;
+		}
+		forms[formName].elements[focusGain].requestFocus();
+		return;
+	}
+	if (stayField == '' && fieldStayFlag){
+		application.output(dc++ + ' +REM entry reqd but not stayed Focus Gain')
+		for (index = tabFieldOrder.indexOf(elementName);index < tabFieldOrder.length;index++){
+			var fld = tabFieldOrder[index];
+			var dataProv = elements[fld].getDataProviderID();
+			forms[formName][dataProv] = '';
+			application.output(dc++ +'  +REM clearing field X= '+tabFieldOrder[index]);
+			//elements[tabFieldOrder[index]].requestFocus();
+		}
+		stayField = elementName;
+		return;
+	}
+	if (fieldErroredName != '' && fieldErroredName != elementName){
+		application.output(dc++ + ' +REM field errored & current not erredFocus Gain')
+		//focusSkipFlag = true;
+		elements[fieldErroredName].requestFocus();
+		stayField = fieldErroredName;
+		return;
+	}
+	if (1==1){return}
+
+	return;
 }
 /**
  *
@@ -369,8 +515,10 @@ function onActionBundle(event) {
 			return false;
 		}
 		scopes.globals.rfCreateBundle(event);
-		return false;
+		return true;
 	} else {
+		//currentField = event.getElementName();
+		stayField = event.getElementName();
 		return true;
 	}
 }
@@ -392,12 +540,49 @@ function onActionOptional(event) {
 		var entry = event.getSource().getDataProviderID();
 		var form = forms[formName];
 		var value = form[entry];
-		//if (!value ||  value == ""){
-			index = tabOrder.indexOf(elementName)*1+1;
-			//return true;
-		//}
+		index = getNextTabbed(elementName,true);
+		currentField = getNextTabbed(elementName,false);
+	}
+	if (false && currentField){
+		forms[formName].elements[currentField].requestFocus();
+		forms.rf_mobile_view.controller.focusField(currentField,true);
+		return true;		
 	}
 	forms[formName].elements[tabOrder[index]].requestFocus();
 	forms.rf_mobile_view.controller.focusField(tabOrder[index],true);
 	return true;
+}
+/**
+ * @param {String} currentFld
+ * @param {Boolean} indexTrue
+ *
+ * @properties={typeid:24,uuid:"73284836-3CBE-4B3C-9C32-5263BA542928"}
+ */
+function getNextTabbed(currentFld,indexTrue){
+	var index = tabFieldOrder.indexOf(currentFld);
+	if (index < tabFieldOrder.length-1){
+		index++;
+	}
+	if (indexTrue){
+		return index;
+	} else {
+		return tabFieldOrder[index];
+	}
+}
+/**
+ * @param fieldName
+ *
+ * @properties={typeid:24,uuid:"9B2C8F36-9FF5-453B-9A4A-63EE8F713E63"}
+ */
+function entryRequired(fieldName){
+	return (requiredFields.indexOf(fieldName) != -1) ? true : false;
+}
+/**
+ * @properties={typeid:24,uuid:"732C6ECD-44F7-49D6-A6D5-EC17AB1671CF"}
+ */
+function fieldNextTab(){
+	var focused = forms.rf_mobile_view.focusGain;
+	var nextTab = forms.rf_mobile_view.getNextTabbed(focused,false);
+	application.output(' REM fieldNextTab focused'+focused+' next tab '+nextTab);
+	forms.rf_mobile_view.elements[nextTab].requestFocus();
 }

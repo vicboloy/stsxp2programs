@@ -69,9 +69,17 @@ function onActionTemp(event) {
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"B48A3328-0E53-428C-979D-FE0FA2E98598"}
+ * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
 	if (firstShow){
+		if (application.getServerURL().search('https') != -1){
+			elements.showHelp.fgcolor = 'green';
+		} else {
+			elements.showHelp.fgcolor = 'red';
+		}
+		
+
 		var width = application.getScreenWidth();
 		if (width > 400){
 			var win = application.getActiveWindow();

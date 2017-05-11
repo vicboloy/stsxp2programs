@@ -52,6 +52,7 @@ uuid:"83549217-B6E7-4528-803C-1CF8CBFAC287"
 {
 extendsID:"E082B205-F6E9-4457-9D80-4E59FA43A491",
 fontType:"Courier New,1,14",
+transparent:true,
 typeid:7,
 uuid:"9CF96803-C2D1-4CE1-BC68-31E89AF32AA3"
 },

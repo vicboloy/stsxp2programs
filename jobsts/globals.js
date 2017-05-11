@@ -2745,14 +2745,15 @@ function rfErrorShow(message){
  * @properties={typeid:24,uuid:"376C6315-A576-4572-AD5F-9208DDF1E543"}
  */
 function rfErrorHide(event) {
-	var formName = session.errorForm;application.output('rferrorhide');
+	var formName = session.errorForm;
 	if (!formName){
 		formName = application.getActiveWindow().controller.getName(); // 20150402 in case this is called outside current window
 	}
 	var elName = session.errorElement;
-	if (session.errorElementAlt != null){
+	if (session.errorElementAlt != null && event.getFormName != 'rf_mobile_view'){
 		elName = session.errorElementAlt;
 	}
+	application.output(' REM rfErrorHide return and activate field:'+elName);
 	globals.mobDisableForm(false);
 	forms[formName].elements.errorWindow.visible = false;
 	forms[formName].elements.errorWindow.enabled = false;
@@ -2766,6 +2767,7 @@ function rfErrorHide(event) {
 		//forms[session.errorForm].elements[session.errorElement].requestFocus();
 		//forms.rf_transactions.elements.current.requestFocus();
 		forms[formName].controller.focusField(elName,true);
+		forms[formName].elements[elName].requestFocus();
 		//forms[formName].elements[elName].selectAll();
 		session.errorForm = null;
 		session.errorElement = null;
@@ -3017,6 +3019,10 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	session.userEntry = newValue;
 	//plugins.scheduler.removeJob('updateField')
 	var formName = application.getActiveWindow().controller.getName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	/**if (flagF8){
 		//var formName = event.getFormName();
 		forms[formName].statusCode = "";
@@ -3024,10 +3030,9 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	}*/ // 20150402 for errors originating from input fields
 	var statusCheck = rfStatusCheck(newValue);
 	if (statusCheck == null){
+		application.output('REM change Status event '+event.getElementName());
 		errorDialogMobile(event,401,'status',null);//401: This is not a valid status code
-		//var formName = event.getFormName();
 		onFocusClear(event);
-		//forms[formName].resetStatusCode();
 		return true;
 	}
 	var permitted = [];
@@ -3088,6 +3093,7 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	mob.statusCode = newValue;
 	session.stationId = m.stations[session.associationId+', '+mob.statusCode];
 	if (formName == "rf_mobile_view"){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 		rfMobileViewNextField(event);
 	} else {
 		rfEmptyNextField(event,'location');
@@ -3123,8 +3129,6 @@ function onFocusClear(event) {
 	var elName = event.getElementName();
 	var entry = event.getSource().getDataProviderID();
 	var variable = forms[formName];
-	//var value = variable[entry];
-	//value = "";
 	variable[entry] = '';
 	forms[formName].controller.focusField(elName,true);
 }
@@ -4134,7 +4138,8 @@ function errorDialogMobile(event,errorNum,returnField,additionalMsg){
 	if (!errorMessage){i18n.getI18NMessage("1048")}
 	errorMessage = errorMessage + " " + additionalMsg;
 	if (mobile){
-		globals.rfErrorShow(errorMessage);DIALOGS.showerro
+		forms.rf_mobile_view.fieldErroredName = session.errorElement;
+		globals.rfErrorShow(errorMessage);//DIALOGS.showerro
 	} else {
 		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.error.number', new Array(errorNum)),errorMessage);
 	}
@@ -4279,6 +4284,10 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
 	var formName = event.getFormName();
 	forms[formName].currentID = "";
 	var barcodeId = globals.checkBarcode(scannedID);
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	if (!barcodeId){
 		globals.errorDialogMobile(event,701,'current',null);//701 This ID Number was not found.
 		globals.logger(true,'Barcode does not exist.');
@@ -4286,7 +4295,7 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
 	}
 	rfProcessBarcode(event);
 	rfResetRevisionsField(formName);//clear Revisions field if there
-	application.updateUI();
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	return true;
 }
 /**
@@ -4649,27 +4658,32 @@ function onDataChangeJob(oldValue, newJob, event) {
 	}
 	var baseForm = getBaseFormName(null);
 	//application.output('base form '+baseForm);
-	var fieldName = event.getElementName();
+	var elementName = event.getElementName();
 	///var returnField = formName+'.'+fieldName;
 	//application.output('return field '+returnField);
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	if (newJob == "" || newJob == null){
-		forms[formName].controller.focusField(fieldName,true);
+		forms[formName].controller.focusField(elementName,true);
 		return true;
 	}
 	var assocID = session.associationId;//#94 permit OFFICE to find piecmarks and status
 	if (session.appName.search('STSmobile') != -1 && scopes.globals.isOfficeFunction(event)){
 		assocID = null;
 	}
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
+	
 	if (!rfJobCheck(newJob,assocID)){
-		//onFocusClear(event);
 		// 101 This job number was not found.
-		errorDialogMobile(event,101,fieldName,null);
+		//if (forms[formName].stayfield !== 'undefined'){forms[formName].stayfield = true}
+		//if (forms[formName].fieldBadEntry !== 'undefined'){forms[formName].fieldBadEntry = true}
+		errorDialogMobile(event,101,elementName,null);
 		return true;
 	}
 	forms[formName].vJobNumber = newJob;
 	forms[formName].vCustNumber = "";
 	getCustomersByJob();
-	
 	switch (baseForm){
 	case 'piecemark':
 	case 'piecemark_view':
@@ -4688,7 +4702,6 @@ function onDataChangeJob(oldValue, newJob, event) {
 				//forms[formName].vCustRec = ds;
 				loadPcmkForm();
 				forms[formName].elements.shop_order.requestFocus();
-				//application.output('cust id '+ds.customer_id);
 			} else {
 				onFocusTabsSTS(event);
 			}
@@ -4697,20 +4710,20 @@ function onDataChangeJob(oldValue, newJob, event) {
 			// 
 			break;
 		case 'rf_bundles':
-			rfEmptyNextField(event,'bundlein');
-			break;
 		case 'rf_shipping':
-			rfEmptyNextField(event,'load');
-			break;
 		case 'rf_mobile_view':
 		case 'rf_mobile':
-			forms.rf_mobile_view.onElementFocusLost(event);
+			if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
+			forms.rf_mobile_view.fieldNextTab();
+			//forms.rf_mobile_view.elements[forms[formName].currentField].requestFocus();
+			//forms.rf_mobile_view.onElementFocusLost(event);
 			break;
 		default:
 	}
 	/**if (formName == 'rf_bundles'){
 		rfEmptyNextField(event,'bundle');
 	}*/
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	return true;
 }
 /**
@@ -4772,7 +4785,12 @@ function onDataChangeBundle(oldValue, bundle, event) {
 	 * have idfile -> piecemark -> 
 	 */
 	var formName = event.getFormName();
+	var elementName = event.getElementName();
 	if (onDataChangeFixEntry(oldValue,bundle,event)){return true;}
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
+
 	if (bundle == "L"){
 		//onFocusClear(event);
 		if (forms[formName].currentBundle){forms[formName].currentBundle = ''}
@@ -4786,6 +4804,7 @@ function onDataChangeBundle(oldValue, bundle, event) {
 		rfErrorShow(msg);
 		return true;
 	}
+
 	session.userEntry = bundle;
 	if (!barcodeIsBundle(bundle)){
 		scopes.globals.rfCreateBundle(event);
@@ -4804,6 +4823,7 @@ function onDataChangeBundle(oldValue, bundle, event) {
 		}
 	}
 	rfGetSpecsBundle();
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}		
 	if (formName == 'rf_mobile_view'){
 		rfMobileViewNextField(event);
 	} else {
@@ -5437,6 +5457,10 @@ function onDataChangeLoad(oldValue, newValue, event) {
 	var formName = event.getFormName();
 	var baseForm = getBaseFormName(null);
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	session.jobIdBack = session.jobId;
 	if (forms[formName].vJobRec && forms[formName].vJobRec.job_id){
 		session.jobId = forms[formName].vJobRec.job_id;
@@ -5471,6 +5495,7 @@ function onDataChangeLoad(oldValue, newValue, event) {
 			
 			break;
 		default:
+			if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 			rfMobileViewNextField(event);
 	}
 	//} else {
@@ -8868,6 +8893,11 @@ function rfResetRevisionsField(formName){
  */
 function rfCreateBundle(event){
 	bundleCreateValid();
+	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	var message = i18n.getI18NMessage('sts.txt.use.new.bundle.number')+
 			session.bundlePrefix+session.bundleSuffix;
 	var response = DIALOGS.showQuestionDialog(
@@ -8880,11 +8910,15 @@ function rfCreateBundle(event){
 		mob.bundle.Id = "";
 		onFocusClear(event);
 		return true;
-	} else {
-		mob.bundle.Id = session.bundlePrefix+session.bundleSuffix;
-		forms[event.getFormName()].currentBundle = mob.bundle.Id;
 	}
-	forms[event.getFormName()].onElementFocusLost(event);
+	mob.bundle.Id = session.bundlePrefix+session.bundleSuffix;
+	forms.rf_mobile_view.currentBundle = mob.bundle.Id;
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
+	forms.rf_mobile_view.fieldNextTab();
+	//forms.rf_mobile_view.focusGain = forms.rf_mobile_view.getNextTabbed(elementName,false);
+	//forms.rf_mobile_view.focusLost = elementName;
+
+	//forms.rf_mobile_view.elements[forms.rf_mobile_view.focusGain].requestFocus();
 }
 /**
  * @properties={typeid:24,uuid:"C7949C53-B416-4E01-8EF2-1FCB63ADB4EB"}

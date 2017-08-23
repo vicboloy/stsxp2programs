@@ -143,6 +143,12 @@ var dsSheetIds = [];
  */
 var dsSheetArrayRev = [];
 /**
+ * Sheet Bom number index by sheet_bom_id.
+ * dsSheetArrayRev[sheet_bom_id] = sheet_id+"_"+item_number;
+ * @properties={typeid:35,uuid:"C29E6AB5-CCFA-4794-8227-44D5DFA15E85",variableType:-4}
+ */
+var dsSheetBomArrayRev = [];
+/**
  * @properties={typeid:35,uuid:"EA531D1D-DF62-4C69-9FDF-705742718596",variableType:-4}
  */
 var dsTossedList = [];
@@ -185,7 +191,7 @@ var dsPiecemarkArray = [];
 var dsPiecemarkIds = [];
 /**
  * @type {JSFoundSet<db:/stsservoy/idfiles>}
- * Array of idfiles, indexed by integer.
+ * Foundset of idfiles.
  * @properties={typeid:35,uuid:"3E4E4833-8DE8-4D58-9BFD-5633D5B5D6A2",variableType:-4}
  */
 var dsIdfiles = null;
@@ -277,6 +283,24 @@ var dsSequenceList = [];
  * @properties={typeid:35,uuid:"F8D6D4A5-DC0B-4EAD-B899-E1E522245E02",variableType:-4}
  */
 var dsSequenceArray = [];
+/**
+ * Sheet_boms indexed by (piecenumber:CUT or partnumber:BOM) sheet_bom.bom_item_number. Since bom_item_number may be blank or non-indexed, it is 
+ * prefixed by "_".  dsSheetBomArray[sheet_id+"_"+bom_item_number] = sheet_bom_id
+ * @properties={typeid:35,uuid:"B028CA7A-6002-4495-8522-CCD6A2BD8FE9",variableType:-4}
+ */
+var dsSheetBomArray = [];
+/**
+ * Sheet_bom List. Index into dsSheetBoms.
+ * dsSheetBomList[sheet_bom_id] = index.
+ * @properties={typeid:35,uuid:"7AF1A3CE-3CAF-4DBF-A4E7-928C537FD8C3",variableType:-4}
+ */
+var dsSheetBomList = [];
+/**
+ * @type {JSFoundSet<db:/stsservoy/sheet_bom>}
+ * dsShtBm records. dsShtBms[index] = sheet_bom_record.
+ * @properties={typeid:35,uuid:"16621A20-4F11-4328-A7B3-3E870385A059",variableType:-4}
+ */
+var dsSheetBoms = null;
 /**
  * @properties={typeid:35,uuid:"7445E671-3137-437B-9240-AFE9CCE38848",variableType:-4}
  */
@@ -739,41 +763,40 @@ function readLots(){
 	dsLotArray = [];
 	dsLotList = [];
 	dsLots = null;
-	var length = dsSequences.getMaxRowIndex();
+	var length = 0;
+	for (var item in dsSequenceArray){length++;break;}
 	if (length == 0){return}
-	var textList = "("; var comma = ",";
-	var index2 = 1;
+	var tempSeqIdList = []
 	for (var sequence in dsSequenceArray){
-		//application.output('sequence '+sequence+' '+sequence.length);
-		if (sequence.length != 36){continue}
-		if (index2++ == length){comma=""}
-		textList = textList + "\'"+sequence+"\'"+comma;
+		application.output('sequence '+sequence+' '+dsSequenceArray[sequence]);
+		//if (dsSequenceArray[sequence].length != 36){continue}
+		tempSeqIdList.push(dsSequenceArray[sequence]);
 	}
-	textList += ")";
-	var maxReturnedRows = -1;
-	var query = "SELECT * " +
-		"FROM lots " +
-		"WHERE sequence_id IN " + textList + " " +
-		" AND delete_flag IS null " +
-		"AND tenant_uuid = ? ";
-	var args = [globals.session.tenant_uuid];
-	dsLots = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
+	/** @type {QBSelect<db:/stsservoy/lots>} */
+	var q = databaseManager.createSelect('db:/stsservoy/lots');
+	q.result.add(q.columns.lot_id);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.sequence_id.isin(tempSeqIdList));
+	dsLots = databaseManager.getFoundSet(q);
+	
 	dsLotList = []; // lots reference sequences, so grab list of sequences for this job
 	dsLotArray = [];
 	var lotId = ""; var seqId = ""; var lotNum = ""; var seqNum = "";
-	var lotsLength = dsLots.getMaxRowIndex();
-	for (var index = 1;index <= lotsLength;index++){
-		dsLots.rowIndex = index;
-		lotId = dsLots.lot_id;
-		seqId = dsLots.sequence_id;
-		lotNum = dsLots.lot;
-		seqNum = dsSequenceArray[seqId];
-		dsLotList[lotId] = index;
-		var unique = "_"+lotNum+"|_"+seqNum.split("_")[1];
+	/** @type {JSFoundSet<db:/stsservoy/lots>} */
+	var rec = null; var index = 1;
+	while (rec = dsLots.getRecord(index++)){
+		lotId = rec.lot_id;
+		seqId = rec.sequence_id;
+		lotNum = rec.lot;
+		seqNum = dsSequenceArray[seqId].split("_")[1];
+		//application.output('sequence should be blank REMOVE'+seqNum);
+		dsLotList[lotId] = index-1;
+		var unique = "_"+lotNum+"|_"+seqNum;
 		dsLotArray[unique] = lotId;
 		dsLotArray[lotId] = unique;
 	}
-	application.output("lots "+lotsLength);
+	if (application.isInDeveloper()){application.output("lots "+dsLots.getSize())}
 }
 /**
  * dsBarcodeArray[id_serial_number_id] = *rowIndex into dsBarcodes dataset*
@@ -783,39 +806,31 @@ function readLots(){
 function readBarcodes(jobID){
 	//dsBarcodeList already defined in readIdfiles()
 	var bcListArray = []; //temporary array list of barcode ids
-	if (dsIdfiles == null || dsIdfiles.getMaxRowIndex() == 0){return}
-	var rows = dsIdfiles.getMaxRowIndex();
-	for (var index = 1;index <= rows;index++){
-		dsIdfiles.rowIndex = index;
+	if (!dsIdfiles){return}
+	var rec = null; var index = 1;
+	while (rec = dsIdfiles.getRecord(index++)){
 		var serialID = dsIdfiles.id_serial_number_id;
-		if (!bcListArray[serialID]){
-			bcListArray.push(serialID);
-		}
+		if (!bcListArray[serialID]){bcListArray.push(serialID)}
 	}
-	var textList = "("; var comma = ",";var length2 = bcListArray.length;
-	for (var index2 = 0;index2 < length2;index2++){
-		if (index2 == length2-1){comma=""}
-		textList = textList + "\'"+bcListArray[index2]+"\'"+comma;
-	}
-	textList += ")";
-	bcListArray = [];//temporary array, clear memory
-	var maxReturnedRows = -1;
-	var query = "SELECT * " +
-		"FROM id_serial_numbers " +
-		"WHERE id_serial_number_id IN " + textList + " " +
-		" AND delete_flag IS null " +
-		"AND tenant_uuid = ? ";
-	var args = [globals.session.tenant_uuid];
-	dsBarcodes = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
+
+	
+	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
+	var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
+	q.result.add(q.columns.id_serial_number_id);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.id_serial_number_id.isin(bcListArray));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	dsBarcodes = databaseManager.getFoundSet(q);
+	if (dsBarcodes.getSize == 0){return}
 	dsBarcodeArray = [];
-	var length = dsBarcodes.getMaxRowIndex();
-	for (var index3 = 1;index3 <= length;index3++){
-		dsBarcodes.rowIndex = index3;
-		serialID = dsBarcodes.id_serial_number_id;
-		dsBarcodeArray[serialID] = index3;
+	rec = null; index = 1;
+	while (rec = dsBarcodes.getRecord(index++)){
+		serialID = rec.id_serial_number_id;
+		dsBarcodeArray[serialID] = index;
 	}
-	scopes.jobs.jobBarcodes = dsBarcodes.getMaxRowIndex();
-	application.output("barcodes "+scopes.jobs.jobBarcodes);
+	bcListArray = [];//temporary array, clear memory
+	scopes.jobs.jobBarcodes = dsBarcodes.getSize();
+	if (application.isInDeveloper()){application.output("barcodes "+scopes.jobs.jobBarcodes)}
 }
 /**
  * dsSequenceArray["_"+seqNum] = sequence_id
@@ -829,29 +844,30 @@ function readSequences(jobID){
 	dsSequenceList = [];
 	dsSequences = null;
 	dsSequenceArray = [];
-	var query = "SELECT * " +
-		"FROM sequences " +
-		"WHERE job_id = ? " +
-		" AND delete_flag IS null " +
-		"AND tenant_uuid = ? ";
-	var args = [jobID,globals.session.tenant_uuid];
+	/** @type {QBSelect<db:/stsservoy/sequences>} */
+	var q = databaseManager.createSelect('db:/stsservoy/sequences');
+	q.result.add(q.columns.sequence_id);
+	q.where.add(q.columns.job_id.eq(jobID));
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	/** @type {JSDataSet} */
-	dsSequences = databaseManager.getDataSetByQuery('stsservoy', query, args , -1);
-	var rows = dsSequences.getMaxRowIndex();
+	dsSequences = databaseManager.getFoundSet(q);
+
 	var seqId = ""; var seqNum = ""; var unique = "";
-	for (var index = 1;index <= rows;index++){
-		dsSequences.rowIndex = index;
-		seqId = dsSequences.sequence_id;
-		seqNum = dsSequences.sequence_number;
+	/** @type {JSFoundSet<db:/stsservoy/sequences>} */
+	var rec = null; var index = 1;
+	while (rec = dsSequences.getRecord(index++)){
+		seqId = rec.sequence_id;
+		seqNum = rec.sequence_number;
 		unique = "_"+seqNum;
 		if (seqNameList.indexOf(unique) == -1){
 			seqNameList.push(unique);
 		}
 		dsSequenceArray[unique] = seqId;
 		dsSequenceArray[seqId] = unique;
-		dsSequenceList[seqId] = index;
+		dsSequenceList[seqId] = index-1;
 	}
-	application.output("sequences "+dsSequences.getMaxRowIndex());
+	if (application.isInDeveloper()){application.output("sequences "+dsSequences.getSize())}
 }
 /**
  * 	 * dsBarcodeList[id_serial_number_id] = [idfile_id1...idfile_id2]
@@ -862,6 +878,7 @@ function readSequences(jobID){
 	 * dsIdfileListByPm[piecemark_id] = [idfileId1..idfileIdn] list of idfiles by piecemark
  * @properties={typeid:24,uuid:"43E161F1-BDDC-4019-9B37-E2263D4C2866"}
  * @SuppressWarnings(unused)
+ * @SuppressWarnings(wrongparameters)
  */
 function readIdfiles(){
 	dsBarcodeList = [];
@@ -870,84 +887,62 @@ function readIdfiles(){
 	dsIdfileArray = [];
 	dsIdfileListByPm = []; 
 	var barcodeRecorded = [];
-	application.output('before idfiles read return');
+	var piecemarkArray = [];
 	
 	if (dsPiecemarks == null){return}
 	if (dsPiecemarks.getMaxRowIndex() == 0){return}
-	var textList = "("; var comma = ",";
 	var length = dsPiecemarks.getMaxRowIndex();
 	if (application.isInDeveloper()){application.output('piecemarks found '+length);}
-	application.output('pices xxxxxxxxxxxxxxxxxxxxxx');
 	for (var index2 = 1;index2 <= length;index2++){
-		if (index2 == length){comma=""}
 		dsPiecemarks.rowIndex = index2;
-		textList = textList + "\'"+dsPiecemarks.piecemark_id+"\'"+comma;
+		piecemarkArray.push(application.getUUID(dsPiecemarks.piecemark_id));
 	}
-	textList += ")";
-	var maxReturnedRows = -1;
-	var query = "SELECT * " +
-		"FROM idfiles " +
-		"WHERE piecemark_id IN " + textList + " " +
-		" AND delete_flag IS null " +
-		"AND tenant_uuid = ? ";
-	var args = [globals.session.tenant_uuid];
-	/** @type {JSDataSet} */
-	dsIdfiles = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
-	var rows = dsIdfiles.getMaxRowIndex();
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.result.add(q.columns.idfile_id);
+	q.where.add(q.columns.piecemark_id.isin(piecemarkArray));
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	
+	dsIdfiles = databaseManager.getFoundSet(q);
+	var rows = dsIdfiles.getSize();
 	// unique is piecemark_id, barcodeCount, sequence_id, lot_id
-	///var seqId = "";
-	var lotId = "";
-	var pmId = ""; var bcId = "";   var idId = "";
-	for (var index = 1;index <= rows;index++){
-		dsIdfiles.rowIndex = index;
-		pmId = dsIdfiles.piecemark_id;//check here
-var holdPmIndex = dsPiecemarks.rowIndex;
-dsPiecemarks.rowIndex = dsPiecemarkList[pmId];
-application.output(index+' piecemark for dsIdfiles creation '+dsPiecemarkList[pmId]+' '+dsPiecemarks.material);
-dsPiecemarks.rowIndex = holdPmIndex;
+	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+	var rec = null; var index = 1;
+	while (rec = dsIdfiles.getRecord(index++)){
+		var pmId = rec.piecemark_id;//check here
+		var holdPmIndex = index-1;
 
-		bcId = dsIdfiles.id_serial_number_id;
-		var seqId = dsIdfiles.sequence_id;
-		lotId = dsIdfiles.lot_id;
-		idId = dsIdfiles.idfile_id;
-		dsIdfileList[idId] = index;// index into dsIdfiles
-		if (dsIdfileArray[bcId] != null) {
-			dsIdfileArray[bcId]++;
-		} else {
-			dsIdfileArray[bcId] = 1;
-		}
-	}
-	for (index = 1;index <= rows;index++){
-		dsIdfiles.rowIndex = index;
-		pmId = dsIdfiles.piecemark_id;
-		bcId = dsIdfiles.id_serial_number_id;
-		seqId = dsIdfiles.sequence_id;
-		lotId = dsIdfiles.lot_id;
-		idId = dsIdfiles.idfile_id;
+		var bcId = rec.id_serial_number_id;
+		var seqId = rec.sequence_id;
+		var lotId = rec.lot_id;
+		var idId = rec.idfile_id;
+		(dsIdfileArray[bcId] != null) ?	dsIdfileArray[bcId]++ : dsIdfileArray[bcId] = 1;
 
-		if (dsBarcodeList[bcId] == null){
-			dsBarcodeList[bcId] = [];
-		}
+		pmId = rec.piecemark_id;
+		bcId = rec.id_serial_number_id;
+		seqId = rec.sequence_id;
+		lotId = rec.lot_id;
+		idId = rec.idfile_id;
+
+		if (dsBarcodeList[bcId] == null){dsBarcodeList[bcId] = []}
 		dsBarcodeList[bcId].push(idId);//barcodes->idfiles (1..n)
 		dsBarcodeList[idId] = bcId;//reverse idfile->barcode (1..1)
-		var uniqueIdfileId = uniqueIdfile(dsIdfiles);
-		///var barcodeId = bcId;
+		var uniqueIdfileId = uniqueIdfile(rec);
+
 		var barcodeCount = dsIdfileArray[bcId];
-		if (dsIdfileArray[uniqueIdfileId] == null){
-			dsIdfileArray[uniqueIdfileId] = [];
-		}//foreach each idfile, get piecemark, if barcode count isn't collected, then store the number in the array
+		if (dsIdfileArray[uniqueIdfileId] == null){dsIdfileArray[uniqueIdfileId] = []}
+		//foreach each idfile, get piecemark, if barcode count isn't collected, then store the number in the array
 		// the length of the array is the number of labels, the count is for each label
 		if (barcodeRecorded.indexOf(bcId) == -1){
 			dsIdfileArray[uniqueIdfileId].push(barcodeCount);
 			barcodeRecorded.push(bcId);
 			//application.output(unique+" "+barcodeCount);
 		}
-		if (!dsIdfileListByPm[pmId]){
-			dsIdfileListByPm[pmId] = []
-		}
+		if (!dsIdfileListByPm[pmId]){dsIdfileListByPm[pmId] = []}
 		dsIdfileListByPm[pmId].push(idId);
 	}
-	application.output("idfiles "+dsIdfiles.getMaxRowIndex());
+	if (application.isInDeveloper()){application.output("idfiles "+dsIdfiles.getSize())}
 }
 /**
  * dsTossed.rowIndex dataset
@@ -1126,12 +1121,21 @@ function readSheets(jobID){
 }
 /**
  * @properties={typeid:24,uuid:"86255815-5347-479B-AF2D-55778E4DF0EB"}
+ * @AllowToRunInFind
  */
 function readPieceTables(){
 	var jobID = scopes.jobs.jobUnderCustomer;
+	if (!jobID){
+		var win = application.getActiveWindow();
+		var formName = win.controller.getName();
+		if (formName.search('import_performance') == 0){
+			jobID = forms.import_performance_setting.jobUUID;
+		}
+	}
 	if (application.isInDeveloper()){application.output('readpiecetables job id '+jobID+'----------------------------------------')}
 	if (!jobID || jobID == ""){return}
 	readSheets(jobID);
+	readSheetBoms(jobID);
 	readPiecemarks();
 	readSummedMarks();
 	readIdfiles();
@@ -1869,10 +1873,9 @@ function tablePrefsSave(event){
 		var tableCol = []; var tabLoc = [];
 		/** @type {JSRecord<db:/stsservoy/preferences2>} */
 		var rec = null;var idx = 1;
-		while (rec = PP.getRecord(idx)){
-			tableCol[rec.field_name] = idx;
+		while (rec = PP.getRecord(idx++)){
+			tableCol[rec.field_name] = idx-1;
 			tabLoc[rec.field_name] = rec.field_value;
-			idx++;
 		}
 		var savedElems = new Array();savedElems.push("");
 
@@ -2401,17 +2404,25 @@ function existsJobNumber(jobNumber){
  *
  * @properties={typeid:24,uuid:"A2125947-31D2-4027-B244-E012A6567B59"}
  * @AllowToRunInFind
+ * @SuppressWarnings(wrongparameters)
  */
 function createIdfileRecord(pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity,origQuant,summQuantity,remarks){
+	//if (dsIdfileArray){return dsIdfileArray
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var fs = databaseManager.getFoundSet('stsservoy','idfiles');
-	//application.output(sequence+' sequence ');
-	var lotId = ""; var seqId = "";
-	seqId = dsSequenceArray["_"+sequence];
-	lotId = dsLotArray["_"+lot+"|_"+sequence];
+
+	var seqId = dsSequenceArray["_"+sequence];
+	if (!seqId){seqId = createSequenceNumber(sequence)}
+	var lotId = dsLotArray["_"+lot+"|_"+sequence];
+	if (!lotId){lotId = createLotNumber(lot,sequence)}
+	
+	if (!barcodeId){
+		barcodeId = createValidBarcode();
+	}
+
 	var recIndex = fs.newRecord();
-	createdIdfileCount++;
 	var rec = fs.getRecord(recIndex);
+	if (application.isInDeveloper()){application.output(recIndex+' created idfile '+rec);}
 	rec.piecemark_id = piecemarkId;
 	rec.sequence_id = seqId;
 	rec.lot_id = lotId;
@@ -2434,7 +2445,10 @@ function createIdfileRecord(pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity,
 		}
 	}
 	rec.id_creation_date = importDate;
-	createdRecords++;
+	if (forms.import_performance_setting.insJobSO){
+		rec.shop_order = forms.import_performance_setting.insJobSO;
+	}
+	//createdRecords++;
 	return rec;
 }
 /**
@@ -2488,17 +2502,42 @@ function createPiecemark(fsRec,unique){
  * @properties={typeid:24,uuid:"039F7538-22A0-4C09-BD85-FE9ED186F966"}
  */
 function createSheet(sheetNumber){
+	if ('checkthis' != 'checkthis'){
+		var sheet_num = retainFS.sheet_number;
+	}
+	var editDate = perfImportDate;
+	var unique = "_"+sheet_num;
+	unique = "_"+sheetNumber;
 	/** @type {JSFoundSet<db:/stsservoy/sheets>} */
 	var fs = databaseManager.getFoundSet('stsservoy','sheets');
-	var recIndex = fs.newRecord();
-	var rec = fs.getRecord(recIndex);
+	if (dsSheetArray[unique]){
+		/** @type {String} */
+		var pk = application.getUUID(dsSheetArray[unique]);
+		fs.loadRecords(pk);
+		var rec = fs.getRecord(1);
+		null;
+		//return chkRec;
+	}
+	var update = false;
+	if (!rec){
+		update = true;
+		var recIndex = fs.newRecord();
+		rec = fs.getRecord(recIndex);
+	}
 	var sheetId = rec.sheet_id+"";
+	rec.edit_date - editDate;
 	rec.sheet_number = sheetNumber;
 	rec.job_id = scopes.jobs.jobUnderCustomer;
 	rec.tenant_uuid = globals.session.tenant_uuid;
-	dsSheetArray["_"+sheetNumber] = sheetId;
-	dsSheetArray[sheetId] = "_"+sheetNumber;
+	if (forms.import_performance_setting.insSheetPO){
+		rec.sheet_po = forms.import_performance_setting.insSheetPO;
+	}
+	if (update){
+		dsSheetArray["_"+sheetNumber] = sheetId;
+		dsSheetArray[sheetId] = "_"+sheetNumber;
+	}
 	createdRecords++;
+	return rec;
 }
 /**
  * @properties={typeid:24,uuid:"C69E27A8-6A48-41A4-965E-203DC14DEC4A"}
@@ -2536,21 +2575,19 @@ function createSheets(){
  * @AllowToRunInFind
  */
 function createSequenceNumber(sequenceNumber){
+	var unique = "_"+sequenceNumber;
 	/** @type {JSFoundSet<db:/stsservoy/sequences>} */
 	var fs = databaseManager.getFoundSet('stsservoy','sequences');
+	if (dsSequenceArray[unique]){return dsSequenceArray[unique]}
 	var recIndex = fs.newRecord();
 	var rec = fs.getRecord(recIndex);
-	var seqId = rec.sequence_id;
-	if (sequenceNumber.search("_") != -1){
-		sequenceNumber = sequenceNumber.split("_")[1];
-	}
 	rec.sequence_number = sequenceNumber;
 	rec.job_id = scopes.jobs.jobUnderCustomer;
 	rec.tenant_uuid = globals.session.tenant_uuid;
-	var unique = "_"+sequenceNumber;
-	dsSequenceArray[unique] = seqId;
-	dsSequenceArray[seqId] = unique;
-	createdRecords++;
+	dsSequenceArray[unique] = rec.sequence_id;
+	dsSequenceArray[rec.sequence_id] = unique;
+	return rec.sequence_id;
+	//createdRecords++;
 	//dsSequenceList[rec.sequence_id] = newItems[index];
 }
 /**
@@ -2561,27 +2598,23 @@ function createSequenceNumber(sequenceNumber){
  * @AllowToRunInFind
  */
 function createLotNumber(lotNumber,sequence){
+	var uniqueLot = '_'+lotNumber;
+	var uniqueSeq = '_'+sequence;
+
+	var unique = uniqueLot+"|_"+uniqueSeq;
+	if (dsLotArray[unique]){return dsLotArray[unique]}
 	/** @type {JSFoundSet<db:/stsservoy/lots>} */
 	var fs = databaseManager.getFoundSet('stsservoy','lots');
 	var recIndex = fs.newRecord();
 	var rec = fs.getRecord(recIndex);
-	var lotId = rec.lot_id+"";
-	var lotNum = lotNumber;
-	var seqNum = sequence;
-	if (lotNumber.search("_")!= -1){
-		lotNum = lotNumber.split("_")[1];
-	}
-	if (seqNum.search("_")!= -1){
-		seqNum = sequence.split("_")[1];
-	}
-	var	seqId = dsSequenceArray["_"+seqNum];
-	rec.lot = lotNum;
-	rec.sequence_id = seqId;
+	rec.lot = lotNumber;
+	var seqId = dsSequenceArray[uniqueSeq]+'';
+	rec.sequence_id = application.getUUID(seqId);
 	rec.tenant_uuid = globals.session.tenant_uuid;
-	var unique = "_"+lotNum+"|_"+seqNum;
-	dsLotArray[unique] = lotId;
-	dsLotArray[lotId] = unique;
-	createdRecords++;
+	dsLotArray[unique] = rec.lot_id;
+	dsLotArray[rec.lot_id] = unique;
+	//createdRecords++;
+	return rec.lot_id;
 }
 /**
  * @properties={typeid:24,uuid:"234B6EE5-1FBC-4C47-8303-B9A8D35A968F"}
@@ -2707,7 +2740,7 @@ function createBarCodePrefix(){
 		var barcode_preamble_length = custRec2.barcode_preamble_length;
 		var barcode_job_start = custRec2.barcode_job_start;
 		var barcode_fixed_length = custRec2.barcode_fixed_length;
-		var jobNumber = jobName;
+		var jobNumber = importJob.jobNumber;
 		// If prefix is not two characters, pad with "P"
 		if (barcode_prefix_label.length == 1){barcode_prefix_label = "P"+barcode_prefix_label}
 		// Pad job number if too short
@@ -3782,7 +3815,7 @@ function createValidBarcode(){
 	barRec.edit_date = new Date();
 	createdRecords++;
 	//databaseManager.saveData(barRec);
-	return barRec;
+	return barRec.id_serial_number_id;
 }
 /**
  * @AllowToRunInFind
@@ -7908,4 +7941,490 @@ function resetSampleData(jobNumber){
 	if (ID4.getSize() > 0){ //delete all transactions, purged from database
 		ID4.deleteAllRecords();
 	}
+}
+/**
+ * @param {String} windowName
+ * @param {Array} dataArray
+ * @param {Array} columnNames
+ *
+ * @properties={typeid:24,uuid:"02FDD594-F417-429D-ADB7-AB5C2AC06DD6"}
+ */
+function viewTemporaryData(windowName,dataArray,columnNamesArray){
+	//read array columns,  convert to dataset, then datasource
+	var dataSet = databaseManager.createEmptyDataSet(dataArray.length,columnNamesArray);
+	
+	//forms.address_lst.foundset.loadRecords(dataset);
+	forms.import_performance_bom.foundset.loadRecords(dataSet);
+	
+}
+/**
+ * @param {JSEvent} event
+ * @properties={typeid:24,uuid:"AF2B4D0E-8E1A-4F2B-A5DA-2FB351548D6A"}
+ */
+function importPerformance(event){
+	perfImportDate = new Date();
+	scopes.jobs.jobUnderCustomer = forms.import_performance_setting.jobUUID;
+	readPieceTables();
+	scopes.jobs.createSheetsPerf();
+	databaseManager.saveData();
+	scopes.jobs.createSheetBomsPerf();
+	databaseManager.saveData();
+	scopes.jobs.createPiecemarksPerf();
+	databaseManager.saveData();
+	scopes.jobs.createIdfilesPerf();
+	databaseManager.saveData();
+	/**
+	 * update job data:
+	 */
+	var formData = forms.import_performance_setting;
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var qq = databaseManager.createSelect('db:/stsservoy/jobs');
+	qq.result.add(qq.columns.job_id);
+	qq.where.add(qq.columns.delete_flag.isNull);
+	qq.where.add(qq.columns.job_number.eq(formData.vJobNumber));
+	qq.where.add(qq.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var jobData = databaseManager.getFoundSet(qq);
+	if (jobData){
+		/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+		var rec2 = jobData.getRecord(1);
+		rec2.customer_po = formData.insCustPO; //jobs.customer_po 30
+		rec2.po_release = formData.insReleasePO; //jobs.po_release 25
+		databaseManager.saveData(rec2);
+	}
+	forms.import_performance_bom.importProgressUpdate(0);
+
+}
+/**
+ * @param {String} jobID
+ *
+ * @properties={typeid:24,uuid:"4D700B7F-B62E-4C1D-B626-78D3F835F330"}
+ */
+function readSheetBoms(jobID){
+	//var seqNameList = scopes.jobs.jobSheets;
+	dsSheetBomList = [];
+	dsSheetBoms = null;
+	dsSheetBomArray = [];
+	dsSheetBomArrayRev = [];
+	var sheetIdsList = [];
+	//if (dsSheetBomArray.length == 0){return}
+	for (var sheetNum in dsSheetArray){sheetIdsList.push(dsSheetArray[sheetNum])}
+
+	/** @type {QBSelect<db:/stsservoy/sheet_bom>} */
+	var q = databaseManager.createSelect('db:/stsservoy/sheet_bom');
+	q.result.add(q.columns.sheet_bom_id);
+	q.result.add(q.columns.sheet_id);
+	q.result.add(q.columns.item_number);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.sheet_id.isin(sheetIdsList));
+
+	/** @type {JSDataSet} */
+	dsSheetBoms = databaseManager.getDataSetByQuery(q,-1)
+	var rows = dsSheetBoms.getMaxRowIndex();
+	var shtBmId = ""; var shtBmNum = ""; var unique = "";
+	for (var index = 1;index <= rows;index++){
+		dsSheetBoms.rowIndex = index;
+		shtBmId = dsSheetBoms.sheet_bom_id;
+		shtBmNum = dsSheetBoms.item_number;
+		var sheetId = dsSheetBoms.sheet_id;
+		unique = sheetId+"_"+shtBmNum;
+		if (dsSheetBomList.indexOf(unique) == -1){
+			dsSheetBomList.push(unique);
+		}
+		dsSheetBomList[shtBmId] = index;
+		dsSheetBomArray[unique] = shtBmId;
+		dsSheetBomArrayRev[shtBmId] = unique;
+	}
+	if (application.isInDeveloper()){application.output("sheet boms")}
+}
+/**
+ *
+ * @properties={typeid:24,uuid:"1A782DB6-D4AF-44AD-AF80-E230904DB67A"}
+ */
+function createSheetsPerf(){
+	var sheets = forms.import_performance_txt._arraysheets;
+	databaseManager.startTransaction();
+	for (var idx = 0;idx < sheets.length;idx++){
+		var sheet = sheets[idx];
+		var sheetInfo = forms.import_performance_txt._arrayborderkss[sheet];
+		if (application.isInDeveloper()){application.output('sheet number '+sheets[idx])}
+		/** @type {JSFoundSet<db:/stsservoy/sheets>} */
+		var sheetRec = createSheet(sheet);
+		if (sheetRec){
+			for (var key in forms.import_performance_txt.objborderkss){
+				if (typeof sheetRec[key] != 'undefined'){sheetRec[key] = sheetInfo[key]}
+			}
+			var comment = forms.import_performance_txt._arraycomments[sheet];
+			sheetRec.bom_comment = comment;
+			//application.output('sheet '+sheet+' memo : '+forms.import_performance_txt._arraycomments[sheet]);
+		}
+		forms.import_performance_bom.importProgressUpdate(1);
+	}
+	databaseManager.commitTransaction();
+}
+/**
+ * @properties={typeid:24,uuid:"5BC194CA-6717-4AD0-89ED-362CDD93BA48"}
+ */
+function createSheetBomsPerf(){
+	var sheets = forms.import_performance_txt._arraysheets;
+	databaseManager.startTransaction();
+	for (var idx = 0;idx < sheets.length;idx++){
+		var sheet = sheets[idx];
+		var sheetBomArray = forms.import_performance_txt._arraybom[sheet];
+		if (application.isInDeveloper()){application.output('sheet number '+sheets[idx])}
+		/** @type {JSFoundSet<db:/stsservoy/sheet_bom>} */
+		for (var idx2 = 0;idx2 < sheetBomArray.length;idx2++){
+			var bomLine = sheetBomArray[idx2];
+			var itemNumber = bomLine.item_number;
+			if (application.isInDeveloper()){application.output('create bom sheet '+sheet+' bom item '+itemNumber);}
+			var bomRec = createSheetBom(sheet,itemNumber);
+			
+			for (var key in bomLine){ //forms.import_performance_txt.objsheetbom){
+				if (typeof bomRec[key] != 'undefined'){bomRec[key] = bomLine[key]}
+			}
+			forms.import_performance_bom.importProgressUpdate(1);
+		}
+	}
+	var sheetCutArray = forms.import_performance_txt._arraycuts;
+	for (idx2 = 0;idx2 < sheetCutArray.length;idx2++){
+		bomLine = sheetCutArray[idx2];
+		sheet = bomLine.sheet;
+		itemNumber = bomLine.item_number;
+		bomRec = createSheetBom(sheet,itemNumber);
+		for (key in bomLine){
+			if (typeof bomRec[key] != 'undefined'){bomRec[key] = bomLine[key]}
+		}
+		
+	}
+	databaseManager.commitTransaction();
+}
+/**
+ * @param sheetNumber
+ * @param itemNumber
+ *
+ * @properties={typeid:24,uuid:"C627AF23-B9ED-4747-8608-AC528D38943E"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function createSheetBom(sheetNumber,itemNumber){
+	var uniqueSht = "_"+sheetNumber;
+	/** @type {JSFoundSet<db:/stsservoy/sheet_bom>} */
+	var fs = databaseManager.getFoundSet('stsservoy','sheet_bom');
+	var sheetId = dsSheetArray[uniqueSht]+'';
+	var unique = sheetId+"_"+itemNumber;
+	var update = false;
+	if (dsSheetBomArray[unique]){
+		/** @type {String} */
+		var pk = application.getUUID(dsSheetBomArray[unique]);
+		fs.loadRecords(pk);
+		/** @type {JSFoundSet<db:/stsservoy/sheet_bom>} */
+		var bomRec = fs.getRecord(1);
+		//return bomRec;
+	}
+	if (!bomRec){
+		update = true;
+		var recIndex = fs.newRecord();
+		bomRec = fs.getRecord(recIndex);
+	}
+	bomRec.edit_date = perfImportDate;
+	bomRec.item_number = itemNumber;
+	bomRec.sheet_id = application.getUUID(sheetId);
+	bomRec.tenant_uuid = globals.session.tenant_uuid;
+	if (update){
+		dsSheetArrayRev[unique] = sheetId;
+		dsSheetArray[sheetId] = unique;
+	}
+	return bomRec;
+}
+/**
+ * @param {String} length
+ *
+ * @properties={typeid:24,uuid:"1CECE378-C224-4758-A367-3F65777CF074"}
+ * @AllowToRunInFind
+ */
+function ft_to_mm(length){
+	// make conversion to mm
+	//length = fracToDec(length);
+	application.output('length '+length);
+
+	//length = length * 12 * 25.4;
+	//return length;
+	return 0;
+}
+/**
+ * @param {String} mm
+ *
+ * @properties={typeid:24,uuid:"9FDF2488-A0B2-438B-A83F-3811EBB77007"}
+ */
+function mm_to_ft(mm){
+	// make conversion to ft
+	return 0;
+}
+/**
+ * @param length
+ *
+ * @properties={typeid:24,uuid:"F0AD59CD-1ADC-45D6-8005-5D1A5F654802"}
+ * @AllowToRunInFind
+ */
+function ft_to_in(length){
+	length = fracToDec(length);
+	if (1==1){return length}
+	application.output(length);
+	if (length.search('.') != -1){
+		length = length.replace("'",'');
+		length = length * 12;
+		return length;
+	}
+	if (length.search('"') != -1){
+		length = length.replace('"','');
+		return length;
+	}
+	return fracToDec(length);
+}
+/**
+ * @param {String} material
+ *
+ * @properties={typeid:24,uuid:"A20FCC8B-6322-47F2-9CE2-6F85F264F749"}
+ * @AllowToRunInFind
+ */
+function pipeDescripToFieldValue(material){
+	material = material.toUpperCase();
+	if (material.search(i18n.getI18NMessage('sts.txt.pipe.field.support')) != -1){
+		return i18n.getI18NMessage('sts.txt.pipe.field.return.support');
+		
+	} else if (material.search(i18n.getI18NMessage('sts.txt.pipe.field.pipe')) != -1){
+		return i18n.getI18NMessage('sts.txt.pipe.field.return.pipe');
+		
+	} else if (material.search(i18n.getI18NMessage('sts.txt.pipe.field.flanges')) != -1){
+		return i18n.getI18NMessage('sts.txt.pipe.field.return.flanges');
+		
+	} else if (material.search(i18n.getI18NMessage('sts.txt.pipe.field.fittings')) != -1){
+		return i18n.getI18NMessage('sts.txt.pipe.field.return.fittings');
+		
+	} else if (material.search(i18n.getI18NMessage('sts.txt.pipe.field.valves')) != -1){
+		return i18n.getI18NMessage('sts.txt.pipe.field.return.valves');
+		
+	} else if (material.search(i18n.getI18NMessage('sts.txt.pipe.field.instrument')) != -1){
+		return i18n.getI18NMessage('sts.txt.pipe.field.return.instrument');
+		
+	} else if (material.search(i18n.getI18NMessage('sts.txt.pipe.field.field.material')) != -1){
+		return i18n.getI18NMessage('sts.txt.pipe.field.return.field.material');
+		
+	} else 
+		return '';
+}
+/**
+ * @param {String} piecemark
+ * @param {String} sheet
+ *
+ * @properties={typeid:24,uuid:"FEDB2A68-81E4-42F5-AD1C-3D042CBA9E3C"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function createPiecemarkPerf(piecemark, sheet){
+	//var origEmployee = globals.session.employeeId; // used in idfile
+	// record.piecemark+","+record.parent_piecemark+","+sheetNum+","+record.grade+","+record.finish
+	var pRec = {piecemark:piecemark,grade:'',parent_piecemark:'',finish:'',sheet_id:dsSheetArray['_'+sheet]};
+	var uniquePcmk = uniquePiecemark(pRec);
+	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
+	var q = databaseManager.getFoundSet('db:/stsservoy/piecemarks');
+	var update = false;
+	if (dsPiecemarkArray[uniquePcmk]){
+		var piecemarkId = application.getUUID(dsPiecemarkArray[uniquePcmk]);
+		q.loadRecords(piecemarkId);
+		var newRec = q.getRecord(1);
+		//return newRec;
+	}
+	if (!newRec){
+		update = true;
+		var recIdx = q.newRecord();
+		newRec = q.getRecord(recIdx);
+	}
+	newRec.piecemark = piecemark;
+	newRec.sheet_id = application.getUUID(dsSheetArray['_'+sheet]);
+	newRec.grade = '';
+	newRec.finish = '';
+	newRec.parent_piecemark = '';
+	newRec.tenant_uuid = globals.session.tenant_uuid;
+	newRec.edit_date = perfImportDate;
+	newRec.e_route_code_id = application.getUUID(forms.import_performance_setting.insRoutingCode);
+	if (!dsPiecemarkArray[uniquePcmk]){dsPiecemarkArray[uniquePcmk] = []}
+	if (update){
+		dsPiecemarkArray[uniquePcmk] = newRec.piecemark_id;
+		dsPiecemarkIds.push(newRec.piecemark_id);
+		dsPiecemarkList[newRec.piecemark_id] = recIdx;
+	}
+	forms.import_performance_bom.importProgressUpdate(4);
+
+	null;
+}
+/**
+ * @properties={typeid:24,uuid:"662425C2-C144-4814-B0CF-651E55C7BFF6"}
+ */
+function createPiecemarksPerf(){
+	databaseManager.startTransaction();
+	var pcmks = forms.import_performance_txt._arraypcmks;
+	for (var idx = 0;idx < pcmks.length;idx++){
+		var pcmkLine = pcmks[idx];
+		application.output(pcmkLine);
+		if (application.isInDeveloper()){application.output(pcmkLine.piecemark+' '+pcmkLine.spoolfile+' '+pcmkLine.sheet)}
+		createPiecemarkPerf(pcmkLine.piecemark,pcmkLine.sheet);
+	}
+	databaseManager.commitTransaction();
+	application.output('done with piecemarks');
+
+}
+/**
+ * @properties={typeid:24,uuid:"9B489A45-FC4E-4A38-AB10-4742C93E40DE"}
+ * @SuppressWarnings(wrongparameters)
+ */
+function createIdfilesPerf(){
+	databaseManager.startTransaction();
+	var pcmks = forms.import_performance_txt._arraypcmks;
+	for (var idx = 0;idx < pcmks.length;idx++){
+		var pcmkLine = pcmks[idx];
+		var piecemark = pcmkLine.piecemark;
+		var sheet = pcmkLine.sheet;
+		if (application.isInDeveloper()){application.output('IDfiles for '+pcmkLine.piecemark+' '+pcmkLine.spoolfile+' '+pcmkLine.sheet)}
+		var pRec = {piecemark:piecemark,grade:'',parent_piecemark:'',finish:'',sheet_id:dsSheetArray['_'+sheet]};
+		var uniquePcmk = uniquePiecemark(pRec);
+		if (!dsPiecemarkArray[uniquePcmk]){
+			application.output('unknown piecemark');
+			continue
+		}
+
+		var piecemarkId = application.getUUID(dsPiecemarkArray[uniquePcmk]);
+		if (dsIdfileListByPm[piecemarkId]){ //list of idfiles for this piecemark
+			var found = false;
+			/** @type {QBSelect<db:/stsservoy/idfiles>} * /
+			var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+			// only one idfile per pipe piecemark
+			q.result.add(q.columns.idfile_id);
+			q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+			q.where.add(q.columns.piecemark_id.eq(piecemarkId));
+			q.where.add(q.columns.delete_flag.isNull);
+			var R = databaseManager.getFoundSet(q); * /
+			/ ** @type {JSFoundSet<db:/stsservoy/idfiles>} * /
+			var rec = null; var recIdx = 1;
+			while (rec = R.getRecord(recIdx++)){
+				if (dsIdfileListByPm.indexOf(rec.idfile_id) == -1){dsIdfileListByPm.push(rec.idfile_id)}
+			} */
+			for (var idx2 = 0;idx2 < dsIdfileListByPm[piecemarkId].length;idx2++){
+				found = true;
+				dsIdfileListByPm[piecemarkId][idx2];//return first for now, the piecemark:idfile is 1:1
+				break;
+			}
+			continue;
+		}
+		var formData = forms.import_performance_setting;
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var rec = createIdfileRecord(uniquePcmk,piecemarkId,formData.insSeqNumber,'',null,1,1,0,'');
+		//idfRec.current_load_id;
+		rec.edit_date = perfImportDate;
+		rec.id_creation_date = perfImportDate;
+		
+		rec.original_employee = globals.session.employeeId;
+		rec.id_area = formData.insArea; // size 10
+		rec.shop_order = formData.insJobSO;
+		rec.sequence_id = dsSequenceArray['_'+formData.insSeqNumber];
+		if (!dsIdfileListByPm[piecemarkId]){dsIdfileListByPm[piecemarkId] = []}
+		dsIdfileListByPm[piecemarkId].push(rec.idfile_id);
+	}
+	databaseManager.commitTransaction();
+}
+/**
+ * Change an array of objects into a view table
+ * @param {JSEvent} event
+ * @param arrayName
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"4F051EAB-A5C8-4A97-B505-7124921A2951"}
+ * @AllowToRunInFind
+ * @SuppressWarnings(unused)
+ */
+function viewCTableToForm(event,arrayName, formName){
+	scopes.jobs.removeFormHist(formName+'_table');
+	tableOrderingData = tablePrefsPreLoad(formName+'_table');
+	var dsName = 'tableDS';
+	var newDsName = dsName; var count = 1;
+	while (databaseManager.dataSourceExists('mem:'+newDsName)){
+		newDsName = dsName+count++;
+	}
+    var sourceTypes = [];
+	/** @type  {JSDataSet} */
+	browseFS2[formName] = databaseManager.createEmptyDataSet();
+	/** @type  {JSDataSet} */
+	var dataset = browseFS2[formName];
+	var toBeCount = 0;
+	//var jj = databaseManager.createEmptyDataSet();
+	if (arrayName.length == 0){ // assoc array of sheet objects
+		var firstShow = true;
+		for (var sheet in arrayName) {
+			toBeCount++;
+			if (typeof arrayName[sheet].length != 'number'){ //bom
+				id2 = 1;
+				newArray = new Array();
+				dataObj = arrayName[sheet];
+				for (item in dataObj){
+					if (firstShow){
+						dataset.addColumn(item,id2++,JSColumn.TEXT);sourceTypes.push(JSColumn.TEXT)
+					}
+					/** @type {String} */
+					var data = dataObj[item];
+					if (data && typeof data !== 'string'){data = data.toDateString()}
+					newArray.push(data);
+				}
+				toBeCount++;
+				firstShow = false;
+				dataset.addRow(newArray);				
+
+			} else {//border
+				for (var index = 0;index < arrayName[sheet].length;index++){
+					var id2 = 1;
+					var newArray = new Array();
+					var dataObj = arrayName[sheet][index];
+					for (var item in dataObj){
+						if (firstShow){dataset.addColumn(item,id2++,JSColumn.TEXT);sourceTypes.push(JSColumn.TEXT)}
+						newArray.push(dataObj[item].toString());
+					}
+					firstShow = false;
+					dataset.addRow(newArray);
+					toBeCount++;
+					if (newArray.length != dataset.getMaxColumnIndex()){
+						application.output('wrong columns entered '+newArray.length);
+					}
+				}
+			}
+		}
+	} else { // indexed array of objects
+		firstShow = true; id2 = 1;
+		for (index = 0;index < arrayName.length;index++){
+			newArray = new Array();
+			for (item in arrayName[index]){
+				if (firstShow){dataset.addColumn(item,id2++,JSColumn.TEXT);sourceTypes.push(JSColumn.TEXT)}
+				newArray.push(arrayName[index][item])
+			}
+			
+			firstShow = false;
+			dataset.addRow(newArray);
+			toBeCount += 3;
+		}
+	}
+	var countFrm = forms.import_performance_bom;
+	var currentView = forms.import_performance_validation.currentView;
+	if (currentView.search('bom') != -1){
+		countFrm.importBoms = toBeCount;
+	}
+	if (currentView.search('border') != -1){
+		countFrm.importBorders = toBeCount;
+	}
+	if (currentView.search('pcmk') != -1){
+		countFrm.importPcmks = toBeCount;
+	}
+
+		
+	forms.import_performance_setting.importCount = countFrm.importBoms+countFrm.importBorders+countFrm.importPcmks;
+	versionForm = globals.getInstanceForm(null);
+	var dataSource = dataset.createDataSource(newDsName,sourceTypes);
+	viewBTableCreateForm2(formName,dataSource);
+	var win = application.createWindow('Preview Data', JSWindow.MODAL_DIALOG);
+	win.show(formName);
 }

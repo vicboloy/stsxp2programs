@@ -1431,3 +1431,11 @@ function onActionClickSampleDataReset(event){
 		scopes.jobs.resetSampleData('04030');
 	}
 }
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"4C7A819E-EBE3-47C2-A50E-E1DF4C12040B"}
+ */
+function onActionClickPerformanceImport(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.import.performance'),'import_performance_bom',50,50,640,530,false);
+}

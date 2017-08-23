@@ -1,0 +1,6 @@
+addEmptyValue:1,
+customValues:"i18n:sts.radio.import.delimited\r\
+i18n:sts.radio.import.sdf",
+name:"stsvl_data_import_format",
+typeid:34,
+uuid:"5AE598C1-2074-475A-B8B6-125944B7EDD2"

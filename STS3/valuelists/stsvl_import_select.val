@@ -1,9 +1,7 @@
 addEmptyValue:1,
-customValues:"Overwrite Existing Data\r
-Append to Existing Data\r
-Use Sheet Number Matching",
+customValues:"i18n:sts.radio.import.overwrite\r\
+i18n:sts.radio.import.append\r\
+i18n:sts.radio.import.matching",
 name:"stsvl_import_select",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"A70FE98E-2659-42B8-9189-3411092E0F30"

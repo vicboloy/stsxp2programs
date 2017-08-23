@@ -1,0 +1,8 @@
+addEmptyValue:1,
+customValues:"i18n:sts.txt.delimiter.tab\r\
+i18n:sts.txt.delimiter.space\r\
+i18n:sts.txt.delimiter.comma\r\
+i18n:sts.txt.delimiter.tilde",
+name:"stsvl_file_delimiters",
+typeid:34,
+uuid:"40242C32-8FCE-4ED6-BD11-250D690B9319"

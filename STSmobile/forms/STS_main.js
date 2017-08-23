@@ -81,7 +81,7 @@ function onShow(firstShow, event) {
 		
 
 		var width = application.getScreenWidth();
-		if (width > 400){
+		if (width > 400 && application.getSolutionName() != "STSx"){
 			var win = application.getActiveWindow();
 			win.setSize(330,win.getHeight());
 			

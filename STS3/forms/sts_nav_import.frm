@@ -336,7 +336,7 @@ uuid:"79C4801A-94C9-495C-9511-87ABE79927DD"
 formIndex:12,
 location:"182,263",
 name:"btn_PerformanceContractors",
-onActionMethodID:"-1",
+onActionMethodID:"4C7A819E-EBE3-47C2-A50E-E1DF4C12040B",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"196,23",

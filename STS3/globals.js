@@ -943,6 +943,10 @@ function onSolutionOpen() {
 		databaseManager.removeTableFilterParam('stsservoy',globals.SEC_ASSOCIATION_FILTER);
 	}
 	scopes.jobs.i18nTableColumns();
+	if (appType == 1){
+		var client = plugins.UserManager.getClientByUID(session.sessionId);
+		client.maxIdleTime = 0;
+	}
 }
 
 /**
@@ -1732,4 +1736,100 @@ function getAssocCorporate(assocId){
  */
 function trackURL(namedVar){
 	application.output('tracked URL is '+namedVar);
+}
+/**
+ * @param {JSEvent} event
+ * @param {Array} elementArray
+ *
+ * @properties={typeid:24,uuid:"0BFC2C99-F21D-44A5-B1F5-7BB14FBD003F"}
+ * @AllowToRunInFind
+ */
+function savePrefsLocal(event,elementArray){
+	var formName = event.getFormName();
+	var prefArray = [];
+	if (elementArray){
+		prefArray = prefArray.concat(elementArray);
+	}
+	for (var el in forms[formName]){
+		if ((elementArray && elementArray.indexOf(el) != -1) ||
+			el.search('pref') != -1){//if there is a pref variable in the form, save preference value
+			prefArray.push(el);
+		}
+	}
+	if (prefArray.length == 0){return}
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
+	q.result.add(q.columns.preferences2_id);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.form_name.eq(formName));
+	var Q = databaseManager.getFoundSet(q);
+	var index = 0;
+	/** @type {JSRecord<db:/stsservoy/preferences2>} */
+	var rec;
+	var changedSet = false;
+	var checkedArray = new Array();
+	index = 1;
+	while (rec = Q.getRecord(index++)){
+		var fldName = rec.field_name;
+		checkedArray.push(fldName);
+		var fldVal = rec.field_value;
+		var localVal = forms[formName][fldName];
+		if (fldVal != localVal){
+			rec.field_value = localVal;
+			rec.edit_date = new Date();
+			changedSet = true;
+		}
+	}
+	var dataProv = '';
+	application.output(checkedArray);
+	while (dataProv = prefArray.pop()){
+		if (checkedArray.indexOf(dataProv) == -1){
+			changedSet = true;
+			var idx = Q.newRecord();
+			rec = Q.getRecord(idx);
+			rec.tenant_uuid = globals.session.tenant_uuid;
+			rec.form_name = formName;
+			rec.edit_date = new Date();
+			rec.field_name = dataProv;
+			rec.field_type = (typeof forms[formName][dataProv]);
+			rec.field_value = forms[formName][dataProv];
+		}
+	}
+	if (changedSet){
+		databaseManager.saveData(Q);
+	}
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"2749BA2C-9936-4D54-8FF4-D014FBC54608"}
+ */
+function restorePrefsLocal(event){
+	var formName = event.getFormName();
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
+	q.result.add(q.columns.preferences2_id);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.form_name.eq(formName));
+	var Q = databaseManager.getFoundSet(q);
+	var index = 1;
+	/** @type {JSRecord<db:/stsservoy/preferences2>} */
+	var rec;
+	while (rec = Q.getRecord(index++)){
+		var fldName = rec.field_name;
+		if (forms[formName][fldName] && rec.field_value != ''){
+			forms[formName][fldName] = rec.field_value;
+		}
+	}
+}
+/**
+ * @param {String} dateString
+ *
+ * @properties={typeid:24,uuid:"0FA3E913-4714-4A86-B15C-9422D60B9EBB"}
+ */
+function getDateTime(dateString){
+	var dt = dateString.split('/');
+	if (dt.length != 3){return null}
+	var dated = new Date('20'+dt[2],dt[0]-1,dt[1]-1,12,0,0,0);
+	return dated;
 }

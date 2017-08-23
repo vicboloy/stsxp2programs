@@ -631,6 +631,7 @@ var session = {
 	bundlePrefix : "",
 	tenant_uuid : "",
 	worker : "",
+	heatNumber : "",
 	loadNumber : 0,
 	loadNextNumber : 0,
 	loadId: "",
@@ -753,6 +754,7 @@ var sampleMultiArray = [
  */
 var rfViews = {
 	Sample : {
+		genericin : 'R',
 		statusin : 'R',
 		locationin : 'O',
 		workerin : 'O',
@@ -790,6 +792,7 @@ var rfViews = {
 
 	},
 	Receiving : {
+		genericin : 'R',
 		jobnumberin : 'R',
 		loadnumberin : 'R',
 		statusin : 'O',
@@ -807,6 +810,7 @@ var rfViews = {
 		receiveremaining : 'V'
 	},
 	'Build Bundles' : {
+		genericin : 'R',
 		jobnumberin : 'R',
 		bundlein : 'R',
 		statusin : 'R',
@@ -821,6 +825,7 @@ var rfViews = {
 		bundleweight : 'V'
 	},
 	'Saw' : {
+		genericin : 'R',
 		statusin : 'R',
 		locationin : 'O',
 		workerin : 'O',
@@ -837,6 +842,7 @@ var rfViews = {
 		pcsstatcount : 'V'
 	},
 	'Status' : {
+		genericin : 'R',
 		currentidin : 'R',
 		
 		jobnumber : 'V',
@@ -855,6 +861,7 @@ var rfViews = {
 		material : 'V'
 	},
 	'Find Piece Marks' : {
+		genericin : 'R',
 		jobnumberin : 'R',
 		piecemarkin : 'R',
 		material : 'V',
@@ -863,6 +870,7 @@ var rfViews = {
 		location : 'V'
 	},
 	'Final Ship' : {
+		genericin : 'R',
 		jobnumberin : 'R',
 		loadnumberin : 'R',
 		statusin : 'R',
@@ -874,6 +882,7 @@ var rfViews = {
 		shipweight : 'V'		
 	},
 	'Ship By Sequence' : {
+		genericin : 'R',
 		jobnumberin : 'R',
 		seqnumberin : 'R',
 		loadnumberin : 'R',
@@ -894,6 +903,7 @@ var rfViews = {
 	
 	},
 	'Shipping' : {
+		genericin : 'R',
 		jobnumberin : 'R',
 		loadnumberin : 'R',
 		statusin : 'R',
@@ -913,6 +923,7 @@ var rfViews = {
 
 	},
 	'Transactions' : {
+		genericin : 'R',
 		statusin : 'R',
 		locationin : 'O',
 		workerin : 'O',
@@ -929,6 +940,7 @@ var rfViews = {
 		locationweight: 'V'
 	},
 	'Transactions w/Revs' : {
+		genericin : 'R',
 		statusin : 'R',
 		locationin : 'O',
 		workerin : 'O',
@@ -946,6 +958,7 @@ var rfViews = {
 		locationweight: 'V'
 	},
 	'Inspections' : {
+		genericin : 'R',
 		statusin : 'R',
 		locationin : 'O',
 		workerin : 'O',
@@ -963,6 +976,7 @@ var rfViews = {
 		
 	},
 	'Inspections w/Revs' : {
+		genericin : 'R',
 		statusin : 'R',
 		locationin : 'O',
 		workerin : 'O',
@@ -1511,12 +1525,12 @@ function rfF8ReversalTransaction(){
 	if (errorNum != 0){
 		// raise error button
 		if (application.isInDeveloper()){application.output('error reversal '+errorNum)}
-		errorDialogMobile('rf_transactions.current',errorNum,'current',errorMsg);
+		errorDialogMobile('rf_mobile_view.currentidin',errorNum,'currentidin',errorMsg);
 		return null;
 	}
 	if (foundIndex == 0){
 		// status not found error
-		errorDialogMobile('rf_transactions.current',409,'current','');
+		errorDialogMobile('rf_mobile_view.currentidin',409,'currentidin','');
 		if (application.isInDeveloper()){application.output('error reversal status not found')}
 		return null;
 	}
@@ -1545,7 +1559,7 @@ function rfF8ReversalTransaction(){
 			fsUpdater.setColumn('trailer_labor_percentage',0);
 			fsUpdater.setColumn('trailer_labor_quantity',0);
 			fsUpdater.performUpdate(); //411 100% complete Removed From the STOP Status Code.
-			errorDialogMobile('rf_transactions.current',411,'current','');
+			errorDialogMobile('rf_mobile_view.currentidin',411,'currentidin','');
 			return null;
 		}
 	}
@@ -2166,7 +2180,7 @@ function rfCheckRouteOrder(){
 	}*/
 	if (!allowInRoute && !allowMoreCodes){
 		missing = "("+m.stations[session.stationId]+")"; // make missing global
-		errorDialogMobile('rf_transactions.current','431','current',missing);// 431 This Routing Code Does Not Allow This Status.
+		errorDialogMobile('rf_mobile_view.currentidin','431','currentidin',missing);// 431 This Routing Code Does Not Allow This Status.
 		return false;
 	}
 	//var writeTransRecord = (allowMultiScan && stationScanned) || (!stationScanned) ||	(routeId == null);
@@ -2750,25 +2764,26 @@ function rfErrorHide(event) {
 		formName = application.getActiveWindow().controller.getName(); // 20150402 in case this is called outside current window
 	}
 	var elName = session.errorElement;
+	if (application.isInDeveloper()){application.output(' REM Focus fields, stayfield:'+forms.rf_mobile_view.stayField+' focusGain:'+forms.rf_mobile_view.focusGain+' focusLost:'+forms.rf_mobile_view.focusLost+' fieldErroredName:'+forms.rf_mobile_view.fieldErroredName);}
 	if (session.errorElementAlt != null && event.getFormName != 'rf_mobile_view'){
 		elName = session.errorElementAlt;
 	}
-	application.output(' REM rfErrorHide return and activate field:'+elName);
+	if (application.isInDeveloper()){application.output(' REM rfErrorHide return and activate field:'+elName);}
 	globals.mobDisableForm(false);
 	forms[formName].elements.errorWindow.visible = false;
 	forms[formName].elements.errorWindow.enabled = false;
 	forms[formName].elements.errorWindow.transparent = true;
-	forms[formName].elements[elName].requestFocus();
-	forms[formName].controller.focusField(elName,false);
-	forms[formName].elements[elName].selectAll();
+	if (application.isInDeveloper()){application.output('elName is '+elName+', formName: '+formName);}
+	//forms[formName].elements[elName].requestFocus();
+	if (forms[formName].elements[elName]){forms[formName].controller.focusField(elName,false);}
+	//forms[formName].elements[elName].selectAll();
 	//forms[formName].elements[elName].requestFocus();
 	if (session.errorForm != null && session.errorElement != null){
-		//application.output(' focus request set');
 		//forms[session.errorForm].elements[session.errorElement].requestFocus();
 		//forms.rf_transactions.elements.current.requestFocus();
-		forms[formName].controller.focusField(elName,true);
-		forms[formName].elements[elName].requestFocus();
-		//forms[formName].elements[elName].selectAll();
+		//forms[formName].controller.focusField(elName,true);
+		forms[formName].elements[session.errorElement].requestFocus();
+		forms[formName].elements[session.errorElement].selectAll();
 		session.errorForm = null;
 		session.errorElement = null;
 		session.errorElementAlt = null;
@@ -3028,10 +3043,12 @@ function onDataChangeStatus(oldValue, newValue, event) {
 		forms[formName].statusCode = "";
 		return true;
 	}*/ // 20150402 for errors originating from input fields
+	var statusField = 'status';
+	if (formName == 'rf_mobile_view'){statusField = 'statusin'}
 	var statusCheck = rfStatusCheck(newValue);
 	if (statusCheck == null){
-		application.output('REM change Status event '+event.getElementName());
-		errorDialogMobile(event,401,'status',null);//401: This is not a valid status code
+		if (application.isInDeveloper()){application.output('REM change Status event '+event.getElementName());}
+		errorDialogMobile(event,401,'statusin',null);//401: This is not a valid status code
 		onFocusClear(event);
 		return true;
 	}
@@ -3081,12 +3098,12 @@ function onDataChangeStatus(oldValue, newValue, event) {
 			permitted = processCodes.all;
 	}
 	if (forbidden.indexOf(m.statusToProcess[newValue]) != -1){
-		errorDialogMobile(event,404,'status',null);//404 This Is Not A Valid Status Code For This Screen / Operation.
+		errorDialogMobile(event,404,statusField,null);//404 This Is Not A Valid Status Code For This Screen / Operation.
 		onFocusClear(event);
 		return true;	
 	}
 	if (permitted.indexOf(m.statusToProcess[newValue]) == -1){
-		errorDialogMobile(event,404,'status',null);//404 This Is Not A Valid Status Code For This Screen / Operation.
+		errorDialogMobile(event,404,statusField,null);//404 This Is Not A Valid Status Code For This Screen / Operation.
 		onFocusClear(event);
 		return true;	
 	}
@@ -3278,6 +3295,10 @@ function onDataChangeWorker(oldValue, workers, event){
 	if (onDataChangeFixEntry(oldValue,workers,event)){return true;}
 	session.userEntry = workers;
 	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	var rev = (formName.search('_rev') != -1);
 	if (workers == "" || workers == null){
 		if (formName == 'rf_mobile_view'){
@@ -3316,6 +3337,7 @@ function onDataChangeWorker(oldValue, workers, event){
 			globals.rfEmptyNextField(event,'currentidin');
 		}
 	}
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	return true;
 }
 /**
@@ -4109,9 +4131,14 @@ function errorDialog(errorNum){
  * @AllowToRunInFind
  */
 function errorDialogMobile(event,errorNum,returnField,additionalMsg){
+	if (application.isInDeveloper()){application.output('  REM enter errorDialogMobile')}
 	var mobile = (session.program != "STS Desktop");
 	if (application.isInDeveloper()){application.output('program '+session.program);}
 	session.errorShow = true;
+	if (application.isInDeveloper()){application.output('returnField of errorDialogMobile '+returnField)}
+	if (returnField){
+		session.errorElement = returnField;
+	}
 	//if (event.getFormName() != application.getActiveWindow().controller.getName()){return} // 20150402 for errors originating from input fields 
 	if (typeof additionalMsg === 'undefined') {additionalMsg = ''}
 	if (session.errorElement){
@@ -4139,7 +4166,8 @@ function errorDialogMobile(event,errorNum,returnField,additionalMsg){
 	errorMessage = errorMessage + " " + additionalMsg;
 	if (mobile){
 		forms.rf_mobile_view.fieldErroredName = session.errorElement;
-		globals.rfErrorShow(errorMessage);//DIALOGS.showerro
+		if (application.isInDeveloper()){application.output('session.errorElement is '+session.errorElement)}
+		globals.rfErrorShow(errorMessage);
 	} else {
 		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.error.number', new Array(errorNum)),errorMessage);
 	}
@@ -4276,6 +4304,7 @@ function onActionMainMenu(event) {
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"8207B6BB-DA06-4861-8E21-3426C54CCC5F"}
+ * @AllowToRunInFind
  */
 function onDataChangeBarcode2(oldValue, scannedID, event) {
 	if (onDataChangeFixEntry(oldValue,scannedID,event)){return true;}
@@ -4285,14 +4314,22 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
 	forms[formName].currentID = "";
 	var barcodeId = globals.checkBarcode(scannedID);
 	var elementName = event.getElementName();
+	var barcodeErrorField = 'currentidin';
+	if (formName.search('rf_mobile_view') != -1){
+		barcodeErrorField = 'genericin';
+	}
 	if (forms[formName].entryRequired(elementName)){
 		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+		if (forms.rf_mobile_view.elements['drawrevin'].visible){
+			barcodeErrorField = 'drawrevin';
+		}
 	}
 	if (!barcodeId){
-		globals.errorDialogMobile(event,701,'current',null);//701 This ID Number was not found.
+		globals.errorDialogMobile(event,701,barcodeErrorField,null);//701 This ID Number was not found.
 		globals.logger(true,'Barcode does not exist.');
 		return true;
 	}
+	mob.barcodeId = barcodeId;
 	rfProcessBarcode(event);
 	rfResetRevisionsField(formName);//clear Revisions field if there
 	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
@@ -4314,16 +4351,20 @@ function rfProcessBarcode(event){
 	mob.workers = forms[formName].statusWorker;
 	forms[formName].lastID = mob.barcode;
 	rfGetBarcodeIdfiles()
+	var barcodeErrorField = 'currentidin';
+	if (forms.rf_mobile_view.elements['drawrevin'].visible){
+		barcodeErrorField = 'drawrevin';
+	}
 	if (!barcodeAttached()){
 		if (application.isInDeveloper()){application.output('ERROR: Database inconsistent with barcode');}//errortypeneeded
-		errorDialogMobile(event,'6002','current');//6002 This item has no associated piecemark.
+		errorDialogMobile(event,'6002',barcodeErrorField);//6002 This item has no associated piecemark.
 		logger(true,i18n.getI18NMessage('sts.txt.barcode.no.idfiles'));
 		rfWindowLastInfoClear();
 		return true;
 	}
 	var onHold = barcodeOnHold(); //first check 1/29/2015 pp 
 	if (onHold){
-		errorDialogMobile(event,'1050','current');//1050 One or more of the ID Numbers are on Hold.
+		errorDialogMobile(event,'1050',barcodeErrorField);//1050 One or more of the ID Numbers are on Hold.
 		logger(true,i18n.getI18NMessage('1050'));
 		return true;
 	}
@@ -4332,7 +4373,7 @@ function rfProcessBarcode(event){
 	rfGetMobPiecemark(); // Get piecemark record
 	if (!barcodePlant() && !scopes.globals.isOfficeFunction(event)){
 		var assocName = ' ('+barcode_to_idfile.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.sts_job_to_assoc.association_name+')';
-		errorDialogMobile(event,'6001','current',assocName);//6001 This item doesn't belong to this Division.
+		errorDialogMobile(event,'6001',barcodeErrorField,assocName);//6001 This item doesn't belong to this Division.
 		logger(true,i18n.getI18NMessage('6001')+assocName);
 		return true;
 	}
@@ -4351,7 +4392,7 @@ function rfProcessBarcode(event){
 					if (application.isInDeveloper()){application.output('add to bundle');}
 					if (flagF8){
 						if (!bundleCheckIdInside()){
-							errorDialogMobile(event,'701','current','  Item not removed.'); // 701 This ID Number Was Not Found.
+							errorDialogMobile(event,'701',barcodeErrorField,'  Item not removed.'); // 701 This ID Number Was Not Found.
 							return true;
 						}
 						bundleGetIdfilesByBarcode();
@@ -4381,7 +4422,7 @@ function rfProcessBarcode(event){
 					routeOK = rfCheckRouteOrder(); // route checks out 
 					if (!routeOK){
 						if (application.isInDeveloper()){application.output('Routing not ok');}
-						errorDialogMobile('rf_transactions.current','405','current',null);//405 
+						errorDialogMobile(event,'405',barcodeErrorField,null);//405 
 						return true;
 					}
 					shipStat = barcodeShip();
@@ -4409,25 +4450,25 @@ function rfProcessBarcode(event){
 					routeOK = rfCheckRouteOrder(); // route checks out 
 					if (!routeOK){
 						if (application.isInDeveloper()){application.output('Routing not ok');}
-						errorDialogMobile('rf_transactions.current','405','current',missing);//405 
+						errorDialogMobile(event,'405',barcodeErrorField,missing);//405 
 						return true;
 					}
 					shipStat = barcodeShip();
 					shipped = barcodeShipped();
 					if (shipped){
 						if (application.isInDeveloper()){application.output('Barcode already shipped.');}
-						errorDialogMobile('rf_shipping.current','708','current');//405 
+						errorDialogMobile(event,'708',barcodeErrorField);//405 
 						return true;
 					}
 					if (barcodeInAnotherLoad()){
 						if (application.isInDeveloper()){application.output('Barcode already on another load.');}
-						errorDialogMobile('rf_shipping.current','951','current');//405 
+						errorDialogMobile(event,'951',barcodeErrorField);//405 
 						return true;				
 					}
 					if (rfTimed() && (mob.timedError != "")){
-							errorDialogMobile(event,mob.timedError,'current');
-							logger(true,'Timed status error'+mob.timedError);
-							return true;
+						errorDialogMobile(event,mob.timedError,barcodeErrorField);
+						logger(true,'Timed status error'+mob.timedError);
+						return true;
 					}
 					saveScanTransaction(); // moved to inside rfTimed where the form query on timed end is located
 					rfGetLocationStats2(forms[formName].id_location);
@@ -4446,6 +4487,10 @@ function rfProcessBarcode(event){
 		default:{}
 	}
 	rfGetTransactionList(mob.idfile); // second pass of same transaction list to include new transaction ticket #139
+	if (forms.rf_mobile_view.elements['drawrevin'].visible){
+		barcodeErrorField = 'drawrevin';
+		forms[formName].elements[barcodeErrorField].requestFocus();
+	}	
 	return null;
 }
 /**
@@ -4570,6 +4615,10 @@ function onDataChangeLocation(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	session.userEntry = newValue;
 	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	/** @type {String} */
 	var statusLocation = forms[formName].statusLocation;
 	if (newValue != null && newValue != ""){
@@ -4589,6 +4638,7 @@ function onDataChangeLocation(oldValue, newValue, event) {
 	mob.locationArea = newValue;
 	switch (formName){
 		case 'rf_mobile_view':
+			if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 			rfMobileViewNextField(event);
 			break;
 		default:
@@ -4657,10 +4707,8 @@ function onDataChangeJob(oldValue, newJob, event) {
 		formName = formName.replace(instance_form,'_view'+instance_form);
 	}
 	var baseForm = getBaseFormName(null);
-	//application.output('base form '+baseForm);
 	var elementName = event.getElementName();
-	///var returnField = formName+'.'+fieldName;
-	//application.output('return field '+returnField);
+	if (formName.search('rf_mobile_view') != -1){elementName = 'jobnumberin'}
 	if (forms[formName].entryRequired(elementName)){
 		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
 	}
@@ -4714,7 +4762,10 @@ function onDataChangeJob(oldValue, newJob, event) {
 		case 'rf_mobile_view':
 		case 'rf_mobile':
 			if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-			forms.rf_mobile_view.fieldNextTab();
+			var dataProv = forms['rf_mobile_view'].elements['jobnumberin'].getDataProviderID();
+			forms['rf_mobile_view'][dataProv] = newJob;
+			application.output('job is '+newJob+' dataprov '+dataProv);
+			//forms.rf_mobile_view.fieldNextTab();
 			//forms.rf_mobile_view.elements[forms[formName].currentField].requestFocus();
 			//forms.rf_mobile_view.onElementFocusLost(event);
 			break;
@@ -4774,6 +4825,7 @@ function rfJobCheck(jobNumber,associationId){
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"7A558DA6-FB57-40FA-AA5A-D44A5091208E"}
+ * @AllowToRunInFind
  */
 function onDataChangeBundle(oldValue, bundle, event) {
 	/**
@@ -4787,6 +4839,7 @@ function onDataChangeBundle(oldValue, bundle, event) {
 	var formName = event.getFormName();
 	var elementName = event.getElementName();
 	if (onDataChangeFixEntry(oldValue,bundle,event)){return true;}
+	if (formName.search('rf_mobile_view') != -1){elementName = 'bundlein'}
 	if (forms[formName].entryRequired(elementName)){
 		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
 	}
@@ -4807,7 +4860,11 @@ function onDataChangeBundle(oldValue, bundle, event) {
 
 	session.userEntry = bundle;
 	if (!barcodeIsBundle(bundle)){
+		if (formName == 'rf_mobile_view'){
+			forms[formName].elements['bundlein'].requestFocus();
+		}
 		scopes.globals.rfCreateBundle(event);
+		return;
 	} else {
 		// barcode has items, is it for this job? Create new dialog for new bundle
 		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
@@ -4816,19 +4873,13 @@ function onDataChangeBundle(oldValue, bundle, event) {
 		if (bundleJobId+'' != session.jobId+''){
 			mob.bundle.Id = "";
 			// 730 This Bundle Number Does Not Belong To This Job.
-			errorDialogMobile(event,730,'bundle',null);
+			errorDialogMobile(event,730,'bundlein',null);
 			return true;
 		} else {
 			mob.bundle.Id = bundle;
 		}
 	}
-	rfGetSpecsBundle();
-	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}		
-	if (formName == 'rf_mobile_view'){
-		rfMobileViewNextField(event);
-	} else {
-		onFocusSet(event,mob.bundle.Id,'status');
-	}
+	dataChangedBundle(event,formName);
 	return true;
 }
 /**
@@ -5421,9 +5472,15 @@ function bundleGetIdfilesByBarcode(){
  */
 function onDataChangeRevision(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
+	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	session.userEntry = newValue;
 	mob.currentRevision = newValue;
 	///var formName = event.getFormName();
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	rfEmptyNextField(event,'currentidin');
 	return true
 }
@@ -5472,7 +5529,7 @@ function onDataChangeLoad(oldValue, newValue, event) {
 		session.loadNumber = newValue;
 		mobLoadNumber = newValue;
 		if (application.isInDeveloper() && newValue == "ALL"){
-			rfMobileViewNextField(event);// JMC pass for additional testing
+			//rfMobileViewNextField(event);// JMC pass for additional testing
 		}
 		//loadGetData();
 	} else {
@@ -5649,7 +5706,7 @@ function loadNumberCheck(loadNumber){
 		switch (session.program){
 		case 'Receiving':
 			// error message that must use existing load number, number does not exist
-			globals.errorDialogMobile(null,301,'loadnumber',null);//301 This Load was not found.
+			globals.errorDialogMobile(null,301,'loadnumberin',null);//301 This Load was not found.
 			globals.logger(true,i18n.getI18NMessage('sts.txt.load.does.not.exist'));
 			return false;
 			break;
@@ -6369,11 +6426,14 @@ function onActionSelectUnprinted(event) {
  */
 function rfMobileViewNextField(event){
 	if (event.getFormName() != 'rf_mobile_view'){return}
+	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	if (1==1){return}//skip rest mobile redesign
 	/** @type {Array} */
 	var entryFields = forms['rf_mobile_view'].tabFieldOrder;
 	var currentField = event.getElementName();
 	var index = entryFields.indexOf(currentField);
 	index = (index < entryFields.length-1) ? ++index : index;
+	if (application.isInDeveloper()){application.output('REM entryFields '+entryFields)}
 	forms['rf_mobile_view'].elements[entryFields[index]].requestFocus();
 }
 /**
@@ -6415,23 +6475,35 @@ function rfGetSpecsItem(){
  */
 function onDataChangeHeat(oldValue, newValue, event) {
 	session.userEntry = newValue;
+	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	rfGetJobIdfileIds();
 	/** @type {QBSelect<db:/stsservoy/heats>} */
 	var s = databaseManager.createSelect('db:/stsservoy/heats');
 	s.result.add(s.columns.heat_number);
 	s.result.add(s.columns.heat_id);
-	s.where.add(
-		s.and
-			.add(s.columns.delete_flag.isNull)
-			.add(s.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(s.columns.idfile_id.isin(mob.idfileIds))
-			.add(s.columns.heat_number.eq(newValue))
-	);
+	s.where.add(s.columns.delete_flag.isNull);
+	s.where.add(s.columns.tenant_uuid.eq(session.tenant_uuid));
+	s.where.add(s.columns.idfile_id.isin(mob.idfileIds));
+	s.where.add(s.columns.heat_number.eq(newValue));
+	
 	/** @type {JSFoundSet<db:/stsservoy/heats>} */
 	var fs3 = databaseManager.getFoundSet(s);
 	if (fs3.getSize() == 0){
 		globals.logger(true,i18n.getI18NMessage('sts.txt.heat.not.found.this.job',new Array(newValue,session.jobNumber)));
-		var message = 'Do you wish to use the new HEAT Number: '+newValue;
+
+		forms.rf_mobile_view.elements.tablessQuery.visible = true;
+		if (forms.rf_mobile_view.elements.tablessQuery.visible){
+			forms.mobile_query.setTitleText(i18n.getI18NMessage('sts.txt.heat.use.new.number',new Array(newValue)),newValue);
+			forms.mobile_query.setButtonTextLt(i18n.getI18NMessage('sts.btn.no'));
+			forms.mobile_query.setButtonTextRt(i18n.getI18NMessage('sts.btn.yes'));
+			forms.mobile_query.elements.btn_respond_lt.requestFocus();
+			// now must use buttons to query a global variable and set/unset visibility of mobile_query form
+			return;
+		}
 		var response = globals.DIALOGS.showQuestionDialog(
 			i18n.getI18NMessage('sts.txt.heat.new.number',new Array(newValue)),
 			i18n.getI18NMessage('sts.txt.heat.new.number',new Array(newValue)),
@@ -6452,6 +6524,7 @@ function onDataChangeHeat(oldValue, newValue, event) {
 		newValue = oldValue;
 		return true;
 	}
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	rfMobileViewNextField(event);
 	return true;
 }
@@ -6471,6 +6544,8 @@ function onDataChangeGrade(oldValue, newValue, event) {
 	// reject if grade doesn't match piecemark grade.
 	// blank piecemark grade is a pass
 	session.userEntry = newValue;
+	var formName = event.getFormName();
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	return true;
 }
 
@@ -6492,6 +6567,10 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 	var sheetList = [];
 	var piecemark = newValue;
 	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	var baseForm = getBaseFormName(null);
 	//application.output('base form '+baseForm);
 	session.jobIdBack = session.jobId;
@@ -6549,7 +6628,7 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 		//mob
 		//forms['rf_mobile_view'].material = rec.material;
 	} else {	
-		globals.errorDialogMobile(event,'27','current');// message 27 piecemark not found on this job
+		globals.errorDialogMobile(event,'27','currentidin');// message 27 piecemark not found on this job
 		globals.logger(true,piecemark+' piecemark not found on this job# '+session.jobNumber);
 
 		//forms[formName].clearForm();
@@ -6588,7 +6667,7 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 	//application.output('locations '+locations);
 	forms[formName].elements[event.getElementName()].selectAll();
 	switch (baseForm){
-		case 'rf_mobile'://STSmobile
+		case 'rf_mobile'://STSmobile // was rf_mobile_view, cause of stripping _view from end of formName
 			/** @type {QBSelect<db:/stsservoy/transactions>} */
 			var trans = databaseManager.createSelect('db:/stsservoy/transactions');
 			trans.result.add(trans.columns.trans_id);
@@ -6660,6 +6739,7 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 		default:
 			
 	}
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	if (application.isInDeveloper()){application.output('get piecemark '+baseForm)}
 	return true;
 }
@@ -6679,6 +6759,11 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 function onDataChangeSequence(oldValue, newValue, event) {
 	session.userEntry = newValue;
 	// Is sequence part of the job?
+	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	/** @type {QBSelect<db:/stsservoy/sequences>} */
 	var s = databaseManager.createSelect('db:/stsservoy/sequences');
 	s.result.add(s.columns.sequence_number);
@@ -6702,12 +6787,12 @@ function onDataChangeSequence(oldValue, newValue, event) {
 	// if piecemark screen, reset all counts
 	switch (getBaseFormName(event)){
 		case 'piecemark','piecemark_entry': {
-			application.output('hello joe');
 			getResetPcmkCounts();
 			break;
 		}
 		default:
 	}
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	rfMobileViewNextField(event);
 	return true
 }
@@ -6971,12 +7056,14 @@ function getInstanceWindow(event){
 function getCustomersByJob(){
 	var formName = getFormName();
 	var baseForm = getBaseFormName(null);
-	if (baseForm.search('piecemark') == -1){return null}
+	if (baseForm.search(/(piecemark)|(performance)/) == -1){return null}
 	if (application.isInDeveloper()){application.output('job '+formName)}
 	var jobNum = forms[formName].vJobNumber;
+	if (formName.search('import_performance') != -1){jobNum = forms['import_performance_setting'].vJobNumber}
 	var custNum = [];
 	var custId = [];
 	var custIds = [];
+	var custNam = [];
 	// Look in session.jobId
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
@@ -7007,10 +7094,11 @@ function getCustomersByJob(){
 			var rec2 = C.getRecord(index);
 			custId.push(rec2.customer_id);
 			custNum.push(rec2.customer_number);
+			custNam.push(rec2.name);
 			index++;//task08 infinite loop on job number change
 		}
 
-		var ds = databaseManager.convertToDataSet(C,['customer_number','customer_id']);
+		var ds = databaseManager.convertToDataSet(C,['customer_number','customer_id','name']);
 		return ds;
 	}
 	return null;
@@ -7075,6 +7163,10 @@ function getBaseFormName(event){
  */
 function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	var formName = event.getFormName();
+	var elementName = event.getElementName();
+	if (forms[formName].entryRequired(elementName)){
+		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	}
 	var baseForm = getBaseFormName(null);
 	if (application.isInDeveloper()){application.output('base form '+baseForm);}
 	var theForm = forms[formName];
@@ -7111,6 +7203,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 			onFocusTabsSTS(event);
 			break;
 	}
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	return true
 }
 /**
@@ -7126,7 +7219,9 @@ function getJobData(custId,jobNum){
 	fs.result.add(fs.columns.job_id);
 	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	fs.where.add(fs.columns.delete_flag.isNull);
-	fs.where.add(fs.columns.customer_id.eq(custId));
+	if (custId){
+		fs.where.add(fs.columns.customer_id.eq(custId));
+	}
 	fs.where.add(fs.columns.job_number.eq(jobNum));
 	var J = databaseManager.getFoundSet(fs);
 	if (J.getSize() > 0){
@@ -7210,7 +7305,7 @@ function getJobIdSheets(){
 	var idx = 1;
 	/** @type {JSRecord<db:/stsservoy/sheets>} */
 	var rec = null;
-	while (rec = S.getRecord(idx)){
+	while (rec = S.getRecord(idx++)){
 		sheets.push(rec.sheet_id+"");		
 	}
 	return sheets;
@@ -8883,7 +8978,9 @@ function checkUserEmpty(userId){
 function rfResetRevisionsField(formName){
 	if (forms[formName].drawingRevision){
 		forms[formName].drawingRevision = '';
-		forms[formName].controller.focusField('drawrevin',true);
+		//if (forms[formName].entryRequired('fieldrevin')){
+		//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = 'drawrevin'}
+		//}
 	}
 }
 /**
@@ -8898,8 +8995,18 @@ function rfCreateBundle(event){
 	if (forms[formName].entryRequired(elementName)){
 		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
 	}
+	//set here iff MC, use single-page dialog
 	var message = i18n.getI18NMessage('sts.txt.use.new.bundle.number')+
 			session.bundlePrefix+session.bundleSuffix;
+	forms.rf_mobile_view.elements.tablessQuery.visible = true;
+	if (forms.rf_mobile_view.elements.tablessQuery.visible){
+		forms.mobile_query.setTitleText(i18n.getI18NMessage('sts.txt.use.new.bundle.number'),session.bundlePrefix+session.bundleSuffix);
+		forms.mobile_query.setButtonTextLt(i18n.getI18NMessage('sts.btn.no'));
+		forms.mobile_query.setButtonTextRt(i18n.getI18NMessage('sts.btn.yes'));
+		forms.mobile_query.elements.btn_respond_lt.requestFocus();
+		// now must use buttons to query a global variable and set/unset visibility of mobile_query form
+		return;
+	}
 	var response = DIALOGS.showQuestionDialog(
 		i18n.getI18NMessage('sts.txt.new.bundle.number'),
 		message,
@@ -8914,7 +9021,9 @@ function rfCreateBundle(event){
 	mob.bundle.Id = session.bundlePrefix+session.bundleSuffix;
 	forms.rf_mobile_view.currentBundle = mob.bundle.Id;
 	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-	forms.rf_mobile_view.fieldNextTab();
+	dataChangedBundle(formName);
+
+	//forms.rf_mobile_view.fieldNextTab();
 	//forms.rf_mobile_view.focusGain = forms.rf_mobile_view.getNextTabbed(elementName,false);
 	//forms.rf_mobile_view.focusLost = elementName;
 
@@ -8922,8 +9031,24 @@ function rfCreateBundle(event){
 }
 /**
  * @properties={typeid:24,uuid:"C7949C53-B416-4E01-8EF2-1FCB63ADB4EB"}
+ * @AllowToRunInFind
  */
 function rfRecordUp(){
+	var appUp = application.getActiveWindow();
+	var name = appUp.controller.getName();
+	//application.output('REM rfRecordUP()'+session.program);
+	if (application.isInDeveloper()){application.output('REM rfRecordUP()'+session.program);}
+	if (session.program.search('Bundle')){
+		//application.output('REM Bundle reached '+forms.rf_mobile_view.fieldPrevTab());
+		if (application.isInDeveloper()){application.output('REM Bundle reached '+forms.rf_mobile_view.fieldPrevTab());}
+		if (1==0 && forms.rf_mobile_view.focusGain == ''){
+			var field = forms.rf_mobile_view.tabFieldOrder[0];
+			if (application.isInDeveloper()){application.output('REM Bundle reached '+field);}
+			forms.rf_mobile_view.elements[field].requestFocus();
+			forms.rf_mobile_view.controller.focusField('bundlein',false)
+		}
+		return;
+	}
 	var fs = forms.trans_history.foundset;
 	var index = fs.getSelectedIndex();
 	if (index == 1){
@@ -8953,6 +9078,7 @@ function rfRecordDown(){
 function rfRecordDetail(){
 	forms.trans_history.onActionDetail();
 	application.updateUI();
+	application.output('arrow right ');
 	return true;
 }
 /**
@@ -8970,4 +9096,218 @@ function rfRecordDetailClose(){
  */
 function i18nSanify(i18nText){
 	return i18n.getI18NMessage(i18nText).replace(/\'/g,"\\'");//ticket #151 i18n embedded single quote issue
+}
+/**
+ * @properties={typeid:24,uuid:"1217BC41-3AD3-4F6B-B119-7A42B7D9F7D4"}
+ */
+function rfArrowLt(){
+	forms.mobile_query.elements.btn_respond_lt.requestFocus();
+}
+/**
+ * @properties={typeid:24,uuid:"E7B4BC53-6D8C-4EC4-8304-5945DBBBD88A"}
+ */
+function rfArrowRt(){
+	forms.mobile_query.elements.btn_respond_rt.requestFocus();
+}
+/**
+ * @param event
+ * @param btnText
+ *
+ * @properties={typeid:24,uuid:"86A2ADAC-E3AF-4349-A5FF-4187D30833B1"}
+ */
+function rfQueryClose(event,btnText){
+	forms.rf_mobile_view.elements.tablessQuery.visible = false;
+	var elName = event.getElementName();
+	var stay = forms.rf_mobile_view.stayField;
+	var dataProv = forms.rf_mobile_view.elements[stay].getDataProviderID();
+	if (elName == 'btn_respond_lt'){
+		forms.rf_mobile_view[dataProv] = '';
+		forms.rf_mobile_view.elements[stay].requestFocus();
+		return;
+	}
+	var next = forms.rf_mobile_view.getNextTabbed(stay,false);
+	if (elName == 'btn_respond_rt'){
+		forms.rf_mobile_view[dataProv] = forms.mobile_query.approveValue;
+		forms.rf_mobile_view.fieldErroredName = '';
+		forms.rf_mobile_view.elements[next].requestFocus();
+	}
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} formName
+ *
+ * @properties={typeid:24,uuid:"8A778984-DAA6-455C-B578-E3BCE28207CE"}
+ */
+function dataChangedBundle(event,formName){
+	rfGetSpecsBundle();
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}		
+	if (formName == 'rf_mobile_view'){
+		null;
+		//rfMobileViewNextField(event);
+	} else {
+		onFocusSet(event,mob.bundle.Id,'statusin');
+	}
+
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} formName
+ *
+ * @properties={typeid:24,uuid:"F1D23A72-CCF2-448E-B594-9EA3DF2632F4"}
+ */
+function dataChangedHeat(event,formName){
+	globals.logger(true,i18n.getI18NMessage('sts.txt.heat.created.for.job.number',new Array(session.heatNumber,session.jobNumber)));
+	var fs = databaseManager.getFoundSet('stsservoy','heats');
+	/** @type {JSFoundSet<db:/stsservoy/heats>} */
+	var rec = fs.newRecord();
+	rec.heat_number = session.heatNumber;
+	rec.tenant_uuid = session.tenant_uuid;
+	rec.edit_date = new Date();
+	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
+	if (formName == 'rf_mobile_view'){
+		rfMobileViewNextField(event);
+	} else {
+		onFocusSet(event,mob.bundle.Id,'statusin');
+	}
+}
+/**
+ * @param {String} custName
+ *
+ * @properties={typeid:24,uuid:"F10B319F-EFE8-4E72-808F-CC8109B8024E"}
+ */
+function getCustomerId(custName){
+	/** @type {QBSelect<db:/stsservoy/customers>} */
+	var q = databaseManager.createSelect('db:/stsservoy/customers');
+	q.where.add(q.columns.customer_number.eq(custName));
+	q.result.add(q.columns.customer_id);
+	/** @type {JSFoundSet<db:/stsservoy/customers>} */
+	var Q = databaseManager.getFoundSet(q);
+	return (Q.getSize() != 0) ? Q.getRecord(1).customer_id : null;
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F8ADBEB1-1289-45F4-AE3B-3E68F35340C2"}
+ */
+function onActionGeneric(event) {
+	//
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"527CADD7-4E05-4B95-B333-3D6642B8999C"}
+ */
+function onDataChangeGeneric(oldValue, newValue, event) {
+	var action = newValue.substr(0,1);
+	var data = newValue.replace(action,'');
+	if (application.isInDeveloper()){
+		application.output('Entered code:'+action+' data: '+data);
+		//return true;
+	}
+	var targView = forms.rf_mobile_view;
+	switch (action.toUpperCase()){
+		//B or b - (B)undle
+		case 'B':
+			var bundle = data;
+			onDataChangeBundle(oldValue,bundle,event);
+			break;
+		//C or c - Lo(c)ation
+		case 'C':
+			onDataChangeLocation(oldValue,newValue,event);
+			break;
+		//D or d - I(D) Number - complete serialization - typical ID nomenclature
+		case 'D':
+			if (dataEntryComplete(event)){
+				var scannedID = data;
+				onDataChangeBarcode2(oldValue,scannedID,event);
+			}
+			break;
+		//E or e - (E)mployee/Worker Number
+		case 'E':
+			var workers = data;
+			onDataChangeWorker(oldValue,workers,event)
+			break;
+		//G or g = (G)rade
+		case 'G':
+			//onDataChangeGrade(oldValue,newValue,event);
+			//break;
+		//H or h - (H)eat
+		case 'H':
+			//onDataChangeHeat(oldValue,newValue,event);
+			//break;
+		//J or j - (J)ob Numbers
+		case 'J':
+			var newJob = data;
+			onDataChangeJob(oldValue,newJob,event);
+			break;
+
+		//L or l - (L)oad Numbers
+		case 'L':
+			onDataChangeLoad(oldValue,newValue,event);
+			break;
+		//M or m - piece(m)ark
+		case 'M':
+			onDataChangeLoad(oldValue,newValue,event);
+			break;
+		
+		//P or p - (P)art Serial Number [Ex. P0000000001 thru PZZZZZZZZZZ then it is P0000000001 again] - starting point for barcoding w/FS Built In
+		case 'P':
+			scannedID = data;
+			onDataChangeBarcode2(oldValue,scannedID,event);
+			break;
+
+		//Q or q - (Q)uantity
+		case 'Q':
+			//onDataChangeQuantity(oldValue,newValue,event);
+			break;
+
+		//R or r - Use(r)Name - * - FS user name - this is username for fabSuite
+		case 'R':
+			//onDataChangeWorker(oldValue,workers,event);
+			break;
+
+		//S or s - (S)tatus/Work Station
+		case 'S':
+			onDataChangeStatus(oldValue,newValue,event);
+			break;
+
+		//U or u - Seq(u)ence Number 
+		case 'U':
+			onDataChangeSequence(oldValue,newValue,event);
+			break;
+		//V or v - Re(v)ision
+		case 'V':
+			onDataChangeRevision(oldValue,newValue,event);
+			break;
+		default:
+	}
+	var dataProv = forms['rf_mobile_view']['genericInput'] = '';
+	return true
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"F89D71B9-358E-4E27-A026-9BF66DB6B5F5"}
+ */
+function dataEntryComplete(event){
+	if (event){return true}
+	/** @type {Array} */
+	var entryList = forms['rf_mobile_view'].requiredFields;
+	for (var index = 0;index < entryList.length;index++){
+		var entry = entryList[index];
+		var dataProv = forms['rf_mobile_view'][entry];
+		if (dataProv == ''){
+			//hereherehere
+		}
+	}
+	return false;
 }

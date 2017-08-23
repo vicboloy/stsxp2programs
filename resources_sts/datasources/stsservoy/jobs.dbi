@@ -194,7 +194,7 @@ titleText:"i18n:table.jobs.metric_job"
 allowNull:true,
 creationOrderIndex:9,
 dataType:12,
-length:25,
+length:30,
 name:"po_release",
 titleText:"i18n:table.jobs.po_release"
 },

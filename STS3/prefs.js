@@ -1203,7 +1203,7 @@ var labels = "1 AREA Character 6 idfiles.id_area 10,\
 	209 BOMMATL Character 100 UNKNOWN,\
 	210 BOMSIZE Character 13 UNKNOWN,\
 	211 BOMRATING Character 15 UNKNOWN,\
-	212 MATLCLASS Character 10 piecemarks.material_class 10,\
+	212 MATLCLASS Character 10 sheetbom.material_class 10,\
 	213 BOMENDPREP Character 6 UNKNOWN,\
 	214 GUID Character 40 idfiles.id_guid 40,\
 	215 BOMFINISH Character 30 UNKNOWN,\

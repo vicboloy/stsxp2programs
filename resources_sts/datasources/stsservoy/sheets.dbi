@@ -28,11 +28,10 @@ titleText:"i18n:table.sheets.bhn_maximum"
 },
 {
 allowNull:true,
-creationOrderIndex:36,
-dataType:-2,
-length:2147483647,
-name:"bom_comment",
-titleText:"i18n:table.sheets.bom_comment"
+creationOrderIndex:40,
+dataType:12,
+length:100,
+name:"bom_comment"
 },
 {
 allowNull:true,
@@ -59,7 +58,7 @@ titleText:"i18n:table.sheets.date_issued"
 },
 {
 allowNull:true,
-creationOrderIndex:38,
+creationOrderIndex:37,
 dataType:4,
 name:"delete_flag",
 titleText:"i18n:table.general.delete_flag"
@@ -76,7 +75,7 @@ titleText:"i18n:table.sheets.drawn_by"
 allowNull:true,
 autoEnterSubType:3,
 autoEnterType:1,
-creationOrderIndex:40,
+creationOrderIndex:39,
 dataType:93,
 name:"edit_date",
 titleText:"i18n:table.general.edit_date"
@@ -116,7 +115,7 @@ titleText:"i18n:table.sheets.line_spec"
 },
 {
 allowNull:true,
-creationOrderIndex:37,
+creationOrderIndex:36,
 dataType:4,
 name:"logic_flag",
 titleText:"i18n:table.general.logic_flag"
@@ -298,7 +297,7 @@ titleText:"i18n:table.sheets.sheet_number"
 allowNull:true,
 creationOrderIndex:30,
 dataType:12,
-length:20,
+length:30,
 name:"sheet_po",
 titleText:"i18n:table.sheets.sheet_po"
 },
@@ -320,7 +319,7 @@ titleText:"i18n:table.sheets.sketch"
 },
 {
 allowNull:true,
-creationOrderIndex:39,
+creationOrderIndex:38,
 dataType:12,
 flags:4,
 length:36,

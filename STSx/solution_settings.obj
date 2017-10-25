@@ -1,6 +1,7 @@
 firstFormID:"AF57C0AD-B42C-470A-B1A3-21E14AAB3492",
 i18nDataSource:"db:/stsservoy/i18n_table",
-modulesNames:"STSmobile",
+modulesNames:"STSmobile,fabSuiteAuthenticate,servoySecurityAuthenticator,STS_postLogin,kiss_import,fabSuiteCom",
+onCloseMethodID:"-1",
 onOpenMethodID:"D7A7FA63-522F-44C6-84AD-07135F6C4BB2",
 titleText:"Steel Tracking System",
 typeid:43,

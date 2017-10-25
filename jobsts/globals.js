@@ -663,6 +663,8 @@ var session = {
 	errorShow : false,
 	fabShop : "",
 	userId : null,
+	mainMarks : [], // used in STSx for piecemark lists
+	drawings : [], // used in STSx for drawing list
 	endItem : 0
 }
 /**
@@ -1162,6 +1164,24 @@ var mobUnits = "";
  * @properties={typeid:35,uuid:"63904BF5-9EB3-48A5-B0F2-A47AB67D515E",variableType:-4}
  */
 var mobileWindows = [];//see getI18nWindowNames
+/**
+ * @properties={typeid:35,uuid:"818C22F3-8198-471B-81B3-1AEE3AB764CF",variableType:-4}
+ */
+var importResultsFS = [];
+/**
+ * @properties={typeid:35,uuid:"0C72DBAF-A00F-4089-807B-62FEAD753563",variableType:-4}
+ */
+var importJobFS = {
+	bcFormId : null,//#87ticket#87
+	jobId : "",
+	jobNumber : "",
+	title : "",
+	name : "",
+	date : "",
+	associationId : null,
+	customerId : null,
+	metricFlag : 0
+}
 /**
  * @AllowToRunInFind
  * 
@@ -2338,6 +2358,7 @@ function rfDelayFunction(funcName){
  * @SuppressWarnings(wrongparameters)
  */
 function rfFunctionKeys(screen){
+	if (application.isInDeveloper()){application.output('screen rfFunctionKeys() '+screen)}
 	globals.mobProg = screen;
 	if (screen == 'rf_mobile_view'){
 		screen = session.program;
@@ -2845,7 +2866,11 @@ function onSetCurrentFocus(event){
  * @properties={typeid:24,uuid:"C23097C7-0091-41B2-8224-026404DC4274"}
  */
 function getMenuList(){
-	var office = isOfficeFunction(null);
+	if (session.appName == "STSx"){
+		var office = false;
+	} else {
+		office = isOfficeFunction(null);
+	}
 	var progList = new Array;
 	if (!office){
 		progList.push(i18n.getI18NMessage('sts.mobile.inspections'));
@@ -2863,6 +2888,12 @@ function getMenuList(){
 	if (!office){
 		progList.push(i18n.getI18NMessage('sts.mobile.final.ship'));//Final Ship
 		progList.push(i18n.getI18NMessage('sts.mobile.ship.by.sequence'));//Ship By Sequence
+	}
+	if (session.appName == "STS X Embedded"){
+		progList = new Array();
+		progList.push(i18n.getI18NMessage('sts.mobile.inspections'));
+		progList.push(i18n.getI18NMessage('sts.mobile.shipping'));//Shipping
+		progList.push(i18n.getI18NMessage('sts.mobile.transactions'));//Transactions
 	}
 	progList.sort();
 	progList.push(i18n.getI18NMessage('sts.mobile.exit'));//'Exit'
@@ -3032,6 +3063,11 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
 function onDataChangeStatus(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	session.userEntry = newValue;
+	var fsStatus = checkFSStatus(newValue);
+	if (fsStatus != null){
+		errorDialogMobile(event,1024,'genericin',fsStatus);
+		return true;
+	}
 	//plugins.scheduler.removeJob('updateField')
 	var formName = application.getActiveWindow().controller.getName();
 	var elementName = event.getElementName();
@@ -4000,6 +4036,10 @@ function showHelp(){
 	var formName = winName.controller.getName();
 	functionKeyProvider = -1;
 	functionKeyProvider = null;
+	if (!forms[formName].elements.elHelp){
+		application.output('formname '+formName+' not active.');
+		return
+	}
 	var vis = (forms[formName].elements.elHelp.visible);
 	forms[formName].elements.elHelp.visible = !vis;
 	forms[formName].elements.elHelp.enabled = !vis;
@@ -4700,7 +4740,19 @@ function onReturnFromFunction(){
  */
 function onDataChangeJob(oldValue, newJob, event) {
 	if (onDataChangeFixEntry(oldValue,newJob,event)){return true;}
+	/** @type {String} */
+	var fsJobInfo = checkFSJobNumber(newJob);
+	if (fsJobInfo != null){
+		errorDialogMobile(event,1024,'genericin',fsJobInfo);
+		return true;
+	}
 	session.userEntry = newJob;
+	if (session.program.search('FabSuite')){
+		application.output('formname '+formName);
+		forms['rf_mobile_view'].jobNumber = newJob;
+		session.jobNumber = newJob;
+		return true;
+	}
 	var formName = event.getFormName();
 	if (formName != 'rf_mobile_view' && application.getActiveWindow().controller.getName().search(/View|view/) != -1){
 		var instance_form = globals.getInstanceForm(event);
@@ -5515,6 +5567,12 @@ function onDataChangeLoad(oldValue, newValue, event) {
 	var baseForm = getBaseFormName(null);
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	var elementName = event.getElementName();
+	var fsLoadNum = checkFSLoad(newValue);
+	if (fsLoadNum != null){
+		errorDialogMobile(event,1024,'genericin',fsLoadNum);
+		return true;
+	}
+
 	if (forms[formName].entryRequired(elementName)){
 		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
 	}
@@ -9252,11 +9310,13 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 
 		//L or l - (L)oad Numbers
 		case 'L':
-			onDataChangeLoad(oldValue,newValue,event);
+			var newLoad = data;
+			onDataChangeLoad(oldValue,newLoad,event);
 			break;
 		//M or m - piece(m)ark
 		case 'M':
-			onDataChangeLoad(oldValue,newValue,event);
+			var newPM = data;
+			onDataChangeLoad(oldValue,newPM,event);
 			break;
 		
 		//P or p - (P)art Serial Number [Ex. P0000000001 thru PZZZZZZZZZZ then it is P0000000001 again] - starting point for barcoding w/FS Built In
@@ -9277,16 +9337,16 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 
 		//S or s - (S)tatus/Work Station
 		case 'S':
-			onDataChangeStatus(oldValue,newValue,event);
+			onDataChangeStatus(oldValue,data,event);
 			break;
 
 		//U or u - Seq(u)ence Number 
 		case 'U':
-			onDataChangeSequence(oldValue,newValue,event);
+			onDataChangeSequence(oldValue,data,event);
 			break;
 		//V or v - Re(v)ision
 		case 'V':
-			onDataChangeRevision(oldValue,newValue,event);
+			onDataChangeRevision(oldValue,data,event);
 			break;
 		default:
 	}

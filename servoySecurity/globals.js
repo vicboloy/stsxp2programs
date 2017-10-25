@@ -216,6 +216,18 @@ var secTenantArraySearch = [""];
  */
 var secLicenses = [];
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3A728C0C-74FE-4A29-8918-C1CD89BFC628"}
+ */
+var fabsuiteCom = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"A29DEFF9-7FD1-4B31-94B8-F133FA5E0BB6"}
+ */
+var fabsuiteResponse = '';
+/**
  * Adds the specified user to the named group
  * Looks first in the current tenant's groups, then the current application-wide groups
  * @param {Number} userID the ID of the user
@@ -684,9 +696,57 @@ function secSetCurrentApplication(applicationID){
  * removes and re adds the application data filter
  * @param {String} [tenantID] the tenant ID
  * @properties={typeid:24,uuid:"7184F80F-6D6E-4A21-A34D-AF5F8BB789EE"}
+ * @AllowToRunInFind
  */
 function secSetCurrentTenant(tenantID){
-	secCurrentTenantID = tenantID;
+	if (application.getSolutionName().search('STS X Embedded') != -1){//Create tenant for Embedded otherwise, all zeroes
+		/** @type {QBSelect<db:/stsservoy/tenant_list>} */
+		var q = databaseManager.createSelect('db:/stsservoy/tenant_list');
+		q.result.add(q.columns.tenant_uuid);
+		q.where.add(q.columns.tenant_uuid.not.eq(tenantID));
+		/** @type {JSRecord<db:/stsservoy/tenant_list>} */
+		var Q = databaseManager.getFoundSet(q);
+		Q.loadAllRecords();
+		if (false && Q.getSize() > 0){
+			var notEmbedded = '00000000-0000-0000-0000-000000000000';
+			secCurrentTenantID = application.getUUID(notEmbedded);
+		} else {
+			secCurrentTenantID = tenantID;// either create embedded tenant or skip creation
+			q = databaseManager.createSelect('db:/stsservoy/tenant_list');
+			q.result.add(q.columns.tenant_uuid);
+			q.where.add(q.columns.tenant_uuid.eq(tenantID));
+			Q = databaseManager.getFoundSet(q);
+			Q.loadAllRecords();
+			if (Q.getSize() == 0){
+				var recIdx = Q.newRecord();
+				/** @type {JSRecord<db:/stsservoy/tenant_list>} */
+				var rec = Q.getRecord(recIdx);
+				rec.company_name = 'FabSuite';
+				rec.edit_date = new Date();
+				rec.tenant_uuid = secCurrentTenantID;
+				databaseManager.saveData(rec);
+				/** @type {QBSelect<db:/stsservoy/associations>} */
+				var s = databaseManager.createSelect('db:/stsservoy/associations');
+				s.result.add(s.columns.association_uuid);
+				s.where.add(s.columns.tenant_uuid.eq(tenantID));
+				s.where.add(s.columns.association_name.eq('EMBEDDED'));
+				/** @type {JSRecord<db:/stsservoy/associations>} */
+				var S = databaseManager.getFoundSet(s);
+				S.loadAllRecords();
+				if (S.getSize() == 0){
+					recIdx = S.newRecord();
+					/** @type {JSRecord<db:/stsservoy/associations>} */
+					var rec2 = S.getRecord(recIdx);
+					rec2.edit_date = new Date();
+					rec2.association_name = 'EMBEDDED';
+					rec2.association_uuid = secCurrentTenantID;
+					rec2.tenant_uuid = secCurrentTenantID;
+					databaseManager.saveData(rec2);
+					secSetCurrentAssociation(secCurrentTenantID);
+				}
+			}
+		}
+	}
 	databaseManager.removeTableFilterParam(SEC_SERVER,SEC_TENANT_FILTER);
 	if(tenantID){
 		databaseManager.addTableFilterParam(SEC_SERVER,null,'tenant_uuid','^||=',tenantID,SEC_TENANT_FILTER);
@@ -1821,6 +1881,8 @@ function secCheckLicense(solutionName,tenantID,userID){
 		client = client.clientId;
 		var clientInfo = plugins.UserManager.getClientByUID(client);
 		var clientSolution = clientInfo.solutionName;
+		application.output('clientSolution '+clientSolution);
+		if (!clientSolution){continue}//REMOVE unable to login verification. Why?
 		
 		if (allUsers.indexOf(clientInfo.userUid+"") == -1){continue} // not in this company
 		//if (!licensesInUse[clientSolution]){licensesInUse[clientSolution] = 0}

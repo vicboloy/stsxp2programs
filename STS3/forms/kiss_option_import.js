@@ -76,10 +76,6 @@ var keepMinors = 0;
  */
 var currentSequence = "";
 /**
- * @properties={typeid:35,uuid:"505C5557-00D6-4920-851A-193B9A8152C2",variableType:-4}
- */
-var exitSequence = false;
-/**
  * @type {String}
  * Tracking for a sequence quantity on an assembly.
  * @properties={typeid:35,uuid:"E35FE49A-07C5-450B-B5DA-9C3B51A7BD32"}
@@ -256,6 +252,14 @@ var importMainGuidList = [];
  * @properties={typeid:35,uuid:"B0D3968E-D4DE-48E7-B6AB-7776130EC21F",variableType:-4}
  */
 var importSubGuidList = [];
+/**
+ * @properties={typeid:35,uuid:"603BD5D4-53F9-4492-9A86-DD69E3F3B70E",variableType:-4}
+ */
+var exitSequence = false;
+/**
+ * @properties={typeid:35,uuid:"0879B896-5487-4BA7-8CA3-446FE1770947",variableType:-4}
+ */
+var endVars = null;
 /**
  * Callback method for when form is shown.
  * Unique setup for the form.  Results are from a range of tables, so no initial datasource is truly applicable

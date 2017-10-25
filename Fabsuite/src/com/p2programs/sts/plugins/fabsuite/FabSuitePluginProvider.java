@@ -17,31 +17,50 @@ public class FabSuitePluginProvider implements IScriptable {
 		String _FabSuiteXML(String xmlRequest);
 	}
 	
-	public String js_fsXML2(String args) {
+	String libString = "";
+	
+	public String js_fsSetLib(String args){
+		String response = args;
+		try {
+			response += Native.loadLibrary(args, fsLib.class);
+		} catch (Exception e){
+			response += " "+e.getMessage();
+		}
+		libString = args;
+		return response;
+	}
+	
+	public String js_fsXML(String args) {
 		System.setProperty("jna.debug_load", "true");
         //System.setProperty("jna.library.path", "c:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\");
         //System.setProperty("java.library.path", "c:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\");
         //System.setProperty("java.class.path", "c:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\");
-        NativeLibrary.addSearchPath("FabSuiteSTS", "c:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\");
+        //NativeLibrary.addSearchPath("FabSuiteSTS", "c:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\");
+
+        //NativeLibrary.addSearchPath("FabSuiteXMLInterface", "c:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\");
+        ///NativeLibrary.addSearchPath("FabSuiteAPI", "c:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\");
 		//String xmlReq = "<FabSuiteXMLRequest><Connect><IPAddress>localhost</IPAddress><PortNumber>3306</PortNumber><Username>admin</Username><Password>fab</Password></Connect></FabSuiteXMLRequest>";
 		String xmlReq = args;
-		String fabLib = "FabSuiteSTS";
-		//String fabLib = "FabSuiteXMLInterface";
+		//String fabLib = "FabSuiteSTS";
+		String fabLib = "FabSuiteAPI";
 		String outputX = "No Response.";
+		//return outputX;
+		
 		try {
 			
-			System.loadLibrary("FabSuiteSTS");
+			//System.loadLibrary(fabLib);
 			fsLib lib = (fsLib) Native.loadLibrary(fabLib, fsLib.class);
 			//outputX = fsLib.class.toString();
 			outputX = lib._FabSuiteXML(xmlReq);
 
 		} catch (Exception e){
-			outputX = e.getMessage();
+			outputX = "Exception " + e.getMessage();
 
 		} catch (Error m){
 			outputX = "Error "+ m.getMessage()+ " " + m.toString();
 		}
 		return outputX;	
+		
 		//System.out.println(outputX);
 	}
 

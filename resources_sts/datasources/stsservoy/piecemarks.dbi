@@ -256,6 +256,14 @@ titleText:"i18n:table.piecemarks.parent_piecemark_flag"
 },
 {
 allowNull:true,
+creationOrderIndex:41,
+dataType:12,
+length:12,
+name:"part_serial",
+titleText:"i18n:table.piecemarks.part_serial"
+},
+{
+allowNull:true,
 creationOrderIndex:3,
 dataType:12,
 length:40,

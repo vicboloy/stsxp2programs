@@ -41,6 +41,12 @@ typeid:4,
 uuid:"375C7BE5-6B4F-4B4F-BD77-D26413929E9E"
 },
 {
+location:"242,147",
+size:"150,26",
+typeid:4,
+uuid:"49BD8407-686B-4CB7-AA7E-8157BAE55F43"
+},
+{
 height:480,
 partType:5,
 typeid:19,
@@ -52,6 +58,14 @@ location:"15,111",
 size:"377,26",
 typeid:4,
 uuid:"5D9BA106-B212-46BF-934B-987A8571EC00"
+},
+{
+location:"15,147",
+size:"222,26",
+text:"i18n:sts.label.i18n",
+transparent:true,
+typeid:7,
+uuid:"660CA210-E28F-4E1F-BD96-068AB9F364D8"
 },
 {
 location:"15,30",

@@ -120,6 +120,7 @@ function login(){
 	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[userName,companyName]);
 	//application.output('after tenantid'+tenantID+' ID ');
 	var checkLicense = "";
+	var invalidTenant = '';
 	if(tenantID){
 		//application.output('inside tenantID');
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
@@ -161,16 +162,19 @@ function login(){
 		}
 	} else {
 		if (application.isInDeveloper()){application.output('No Tenant ID')}
+		invalidTenant = i18n.getI18NMessage('sts.txt.invalid.tenant');
 	}
 	var licExceeded = i18n.getI18NMessage('sts.txt.license.exceeded');
 	var message = "\n"+i18n.getI18NMessage('sts.txt.login.failed');
 	var licenseData = checkLicense.split(':');
 	var licRemain = licenseData[1];
 	var licAvail = licenseData[2];
-	message += '.\n'+i18n.getI18NMessage('sts.txt.license.available',[application.getSolutionName(),licRemain,licAvail]); // only add license info if login failure license-related
+	message += '.\n'+invalidTenant;
 	//var licTotal = licenseData[2];
 	//var licUsed = licenseData[3];
+	application.output('message '+message);
 	if (licRemain <= 0 && passCheck){
+		message += +'.\n'+i18n.getI18NMessage('sts.txt.license.available',[application.getSolutionName(),licRemain,licAvail]); // only add license info if login failure license-related
 		message += '.\n'+i18n.getI18NMessage('sts.txt.license.error');
 		errorMessage = licExceeded;
 	}
@@ -314,3 +318,18 @@ function licenseCount() {
 	   
 	   return _nTotal;
 	}
+/**
+ * FabSuite execute call for XML
+ * @param {String} xmlStuff
+ *
+ * @properties={typeid:24,uuid:"DB73DAA8-36E0-48F7-83D2-9643D02BA051"}
+ */
+function fabsuite(xmlStuff){
+	var fabsuiteCom;
+	if (!fabsuiteCom){
+		fabsuiteCom = plugins.servoyguy_servoycom.getNewClientJSCOM('FabSuite.FabSuiteAPI.FabSuiteAPI');
+	}
+	var fabsuiteResponse = fabsuiteCom.call('FabSuiteXML',xmlStuff);
+	application.output('testing fabsuite')
+	return fabsuiteResponse;
+}

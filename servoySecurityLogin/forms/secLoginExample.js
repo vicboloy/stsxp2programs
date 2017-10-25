@@ -96,8 +96,16 @@ function onFocusLost(event) {
 	var formName = event.getFormName();
 	var prov = forms[formName].elements[elName].getDataProviderID();
 	var val = controller.getDataProviderValue(prov);
-	if (val == "" || val == null){
-		forms[formName].elements[elName].requestFocus();
+	if (!val){
+		if (elName == 'companyName'){
+			forms[formName].elements[elName].requestFocus();
+			return true;
+		}
+		if (elName == 'userName' && companyName == '' && elements.companyName.visible){
+			elements.userName.requestFocus();
+			return true;
+		}
+		return true;
 	}
 }
 

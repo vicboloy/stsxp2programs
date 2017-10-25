@@ -1,0 +1,8 @@
+addEmptyValue:1,
+customValues:"i18n:import.ignore\r\
+i18n:import.append\r\
+i18n:import.update\r\
+i18n:import.delete",
+name:"vl_import_status",
+typeid:34,
+uuid:"48EFE777-31FB-4CAC-9952-838A3375D691"

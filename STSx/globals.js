@@ -16,6 +16,26 @@ var isSmartClient = false;
  */
 var selection = null;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"2A4643FA-8F34-42F1-AD34-4EB06869BEF0"}
+ */
+var progressMsg = '';
+/**
+ * @properties={typeid:35,uuid:"1A87A1A6-E3CF-4FD9-9BD0-8A6B68F8C39F",variableType:-4}
+ */
+var progressWin = null;
+/**
+ * @properties={typeid:35,uuid:"51C3A839-98F2-40F4-A6FC-3B9D78A060C9",variableType:-4}
+ */
+var DEBUG = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"72A29966-8A54-4886-9FD2-4AB4886B4CC5"}
+ */
+var stsMessages = '';
+/**
  * @properties={typeid:35,uuid:"341C9E81-7169-4E8D-BA7A-C6CF83D1A34B",variableType:-4}
  */
 var endVars = null;
@@ -41,7 +61,7 @@ function onSolutionOpenX(arg, queryParams) {
 	var embedded = application.getUUID('EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE');
 	//var tables = ['idfiles','jobs','loads','lots','piecemarks','sequences','sheets','id_serial_numbers'];
 	//for (var table in tables){
-	databaseManager.addTableFilterParam('stsservoy',null,'tenant_uuid','=',embedded);
+	databaseManager.addTableFilterParam('stsservoy',null,'tenant_uuid','=',embedded,'embedded');
 	//}
 	secCurrentUserID = security.getUserUID();
 	globals.secCurrentTenantID = embedded;
@@ -216,4 +236,35 @@ function checkFSLocal(){
 	var clientIP = plugins.UserManager.Client().ipAddress;
 	var serverIP = plugins.UserManager.Server().ipAddress;
 	fabSuiteLocal = (clientIP == serverIP);
+}
+/**
+ * @param {JSEvent} event
+ *
+ *
+ * @properties={typeid:24,uuid:"223D9F1B-76DD-447F-A2FE-45CA19E7F68D"}
+ */
+function showProgressInit(event){
+	//var formName = event.getFormName();
+	progressWin = application.createWindow('Messages',JSWindow.WINDOW);
+	progressWin.show('import_messages');
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} message
+ *
+ *
+ * @properties={typeid:24,uuid:"0829E95A-1A26-41FE-A6E8-263BA1183E6B"}
+ */
+function showProgressUpdate(event,message){
+	progressMsg = message;
+	application.updateUI();
+}
+/**
+ * @param {JSEvent} event
+ *
+ *
+ * @properties={typeid:24,uuid:"1EB9FABF-B5BA-431A-8F90-CF5A3E92A300"}
+ */
+function showProgessDone(event){
+	progressWin.hide();
 }

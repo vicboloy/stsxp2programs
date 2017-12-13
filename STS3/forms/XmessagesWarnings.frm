@@ -15,7 +15,7 @@ typeid:19,
 uuid:"E6EC9EBA-A149-44FC-9D28-599186D04A5E"
 }
 ],
-name:"messagesWarnings",
+name:"XmessagesWarnings",
 navigatorID:"-1",
 showInMenu:true,
 size:"457,47",

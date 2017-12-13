@@ -1,0 +1,10 @@
+addEmptyValue:1,
+customValues:"i18n:import.ignore\r\
+i18n:import.summarize\r\
+i18n:import.append\r\
+i18n:import.update\r\
+i18n:import.delete\r\
+",
+name:"vl_import_actions",
+typeid:34,
+uuid:"A9B44983-9D5F-43F3-B093-64EA7FF1CCD3"

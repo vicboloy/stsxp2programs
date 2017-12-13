@@ -52,7 +52,7 @@ uuid:"122B94F4-C225-4803-BBB5-916C095A51FA"
 {
 fontType:"Arial,1,12",
 formIndex:8,
-location:"33,117",
+location:"33,91",
 size:"148,23",
 text:"i18n:sts.import.btn.import.generic.text.files",
 transparent:true,
@@ -121,7 +121,7 @@ uuid:"21012688-DD96-4996-BC44-E95210721B24"
 },
 {
 formIndex:10,
-location:"33,61",
+location:"33,35",
 name:"btn_ImportReceiverFormat",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
@@ -133,7 +133,7 @@ uuid:"2DCF2FAA-503A-4BFB-AE92-DD02C5620685"
 },
 {
 formIndex:10,
-location:"33,89",
+location:"33,63",
 name:"btn_ImportStandardFormat",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
@@ -165,7 +165,8 @@ onRightClickMethodID:"-1",
 size:"193,23",
 text:"i18n:sts.import.btn.identify.mapping",
 typeid:7,
-uuid:"5382FC0D-609E-42FF-8B45-4D6456488EA0"
+uuid:"5382FC0D-609E-42FF-8B45-4D6456488EA0",
+visible:false
 },
 {
 formIndex:10,
@@ -261,7 +262,7 @@ uuid:"63218E3D-CD07-472E-98AB-71D297B629EA"
 },
 {
 formIndex:10,
-location:"46,145",
+location:"46,119",
 name:"btn_TextFileWIDNumbers",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
@@ -586,7 +587,7 @@ uuid:"E9CD20A1-A7F9-4905-B664-9B6CDFAEE0DF"
 },
 {
 formIndex:10,
-location:"46,173",
+location:"46,147",
 name:"btn_TextFileWoIDNumbers",
 onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",

@@ -493,31 +493,7 @@ function onShow(firstShow, event) {
 	applyImportPreferences();
 	scopes.jobs.warningsMessage("Table complete.",true);
 }
-/**
- * 
- *
- * @properties={typeid:24,uuid:"5EF10CE3-D357-4590-8FA8-D83241C72E11"}
- */
-function loadImportLabelCounts(){
-	var counts = scopes.jobs.importLabelCounts;
-	var retainFS = transitionFS;
-	var rows = retainFS.getMaxRowIndex();
-	for (var index = 1;index <= rows;index++){
-		retainFS.rowIndex = index;
-		if (retainFS.piecemark == ""){
-		  var unique = retainFS.material+retainFS.grade+retainFS.finish+retainFS.sequence_number;
-		 } else {
-		  unique = retainFS.piecemark+retainFS.parent_piecemark+retainFS.sheet_number+retainFS.grade+retainFS.finish+retainFS.sequence_number;
-		}
-		if (counts[unique]){
-			var count = counts[unique];
-			if (retainFS.barcode_qty != count){
-				retainFS.barcode_qty = counts[unique];
-				setBarcodeLimits(index);
-			}
-		}
-	}
-}
+
 /**
  * Load any saved Steel Shape exclusions from the preferences file.
  * These values are global, so the user is global, -1
@@ -1545,36 +1521,7 @@ function setbarcodeQuantity(row){
 	setBarcodeLimits(row);
 }
 
-/**
- * @param row
- *
- * 
- *
- * @properties={typeid:24,uuid:"6870ED79-3AEE-4EB0-B49B-6CBE1CB88860"}
- */
-function setBarcodeLimits(row){
-	transitionFS.rowIndex = row;
-	if (transitionFS.piecemark == ""){
-		var unique = transitionFS.material+transitionFS.grade+transitionFS.finish+transitionFS.sequence_number;
-	} else {
-		unique = transitionFS.piecemark+transitionFS.parent_piecemark+transitionFS.sheet_number+transitionFS.grade+transitionFS.finish+transitionFS.sequence_number;
-	}
-	if (scopes.jobs.importLabelCounts[unique]){
-		transitionFS.barcode_qty = scopes.jobs.importLabelCounts[unique];
-	}
-	//var currentLabelCount = transitionFS.getValue(row,fieldOrderTempTable['barcode_qty']+1);
-	var currentLabelCount = transitionFS.barcode_qty;
-	//var itemsCount = transitionFS.getValue(row,fieldOrderTempTable['sequence_quantity']+1);
-	var itemsCount = (transitionFS.sequence_quantity == "") ? transitionFS.item_quantity : transitionFS.sequence_quantity;
-	//if (application.isInDeveloper()){application.output('row '+row+'item quantity '+transitionFS.item_quantity);}
-	if (!itemsCount || itemsCount == ""){itemsCount = transitionFS.item_quantity}
-	var bcNums = scopes.jobs.createBCnums(currentLabelCount,itemsCount,transitionFS.item_weight);
 
-	transitionFS.set_bc_qty = bcNums.full; //labelsFull;
-	transitionFS.last_bc_qty = bcNums.last; //lastLabelCount;
-	transitionFS.total_label_qty = bcNums.per; //itemsPerLabel;
-	transitionFS.ext_wt_qty = bcNums.totwt; //labelWeight;
-}
 /**
  * Remove or include minor piecemarks within retention Foundset
  * @param sourceDb

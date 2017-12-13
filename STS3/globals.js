@@ -119,7 +119,6 @@ function initUomArray() {
  * @properties={typeid:35,uuid:"35B65CE5-89D3-4ECF-93F2-D9058F73272D",variableType:-4}
  */
 var transactions = false;
-//--------------------------------------------------------------------------------------
 /**
  * @properties={typeid:35,uuid:"75DABA6A-1EB2-4E4E-BCA4-6B65DF8804B7",variableType:-4}
  * @type aStatusTypes {Array} Status condition types
@@ -130,6 +129,13 @@ var aStatusTypes = new Array;
  * @type aTrackWindows {Array} Windows lists
  */
 var aTrackWindows = ['STS - Main'];
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"EBD2A621-C2C3-49BE-B7D8-E421721AB0C2"}
+ */
+var com = '';
+//--------------------------------------------------------------------------------------
 /**
  * @properties={typeid:24,uuid:"E55D375F-2EA8-4D4E-8234-B7AF6A47619E"}
  */

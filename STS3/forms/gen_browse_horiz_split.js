@@ -8,6 +8,10 @@
  * @properties={typeid:24,uuid:"5D6141D0-3298-4D11-9211-D6536912D19D"}
  */
 function onShow(firstShow, event) {
+	if (elements.btn_Clear){elements.btn_Clear.enabled = true;}
+	if (elements.btn_SelectAll){elements.btn_SelectAll.enabled = true;}
+	if (elements.btn_RemoveSelected){elements.btn_RemoveSelected.enabled = true;}
+
 	elements.split.dividerLocation = 0.75;
 	return _super.onShow(firstShow, event)
 }

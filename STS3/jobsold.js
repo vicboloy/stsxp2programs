@@ -1,7 +1,7 @@
 /**
 * @type abcPrinterList {Array} Array containing units of measure
  * small change
- * @properties={typeid:35,uuid:"4E21A316-7E58-4E95-86A4-2D8FAEEDF8F3",variableType:-4}
+ * @properties={typeid:35,uuid:"35C8F6C4-5B6A-425E-8D51-6711DEB8AB82",variableType:-4}
  */
 var abcPrinterList = new Array;
 abcPrinterList.push("Allegro");
@@ -14,7 +14,7 @@ abcPrinterList.push("Zebra");
 /**
  * @type aLabelType {Array} aLabelType Array containing units of measure
 *
- * @properties={typeid:35,uuid:"02B9543F-345C-4593-8040-1815159F3615",variableType:-4}
+ * @properties={typeid:35,uuid:"50C576C1-04C2-4FD5-BE10-887B07566616",variableType:-4}
  */
 var aLabelType = new Array;
 aLabelType.push("Raw Matl");
@@ -24,185 +24,185 @@ aLabelType.push("Standard");
 /**
  * @type lanUsers {Array} lanUsers Array containing units of measure
  *
- * @properties={typeid:35,uuid:"A543810F-CC73-4F16-A330-E50E11B16632",variableType:-4}
+ * @properties={typeid:35,uuid:"E9D0DC0F-EA4B-42D7-BDC3-047DFC25FFB8",variableType:-4}
  */
 var lanUsers = new Array;
 /**
- * @properties={typeid:35,uuid:"C21C7885-423A-458D-A0AC-E90ACF5D7D37",variableType:-4}
+ * @properties={typeid:35,uuid:"4842B30E-E9ED-4C23-8A0D-A933582C3CC9",variableType:-4}
  */
 var importResults = [];
 /**
- * @properties={typeid:35,uuid:"C2F4D612-6B67-4D98-A897-BE724811CB53",variableType:-4}
+ * @properties={typeid:35,uuid:"47DB807A-7C7E-46B5-BDC3-7E2F4004E61D",variableType:-4}
  */
 var importErrors = [];
 /**
  * Array for all labels by unique piecemark and sequence.
  * piecemark_sequence
- * @properties={typeid:35,uuid:"A877E055-7119-4979-9401-CF712A1865B9",variableType:-4}
+ * @properties={typeid:35,uuid:"3ECE72A8-66DE-4530-A11E-FC68EC2F8298",variableType:-4}
  */
 var importLabelCounts = [];
 /**
- * @properties={typeid:35,uuid:"14A210F9-34D2-4D24-8E4E-95AE97FCF96B",variableType:-4}
+ * @properties={typeid:35,uuid:"D320B41F-E566-4ACE-B79A-5C010408F785",variableType:-4}
  */
 var mappedFormatArray = [];
 /**
- * @properties={typeid:35,uuid:"1C39F0C7-0609-47D5-AF72-C34E9A51E89F",variableType:-4}
+ * @properties={typeid:35,uuid:"2CA094E2-D297-49C5-A687-D59849A69C23",variableType:-4}
  */
 var mappedFormatArrayDescrips = [];
 /**
  * Piecemarks added to the job during import.
- * @properties={typeid:35,uuid:"D30A3E84-E690-4C4F-AF7E-C42D6ACDE301",variableType:-4}
+ * @properties={typeid:35,uuid:"34F61348-32D5-45D4-9185-5B398BBB4856",variableType:-4}
  */
 var insertedPiecemarks = [];
 /**
  * Idfiles added to the job during import.
- * @properties={typeid:35,uuid:"E6D5018E-D7D9-42CF-BED5-916C278D2E44",variableType:-4}
+ * @properties={typeid:35,uuid:"F9C9CFE1-91DF-4D94-B772-A9B1A820D35C",variableType:-4}
  */
 var insertedIdfiles = [];
 /**
  * Barcodes added to the job during import.
- * @properties={typeid:35,uuid:"F2ACBCCA-AF76-4140-BB12-1EBF816D637E",variableType:-4}
+ * @properties={typeid:35,uuid:"C471583E-4686-44C4-A781-49BAEB7E3D1B",variableType:-4}
  */
 var insertedBarcodes = [];
 /**
  * Idfiles deleted upon import.  idfile_id pushed.
- * @properties={typeid:35,uuid:"1405113A-63BC-4CEA-81B6-4783C3AE5B29",variableType:-4}
+ * @properties={typeid:35,uuid:"F9239090-32AC-4D5B-815B-A995AF70E0E2",variableType:-4}
  */
 var deletedIdfiles = [];
 /**
  * Barcodes deleted upon import. barcode_id pushed.
- * @properties={typeid:35,uuid:"E8B59730-0AB5-4F36-935A-3867C94E91DA",variableType:-4}
+ * @properties={typeid:35,uuid:"10007C61-F298-406A-8C3C-D717E31E43DC",variableType:-4}
  */
 var deletedBarcodes = [];
 /**
  * Piecemarks deleted upon import.  piecemark_id pushed.
- * @properties={typeid:35,uuid:"0850D05A-D4AB-458C-AE36-1C84684E4BE5",variableType:-4}
+ * @properties={typeid:35,uuid:"32F80DAE-58B1-4023-8602-2C0EB9659BFF",variableType:-4}
  */
 var deletedPiecemarks = [];
 /**
- * @properties={typeid:35,uuid:"B0537C89-1A5D-49F3-AB0E-1B48C3102D29",variableType:-4}
+ * @properties={typeid:35,uuid:"9D617029-0980-460E-9DF3-5EC706C45FC4",variableType:-4}
  */
 var browseTable = [];
 /**
- * @properties={typeid:35,uuid:"9BA511C5-BBC0-4854-A2CC-B9EE4396446A",variableType:-4}
+ * @properties={typeid:35,uuid:"F593B1B5-D143-43BA-94C2-4E60370F60C0",variableType:-4}
  */
 var browseFS = null;
 /**
- * @properties={typeid:35,uuid:"2E05DD3E-4C78-4582-980D-99BF7A958389",variableType:-4}
+ * @properties={typeid:35,uuid:"9EA621AF-0F04-4942-90E3-718AEB4CD2C5",variableType:-4}
  */
 var browseFS2 = [];
 /**
- * @properties={typeid:35,uuid:"288F5458-B8B4-4571-B4DD-8377CE856783",variableType:-4}
+ * @properties={typeid:35,uuid:"2275F363-AADA-4555-BCD6-F0275FB47BD3",variableType:-4}
  */
 var browseFieldOrder = [];
 /**
- * @properties={typeid:35,uuid:"82F23C4D-B38B-49FD-B850-6A577B56F83A",variableType:-4}
+ * @properties={typeid:35,uuid:"94D426C8-A74B-4FD3-A4B7-5CF385E59978",variableType:-4}
  */
 var dsBrowse = null;
 /**
- * @properties={typeid:35,uuid:"17D0F819-B25D-4BFB-9E3E-EC5DEB88CDE3",variableType:-4}
+ * @properties={typeid:35,uuid:"62E36F03-B1F5-4063-A8AF-891E200A3BB3",variableType:-4}
  */
 var browseDatasource = null;
 /**
- * @properties={typeid:35,uuid:"2208D6CF-B80A-4D01-B7AD-3B57C9E2C3AC",variableType:-4}
+ * @properties={typeid:35,uuid:"B326DEE5-0181-4394-991B-0C29B0E30EB9",variableType:-4}
  */
 var fsBrowse = null;
 /**
- * @properties={typeid:35,uuid:"21E07FB4-9806-44F4-B42D-DFC7172427EB",variableType:-4}
+ * @properties={typeid:35,uuid:"9BA9D8B3-2090-4DBA-A856-08A0E632FCD0",variableType:-4}
  */
 var browseArray = [];
 /**
- * @properties={typeid:35,uuid:"33233339-7813-4B0C-BB40-1CC5E50D95FF",variableType:-4}
+ * @properties={typeid:35,uuid:"A566D185-5E02-4B7A-85E6-1D436EC30D54",variableType:-4}
  */
 var dsQuery = [];
 /**
  * @type {JSFoundSet<db:/stsservoy/sheets>}
- * @properties={typeid:35,uuid:"E6FF48A0-2A3F-4E63-87E3-845825030B68",variableType:-4}
+ * @properties={typeid:35,uuid:"E092E2E0-AFB0-46A8-B347-2413E0B6C414",variableType:-4}
  */
 var dsSheets = null;
 /**
  * Index into dsSheets by sheet_id.
  * dsSheetList.rowIndex = index. dsSheets is sheet_record index.
- * @properties={typeid:35,uuid:"6A3705A7-4763-41BA-AB78-561ABCF7B280",variableType:-4}
+ * @properties={typeid:35,uuid:"CDD959EC-E7C4-4E04-80E7-3C1B0F60A3DB",variableType:-4}
  */
 var dsSheetList = [];
 /**
  * Sheet_id indexed by unique sheet_number.
  * dsSheetArray["_"+sheet_number] = sheet_id;
- * @properties={typeid:35,uuid:"9E8C080F-B2AB-4156-9664-30F00DBA2108",variableType:-4}
+ * @properties={typeid:35,uuid:"02E6FC35-3CDD-4FD8-92EA-AA922BF1587D",variableType:-4}
  */
 var dsSheetArray = [];
 /**
- * @properties={typeid:35,uuid:"EF9BA59B-762B-4246-9CFE-B3A0AE65F042",variableType:-4}
+ * @properties={typeid:35,uuid:"A350E158-5F78-49A9-9114-72EC1E7C7831",variableType:-4}
  */
 var dsSheetIds = [];
 /**
  * Sheet number index by sheet_id.
  * dsSheetArrayRev[sheet_id] = "_"+sheet_number;
- * @properties={typeid:35,uuid:"EA7937A0-1D06-4E58-8ED1-BBF16C308870",variableType:-4}
+ * @properties={typeid:35,uuid:"12D45FC8-AB40-4511-AD78-17F27DEEE290",variableType:-4}
  */
 var dsSheetArrayRev = [];
 /**
  * Sheet Bom number index by sheet_bom_id.
  * dsSheetArrayRev[sheet_bom_id] = sheet_id+"_"+item_number;
- * @properties={typeid:35,uuid:"C29E6AB5-CCFA-4794-8227-44D5DFA15E85",variableType:-4}
+ * @properties={typeid:35,uuid:"271A8417-A23B-4435-A77B-362002B6BC4B",variableType:-4}
  */
 var dsSheetBomArrayRev = [];
 /**
- * @properties={typeid:35,uuid:"EA531D1D-DF62-4C69-9FDF-705742718596",variableType:-4}
+ * @properties={typeid:35,uuid:"E8AC1CB8-7418-4998-AF86-3B6DE1DC1C92",variableType:-4}
  */
 var dsTossedList = [];
 /**
- * @properties={typeid:35,uuid:"9748D291-D502-4870-9F05-31DC81AE5C01",variableType:-4}
+ * @properties={typeid:35,uuid:"084CFD19-545E-49E7-B05C-A2C90972C045",variableType:-4}
  */
 var dsTossedArray = [];
 /**
  * @type {JSFoundSet<db:/stsservoy/piecemarks>}
- * @properties={typeid:35,uuid:"2C696A9F-0A79-4626-A81B-3ED1B2BAB34C",variableType:-4}
+ * @properties={typeid:35,uuid:"4CD00661-B5FF-438C-8ECF-DF8231ADA0D6",variableType:-4}
  */
 var dsTossed = null;
 /**
  * @type {JSFoundSet<db:/stsservoy/piecemarks>}
  * Array of piecemark records, indexed by integer. 
- * @properties={typeid:35,uuid:"C2B44F80-9A2F-4853-9AFB-5882EF6896F8",variableType:-4}
+ * @properties={typeid:35,uuid:"0F5956D4-B37C-4F60-B6D4-D4FBA15463C7",variableType:-4}
  */
 var dsPiecemarks = null;
 /**
  * 
- * @properties={typeid:35,uuid:"38E6551E-2750-46D3-B470-5F8009B628EA",variableType:-4}
+ * @properties={typeid:35,uuid:"DDC9447D-5712-47AA-A5F4-7B7001C2CA23",variableType:-4}
  */
 var dsDiffPiecemarks = [];
 /**
  * Index integer into dsPiecemarks, indexed by piecemark_id.
  * dsPiecemarkList[piecemark_id] = index.  dsPiecemarks[index] is piecemark_record.
- * @properties={typeid:35,uuid:"20F33FCC-F415-4D88-86DD-9B4E346562EF",variableType:-4}
+ * @properties={typeid:35,uuid:"54767CFC-2C77-4E6A-B019-52F5DCC7BEED",variableType:-4}
  */
 var dsPiecemarkList = [];
 /**
  * Index into a piecemark_id array by uniqueness of a piecemark, identified within unique piecemark function.
  * Unique piecemark is defined by function uniquePiecemark().
  * dsPiecemarkArray[unique_piecemark] = piecemark_id.
- * @properties={typeid:35,uuid:"5BCCA6D0-E161-4130-915E-770E5E547317",variableType:-4}
+ * @properties={typeid:35,uuid:"BD7B3C76-9586-459F-AA52-34F44703915C",variableType:-4}
  */
 var dsPiecemarkArray = [];
 /**
- * @properties={typeid:35,uuid:"772E8BDD-3595-48EA-8B25-9D246B58FCD3",variableType:-4}
+ * @properties={typeid:35,uuid:"E57E7993-B462-4088-82DB-9D3E582F0CA5",variableType:-4}
  */
 var dsPiecemarkIds = [];
 /**
  * @type {JSFoundSet<db:/stsservoy/idfiles>}
  * Foundset of idfiles.
- * @properties={typeid:35,uuid:"3E4E4833-8DE8-4D58-9BFD-5633D5B5D6A2",variableType:-4}
+ * @properties={typeid:35,uuid:"9B090C25-A06C-4C1C-84C3-076FF82AD2C9",variableType:-4}
  */
 var dsIdfiles = null;
 /**
  * @type {JSFoundSet<db:/stsservoy/idfiles>}
- * @properties={typeid:35,uuid:"2ED014E1-A1B9-4C0C-B517-DCF2030F5AA8",variableType:-4}
+ * @properties={typeid:35,uuid:"56B16BDF-C188-4940-AD2E-C93CD33720A6",variableType:-4}
  */
 var dsDiffIdfiles = [];
 /**
  * Index integer mapping into dsIdfiles, index by idfile_id. 
- * @properties={typeid:35,uuid:"1410BFB8-F727-4037-98FF-2E764017E1C8",variableType:-4}
+ * @properties={typeid:35,uuid:"EBA6F3D2-15BE-467A-A2F4-A986FFF10972",variableType:-4}
  */
 var dsIdfileList = [];
 /**
@@ -210,22 +210,22 @@ var dsIdfileList = [];
  * Holds barcode count, indexed by id_serial_number_id.
  * Holds the barcode count array per idfiles of a piecemark, indexed by unique piecemark for that piecemark.
  * dsIdfileArray[uniquePiecemark+"_"+sequence_id]][barcode1count,barcode2count, barcode3count...]
- * @properties={typeid:35,uuid:"C10FFB81-5E94-4EAA-9AD0-337FA0340022",variableType:-4}
+ * @properties={typeid:35,uuid:"D4896F3B-C26C-4909-8A58-D70B97DFA094",variableType:-4}
  */
 var dsIdfileArray = [];
 /**
  * List of idfiles for a piecemark, indexed by piecemark_id.
  * dsIdfileListByPm[piecemark_id] = [idfile1,2,3...]
- * @properties={typeid:35,uuid:"BB02953F-F65B-4862-85E2-AF9E67B690BF",variableType:-4}
+ * @properties={typeid:35,uuid:"3271F450-8CF1-4A8C-A609-81197AA25F6D",variableType:-4}
  */
 var dsIdfileListByPm = [];
 /**
- * @properties={typeid:35,uuid:"BD23E2C8-A060-43F2-AFFF-ABF3A3FA29E4",variableType:-4}
+ * @properties={typeid:35,uuid:"94F84922-8FE5-4B35-BA25-F7ABA6ED6575",variableType:-4}
  */
 var dsIdfileCounts = [];
 /**
  * @type {JSFoundSet<db:/stsservoy/id_serial_numbers>} 
- * @properties={typeid:35,uuid:"1AF39EAD-81DB-479A-B585-3B32F189E417",variableType:-4}
+ * @properties={typeid:35,uuid:"379D5D0A-CAFE-4E7A-A577-83DA059E7451",variableType:-4}
  */
 var dsBarcodes = null;
 /**
@@ -234,110 +234,110 @@ var dsBarcodes = null;
  * idfile_id array list indexed by barcodeid/id_serial_number_id (1..n)
  * id_serial_number indexed by idfile_id (should always be 1..1)
  * 
- * @properties={typeid:35,uuid:"CEF296A9-6A8F-4E92-A024-C267461B2B24",variableType:-4}
+ * @properties={typeid:35,uuid:"650B30C3-9C2D-49F1-BB67-18DC3AB0F239",variableType:-4}
  */
 var dsBarcodeList = [];
 /**
  * Holds id_serial_number_id, indexed by id_serial_number/barcode.
  * dsBarcodeArray[dsBarcodes.id_serial_number_id] = index_integer into dsBarcodes.
  * 
- * @properties={typeid:35,uuid:"FE1D72BB-7F94-49F5-B70A-D37E35D5036F",variableType:-4}
+ * @properties={typeid:35,uuid:"2EDE049F-DE96-4731-9C8E-2148C1C9817E",variableType:-4}
  */
 var dsBarcodeArray = [];
 /**
  * @type {JSFoundSet<db:/stsservoy/lots>}
- * @properties={typeid:35,uuid:"ED66984C-AB7B-4F5F-90DA-049351B78692",variableType:-4}
+ * @properties={typeid:35,uuid:"7EF30714-EAB5-428C-90EF-91C02547224D",variableType:-4}
  */
 var dsLots = null;
 /**
- * @properties={typeid:35,uuid:"729647E7-A3C6-45A0-B04F-C479908ABB7C",variableType:-4}
+ * @properties={typeid:35,uuid:"32ED2AC8-F0E6-4950-A5B1-080334C4308E",variableType:-4}
  */
 var dsLotList = [];
 /**
- * @properties={typeid:35,uuid:"02FD2640-D907-46BD-BCA7-85DAB90F7271",variableType:-4}
+ * @properties={typeid:35,uuid:"3D083922-6F7D-4945-B989-EE5680AFAD28",variableType:-4}
  */
 var dsLotArray = [];
 /**
- * @properties={typeid:35,uuid:"E76197EF-9F9D-4F6F-9194-1940A287CD1C",variableType:-4}
+ * @properties={typeid:35,uuid:"C59E271B-C406-430A-81FD-6646EADB8F6F",variableType:-4}
  */
 var newRow = [];
 /**
- * @properties={typeid:35,uuid:"9384E4F9-0E8A-43D0-A455-0AAB48590750",variableType:-4}
+ * @properties={typeid:35,uuid:"03982578-22AC-4930-ABF8-963F11EA6A36",variableType:-4}
  */
 var nullRow = [];
 /**
  * @type {JSFoundSet<db:/stsservoy/sequences>}
  * dsSequence records. dsSequences[index] = sequence_record.
- * @properties={typeid:35,uuid:"C1C4A1F7-415B-45E8-9C63-3271833C6E86",variableType:-4}
+ * @properties={typeid:35,uuid:"5C8577FB-BDD3-481B-91B7-B1E1A7FE1B7F",variableType:-4}
  */
 var dsSequences = null;
 /**
  * Sequence List. Index into dsSequences.
  * dsSequenceList[sequence_id] = index.
- * @properties={typeid:35,uuid:"2BFC2F12-EAD3-409E-AF1D-2C4D08722E76",variableType:-4}
+ * @properties={typeid:35,uuid:"BC6B0F1D-1C82-4CFD-A61E-31BD58F0CBDC",variableType:-4}
  */
 var dsSequenceList = [];
 /**
  * Sequences indexed by Sheet_number. Since sheet_number may be blank or non-indexed, it is 
  * prefixed by "_".  dsSequenceArray["_"+sequence_number] = sequence_id
- * @properties={typeid:35,uuid:"F8D6D4A5-DC0B-4EAD-B899-E1E522245E02",variableType:-4}
+ * @properties={typeid:35,uuid:"8B3BE1BD-8328-46A7-9E01-5B7DB3419311",variableType:-4}
  */
 var dsSequenceArray = [];
 /**
  * Sheet_boms indexed by (piecenumber:CUT or partnumber:BOM) sheet_bom.bom_item_number. Since bom_item_number may be blank or non-indexed, it is 
  * prefixed by "_".  dsSheetBomArray[sheet_id+"_"+bom_item_number] = sheet_bom_id
- * @properties={typeid:35,uuid:"B028CA7A-6002-4495-8522-CCD6A2BD8FE9",variableType:-4}
+ * @properties={typeid:35,uuid:"3B152823-C91A-42D5-BE05-CAD505BBF57D",variableType:-4}
  */
 var dsSheetBomArray = [];
 /**
  * Sheet_bom List. Index into dsSheetBoms.
  * dsSheetBomList[sheet_bom_id] = index.
- * @properties={typeid:35,uuid:"7AF1A3CE-3CAF-4DBF-A4E7-928C537FD8C3",variableType:-4}
+ * @properties={typeid:35,uuid:"889CBE76-D6BD-48BD-B925-421F2A5D6E36",variableType:-4}
  */
 var dsSheetBomList = [];
 /**
  * @type {JSFoundSet<db:/stsservoy/sheet_bom>}
  * dsShtBm records. dsShtBms[index] = sheet_bom_record.
- * @properties={typeid:35,uuid:"16621A20-4F11-4328-A7B3-3E870385A059",variableType:-4}
+ * @properties={typeid:35,uuid:"EF932949-8363-47F9-9829-4AFA0C828B04",variableType:-4}
  */
 var dsSheetBoms = null;
 /**
- * @properties={typeid:35,uuid:"7445E671-3137-437B-9240-AFE9CCE38848",variableType:-4}
+ * @properties={typeid:35,uuid:"AE209D66-F602-4D9D-9257-0947BAEAAD78",variableType:-4}
  */
 var countsBCandID = null;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"E94FE975-C814-4098-80B4-3B96BC84F169",variableType:4}
+ * @properties={typeid:35,uuid:"0F84565B-D874-4405-87E9-97A68E0CFBE6",variableType:4}
  */
 var createdRecords = 0;
 /**
  * Status on databaseManager saves.
- * @properties={typeid:35,uuid:"33C4B5E5-BA06-4F8A-949F-5BD3844BE1EC",variableType:-4}
+ * @properties={typeid:35,uuid:"58181832-56B2-4D25-8A27-911AA28EF851",variableType:-4}
  */
 var saveStat = true;
 /**
- * @properties={typeid:35,uuid:"679573FF-6ACA-4FE3-B107-EA66D08E30FE",variableType:-4}
+ * @properties={typeid:35,uuid:"6C796C63-A327-4B00-B2B7-523C98616F93",variableType:-4}
  */
 var usedFields = [];
 /**
  * Boolean to set import data append to existing data or not.
- * @properties={typeid:35,uuid:"95280E62-200B-4F04-B3AD-1D78BD22144B",variableType:-4}
+ * @properties={typeid:35,uuid:"737686C3-30B9-46CE-B9EB-E2A95A7640CC",variableType:-4}
  */
 var appendToData = false;
 /**
  * Boolean to indicate quantities have been appended to transitionFS table.
- * @properties={typeid:35,uuid:"24136611-2D30-4D0D-BA0D-9F748F98A1DE",variableType:-4}
+ * @properties={typeid:35,uuid:"8658B10D-6628-4190-9B67-99BD9B3759FD",variableType:-4}
  */
 var appendedToData = false;
 /**
  * Array of idfiles, unique by uniquePiecemark+SequenceNumber+LotNumber.
  * appendQuantityToIdfile[uniqueIdfile] = existing_item_count
- * @properties={typeid:35,uuid:"D036DA77-7DB2-4903-8F64-DAC1E37F61DF",variableType:-4}
+ * @properties={typeid:35,uuid:"850530F1-C9AA-4AB9-8F3B-7340D246DD80",variableType:-4}
  */
 var appendQuantityToIdfile = null;
 /**
- * @properties={typeid:35,uuid:"58092B91-9902-41CF-872F-639478065339",variableType:-4}
+ * @properties={typeid:35,uuid:"0B64648B-2F60-491C-A12A-3BB52932F735",variableType:-4}
  */
 var importJob = {
 	bcFormId : null,//#87ticket#87
@@ -353,130 +353,124 @@ var importJob = {
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"9B57177F-1D0C-4856-8047-692D87829775"}
+ * @properties={typeid:35,uuid:"4464F0A8-1659-4A6A-B024-164DEEB6A13B"}
  */
 var importJobNumber = "";
 /**
  * @type {Date}
  *
- * @properties={typeid:35,uuid:"31C27CBE-0E9D-4730-A03C-922F0BA707C8",variableType:93}
+ * @properties={typeid:35,uuid:"844A11B3-27FC-488F-9D9A-93CE3F047ECA",variableType:93}
  */
 var importDate = null;
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"9CCA6C50-C08B-48C2-8788-11261608EA40"}
+ * @properties={typeid:35,uuid:"E297B718-8C5D-4CEB-AB0D-E9493CADC3A5"}
  */
 var importJobName = "";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"176425AB-BB7A-45A3-81D2-523AF5D2345C"}
+ * @properties={typeid:35,uuid:"7B6929EE-6FD2-4D56-BA9D-E9DF0D658837"}
  */
 var importFormatType = "";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"81E84729-E1EF-47E4-A897-243F3CB748EA"}
+ * @properties={typeid:35,uuid:"9AA1F84B-F5B1-4E3B-ABC3-411C466EF79E"}
  */
 var barcodeLast = "";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"B9EDAD34-EE02-46C6-88B8-F26A6052F795"}
+ * @properties={typeid:35,uuid:"6F0C19D9-848F-47E9-83F9-A614969E0DD1"}
  */
 var barcodePrefix = "";
 /**
- * @properties={typeid:35,uuid:"09E04C8F-95CA-45E4-9FF5-AFCBA9D21A3D",variableType:-4}
+ * @properties={typeid:35,uuid:"316F440D-B981-4B90-A55F-F068BA0E2E85",variableType:-4}
  */
 var jobName = forms.kiss_option_import.jobName;
 /**
- * @properties={typeid:35,uuid:"4D045C72-EE06-4B4A-935E-B36322243638",variableType:-4}
+ * @properties={typeid:35,uuid:"A778E126-9B4F-4690-BAC7-274DAEBFDDC9",variableType:-4}
  */
 var jobDate = forms.kiss_option_import.jobDate;
 /**
- * @properties={typeid:35,uuid:"0A52C811-0F92-48C2-937A-B107E61B09CA",variableType:-4}
+ * @properties={typeid:35,uuid:"FEAB4A93-0C7F-4118-BF87-E258CAEF8E59",variableType:-4}
  */
 var jobMetric = forms.kiss_option_import.jobMetric;
 
 /**
- * @properties={typeid:35,uuid:"0581EEED-9060-47E7-AD2D-BD9A5BC4BEDB",variableType:-4}
+ * @properties={typeid:35,uuid:"49B8FBB4-6075-4F57-8350-B7A859F4A84B",variableType:-4}
  */
 var keepMinors = forms.kiss_option_import.keepMinors;
 /**
- * @properties={typeid:35,uuid:"2E65EA10-17FD-43E5-9FBC-63ACAE67D007",variableType:-4}
+ * @properties={typeid:35,uuid:"D933DD03-155E-459D-BC15-2E6C358D632F",variableType:-4}
  */
 var weightPerID = scopes.prefs.wtPrompt;
 /**
  * GUI and import update times tracker
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"7294EC86-7843-44FF-AABE-1DA2FDDD2BB5",variableType:8}
+ * @properties={typeid:35,uuid:"B1643AF3-8032-4E72-98D8-4B4728960A09",variableType:8}
  */
 var timeIn;
 /**
  * temporary hold table for which columns to hide when saving preferences
- * @properties={typeid:35,uuid:"A8D7FCB2-C9D3-483D-8EBB-54E06CFAF5DA",variableType:-4}
+ * @properties={typeid:35,uuid:"EE57FC31-E2DF-4A98-AE17-A623EDBC5EE5",variableType:-4}
  */
 var tempTableColumnsHide = [];
 /**
  * GUI and import update times tracker
  * @type {String}
  *
- * @properties={typeid:35,uuid:"0D715106-7CBF-490F-8DB0-81FEB8C2C09C"}
+ * @properties={typeid:35,uuid:"6B0B355E-313D-428B-ACE9-98E1C21F88EB"}
  */
 var timeOut;
 /**
  * GUI and import update times tracker
  * @type {String}
  *
- * @properties={typeid:35,uuid:"EAE8F0AA-FA7F-4071-9E34-A72436E8CB9F"}
+ * @properties={typeid:35,uuid:"3EE1D659-DA56-4BFD-A019-840BDF6EA8D7"}
  */
 var timeUpdate;
 /**
- * @properties={typeid:35,uuid:"56431830-8634-4400-8776-5593CA0F6B6C",variableType:-4}
+ * @properties={typeid:35,uuid:"D44384C2-9B69-47F2-AA04-ECB78CE810FB",variableType:-4}
  */
 var quantityPerID = scopes.prefs.qtyPrompt;
 /**
- * @properties={typeid:35,uuid:"C7DADD30-8A8C-4DE1-8DEE-F39B8E267139",variableType:-4}
+ * @properties={typeid:35,uuid:"85D45781-FD93-4EF7-A1D6-846C87629203",variableType:-4}
  */
 var excludeFS = forms.kiss_option_import.transitionFSsink;
 /**
- * @properties={typeid:35,uuid:"77AE18E2-8E70-4AA7-83EF-B33D954C53E2",variableType:-4}
+ * @properties={typeid:35,uuid:"E490A83B-D6ED-49ED-8CDA-96BDC429420D",variableType:-4}
  */
 var excludeStr = forms.kiss_option_import.jobImportExc;
 /**
- * @properties={typeid:35,uuid:"0BA760FD-232C-4D8A-B363-633BDBF25F94",variableType:-4}
+ * @properties={typeid:35,uuid:"A34DA84B-274C-4894-8EF7-8AA9FDA76ABC",variableType:-4}
  */
 var retainStr = forms.kiss_option_import.jobImportSum;
 /**
- * @properties={typeid:35,uuid:"84229498-2E07-4027-9015-ED388057C9F0",variableType:-4}
+ * @properties={typeid:35,uuid:"C6F318F5-CFFB-40AF-B7AC-793DFB840F7F",variableType:-4}
  */
 var fields = forms.kiss_option_import.fieldOrderTempTable;
 /**
  * @type {String}
  * Hold customerIDs for a single job number, usually one, but will be additional customer ids.
- * @properties={typeid:35,uuid:"82F8A27F-0E0A-402C-8732-A03DD34C71D8",variableType:-4}
+ * @properties={typeid:35,uuid:"58334991-8845-4A0A-84D2-C34D222F25DC",variableType:-4}
  */
 var customerIDs = [];
 /**
  * Upon load get jobs in array 
- * @properties={typeid:35,uuid:"1510C6F6-171F-4C1C-A992-954D08577746",variableType:-4}
+ * @properties={typeid:35,uuid:"35514E2C-458D-4610-AD4F-04B20B0734B2",variableType:-4}
  */
 var jobsArray = [];
 /**
  * Upon load get customers in array
- * @properties={typeid:35,uuid:"CE6A53F9-5747-4B66-807C-622684996A60",variableType:-4}
+ * @properties={typeid:35,uuid:"F270F863-EEDC-499F-8AB3-61A81F2134D0",variableType:-4}
  */
 var customersArray = [];
 /**
- * @type {String}
- * Hold the selected idfile_id for view transactions for the idfile_id
- * @properties={typeid:35,uuid:"AD4C4756-8406-4414-BFC8-8AE718C60C0D"}
- */
-var transactionIdfileId = null;
-/**
- * @properties={typeid:35,uuid:"AABDF6B8-AEA2-44A9-AF6B-FC19B543C9D4",variableType:-4}
+ * @properties={typeid:35,uuid:"EA242F21-D65E-4B2A-A2EB-979700E3C5B9",variableType:-4}
  */
 var cowInfo = {
 	custCode : null,
@@ -486,268 +480,268 @@ var cowInfo = {
 	cost : null
 }
 /**
- * @properties={typeid:35,uuid:"01A0825D-70F3-4489-A9AF-CE64541BD976",variableType:-4}
+ * @properties={typeid:35,uuid:"FD3BD48F-924A-4FC9-B22A-86D0529F7E09",variableType:-4}
  */
 var jobIDs = [];
 /**
  * @type {String}
  * Id for browsing under total table browsing.
- * @properties={typeid:35,uuid:"0D3F9CAD-31BC-4D34-8540-C01ED3BF5BE6"}
+ * @properties={typeid:35,uuid:"523D83A0-2E91-4C13-9868-16A2FEE95401"}
  */
 var browseJobID = "";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"F6946598-108D-4E85-8E7E-0647506213D4"}
+ * @properties={typeid:35,uuid:"E030DEF8-DDBC-444B-92BB-B3ACCEF20EBB"}
  */
 var browseJobIDrecall = "";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"352B2DEE-67EB-40F7-A0F5-3652043A0910"}
+ * @properties={typeid:35,uuid:"92C27B53-FD1C-4DAA-AE47-EECE51E0E3E0"}
  */
 var jobUnderCustomer = "";
 /**
  * List of piecemarks under selected job
- * @properties={typeid:35,uuid:"1F0B2EA3-BF51-40A1-A817-F435786033CE",variableType:-4}
+ * @properties={typeid:35,uuid:"1FF7B5E4-D6DF-486F-886C-31C7F6FA53B4",variableType:-4}
  */
 var jobPiecemarks = [];
 /**
  * Piecemarks which need to be deleted. in Bulk.  piecemark_id files.
- * @properties={typeid:35,uuid:"728D1505-B9B0-49BF-82D2-386673E78B8C",variableType:-4}
+ * @properties={typeid:35,uuid:"8E7AF989-2310-44AF-93D0-C3362B627642",variableType:-4}
  */
 var piecemarksToDelete = [];
 /**
  * Idfiles which need to be deleted. in Bulk. idfile_id files.
- * @properties={typeid:35,uuid:"DBA7AED4-8984-4F69-B2D8-CD75F68FA35B",variableType:-4}
+ * @properties={typeid:35,uuid:"E786476B-7F9D-4052-8218-7580126C3C52",variableType:-4}
  */
 var idfilesToDelete = [];
 /**
  * Barcodes which need to be deleted. in bulk. id_serial_number_id records.
- * @properties={typeid:35,uuid:"D90C164E-1B19-466E-9D49-8E79CA3D8CAC",variableType:-4}
+ * @properties={typeid:35,uuid:"5E03D5CF-A937-4047-90AB-FCCEED227050",variableType:-4}
  */
 var barcodesToDelete = [];
 /**
  * List of sheets under selected job
- * @properties={typeid:35,uuid:"57E9EC31-2CA6-42D8-8713-F4D96D70A535",variableType:-4}
+ * @properties={typeid:35,uuid:"EA7524F8-8CF7-45E1-9455-126DD908513F",variableType:-4}
  */
 var jobSheets = [];
 /**
  * list of sequences under selected job
- * @properties={typeid:35,uuid:"3AA03172-349A-4940-AE5E-411EEA057923",variableType:-4}
+ * @properties={typeid:35,uuid:"9D253A7D-9D6D-4A56-ADD7-3607683E64F3",variableType:-4}
  */
 var jobSequences = [];
 /**
  * list of SOs undder selected job
- * @properties={typeid:35,uuid:"EB4E667D-2B4D-4918-95BC-1EE00F553341",variableType:-4}
+ * @properties={typeid:35,uuid:"71CD082C-CAE1-44C7-AADC-32558920203C",variableType:-4}
  */
 var jobSONums = [];
 /** 
  * List of Loads under selected job
- * @properties={typeid:35,uuid:"401864F5-0BBB-4687-A460-9897E8C0AF0C",variableType:-4}
+ * @properties={typeid:35,uuid:"32BFC748-AF82-4310-ADB4-79356E448738",variableType:-4}
  */
 var jobLoadNums = [];
 /**
  * List of piecemark references under selected job
- * @properties={typeid:35,uuid:"F961D489-858C-4537-BC75-627C8E0207A1",variableType:-4}
+ * @properties={typeid:35,uuid:"EB0C2969-B325-48FE-9285-FC3C3C4CA40E",variableType:-4}
  */
 var jobPcmkRefs = [];
 /**
  * List of FabShops under selected job
- * @properties={typeid:35,uuid:"7F520CCD-6C7D-4EEE-B2EF-B9C9868F8549",variableType:-4}
+ * @properties={typeid:35,uuid:"2DD1A590-684C-4F89-A742-269CA3716104",variableType:-4}
  */
 var jobFabShops = [];
 /**
  * List of Areas under selected job
- * @properties={typeid:35,uuid:"911811AB-62BE-4883-AAD4-B3099367326B",variableType:-4}
+ * @properties={typeid:35,uuid:"AFFD7310-7ACF-437C-97C0-D333C8DE98DB",variableType:-4}
  */
 var jobAreas = [];
 /**
  * List of batches under selected job
- * @properties={typeid:35,uuid:"0C4A15D3-2CE1-4DBB-8BC3-28E8B05C986E",variableType:-4}
+ * @properties={typeid:35,uuid:"26C2FE71-9DCA-4BEB-94DC-9897BABB1A8C",variableType:-4}
  */
 var jobBatches = [];
 /**
  * List of Cost of Work Codes under selected job
- * @properties={typeid:35,uuid:"E5560014-B24E-4E0E-BDFE-95E98D0D57D2",variableType:-4}
+ * @properties={typeid:35,uuid:"B69A49A7-938E-418D-ABD6-65A867D644A6",variableType:-4}
  */
 var jobCowCodes = [];
 /**
  * Selected job's total weight
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"F85F4E54-3EAB-4D48-8379-CE5009F8EB17",variableType:4}
+ * @properties={typeid:35,uuid:"505BBFC6-C546-48AE-9563-5C623FEDCDFE",variableType:4}
  */
 var jobWeightTotal = 0;
 /**
  * Selected job's number of barcodes
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"76D1DC7F-2B17-4004-A8C9-9B9CC19B8221",variableType:4}
+ * @properties={typeid:35,uuid:"7D8B0CDD-C44F-489E-B6DB-21D20EC89D4B",variableType:4}
  */
 var jobBarcodes = 0;
 /**
  * Selected job's total piece count
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"0439F1D8-8BF3-4161-AD14-BD94C82A6DB7",variableType:4}
+ * @properties={typeid:35,uuid:"31880E6A-CEF7-4AFC-A3FE-C00E62B47337",variableType:4}
  */
 var jobPiecesCount = 0;
 /**
  * Selected job's unique piecemark count
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"A7A8B1EE-980A-43C5-8BBF-2750D1DA56A1",variableType:4}
+ * @properties={typeid:35,uuid:"CF832813-8198-4542-AFA9-7FADC42F0B84",variableType:4}
  */
 var jobPcmkCount = 0;
 /**
  * @type {JSRecord<db:/stsservoy/customers>}
  * Holds the current customer record for import.
- * @properties={typeid:35,uuid:"7BC883A5-863E-4975-B6AF-801A0C32CABC",variableType:-4}
+ * @properties={typeid:35,uuid:"906528DD-17F1-48BA-8138-AF1281B9FAB9",variableType:-4}
  */
 var custRec = null;
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"D7955C3D-2918-48D4-87A0-FB2ABE281306"}
+ * @properties={typeid:35,uuid:"44D68C89-D2A8-4A33-AE56-B331A94798C6"}
  */
 var customerName = "";
 /**
- * @properties={typeid:35,uuid:"12AA24A0-7E1D-462A-BCEC-06DCA2F5D61C",variableType:-4}
+ * @properties={typeid:35,uuid:"57218DE7-CFFF-4515-BC9E-3BC44EAC2EB2",variableType:-4}
  */
 var columnNames = forms.kiss_option_import.columnNames; // columnNames indexed into array
 /**
- * @properties={typeid:35,uuid:"ABC9E86F-0C84-4FFC-A70A-19E888A421F8",variableType:-4}
+ * @properties={typeid:35,uuid:"29D08B1A-6F86-4174-A15A-22389E84F787",variableType:-4}
  */
 var columnNames2 = []; // columnNames for browsing sql-based forms
 /**
- * @properties={typeid:35,uuid:"1D1DC7BD-66CD-442D-BE61-BB6305AEE98C",variableType:-4}
+ * @properties={typeid:35,uuid:"C6080A1D-540A-43FB-9355-7FAC623556CC",variableType:-4}
  */
 var removeColumns = [];
 /**
  * Keep separate count for job load information browsing.
  * @type {String}
- * @properties={typeid:35,uuid:"F4DAEC4A-73A1-490F-AE39-D8E9CFFF5DDA"}
+ * @properties={typeid:35,uuid:"A47E8F7D-55C1-4AFD-B99E-B0EC2550577D"}
  */
 var loadCountsJobId = null;
 /**
- * @properties={typeid:35,uuid:"EFDE9CA2-94A9-402F-BADA-AB6AC70DD8B9",variableType:-4}
+ * @properties={typeid:35,uuid:"9CB351AA-6386-40DD-930F-EB4F8FAC1B8A",variableType:-4}
  */
 var tablePKs = ['tenant_uuid','sheet_id','sequence_id','piecemark_id',
 	'idfile_id','loads_id','status_description_id','e_route_code_id','routing_id','job_id',
 	'lot_id','id_creation_date','id_serial_number_id','association_uuid'];
 /**
  * tableOrderingArray[index'order'] = columnName
- * @properties={typeid:35,uuid:"7886C7DE-1B50-4E80-8F6B-2983D5BB518F",variableType:-4}
+ * @properties={typeid:35,uuid:"D84C99AE-83ED-4CCF-8E46-EF04C91D7310",variableType:-4}
  */
 var tableOrderingArray = [];
 /**
  * tableOrderingData = [columnName,positionX,columnLength,visible]
- * @properties={typeid:35,uuid:"C5EBA2BA-4CFC-4731-BAD3-DC8717790767",variableType:-4}
+ * @properties={typeid:35,uuid:"B6F870F6-7289-48CA-94C0-A55F7C09B933",variableType:-4}
  */
 var tableOrderingData = [];
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"F5322DE8-E954-41A2-9749-28C19E3185F5"}
+ * @properties={typeid:35,uuid:"87F3D869-B9A7-48C7-8999-23B6846CB1B1"}
  */
 var generalTableOrderTableName = "";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"2021418E-22BA-43E6-894D-CC7739166ECB"}
+ * @properties={typeid:35,uuid:"B17BC4C9-E95D-4FF9-949D-279980B5BC4F"}
  */
 var versionForm = "";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"C596BAD6-0911-4FAA-A8AF-983CAB7C1811"}
+ * @properties={typeid:35,uuid:"5AF6B259-F824-40AC-8F10-D8BE7026D745"}
  */
 var tmp_LabelSort = "";
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"12D32104-0E17-4D9C-8A20-7CF71B1F67E0"}
+ * @properties={typeid:35,uuid:"4BB0BEFA-515B-474C-8724-84CACB9983BE"}
  */
 var tmp_Print = "";
 /**
- * @properties={typeid:35,uuid:"E6DE4DAF-44E1-4107-9654-A861BD4BE156",variableType:-4}
+ * @properties={typeid:35,uuid:"45E91B19-B7F1-4698-8FA3-ABB291689E88",variableType:-4}
  */
 var parseArray = [];
 /**
- * @properties={typeid:35,uuid:"0938BA6C-F971-453E-BE39-5F8D0295170A",variableType:-4}
+ * @properties={typeid:35,uuid:"29AC33CB-4512-4984-95E9-5253F6CAAAC4",variableType:-4}
  */
 var parseLines = [];
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"7D3677A2-E9AB-40CB-BA4A-B5FD7961B57E",variableType:4}
+ * @properties={typeid:35,uuid:"76AF8134-6F2B-4121-8AE6-188FD7D73AB4",variableType:4}
  */
 var recordSaveLimit = 20;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"2D599E37-A3A6-403A-889E-82592AF49808",variableType:4}
+ * @properties={typeid:35,uuid:"5891FBC7-E3EA-4FD5-A3F9-DF13E164C9FA",variableType:4}
  */
 var recordSaveDur = 40;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"B1BF3C15-4FDE-4DF0-9289-09BBF82C3F99",variableType:4}
+ * @properties={typeid:35,uuid:"98D6A927-CC78-45B9-81FF-D61AC274CEAE",variableType:4}
  */
 var idCreationCount = 0;
 /**
  * List of new barcodes if they are not located in the db by primary key, meaning they are not yet saved
- * @properties={typeid:35,uuid:"2B60F91D-407F-4D2E-BC15-ED2A6625CE08",variableType:-4}
+ * @properties={typeid:35,uuid:"D0941EF1-76D8-4F8F-922D-A81F2CED8E7A",variableType:-4}
  */
 var idBarcodePool = [];
 /**
  * This is to keep a cache of import records by primary key as the index, so that they may be cached 
  * while building piecemarks during the import process.
  * 
- * @properties={typeid:35,uuid:"A983CC8F-33D1-4246-BF5D-54947242D569",variableType:-4}
+ * @properties={typeid:35,uuid:"EA32D139-BDEA-431F-B84C-85B28895F56E",variableType:-4}
  */
 var importRecordCache = [];
 /**
- * @properties={typeid:35,uuid:"00A52664-9097-4B32-9A20-4B80A17A222A",variableType:-4}
+ * @properties={typeid:35,uuid:"CCD947DF-E1D0-44E8-9156-B9F5AF508D95",variableType:-4}
  */
 var idfilePool = [];
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"E0A7B238-7C46-42DB-96C5-602DC3E2A9E4"}
+ * @properties={typeid:35,uuid:"97F15446-9FFF-4D0D-9A59-B80DB0371745"}
  */
 var remainingTime = "";
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"C9AC0F7B-06CD-4AAC-A356-27B6AF9A1664",variableType:4}
+ * @properties={typeid:35,uuid:"7D68774A-7084-4490-85C9-6D35AFB25E52",variableType:4}
  */
 var createdIdfileCount = 0;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"6F291F55-9F86-457A-BC7C-A3BD3ABCA624",variableType:4}
+ * @properties={typeid:35,uuid:"C3CAD2C2-DB5D-4A2B-BAF5-A7EFE17AD709",variableType:4}
  */
 var commitStart = 0;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"71CACE69-EEF8-432C-B24E-9E9DFF46D5AB",variableType:4}
+ * @properties={typeid:35,uuid:"B44F52AD-4821-4B61-8B14-4DBB0C1EC13A",variableType:4}
  */
 var commitLastDur = 0;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"7B6E83BB-E004-4844-8A02-CBED067CA707",variableType:4}
+ * @properties={typeid:35,uuid:"E24C1F87-8968-4F1E-9615-A7FC37860C92",variableType:4}
  */
 var commitRecAt = 20;
 /**
- * @properties={typeid:35,uuid:"1AF3FB7E-169F-46CE-8A31-AFAE19565329",variableType:-4}
+ * @properties={typeid:35,uuid:"AC75A1D0-67CC-40E5-8F8E-9F0D97347664",variableType:-4}
  */
 var i18nColumnNames = [];
 /**
- * @properties={typeid:35,uuid:"448ADD8C-7EF9-49CC-942E-982303DDD9CA",variableType:-4}
+ * @properties={typeid:35,uuid:"F3EEAEAA-AC80-442B-9C22-0E11DADF5881",variableType:-4}
  */
 var dsQuerySave = [];
 // -------------------------------------------------------------------------------------------------------------------
@@ -5125,10 +5119,11 @@ function importRecordCheckIdfileCount(record,correct){
 				idfilePool.push(newIdfileRec);
 				createNumberIdfiles2 -= 1;//was createQuant, but that is only copied to the idfile, not creating idfiles, BUT summarized items are set otherwise
 			}
-			if (application.isInDeveloper()){application.output('added idfiles '+nums.idfileAdd)}
+			if (application.isInDeveloper()){application.output('added idfiles z'+nums.idfileAdd)}
 		}
 		
 		if (nums.idfileDel > 0){
+			if (application.isInDeveloper()){application.output('deleting idfiles '+nums.idfileDel)}
 			var deleteNumberIdfiles = (orphanIdfileList.length >= nums.idfileDel) ? 0 : nums.idfileDel - orphanIdfileList.length;
 			var index7;
 			for (index7 = nums.bcCodes.length-1;index7 >= 0;index7--){//start at end of allocated barcodes
@@ -5522,6 +5517,12 @@ function importRecordsDelete(){
  * @AllowToRunInFind
  */
 function importRecordsAlt(){
+	forms.kiss_option_import.elements.btn_Apply.enabled = false;
+	forms.kiss_option_import.elements.btn_Import.enabled = false;
+	scopes.kiss.performImportTable();
+	forms.kiss_option_import.onHide(null);
+
+	if (1==1){return}
 	///var win = application.getActiveWindow();
 	///win.controller.enabled = false;
 	var beginTime = new Date().getTime();

@@ -1,5 +1,6 @@
 dataSource:"db:/stsservoy/jobs",
 encapsulation:60,
+extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {
 formIndex:24,
@@ -80,6 +81,15 @@ uuid:"225D393F-362A-44DA-BDB7-58A1F4700394"
 {
 anchors:15,
 formIndex:2,
+items:[
+{
+containsFormID:"DAF13E4B-44A9-45AE-AFF8-D51941059714",
+location:"589,63",
+text:"import_table",
+typeid:15,
+uuid:"1166A575-74E5-4A5A-A1EF-E607BA559672"
+}
+],
 location:"589,33",
 name:"tabless",
 printable:false,
@@ -91,8 +101,8 @@ typeid:16,
 uuid:"22C8E893-098B-4997-A201-D1DFBC404C4B"
 },
 {
+extendsID:"B8264F35-3B2C-445D-8057-07A22DF67C55",
 height:480,
-partType:5,
 typeid:19,
 uuid:"2572924E-E6D0-4191-B9EE-D8C383B93416"
 },
@@ -321,6 +331,7 @@ uuid:"830D61E0-5869-409E-86B1-A477F28D0C25",
 valuelistID:"49A8373A-A6B1-4D6F-9AF8-40CC141E0E0F"
 },
 {
+enabled:false,
 horizontalAlignment:0,
 location:"427,450",
 name:"btn_Browse",
@@ -331,7 +342,8 @@ size:"80,26",
 tabSeq:-2,
 text:"i18n:sts.btn.browse",
 typeid:7,
-uuid:"83A4603D-0FDE-4CF0-BB4E-A8C3C9608C14"
+uuid:"83A4603D-0FDE-4CF0-BB4E-A8C3C9608C14",
+visible:false
 },
 {
 dataProviderID:"st2_jobs_to_customers.customer_number",

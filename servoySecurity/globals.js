@@ -1048,6 +1048,9 @@ function getTenantCount(){
 		}
 	}
 	databaseManager.saveData();
+	if (application.getSolutionName() != 'STS X Embedded'){
+		databaseManager.addTableFilterParam('stsservoy','tenant_list','tenant_uuid','=','EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE','noEmbedded');
+	}
 	tent.loadAllRecords();
 	return tent.getSize();
 }

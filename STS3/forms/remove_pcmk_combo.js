@@ -28,6 +28,7 @@ function onActionClearAll(event) {
  * @properties={typeid:24,uuid:"EEF2A17A-C408-474B-88DF-7083D8BCED07"}
  */
 function onActionRemoveSelected(event) {
+	
 	if (!scopes.globals.purgeBarcodeRecords){
 		scopes.globals.purgeBarcodeRecords = [];
 	}
@@ -59,6 +60,9 @@ function onActionRemoveSelected(event) {
 	var fs = forms[formPrefix+'_pcmk_combo_table'].foundset;
 	var removeList = [];
 	var i = 1;
+	elements.btn_Clear.enabled = false;
+	elements.btn_SelectAll.enabled = false;
+	elements.btn_RemoveSelected.enabled = false;
 	while (i <= fs.getSize()){
 		/** @type {JSRecord} */
 		var rec = fs.getRecord(i++);
@@ -67,10 +71,19 @@ function onActionRemoveSelected(event) {
 		blowCodes.push(rec.id_serial_number_id+"");
 		removeList.push(i-1); //selection is array, which is zero-based, records are one-based
 	}
-	while (removeList.length > 0){
-		forms[formTable].controller.setSelectedIndex(removeList.pop());
-		forms[formTable].controller.omitRecord();
+	if (removeList.length < 100){
+		while (removeList.length > 0){
+			forms[formTable].controller.setSelectedIndex(removeList.pop());
+			forms[formTable].controller.omitRecord();
+		}
 	}
 	var purge = true;
 	scopes.jobs.purgeDeletedIdfiles();
+	var win = application.getActiveWindow();
+	elements.btn_Clear.enabled = true;
+	elements.btn_SelectAll.enabled = true;
+	elements.btn_RemoveSelected.enabled = true;
+
+	//var winName = win.title;
+	win.hide();
 }

@@ -20,13 +20,19 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"374ED16A-949C-40E1-B082-9095F45463C0"}
  */
 function onActionSelectAll(event) {
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage('Selecting records, please wait...',true);
 	var formName = event.getFormName();
 	var fs = forms[formName+'_table'].foundset;
 	var i = 1;
 	while (i <= fs.getSize()){
+		scopes.jobs.warningsMessage('Selecting records, please wait...',false);
 		var rec = fs.getRecord(i++);
 		rec.selection = 1;
 	}
+	scopes.jobs.warningsMessage('',true);
+	scopes.jobs.warningsX();
+
 }
 
 /**
@@ -39,11 +45,16 @@ function onActionSelectAll(event) {
 function onActionClearAll(event) {
 	var formName = event.getFormName();
 	var fs = forms[formName+'_table'].foundset;
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage('Clearing Selected Messages, please wait...',true);
 	var i = 1;
 	while (i <= fs.getSize()){
+		scopes.jobs.warningsMessage('Clearing Selected Messages, please wait...',false);
 		var rec = fs.getRecord(i++);
 		rec.selection = 0;
 	}
+	scopes.jobs.warningsMessage('',true);
+	scopes.jobs.warningsX();
 }
 
 /**
@@ -81,8 +92,12 @@ function onActionDeleteSelected(event,formName) {
 	var formTable = formPrefix+'_pcmk_combo_table';
 	var fs = forms[formTable].foundset;
 	var omitList = [];
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',true);
 	var i = 1;
 	while (i <= fs.getSize()){ // collect selected record idfile id's
+		scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',false);
+
 		var rec = fs.getRecord(i);
 		if (rec.selection == 1){
 			//var idfileId = rec.idfile_id;
@@ -93,9 +108,11 @@ function onActionDeleteSelected(event,formName) {
 		i++;
 	}
 	scopes.jobs.deleteIdfiles();
-	while (omitList.length != 0){
-		//fs.setSelectedIndex(omitList.pop());
-		fs.omitRecord(omitList.pop());
+	if (omitList.length < 100){
+		while (omitList.length != 0){
+			fs.setSelectedIndex(omitList.pop());
+			fs.omitRecord(omitList.pop());
+		}
 	}
 	/**i = 1;
 	while (i <= fs.getSize()){ // collect selected record idfile id's
@@ -114,6 +131,11 @@ function onActionDeleteSelected(event,formName) {
 		
 	//}
 	//scopes.jobs.deleteIdfiles();
+	scopes.jobs.warningsX();
+
+	var win = application.getActiveWindow();
+	win.hide();
+	//forms.delete_pcmk_combo.onHide(event);
 }
 
 /**

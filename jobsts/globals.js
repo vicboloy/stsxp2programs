@@ -4231,7 +4231,7 @@ function logger(capture,message){
 	if (!(capture || session.capture)){return}
 	/** @type {JSFoundSet<db:/stsservoy/rf_transactions>} */
 	var fs = databaseManager.getFoundSet('db:/stsservoy/rf_transactions');
-	fs.newRecord();
+	fs.newRecord(false);
 	fs.transaction_date = new Date();
 	fs.tenant_uuid = session.tenant_uuid;
 	fs.rf_comm_data = message;
@@ -9370,4 +9370,58 @@ function dataEntryComplete(event){
 		}
 	}
 	return false;
+}
+/**
+ * Get job info with jobNumber, returning arrays of sheets, loads, etc
+ * big procedure. may break into smaller
+ * return {topForm : parent, job_id : jobId, job_num : jobNum};
+ * 
+ * @param jobNum
+ *
+ * 
+ * @SuppressWarnings(wrongparameters)
+ *
+ *
+ * @properties={typeid:24,uuid:"7789CDA2-7B48-402E-BF3F-D40E04D35000"}
+ */
+function getJobIdInfo(jobNum){
+	/*
+	 * return sequence_number, load_number, load_release, customer so, shop, Lot, package, area, batch, drawing num, 
+	 */
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var p = databaseManager.createSelect('db:/stsservoy/jobs');
+	p.result.add(p.columns.job_id);
+	p.result.add(p.columns.association_id);
+	p.result.distinct = true;
+	p.where.add(
+	p.and
+		.add(p.or
+			.add(p.columns.delete_flag.isNull)
+			.add(p.columns.delete_flag.eq(0))
+			)
+		.add(p.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+		.add(p.columns.job_number.eq(jobNum))
+	);
+	var fsJ = databaseManager.getFoundSet(p);
+	/** @type JSRecord<db:/stsservoy/jobs> */
+	var rec = fsJ.getRecord(1);
+	var jobId = rec.job_id;
+
+	var win = application.getActiveWindow();
+	var parent = win.controller.getName();
+	/** sheetRefDrawing = sheetRefDrawing.sort();
+	loadRels = loadRels.sort();
+	shopOrderNumbers = shopOrderNumbers.sort();
+	pcmkReleases = pcmkReleases.sort();
+	activeStations = activeStations.sort();
+	areaNames = areaNames.sort();
+	batchNames = batchNames.sort();
+	{sheet_ids :sheetIds, sheet_nums :sheetNumbers, ref_drawing :sheetRefDrawing,
+		sequence_ids :sequenceIds, sequence_nums :sequenceNumbers,
+		load_ids :loadIds, load_nums :loadNumbers, load_rels :loadRels,
+		lot_ids :lotIds, lot_nums :lotNumbers,
+		area_names : areaNames, batch_names :batchNames, customer_sos :shopOrderNumbers,
+		pcmk_releases :pcmkReleases, active_stations :activeStations, package_nums: packageNumbers}
+	 */
+	return {topForm : parent, job_id : jobId, job_num : jobNum};
 }

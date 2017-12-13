@@ -9,6 +9,19 @@ var mappedFormatArray = [];
  */
 var selectedCust = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"675D86A9-92BD-4BA8-AB98-280CAB563E59"}
+ */
+var vJobNumber = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"AFAC0BFC-86EE-4035-8A29-E52E00E956B5"}
+ */
+var texts="";
+//------------------------------------------------------------------------------------------------
+/**
  *
  * @properties={typeid:24,uuid:"CEB68FE5-3762-496D-B815-88ADC962BE24"}
  * @AllowToRunInFind
@@ -107,14 +120,34 @@ function fileReceipt(file){
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
 function getKissFile(event){
+	var servoyDir = scopes.prefs.importpath;
+	var request = '<FabSuiteXMLRequest>\n\
+		<ExportJob>\n\
+		<JobNumber>'+vJobNumber+'</JobNumber>\n\
+		<FileName>'+servoyDir+'\\KissFileSTSx.kss</FileName>\n\
+		<IncludeLotNumbers>1</IncludeLotNumbers>\n\
+		</ExportJob>\n\
+		</FabSuiteXMLRequest>';
+
+	var success = history.removeForm('kiss_barcode_request');
+	if (success){
+		var success2 = solutionModel.removeForm('kiss_barcode_request');
+		if (!success2){globals.loggerDev(this,'Remove form history fail.');}
+	}
+	history.removeForm('kiss_excludes_lst');
+	solutionModel.removeForm('kiss_excludes_lst');
+
+	scopes.kiss.importFSOnServer(event,request,'');//RECENT
+	
+	if (1==1){return}
 	if (scopes.prefs.lFabsuiteInstalled){
 		var getFskiss = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.kiss.fabsuite'),i18n.getI18NMessage('sts.txt.kiss.fabsuite'),[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')])
 		globals.errorDialogMobile(event,'sts.txt.kiss.fabsuite',null,getFskiss);
 		if (getFskiss == i18n.getI18NMessage('sts.btn.yes')){
-			application.output('test get fs kiss');
-			
+			//application.output('test get fs kiss');
+			//scopes.kiss.importFSOnServer(event,xmlRequest,filters)
 			var attachTo = plugins.fabsuite.fsSetLib('E:\\p2programs\\javaCom\\FabSuiteXMLInterface.dll');
-			application.output('attached to fslib '+attachTo);
+			//application.output('attached to fslib '+attachTo);
 			var xmlQuery = '<FabSuiteXMLRequest>\
 							<Connect>\
 								<IPAddress>localhost</IPAddress>\
@@ -124,7 +157,7 @@ function getKissFile(event){
 							</Connect>\
 						</FabSuiteXMLRequest>';
 			var response = plugins.fabsuite.fsXML(xmlQuery);
-			application.output('fs xml response '+response);
+			//application.output('fs xml response '+response);
 			var test0 = plugins.fabsuite.fsSetLib('C:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\FabSuiteXMLInterface.dll');
 			var xmlConnect = '<FabSuiteXMLRequest>\
 									<Connect>\
@@ -136,12 +169,12 @@ function getKissFile(event){
 								</FabSuiteXMLRequest>';
 
 			var test = plugins.fabsuite.fsXML(xmlConnect);
-			application.output('test fs interface '+test);
+			//application.output('test fs interface '+test);
 			var xmlConn2 = '	<FabSuiteXMLRequest>\
 									<Version/>\
 								</FabSuiteXMLRequest>';
 			test = plugins.fabsuite.fsXML(xmlConn2);
-			application.output('test fs interface '+test);//two jobs in FabSuite Sample1 and FabSuite2
+			//application.output('test fs interface '+test);//two jobs in FabSuite Sample1 and FabSuite2
 			var xmlConn3 = '	<FabSuiteXMLRequest>\
 				<ExportJob>\
 					<JobNumber>FabSuite2</JobNumber>\
@@ -150,31 +183,17 @@ function getKissFile(event){
 				</ExportJob>\
 			</FabSuiteXMLRequest>';
 			test = plugins.fabsuite.fsXML(xmlConn3);
-			application.output('test '+test);
+			//application.output('test '+test);
 		} else {
 			return;			
 		}
 		return;
 	}
 	scopes.jobs.appendQuantityToIdfile = null; //import append data
-	var success = history.removeForm('kiss_barcode_request');
-	if (success){
-		var success2 = solutionModel.removeForm('kiss_barcode_request');
-		if (!success2){globals.loggerDev(this,'Remove form history fail.');}
-	}
-	history.removeForm('kiss_excludes_lst');
-	solutionModel.removeForm('kiss_excludes_lst');
 	//var path = "C:\\Users\\Alienware\\Documents\\STS p2programs\\KISS\\";
-	var path = scopes.prefs.importpath;
-	plugins.file.showFileOpenDialog(0, path, false, fileReceipt);
+	//var path = scopes.prefs.importpath;
+	//plugins.file.showFileOpenDialog(0, path, false, fileReceipt);
 }
-
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"AFAC0BFC-86EE-4035-8A29-E52E00E956B5"}
- */
-var texts="";
 /**
  * Perform the element default action.
  *
@@ -220,44 +239,6 @@ function onActionHide(event) {
 	globals.mainWindowFront();
 	globals.stopWindowTrack();
 }
-
-/**
- * Handle changed data.
- *
- * @param {String} oldValue old value
- * @param {String} newValue new value
- * @param {JSEvent} event the event that triggered the action
- *
- *
- * @properties={typeid:24,uuid:"C350E283-FBB6-4F29-B69D-FDAC625D3A2F"}
- * @AllowToRunInFind
- */
-function xxxunusedonDataChangeCustomer(oldValue, newValue, event) {
-	/**
-	var index = custNums.indexOf(newValue);
-	var pkJobs = scopes.jobs.customerIDs[index];
-	for (index = 1;index < foundset.getSize();index++){
-		var rec = foundset.getRecord(index);
-		if (rec.customer_id == pkJobs){
-			break
-		}
-	}
-	var custRec = rec.sts_job_to_customer2;
-
-	if (!custRec.barcode_prefix || 
-			!custRec.barcode_fixed_length || 
-			!custRec.barcode_include_prefix || 
-			!custRec.barcode_job_length ||
-			custRec.barcode_prefix.length != 2){
-		plugins.dialogs.showErrorDialog('STS ERROR: Customer barcode incomplete.','Customer '+rec.customer_number+' barcode is incomplete.  Please review the barcode setup using the \'Edit Customer Information\' button under the Edit/Add Tab.');
-		return;
-	}
-	var win = application.createWindow("KISS Import", JSWindow.DIALOG);
-	win.title = "KISS Import";
-	win.show(forms.kiss_option_import);
-	return true;*/
-}
-
 /**
  * Callback method for when form is shown.
  *
@@ -270,7 +251,19 @@ function onShow(firstShow, event) {
 	if (firstShow){
 	}
 	globals.setUserFormPermissions(event);
+	vJobNumber = '';
+	elements.btnSelect.enabled = false;
 	elements.chooseCust.visible = false;
 	elements.chooseCustSelect.visible = false;
 	selectedCust = "";
+	elements.jobEntry.requestFocus(false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"B95F03CA-A597-4C63-8EC9-0E18A60BA335"}
+ */
+function clearBadEntry(event){
+	vJobNumber = '';
 }

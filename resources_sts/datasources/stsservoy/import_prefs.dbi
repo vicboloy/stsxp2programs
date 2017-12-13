@@ -20,7 +20,6 @@ name:"association_uuid"
 allowNull:true,
 creationOrderIndex:4,
 dataType:12,
-flags:4,
 length:15,
 name:"customer_number"
 },

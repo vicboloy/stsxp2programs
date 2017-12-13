@@ -1,0 +1,154 @@
+/**
+ * 
+ *
+ * @properties={typeid:35,uuid:"5986270F-2DA2-4408-A62E-5F2E26B8D48B",variableType:-4}
+ */
+var printSelection = [];
+/**
+ * 
+ *
+ * @properties={typeid:35,uuid:"19CC51C9-710E-4337-B405-E566C8301C68",variableType:-4}
+ */
+var printActions = [];
+/**
+ * 
+ *
+ * @properties={typeid:35,uuid:"56015AC8-394E-4F8F-89C1-C2B5F98A5FBC",variableType:-4}
+ */
+var barcodeSet = [];
+/**
+ * 
+ *
+ * @properties={typeid:35,uuid:"9F2A7483-9483-4511-8209-EE3134121E7B",variableType:-4}
+ */
+var lprint = false;
+/**
+ * 
+ *
+ * @properties={typeid:35,uuid:"F407FAA9-9903-49DC-B79C-22FF1C75C4B4",variableType:-4}
+ */
+var endVars = null;
+/**
+ * Called before the form component is rendered.
+ *
+ * @param {JSRenderEvent} event the render event
+ *
+ * 
+ *
+ * @properties={typeid:24,uuid:"53AA15CA-E636-482E-BEF3-AFE7B5C4ECF4"}
+ */
+function onRenderRequestBarCount(event) {
+	/**
+	 * item quantities of 1 must get label counts of 1
+	 * item quantities in a multiple of sequence_quantity, get initialized to item quantities
+	 */
+	// NOTE: a property set on the renderable, will be kept on the element only during onRender
+	//if (event.isRecordSelected()) {
+	//	event.getRenderable().fgcolor = '#00ff00';
+	//} else if (event.getRecordIndex() % 2) {
+	//	event.getRenderable().fgcolor = '#ff0000';
+	//}
+	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
+	var rec=event.getRecord();
+	var rend=event.getRenderable();
+	
+	var color = 'yellow';//rend.bgcolor;
+	//rend.bgcolor = cyan;
+	if (event.getRenderable()){
+		if (rec && !rend.toolTipText){
+			rend.toolTipText = scopes.kiss.importExistingRecStatus(rec);
+		}
+		if (rend && rec && rec.lprint != 1 && rec.selected == 1){color = "green"}
+		if (rend && rec && rec.lprint == 1 && rec.selected == 0){color = "yellow"}
+		if (rend && rec && rec.lprint == 1 && rec.selected == 1){color = "red"}
+		var recalc = false;
+		//var rec = event.getRecord();
+		if ((rec && rec.item_qty == 1) || (rec && rec.parent_piecemark != rec.piecemark) ){
+			if (rend.getName() == 'set_bc_qty'){
+				rec.set_bc_qty = 1;
+				rend.fgcolor = 'black';rend.border = 'EmptyBorder,0,0,0,0';
+				rend.enabled = false;
+				recalc = true;
+			}
+		} else 
+		if (rec && rend.getName() == 'set_bc_qty' && rec.item_qty*1 > 1){
+			if (!rec.set_bc_qty){
+				//application.output('set bc qty render');
+				//var uniqPcmk = scopes.jobs.uniquePiecemark(rec);
+				//var uniqPcmkId = scopes.jobs.dsPiecemarkArray[uniqPcmk];
+				//var seqId = scopes.jobs.dsSequenceArray['_'+rec.sequence_number];
+				//var lotId = scopes.jobs.dsLotArray['_'+rec.lot_number+'|_'+rec.sequence_number];
+				//** @type {Array} */
+				//var barcodeCnt = scopes.jobs.dsIdfileArray[uniqPcmkId+','+seqId+','+lotId];
+				rec.set_bc_qty =  Math.floor(rec.item_qty);
+				//if (application.isInDeveloper()){application.output('existing bc count '+barcodeCnt+' : length'+barcodeCnt)}
+				recalc = true;
+			}
+			rend.bgcolor = color;//'yellow';rend.fgcolor = 'red';
+		}
+		if (rec && recalc){
+			var nums = scopes.jobs.createBCnums(rec.set_bc_qty,rec.item_qty,rec.item_weight);
+			rec.last_bc_qty = nums.last;
+			rec.barcode_qty = nums.per;
+			rec.total_label_wt = nums.totwt;
+			rec.last_bc_qty = nums.last;
+			rec.total_label_qty = nums.full;
+		}
+	}
+}
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * 
+ *
+ * @properties={typeid:24,uuid:"4DF98C5B-E5E6-4A71-AA70-55B102E8A7A8"}
+ */
+function onShow(firstShow, event) {
+	foundset.loadRecords();
+	null;
+	//scopes.kiss.setDbTableCounts(event);
+	//databaseManager.getTableFilterParams('stsservoy');
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param rec
+ *
+ * @properties={typeid:24,uuid:"4E347EEF-947C-4A80-9D36-2FBA5E95DC5B"}
+ */
+function setBarcodesCounts(rec){
+	rec.set_bc_qty = ((rec.item_qty == 1) || (rec && rec.parent_piecemark != rec.piecemark))? 1: rec.item_qty;
+	var nums = scopes.jobs.createBCnums(rec.set_bc_qty,rec.item_qty,rec.item_weight);
+	rec.last_bc_qty = nums.last;
+	rec.barcode_qty = nums.per;
+	rec.total_label_wt = nums.totwt;
+	rec.last_bc_qty = nums.last;
+	rec.total_label_qty = nums.full;
+	return nums;
+}
+/**
+ * Called before the form component is rendered.
+ *
+ * @param {JSRenderEvent} event the render event
+ *
+ * @properties={typeid:24,uuid:"D1FFC250-3A99-4B9F-BD86-33E83EF6960D"}
+ */
+function onRenderStatus(event) {
+	var rend = event.getRenderable();
+	if (rend){
+		/** @type {JSFoundSet<db:/stsservoy/import_table>} */
+		var rec = event.getRecord();
+		if (rec){
+			if (rec.import_status == i18n.getI18NMessage('import.summarize')) {
+				rend.bgcolor = '#99ffff';
+			} else if (rec.import_status == i18n.getI18NMessage('import.ignore')) {
+				rend.bgcolor = '#d6d6c2';
+			} else {
+				rend.bgcolor = '#ffff99';
+			}
+		}
+	}
+}

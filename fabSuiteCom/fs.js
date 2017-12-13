@@ -9,6 +9,22 @@ var fabSuiteLocal = true;
  */
 var fsCom = '';
 /**
+ * @properties={typeid:35,uuid:"3B3513F5-2BC8-48F1-A9BE-E6572B8D1FC4",variableType:-4}
+ * @type {JSWindow}
+ */
+var progressWin = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E037F5AB-3855-4CC8-84B5-0BB6A741A5A2"}
+ */
+var progressMsg = '';
+/**
+ *
+ * @properties={typeid:35,uuid:"4AF6A250-911E-429C-BF69-A6584C229F1E",variableType:-4}
+ */
+var com = null;
+/**
  * @properties={typeid:35,uuid:"4083EB34-1DAB-4749-AE2C-245F6F602082",variableType:-4}
  */
 var endVars = null;
@@ -202,6 +218,20 @@ function checkFSSequences(oldValue, newValue, event){
  * @AllowToRunInFind
  */
 function checkFSJob(oldValue, newValue, event) {
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage('Connecting to FabSuite',true);
+	if (!scopes.globals.com){
+		scopes.globals.com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
+	}
+
+	/** @type {String} */
+	var fsUp = com;
+	scopes.jobs.warningsMessage('Verifying FabSuite Connection',true);
+
+	if (!com || (fsUp && fsUp.toString().search('RemoteCOM') != -1)){scopes.fs.checkComFabsuite()}
+	//showProgressInit(event);
+	//showProgressUpdate(event,'Checking For This Job Number')
+
 	if (application.isInDeveloper()){application.output(newValue)}
 	var formName = event.getFormName();
 	var check = '<FabSuiteXMLRequest>\
@@ -209,13 +239,16 @@ function checkFSJob(oldValue, newValue, event) {
 					<JobNumber>'+newValue+'</JobNumber>\
 					</GetProductionControlJobInformation>\
 				</FabSuiteXMLRequest>';
+	scopes.jobs.warningsMessage('Logging Into FabSuite',true);
 	/** @type {String} */
-	var fsResp = scopes.globals.com.call('FabSuiteXML',check).toString();
+	var fsResp = com.call('FabSuiteXML',check).toString();
 	if (fsResp.search('<JobNumber>') == -1){
+		scopes.jobs.warningsMessage('FabSuite Login Failed',true);
 		plugins.dialogs.showErrorDialog('1030',i18n.getI18NMessage('1030'));
 		forms[formName].clearBadEntry(event);
 		globals.session.jobNumber = '';
 		//scopes.globals.errorDialogMobile(event,1030,event.getElementName(),'');
+		scopes.jobs.warningsX();
 		return true;
 	}
 	/** else {
@@ -225,8 +258,18 @@ function checkFSJob(oldValue, newValue, event) {
 		//application.sleep(1000);
 		//headless.shutdown();
 	} */
+	scopes.jobs.warningsMessage('Connection Successful. Getting Internal Job Information.',true);
+	scopes.jobs.getJobIdInfo(newValue);//places it into scopes.jobs.importJob object
 	globals.session.jobNumber = newValue;
 	forms[formName].elements.btnSelect.enabled = true;
+	scopes.jobs.warningsMessage('Collecting Internal Job Piecemarks',true);
+
+	scopes.jobs.readPieceTables();
+	scopes.jobs.warningsX();
+	if (event.getFormName() == 'kiss_import'){
+		forms['kiss_import'].elements.btnSelect.requestFocus(false);
+	}
+	scopes.jobs.warningsX();
 	return true;
 }
 /**
@@ -270,25 +313,27 @@ function checkFSLots(oldValue, newValue, event) {
  * @AllowToRunInFind
  */
 function checkResetToValidEntry(xmlFieldName,validString,enteredString,event){
-
+	//var baseMessage = scopes.kiss.importMessages;
 	var xmlField = '<'+xmlFieldName+'>(.*)<\/'+xmlFieldName+'>';
 	var dbValues = [];
 	var choices = validString.split('\n');
 	var regX = new RegExp(xmlField);
-	application.output('regex '+regX);
+	//application.output('regex '+regX);
 	for (var idx = 0;idx < choices.length;idx++){
-		application.output('choice idx '+choices[idx]);
+		//application.output('choice idx '+choices[idx]);
 		/** @type {String} */
 		var item = regX.exec(choices[idx]);
 		if (!item){continue;}
-		application.output(item);
+		//application.output(item[1]);
+		//scopes.kiss.importMessages = baseMessage + '\n'+ item[1];
+		//application.updateUI();
 		dbValues.push(item[1].trim());//remove any extra spaces on outside of item
 	}	
 	choices = enteredString.split(',');
 	var replaceVal = '';
 	var nonVal = '';
 	for (idx = 0;idx < choices.length;idx++){
-		application.output(choices[idx]);
+		//application.output(choices[idx]);
 		if (dbValues.indexOf(choices[idx]) != -1){
 			if (replaceVal == ''){replaceVal = choices[idx]} else {replaceVal += ','+choices[idx]}		
 		} else {
@@ -297,7 +342,7 @@ function checkResetToValidEntry(xmlFieldName,validString,enteredString,event){
 	}
 	if (dbValues.length == 0){nonVal = enteredString}
 	if (nonVal != ''){
-		application.output('nonval '+nonVal);
+		//application.output('nonval '+nonVal);
 		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1074',['']),i18n.getI18NMessage('1074',['\n'+nonVal]));
 		//scopes.globals.errorDialog(1030);
 		var formName = event.getFormName();
@@ -316,7 +361,17 @@ function checkResetToValidEntry(xmlFieldName,validString,enteredString,event){
  * @properties={typeid:24,uuid:"4B7B892A-B0D5-44D2-A20F-501A6A9F5851"}
  */
 function checkFSMainMark(oldValue,newValue,event){
+	var formName = event.getFormName();
+	//var thisWin = application.getActiveWindow();
+	//thisWin.controller.enabled = false;
 	//use session.mainMark array for list of db piecemark assemblies
+	showProgressInit(event);
+	showProgressUpdate(event,'Checking For Selected Main Mark')
+	//scopes.jobs.importMessages = 'Checking For Selected Main Mark';
+	//var win = application.createWindow('Messages',JSWindow.WINDOW);
+	//win.show('import_messages');
+	//application.updateUI();
+	//application.updateUI();
 	var check = '<FabSuiteXMLRequest>\n\
 		<GetAssemblies>\n\
 		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\n\
@@ -332,9 +387,15 @@ function checkFSMainMark(oldValue,newValue,event){
 		//scopes.globals.errorDialog(1030);
 		checkResetToValidEntry(fieldValueName,'',newValue,event);
 		//scopes.globals.errorDialogMobile(event,1030,event.getElementName(),'');
+		//win.hide();
+		showProgessDone(event);
+		//thisWin.controller.enabled = true;
 		return true;
 	}
 	checkResetToValidEntry(fieldValueName,fsResp,newValue,event);
+	//thisWin.controller.enabled = true;
+	//win.hide();
+	showProgessDone(event);
 return true;
 
 }
@@ -426,7 +487,6 @@ function nextEntry(event){
 	return;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"973F4C13-0566-489B-BFB0-20683839E843"}
@@ -434,4 +494,87 @@ function nextEntry(event){
 function checkFabSuiteCom(event){
 	var check = '';
 	var fsResp = scopes.globals.com.call('FabSuiteXML',check).toString()
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"A986C975-4C28-474D-A782-7F19C1AA91FF"}
+ */
+function showProgressInit(event){
+	var formName = event.getFormName();
+	progressWin = application.createWindow('Messages',JSWindow.WINDOW);
+	progressWin.show('import_messages');
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} message
+ *
+ * @properties={typeid:24,uuid:"1504C08D-A81E-467E-AAF9-9E891D47F0B5"}
+ */
+function showProgressUpdate(event,message){
+	//progressMsg = 
+	forms['import_messages'].message = message;
+	application.updateUI();
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"8F569E1D-2131-47CD-BAD8-32515BE0A28B"}
+ */
+function showProgessDone(event){
+	progressWin.hide();
+}
+/**
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"4A3F4C5B-D25D-4DA7-B20A-17CF4D63C1C5"}
+ */
+function checkComFabsuite(){
+	fabSuiteLocal = false;
+	if (!com){
+		com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
+	}
+	if (!com || !com.isJACOBLoaded()) {
+		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
+		fabSuiteLocal = false;
+		return fabSuiteLocal;
+	}
+	//application.output('this is com |'+com+'|');
+	var xmlConnect = '<FabSuiteXMLRequest>\
+							<Connect>\
+								<IPAddress>localhost</IPAddress>\
+								<PortNumber>3306</PortNumber>\
+								<Username>admin</Username>\
+								<Password>fab</Password>\
+							</Connect>\
+						</FabSuiteXMLRequest>';
+	/** @type {String} */
+	var response = 'NO COM';
+	/** @type {String} */
+	var sam2 = com;
+	var sample = sam2.toString();
+	if (sample.search('RemoteCOM') != -1){
+		response = com.call('FabSuiteXML',xmlConnect);		
+	} else {
+		com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
+		response = com.call('FabSuiteXML',xmlConnect);	
+	}
+	/** @type {String} */
+	var response2 = response.toString();
+	if (response2.search('<Successful>0') == -1){
+		//failed connection
+	}
+	//application.output('com response: |'+response+'|');
+	if (application.getSolutionName() == 'STS X Embedded'){
+		var xmlVersion = '	<FabSuiteXMLRequest>\
+			<Version/>\
+			</FabSuiteXMLRequest>';
+		var fsResp = com.call('FabSuiteXML',xmlVersion);
+		//application.output(fsResp);
+		var regX = new RegExp(/>([0-9]*\..*)</);
+		var version = regX.exec(fsResp);
+		forms.sts_x.elements.indFabSuite.text = version[1];
+		fabSuiteLocal = true;
+	}
+	return fabSuiteLocal;
 }

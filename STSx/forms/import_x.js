@@ -37,6 +37,22 @@ var entryOrder = ['numJob','numSeq','numLot','numPart','numDraw','btnSelect'];
  */
 var importing = false;
 /**
+ * @properties={typeid:35,uuid:"6154C6D0-024E-4855-83BC-11552DACC348",variableType:-4}
+ */
+var seqs = [];
+/**
+ * @properties={typeid:35,uuid:"C19DF545-D466-487A-8392-884880558E33",variableType:-4}
+ */
+var marks = [];
+/**
+ * @properties={typeid:35,uuid:"60412191-034F-41A8-A341-4B96F2640E8F",variableType:-4}
+ */
+var lots = [];
+/**
+ * @properties={typeid:35,uuid:"EE95D966-E225-40F6-8E3B-7758D33049E5",variableType:-4}
+ */
+var draws = [];
+/**
  * @properties={typeid:35,uuid:"AA70D327-3A39-441F-839C-533427D7CF8F",variableType:-4}
  */
 var endVars = null;
@@ -83,9 +99,14 @@ function onActionCollectCriteria(event) {
 	var filterFld = '';
 	var filterType = '<Filter><FilterType>TTT</FilterType><FilterValue>UUU</FilterValue></Filter>\n';
 	var filters = {};
-	for (item in elements){
+	seqs = [];
+	marks = [];
+	lots = [];
+	draws = [];
+
+	for (item in forms['import_x'].elements){
 		if (item.search('num') != 0){continue}
-		var dataProv = elements[item].getDataProviderID();
+		var dataProv = forms['import_x'].elements[item].getDataProviderID();
 		if (forms[formName][dataProv] == ''){continue} //skip empty fields for filter
 		switch (dataProv){
 			case 'vJobNumber':
@@ -112,6 +133,22 @@ function onActionCollectCriteria(event) {
 		filters[filterFld] = forms[formName][dataProv];
 		items = forms[formName][dataProv].split(',');
 		for (idx = 0;idx < items.length;idx++){
+			application.output('name '+items[idx]);
+			switch(filterFld){
+				case 'Sequence':
+					seqs.push(items[idx]);
+					break;
+				case 'LotNumber':
+					lots.push(items[idx]);
+					break;
+				case 'MainMark':
+					marks.push(items[idx]);
+					break;
+				case 'DrawingNumber':
+					draws.push(items[idx]);
+					break;
+				default:
+			}
 			subFilter = filterType.replace('TTT',filterFld);
 			subFilter = subFilter.replace('UUU',items[idx]);
 			filter += subFilter;
@@ -139,10 +176,23 @@ function onActionCollectCriteria(event) {
 			
 		}
 	}
+	forms.sts_x.elements.tabless.removeAllTabs();
+	var applied = false;
+	for (var filtName in ['marks','seqs','draws','lots','setFilter']){databaseManager.removeTableFilterParam('stsservoy',filtName)}
+	if (1==1){
+		if (marks.length != 0){applied = databaseManager.addTableFilterParam('stsservoy','import_table','parent_piecemark','in',marks,'marks')}
+		if (seqs.length != 0){applied = databaseManager.addTableFilterParam('stsservoy','import_table','sequence_number','in',seqs,'seqs')}
+		if (draws.length != 0){applied = databaseManager.addTableFilterParam('stsservoy','import_table','sheet_number','in',draws,'draws')}
+		if (lots.length != 0){applied = databaseManager.addTableFilterParam('stsservoy','import_table','lot_number','in',lots,'lots')}
+	}
+	//var filts = databaseManager.getTableFilterParams("stsservoy");
+	//for (var idx = 0;idx < filts.length;idx++){
+	//	application.output(filts[idx]);
+	//}
 	scopes.kiss.importFSOnServer(event,request,filters);
+	forms.sts_x.elements.tabless.addTab('import_embed');
 	elements.btnSelect.visible = true;
 	importing = false;
-
 }
 /**
  * @param {JSEvent} event
@@ -165,6 +215,11 @@ function clearBadEntry(event){
  * @properties={typeid:24,uuid:"4C7EC89A-FC8D-4517-B073-46573C77A6B4"}
  */
 function onShow(firstShow, event) {
+	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
+	var fs = databaseManager.getFoundSet('db:/stsservoy/import_table');
+	for (var filtName in ['marks','seqs','draws','lots','setFilter']){databaseManager.removeTableFilterParam('stsservoy',filtName)}
+	fs.loadAllRecords();
+	fs.deleteAllRecords();
 	if (!globals.fabSuiteLocal){
 		for (var el in elements){
 			elements[el].enabled = false;

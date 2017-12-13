@@ -274,11 +274,11 @@ function onShow(firstShow, event) {
 	if (firstShow){
 	}
 	globals.setUserFormPermissions(event);
-	if (transitionFS){
-		transitionFS.removeRow(-1);
-		transitionFSsink.removeRow(-1);
-		transitionFSsumm.removeRow(-1);
-	}
+//	if (transitionFS){
+//		transitionFS.removeRow(-1);
+//		transitionFSsink.removeRow(-1);
+//		transitionFSsumm.removeRow(-1);
+//	}
 	excludeFS = null; kissDataSheets = []; kissDatasink = null; kissDataSumm = null; kissExcludes = null;
 	var job = scopes.jobs.importJob;
 	if (databaseManager.hasTransaction()){
@@ -291,7 +291,7 @@ function onShow(firstShow, event) {
 			break;
 		}
 	}*/
-	jobNumber = job.jobNumber;
+	jobNumber = job.jobNumber;//STOP HERE
 	jobName = job.name;
 	jobDate = job.date;
 	jobMetric = job.metricFlag;
@@ -299,10 +299,8 @@ function onShow(firstShow, event) {
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.result.add(j.columns.job_id);
-	j.result.add(j.columns.customer_id);
-	j.result.add(j.columns.barcode_form);
 	j.where.add(j.columns.job_number.eq(scopes.jobs.importJob.jobNumber));
-	j.where.add(j.columns.customer_id.eq(scopes.jobs.importJob.customerId));
+	//j.where.add(j.columns.customer_id.eq(scopes.jobs.importJob.customerId));
 	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	var J = databaseManager.getFoundSet(j);
 	/** @type {JSRecord<db:/stsservoy/jobs>} */
@@ -313,6 +311,7 @@ function onShow(firstShow, event) {
 		scopes.jobs.importJob.jobId = jobRec.job_id;
 		scopes.jobs.importJob.bcFormId = jobRec.barcode_form;//#87ticket#87
 	}
+	foundset.loadRecords(J);//populate windows current record to return specific job info
 	
 	scopes.jobs.tempGetIdfilesToBarcodeCount(jobRec.job_id);// test tempGetIdfilesToBarcodeCount // example get item record summed count on field
 	
@@ -377,7 +376,7 @@ function onShow(firstShow, event) {
 		jobRoutes.push(rec2.route_code);
 		jobRouteIds.push(rec2.routing_id);
 	}
-	application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds);
+	if (application.isInDeveloper()){application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds)}
 	var window = controller.getWindow();
 	var height = window.getHeight();
 	window.setLocation(0, 0);
@@ -389,7 +388,7 @@ function onShow(firstShow, event) {
 	//index;
 	///var custRec;
 	controller.enabled = true;
-	headerKissNames['item_quantity']=i18n.getI18NMessage('table.kiss.marks.total.import.qty');//'Total PcMarks Import Qty';
+	/** headerKissNames['item_quantity']=i18n.getI18NMessage('table.kiss.marks.total.import.qty');//'Total PcMarks Import Qty';
 	headerKissNames['sequence_quantity']=i18n.getI18NMessage('table.kiss.sequence.qty');//'Import Qty';
 	headerKissNames['set_bc_qty']=i18n.getI18NMessage('table.kiss.marks.full.label');//'Marks Full Label';
 	headerKissNames['total_label_qty']=i18n.getI18NMessage('table.kiss.per.label.marks');//'Per Label Marks';
@@ -397,7 +396,7 @@ function onShow(firstShow, event) {
 	headerKissNames['barcode_qty']=i18n.getI18NMessage('table.kiss.labels.needed');//'Labels Needed';
 	headerKissNames['ext_wt_qty']=i18n.getI18NMessage('table.kiss.labels.weight');//'Label Weight';
 	headerKissNames['sheet_number']=i18n.getI18NMessage('table.kiss.sheet.number');//'Sheet';
-	headerKissNames['piecemark']=i18n.getI18NMessage('table.kiss.piecemark');//'Piecemark';
+	headerKissNames['piecemark']=i18n.getI18NMessage('table.kiss.piecemark');//'Piecemark';*/
 	defineExclDataset();
 	loadExclSumms();
 	application.updateUI();
@@ -407,12 +406,12 @@ function onShow(firstShow, event) {
 	success = history.removeForm('kiss_barcode_request');
 	success2 = solutionModel.removeForm('kiss_barcode_request');
 	if (!success || !success2){globals.loggerDev(this,'Form kiss_barcode_request remove fail.')}
-	importTempTable();
+	//importTempTable();
 	scopes.jobs.warningsMessage("Piecemark table view creation posted.",true);
 	null;
 	if (keepMinors == 0) {
 		elements.keep_minors.enabled = false;
-		applyRemoveMinors(transitionFS);
+		//applyRemoveMinors(transitionFS);
 	} else {
 		elements.keep_minors.enabled = true;
 	}
@@ -543,11 +542,18 @@ function defineExclDataset(){
 	excludeFS = databaseManager.createEmptyDataSet();
 	var item,code;
 	var shapes = [];
-	var results = scopes.jobs.importResults;
-	var lineFieldIndex = scopes.jobs.getFieldDataMapping("mapped_field","piecemarks.material").split(",")[1]-1;
-	for (var i = 0;i < results.length;i++){
-		if (results[i][0] != "D"){continue}
-		var newShape = results[i][lineFieldIndex];
+	//var results = foundset;
+	//var lineFieldIndex = scopes.jobs.getFieldDataMapping("mapped_field","piecemarks.material").split(",")[1]-1;
+	//for (var i = 0;i < results.getSize();i++){
+	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
+	var fs = databaseManager.getFoundSet('db:/stsservoy/import_table');
+	fs.loadRecords();
+	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
+	var rec = null; var i = 1;
+	while (rec = fs.getRecord(i++)){
+		//if (results[i][0] != "D"){continue}
+		var newShape = rec.material.split(' ')[0];
+		//application.output('shape '+newShape);
 		if (!(newShape in shapes)){shapes[newShape] = "";}
 	}
 	var columns = ['shape','exclude','summarize'];
@@ -629,9 +635,9 @@ function onHide(event) {
 	//	var success2 = solutionModel.removeForm('kiss_barcode_request');
 	//}
 	globals.setWindowClosed("");
-	transitionFS.removeRow(-1);
-	transitionFSsink.removeRow(-1);
-	transitionFSsumm.removeRow(-1);
+	//transitionFS.removeRow(-1);
+	//transitionFSsink.removeRow(-1);
+	//transitionFSsumm.removeRow(-1);
 	history.removeForm('kiss_excludes_lst');
 	solutionModel.removeForm('kiss_excludes_lst');
 	//databaseManager.getTable('kissDatasource');
@@ -768,7 +774,7 @@ function importTempTable(){
 /**
  * @properties={typeid:24,uuid:"536E53EC-DBBA-4831-93CA-897FF4253C42"}
  */
-function recomputeLabelLimits(){
+function recomputeLabelLimitsK(){
 	while (recomputeLabelArray.length > 0){
 		setBarcodeLimits(recomputeLabelArray.pop());
 	}
@@ -778,7 +784,7 @@ function recomputeLabelLimits(){
  * @properties={typeid:24,uuid:"66D84854-9E39-42E3-83A6-7F4AF0005288"}
  * @SuppressWarnings(wrongparameters)
  */
-function saveDetailRow(){
+function saveDetailRowK(){
 	var length = sequenceArr.length;//get total number of sequences for this major mark
 	if (length == 0) {
 		null;
@@ -885,7 +891,7 @@ function newKRecord(lineArray){
  * @AllowToRunInFind
  * @SuppressWarnings(wrongparameters)
  */
-function popKISSTable() {
+function popKISSTableK() {
 	scopes.jobs.warningsYes();
 	var beginTime = new Date().getTime();
 	recomputeLabelArray = [];
@@ -1174,7 +1180,7 @@ function createKISSForm (){	// create table in form
 	//		quant = item_quantity;\
 	
 	code = 'function onQtyVerify(last,current,event) {\
-		return forms.kiss_option_import.verifyImportQuants(last,current,event);\
+		return scopes.kiss.verifyImportQuants(last,current,event);\
 	}';
 	/**		if (current*1<1||Math.floor(current)!=current){\
 	forms.kiss_option_import.errorMessage = i18n.getI18NMessage("sts.txt.label.quantity.entry.incorrect");\
@@ -1649,6 +1655,7 @@ function listDataset(db){
  * @AllowToRunInFind
  */
 function applyImportPreferences(){
+	//if (1==1){return}
 	scopes.jobs.warningsMessage('Applying import preferences to all rows.',true);
 	//scopes.jobs.warningsYes();
 	//scopes.jobs.warningsMessage('Apply import preferences.');
@@ -1658,34 +1665,34 @@ function applyImportPreferences(){
 	//application.updateUI();
 	//application.output('color '+elements.btn_Import.bgcolor);
 	var appendToData2 = importOption.search('Append') != -1;
-	applyResetExclusions();
-	applyShapeExcludes(transitionFS,transitionFSsink);
-	applyShapeSummary(transitionFS,transitionFSsumm);
-	applySheetUpdatesRemove(transitionFS);
+	//applyResetExclusions();
+	//applyShapeExcludes(transitionFS,transitionFSsink);
+	//applyShapeSummary(transitionFS,transitionFSsumm);
+	//applySheetUpdatesRemove(transitionFS);
 	// tossMinors keep weights
 	var minors = i18n.getI18NMessage('sts.txt.minors.kept');
 	if (keepMinors == 0){
 		minors = i18n.getI18NMessage('sts.txt.minors.discarded');
 	}
 	errorMessage = i18n.getI18NMessage('sts.txt.exclude.summary.selections.set')+' '+minors;
-	importRecordCount = transitionFS.getMaxRowIndex();
+	///importRecordCount = transitionFS.getMaxRowIndex();
 	scopes.jobs.idCreationCount = 0;// reset bc count to be created
-	for (var index = 1;index <= importRecordCount;index++){
-		setBarcodeLimits(index);
-		transitionFS.rowIndex = index;
-		var nums = scopes.jobs.dbRecCounts(transitionFS);
-		scopes.jobs.idCreationCount = scopes.jobs.idCreationCount*1 + nums.bcAdd;// update bc count for import
-	}
+	//for (var index = 1;index <= importRecordCount;index++){
+	//	setBarcodeLimits(index);
+	//	transitionFS.rowIndex = index;
+	//	var nums = scopes.jobs.dbRecCounts(transitionFS);
+	//	scopes.jobs.idCreationCount = scopes.jobs.idCreationCount*1 + nums.bcAdd;// update bc count for import
+	//}
 	scopes.jobs.warningsMessage('Barcodes to be created, '+scopes.jobs.idCreationCount+'.',true);
-	scopes.jobs.importRecordsCheck();
+	//scopes.jobs.importRecordsCheck();
 	forms.kiss_option_import.impDirty = false;
-	if (importOption.search('Sheet') != -1){
+	if (false && importOption.search('Sheet') != -1){
 		if (sheetsFS.getMaxRowIndex() == 0){
 			//scopes.jobs.warningsMessage('Begin load existing DB records.');
 			if (application.isInDeveloper()){application.output('inside loadCurrentJobsRecords');}
 			scopes.jobs.loadCurrentJobsRecords();
 		}
-		applySheetUpdates(sheetsFS,transitionFS);//add piecemarks from database not in the import file
+		//applySheetUpdates(sheetsFS,transitionFS);//add piecemarks from database not in the import file
 	}
 	//scopes.jobs.warningsX();
 	elements.btn_Apply.enabled = true;
@@ -1693,7 +1700,50 @@ function applyImportPreferences(){
 		elements.btn_Import.bgcolor = 'green';
 		elements.btn_Import.enabled = true;
 	//}
+	saveExclSumms();
+	var excList = '';
+	var sumList = '';
+	var excldS = forms.kiss_excludes_lst.foundset;
+	var rec = null; var i = 1;
+	while (rec = excldS.getRecord(i++)){
+		if (rec.exclude == 1){excList+=" "+rec.shape+" "}
+		if (rec.summarize == 1){sumList+=" "+rec.shape+" "}
+	}
+	var fs = forms.import_table.foundset;
+	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
+	rec = null; i = 1;
+	while (rec = fs.getRecord(i++)){
+		/** @type String */
+		var majorPm = rec.parent_piecemark;
+		/** @type String */
+		var minorPm = rec.piecemark;
+		
+		if (!majorPm){continue}
+		var minorRecord = (keepMinors == 0) && ((minorPm != "") && majorPm.toLowerCase() != minorPm.toLowerCase());
+		/** @type String */
+		var shape = rec.material.split(' ')[0];
+		shape = " " + shape + " ";
+		var igText = i18n.getI18NMessage('i18n:import.ignore');
+		var smText = i18n.getI18NMessage('i18n:import.summarize');
+		if (rec.import_status == smText || rec.import_status == igText){
+			rec.import_status = i18n.getI18NMessage('i18n:import.update');
+		}
+		if ((excList.search(shape) != -1) || minorRecord) { // || (sumList.search(shape) != -1)
+			rec.import_status = igText;
+		} else if ((sumList.search(shape) != -1)) {
+			rec.import_status = smText;
+		}
+
+		//var special = majorPm+' '+minorPm+' '+material+" "+sourceDb.grade+" "+sourceDb.finish+sourceDb.item_weight;
+		//application.output('minor '+minorRecord+' '+special);
+		if (minorPm == "" && majorPm == ""){  //remove summaries, excludes overrides
+			//sourceDb.removeRow(i1);
+		}
+
+	
+	}
 	scopes.jobs.warningsMessage('Finished applying import prefs.',true);
+	databaseManager.saveData(fs);
 	scopes.jobs.warningsX();
 }
 /**
@@ -1788,7 +1838,7 @@ function onDataChange1(oldValue, newValue, event) {
 /**
  * @properties={typeid:24,uuid:"5DC3DBFB-AD31-4262-89E8-680DB74249F4"}
  */
-function saveDetailRow2(){
+function saveDetailRow2K(){
 	var length = sequenceArr.length;//get total number of sequences for this major mark
 	if (length == 0) {
 		null;
@@ -1893,9 +1943,9 @@ function saveDetailRow2(){
  * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"A682A513-CF73-44E7-A792-1BD6C1427D2A"}
- */
+ * /
 function verifyImportQuants(last,current,event){
-	/** @type {JSRecord<{sheet_number:String,parent_piecemark:String,sequence_number:Number,finish:String,grade:String,material:String,piecemark:String,ext_wt_qty:Number,total_label_qty:Number,last_bc_qty:Number,set_bc_qty:Number,item_weight:Number,item_quantity:Number,sequence_quantity:Number}>} */
+	/ ** @type {JSRecord<{sheet_number:String,parent_piecemark:String,sequence_number:Number,finish:String,grade:String,material:String,piecemark:String,ext_wt_qty:Number,total_label_qty:Number,last_bc_qty:Number,set_bc_qty:Number,item_weight:Number,item_quantity:Number,sequence_quantity:Number}>} * /
 	var rec = forms[event.getFormName()].foundset.getSelectedRecord();
 	if (current*1<1||Math.floor(current)!=current){
 		forms.kiss_option_import.errorMessage = i18n.getI18NMessage("sts.txt.label.quantity.entry.incorrect");
@@ -1929,4 +1979,4 @@ function verifyImportQuants(last,current,event){
 	}
 	scopes.jobs.importLabelCounts[unique] = current;
 	return true;
-}
+} */

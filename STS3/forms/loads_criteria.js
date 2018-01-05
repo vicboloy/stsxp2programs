@@ -250,20 +250,24 @@ function collectAndBrowse(){
  * @properties={typeid:24,uuid:"8ED9C835-157C-438B-956F-62E3E4C26AFF"}
  */
 function collectAndTab(formName){
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
 	criteria = collectCriteria();
 	//scopes.jobs.viewBTableSQL2(criteria,formName);
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
 	scopes.jobs.viewBTableSQLSummary(criteria,formName);
 	var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
 	var summaryForm = 'loads_summary_info'+versionForm;
 	var removeFormName = summaryForm+'_table';
 	forms[summaryForm].elements.tabless.removeAllTabs();
 	scopes.jobs.removeFormHist(removeFormName);
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
 	scopes.jobs.createRouteSummaryForm(summaryQuery,formName.replace('piecemark','summary'));
 
 	forms['loads_piecemark_info'+versionForm].elements.tabless.removeAllTabs();
 	if (forms[formName+"_table"] && forms[formName+"_table"].hide){forms[formName+"_table"].hide();}
 	scopes.jobs.removeFormHist(formName+"_table");
 	scopes.jobs.browseJobID = vJobID;
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
 	scopes.jobs.viewBTableToFormQB(criteria,formName);
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	null;

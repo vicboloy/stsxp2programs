@@ -27,6 +27,10 @@ function onShow(firstShow, event) {
 	scopes.prefs.getBTLabelFormats();
 	//scopes.prefs.getLabelFormats();
 	printingLabel = scopes.printer.default_label_name;
+	if (firstShow){
+		scopes.jobs.formPermissions(event,true);
+	}
+		
 }
  
 /**

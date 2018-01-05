@@ -54,31 +54,35 @@ function onRenderRequestBarCount(event) {
 	
 	var color = 'yellow';//rend.bgcolor;
 	//rend.bgcolor = cyan;
-	if (event.getRenderable()){
+	if (rend){
 		if (rec && !rend.toolTipText){
 			rend.toolTipText = scopes.kiss.importExistingRecStatus(rec);
 		}
 		if (rend && rec && rec.lprint != 1 && rec.selected == 1){color = "green"}
 		if (rend && rec && rec.lprint == 1 && rec.selected == 0){color = "yellow"}
 		if (rend && rec && rec.lprint == 1 && rec.selected == 1){color = "red"}
-		var recalc = false;
+		//var recalc = false;
 		//var rec = event.getRecord();
-		if ((rec && rec.item_qty == 1) || (rec && rec.parent_piecemark != rec.piecemark) ){
-			if (rend.getName() == 'set_bc_qty'){
-				rec.set_bc_qty = 1;
+		if (rend.getName() == 'set_bc_qty'){
+			if ((rec && rec.item_qty == 1) || (rec && rec.parent_piecemark != rec.piecemark) ){
+				//rec.set_bc_qty = 1;
 				rend.fgcolor = 'black';rend.border = 'EmptyBorder,0,0,0,0';
 				rend.enabled = false;
-				recalc = true;
+				//recalc = true;
+			} else {
+				rend.bgcolor = 'yellow';
+				rend.enabled = true;
 			}
-		} else 
-		if (rec && rend.getName() == 'set_bc_qty' && rec.item_qty*1 > 1){
+		} 
+		/**else 
+		if (false && rec && rend.getName() == 'set_bc_qty' && rec.item_qty*1 > 1){
 			if (!rec.set_bc_qty){
 				//application.output('set bc qty render');
 				//var uniqPcmk = scopes.jobs.uniquePiecemark(rec);
 				//var uniqPcmkId = scopes.jobs.dsPiecemarkArray[uniqPcmk];
 				//var seqId = scopes.jobs.dsSequenceArray['_'+rec.sequence_number];
 				//var lotId = scopes.jobs.dsLotArray['_'+rec.lot_number+'|_'+rec.sequence_number];
-				//** @type {Array} */
+				//** @type {Array} * /
 				//var barcodeCnt = scopes.jobs.dsIdfileArray[uniqPcmkId+','+seqId+','+lotId];
 				rec.set_bc_qty =  Math.floor(rec.item_qty);
 				//if (application.isInDeveloper()){application.output('existing bc count '+barcodeCnt+' : length'+barcodeCnt)}
@@ -86,14 +90,14 @@ function onRenderRequestBarCount(event) {
 			}
 			rend.bgcolor = color;//'yellow';rend.fgcolor = 'red';
 		}
-		if (rec && recalc){
+		if (false && rec && recalc){
 			var nums = scopes.jobs.createBCnums(rec.set_bc_qty,rec.item_qty,rec.item_weight);
 			rec.last_bc_qty = nums.last;
 			rec.barcode_qty = nums.per;
 			rec.total_label_wt = nums.totwt;
 			rec.last_bc_qty = nums.last;
 			rec.total_label_qty = nums.full;
-		}
+		} */
 	}
 }
 
@@ -106,6 +110,7 @@ function onRenderRequestBarCount(event) {
  * 
  *
  * @properties={typeid:24,uuid:"4DF98C5B-E5E6-4A71-AA70-55B102E8A7A8"}
+ * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
 	foundset.loadRecords();
@@ -114,7 +119,6 @@ function onShow(firstShow, event) {
 	//databaseManager.getTableFilterParams('stsservoy');
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param rec
  *
  * @properties={typeid:24,uuid:"4E347EEF-947C-4A80-9D36-2FBA5E95DC5B"}
@@ -151,4 +155,20 @@ function onRenderStatus(event) {
 			}
 		}
 	}
+}
+
+/**
+ * Perform sort.
+ *
+ * @param {String} dataProviderID element data provider
+ * @param {Boolean} asc sort ascending [true] or descending [false]
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"159235FD-8C6C-43FC-8832-98E789A41384"}
+ */
+function onSort(dataProviderID, asc, event) {
+	application.output('sorting '+dataProviderID);
+	controller.sort(dataProviderID + (asc ? ' asc' : ' desc'), false);
+	application.output('has record changes '+databaseManager.hasRecordChanges(foundset))
+	application.output('sort complete');
 }

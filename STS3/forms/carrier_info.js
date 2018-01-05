@@ -144,6 +144,7 @@ function onDataChangeCarrierName(oldValue, newValue, event) { //#task03
 function onShow(firstShow, event) {
 	if (foundset.getSize() == 0){
 		elements.btn_Delete.visible = false;
+		scopes.jobs.formPermissions(event,true);
 	}
 	return _super.onShow(firstShow, event)
 }

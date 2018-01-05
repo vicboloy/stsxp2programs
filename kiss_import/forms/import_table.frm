@@ -1,6 +1,5 @@
 dataSource:"db:/stsservoy/import_table",
 encapsulation:60,
-initialSort:"item_qty asc",
 items:[
 {
 anchors:11,
@@ -336,6 +335,7 @@ anchors:11,
 borderType:"LineBorder,1,#000000",
 labelFor:"selection",
 location:"0,5",
+name:"selection_label",
 size:"54,29",
 text:"i18n:table.general.selection",
 toolTipText:"i18n:table.general.selection",
@@ -467,6 +467,8 @@ uuid:"FFEE7548-B6AE-4773-9974-8B211E333390"
 name:"import_table",
 navigatorID:"-1",
 onShowMethodID:"4DF98C5B-E5E6-4A71-AA70-55B102E8A7A8",
+onSortCmdMethodID:"159235FD-8C6C-43FC-8832-98E789A41384",
+selectionMode:1,
 size:"1774,136",
 styleName:"sts_one",
 typeid:3,

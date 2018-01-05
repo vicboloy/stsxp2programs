@@ -257,6 +257,10 @@ var importSubGuidList = [];
  */
 var exitSequence = false;
 /**
+ * @properties={typeid:35,uuid:"6430E981-086D-4B41-BBD9-B05CFAECE228",variableType:-4}
+ */
+var minorsChanged = true;
+/**
  * @properties={typeid:35,uuid:"0879B896-5487-4BA7-8CA3-446FE1770947",variableType:-4}
  */
 var endVars = null;
@@ -273,7 +277,7 @@ var endVars = null;
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
-	globals.setUserFormPermissions(event);
+	//globals.setUserFormPermissions(event);
 //	if (transitionFS){
 //		transitionFS.removeRow(-1);
 //		transitionFSsink.removeRow(-1);
@@ -428,7 +432,7 @@ function onShow(firstShow, event) {
 /**
  * @properties={typeid:24,uuid:"C010A107-2370-481A-BD1F-99F412CDD06B"}
  */
-function loadImportLabelCounts(){
+function loadImportLabelCountsX(){
 	var counts = scopes.jobs.importLabelCounts;
 	var retainFS = transitionFS;
 	var rows = retainFS.getMaxRowIndex();
@@ -1980,3 +1984,13 @@ function verifyImportQuants(last,current,event){
 	scopes.jobs.importLabelCounts[unique] = current;
 	return true;
 } */
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F47692AF-8415-47D2-9334-C3D943B4EE62"}
+ */
+function onActionMinorMarks(event) {
+	// TODO Auto-generated method stub
+}

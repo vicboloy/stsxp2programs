@@ -129,6 +129,8 @@ function onRecordSelection(event) {
 		var rec = a.getRecord(1);
 		isAdminAccount = (rec.logic_flag == 1) ? i18n.getI18NMessage('sts.txt.login.administrative') : i18n.getI18NMessage('sts.txt.login.shop');
 	}
+	userGroups = databaseManager.getFoundSetDataProviderAsArray(users_to_user_groups,'group_uuid').join('\n');
+
 	updateFields(event);
 	//return _super.onRecordSelection(event)
 }

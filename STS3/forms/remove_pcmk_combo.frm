@@ -16,7 +16,7 @@ parameters:null\
 }\
 }",
 extendsID:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8",
-onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
+onActionMethodID:"9B76F79D-345F-4C2A-830E-CB035E55E972",
 typeid:7,
 uuid:"6DD1CDF7-1A68-4370-9C7C-1C7F83822354"
 },
@@ -31,6 +31,18 @@ size:"94,26",
 text:"i18n:sts.btn.clear.all",
 typeid:7,
 uuid:"8561F454-600F-4B88-BB69-CF38414B4805"
+},
+{
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
+extendsID:"32C27CAC-2195-4B9A-8D52-197B70AC9144",
+onActionMethodID:"9B76F79D-345F-4C2A-830E-CB035E55E972",
+typeid:7,
+uuid:"B398C763-3108-4857-B107-012B08FEE481"
 },
 {
 anchors:3,

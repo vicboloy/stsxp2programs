@@ -247,7 +247,7 @@ function onShow(firstShow, event) {
 	}
 	application.setValueListItems('stsvl_address_types',tempArray);
 	elements.btn_Delete.enabled = (count > 0);
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 }
 
 

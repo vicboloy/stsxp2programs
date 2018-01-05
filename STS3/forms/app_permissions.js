@@ -42,6 +42,8 @@ function onActionClose(event) {
 function onShow(firstShow, event) {
 	globals.setUserFormPermissions(event);
 	stopEditing(event);
+	onEdit(event,false);
+	elements.btn_Edit.enabled = true;
 	return _super.onShow(firstShow, event)
 }
 /**
@@ -49,6 +51,7 @@ function onShow(firstShow, event) {
  * @param {Boolean} editing
  *
  * @properties={typeid:24,uuid:"A3F1070F-8441-4F8A-BAA0-4DEFDBA884C3"}
+ * @AllowToRunInFind
  */
 function onEdit(event,editing){
 	elements.btn_Done.visible = editing;
@@ -72,5 +75,12 @@ function onEdit(event,editing){
 	forms.app_user_group_detail.elements.description.editable = editing;
 	forms.app_user_group_detail.elements.group_name.editable = editing;
 	forms.app_user_group_detail.elements.groupKeys.enabled = editing;
+	var form = forms.app_user_group_detail;
+	var name = form.group_name;
+	var doneEnabled = forms.app_permissions.elements.btn_Done.visible == true;
+	//if (!application.isInDeveloper()){
+		forms.app_user_group_detail.elements.groupKeys.enabled = (name.search('\\.') != 0) && doneEnabled ;//20180103 disable edit default group contents
+	//}
+
 	
 }

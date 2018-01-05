@@ -158,7 +158,7 @@ function createPermissTable(event,formName){
 	fs.where.add(fs.columns.key_uuid.eq(key_uuid));
 	var PRM = databaseManager.getFoundSet(fs);
 	/** @type {JSRecord<db:/stsservoy/permissions>} */
-	var rec = null;
+	var rec = null;var idx = 1;
 	while (rec = PRM.getRecord(idx++)){
 		var elName = rec.element_name;
 		knownEls.push(elName);
@@ -269,9 +269,9 @@ function saveEdits(event, record, stopEdit) {
 	if (form_name != null){
 		/** @type {JSDataSet<uuid:String,name:String>} */
 		var elementNames = security.getElementUUIDs(form_name);//solutionModel.getForm('addressesCustomer').getFields(true) // .getButtons(true) true is inherited elements
-		for (var index = 0; index <= elementNames.getMaxRowIndex();index++){
+		for (var index = 1; index <= elementNames.getMaxRowIndex();index++){
 			elementNames.rowIndex = index;
-			if (elementNames.uuid == element_uuid){
+			if (element_uuid && elementNames.uuid == element_uuid){//20180103 change for problem closing element permissions
 				element_name = elementNames.name;
 				break;
 			}

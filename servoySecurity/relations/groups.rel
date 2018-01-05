@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/groups",
+joinType:1,
+name:"groups",
+primaryDataSource:"db:/stsservoy/groups",
+typeid:22,
+uuid:"5277F2D9-7FA2-4C2A-9911-FF9AB2BC3C80"

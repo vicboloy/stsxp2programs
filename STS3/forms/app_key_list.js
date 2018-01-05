@@ -48,6 +48,9 @@ function deleteRecord(event, index) {
 	g.result.add(g.columns.group_key_uuid);
 	g.where.add(g.columns.key_uuid.eq(key_uuid));
 	g.where.add(g.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	/** @type {QBJoin<db:/stsservoy/permissions>} */
+	var h = g.joins.add('db:/stsservoy/permissions');
+	h.on.add(h.columns.key_uuid.eq(g.columns.key_uuid));
 	var G = databaseManager.getFoundSet(g);
 	if (G.getSize() > 0){
 		globals.DIALOGS.showErrorDialog(
@@ -75,6 +78,7 @@ function onActionDupe(event) {
 	var dupeRec = foundset.getRecord(dupeIdx);
 	dupeRec.edit_date = new Date();
 	var newKeyName = currentRec.key_name;
+	newKeyName = newKeyName.replace('.','');//Do not create additional default Group Keys 20180103
 	
 	/** @type {QBSelect<db:/stsservoy/keys>} */
 	var q = databaseManager.createSelect('db:/stsservoy/keys');

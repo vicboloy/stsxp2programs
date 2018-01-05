@@ -40,6 +40,7 @@ function onActionRefresh(event) {
 function onShow(firstShow, event) {
 	if (firstShow){
 		createEmpList(event);
+		scopes.jobs.formPermissions(event,false);
 	}
 }
 /**

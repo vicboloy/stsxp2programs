@@ -1688,9 +1688,15 @@ function secGetTableNames(displayValue, realValue, record, valueListName) {
  * @returns {JSDataSet} A dataset with 1 or 2 columns display[,real]
  *
  * @properties={typeid:24,uuid:"BE91906B-7877-403C-966B-96A876902C81"}
+ * @AllowToRunInFind
  */
 function secGetFormNames(displayValue, realValue, record, valueListName) {
-	var values = forms.allnames.sort();
+	var valuesCheck = forms.allnames.sort();
+	var values = [];
+	for (var idx = 0;idx < valuesCheck.length;idx++){
+		if (valuesCheck[idx].search(/_[0-9]+$/) != -1){continue}// 20180103 remove form instances
+		values.push(valuesCheck[idx]);
+	}
 	
 	if (displayValue == null && realValue == null) {
 		return databaseManager.convertToDataSet(values);

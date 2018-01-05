@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onSortCmdMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/keys",
 extendsID:"4A16F0F7-4C60-4447-AEBE-4C560622E5C9",
 initialSort:"display_name asc",
@@ -140,6 +146,7 @@ uuid:"EDD65423-E973-4C77-A6E2-3C731E782B1C"
 ],
 name:"app_key_list",
 onShowMethodID:"30EEE7DC-102B-413D-9999-FA2AE63ED9D9",
+onSortCmdMethodID:"0",
 scrollbars:32,
 size:"500,93",
 styleName:"sts_one",

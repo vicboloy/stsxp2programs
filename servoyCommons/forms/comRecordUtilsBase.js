@@ -103,8 +103,9 @@ function deleteRecord(event, index) {
 	if (rec.delete_flag === undefined){
 		foundset.deleteRecord(rec);
 	} else {
-		rec.delete_flag = 99;
-		databaseManager.saveData(rec);
+		foundset.deleteRecord(rec);
+		//rec.delete_flag = 99;
+		//databaseManager.saveData(rec);
 		
 	}
 	application.updateUI(30);

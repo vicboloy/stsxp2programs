@@ -209,6 +209,16 @@ var genericInput = "";
 /**
  * @properties={typeid:24,uuid:"2CEA60B5-2BBD-4F80-B54F-0E5FCE77C62A"}
  */
+var showingFields = [];
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"ECFA46FB-2E8C-4FFC-8025-9B00ACB304F9"}
+ */
+var lastAction = '';
+/**
+ * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
+ */
 function resetWorkerCode(){
 	statusWorker = "";
 }
@@ -547,6 +557,7 @@ function onHide(event) {
  * @AllowToRunInFind
  */
 function onActionBundle(event) {
+	if (1==1) {return true}
 	if (!currentBundle || currentBundle.length == 0 || currentBundle == "L"){
 		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && elements.errorWindow && elements.errorWindow.visible){
 			//globals.rfErrorHide(event);

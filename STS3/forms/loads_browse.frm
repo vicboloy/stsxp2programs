@@ -5,7 +5,7 @@ items:[
 anchors:12,
 horizontalAlignment:0,
 location:"27,432",
-onActionMethodID:"14DEEB4E-751E-49C1-9413-A3019516DB6D",
+onActionMethodID:"9B76F79D-345F-4C2A-830E-CB035E55E972",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 text:"i18n:sts.btn.settings",
@@ -23,6 +23,18 @@ extendsID:"51191EB6-5514-497E-91CC-7CE8F82CA59E",
 size:"497,418",
 typeid:16,
 uuid:"5A67C3F5-A9D0-4104-AEE7-FB36BD231166"
+},
+{
+customProperties:"methods:{\
+onActionMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
+extendsID:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8",
+onActionMethodID:"9B76F79D-345F-4C2A-830E-CB035E55E972",
+typeid:7,
+uuid:"6BBDC92B-F399-4847-9871-59B4EA3A3D81"
 },
 {
 anchors:12,

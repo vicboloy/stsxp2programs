@@ -211,7 +211,9 @@ function onShow(firstShow, event) {
 		onActionEdit(event,false);
 		elements.btn_Delete.visible =  (employee_number != "P2"); // protect admin account
 	}
-	//globals.setUserFormPermissions(event);
+	if (firstShow){
+		//scopes.jobs.formPermissions(event,false);
+	}
 }
 
 /**

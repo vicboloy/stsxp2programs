@@ -1547,7 +1547,7 @@ function onActionUpdatePrefs(event) {
 	var variableSetting = "";
 	databaseManager.startTransaction();
 	for (variableX in prefs){
-		scopes.jobs.warningsMessage('sts.txt.saving.preferences',true);
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.saving.preferences'),true);
 		//variableX = index;
 		variableSetting = prefs[variableX];
 		var variableType = typeof(variableSetting);

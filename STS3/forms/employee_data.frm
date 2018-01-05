@@ -42,18 +42,6 @@ uuid:"13170554-124C-4C5D-8248-04E869BF29F0",
 visible:false
 },
 {
-dataProviderID:"employee_ssn",
-format:"###-##-####",
-location:"341,185",
-name:"employee_ssn",
-size:"111,20",
-tabSeq:11,
-text:"Employee Ssn",
-typeid:4,
-uuid:"1C6BFFFE-0577-4CF3-A74F-B050B010D46E",
-visible:false
-},
-{
 labelFor:"employee_firstname",
 location:"15,40",
 name:"employee_firstname_label",
@@ -62,17 +50,6 @@ text:"i18n:sts.label.name.first",
 transparent:true,
 typeid:7,
 uuid:"1D89D6F8-72F2-451B-9DAE-EFCC68F2C9C2"
-},
-{
-labelFor:"employee_ssn",
-location:"276,185",
-name:"employee_ssn_label",
-size:"50,20",
-text:"i18n:sts.label.employee.ssn",
-transparent:true,
-typeid:7,
-uuid:"2564E7D0-1DD7-4846-82BF-4A81F4BA5FA2",
-visible:false
 },
 {
 dataProviderID:"employee_lastname",
@@ -294,7 +271,7 @@ uuid:"FDAE0A18-F660-460B-BBDB-6F2380225729"
 name:"employee_data",
 navigatorID:"-1",
 onRecordSelectionMethodID:"C32FDF51-8D3F-4607-A4C4-A8BA6B76B1BD",
-onShowMethodID:"-1",
+onShowMethodID:"7AC2ED6B-8536-4DF8-A3E1-302698B9D8C2",
 showInMenu:true,
 size:"462,406",
 styleName:"sts_one",

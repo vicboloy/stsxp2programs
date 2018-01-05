@@ -101,6 +101,7 @@ function onShow(firstShow, event) {
 				elements.tabless.setTabEnabledAt(index,false);
 			}
 		}
+		scopes.jobs.formPermissions(event,true);
 	}
 	return _super.onShow(firstShow, event)
 }

@@ -624,7 +624,7 @@ function onActionClickKISS(event) {
 	if (success){
 		var success2 = solutionModel.removeForm('kiss_barcode_request');
 	}
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.import.kiss'),'kiss_import',50,50,610,330,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.import.kiss'),'kiss_import',50,50,610,400,false);
 }
 /**
  * @param event
@@ -738,6 +738,7 @@ function createFormClone(formName, extension) {
 		}
 	}
 	//clonedForm.namedFoundSet = JSForm.SEPARATE_FOUNDSET;
+	if (!globals.session.forms[cloneName]){globals.session.forms[cloneName] = []}//keep list of forms for permissions
 
 	// Now we will do a depth-first traversal through all the tabs in all the tabpanels of the original form (formName),
 	// and for each tab we will make a clone of the form in that tab, and assign it
@@ -748,6 +749,7 @@ function createFormClone(formName, extension) {
 		for (var j in aTabs) {
 			var tabForm = aTabs[j].containsForm
 			var clonedTabForm = createFormClone(tabForm.name, extension);
+			globals.session.forms[cloneName].push(tabForm.name+'_'+extension);//keep list of forms for permissions
   			aTabs[j].containsForm = clonedTabForm;
 		}
 	}

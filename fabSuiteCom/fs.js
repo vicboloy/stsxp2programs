@@ -45,7 +45,7 @@ function checkFSJobNumber(jobnumber){
 		</FabSuiteXMLRequest>';
 	
 	/** @type {String} */
-	var fsResp = scopes.globals.com.call('FabSuiteXML',jobs).toString();
+	var fsResp = com.call('FabSuiteXML',jobs).toString();
 	if (fsResp.search('<Successful>1') == -1){
 		return getFabSuiteError(fsResp);
 	}
@@ -70,17 +70,18 @@ function getFabSuiteError(fsResponse){
  * @properties={typeid:24,uuid:"FC886476-C72C-45F3-AA7C-9A60F06A6A1C"}
  */
 function checkFSStatus(status){
-	if (application.isInDeveloper()){
-		var jobList = '<FabSuiteXMLRequest>\
+	/**	var jobList = '<FabSuiteXMLRequest>\
 			<GetProductionControlJobInformation>\
 			</GetProductionControlJobInformation>\
 			</FabSuiteXMLRequest>';
-		var jobs = scopes.globals.com.call('FabSuiteXML',jobList).toString();
-		application.output('Jobs are '+jobs);
-		
+		var jobs = com.call('FabSuiteXML',jobList).toString();
+		//application.output('Jobs are '+jobs);*/
+	if (globals.m.stationsThird[status]){
+		status = globals.m.stationsThird[status].toLowerCase();
 	}
-	getFSStations(session.jobNumber);
-	var jobs = '<FabSuiteXMLRequest>\
+	
+	//getFSStations(globals.session.jobNumber);
+	var station = '<FabSuiteXMLRequest>\
 		<ValStation>\
 		<Station>'+ status + 
 		'</Station>\
@@ -88,8 +89,9 @@ function checkFSStatus(status){
 		</FabSuiteXMLRequest>';
 	
 	/** @type {String} */
-	var fsResp = scopes.globals.com.call('FabSuiteXML',jobs).toString();
-	if (fsResp.search('<Successful>1') == -1){
+	var fsResp = com.call('FabSuiteXML',station).toString();
+	//if (fsResp.search('<Successful>1') == -1){
+	if (fsResp == ''){
 		return getFabSuiteError(fsResp);
 	}
 	return null;
@@ -107,7 +109,7 @@ function getFSStations(jobNumber){
 		</GetStations>\
 		</FabSuiteXMLRequest>';
 	/** @type {String} */
-	var stations = scopes.globals.com.call('FabSuiteXML',listStations).toString();
+	var stations = com.call('FabSuiteXML',listStations).toString();
 	var lines = stations.split('\n');
 	var regX = new RegExp(/<StationName>(.*)<\/StationName>/);
 	for (var idx = 0;idx < lines.length;idx++){
@@ -153,17 +155,20 @@ function getFSLoadNums(jobNumber){
  * @properties={typeid:24,uuid:"A3D4FB72-755D-4ABD-B03F-984ABB3F80FF"}
  */
 function checkFSLoad(loadNumber){
-	if (application.isInDeveloper()){application.output(session.jobNumber)}
+	if (application.isInDeveloper()){application.output(globals.session.jobNumber)}
 	var loadcheck = '<FabSuiteXMLRequest>\
 		<ValTruck>\
-		<JobNumber>'+session.jobNumber+'</JobNumber>\
+		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
 		<TruckNumber>'+ loadNumber + '</TruckNumber>\
-		<ActionIfNotExist>0</ActionIfNotExist>\
+		<ActionIfNotExist>\
+		Nothing\
+		</ActionIfNotExist>\
 		</ValTruck>\
 		</FabSuiteXMLRequest>';
+//		<ActionIfNotExist>0</ActionIfNotExist>\
 	
 	/** @type {String} */
-	var fsResp = scopes.globals.com.call('FabSuiteXML',loadcheck).toString();
+	var fsResp = com.call('FabSuiteXML',loadcheck).toString();
 	if (fsResp.search('<Successful>1') == -1){
 		return getFabSuiteError(fsResp);
 	}
@@ -187,7 +192,7 @@ function checkFSSequences(oldValue, newValue, event){
 					</GetSequences>\
 				</FabSuiteXMLRequest>';
 	/** @type {String} */
-	var fsResp = scopes.globals.com.call('FabSuiteXML',check).toString();
+	var fsResp = com.call('FabSuiteXML',check).toString();
 	//application.output('sequences '+fsResp);
 	if (fsResp.search('<Successful>1') == -1){
 		return getFabSuiteError(fsResp);
@@ -200,7 +205,10 @@ function checkFSSequences(oldValue, newValue, event){
 		plugins.dialogs.showErrorDialog('1030',i18n.getI18NMessage('1030'));
 		checkResetToValidEntry(fieldValueName,'',newValue,event);
 		//scopes.globals.errorDialogMobile(event,1030,event.getElementName(),'');
+		if (forms.kiss_import && forms.kiss_import.vSeqAll){forms.kiss_import.vSeqAll = 1}
 		return true;
+	} else {
+		forms.kiss_import.vSeqAll = (forms.kiss_import && forms.kiss_import.vSeqNumber == '') ? 1 : 0;
 	}
 	checkResetToValidEntry(fieldValueName,fsResp,newValue,event);
 	return null;
@@ -218,8 +226,22 @@ function checkFSSequences(oldValue, newValue, event){
  * @AllowToRunInFind
  */
 function checkFSJob(oldValue, newValue, event) {
+	if (!scopes.prefs.lFabsuiteInstalled){
+		plugins.dialogs.showErrorDialog('1216',i18n.getI18NMessage('1216'));
+		return;
+	}
+	if (forms.kiss_import){
+		forms.kiss_import.fabSuiteJobExists = i18n.getI18NMessage('sts.txt.fabsuite.job.dne');
+		forms.kiss_import.stsXJobAssoc = i18n.getI18NMessage('sts.status.none');
+	}
 	scopes.jobs.warningsYes();
 	scopes.jobs.warningsMessage('Connecting to FabSuite',true);
+	if (!checkComFabsuite(event)){
+		scopes.jobs.warningsX();
+		forms['kiss_import'].onActionHide();
+		return;
+		
+	}
 	if (!scopes.globals.com){
 		scopes.globals.com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 	}
@@ -234,16 +256,17 @@ function checkFSJob(oldValue, newValue, event) {
 
 	if (application.isInDeveloper()){application.output(newValue)}
 	var formName = event.getFormName();
+	
 	var check = '<FabSuiteXMLRequest>\
 					<GetProductionControlJobInformation>\
 					<JobNumber>'+newValue+'</JobNumber>\
 					</GetProductionControlJobInformation>\
 				</FabSuiteXMLRequest>';
-	scopes.jobs.warningsMessage('Logging Into FabSuite',true);
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('1202'),true);
 	/** @type {String} */
 	var fsResp = com.call('FabSuiteXML',check).toString();
-	if (fsResp.search('<JobNumber>') == -1){
-		scopes.jobs.warningsMessage('FabSuite Login Failed',true);
+	if (fsResp.search('<JobNumber>') == -1){//This Job Number Was Not Found In FabSuite. - 1030
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('1030'),true);
 		plugins.dialogs.showErrorDialog('1030',i18n.getI18NMessage('1030'));
 		forms[formName].clearBadEntry(event);
 		globals.session.jobNumber = '';
@@ -258,18 +281,44 @@ function checkFSJob(oldValue, newValue, event) {
 		//application.sleep(1000);
 		//headless.shutdown();
 	} */
-	scopes.jobs.warningsMessage('Connection Successful. Getting Internal Job Information.',true);
+	if (globals.session.tenantJobArray.indexOf(newValue) == -1){
+		scopes.jobs.warningsX();
+		plugins.dialogs.showErrorDialog('1217',i18n.getI18NMessage('1217'));
+		return true;
+	}
+	if (globals.session.assocJobArray.indexOf(newValue) == -1){
+		scopes.jobs.warningsX();
+		plugins.dialogs.showErrorDialog('1215',i18n.getI18NMessage('1215'));
+		return true;
+	}
+	// 1203 - Collecting job information from STS X
+	// 1214 - Connection successful. 
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('1203')+' '+i18n.getI18NMessage('1214'),true);
 	scopes.jobs.getJobIdInfo(newValue);//places it into scopes.jobs.importJob object
 	globals.session.jobNumber = newValue;
 	forms[formName].elements.btnSelect.enabled = true;
-	scopes.jobs.warningsMessage('Collecting Internal Job Piecemarks',true);
-
-	scopes.jobs.readPieceTables();
-	scopes.jobs.warningsX();
-	if (event.getFormName() == 'kiss_import'){
-		forms['kiss_import'].elements.btnSelect.requestFocus(false);
+	if (forms.kiss_import){
+		forms.kiss_import.fabSuiteJobExists = i18n.getI18NMessage('sts.txt.fabsuite.job.exists');
+		forms.kiss_import.stsXJobAssoc = scopes.jobs.importJob.associationName;
+		if (globals.session.associationId != scopes.jobs.importJob.associationId){
+			forms.kiss_import.elements.stsJobAssocName.fgcolor = 'red';
+			forms.kiss_import.elements.btnSelect.enabled = false;
+			plugins.dialogs.showErrorDialog('1215',i18n.getI18NMessage('1215'));
+			forms.kiss_import.vJobNumber = '';
+			scopes.jobs.warningsX();
+			return true;
+		}
 	}
+	//scopes.jobs.warningsMessage('Collecting Internal Job Piecemarks',true);
+
+	//scopes.jobs.readPieceTables();
 	scopes.jobs.warningsX();
+	
+	if (forms.kiss_import){
+		forms.kiss_import.elements.stsJobAssocName.fgcolor = 'black';
+		forms.kiss_import.elements.btnSelect.enabled = true;
+		nextEntry(event);
+	}
 	return true;
 }
 /**
@@ -288,18 +337,19 @@ function checkFSLots(oldValue, newValue, event) {
 					<JobNumber>'+globals.session.jobNumber+'</JobNumber>\n\
 					</GetLots>\n\
 				</FabSuiteXMLRequest>';
-	//if (application.isInDeveloper()){application.output(check)}
 	/** @type {String} */
-	var fsResp = scopes.globals.com.call('FabSuiteXML',check).toString();
+	var fsResp = com.call('FabSuiteXML',check).toString();
 	var fieldValueName = 'LotNumber';
-	//application.output('output\n'+fsResp);
+	var formName = event.getFormName();
+	if (application.isInDeveloper()){application.output('output\n'+fsResp)}
 	if (fsResp.search('<JobNumber>') == -1){
 		scopes.globals.errorDialogMobile(event,1030,event.getElementName(),'');
 		checkResetToValidEntry(fieldValueName,'',newValue,event);
-		//scopes.globals.errorDialogMobile(event,1030,event.getElementName(),'');
+		if (forms.kiss_import){forms.kiss_import.vLotAll = 1}
 		return true;
 	}
 	checkResetToValidEntry(fieldValueName,fsResp,newValue,event);
+	forms.kiss_import.vLotAll = (forms.kiss_import && forms.kiss_import.vLotNumber == '') ? 1 : 0;
 	return true;
 }
 /**
@@ -365,8 +415,10 @@ function checkFSMainMark(oldValue,newValue,event){
 	//var thisWin = application.getActiveWindow();
 	//thisWin.controller.enabled = false;
 	//use session.mainMark array for list of db piecemark assemblies
-	showProgressInit(event);
-	showProgressUpdate(event,'Checking For Selected Main Mark')
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage('Getting marks in job.',true);
+	//showProgressInit(event);
+	//showProgressUpdate(event,'Checking For Selected Main Mark')
 	//scopes.jobs.importMessages = 'Checking For Selected Main Mark';
 	//var win = application.createWindow('Messages',JSWindow.WINDOW);
 	//win.show('import_messages');
@@ -379,23 +431,24 @@ function checkFSMainMark(oldValue,newValue,event){
 	</FabSuiteXMLRequest>';
 	if (application.isInDeveloper()){application.output(check)}
 	/** @type {String} */
-	var fsResp = scopes.globals.com.call('FabSuiteXML',check).toString();
+	var fsResp = com.call('FabSuiteXML',check).toString();
 	var fieldValueName = 'MainMark';
 	application.output('output\n'+fsResp);
+	scopes.jobs.warningsMessage('Getting marks in job.',true);
 	if (fsResp.search('<JobNumber>') == -1){
 		scopes.globals.errorDialogMobile(event,1030,event.getElementName(),'');
 		//scopes.globals.errorDialog(1030);
 		checkResetToValidEntry(fieldValueName,'',newValue,event);
 		//scopes.globals.errorDialogMobile(event,1030,event.getElementName(),'');
 		//win.hide();
-		showProgessDone(event);
+		scopes.jobs.warningsX();
 		//thisWin.controller.enabled = true;
 		return true;
 	}
 	checkResetToValidEntry(fieldValueName,fsResp,newValue,event);
 	//thisWin.controller.enabled = true;
 	//win.hide();
-	showProgessDone(event);
+	scopes.jobs.warningsX();
 return true;
 
 }
@@ -417,7 +470,7 @@ function checkFSDrawingNumber(oldValue,newValue,event){
 	</FabSuiteXMLRequest>';
 
 	/** @type {String} */
-	var fsResp = scopes.globals.com.call('FabSuiteXML',check).toString();
+	var fsResp = com.call('FabSuiteXML',check).toString();
 	var fieldValueName = 'DrawingNumber';
 	if (fsResp.search('<JobNumber>') == -1){
 		//scopes.globals.errorDialog(1030);
@@ -529,23 +582,41 @@ function showProgessDone(event){
  *
  * @properties={typeid:24,uuid:"4A3F4C5B-D25D-4DA7-B20A-17CF4D63C1C5"}
  */
-function checkComFabsuite(){
+function checkComFabsuite(event){
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage('Connecting to FabSuite',true);
+	if (!scopes.prefs.lFabsuiteInstalled){
+		scopes.jobs.warningsMessage('FabSuite Is Not Installed',true);
+		var start = new Date().getTime();
+		var time = new Date().getTime();
+		while (time-start < 2000){
+			time = new Date().getTime();
+		}
+		scopes.jobs.warningsX();
+		return false;
+	}
 	fabSuiteLocal = false;
 	if (!com){
 		com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 	}
 	if (!com || !com.isJACOBLoaded()) {
-		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
-		fabSuiteLocal = false;
-		return fabSuiteLocal;
+		scopes.jobs.warnings("Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError(),true);
+		return false;
 	}
-	//application.output('this is com |'+com+'|');
+	var fsServer = scopes.prefs.fabsuiteServerName;
+	var fsPass = scopes.prefs.fabsuitepassword;
+	var fsUser = scopes.prefs.fabsuiteUserid;
+	var fsPort = scopes.prefs.fabsuiteDatabase;
+	if (!fsServer || !fsPass || !fsPort || !fsUser){
+		scopes.jobs.warnings("Fabsuite Connection in Preferences Empty",true);
+		return false;
+	}
 	var xmlConnect = '<FabSuiteXMLRequest>\
 							<Connect>\
-								<IPAddress>localhost</IPAddress>\
-								<PortNumber>3306</PortNumber>\
-								<Username>admin</Username>\
-								<Password>fab</Password>\
+								<IPAddress>'+fsServer+'</IPAddress>\
+								<PortNumber>'+fsPort+'</PortNumber>\
+								<Username>'+fsUser+'</Username>\
+								<Password>'+fsPass+'</Password>\
 							</Connect>\
 						</FabSuiteXMLRequest>';
 	/** @type {String} */
@@ -561,8 +632,8 @@ function checkComFabsuite(){
 	}
 	/** @type {String} */
 	var response2 = response.toString();
-	if (response2.search('<Successful>0') == -1){
-		//failed connection
+	if (response2.search('<Successful>0') != -1){
+		scopes.jobs.warningsMessage('Fabsuite Query Error '+response2);
 	}
 	//application.output('com response: |'+response+'|');
 	if (application.getSolutionName() == 'STS X Embedded'){
@@ -574,7 +645,25 @@ function checkComFabsuite(){
 		var regX = new RegExp(/>([0-9]*\..*)</);
 		var version = regX.exec(fsResp);
 		forms.sts_x.elements.indFabSuite.text = version[1];
-		fabSuiteLocal = true;
 	}
-	return fabSuiteLocal;
+	fabSuiteLocal = true;
+	return true;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"DDD3859A-23D3-41B8-8F73-ACBA7612D9CC"}
+ */
+function checkFSInstalled(event){
+	if (!scopes.prefs.lFabsuiteInstalled){
+		scopes.jobs.warningsMessage('FabSuite Is Not Installed',true);
+		var start = new Date().getTime();
+		var time = new Date().getTime();
+		while (time-start < 2000){
+			time = new Date().getTime();
+		}
+		return false;
+	}
+	return true;
 }

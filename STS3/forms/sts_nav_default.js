@@ -9,8 +9,8 @@
  */
 function onShow(firstShow, event) {
 	if (firstShow){
+		globals.setUserFormPermissions(event);
 	}
-	globals.setUserFormPermissions(event);
 	elements.btn_Developer.visible = (application.isInDeveloper());
 	return _super.onShow(firstShow, event)
 }

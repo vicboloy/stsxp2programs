@@ -1,3 +1,13 @@
+customProperties:"methods:{\
+onRecordSelectionMethodID:{\
+arguments:null,\
+parameters:null\
+},\
+onSortCmdMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/groups",
 extendsID:"A204E0F1-E2E2-42F9-B253-7E77D92EA337",
 initialSort:"group_name asc",
@@ -19,12 +29,14 @@ typeid:19,
 uuid:"2F81E7DD-A07D-497F-BA1F-786D1ED6C584"
 },
 {
+anchors:11,
 dataProviderID:"group_name",
 editable:false,
 enabled:false,
 fontType:"Arial,1,13",
 location:"5,46",
 name:"group_name",
+onDataChangeMethodID:"-1",
 size:"140,20",
 tabSeq:1,
 typeid:4,
@@ -73,6 +85,7 @@ typeid:7,
 uuid:"631BDF5E-7414-4955-87F2-596BA025062B"
 },
 {
+anchors:11,
 labelFor:"group_name",
 location:"5,26",
 name:"group_name_label",
@@ -153,7 +166,9 @@ uuid:"C112C474-31F3-4F9C-9835-C838A8E99B16"
 }
 ],
 name:"app_user_group_list",
+onRecordSelectionMethodID:"7A82288A-B970-4F37-BF9F-1EB32AD87AB4",
 onShowMethodID:"9763F85B-5156-46CC-9A37-0E526289361C",
+onSortCmdMethodID:"0",
 scrollbars:32,
 size:"551,264",
 styleName:"sts_one",

@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onSortCmdMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/permissions",
 encapsulation:12,
 extendsID:"46F22939-6C19-4384-BFDC-2AEF98CB211F",
@@ -31,6 +37,7 @@ typeid:19,
 uuid:"23C22884-2DD7-4602-946B-2966EEC36C51"
 },
 {
+anchors:11,
 labelFor:"permission_type",
 location:"0,27",
 name:"permission_type_label",
@@ -52,6 +59,7 @@ uuid:"395C33EE-D9CB-4897-9176-6A0DDD54F3F2",
 visible:false
 },
 {
+anchors:11,
 dataProviderID:"permission_uuid",
 editable:false,
 enabled:false,
@@ -159,6 +167,7 @@ typeid:4,
 uuid:"C5928D72-A625-4602-B689-FD1EDA53247F"
 },
 {
+anchors:11,
 labelFor:"key_id",
 location:"359,27",
 size:"38,20",
@@ -191,7 +200,7 @@ onActionMethodID:"5E85197C-4A42-4D56-B1EE-7C833A2AB724",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"80,26",
-text:"i18n:sts.btn.new",
+text:"i18n:sts.btn.modify",
 typeid:7,
 uuid:"F9E19FB4-6FA1-40B7-BC77-06A74E49E061"
 }
@@ -199,6 +208,7 @@ uuid:"F9E19FB4-6FA1-40B7-BC77-06A74E49E061"
 name:"app_key_permiss_list",
 navigatorID:"-1",
 onShowMethodID:"941E2E7E-C075-422E-A9EE-DE483236BCF4",
+onSortCmdMethodID:"0",
 scrollbars:32,
 showInMenu:true,
 size:"446,135",

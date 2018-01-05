@@ -161,19 +161,12 @@ typeid:7,
 uuid:"5C8EED74-E9D3-4A7C-9965-8566F0CC8D15"
 },
 {
-customProperties:"methods:{\
-onActionMethodID:{\
-arguments:[\
-null,\
-\"false\"\
-]\
-}\
-}",
+customProperties:"",
 enabled:false,
 horizontalAlignment:0,
 location:"33,399",
 name:"btn_Info",
-onActionMethodID:"99D86CE4-07A3-4625-8174-9F332A538ACD",
+onActionMethodID:"A98C66C7-B597-44CA-A364-EC1E03C57F99",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"129,26",
@@ -189,8 +182,9 @@ formIndex:11,
 format:"|L[30]",
 location:"100,40",
 name:"frmJobNum",
-onDataChangeMethodID:"65F90DE8-D597-49A9-8775-E363E7F2A303",
+onDataChangeMethodID:"100148DA-341F-4087-AED3-413147E0B60F",
 placeholderText:"Job # Required",
+selectOnEnter:true,
 tabSeq:1,
 typeid:4,
 uuid:"61851B26-848D-4EA9-93F3-DA96DBCA2819",

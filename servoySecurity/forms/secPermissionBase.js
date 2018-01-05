@@ -28,7 +28,7 @@ function validate(event) {
 			errorMessage = i18n.getI18NMessage('sts.txt.provide.form');
 			return false;													//	failed validation
 		}
-		if(!element_uuid){													//	validate eliment uuid
+		if(false && !element_uuid){													//	validate eliment uuid // 20180103 getting error, and win won't close - disabled
 			errorMessage = i18n.getI18NMessage('sts.txt.provide.element');
 			return false;													//	failed validation
 		}

@@ -1774,7 +1774,7 @@ function getJobTotalWeight(jobId,tenantId,metric,flaggedDeleted){
  * @properties={typeid:24,uuid:"99D86CE4-07A3-4625-8174-9F332A538ACD"}
  * @AllowToRunInFind
  */
-function onGetInformation(event,flaggedDeleted) {
+function onGetInformationX(event,flaggedDeleted) {
 	if (!forms[event.getFormName()].jobFound && event.getFormName().search('summary') == -1) {return}
 	var formX = forms[event.getFormName()];
 	var formXName = event.getFormName();
@@ -1807,7 +1807,7 @@ function onGetInformation(event,flaggedDeleted) {
  * @properties={typeid:24,uuid:"14DEEB4E-751E-49C1-9413-A3019516DB6D"}
  * @AllowToRunInFind
  */
-function tablePrefsSave(event){
+function tablePrefsSaveX(event){
 	var response = plugins.dialogs.showSelectDialog(i18n.getI18NMessage('sts.txt.modify.table.settings'),
 			i18n.getI18NMessage('sts.txt.save.or.modify.table.preferences'),
 			[i18n.getI18NMessage('sts.btn.save'),i18n.getI18NMessage('sts.btn.modify')]);
@@ -5792,7 +5792,7 @@ function sampleBCPrint(event){
  * @properties={typeid:24,uuid:"65F90DE8-D597-49A9-8775-E363E7F2A303"}
  * @AllowToRunInFind
  */
-function onDataChangeJobNumber(oldValue, newValue, event) {
+function onDataChangeJobNumberX(oldValue, newValue, event) {
 	var formName = event.getFormName();
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
@@ -5804,7 +5804,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 
 	if (J.getSize() > 0){
 		forms[formName].jobFound = true;
-		application.output('formformform '+formName);
+		if (application.isInDeveloper()){application.output('formformform '+formName)}//remove jobinfo task 20171226
 		if (forms[formName].browseInfoEnable){forms[formName].browseInfoEnable(formName)}
 		/** @type {JSRecord<db:/stsservoy/jobs>} */
 		var rec = J.getRecord(1);
@@ -5821,11 +5821,11 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		forms[formName].vLabTotPieces = 0;//totalpieces
 		forms[formName].vLabTotalWt = 0;//totalweight
 		forms[formName].vLabNumPcmks = 0;//total piecemarks
-		var info = getJobIdInfo(newValue);
-		forms[info.topForm].jobIdData = info;
+		//var info = getJobIdInfo(newValue);// remove jobinfo on job selection task 20171226
+		//forms[info.topForm].jobIdData = info; // remove jobinfo on job selection task 20171226
 		if (formName.search("barcode_idlabel") == -1 || formName.search(/(recall|remove)/) != -1){
 			browseInfoEnable(event);
-			scopes.jobs.onGetInformation(event,false);
+			//scopes.jobs.onGetInformation(event,false);// remove jobinfo on job selection task 20171226
 			forms[formName].controller.focusField('frmArea',false);
 		} else {
 			//forms[formName].onActionClear(event);

@@ -750,7 +750,7 @@ function importFSOnServer(event,xmlRequest,filters){
 	if (serverIP == clientIP){
 		saveImportSettings(event);
 		if (application.isInDeveloper()){application.output('Import Job Settings Saved')}
-		importFSRequest(event,xmlRequest,filters);
+		importFSRequest(event,xmlRequest,filters);//IMPORT 2.2 importFSRequest
 		if (!scopes.jobs.readPieceTables()){application.output('Job ID is not set internal.  Exiting');return}
 		///importRecords(event);
 		if (application.getSolutionName() == "STS X Embedded"){
@@ -795,7 +795,7 @@ function importFSRequest(event,xmlRequest,filters){
 	/** @type {String} */
 	var com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 	var sample = com.toString();
-	application.output('FS Check for COM');
+	if (application.isInDeveloper()){application.output('FS Check for COM')}
 	if (sample.search('RemoteCOM') != -1){
 		response = com.call('FabSuiteXML',xmlConnect);
 		response = response.toString();
@@ -823,9 +823,9 @@ function importFSRequest(event,xmlRequest,filters){
 		var regX = new RegExp('<FileName>(.*)</FileName>');
 		var fileAndPath = regX.exec(xmlRequest);
 		if (application.isInDeveloper()){application.output('Get Import File Metadata')}
-		importFSFileInfo(fileAndPath[1]);
-		importSetTableFilters(event,filters);
-		importPopKISSTable(event);
+		importFSFileInfo(fileAndPath[1]);//IMPORT 3.1 importFSFileInfo
+		importSetTableFilters(event,filters);//IMPORT 3.2 importSetTableFilters
+		importPopKISSTable(event);//IMPORT 3.3 importPopKISSTable
 	} else {
 		plugins.dialogs.showErrorDialog('1170',i18n.getI18NMessage('1170'));
 	}
@@ -1039,6 +1039,18 @@ function importPopKISSTable(event) {
 	clearKissTables();
 	countGuids = 0; countPcmks = 0;
 	
+	var filterDraws = [];
+	var filterSeqs = [];
+	var filterLots = [];
+	var filterMarks = [];
+	
+	if (forms.kiss_import){
+		filterDraws = (forms.kiss_import.vDrawingNumber) ? forms.kiss_import.vDrawingNumber.split(',') : [];
+		filterSeqs = (forms.kiss_import.vSeqNumber) ? forms.kiss_import.vSeqNumber.split(',') : [];
+		filterLots = (forms.kiss_import.vLotNumber) ? forms.kiss_import.vLotNumber.split(',') : [];
+		filterMarks = (forms.kiss_import.vPartNumber) ? forms.kiss_import.vPartNumber.split(',') : [];
+	}
+	
 	const hJobNum = 1, hJobName = 2, hGeneric = 3, hDate = 4, hTime = 5, hMetric = 6; //Header
 	const tLoadNum = 1, tTrailerNum = 2, tCarrier = 3, tCapacity = 4, tShipped = 5, tIntermShipFirm = 6,
 		tToBeReturned = 7, tDateReady = 8, tLoadCat1 = 9, tLoadCat2 = 10, tShippedFrom = 11, tDateRcv = 12,
@@ -1123,18 +1135,22 @@ function importPopKISSTable(event) {
 			continue;
 		}
 		if (lineType == "D"){
-			if (application.getSolutionName() == "STS X Embedded"){
-				/** @type {Array} */
+			/**if (application.getSolutionName() == "STS X Embedded"){
+				/** @type {Array} * /
 				var draws = forms.import_x.draws;
 				filterInData = (draws.length == 0) && (draws.indexOf(lineArray[dDrawingNum]) != -1);
-				/** @type {Array} */
+				/** @type {Array} * /
 				var marks = forms.import_x.marks;
 				filterInData = filterInData || (marks.length == 0) ||
 					((marks.length > 0) &&
 						(marks.indexOf(lineArray[dMainMark]) != -1) || (marks.indexOf(lineArray[dPieceMark]) != -1));
-			} else {
-				filterInData = true;
-			}
+			} else {*/
+				//filterInData = true;
+			filterInData = (filterDraws.indexOf(lineArray[dDrawingNum]) != -1);
+			filterInData = filterInData || ((filterMarks.length > 0) &&
+				(filterMarks.indexOf(lineArray[dMainMark]) != -1) || (filterMarks.indexOf(lineArray[dPieceMark]) != -1));
+			filterInData = filterInData || (filterMarks.length == 0 && filterDraws.length == 0);
+			//}
 			if (skippedFirst && filterInData) { // save detail indicating new line before processing detail
 				importPopSaveDetailRow();
 			} else {
@@ -1194,17 +1210,22 @@ function importPopKISSTable(event) {
 				newRec.remarks = lineArray[eRemark];
 				break;
 			case 'L':
+				// no data on lots yet
 				break;
 			case 'W':
 				newRec.item_weight = lineArray[wWeight];
 				continue;
 			case 'S':
-				if (application.getSolutionName() != 'STS X Embedded' || forms.import_x.seqs.length == 0 || forms.import_x.seqs.indexOf(lineArray[sSeq]) != -1){
-					filterInData = true;
+				//filterInData = (application.getSolutionName() != 'STS X Embedded' 
+				//	|| (forms.import_x && forms.import_x.seqs.length == 0) 
+				//	|| (forms.import_x && forms.import_x.seqs.indexOf(lineArray[sSeq]) != -1)
+				//	|| (filterSeqs.indexOf(lineArray[sSeq]) != -1));
+			
+				//if (filterInData){
 					sequenceArr.push({seq:lineArray[sSeq],cnt:Math.floor(lineArray[sQty])});
 					sequence.cnt = 0;sequence.seq = "";
 					if (false && application.isInDeveloper()){application.output('>> Seq '+lineArray[sSeq]+':'+lineArray[sQty])}
-				}
+				//}
 				break;
 			case 'Z':
 				//importMainGUID.push(lineArray[zAssemGuid]);
@@ -1232,7 +1253,9 @@ function importPopKISSTable(event) {
 	//globals.showProgressDone();
 	if (forms['kiss_import']){
 		var win = forms['kiss_import'].controller.getWindow();//RECENT
-		win.hide();
+		if (win){
+			win.hide();
+		}
 	}
 	warningsX();
 }
@@ -1311,10 +1334,14 @@ function importPopSaveDetailRow(){
 			popCount = newRec.sequence_quantity;
 			parentRec.item_weight = parentRec.item_weight*1 + (newRec.item_weight * newRec.item_qty);
 		}
-		if (true || !newRec.set_bc_qty){
+		if (!newRec.set_bc_qty){
 			var setQuant = newRec.item_qty;
 			if ((newRec.sequence_quantity == null || newRec.sequence_quantity == '') && newRec.sequence_quantity < setQuant) {setQuant = newRec.sequence_quantity}
 			if (newRec.piecemark != newRec.parent_piecemark && globals.session.appName == 'STS X Embedded') {setQuant = 1}
+			var q = scopes.prefs.qtyPrompt;
+			var w = scopes.prefs.wtPrompt;
+			if (newRec.item_qty*1 > q*1){setQuant = 1}
+			if (newRec.item_weight*1 < w*1){setQuant = 1}
 			newRec.set_bc_qty = setQuant;
 			newRec.last_bc_qty = 0;
 			newRec.barcode_qty = (setQuant == 1) ? setQuant : 1;
@@ -1368,7 +1395,7 @@ function importPopSaveDetailRow(){
 			}
 		}
 		if (newRec.parent_piecemark == newRec.piecemark){lastMainPcmk = newRec.parent_piecemark;lastMainQuant = popQty}
-		if (application.isInDeveloper()){
+		if ( false && application.isInDeveloper()){
 			application.output('GUIDs  '+newRec.parent_piecemark+' '+newRec.piecemark+' to pop '+popQty+' of ItemQty:'+newRec.item_qty+' Seq: '+newRec.sequence_number+' SeqQty:'+newRec.sequence_quantity);
 		}
 		//application.output('length before: '+importSubGUID.length);
@@ -1408,17 +1435,21 @@ function newKRecord(lineArray){
  * @properties={typeid:24,uuid:"7DD4D865-2423-48F1-837D-F2AD5E8E1434"}
  */
 function clearKissTables(){
+	null;
+	//var q = databaseManager.getDataSetByQuery('stsservoy','DELETE FROM import_table;',[],1);
+	
 	/** @type {JSFoundSet<db:/stsservoy/import_guids>} */
 	var table = databaseManager.getFoundSet('stsservoy','import_guids');
-	while (table.getSize() > 0 && table.loadAllRecords()){
+	while (table.loadAllRecords() && table.getSize() > 0){
 		table.deleteAllRecords();
 	}
 	
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
 	var table2 = databaseManager.getFoundSet('stsservoy','import_table');
-	while (table2.getSize() > 0 && table2.loadAllRecords()){
+	while (table2.loadAllRecords() && table2.getSize() > 0){
 		table2.deleteAllRecords();
 	}
+	null;
 }
 /**
  * dsLotArray["_"+lotNum+"|"+"_"+seqNum] = lot_id
@@ -1998,6 +2029,7 @@ function saveImportSettings(event){
 				rec.job_number = forms[formName].vJobNumber;
 				break;
 			case 'vDrawNumber':
+			case 'vDrawingNumber':
 				rec.drawing_numbers = forms[formName].vDrawingNumber;
 				break;
 			case 'vSeqNumber':
@@ -2035,13 +2067,14 @@ function importSetTableFilters(event, filters){
 		/** @type {Array} */
 		var filterList = filters[filter].split(',');
 		for (index = 0;index < filterList.length;index++){
+			if (!filterList[index]){continue}//leave out items that are blank
 			filterArray.push(filterList[index]);
 		}
-		application.output('filter '+filter)
+		//application.output('filter '+filter)
 		switch (filter){
 			case 'Sequence':
 				columnName = 'sequence_number';
-				application.output('adding sequence filter');
+				//application.output('adding sequence filter');
 				break;
 			case 'LotNumber':
 				columnName = 'lot_number';
@@ -2056,7 +2089,9 @@ function importSetTableFilters(event, filters){
 			default:
 				columnName = '';
 		}
-		databaseManager.addTableFilterParam('stsservoy', 'import_table', columnName, 'in', filterArray,columnName);
+		if (filterArray.length > 0){
+			databaseManager.addTableFilterParam('stsservoy', 'import_table', columnName, 'in', filterArray,columnName);
+		}
 	}
 	//application.output(databaseManager.getTableFilterParams('stsservoy'))
 }
@@ -2068,7 +2103,7 @@ function importSetTableFilters(event, filters){
  *
  * @properties={typeid:24,uuid:"76F413DA-6D84-4AA7-98E2-10D2A6ED9DAC"}
  */
-function verifyImportQuantities(last,current,event){
+function verifyImportQuantitiesX(last,current,event){
 	///** @type {JSRecord<{sheet_number:String,parent_piecemark:String,sequence_number:Number,finish:String,grade:String,material:String,piecemark:String,ext_wt_qty:Number,total_label_qty:Number,last_bc_qty:Number,set_bc_qty:Number,item_weight:Number,item_quantity:Number,sequence_quantity:Number}>} */
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
 	var rec = forms[event.getFormName()].foundset.getSelectedRecord();
@@ -2088,7 +2123,7 @@ function verifyImportQuantities(last,current,event){
 	}
 	quant = rec.item_qty;
 	if (rec.item_qty && current*1>rec.item_qty*1){return false;}
-	var bcNums = createBCnums(current,quant,rec.item_weight);
+	var bcNums = scopes.jobs.createBCnums(current,quant,rec.item_weight);
 	if (application.isInDeveloper()){
 		application.output("current "+current+" quant "+quant+" weight "+rec.item_weight+"\\n bcNums "+bcNums)
 		for (var xitem in bcNums){
@@ -2167,11 +2202,11 @@ function importRecords(event){
 	}
 	databaseManager.startTransaction();
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
-	var fs = databaseManager.getFoundSet('db:/stsservoy/import_table');
-	fs.loadRecords();
+	var fs2 = databaseManager.getFoundSet('db:/stsservoy/import_table');
+	fs2.loadRecords();
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
-	var rec = null; var index = 1;
-	while (rec = fs.getRecord(index++)){
+	var rec = null; index = 1;
+	while (rec = fs2.getRecord(index++)){
 		if (!rec.import_status || rec.import_status == ""||rec.import_status == i18n.getI18NMessage('import.ignore')){continue}
 		warningsMessage('Processing piecemarks line '+index,false);
 		importRecordPiecemarkExist(rec,true);
@@ -2183,7 +2218,7 @@ function importRecords(event){
 	var recStart = new Date().getTime();
 	if (!databaseManager.hasTransaction()){databaseManager.saveData();databaseManager.startTransaction()}
 	createdIdfileCount = 0; index = 1;
-	while (rec = fs.getRecord(index++)){
+	while (rec = fs2.getRecord(index++)){
 		var recCurrT = new Date().getTime();
 		var dur = recCurrT-recStart;
 		var recSec = Math.floor(10*index/(dur/1000))/10;
@@ -3937,7 +3972,7 @@ function deleteFoundSetK(foundset){
  *
  * @properties={typeid:24,uuid:"255A7DF5-89B3-4375-9756-8FE028CF75E8"}
  */
-function setBarcodeLimits(row){
+function setBarcodeLimitsX(row){
 	
 	transitionFS.rowIndex = row;
 	if (transitionFS.piecemark == ""){
@@ -3966,7 +4001,7 @@ function setBarcodeLimits(row){
  *
  * @properties={typeid:24,uuid:"17904105-E0BD-45B2-B7B6-C4326A195191"}
  */
-function loadImportLabelCounts(){
+function loadImportLabelCountsX(){
 	var counts = scopes.jobs.importLabelCounts;
 	var retainFS = transitionFS;
 	var rows = retainFS.getMaxRowIndex();

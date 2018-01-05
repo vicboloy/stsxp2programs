@@ -6,7 +6,7 @@ anchors:15,
 items:[
 {
 containsFormID:"F9BF05D3-03D4-4B0D-86D8-1C3F0FB6FBE4",
-location:"125,93",
+location:"81,115",
 relationName:"sts_application",
 text:"i18n:sts.tab.permissions.group.keys",
 typeid:15,
@@ -14,7 +14,7 @@ uuid:"3BD94FF2-FF09-44A5-9952-721E5C4F4886"
 },
 {
 containsFormID:"31E5E8CB-B508-4AD3-8B69-A2B0079B56FF",
-location:"225,120",
+location:"18,85",
 relationName:"sts_application",
 text:"i18n:sts.tab.permissions.permission.groups",
 typeid:15,
@@ -22,7 +22,7 @@ uuid:"6831BC83-97B6-4099-8917-B6D58078C84B"
 },
 {
 containsFormID:"EB7D6ADE-D726-461D-8984-46223237C197",
-location:"5,60",
+location:"119,143",
 relationName:"applications_to_permissions",
 text:"i18n:sts.tab.permissions.general",
 typeid:15,
@@ -83,6 +83,15 @@ text:"i18n:sts.label.permissions.sts",
 transparent:true,
 typeid:7,
 uuid:"627D4746-D2A5-4993-8AC0-D91EFA7C0A8B"
+},
+{
+anchors:3,
+location:"427,35",
+onActionMethodID:"-1",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+typeid:7,
+uuid:"6379FE0E-7EEA-4B5F-918C-E7905CE64F88"
 },
 {
 anchors:6,

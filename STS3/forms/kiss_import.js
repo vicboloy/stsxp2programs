@@ -17,6 +17,80 @@ var vJobNumber = '';
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"20C3ABDD-6A3E-4DD5-A946-74213A501015"}
+ */
+var fabSuiteJobExists = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"0C14478D-A465-44B1-B16E-83248C8A482C"}
+ */
+var stsXJobAssoc = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"65999E11-A05B-4CF5-B467-30C594AD1670"}
+ */
+var currentAssocName = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"CA24FFC3-8DBB-423C-90D6-04AC27ACAF60"}
+ */
+var vSeqNumber = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"5E94208F-1ECE-4849-BD9E-0F6628954741"}
+ */
+var vDrawingNumber = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"4AB006C4-0CEB-4A35-889C-7FC9EFA4A154"}
+ */
+var vLotNumber = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"12A785EE-D894-4096-B6A6-EDD69FA26404"}
+ */
+var vPartNumber = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"D7385ABD-4A29-4D14-B3C7-BE00C34E3CA3",variableType:4}
+ */
+var vSeqAll = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"C120DF78-24F0-4666-A15A-768846118A2E",variableType:4}
+ */
+var vLotAll = 0;
+/**
+ * @properties={typeid:35,uuid:"95562FEC-EC22-43E8-89AC-A8199340BB9F",variableType:-4}
+ */
+var aDraws = [];
+/**
+ * @properties={typeid:35,uuid:"1147EC7E-4BB2-41B1-9C3E-6EC6B40C91FF",variableType:-4}
+ */
+var aLots = [];
+/**
+ * @properties={typeid:35,uuid:"3F7DB882-118E-46B9-8EBA-251A8ACC2D5B",variableType:-4}
+ */
+var aSeqs = [];
+/**
+ * @properties={typeid:35,uuid:"817168AB-967D-40AD-AB28-3B2E23A27A7E",variableType:-4}
+ */
+var aMarks = [];
+/**
+ * @properties={typeid:35,uuid:"B66B1B06-6CB4-45A3-8CC1-7946DCB00E28",variableType:-4}
+ */
+var entryOrder = [];
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"AFAC0BFC-86EE-4035-8A29-E52E00E956B5"}
  */
 var texts="";
@@ -120,6 +194,9 @@ function fileReceipt(file){
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
 function getKissFile(event){
+	elements.btnSelect.enabled = false;
+	elements.btn_Close.enabled = false;
+	elements.btnClear.enabled = false;
 	var servoyDir = scopes.prefs.importpath;
 	var request = '<FabSuiteXMLRequest>\n\
 		<ExportJob>\n\
@@ -137,7 +214,8 @@ function getKissFile(event){
 	history.removeForm('kiss_excludes_lst');
 	solutionModel.removeForm('kiss_excludes_lst');
 
-	scopes.kiss.importFSOnServer(event,request,'');//RECENT
+	var filters = {Sequence:vSeqNumber,LotNumber:vLotNumber,MainMark:vPartNumber,DrawingNumber:vDrawingNumber}
+	scopes.kiss.importFSOnServer(event,request,filters);//IMPORT 1 importFSOnServer
 	
 	if (1==1){return}
 	if (scopes.prefs.lFabsuiteInstalled){
@@ -249,21 +327,49 @@ function onActionHide(event) {
  */
 function onShow(firstShow, event) {
 	if (firstShow){
+		entryOrder = ['jobEntry','numSeq','numLot','numPart','numDraw','btnSelect'];
 	}
-	globals.setUserFormPermissions(event);
-	vJobNumber = '';
+	//globals.setUserFormPermissions(event);
+	onActionClearForm(event);
 	elements.btnSelect.enabled = false;
-	elements.chooseCust.visible = false;
-	elements.chooseCustSelect.visible = false;
-	selectedCust = "";
+	elements.btn_Close.enabled = true;
+	elements.btnClear.enabled = true;
 	elements.jobEntry.requestFocus(false);
+	currentAssocName = globals.session.association;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"B95F03CA-A597-4C63-8EC9-0E18A60BA335"}
  */
 function clearBadEntry(event){
 	vJobNumber = '';
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"8260D6B4-29FB-404D-AEBB-2185C324A2C7"}
+ */
+function toggleFormInput(event){
+	var allowed = elements.btn_Close.enabled;
+	elements.btn_Close.enabled = !allowed;
+	elements.jobEntry.enabled = !allowed;
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"E465F2A2-85A9-43BC-9714-18D8F24E2080"}
+ */
+function onActionClearForm(event) {
+	vJobNumber = '';
+	vSeqNumber = '';
+	vPartNumber = '';
+	vDrawingNumber = '';
+	vLotNumber = '';
+	vLotAll = 1;
+	vSeqAll = 1;
+	elements.btnSelect.enabled = false;
+	elements.jobEntry.requestFocus();
 }

@@ -130,7 +130,7 @@ typeid:7,
 uuid:"89B44350-8553-41E1-A40E-8161BC970341"
 },
 {
-anchors:11,
+anchors:15,
 dataProviderID:"userGroups",
 displayType:4,
 location:"351,30",

@@ -944,11 +944,16 @@ function onSolutionOpen() {
 	onStartLoadPrefs("");	
 	globals.getMappings();
 	application.setValueListItems('stsvl_fab_shop',l.assocs);
+	databaseManager.removeTableFilterParam('stsservoy','filterCurrentTenant');//20171228 filter current tenant and assoc for nonOffice access
 	databaseManager.addTableFilterParam('stsservoy',null,'tenant_uuid','=',session.tenant_uuid,'filterCurrentTenant');
 	if (globals.SEC_ASSOCIATION_FILTER && session.corporate){
 		databaseManager.removeTableFilterParam('stsservoy',globals.SEC_ASSOCIATION_FILTER);
 	}
 	scopes.jobs.i18nTableColumns();
+	databaseManager.removeTableFilterParam('stsservoy','filterCurrentAssoc');//20171228 filter current tenant and assoc for nonOffice access
+	if (!session.corporate){
+		databaseManager.addTableFilterParam('stsservoy','jobs','association_id','=',session.associationId,'filterCurrentAssoc');
+	}
 	if (appType == 1){
 		var client = plugins.UserManager.getClientByUID(session.sessionId);
 		client.maxIdleTime = 0;
@@ -1838,4 +1843,32 @@ function getDateTime(dateString){
 	if (dt.length != 3){return null}
 	var dated = new Date('20'+dt[2],dt[0]-1,dt[1]-1,12,0,0,0);
 	return dated;
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} i18nString
+ *
+ * @properties={typeid:24,uuid:"87BF46A4-C111-4248-A26A-38E104B8A15E"}
+ */
+function confirmDialog(event,i18nString){
+	globals.doDialog(i18n.getI18NMessage(i18nString),
+		i18n.getI18NMessage(i18nString),
+		i18n.getI18NMessage('sts.btn.yes'),
+		i18n.getI18NMessage('sts.txt.cancel'));
+		//'Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
+	if (globals.dialogResponse.toLowerCase() != 'yes'){
+		//application.output('delete cancelled');
+		return false;
+	}
+	//application.output('ask second question');
+	globals.doDialog(i18n.getI18NMessage(i18nString),
+			i18n.getI18NMessage('sts.txt.are.you.sure'),
+			i18n.getI18NMessage('sts.txt.cancel'),
+			i18n.getI18NMessage('sts.btn.yes'));
+	//'Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
+		//application.output('delete aborted');
+		return false;
+	}
+	return true;
 }

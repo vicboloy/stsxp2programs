@@ -39,6 +39,10 @@ function newRecord(event, location, changeSelection) {
  * @AllowToRunInFind
  */
 function deleteRecord(event, index) {
+	if (foundset.getSelectedRecord().group_name.search('\\.') == 0){
+		globals.DIALOGS.showErrorDialog('1219',i18n.getI18NMessage('1219'))//20180103 Cannot delete a default group. Prefixed '.'
+		return;
+	}//20180103 cannot delete default group
 	/** @type {QBSelect<db:/stsservoy/user_groups>} */
 	var ug = databaseManager.createSelect('db:/stsservoy/user_groups');
 	ug.result.add(ug.columns.user_group_uuid);
@@ -121,4 +125,36 @@ function onActionDupe(event) {
 		dupedRec.group_uuid = dupeRec.group_uuid;
 	}
 	databaseManager.saveData(S);
+}
+
+/**
+ * Handle record selected.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"7A82288A-B970-4F37-BF9F-1EB32AD87AB4"}
+ * @AllowToRunInFind
+ */
+function onRecordSelection(event) {
+
+	var form = forms.app_user_group_detail;
+	application.output('record selection entered'+form.group_name)
+	form.elements.groupKeys.enabled = false;
+	if (form.group_name){
+		var name = form.group_name;
+		var doneEnabled = forms.app_permissions.elements.btn_Done.visible == true;
+		//if (!application.isInDeveloper()){
+			form.elements.groupKeys.enabled = (name.search('\\.') != 0) && doneEnabled ;//20180103 disable edit default group contents
+		//}
+	}
+	return _super.onRecordSelection(event)
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"CC5E4A3C-9884-4022-AA16-FECE8748B88C"}
+ */
+function formModeEdit(event){
+	
 }

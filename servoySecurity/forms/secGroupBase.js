@@ -40,6 +40,8 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 	newIDs = (newIDs) ? new String(newIDs).split('\n') : [];				//	split the new id list into an array by carriage return
 	newIDs.sort();															//	sort the array
 	
+	if (newIDs.length == oldIDs.length){return}
+	
 	if(newIDs.length > oldIDs.length){										//	check difference: id was ADDED
 		id = newIDs[newIDs.length - 1];									//	determine the id, starting with the last element in the array
 		for(i in oldIDs){													//	iterate by the old ids
@@ -54,22 +56,20 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 			databaseManager.saveData(fs.getSelectedRecord());				//	save data
 		}
 	} else {																//	id was REMOVED	
-		//id = oldIDs[oldIDs.length - 1];									//	determine the id, starting with the last element in the array
-		/**for(i in newIDs){													//	iterate by the new ids
-			if(oldIDs[i] != newIDs[i])										//	until the corresponding old id doesn't match
+		id = oldIDs[oldIDs.length - 1];									//	determine the id, starting with the last element in the array
+		for(i in newIDs){													//	iterate by the new ids
+			if(oldIDs[i] != newIDs[i]){										//	until the corresponding old id doesn't match
 				id = oldIDs[i];												//	which gives the id that was removed
-		}*/
-		id = oldIDs.pop();
-		while (newIDs.indexOf(id) != -1){
-			id = oldIDs.pop();
+				null;
+				break;
+			}
 		}
-		if(fs.find()){														//	search the foundset
+		if(id && fs.find()){														//	search the foundset
 			fs[idColumnName] = id;											//	by the fk column
 			if(fs.search())																					
 				fs.deleteRecord();											//	delete record
 		}
 	}
-	//updateUI();																//	update user interface
 	updateUI(event);																//	update user interface
 	return true;															//	allow data change
 }

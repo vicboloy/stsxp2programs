@@ -222,6 +222,12 @@ function onDataChangeJobNum(oldValue, newValue, event) {
 		onActionCancelEdit(event);
 		var idx = foundset.getRecordIndex(rec);
 		foundset.setSelectedIndex(idx);
+	} else {
+		if (globals.session.tenantJobArray.indexOf(newValue) != -1){
+			plugins.dialogs.showErrorDialog('1218',i18n.getI18NMessage('1218'));//1218 - This Job Number Already Exists in STS X.
+			newValue = '';
+			return true;
+		}
 	}
 	
 	globals.onFocusTabsSTS(event);
@@ -297,8 +303,9 @@ function onShow(firstShow, event) {
 		vJobWeightUnits = (metric_job==1) ? 'kgs' : 'lbs';
 		elements.job_number.requestFocus();
 		globals.getCustomerList();
+		globals.setUserFormPermissions(event);
+		scopes.jobs.formPermissions(event,true);
 	}
-	globals.setUserFormPermissions(event);
 	onActionHeats(event);
 	foundset.loadAllRecords();
 	var path = scopes.prefs.reportpath;

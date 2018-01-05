@@ -93,3 +93,17 @@ function onRecordSelection(event) {
 		activeLogin = rec.is_account_active;
 	}
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"7AC2ED6B-8536-4DF8-A3E1-302698B9D8C2"}
+ */
+function onShow(firstShow, event) {
+	if (firstShow){
+		scopes.jobs.formPermissions(event,false);
+	}
+}

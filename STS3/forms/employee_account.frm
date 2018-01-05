@@ -234,7 +234,7 @@ uuid:"FF4D1A18-38A0-40DE-9480-2DD8E517B24A"
 ],
 name:"employee_account",
 navigatorID:"-1",
-onShowMethodID:"-1",
+onShowMethodID:"D86B3C83-27D8-4526-B919-123D7EEEC6BA",
 showInMenu:true,
 size:"376,338",
 styleName:"sts_one",

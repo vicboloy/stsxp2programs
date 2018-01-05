@@ -2,6 +2,10 @@ customProperties:"methods:{\
 onHideMethodID:{\
 arguments:null,\
 parameters:null\
+},\
+onLoadMethodID:{\
+arguments:null,\
+parameters:null\
 }\
 }",
 dataSource:"db:/stsservoy/jobs",
@@ -271,6 +275,7 @@ location:"332,15",
 name:"job_number",
 onDataChangeMethodID:"177EE23C-05E3-4131-A6C1-586D259F1790",
 onFocusLostMethodID:"-1",
+selectOnEnter:true,
 size:"140,20",
 tabSeq:1,
 text:"Job Number",
@@ -740,7 +745,7 @@ uuid:"FFE799B7-84ED-4446-9311-5CACEDF8F0CB"
 name:"jobs_general",
 navigatorID:"-1",
 onHideMethodID:"-1",
-onLoadMethodID:"-1",
+onLoadMethodID:"D4D51067-2023-4108-A007-BFDB214F7ADB",
 onRecordSelectionMethodID:"96D0E7FA-8490-4C31-95D5-2F1E3514219D",
 onShowMethodID:"D3694EFE-4004-4583-A215-4C9582FF0ED8",
 showInMenu:true,

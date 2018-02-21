@@ -194,14 +194,32 @@ function fileReceipt(file){
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
 function getKissFile(event){
-	elements.btnSelect.enabled = false;
+	scopes.jobs.warningsYes();
+	var verified = scopes.fs.verifyKissImportFilters(event);
+	if (!verified){
+		var response = globals.DIALOGS.showQuestionDialog(
+		i18n.getI18NMessage('1221'),//import filters may not apply
+		i18n.getI18NMessage('1221'),
+		i18n.getI18NMessage('sts.btn.no'),
+		i18n.getI18NMessage('sts.btn.yes'));
+		if (response == i18n.getI18NMessage('sts.btn.no')){
+			scopes.jobs.warningsX();
+			return;
+		}
+	}
+	elements.btn_GetKiss.enabled = false;
 	elements.btn_Close.enabled = false;
-	elements.btnClear.enabled = false;
+	elements.btn_Clear.enabled = false;
 	var servoyDir = scopes.prefs.importpath;
+	//var servoyDir = plugins.UserManager.Client().userDir;
+	var randFile = 'Import'+new Date().getTime()+'.kss';
+	var servoyDir = servoyDir+'\\'+randFile;
+	servoyDir = servoyDir.replace('[A-Za-z]//','');
+	application.output('Import file '+servoyDir);
 	var request = '<FabSuiteXMLRequest>\n\
 		<ExportJob>\n\
 		<JobNumber>'+vJobNumber+'</JobNumber>\n\
-		<FileName>'+servoyDir+'\\KissFileSTSx.kss</FileName>\n\
+		<FileName>'+servoyDir+'</FileName>\n\
 		<IncludeLotNumbers>1</IncludeLotNumbers>\n\
 		</ExportJob>\n\
 		</FabSuiteXMLRequest>';
@@ -211,12 +229,16 @@ function getKissFile(event){
 		var success2 = solutionModel.removeForm('kiss_barcode_request');
 		if (!success2){globals.loggerDev(this,'Remove form history fail.');}
 	}
-	history.removeForm('kiss_excludes_lst');
-	solutionModel.removeForm('kiss_excludes_lst');
+	var success = history.removeForm('kiss_excludes_lst');
+	if (application.isInDeveloper()){application.output('kiss_excludes_lst form history removed '+success)}
+	success = solutionModel.removeForm('kiss_excludes_lst');
+	if (application.isInDeveloper()){application.output('kiss_excludes_lst form object removed '+success)}
 
 	var filters = {Sequence:vSeqNumber,LotNumber:vLotNumber,MainMark:vPartNumber,DrawingNumber:vDrawingNumber}
+	if (application.isInDeveloper()){application.output('kiss on server');}
 	scopes.kiss.importFSOnServer(event,request,filters);//IMPORT 1 importFSOnServer
 	
+	/**
 	if (1==1){return}
 	if (scopes.prefs.lFabsuiteInstalled){
 		var getFskiss = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.kiss.fabsuite'),i18n.getI18NMessage('sts.txt.kiss.fabsuite'),[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')])
@@ -235,6 +257,7 @@ function getKissFile(event){
 							</Connect>\
 						</FabSuiteXMLRequest>';
 			var response = plugins.fabsuite.fsXML(xmlQuery);
+			application.output(scopes.fs.fabSuiteError(response));
 			//application.output('fs xml response '+response);
 			var test0 = plugins.fabsuite.fsSetLib('C:\\Program Files (x86)\\FabSuite LLC\\FabSuite\\FabSuiteXMLInterface.dll');
 			var xmlConnect = '<FabSuiteXMLRequest>\
@@ -271,6 +294,7 @@ function getKissFile(event){
 	//var path = "C:\\Users\\Alienware\\Documents\\STS p2programs\\KISS\\";
 	//var path = scopes.prefs.importpath;
 	//plugins.file.showFileOpenDialog(0, path, false, fileReceipt);
+	 */
 }
 /**
  * Perform the element default action.
@@ -327,13 +351,17 @@ function onActionHide(event) {
  */
 function onShow(firstShow, event) {
 	if (firstShow){
-		entryOrder = ['jobEntry','numSeq','numLot','numPart','numDraw','btnSelect'];
+		entryOrder = ['jobEntry','numSeq','numLot','numPart','numDraw'];
+		/**scopes.fs.importData.drawings.push('');
+		scopes.fs.importData.sequences.push('');
+		scopes.fs.importData.lots.push('');
+		scopes.fs.importData.mainMarks.push('');*/
 	}
 	//globals.setUserFormPermissions(event);
 	onActionClearForm(event);
-	elements.btnSelect.enabled = false;
+	elements.btn_GetKiss.enabled = false;
 	elements.btn_Close.enabled = true;
-	elements.btnClear.enabled = true;
+	elements.btn_Clear.enabled = true;
 	elements.jobEntry.requestFocus(false);
 	currentAssocName = globals.session.association;
 }
@@ -370,6 +398,50 @@ function onActionClearForm(event) {
 	vLotNumber = '';
 	vLotAll = 1;
 	vSeqAll = 1;
-	elements.btnSelect.enabled = false;
+	elements.btn_GetKiss.enabled = false;
 	elements.jobEntry.requestFocus();
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"915DCF57-B15D-4A23-9FA6-4B011EB1EEF5"}
+ */
+function onDataChangeCheck(oldValue, newValue, event) {
+	var elName = event.getElementName();
+	if (elName == 'numSeqAll'){
+		if (newValue == 1){vSeqNumber = ''}
+	}
+	if (elName == 'numLotAll'){
+		if (newValue == 1){vLotNumber = ''}
+	}
+	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"EFF99839-30A0-4600-9CD0-BF4DAE3A6177"}
+ */
+function onDataChangeLotSeq(oldValue, newValue, event) {
+	var elName = event.getElementName();
+	if (elName == 'numSeq'){
+		vSeqAll = (newValue == '') ? 1 : 0;
+	}
+	if (elName == 'numLot'){
+		vLotAll = (newValue == '') ? 1 : 0;
+	}
+	return true
 }

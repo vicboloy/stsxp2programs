@@ -64,7 +64,10 @@ function onRenderRequestBarCount(event) {
 		//var recalc = false;
 		//var rec = event.getRecord();
 		if (rend.getName() == 'set_bc_qty'){
-			if ((rec && rec.item_qty == 1) || (rec && rec.parent_piecemark != rec.piecemark) ){
+			if ((rec && rec.item_qty == 1) || 
+					(rec.import_status == i18n.getI18NMessage('status.ignore'))){// ||
+					//(scopes.prefs.qtyPrompt != 0 && rec.item_qty*1 < scopes.prefs.qtyPrompt*1) || 
+					//(scopes.prefs.wtPrompt != 0 && rec.item_weight*rec.item_qty <= scopes.prefs.wtPrompt*1) ){//) || (rec && rec.parent_piecemark != rec.piecemark) ){
 				//rec.set_bc_qty = 1;
 				rend.fgcolor = 'black';rend.border = 'EmptyBorder,0,0,0,0';
 				rend.enabled = false;
@@ -167,8 +170,45 @@ function onRenderStatus(event) {
  * @properties={typeid:24,uuid:"159235FD-8C6C-43FC-8832-98E789A41384"}
  */
 function onSort(dataProviderID, asc, event) {
+	function sort(a,b){
+		var numeric = (a-b);
+		application.output('numeric '+numeric);
+		if (numeric== "NaN"){
+			if (asc){
+				return (a-b);
+			} else {
+				return (b-a);
+			}
+		} else {
+			if (asc){
+				return (a<b);
+			} else {
+				return (a>b);
+			}
+		}
+	}
+	//if (1==1) {return}
 	application.output('sorting '+dataProviderID);
-	controller.sort(dataProviderID + (asc ? ' asc' : ' desc'), false);
+	var form = event.getFormName();
+	sort(dataProviderID + (asc ? ' asc' : ' desc'), false);
 	application.output('has record changes '+databaseManager.hasRecordChanges(foundset))
 	application.output('sort complete');
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"944967A0-68FC-410B-99A1-E9278A890C0B"}
+ */
+function onDataChangeStatus(oldValue, newValue, event) {
+	var idx = controller.getSelectedIndex();
+	var rec = foundset.getRecord(idx);
+	if (rec){databaseManager.saveData(rec)}
+	return true;
 }

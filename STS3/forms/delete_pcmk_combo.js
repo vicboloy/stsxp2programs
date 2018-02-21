@@ -1,4 +1,15 @@
-
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"17CBDB93-9500-44C1-936B-E71CA4EE97EC",variableType:4}
+ */
+var deleteJob = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"021C4120-0037-486D-A304-363019662C55",variableType:4}
+ */
+var deleteHistory = 0;
 /**
  * Callback method for when form is shown.
  *
@@ -8,7 +19,8 @@
  * @properties={typeid:24,uuid:"0D0218ED-5C64-44FE-88B6-3DBA7CA310FA"}
  */
 function onShow(firstShow, event) {
-
+	deleteJob = 0;
+	deleteHistory = 0;
 	return _super.onShow(firstShow, event)
 }
 
@@ -65,6 +77,7 @@ function onActionClearAll(event) {
  * @properties={typeid:24,uuid:"6588863C-C211-45FD-B32C-4FFCA0CA9711"}
  */
 function onActionDeleteSelected(event,formName) {
+	scopes.jobs.deleteDataJobId = forms.delete_criteria.vJobID;
 	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.records.selected'),
 		i18n.getI18NMessage('sts.txt.delete.records.selected'),
 		i18n.getI18NMessage('sts.txt.delete'),
@@ -94,6 +107,19 @@ function onActionDeleteSelected(event,formName) {
 	var omitList = [];
 	scopes.jobs.warningsYes();
 	scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',true);
+
+	if (deleteJob){//JOE 20180112
+		
+		scopes.jobs.importRecordsDelete(scopes.jobs.browseJobID);
+		scopes.jobs.warningsMessage('',true);
+		scopes.jobs.warningsX();
+		
+		return;
+	}
+	if (deleteHistory){//JOE 20180112
+		return;
+	}
+
 	var i = 1;
 	while (i <= fs.getSize()){ // collect selected record idfile id's
 		scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',false);
@@ -183,3 +209,4 @@ function onActionScreenToggle(event) {
 function onHide(event) {
 	return _super.onHide(event)
 }
+

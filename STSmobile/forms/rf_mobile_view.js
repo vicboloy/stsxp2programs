@@ -217,6 +217,24 @@ var showingFields = [];
  */
 var lastAction = '';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"9EC1199F-5853-43DB-8FC5-8579716AB8BC"}
+ */
+var sequence = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"8FB89D6E-ED8E-47C2-8B22-DD5DD27E9A68"}
+ */
+var quantity = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"8F1285DB-7F41-4643-93BD-593B6BCC5046"}
+ */
+var partnumber = '';
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -598,8 +616,8 @@ function onActionOptional(event) {
 		forms.rf_mobile_view.controller.focusField(currentField,true);
 		return true;		
 	}
-	forms[formName].elements[tabOrder[index]].requestFocus();
-	forms.rf_mobile_view.controller.focusField(tabOrder[index],true);
+	//forms[formName].elements[tabOrder[index]].requestFocus();
+	//forms.rf_mobile_view.controller.focusField(tabOrder[index],true);
 	return true;
 }
 /**

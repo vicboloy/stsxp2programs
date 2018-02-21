@@ -135,6 +135,11 @@ var aTrackWindows = ['STS - Main'];
  * @properties={typeid:35,uuid:"EBD2A621-C2C3-49BE-B7D8-E421721AB0C2"}
  */
 var com = '';
+/**
+ * List of idfiles/barcode id_serial_numbers that have been printed.
+ * @properties={typeid:35,uuid:"FC357C54-6A5F-4015-AF29-4F2AD3718DB3",variableType:-4}
+ */
+var barcodePrintedArray = [];
 //--------------------------------------------------------------------------------------
 /**
  * @properties={typeid:24,uuid:"E55D375F-2EA8-4D4E-8234-B7AF6A47619E"}
@@ -870,6 +875,10 @@ var tempArray = [];
  * @properties={typeid:35,uuid:"9B53D57D-E63F-4EA7-B47E-E46831EE61B6",variableType:-4}
  */
 var formsToRemove = [];
+/**
+ * @properties={typeid:35,uuid:"BCAFD77D-9FB1-4973-9FED-F8549994234E",variableType:-4}
+ */
+var showElementReferences = false;//20180105 show element references
 /**
  * Callback method for when solution is opened.
  *

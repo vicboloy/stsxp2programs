@@ -9,6 +9,7 @@
  */
 function onShow(firstShow, event) {
 	if (firstShow){
+		globals.setUserFormPermissions(event,false);
 		scopes.prefs.screenFull = false;
 	}
 	var formName = event.getFormName();

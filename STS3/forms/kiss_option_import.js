@@ -259,7 +259,7 @@ var exitSequence = false;
 /**
  * @properties={typeid:35,uuid:"6430E981-086D-4B41-BBD9-B05CFAECE228",variableType:-4}
  */
-var minorsChanged = true;
+var minorsChanged = false;
 /**
  * @properties={typeid:35,uuid:"0879B896-5487-4BA7-8CA3-446FE1770947",variableType:-4}
  */
@@ -388,7 +388,7 @@ function onShow(firstShow, event) {
 	scopes.jobs.importLabelCounts = [];
 	importOption = null;
 	elements.btn_Import.enabled = false;
-	keepMinors = scopes.prefs.lKeepMinorPcMarks;
+	keepMinors = scopes.prefs.lKeepMinorPcMarks;	minorsChanged = false;
 	//index;
 	///var custRec;
 	controller.enabled = true;
@@ -426,7 +426,9 @@ function onShow(firstShow, event) {
 	scopes.jobs.tablePrefsLoad('kiss_option_import');
 	//handle excludes by shape and summaries by piecemark
 	scopes.jobs.warningsMessage("Apply initial preferences to piecemark table.",true);
-	applyImportPreferences();
+	//applyImportPreferences(); 20180110 task disable upon load, use button instead
+	forms['import_table'].foundset.sort('parent_piecemark asc, piecemark asc');
+	databaseManager.saveData(foundset);
 	scopes.jobs.warningsMessage("Table complete.",true);
 }
 /**
@@ -500,6 +502,8 @@ function loadExclSumms() {
  * @properties={typeid:24,uuid:"091EDD49-911A-4129-8FE0-3710D32C2695"}
  */
 function saveExclSumms(){
+	var reply = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),i18n.getI18NMessage('sts.txt.question.save.discard.types'),[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
+	if (reply == i18n.getI18NMessage('sts.btn.no')){return}
 	//var excludedArray = [];
 	var uuidGen = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 	var formName = controller.getName();
@@ -649,6 +653,10 @@ function onHide(event) {
 	solutionModel.removeForm('kiss_option_import');
 	history.removeForm('kiss_barcode_request');
 	solutionModel.removeForm('kiss_barcode_request');
+	var success = history.removeForm('kiss_excludes_lst');
+	if (application.isInDeveloper()){application.output('kiss_excludes_lst form history removed '+success)}
+	success = solutionModel.removeForm('kiss_excludes_lst');
+	if (application.isInDeveloper()){application.output('kiss_excludes_lst form object removed '+success)}
 	var win = application.getActiveWindow();
 	win.hide();
 	return true
@@ -747,6 +755,10 @@ var drawSufx = "";
  * @type {JSFoundSet}
  */
 var kissFS = null;
+/**
+ * @properties={typeid:35,uuid:"213B30FD-BD69-4B8B-BABA-B489894C733A",variableType:-4}
+ */
+var useImportRouting = false;
 /**
  * Initial processing of Import KISS file to a visual representation of the Foundset
  * @properties={typeid:24,uuid:"87B9ADB5-5C35-4208-90CF-6E3003F6B9F1"}
@@ -1659,7 +1671,11 @@ function listDataset(db){
  * @AllowToRunInFind
  */
 function applyImportPreferences(){
-	//if (1==1){return}
+	var reply = globals.DIALOGS.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),
+		i18n.getI18NMessage('sts.txt.question.discard.types'),
+		[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
+	scopes.jobs.applyDiscardTypes = (reply == i18n.getI18NMessage('sts.btn.yes'));
+
 	scopes.jobs.warningsMessage('Applying import preferences to all rows.',true);
 	//scopes.jobs.warningsYes();
 	//scopes.jobs.warningsMessage('Apply import preferences.');
@@ -1668,7 +1684,7 @@ function applyImportPreferences(){
 	elements.btn_Import.bgcolor = '#f0f0f0';
 	//application.updateUI();
 	//application.output('color '+elements.btn_Import.bgcolor);
-	var appendToData2 = importOption.search('Append') != -1;
+	//var appendToData2 = importOption.search('Append') != -1; // 2018 remove since no import option this view anymore
 	//applyResetExclusions();
 	//applyShapeExcludes(transitionFS,transitionFSsink);
 	//applyShapeSummary(transitionFS,transitionFSsumm);
@@ -1678,6 +1694,7 @@ function applyImportPreferences(){
 	if (keepMinors == 0){
 		minors = i18n.getI18NMessage('sts.txt.minors.discarded');
 	}
+	minorsChanged = false;
 	errorMessage = i18n.getI18NMessage('sts.txt.exclude.summary.selections.set')+' '+minors;
 	///importRecordCount = transitionFS.getMaxRowIndex();
 	scopes.jobs.idCreationCount = 0;// reset bc count to be created
@@ -1704,7 +1721,7 @@ function applyImportPreferences(){
 		elements.btn_Import.bgcolor = 'green';
 		elements.btn_Import.enabled = true;
 	//}
-	saveExclSumms();
+	//saveExclSumms();
 	var excList = '';
 	var sumList = '';
 	var excldS = forms.kiss_excludes_lst.foundset;
@@ -1715,15 +1732,16 @@ function applyImportPreferences(){
 	}
 	var fs = forms.import_table.foundset;
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
-	rec = null; i = 1;
+	rec = null; i = 1; var totRec = 0;
 	while (rec = fs.getRecord(i++)){
 		/** @type String */
 		var majorPm = rec.parent_piecemark;
 		/** @type String */
 		var minorPm = rec.piecemark;
-		
+		totRec++;
 		if (!majorPm){continue}
 		var minorRecord = (keepMinors == 0) && ((minorPm != "") && majorPm.toLowerCase() != minorPm.toLowerCase());
+		
 		/** @type String */
 		var shape = rec.material.split(' ')[0];
 		shape = " " + shape + " ";
@@ -1732,8 +1750,8 @@ function applyImportPreferences(){
 		if (rec.import_status == smText || rec.import_status == igText){
 			rec.import_status = i18n.getI18NMessage('i18n:import.update');
 		}
-		if ((excList.search(shape) != -1) || minorRecord) { // || (sumList.search(shape) != -1)
-			rec.import_status = igText;
+		if (scopes.jobs.applyDiscardTypes && (excList.search(shape) != -1) || minorRecord) { // || (sumList.search(shape) != -1)
+			rec.import_status = igText;totRec--;
 		} else if ((sumList.search(shape) != -1)) {
 			rec.import_status = smText;
 		}
@@ -1746,9 +1764,10 @@ function applyImportPreferences(){
 
 	
 	}
+	importRecordCount = totRec;
 	scopes.jobs.warningsMessage('Finished applying import prefs.',true);
 	databaseManager.saveData(fs);
-	scopes.jobs.warningsX();
+	//scopes.jobs.warningsX();
 }
 /**
  * Handle changed data.
@@ -1992,5 +2011,5 @@ function verifyImportQuants(last,current,event){
  * @properties={typeid:24,uuid:"F47692AF-8415-47D2-9334-C3D943B4EE62"}
  */
 function onActionMinorMarks(event) {
-	// TODO Auto-generated method stub
+	minorsChanged = true;;
 }

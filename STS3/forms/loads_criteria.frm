@@ -230,6 +230,16 @@ typeid:4,
 uuid:"658BB30F-6E7A-45E3-9598-2B9D0C94FA56"
 },
 {
+formIndex:22,
+location:"417,89",
+onActionMethodID:"E6FA5BBD-3583-4E63-9534-EFF76D6816CF",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+text:"button",
+typeid:7,
+uuid:"6816B68D-AEFA-4F71-A9D9-A5D2E610C885"
+},
+{
 borderType:"EmptyBorder,0,0,0,0",
 formIndex:10,
 horizontalAlignment:4,

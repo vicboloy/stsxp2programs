@@ -3,6 +3,7 @@ extendsID:"A79F1F6F-C6D5-423B-990D-B21783F0F1EA",
 items:[
 {
 anchors:15,
+formIndex:1,
 items:[
 {
 containsFormID:"F9BF05D3-03D4-4B0D-86D8-1C3F0FB6FBE4",
@@ -86,10 +87,16 @@ uuid:"627D4746-D2A5-4993-8AC0-D91EFA7C0A8B"
 },
 {
 anchors:3,
-location:"427,35",
-onActionMethodID:"-1",
+background:"#00ff00",
+formIndex:3,
+horizontalAlignment:0,
+location:"367,35",
+name:"btn_Refs",
+onActionMethodID:"20A68262-4AD4-4B84-B6C1-786477CBD8E2",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
+size:"140,20",
+text:"i18n:sts.btn.tooltips",
 typeid:7,
 uuid:"6379FE0E-7EEA-4B5F-918C-E7905CE64F88"
 },

@@ -40,7 +40,7 @@ function onActionClose(event) {
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	stopEditing(event);
 	onEdit(event,false);
 	elements.btn_Edit.enabled = true;
@@ -78,9 +78,20 @@ function onEdit(event,editing){
 	var form = forms.app_user_group_detail;
 	var name = form.group_name;
 	var doneEnabled = forms.app_permissions.elements.btn_Done.visible == true;
-	//if (!application.isInDeveloper()){
+	if (!application.isInDeveloper()){
 		forms.app_user_group_detail.elements.groupKeys.enabled = (name.search('\\.') != 0) && doneEnabled ;//20180103 disable edit default group contents
-	//}
+	}
 
 	
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"20A68262-4AD4-4B84-B6C1-786477CBD8E2"}
+ */
+function onActionShowElementRefs(event) {
+	globals.showElementReferences = !globals.showElementReferences;
+	elements.btn_Refs.text = (globals.showElementReferences) ? i18n.getI18NMessage('sts.btn.tooltips.off') :i18n.getI18NMessage('sts.btn.tooltips');
 }

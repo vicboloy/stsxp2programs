@@ -212,7 +212,7 @@ function onShow(firstShow, event) {
 		elements.btn_Delete.visible =  (employee_number != "P2"); // protect admin account
 	}
 	if (firstShow){
-		//scopes.jobs.formPermissions(event,false);
+		scopes.jobs.formPermissions(event,false);
 	}
 }
 

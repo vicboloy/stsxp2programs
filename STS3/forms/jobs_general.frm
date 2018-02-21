@@ -270,7 +270,7 @@ valuelistID:"EB32DD89-6D84-4D8D-9EFF-FFDD2AE816FB"
 customProperties:"",
 dataProviderID:"job_number",
 displayType:10,
-format:"|#(30)",
+format:"|U[30]",
 location:"332,15",
 name:"job_number",
 onDataChangeMethodID:"177EE23C-05E3-4131-A6C1-586D259F1790",

@@ -12,6 +12,12 @@ titleText:"i18n:table.general.id_serial_number_id"
 },
 {
 allowNull:true,
+creationOrderIndex:7,
+dataType:93,
+name:"create_date"
+},
+{
+allowNull:true,
 creationOrderIndex:4,
 dataType:4,
 name:"delete_flag",
@@ -40,6 +46,12 @@ creationOrderIndex:3,
 dataType:4,
 name:"logic_flag",
 titleText:"i18n:table.general.logic_flag"
+},
+{
+allowNull:true,
+creationOrderIndex:8,
+dataType:4,
+name:"printed"
 },
 {
 allowNull:false,

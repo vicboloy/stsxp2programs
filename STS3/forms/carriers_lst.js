@@ -19,3 +19,18 @@ function delCustomerRecord(event) {
 	// TODO This probably isn't used.  Wrong place to put the deletion...
 	application.output('Deleting Record. '+forms.customers_lst.customer_number);
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"52897698-F5FB-49DC-B819-3527F96F7045"}
+ */
+function onShow(firstShow, event) {
+	if (firstShow){
+		globals.setUserFormPermissions(event,false);
+
+	}
+}

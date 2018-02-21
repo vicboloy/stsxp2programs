@@ -3,6 +3,7 @@ customValues:"i18n:import.create\r\
 i18n:import.update\r\
 i18n:import.summarize\r\
 i18n:import.reprint\r\
+i18n:import.nohist\r\
 i18n:import.ignore\r\
 i18n:import.append\r\
 i18n:import.delete\r\

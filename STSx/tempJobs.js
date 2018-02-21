@@ -3800,12 +3800,12 @@ function importRecords_append(){
  *
  * @properties={typeid:24,uuid:"20460AB2-71FA-4B54-86A8-9D82A229DBA1"}
  */
-function importRecords_overwrite(){
+function importRecords_overwriteX(){
 	warningsMessage('Overwrite - Deleting current job information.')
-	importRecordsDelete();
+	importRecordsDeleteX();
 	///var append = false;
 	warningsMessage('Overwrite - New Data . . .');
-	importRecords_sheet();
+	importRecords_sheetX();
 }
 /**
  * 
@@ -3818,8 +3818,8 @@ function importRecords_overwrite(){
  *
  * @properties={typeid:24,uuid:"E1E0102E-88DF-4454-907C-83465391D670"}
  */
-function importRecordsDelete(){
-	warningsMessage('Begin overwrite of data.');
+function importRecordsDeleteX(){
+	warningsMessageX('Begin overwrite of data.');
 	var jobID = scopes.jobs.jobUnderCustomer;
 	scopes.jobs.jobUnderCustomer = jobID;
 	/*
@@ -3830,19 +3830,19 @@ function importRecordsDelete(){
 	 * 2 delete sequences for job - attached to idfile and/or job
 	 * 4 delete idfiles for job - idfiles attached to piecemarks
 	 */
-	readPieceTables(); // existing records
-	deleteLotsJob();
-	warningsMessage('Delete Lots');
-	deleteSequencesJob(jobID);
-	warningsMessage('Delete Sequences');
-	deleteBarcodesJob();
-	warningsMessage('Delete Barcodes');
-	deleteIdfilesJob();
-	warningsMessage('Delete Idfiles');
-	deletePiecemarksJob();
-	warningsMessage('Delete Piecemarks');
-	deleteSheetsJob(jobID);
-	warningsMessage('Delete Sheets');
+	readPieceTableXs(); // existing records
+	deleteLotsJobX();
+	warningsMessageX('Delete Lots');
+	deleteSequencesJobX(jobID);
+	warningsMessageX('Delete Sequences');
+	deleteBarcodesJobX();
+	warningsMessageX('Delete Barcodes');
+	deleteIdfilesJobX();
+	warningsMessageX('Delete Idfiles');
+	deletePiecemarksJobX();
+	warningsMessageX('Delete Piecemarks');
+	deleteSheetsJobX(jobID);
+	warningsMessageX('Delete Sheets');
 }
 /**
  * 

@@ -1519,17 +1519,26 @@ function onActionUpdatePrefs(event) {
 		prefs = scopes.printer;
 		description = "Global Printer";
 		forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
+		var form = forms[event.getFormName()];
+		var tempPrefsChanged = form.prefsChanged;
 	}
 	scopes.jobs.warningsYes();
 	application.updateUI();
 	//var fs = databaseManager.getFoundSet('stsservoy','preferences2');
-	var user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+	var global_user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 	var tenant = globals.session.tenant_uuid;
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/preferences2');
 	fs.result.add(fs.columns.preferences2_id);
-	fs.where.add(fs.columns.user_uuid.eq(user_uuid));
+	fs.where.add(fs.or
+			.add(fs.columns.user_uuid.eq(global_user_uuid))
+			.add(fs.columns.user_uuid.eq(globals.session.userId))
+		);
 	fs.where.add(fs.columns.tenant_uuid.eq(tenant));
+	if (tempPrefsChanged){
+		var thesePrefs = tempPrefsChanged.sort();
+		fs.where.add(fs.columns.field_name.isin(thesePrefs)); //20180108 save only changed prefs
+	}
 	var FS = databaseManager.getFoundSet(fs);
 	var fldDescrip = []; var fldValue = [];var fldType = [];var fldName = [];
 	var fsIndex = 1;
@@ -1547,11 +1556,17 @@ function onActionUpdatePrefs(event) {
 	var variableSetting = "";
 	databaseManager.startTransaction();
 	for (variableX in prefs){
+		if (tempPrefsChanged){
+			if (tempPrefsChanged.indexOf(variableX) == -1){continue}//20180108
+		}
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.saving.preferences'),true);
 		//variableX = index;
 		variableSetting = prefs[variableX];
 		var variableType = typeof(variableSetting);
 		if (variableType === 'function'){continue}
+		if (tempPrefsChanged){
+			if (tempPrefsChanged.indexOf(variableX) == -1){continue}//20180108
+		}
 		//var fieldType = typeof(prefs[index]);
 		variableSetting +="";
 		if (fldName[variableX]){
@@ -1565,10 +1580,13 @@ function onActionUpdatePrefs(event) {
 		} else {
 			var recNum = FS.newRecord(false);
 			rec = FS.getRecord(recNum);
-			if (!user_uuid) {
+			if (!global_user_uuid) {
 				rec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
 			} else {
-				rec.user_uuid = user_uuid;
+				rec.user_uuid = global_user_uuid;
+			}
+			if (variableX.search('user') == 0){
+				rec.user_uuid = globals.session.userId;
 			}
 			rec.tenant_uuid = tenant;
 			rec.field_name = variableX;
@@ -1585,6 +1603,7 @@ function onActionUpdatePrefs(event) {
 		committed = databaseManager.commitTransaction();
 	}
 	if (application.isInDeveloper()){application.output('comitted '+committed)}
+	tempPrefsChanged = [];
 	setPrefsClean(event,prefType);
 	globals.onActionCancelButton(event);
 	application.updateUI();
@@ -1626,13 +1645,14 @@ function setPrefsDirty(event,prefsType){
 		}
 	}
 	if (formName.search('print') != -1){
+		
 		prefsPrinterDirty = (prefsType == "Printer") ? true : false;
-		forms.preferences_printer.elements.btn_UpdatePreferences.visible = (prefsPrinterDirty) ? true : false;
-		forms.preferences_printer.elements.btn_SessionPreferences.visible = (prefsPrinterDirty) ? true : false;
+		forms[formName].elements.btn_UpdatePreferences.enabled = (prefsPrinterDirty) ? true : false;
+		forms[formName].elements.btn_SessionPreferences.enabled = (prefsPrinterDirty) ? true : false;
 	} else {
 		prefsDirty = (prefsType != "Printer") ? true : false;
-		forms.preferences_main.elements.btn_UpdatePreferences.visible = (prefsDirty) ? true : false;
-		forms.preferences_main.elements.btn_SessionPreferences.visible = (prefsDirty) ? true : false;
+		forms.preferences_main.elements.btn_UpdatePreferences.enabled = (prefsDirty) ? true : false;
+		forms.preferences_main.elements.btn_SessionPreferences.enabled = (prefsDirty) ? true : false;
 	}
 }
 /**
@@ -1646,12 +1666,12 @@ function setPrefsClean(event,prefsType){
 	var formName = event.getFormName();
 	if (formName.search('print') != -1){
 		prefsPrinterDirty = (prefsType == "Printer") ? true : false;
-		forms.preferences_printer.elements.btn_UpdatePreferences.visible = (!prefsPrinterDirty);
-		forms.preferences_printer.elements.btn_SessionPreferences.visible = (!prefsPrinterDirty);
+		forms.preferences_printer.elements.btn_UpdatePreferences.enabled = (!prefsPrinterDirty);
+		forms.preferences_printer.elements.btn_SessionPreferences.enabled = (!prefsPrinterDirty);
 	} else {
 		prefsDirty = (prefsType != "Printer") ? true : false;
-		forms.preferences_main.elements.btn_UpdatePreferences.visible = (!prefsDirty);
-		forms.preferences_main.elements.btn_SessionPreferences.visible = (!prefsDirty);
+		forms.preferences_main.elements.btn_UpdatePreferences.enabled = (!prefsDirty);
+		forms.preferences_main.elements.btn_SessionPreferences.enabled = (!prefsDirty);
 	}
 }
 /**
@@ -1665,10 +1685,14 @@ function setPrefsClean(event,prefsType){
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"04DB1200-402E-4A31-85CB-8F463D135F52"}
+ * @AllowToRunInFind
  */
 function onDataChangePrefsGeneral(oldValue, newValue, event,prefsType) {
 	setPrefsDirty(event,prefsType);
-	return true
+	var elName = event.getElementName();
+	if (!globals.tempPrefsChanged){globals.tempPrefsChanged = []}
+	if (globals.tempPrefsChanged.indexOf(globals.tempPrefsChanged)){globals.tempPrefsChanged.push(elName);}
+	return true;
 }
 /**
  * @param event
@@ -1691,6 +1715,8 @@ function onActionFileOpenDialog(event,updateValue,prefsType) {
 		scopes.prefs[updateValue] = path;
 	}
 	setPrefsDirty(event,prefsType);
+	forms.preferences_printer.prefsChanged.push(updateValue);//20180109 update prefs on button inop from button change
+	
 }
 /**
  * @param event {JSEvent}
@@ -1776,15 +1802,20 @@ function onActionPrintLabels(event) {
 	/**
 	 * collect label fields and then push into tabbed fields with data
 	 */
-	application.output('print label fields');
-	var dbFields = scopes.printer.barTenderTextSpecs.split(",");
-	//scopes.printer.labelFields2 = scopes.printer.labelFields.split(",");
-	var tabCount = scopes.printer.barTenderFields.length;
-//	if (true == true ){return}
+	var specs = scopes.printer.getBTFieldData();
+	var fields = [];
+	for (var idx = 0;idx < specs.length;idx++){
+		fields.push(specs.field_name);
+	}
 	var outputFields = [];
 	var outputSpecs = [];
+	if (application.isInDeveloper()){application.output('print label fields')}
+	/** var dbFields = scopes.printer.barTenderTextSpecs.split(",");
+	//scopes.printer.labelFields2 = scopes.printer.labelFields.split(",");
+	var tabCount = scopes.printer.barTenderFields.length;
+
 	for (var index = 0;index < tabCount;index++){
-		//application.output('index '+index+" of "+tabCount+" "+dbFields[index]);
+		application.output('index '+index+" of "+tabCount+" "+dbFields[index]);
 		var fields = dbFields[index].split(" ");
 		var fieldIn = fields[1];
 		var fieldNameDb = fields[4].split(".");
@@ -1794,37 +1825,40 @@ function onActionPrintLabels(event) {
 		outputFields.push(fieldOut);
 		outputSpecs.push(new Array(fieldType,fieldSize,fieldIn));
 		//application.output(fieldOut);
-	}
+	} */
 	
 	//if (true || true) {return;}
+	var tabCount = specs.length;
 	var formName = event.getFormName();
 	var formTable = formName+"_table";
 	/** @type JSFoundSet */
 	var fs = forms[formTable].foundset;
 	var i = 1;
 	var fileLine = "";
-	var itemsSelected = false;
+	var itemsSelected = false; globals.barcodePrintedArray = [];
+	//var btSpec = {num: 0, name:'', size: 0,dbcol:'',dbtype:'',dbsize:0}
 	while (i <= fs.getSize()){
+		/** @type {JSRecord<selection:Number>} */
 		var rec = fs.getRecord(i++);
 		var tabContents = "";
 		if (rec.selection != 1){continue}
+		if (rec.bc_id_serial_number_id){globals.barcodePrintedArray.push(rec.bc_id_serial_number_id)}
 		itemsSelected = true;
-		for (index = 0;index < tabCount;index++){
-			var outputField = outputFields[index];
+		for (var index = 0;index < tabCount;index++){
+			/** @type {JSRecord<num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number>} */
+			var specObj = specs[index];
 			/** @type {Array} */
-			var outputSpec = outputSpecs[index]; // fieldtype,fieldsize
-			tabContents = rec[outputFields[index]];
-			//application.output(outputFields[index]+' tabContents '+tabContents)
+			var dbCol = specObj.dbcol.split('.');
+			var dbField = dbCol[dbCol.length-1];//get unique record field
+			tabContents = rec[dbField];
 			if (typeof tabContents === 'undefined'){
 				//application.output('undefined or unknow - '+scopes.printer.barTenderFields[index]);
-				var fieldTagName = scopes.printer.barTenderFields[index];
+				var fieldTagName = specObj.name;
 				tabContents = getNonRecordValues(rec,fieldTagName);
 			}
-			if (tabContents == null){
-				tabContents = "";
-			}
-
-			tabContents = tabContentFormat(tabContents,outputSpec);
+			if (!tabContents){tabContents = ''}
+			
+			tabContents = tabContentFormat(tabContents,specObj);
 			//application.output('contents '+tabContents);
 			fileLine += tabContents+"\t";
 		}
@@ -1837,76 +1871,168 @@ function onActionPrintLabels(event) {
  * @param {String} txtString
  *
  * @properties={typeid:24,uuid:"5D168323-EA10-466B-AEED-B5B6E31D38F3"}
+ * @AllowToRunInFind
  */
 function bartenderPrint(event,txtString){
 	null;
 	var versionForm = globals.getInstanceForm(event);
 	var formName = event.getFormName();
+	if (formName.search('barcode_piecemark_info') == 0){
+		formName = 'barcode_idlabel'+versionForm;
+	}
 	var reportPth = scopes.prefs.reportpath;
-	var btwFile = reportPth+"\\"+forms['barcode_idlabel'+versionForm].printingLabel;
+	var barForm = forms[formName];
+	
+	var printer = barForm.printerName;
+	var label = barForm.labelName;
+	var tempDir = (barForm.useLocalDirectory) ? barForm.localDir : scopes.prefs.temppath;
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
 	var line = "";
-	var fileName = reportPth+"\\barcodelabel.txt";
-	///var data = "";
-	var randFileName = reportPth+"\\" + application.getUUID().toString().split("-")[4] +".txt";
-	//application.output(randFileName);
+	var fileName = tempDir+"\\barcodelabel.txt";
+	var btwFile = reportPth+"\\"+label;
+	var btwExists = plugins.file.createFile(btwFile);
+	if (!btwExists.exists()){
+		globals.DIALOGS.showErrorDialog('1226',i18n.getI18NMessage('1226'));//BarTender Template Does Not Exist in Reports Location
+		scopes.jobs.warningsX();
+		return;
+	}
+
+	var randFileName = tempDir+"\\" + application.getUUID().toString().split("-")[4] +".txt";
+
 	var status = plugins.file.writeTXTFile(fileName,txtString);
 	if (status){globals.loggerDev(this,'Status write to txt file fail.');}
 	status = plugins.file.appendToTXTFile(fileName,line + "\n");
 	if (status){globals.loggerDev(this,'Status append to txt file fail.');}
-	plugins.file.copyFile(fileName,randFileName);
+	status = plugins.file.copyFile(fileName,randFileName);
 	null;
-	if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
-		globals.errorDialog('952');
-		//plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
-		return;
+	if (forms[formName].useLabeLasePrinter){
+		var labeLaseFile = tempDir+'/LabeLase1000.txt';
+		status = plugins.file.copyFile(fileName,labeLaseFile);
 	}
-	var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
-	if (!com || !com.isJACOBLoaded()) {
-		globals.errorDialog('953');
-		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
-		return;
-	}
-	com.put("Visible","true");
-	var formats = com.getChildJSCOM("Formats");
-	var format = formats.getChildJSCOM("Open","",[btwFile,"false",""]);
-	//application.output('btw file '+btwFile);
-	var DBs = format.getChildJSCOM("Databases");
-	var db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
-	//var setDb = db.getChildJSCOM("TextFile");
-	// Need db.TextFile.FileName = "c:\\barcodelabel.txt"
-	var oleDb = db.getChildJSCOM("TextFile");
-	oleDb.put("FileName",randFileName);
 	/**
-	var db = DBs.getChildJSCOM("GetDatabase","",["PostgreSQL35W"]);
-	var ole = db.getChildJSCOM("ODBC");
-	var sql = 'SELECT "bc_id", "bc_text1" FROM "public"."barcode_test" WHERE bc_id <> \'*EX0B022680*\'';
-	ole.put("SQLStatement",sql);
-	ole.put("UserId","DBA");
-	application.output("sql "+ole.get("SQLStatement"));*/
-	//format.put("Printer","Bullzip PDF Printer");
-	format.getChildJSCOM("PrintOut","",["false","true"]);
-	//formatsFile.call("ExportToClipboard",0,0);
-	//var comItems = formats.get("NamedSubStrings");
-	//var comMaterial = comItems.get('Item("Material")');
-	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
-	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
-	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
-	com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
-	com.release();
+	 * check for bartender 2016 or greater
+	 * show print status dialog or not t/f
+	 * how many duplicate labels
+	 * show print dialog t/f
+	 * printing labels, please wait message
+	 * set printed flags
+	 * enable printed status on table, render code
+	 * control print, won't enable unless printer and btw selected
+	 * create database label
+	 */
+	if (forms[formName].useBarTender){
+		if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
+			globals.errorDialog('952');
+			//plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
+			scopes.jobs.warningsX();
+			return;
+		}
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+		var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
+		if (!com || !com.isJACOBLoaded()) {
+			globals.errorDialog('953');
+			plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
+			return;
+		}
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+		com.put("Visible","true");
+		var formats = com.getChildJSCOM("Formats");
+		if (!formats){
+			plugins.dialogs.showErrorDialog('1225',i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+			scopes.jobs.warningsX();
+			return;
+		}
+		var format = formats.getChildJSCOM("Open","",[btwFile,false,printer]);
+		if (!format){
+			plugins.dialogs.showErrorDialog('1225',i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+			com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+			com.release();
+			scopes.jobs.warningsX();
+			if (1==1){return}
+			// check btwfile for existence
+			//var btwCheck =  (plugins.file.createFile(btwFile));
+			// check empty printer
+		}
+		//application.output('btw file '+btwFile);
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+		var DBs = format.getChildJSCOM("Databases");
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+		if (scopes.printer.barTender_2016){
+			var db = DBs.getChildJSCOM("GetDatabase","",["1"]);
+			if (!db){
+				db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
+			}
+		} else {
+			db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
+		}
+		if (!db){
+			plugins.dialogs.showErrorDialog('1225',i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+			com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+			com.release();
+			scopes.jobs.warningsX();
+			return;
+		}
+		//var setDb = db.getChildJSCOM("TextFile");
+		// Need db.TextFile.FileName = "c:\\barcodelabel.txt"
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+		var oleDb = db.getChildJSCOM("TextFile");
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+		oleDb.put("FileName",randFileName);
+		/**
+		var db = DBs.getChildJSCOM("GetDatabase","",["PostgreSQL35W"]);
+		var ole = db.getChildJSCOM("ODBC");
+		var sql = 'SELECT "bc_id", "bc_text1" FROM "public"."barcode_test" WHERE bc_id <> \'*EX0B022680*\'';
+		ole.put("SQLStatement",sql);
+		ole.put("UserId","DBA");
+		application.output("sql "+ole.get("SQLStatement"));*/
+		//format.put("Printer","Bullzip PDF Printer");
+		format.getChildJSCOM("PrintOut","",["false","true"]);
+		//formatsFile.call("ExportToClipboard",0,0);
+		//var comItems = formats.get("NamedSubStrings");
+		//var comMaterial = comItems.get('Item("Material")');
+		//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+		//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+		//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+		com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+		com.release();
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+		var reply = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),
+			i18n.getI18NMessage('sts.txt.question.delete.barcode.file'),
+			[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
+		if (reply == i18n.getI18NMessage('sts.btn.yes')){
+			var status = plugins.file.deleteFile(randFileName);
+			if (!status){//1223
+				plugins.dialogs.showErrorDialog('1223',i18n.getI18NMessage('1223'));
+			}
+		}
+	}
+	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
+	var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
+	q.where.add(q.columns.id_serial_number_id.isin(globals.barcodePrintedArray));
+	q.result.add(q.columns.id_serial_number_id);
+	var Q = databaseManager.getFoundSet(q);
+	Q.loadRecords();
+	var Qupdate = databaseManager.getFoundSetUpdater(Q);
+	Qupdate.setColumn('printed',1);
+	Qupdate.performUpdate();
+	
+	scopes.jobs.warningsX();
 }
 /**
  * @param {String} tabContents  "string indicating field from which to grab information
- * @param {Array} tabSpec //// fieldtype="Character|Date|Logical|Numeric",fieldsize="x|x.x"
+ * @param {Object} tabSpec //// fieldtype="Character|Date|Logical|Numeric",fieldsize="x|x.x"
  *
  * @properties={typeid:24,uuid:"86A68CCA-D101-4D62-886B-8F9197D80CD0"}
  * @AllowToRunInFind
  */
 function tabContentFormat(tabContents,tabSpec){
 	if (tabContents == ""){return tabContents}
+	//{num: 0, name:'', size: 0,dbcol:'',dbtype:'',dbsize:0}
 	/** @type {Array} */
-	var tabType = tabSpec[0]; // content type
+	var tabType = tabSpec.dbtype; // content type
 	/** @type {Array} */
-	var spec = tabSpec[1].split("."); //length or number.decimal
+	var spec = tabSpec.size.split("."); //length or number.decimal
 	var length = spec[0];	// decimal included?
 	var expectedData = tabSpec[2]; // incoming expected Data name field for Character, Numeric, Logical, Date
 	var decimal = 0;
@@ -1917,39 +2043,42 @@ function tabContentFormat(tabContents,tabSpec){
 	var blanks = "                    ";
 	var a = tabContents;
 	var b = "";
-	if (tabType == "Numeric"){
-		if (decimal != 0){
-			var nums = a.toString().split(".");
-			var zeroes = "0000000000000000";
-			a = blanks+nums[0];
-			b = nums[1]+zeroes;
-			b = b.substr(0,(decimal*1+1)); // get decimal, and round
-			b = Math.round(b/10)+zeroes;
-			b = b.substr(0,decimal);
-			b = "."+b;
-		}
-	}
-	if (tabType == "Date"){
-		var myDate = a;
-		myDate = Date.parse(myDate);
-		myDate2 = myDate.clone().add(6).days();
-		//application.ouput('in date '+myDate+" changed + 6 days "+myDate.add(6).days());
-		application.output('date is '+tabContents+ 'expected Data '+tabSpec+" +-+-+-+ "+expectedData+" dayts "+myDate2);
-		/** @type {Date} */
-		///var dated = a;
-		if (expectedData && expectedData.search("TIME") == -1){
-			//a ="";
-			var day = Date.parse(tabContents);
-			a = (day.getMonth()+1)+"/"+day.getDate()+"/"+day.getFullYear().toString().substr(2);
-			application.output('data converted is '+a);
-		} else {
-			a= day.getHours()+":"+day.getMinutes();
-			application.output('time is '+a);
-		}
-		
-		//if (expectedData.search("DATE") != -1) {
+	switch (tabType) {
+		case 'Numeric':
+			if (decimal != 0){
+					var nums = a.toString().split(".");
+					var zeroes = "0000000000000000";
+					a = blanks+nums[0];
+					b = nums[1]+zeroes;
+					b = b.substr(0,(decimal*1+1)); // get decimal, and round
+					b = Math.round(b/10)+zeroes;
+					b = b.substr(0,decimal);
+					b = "."+b;
+			}		
+			break;
+		case 'Date':
+			/** @type {Date} */
+			var myDate = a;
+			a = myDate.getMonth()+1+'/'+myDate.getDate()+'/'+myDate.getFullYear().toString().substr(2);;
+			myDate = Date.parse(myDate);
+			if (!myDate){return ''}
+			//myDate2 = myDate.clone().add(6).days();
+			//application.ouput('in date '+myDate+" changed + 6 days "+myDate.add(6).days());
+			//if (application.isInDeveloper()){application.output('date is '+tabContents+ 'expected Data '+tabSpec+" +-+-+-+ "+expectedData+" dayts "+myDate2)}
+			///** @type {Date} */
+			///var dated = a;
+			//if (expectedData && expectedData.search("TIME") == -1){
+				//a ="";
+				//var day = Date.parse(tabContents);
+				//a = (myDate.getMonth()+1)+"/"+myDate.getDate()+"/"+myDate.getFullYear().toString().substr(2);
+				//if (application.isInDeveloper()){application.output('data converted is '+a);}
+			//} else {
+			//	a= day.getHours()+":"+day.getMinutes();
+			//	if (application.isInDeveloper()){application.output('time is '+a);}
+			//}
 			
-		//}
+			break;
+		default:
 	}
 	a = blanks+a;
 	a = a.substr(a.length-length);

@@ -1,5 +1,5 @@
-customProperties:"design:{
-corporate:null
+customProperties:"design:{\
+corporate:null\
 }",
 dataSource:"db:/stsservoy/employee",
 encapsulation:60,
@@ -17,6 +17,7 @@ items:[
 {
 containsFormID:"22EFDBB4-D013-452F-82D2-60D162098B25",
 location:"89,14",
+name:"employee_specs",
 relationName:"sts_employee_container",
 text:"employee_specs",
 typeid:15,
@@ -25,6 +26,7 @@ uuid:"825CB24A-0CAB-4641-80A6-9B94B499017A"
 {
 containsFormID:"6350AE96-4977-44EB-A7D4-2F124C417D6E",
 location:"9,14",
+name:"employees_selection",
 relationName:"sts_employee_container",
 text:"employees_rec",
 typeid:15,

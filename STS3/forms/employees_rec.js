@@ -82,6 +82,7 @@ function createEmpList(event){
 	var columns = table.getColumnNames();
 	for (idx = 0;idx < columns.length;idx++){
 		var dataProvName = columns[idx];
+		if (application.isInDeveloper()){application.output('column name '+dataProvName)}
 		var dataProv = table.getColumn(columns[idx]).getDataProviderID();
 		if (dataProv.search('sv_') != -1){continue}
 		if (dataProv.search('_id') != -1){continue}
@@ -94,6 +95,7 @@ function createEmpList(event){
 			if (dataProvName.search('employee_lastname') != -1){tTip = i18n.getI18NMessage('table.employee.employee_lastname');width = 40;}
 			if (dataProvName.search('employee_number') != -1){tTip = i18n.getI18NMessage('table.employee.employee_number');width = 35;}
 			if (dataProvName.search('employee_firstname') != -1){tTip = i18n.getI18NMessage('table.employee.employee_firstname');width = 12}
+			if (dataProvName.search('association_name') != -1){tTip = i18n.getI18NMessage('table.employee.association.name');width = 20}
 		}
 		//lstForm.newLabel(txt,x,y,width,height)
 		var lbl = lstForm.newLabel(tTip,totalWidth,0,width,height);

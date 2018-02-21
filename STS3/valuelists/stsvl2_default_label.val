@@ -1,9 +1,6 @@
 addEmptyValue:1,
-customValues:"i18n:sts.txt.id.label.default\r
-i18n:sts.txt.part.label.default\r
-i18n:sts.txt.system.label.default",
+customValues:"i18n:sts.txt.id.label.default\r\
+i18n:sts.txt.part.label.default",
 name:"stsvl2_default_label",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"F81466D9-4AC6-4031-B98A-B4D5234F595B"

@@ -743,35 +743,38 @@ function importFSOnServer(event,xmlRequest,filters){
 	 * Parse the KISS file
 	 * Store in table
 	 */
+	forms['kiss_import'].onActionHide(event);
 	var serverIP = plugins.UserManager.Server().ipAddress;
 	var clientIP = plugins.UserManager.Client().ipAddress;
 	editDate = new Date();
-	if (application.isInDeveloper()){application.output('BEGIN Import '+editDate)}
-	if (serverIP == clientIP){
+	if (application.isInDeveloper()){application.output('BEGIN Import File Creation '+editDate)}
+	//if (serverIP == clientIP){
 		saveImportSettings(event);
 		if (application.isInDeveloper()){application.output('Import Job Settings Saved')}
-		importFSRequest(event,xmlRequest,filters);//IMPORT 2.2 importFSRequest
-		if (!scopes.jobs.readPieceTables()){application.output('Job ID is not set internal.  Exiting');return}
-		///importRecords(event);
-		if (application.getSolutionName() == "STS X Embedded"){
-			forms['sts_x'].onActionPrint(event);
-		} else {
-			//forms['kiss_option_import'].show();
-			//forms.import_table;
-			var win = application.createWindow("KISS Import", JSWindow.DIALOG);
-			win.title = "KISS Import";
-			win.show(forms.kiss_option_import);
+		if (importFSRequest(event,xmlRequest,filters)){//IMPORT 2.2 importFSRequest
+			if (!scopes.jobs.readPieceTables('import')){application.output('Job ID is not set internal.  Exiting');return}
+			///importRecords(event);
+			if (application.getSolutionName() == "STS X Embedded"){
+				forms['sts_x'].onActionPrint(event);
+			} else {
+				//forms['kiss_option_import'].show();
+				//forms.import_table;
+				warningsMessage('Open KISS options Window. Please wait.',true);
+				var win = application.createWindow("KISS Import", JSWindow.DIALOG);
+				win.title = "KISS Import";
+				win.show(forms.kiss_option_import);
+			}
 		}
-	}/** else {
+	/** else {
 		headless = plugins.headlessclient.createClient('STSx','S','S',['headless']);// onSolutionOpen argument
 		headless.queueMethod(null,'scopes.kiss.importFSRequest',[xmlRequest],scopes.kiss.importFSResponse);
 		application.sleep(5000);
 		//headless.shutdown();
 	}*/
 	var finishDate = new Date();
-	application.output('END Import '+finishDate);
+	if (application.isInDeveloper()){application.output('END Import File Creation '+finishDate)}
 	var dur = finishDate - editDate;
-	application.output('total time '+dur);
+	if (application.isInDeveloper()){application.output('total time '+dur)}
 }
 /**
  * @AllowToRunInFind
@@ -783,30 +786,29 @@ function importFSOnServer(event,xmlRequest,filters){
  * @properties={typeid:24,uuid:"DEEADCFA-36E3-4C08-B9A3-7BEE3B269CEF"}
  */
 function importFSRequest(event,xmlRequest,filters){
-	var xmlConnect = '<FabSuiteXMLRequest>\
-		<Connect>\
-			<IPAddress>localhost</IPAddress>\
-			<PortNumber>3306</PortNumber>\
-			<Username>admin</Username>\
-			<Password>fab</Password>\
-		</Connect>\
-	</FabSuiteXMLRequest>';
-	var response = '';
-	/** @type {String} */
-	var com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
-	var sample = com.toString();
 	if (application.isInDeveloper()){application.output('FS Check for COM')}
-	if (sample.search('RemoteCOM') != -1){
-		response = com.call('FabSuiteXML',xmlConnect);
+	application.output('FS Check for COM 1')
+	var ok = scopes.fs.checkComFabsuite(event);
+	application.output('FS Request Job')
+	if (application.isInDeveloper()){application.output('FS Request Job')}
+	if (ok == ''){
+		/** response = scopes.fs.com.call('FabSuiteXML',xmlConnect);
 		response = response.toString();
 		application.output('FS Test Successful Connect for Login');
 		if (response.search('<Successful>1') == -1){
 			plugins.dialogs.showErrorDialog('1170',i18n.getI18NMessage('1170'));
 			return;
-		}
-		application.output('FS Request For Job Data');
-		response = com.call('FabSuiteXML',xmlRequest);
+		} */
+		application.output('FS Request For Job Data'+xmlRequest);
+		response = scopes.fs.com.call('FabSuiteXML',xmlRequest);
 		response = response.toString();
+		var error = scopes.fs.fabSuiteError(response);
+		application.output(error);
+		if (error){
+			application.output('R \n'+response);
+			plugins.dialogs.showErrorDialog('1220',i18n.getI18NMessage('1220')+error);
+			return;
+		}
 
 		application.output('FS Check for Request Data Success');
 		if (response.search('<Successful>1') == -1){
@@ -817,17 +819,20 @@ function importFSRequest(event,xmlRequest,filters){
 		}
 		var xmlClose = '<FabSuiteXMLRequest><Close></FabSuiteXMLRequest>';
 		if (application.getSolutionName() == 'STS X Embedded'){
-			com.call('FabSuiteXML',xmlClose);
-			com.release();
+			scopes.fs.com.call('FabSuiteXML',xmlClose);
+			scopes.fs.com.release();
 		}
 		var regX = new RegExp('<FileName>(.*)</FileName>');
 		var fileAndPath = regX.exec(xmlRequest);
+		application.output('file '+fileAndPath[1]);
 		if (application.isInDeveloper()){application.output('Get Import File Metadata')}
 		importFSFileInfo(fileAndPath[1]);//IMPORT 3.1 importFSFileInfo
 		importSetTableFilters(event,filters);//IMPORT 3.2 importSetTableFilters
 		importPopKISSTable(event);//IMPORT 3.3 importPopKISSTable
+		return true;
 	} else {
 		plugins.dialogs.showErrorDialog('1170',i18n.getI18NMessage('1170'));
+		return false;
 	}
 
 }
@@ -873,8 +878,8 @@ function importFSFileInfo(file){
 			break;
 		}
 	}
-	var jobNumber = headerLine[hJobNum];//global job number setting
-	job.jobNumber = jobNumber;
+	var jobNumber = headerLine[hJobNum].toUpperCase();//global job number setting
+	//job.jobNumber = jobNumber;
 	job.metricFlag = (headerLine[hMetric] == "F") ? 0 : 1;
 	job.title = headerLine[hJobName];
 	job.name = headerLine[hJobName];
@@ -1109,7 +1114,7 @@ function importPopKISSTable(event) {
 		//if (application.isInDeveloper() && diffT > 2000){application.output('index '+index+' of '+lengthResults)}
 		warningsMessage('Process '+index+'/'+lengthResults,false);
 		//if (lineType[0] == '*'){importSubGUID = []}
-		if (lineType[0] == '*' && (tableFS.getSize() + guidsFS.getSize()) > 200){
+		if (lineType[0] == '*' && (tableFS.getSize() + guidsFS.getSize()) > 10){
 			var ok = databaseManager.saveData(tableFS);
 			tableFS.clear();	
 			tableFS.loadRecords('select import_table_id order by parent_piecemark, piecemark');
@@ -1257,7 +1262,7 @@ function importPopKISSTable(event) {
 			win.hide();
 		}
 	}
-	warningsX();
+	//warningsX();
 }
 
 /**
@@ -1333,6 +1338,7 @@ function importPopSaveDetailRow(){
 			newRec.item_qty = Math.floor(newRec.pcmk_qty/parentRec.pcmk_qty * thisSeqCnt).toFixed();				
 			popCount = newRec.sequence_quantity;
 			parentRec.item_weight = parentRec.item_weight*1 + (newRec.item_weight * newRec.item_qty);
+			parentRec.total_label_wt = parentRec.item_weight*1 * parentRec.item_qty;
 		}
 		if (!newRec.set_bc_qty){
 			var setQuant = newRec.item_qty;
@@ -2145,6 +2151,7 @@ function verifyImportQuantitiesX(last,current,event){
 	var formFS = forms[formName].foundset;
 	var idx = formFS.getSelectedIndex()+1;
 	if (idx < formFS.getSize()){formFS.setSelectedIndex(idx)} else {formFS.setSelectedIndex(1)}
+	if (rec){databaseManager.saveData(rec)}
 	return true;
 }
 /**

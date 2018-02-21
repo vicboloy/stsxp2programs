@@ -10,14 +10,12 @@ uuid:"2F4CA135-F526-42C0-829F-F42CB97CA284"
 {
 customProperties:"methods:{\
 onActionMethodID:{\
-arguments:[\
-null,\
-\"true\"\
-]\
+arguments:null,\
+parameters:null\
 }\
 }",
 extendsID:"386A923E-2D96-456D-BF91-E7A5922EEADA",
-onActionMethodID:"99D86CE4-07A3-4625-8174-9F332A538ACD",
+onActionMethodID:"A98C66C7-B597-44CA-A364-EC1E03C57F99",
 typeid:7,
 uuid:"96BF518D-6837-4F6A-BC9D-CA2A0FE647FA"
 }

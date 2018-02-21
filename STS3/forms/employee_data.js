@@ -5,6 +5,12 @@
  */
 var activeLogin = 0;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C4F17BD2-ADD3-40D6-8E2C-7EFAEA968D37"}
+ */
+var empLoginList = '';
+/**
  * @AllowToRunInFind
  * 
  *
@@ -78,6 +84,8 @@ function onActionEdit(event,editing){
  * @AllowToRunInFind
  */
 function onRecordSelection(event) {
+	activeLogin = false;
+	var loginArray = [];
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var userFS = databaseManager.createSelect('db:/stsservoy/users');
 	
@@ -86,12 +94,14 @@ function onRecordSelection(event) {
 	userFS.where.add(userFS.columns.delete_flag.isNull);
 	userFS.where.add(userFS.columns.employee_id.eq(employee_id));
 	var U = databaseManager.getFoundSet(userFS);
-	/** @type {JSRecord<db:/stsservoy/users>} */
-	var rec = U.getRecord(1);
-	activeLogin = false;
-	if (rec){
-		activeLogin = rec.is_account_active;
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
+	var rec = null; index = 1;
+	while (rec = U.getRecord(index++)){
+		if (!activeLogin){if (rec.is_account_active){activeLogin = true}}
+		loginArray.push(rec.user_name);
 	}
+	loginArray = loginArray.sort();
+	empLoginList = loginArray.toString().replace('[','').replace(']','');
 }
 
 /**

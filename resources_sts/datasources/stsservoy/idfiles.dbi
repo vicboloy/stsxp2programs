@@ -44,6 +44,12 @@ titleText:"i18n:table.idfiles.control_number"
 },
 {
 allowNull:true,
+creationOrderIndex:64,
+dataType:93,
+name:"create_date"
+},
+{
+allowNull:true,
 creationOrderIndex:20,
 dataType:12,
 flags:4,

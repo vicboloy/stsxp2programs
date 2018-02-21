@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/carrier",
 encapsulation:0,
 extendsID:"-1",
@@ -58,6 +64,7 @@ uuid:"CBEFE966-51BB-44A5-94DE-EB72CF40B20C"
 name:"carriers_lst",
 navigatorID:"-1",
 onRecordSelectionMethodID:"-1",
+onShowMethodID:"52897698-F5FB-49DC-B819-3527F96F7045",
 scrollbars:32,
 selectionMode:1,
 size:"170,64",

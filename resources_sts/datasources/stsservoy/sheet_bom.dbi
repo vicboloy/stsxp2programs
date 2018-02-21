@@ -24,6 +24,13 @@ name:"bom_backflush_quantity"
 },
 {
 allowNull:true,
+creationOrderIndex:36,
+dataType:12,
+length:100,
+name:"bom_comment"
+},
+{
+allowNull:true,
 creationOrderIndex:33,
 dataType:12,
 length:15,
@@ -124,6 +131,13 @@ creationOrderIndex:24,
 dataType:12,
 length:30,
 name:"bom_remarks"
+},
+{
+allowNull:true,
+creationOrderIndex:35,
+dataType:12,
+length:25,
+name:"bom_sequence_num"
 },
 {
 allowNull:true,

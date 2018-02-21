@@ -390,7 +390,7 @@ var printingLabel = "";
 *
 * @properties={typeid:35,uuid:"E4C4E59D-EBC8-4420-82AC-82EC00C92172"}
 */
-var labelPrintOrder = 'Piece Mark';
+var labelPrintOrder = i18n.getI18NMessage('sts.print.order.piecemark');
 /**
 * @type {String}
 *
@@ -698,7 +698,7 @@ function onActionPermissions(event) {
  * @properties={typeid:24,uuid:"8378DB0B-1F09-430A-84C3-D34DCCAD8B59"}
  */
 function onActionBarcodeLabels(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.bar.code.id.labels'),'barcode_print',50,50,620,490,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.bar.code.id.labels'),'barcode_print',50,50,620,670,true);
 }
 /**
  * @param {String} formName

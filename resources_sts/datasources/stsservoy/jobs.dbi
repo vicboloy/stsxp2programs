@@ -39,6 +39,12 @@ name:"bill_to",
 titleText:"i18n:table.jobs.bill_to"
 },
 {
+allowNull:true,
+creationOrderIndex:32,
+dataType:93,
+name:"create_date"
+},
+{
 allowNull:false,
 creationOrderIndex:1,
 dataType:12,

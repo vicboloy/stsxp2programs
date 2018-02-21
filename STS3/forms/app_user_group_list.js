@@ -138,19 +138,17 @@ function onActionDupe(event) {
 function onRecordSelection(event) {
 
 	var form = forms.app_user_group_detail;
-	application.output('record selection entered'+form.group_name)
 	form.elements.groupKeys.enabled = false;
 	if (form.group_name){
 		var name = form.group_name;
 		var doneEnabled = forms.app_permissions.elements.btn_Done.visible == true;
-		//if (!application.isInDeveloper()){
+		if (!application.isInDeveloper()){
 			form.elements.groupKeys.enabled = (name.search('\\.') != 0) && doneEnabled ;//20180103 disable edit default group contents
-		//}
+		}
 	}
 	return _super.onRecordSelection(event)
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"CC5E4A3C-9884-4022-AA16-FECE8748B88C"}

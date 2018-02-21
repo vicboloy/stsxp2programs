@@ -2776,7 +2776,7 @@ function createBarCodePrefix(){
  * @properties={typeid:24,uuid:"B16AB869-1385-422D-AE81-39AD47A9E7B4"}
  * @AllowToRunInFind
  */
-function createBarCodeNextNumber(){
+function createBarCodeNextNumberK(){
 	///var barcodeLength = scopes.prefs.barcodeLength;
 	var prefix = createBarCodePrefix(); // serial is loaded in this call, too
 	///var serialLength = barcodeLength-barcodePrefix.length;

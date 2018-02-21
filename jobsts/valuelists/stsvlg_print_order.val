@@ -1,6 +1,8 @@
 addEmptyValue:1,
+customValues:"i18n:sts.print.order.piecemark\r\
+i18n:sts.print.order.id.number\r\
+i18n:sts.print.order.drawing.number\r\
+i18n:sts.print.order.material",
 name:"stsvlg_print_order",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"457830FB-CE31-4F3E-A472-FE8EBB6FBADB"

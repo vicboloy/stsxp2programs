@@ -47,6 +47,12 @@ titleText:"i18n:table.piecemarks.cost_of_work_quantity"
 },
 {
 allowNull:true,
+creationOrderIndex:43,
+dataType:93,
+name:"create_date"
+},
+{
+allowNull:true,
 creationOrderIndex:28,
 dataType:4,
 name:"delete_flag",
@@ -336,6 +342,13 @@ dataType:12,
 length:20,
 name:"ship_tag",
 titleText:"i18n:table.piecemarks.ship_tag"
+},
+{
+allowNull:true,
+creationOrderIndex:42,
+dataType:12,
+length:30,
+name:"subcategory"
 },
 {
 allowNull:true,

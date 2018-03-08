@@ -817,6 +817,10 @@ var applyDiscardTypes = false;
  */
 var deleteDataJobId = null;
 /**
+ * @properties={typeid:35,uuid:"A71D58D7-C734-460D-9FC2-7702992B7FE9",variableType:-4}
+ */
+var purgeBarcodeRecords = [];
+/**
  * @properties={typeid:35,uuid:"7F3841B5-E667-4FFB-9B9F-C3BA1F2D9E18",variableType:-4}
  */
 var endVars = null;
@@ -1682,7 +1686,7 @@ function tablePrefsLoad(formx){
 	var elems = forms[formy].elements;
 	
 	
-	if (application.isInDeveloper()){application.output('xxx tablePrefsLoad table '+formy.replace(version,"")+'_table')}
+	if (application.isInDeveloper()){application.output('xxx tablePrefsLoad table '+formy.replace(version,"")+'_table'+' '+formy)}
 	for (var index in elems){
 		var colName = elems[index].getName();
 		var vis = (elems[index].isVisible()) ? 1 : 0;
@@ -3911,13 +3915,16 @@ function findEmptyColumns(event,table){
 	//globals.a.tempHiddenEmpty = [];
 	var altForm = (table == 1);
 	var formName = event.getFormName();
+	var regexp = new RegExp(/(_[0-9]+)/);
+	versionMatch = event.getFormName().match(regexp);
+	if (versionMatch){versionForm = versionMatch[1]}
 	var prefix = formName.split('_')[0];
 	var hideEm = (globals.hideEmptyColumns == 1);
 	//application.output(prefix+' form name '+formName+' loads_pcmk_combo');
 	//forms.loads_pcmk_combo.elements.split.getRightForm().elements.checklist_line.visible
 	if (prefix == 'loads'){
 		var form = 'loads_pcmk_combo'+versionForm;
-		if (forms[form].elements.split.getLeftForm().elements.selection){
+		if (forms[form] && forms[form].elements && forms[form].elements.split.getLeftForm().elements.selection){
 			if (application.isInDeveloper()){application.output('hiding visibility of elements.selection column')}
 			//forms[form].elements.split.getLeftForm().elements.selection.visible = false;
 		}
@@ -4050,10 +4057,10 @@ function idHeaders(){
  */
 function onRecordSelectIdfile(event){
 	//application.output('selected line');
-	var versionForm = globals.getInstanceForm(event);
+	if (!versionForm){versionForm = globals.getInstanceForm(event);}
 	var formName = event.getFormName();
 	var tableParent = formName.replace("_table","");
-	//application.output('on record select '+formName);
+	if (application.isInDeveloper()){application.output('on record select '+formName+' version '+versionForm);}
 	if (typeof forms[tableParent].elements.tabless === 'object'){return}
 	//if (formName.search('barcode') != -1){return}
 	var prefix = event.getFormName().split("_")[0];
@@ -4062,7 +4069,11 @@ function onRecordSelectIdfile(event){
 	//var fs = databaseManager.getFoundSetCount('sts_piecemarks');
 	//fs.sts_piecemark.loadRecords();
 	//var fs = rec.piecemark_id.rr;
-	scopes.jobs['transactionIdfileId'+versionForm] = rec.idfile_id;
+	if (rec.idfile_id){//20180226 changed from idfile_id for showing transaction
+		scopes.jobs['transactionIdfileId'+versionForm] = rec.idfile_id;
+	} else {
+		scopes.jobs['transactionIdfileId'+versionForm] = rec.if_idfile_id;//20180226 changed from idfile_id for showing transaction
+	}
 	//application.output('idfileid '+scopes.jobs.transactionIdfileId);
 	//application.output('form name '+prefix+'_pcmk_transaction'+versionForm);
 	//forms.gen_browse_trans.controller.loadRecords();
@@ -4400,164 +4411,84 @@ function deletePiecemarksJob(){
 }
 /**
  * 
+ * @param {Boolean} deleteHistory 
  * @SuppressWarnings(wrongparameters)
  *
  * @properties={typeid:24,uuid:"2242DBCB-B3FE-41B1-9B40-919439411989"}
  */
-function deleteIdfiles(){
-	// get idfiles, get barcodes for idfiles, then retrieve remaining idfiles from that barcode
-	// delete idfiles, associated piecemarks, 
-	var index = 0;
-	///var lots = [];
-	var barcodes = [];
-	var piecemarks = [];
-	///var piecemarkRec = null;
+function deleteIdfiles(deleteHistory){
+	// Just set idfiles to '99' or set transactions to '99' and idfiles to '99'
 	if (scopes.jobs.idfilesToDelete.length == 0){return}
-	var itd = scopes.jobs.idfilesToDelete;
-	for (var i = 0;i < itd.length;i++){
-		itd[i] = application.getUUID(itd[i]);
-	}
+	//var itd = scopes.jobs.idfilesToDelete;
+	//for (var i = 0;i < itd.length;i++){
+	//	itd[i] = application.getUUID(itd[i]);
+	//}
 
-
-	//databaseManager.startTransaction();
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
-	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
-	i.result.add(i.columns.piecemark_id);
-	//i.result.add(i.columns.id_serial_number_id);
-	i.result.distinct = true;
-	i.where.add(i.columns.idfile_id.isin(scopes.jobs.idfilesToDelete));
-	/**i.where.add(i.or
-		.add(i.columns.delete_flag.isNull)
-		.add(i.columns.delete_flag.eq(0))
-		)*/
-	//i.where.add(i.columns.delete_flag.not.eq('99));
-	var resultII = databaseManager.getDataSetByQuery(i,-1);
-	//if (application.isInDeveloper()){application.output('idfiles to delete 1st pass '+scopes.jobs.idfilesToDelete)}
-
-	/** var barIds = [];
-	/ ** @type {JSFoundSet<db:/stsservoy/idfiles>} * /
-	var rec = null;var id2 = 1;
-	while (rec = resultII.getRecord(id2++)){
-		barIds.push(rec.id_serial_number_id);
-	}*/
-
-	var pcmkIds = resultII.getColumnAsArray(1);
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
-	var j = databaseManager.createSelect('db:/stsservoy/idfiles');
-	j.result.add(j.columns.idfile_id);
-	j.where.add(j.columns.piecemark_id.isin(pcmkIds));//get associated idfiles for piecemarks
-	var J = databaseManager.getDataSetByQuery(j,-1);
-	pcmkIds = [];
-	
-	var finalIdfiles = J.getColumnAsArray(1);
-	
-/**	var resultI = databaseManager.getFoundSet(i);
-	resultII = resultI.duplicateFoundSet();
-	/** @type {JSRecord<db:/stsservoy/idfiles>} * /
-	var rec = null;index = 1;
-	while (rec = resultI.getRecord(index++)){
-		if (barcodes.indexOf(rec.id_serial_number_id+"") == -1){
-			barcodes.push(rec.id_serial_number_id);
-		}
-		if (piecemarks.indexOf(rec.piecemark_id+"") == -1){
-			piecemarks.push(rec.piecemark_id);
-		}
-		index++;
-	}*/
-	
-	if (scopes.jobs.idfilesToDelete.length > 0){
-		/** @type {QBSelect<db:/stsservoy/idfiles>} */
-		var p =  databaseManager.createSelect("db:/stsservoy/idfiles");
-		p.result.add(p.columns.idfile_id);
-		p.where.add(p.columns.idfile_id.isin(finalIdfiles));
-		var resultB = databaseManager.getFoundSet(p);
-
-		/** @type {QBSelect<db:/stsservoy/transactions>} */
-		var pp = databaseManager.createSelect("db:/stsservoy/transactions");
-		pp.result.add(pp.columns.trans_id);
-		pp.result.add(pp.columns.delete_flag);
-		pp.result.add(pp.columns.edit_date);
-		pp.where.add(pp.columns.idfile_id.isin(finalIdfiles));
-		if (application.isInDeveloper()){application.output('pp idfiles delete list ')}
-		var resultT = databaseManager.getFoundSet(pp);
-		
-		/**
-		/** piecemarksCheck[] holds all piecemark that have had piecemarks deleted
-		 * piecemarksKeep[] identifies piecemarks with active idfiles
-		 * pop piecemarksCheck[] and push to piecemarksDelete unless it is in piecemarksKeep[]
-		 * /
-		var piecemarksCheck = [].concat(piecemarks);
-		var piecemarksKeep = [];
-		var piecemarksDelete = [];
-		/** @type {QBSelect<db:/stsservoy/idfiles>} * /
-		var u = databaseManager.createSelect("db:/stsservoy/idfiles");
-		u.result.add(u.columns.piecemark_id);
-		u.where.add(u.and
-				 .add(u.columns.piecemark_id.isin(piecemarks))
-				 .add(u.columns.idfile_id.not.isin(idfilesToDelete))
-				 .add(u.columns.delete_flag.isNull)
-				 .add(u.columns.tenant_uuid.eq(globals.session.tenant_uuid))
-			);
-		var resultP = databaseManager.getFoundSet(u);
-		index = 1;
-		while (index <= resultP.getSize()){
-			rec = resultP.getRecord(index);
-			if (piecemarksKeep.indexOf(rec.piecemark_id+"") == -1){
-				piecemarksKeep.push(rec.piecemark_id+"");
-			}
-			index++;
-		}
-		while (piecemarksCheck.length > 0){
-			var piecemark = piecemarksCheck.pop();
-			if (piecemarksKeep.indexOf(piecemark) == -1){
-				piecemarksDelete.push(piecemark);
-			}
-		}
-		if (piecemarksDelete.length > 0){
-			/** @type {JSFoundSet<db:/stsservoy/piecemarks>} * /
-			u = databaseManager.createSelect("db:/stsservoy/piecemarks");
-			u.result.add(u.columns.piecemark_id);
-			u.result.add(u.columns.delete_flag);
-			u.result.add(u.columns.edit_date);
-			u.where.add(u.and
-					 .add(u.columns.piecemark_id.isin(piecemarksDelete))
-					 .add(u.columns.delete_flag.isNull)
-					 .add(u.columns.tenant_uuid.eq(globals.session.tenant_uuid))
-				);
-			resultP = databaseManager.getFoundSet(u);
-			
-		} */
-	}
-	
-	//null;
 	var deleteDate = new Date();
-	if (resultT.getSize() > 0){
-		var delIdfiles = databaseManager.getFoundSetUpdater(resultT);
-		delIdfiles.setColumn('delete_flag',99);
-		delIdfiles.setColumn('deleted_date',deleteDate);
-		var status = delIdfiles.performUpdate();
-		if (application.isInDeveloper()){application.output('updated '+status)}
-		scopes.jobs.idfilesToDelete = [];
+	var idfileId = null;
+	while (scopes.jobs.idfilesToDelete.length != 0){
+		var tempDeleteIdfiles = []; var idx = 200;
+		while ((idx-- != 0) && (scopes.jobs.idfilesToDelete.length != 0)){
+			tempDeleteIdfiles.push(scopes.jobs.idfilesToDelete.pop()+'');//push 400 idfile ids at a time for deletion.  Seems to be a limit on isin(guid_list) for QBSelect
+		}
+		
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var p = databaseManager.createSelect('db:/stsservoy/idfiles');
+		p.result.distinct = true;
+		p.result.add(p.columns.id_serial_number_id);
+		p.groupBy.add(p.columns.id_serial_number_id);
+		p.where.add(p.columns.idfile_id.isin(tempDeleteIdfiles));
+		var subQ = databaseManager.getDataSetByQuery(p,-1);
+		var subArray = subQ.getColumnAsArray(1);
+		//p.where.add(p.columns.idfile_id.isin(tempDeleteIdfiles));
+		
+		
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var i = databaseManager.createSelect('db:/stsservoy/idfiles');
+		i.result.add(i.columns.idfile_id);
+		i.result.distinct = true;
+		i.where.add(i.columns.id_serial_number_id.isin(subArray));
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var resultII = databaseManager.getFoundSet(i);
+		if (resultII.getSize() == 0){return}
+		var markIdfiles = databaseManager.getFoundSetUpdater(resultII);
+		if (!deleteHistory){
+			markIdfiles.setColumn('delete_flag',99);
+			markIdfiles.setColumn('deleted_date',deleteDate);
+			var status = markIdfiles.performUpdate();
+			if (application.isInDeveloper()){application.output('idfiles files updated to deleted 99 '+status)}
+		} else {//deleteHistory is true, do not delete idfiles, just update normal edits on status
+			i.result.clear();
+			/** @type {QBJoin<db:/stsservoy/transactions>} */
+			var j = i.joins.add('db:/stsservoy/transactions');
+			j.on.add(j.columns.idfile_id.eq(i.columns.idfile_id));
+			i.result.add(j.columns.trans_id);
+			var Iset = databaseManager.getDataSetByQuery(i,-1);
+			var transArray = Iset.getColumnAsArray(1);
+			
+			if (transArray.length > 0){
+				/** @type {QBSelect<db:/stsservoy/transactions>} */
+				var k = databaseManager.createSelect('db:/stsservoy/transactions');
+				k.result.distinct = true;
+				k.result.add(k.columns.trans_id);
+				k.where.add(k.columns.trans_id.isin(transArray));
+				
+				var resultIII = databaseManager.getFoundSet(k);
+				if (resultIII.getSize() > 0){
+					var markTransFiles = databaseManager.getFoundSetUpdater(resultIII);
+					markTransFiles.setColumn('delete_flag',99);
+					markTransFiles.setColumn('deleted_date',deleteDate);
+					status = markTransFiles.performUpdate();
+					if (application.isInDeveloper()){application.output('transaction files set to 99')}
+				}
+			}
+			markIdfiles.setColumn('status_description_id',null);
+			markIdfiles.setColumn('id_location',null);
+			markIdfiles.setColumn('bundle_id',null);
+			status = markIdfiles.performUpdate();
+			if (application.isInDeveloper()){application.output('idfile files reset history')}
+		}
 	}
-	if (resultB.getSize() > 0){
-		var delBarcodes = databaseManager.getFoundSetUpdater(resultB);
-		delBarcodes.setColumn('delete_flag',99);
-		delBarcodes.setColumn('edit_date',deleteDate);
-		delBarcodes.performUpdate();
-	}
-	/**if (false && resultT.getSize() > 0){
-		var delTrans = databaseManager.getFoundSetUpdater(resultT);
-		delTrans.setColumn('delete_flag',99);
-		delTrans.setColumn('edit_date',deleteDate);
-		delTrans.performUpdate();
-	}
-	var delPms = databaseManager.getFoundSetUpdater(resultP);
-	if (false && piecemarksDelete.length > 0){
-		delPms.setColumn('delete_flag',99);
-		delPms.setColumn('edit_date',deleteDate);
-		delPms.performUpdate();
-	}*/
-	//databaseManager.commitTransaction();
 }
 /**
  *
@@ -4578,253 +4509,63 @@ function recallDeletedBarcodes(){
  * @properties={typeid:24,uuid:"D3CB3B29-34B7-4579-835E-2CEAB65BE357"}
  */
 function purgeDeletedIdfiles(){
+	
+	//TODO kill off transactions for each idfile
 	warningsYes();
 	warningsMessage('Purging Idfile information.');
-	var message = 'Purging ';
-	///var purgeRecordList = [];
-	/* 
-	 * id_serial_number_id*, idfile_id*, transaction_id*, piecemark_id^, lot_id*, sequence_id*, sheet_id*, job_id 
-	 */
-	if (!scopes.globals.purgeBarcodeRecords){
-		scopes.globals.purgeBarcodeRecords = [];
-	}
-	/** @type {Array} */
-	var purgeCodes = scopes.globals.purgeBarcodeRecords;
-	if (purgeCodes.length == 0){return}
-	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
-	var b =  databaseManager.createSelect("db:/stsservoy/id_serial_numbers");
-	b.result.add(b.columns.id_serial_number_id);
-	b.result.add(b.columns.delete_flag);
-	b.where.add(b.columns.id_serial_number_id.isin(purgeCodes));
-	var resultB = databaseManager.getFoundSet(b);
-	if (application.isInDeveloper()){application.output('barcodes '+resultB.getSize())}
-	if (typeof recall != 'undefined'){
-		var recallable = databaseManager.getFoundSetUpdater(resultB);
-		recallable.setColumn('delete_flag',null);
-		recallable.performUpdate();
-	} else {
-		resultB.deleteAllRecords();
-	}
-	
-	warningsMessage(message+' pm status information.');
-	var idfiles = [];
-	var lots = [];
-	var sequences = [];
-	var piecemarks = [];
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
-	var i =  databaseManager.createSelect("db:/stsservoy/idfiles");
-	i.result.add(i.columns.idfile_id);
-	i.result.add(i.columns.delete_flag);
-	i.result.add(i.columns.deleted_date);
-	i.result.add(i.columns.piecemark_id);
-	i.result.add(i.columns.lot_id);
-	i.result.add(i.columns.sequence_id);
-	//i.result.add(i.columns.ship_load_id);
-	//i.result.add(i.columns.received_load_id);
-	//i.result.add(i.columns.current_load_id);
-	i.where.add(i.and
-		.add(i.columns.tenant_uuid.eq(globals.session.tenant_uuid))
-		.add(i.columns.id_serial_number_id.isin(purgeCodes))
-		.add(i.columns.delete_flag.eq(99))
-		);
-	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-	var resultI = databaseManager.getFoundSet(i);
-	var length = resultI.getSize();
-	var rec = null;var index = 1
-	while (rec = resultI.getRecord(index++)){
-		var idfileID = rec.idfile_id;
-		var pcmkID = rec.piecemark_id;
-		var lotID = rec.lot_id;
-		var seqID = rec.sequence_id;
-		if (idfiles.indexOf(idfileID+"") == -1){idfiles.push(idfileID+"")}
-		if (piecemarks.indexOf(pcmkID+"") == -1){piecemarks.push(pcmkID+"")}
-		if (lots.indexOf(lotID+"") == -1){lots.push(lotID+"")}
-		if (sequences.indexOf(seqID+"") == -1){sequences.push(seqID+"")}
-	}
-	if (application.isInDeveloper()){application.output('idfile size '+resultI.getSize())}
-	if (typeof recall != 'undefined'){
-		recallable = databaseManager.getFoundSetUpdater(resultI);
-		recallable.setColumn('delete_flag',null);
-		recallable.performUpdate();
-	} else {
-		resultI.deleteAllRecords();
-	}
 
-	
-	warningsMessage(message+' transaction histories.');
-	if (idfiles.length > 0){
+	if (scopes.jobs.purgeBarcodeRecords.length == 0){return}
+	while (scopes.jobs.purgeBarcodeRecords.length != 0){
+		var tempPurgeIdfiles = []; var idx = 200;
+		while ((idx-- != 0) && (scopes.jobs.purgeBarcodeRecords.length != 0)){
+			tempPurgeIdfiles.push(scopes.jobs.purgeBarcodeRecords.pop()+'');//push 400 idfile ids at a time for deletion.  Seems to be a limit on isin(guid_list) for QBSelect
+		}
+		// Remove all idfiles from purge list
+		/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
+		var id = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
+		id.result.add(id.columns.id_serial_number_id);
+		id.where.add(id.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		id.where.add(id.columns.id_serial_number_id.isin(tempPurgeIdfiles));
+		var ID = databaseManager.getFoundSet(id);
+		ID.deleteAllRecords();
+		
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var p = databaseManager.createSelect('db:/stsservoy/idfiles');
+		p.result.distinct = true;
+		p.result.add(p.columns.id_serial_number_id);
+		p.groupBy.add(p.columns.id_serial_number_id);
+		p.where.add(p.columns.id_serial_number_id.isin(tempPurgeIdfiles));
+		var subQ = databaseManager.getDataSetByQuery(p,-1);
+		var subArray = subQ.getColumnAsArray(1);
+		
+		// Remove all transactions from idfiles
 		/** @type {QBSelect<db:/stsservoy/transactions>} */
-		var t =  databaseManager.createSelect("db:/stsservoy/transactions");
-		t.result.add(t.columns.trans_id);
-		t.result.add(t.columns.delete_flag);
-		t.where.add(t.columns.idfile_id.isin(idfiles));
-		var resultT = databaseManager.getFoundSet(t);
-		application.output('transaction '+resultT.getSize());
-		if (typeof recall != 'undefined'){
-			recallable = databaseManager.getFoundSetUpdater(resultT);
-			recallable.setColumn('delete_flag',null);
-			recallable.performUpdate();
-		} else {
-			resultT.deleteAllRecords();
+		var tr = databaseManager.createSelect('db:/stsservoy/transactions');
+		tr.result.add(tr.columns.trans_id);
+		tr.where.add(tr.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		tr.where.add(tr.columns.idfile_id.isin(p));
+		var TR = databaseManager.getFoundSet(tr);
+		TR.deleteAllRecords();
+		
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var i = databaseManager.createSelect('db:/stsservoy/idfiles');
+		i.result.add(i.columns.idfile_id);
+		i.result.distinct = true;
+		i.where.add(i.columns.id_serial_number_id.isin(p));
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var resultII = databaseManager.getFoundSet(i);
+		if (resultII.getSize() == 0){return}
+		resultII.loadAllRecords();
+		var rec = null;var idx = resultII.getSize();
+		while (rec = resultII.getRecord(idx+1)){
+			idx = resultII.getSize();
 		}
+		while (idx != 0){
+			resultII.deleteRecord(idx);
+			idx--;
+		}
+		//resultII.deleteAllRecords();
 	}
-
-	warningsMessage(message+' piecemark data.');
-	var sheets = [];
-	if (piecemarks.length > 0){
-		/**
-		 * piecemarks that are 99 only
-		 * confirm piecemarks, in list of idfiles, but get list of all idfiles for each piecemark
-		 * and purge only those piecemarks that are in both lists
-		 */
-		var piecemarksToPurge = [];
-		/** @type {QBSelect<db:/stsservoy/piecemarks>} */
-		var p =  databaseManager.createSelect("db:/stsservoy/piecemarks");
-		p.result.add(p.columns.piecemark_id);
-		p.result.add(p.columns.sheet_id);
-		p.where.add(p.and
-				.add(p.columns.tenant_uuid.eq(globals.session.tenant_uuid))
-				.add(p.columns.piecemark_id.isin(piecemarks))
-				.add(p.columns.delete_flag.eq(99))
-			);
-		var resultP = databaseManager.getFoundSet(p);
-		length = resultP.getSize();
-		for (index = 1;index <= length;index++){
-			rec = resultP.getRecord(index);
-			var sheetID = rec.sheet_id; pcmkID = rec.piecemark_id;
-			if (sheets.indexOf(sheetID+"") == -1){sheets.push(sheetID+"")}
-			if (piecemarksToPurge.indexOf(pcmkID+"") == -1){piecemarksToPurge.push(pcmkID+"")}
-		}
-		var piecemarksPurge = []; // all idfiles for piecemarks to delete, if 
-		for (index = 0;index < piecemarksToPurge.length;index++){
-			var piecemarkID = piecemarksToPurge[index];
-			/** @type {QBSelect<db:/stsservoy/idfiles>} */
-			i =  databaseManager.createSelect("db:/stsservoy/idfiles");
-			i.result.add(i.columns.piecemark_id);
-			i.where.add(i.and
-					.add(i.columns.piecemark_id.eq(piecemarkID))
-					.add(i.columns.idfile_id.not.isin(idfiles))
-				);
-			resultI = databaseManager.getFoundSet(i);
-			if (resultI.getSize() == 0){
-				piecemarksPurge.push(piecemarkID+"");//okay to delete because for this piecemark, no idfiles remain to be deleted
-			}
-		}
-		if (piecemarksPurge.length > 0){
-			/** @type {QBSelect<db:/stsservoy/piecemarks>} */
-			p =  databaseManager.createSelect("db:/stsservoy/piecemarks");
-			p.result.add(p.columns.piecemark_id);
-			p.result.add(p.columns.delete_flag);
-			p.result.distinct;
-			p.result.add(p.columns.sheet_id);
-			p.where.add(p.columns.piecemark_id.isin(piecemarksPurge));
-			resultP = databaseManager.getFoundSet(p);
-			application.output('piecemark size '+resultP.getSize());
-			if (typeof recall != 'undefined'){
-				var recallSet = databaseManager.getFoundSetUpdater(resultP);
-				recallSet.setColumn('delete_flag',null);
-				recallSet.performUpdate();
-			} else {
-				resultP.deleteAllRecords();
-			}
-		}
-	}
-	
-	warningsMessage(message+' lot membership.');
-	if (lots.length > 0){ // get list of all identified lots from above, get list of all idfiles using lot, for each lot, delete only if no idfiles use the lot
-		var lotsDelete = []; // all lots with no idfiles to delete 
-		for (index = 0;index < lots.length;index++){
-			lotID = lots[index];
-			/** @type {QBSelect<db:/stsservoy/idfiles>} */
-			i =  databaseManager.createSelect("db:/stsservoy/idfiles");
-			i.result.add(i.columns.lot_id);
-			i.result.add(i.columns.delete_flag);
-			i.result.distinct;
-			i.where.add(i.columns.lot_id.eq(lotID));
-			resultI = databaseManager.getFoundSet(i);
-			if (resultI.getSize() == 0){lotsDelete.push(lotID)}
-		}
-		if (lotsDelete.length > 0){
-			/** @type {QBSelect<db:/stsservoy/lots>} */
-			var l =  databaseManager.createSelect("db:/stsservoy/lots");
-			l.result.add(l.columns.lot_id);
-			l.where.add(l.columns.lot_id.isin(lotsDelete));
-			var resultL = databaseManager.getFoundSet(l);
-			application.output('lot size '+resultL.getSize());
-			if (typeof recall != 'undefined'){
-				recallSet = databaseManager.getFoundSetUpdater(resultL);
-				recallSet.setColumn('delete_flag',null);
-				recallSet.performUpdate();
-			} else {
-				resultL.deleteAllRecords();
-			}
-		}
-	}
-	
-	warningsMessage(message+' sequence membership.');
-	if (sequences.length > 0){ // get list of all identified lots from above, get list of all idfiles using lot, for each lot, delete only if no idfiles use the lot
-		var seqsDelete = []; // all lots with no idfiles to delete 
-		for (index = 0;index < sequences.length;index++){
-			seqID = sequences[index];
-			/** @type {QBSelect<db:/stsservoy/idfiles>} */
-			i =  databaseManager.createSelect("db:/stsservoy/idfiles");
-			i.result.add(i.columns.sequence_id);
-			i.result.distinct;
-			i.where.add(i.columns.sequence_id.eq(seqID));
-			resultI = databaseManager.getFoundSet(i);
-			if (resultI.getSize() == 0){seqsDelete.push(seqID)}
-		}
-		if (seqsDelete.length > 0){
-			/** @type {QBSelect<db:/stsservoy/sequences>} */
-			var s =  databaseManager.createSelect("db:/stsservoy/sequences");
-			s.result.add(s.columns.sequence_id);
-			s.result.add(s.columns.delete_flag);
-			s.where.add(s.columns.sequence_id.isin(seqsDelete));
-			var resultS = databaseManager.getFoundSet(s);
-			application.output('sequence size '+resultS.getSize());
-			if (typeof recall != 'undefined'){
-				recallSet = databaseManager.getFoundSetUpdater(resultS);
-				recallSet.setColumn('delete_flag',null);
-				recallSet.performUpdate();
-			} else {
-				resultS.deleteAllRecords();
-			}
-		}
-	}
-	
-	warningsMessage(message+' sheet membership.');
-	if (sheets.length > 0){ // get list of all identified lots from above, get list of all idfiles using lot, for each lot, delete only if no idfiles use the lot
-		var sheetsDelete = []; // all lots with no idfiles to delete 
-		for (index = 0;index < sheets.length;index++){
-			sheetID = sheets[index];
-			/** @type {QBSelect<db:/stsservoy/piecemarks>} */
-			p =  databaseManager.createSelect("db:/stsservoy/piecemarks");
-			p.result.add(p.columns.sheet_id);
-			p.result.distinct;
-			p.where.add(p.columns.sheet_id.eq(sheetID));
-			resultI = databaseManager.getFoundSet(p);
-			if (resultI.getSize() == 0){sheetsDelete.push(sheetID)}
-		}
-		if (sheetsDelete.length > 0){
-			/** @type {QBSelect<db:/stsservoy/sheets>} */
-			var ss =  databaseManager.createSelect("db:/stsservoy/sheets");
-			ss.result.add(ss.columns.sheet_id);
-			ss.result.add(ss.columns.delete_flag);
-			ss.where.add(ss.columns.sheet_id.isin(sheetsDelete));
-			resultS = databaseManager.getFoundSet(ss);
-			application.output('sheet size '+resultS.getSize());
-			if (typeof recall != 'undefined'){
-				recallSet = databaseManager.getFoundSetUpdater(resultS);
-				recallSet.setColumn('delete_flag',null);
-				recallSet.performUpdate();
-			} else {
-				resultS.deleteAllRecords();
-			}
-		}
-	}
-	scopes.globals.purgeBarcodeRecords = [];
-	warningsX();
-	return;
 }
 /**
  * Uses array scopes.jobs.piecemarksToDelete
@@ -5963,18 +5704,29 @@ function importRecordsDelete(deleteJobId){
 	 * 4 delete idfiles for job - idfiles attached to piecemarks
 	 */
 	readPieceTables('delete'); // existing records
-	deleteLotsJob();
-	warningsMessage('Delete Lots',true);
-	deleteSequencesJob(deleteJobId);
-	warningsMessage('Delete Sequences',true);
-	deleteBarcodesJob();
-	warningsMessage('Delete Barcodes',true);
+	/**
+	 * delete id_serial_numbers
+	 * delete transactions
+	 * delete loads
+	 * delete idfiles
+	 * delete piecemarks
+	 * delete sheetboms
+	 * delete lots
+	 * delete sheets
+	 * 
+	 */
+	//deleteLotsJob();
+	//warningsMessage('Delete Lots',true);
+	//deleteSequencesJob(deleteJobId);
+	//warningsMessage('Delete Sequences',true);
+	//deleteBarcodesJob();
+	//warningsMessage('Delete Barcodes',true);
 	deleteIdfilesJob();
 	warningsMessage('Delete Idfiles',true);
-	deletePiecemarksJob();
-	warningsMessage('Delete Piecemarks',true);
-	deleteSheetsJob(jobID);
-	warningsMessage('Delete Sheets',true);
+	//deletePiecemarksJob();
+	//warningsMessage('Delete Piecemarks',true);
+	//deleteSheetsJob(jobID);
+	//warningsMessage('Delete Sheets',true);
 }
 /**
  * 
@@ -6118,6 +5870,7 @@ function importRecordsAlt(){
  */
 function warningsMessage(message,showAnyway){
 	if (globals.session.appName.search('mobile') != -1){return}
+	if (!scopes.jobs.warnWindow){warningsYes()}
 	message = i18n.getI18NMessage(message);
 	timeOut = new Date().getTime();
 	//var newTime = timeOut-timeUpdate;
@@ -6150,7 +5903,9 @@ function warningsYes(){
 	if (!scopes.jobs.timeIn){scopes.jobs.timeIn = new Date().getTime()}
 	var win = application.createWindow("STS Message", JSWindow.DIALOG);
 	scopes.jobs.warnWindow = win;
-	win.setInitialBounds(10, 10, 460, 110);
+	var screenX = application.getScreenWidth();
+	//var screenY = application.getScreenHeight();
+	win.setInitialBounds(screenX-470, 10, 460, 110);
 	win.title = "STS Message";
 	win.show('messagesWarnings');
 }
@@ -6171,6 +5926,7 @@ function warningsX(){
 		win.hide();
 		win.destroy();
 	}
+	scopes.jobs.warnWindow = null;
 	var skip = true;
 	if (skip) {return}
 }
@@ -6497,7 +6253,9 @@ function collectCriteria(){
  */
 function tablePrefsPreLoad(formx){
 	if (application.isInDeveloper()){application.output('tablePrefsPreLoad')}
-	var thisVersion = scopes.globals.getInstanceForm(null);
+	var thisVersion = '';
+	var versionMatch = formx.match(scopes.globals.instanceReg);
+	if (versionMatch){thisVersion = versionMatch[1]}
 	var tableArray = [];
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var pp = databaseManager.createSelect('db:/stsservoy/preferences2');
@@ -7563,15 +7321,8 @@ function queryAssembly(criteria,formName,subquery){
 	var trpm = trans.joins.add('db:/stsservoy/piecemarks');
 	trpm.on.add(trans.columns.sheet_id.eq(trpm.columns.sheet_id));
 	trans.result.add(trpm.columns.piecemark_id);
-	if (getDeleted){
-		trpm.root.where.add(trpm.columns.delete_flag.eq(99));		
-	} else {
-		trpm.root.where.add(trpm.root.or
-			.add(trpm.columns.delete_flag.isNull)
-			.add(trpm.columns.delete_flag.eq(11)));
-	}
+	trpm.root.where.add(trpm.columns.delete_flag.isNull);
 	trpm.root.where.add(trpm.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	//trpm.root.where.add(trans.columns.sheet_id.eq(trpm.columns.sheet_id));
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var trIdf = trans.joins.add('db:/stsservoy/idfiles');
 	trIdf.on.add(trIdf.columns.piecemark_id.eq(trpm.columns.piecemark_id));
@@ -7601,14 +7352,7 @@ function queryAssembly(criteria,formName,subquery){
 	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
 	var uIdpm = uIdfile.joins.add('db:/stsservoy/piecemarks');
 	uIdpm.on.add(uIdfile.columns.sheet_id.eq(uIdpm.columns.sheet_id));
-	if (getDeleted){
-		uIdpm.root.where.add(uIdpm.columns.delete_flag.eq(99));
-	} else {
-		//uIdpm.root.where.add(uIdpm.root.or
-		//	.add(uIdpm.columns.delete_flag.isNull)
-		//	.add(uIdpm.columns.delete_flag.eq(11)));
-		uIdpm.root.where.add(uIdpm.columns.delete_flag.isNull);
-	}
+	uIdpm.root.where.add(uIdpm.columns.delete_flag.isNull);
 	uIdpm.root.where.add(uIdpm.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	/** @type {QBJoin<db:/stsservoy/idfiles>} */
 	var uIdIdfile = uIdfile.joins.add('db:/stsservoy/idfiles');
@@ -7646,13 +7390,7 @@ function queryAssembly(criteria,formName,subquery){
 	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
 	var upmm = upcmk.joins.add('db:/stsservoy/piecemarks');
 	upmm.on.add(upcmk.columns.sheet_id.eq(upmm.columns.sheet_id));
-	if (getDeleted){
-		upcmk.where.add(upmm.columns.delete_flag.eq(99));
-	} else {
-		upcmk.root.where.add(upmm.root.or
-			.add(upmm.columns.delete_flag.isNull)
-			.add(upmm.columns.delete_flag.eq(11)));
-	}
+	upcmk.root.where.add(upmm.root.columns.delete_flag.isNull);
 	upcmk.root.where.add(upmm.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	upcmk.root.result.distinct = true;
 	upcmk.result.add(upmm.columns.piecemark_id);
@@ -7756,13 +7494,7 @@ function queryAssembly(criteria,formName,subquery){
 		)
 	} // overkill, but satisfies n-1 approach for search criteria
 
-	if (getDeleted){
-		st.where.add(pmm.columns.delete_flag.eq(99));
-	} else {
-		st.where.add(st.or
-			.add(pmm.columns.delete_flag.isNull)
-			.add(pmm.columns.delete_flag.eq(11)));
-	}
+	st.where.add(pmm.columns.delete_flag.isNull)
 	
 	st.result.distinct;
 	st.sort.add(pmm.columns.piecemark);
@@ -7858,11 +7590,8 @@ function queryAssembly(criteria,formName,subquery){
 		pm2.on.add(pmm.columns.parent_piecemark.eq(pm2.columns.piecemark));
 		//pm2.root.where.add(pm2.columns.piecemark_id.isin(pcmkArray));
 		pm2.root.where.add(pm2.columns.piecemark_id.isin(sh3));
-		if (getDeleted){
-			pm2.root.where.add(pm2.columns.delete_flag.eq(99));
-		} else {
-			pm2.root.where.add(pm2.columns.delete_flag.isNull);
-		}
+		pm2.root.where.add(pm2.columns.delete_flag.isNull);
+
 		/** @type {QBJoin<db:/stsservoy/idfiles>} */
 		var id2 = pm2.joins.add('db:/stsservoy/idfiles');
 		id2.on.add(pm2.columns.piecemark_id.eq(id2.columns.piecemark_id));
@@ -7876,6 +7605,11 @@ function queryAssembly(criteria,formName,subquery){
 		/** @type {QBJoin<db:/stsservoy/idfiles>} */
 		var id3 = id2.joins.add('db:/stsservoy/idfiles');
 		id3.on.add(id2.columns.idfile_id.eq(id3.columns.idfile_id));
+		if (getDeleted){
+			id3.root.where.add(id3.columns.delete_flag.eq(99));
+		} else {
+			id3.root.where.add(id3.columns.delete_flag.isNull);			
+		}
 		id3.root.where.add(id2.columns.id_serial_number_id.eq(id3.columns.id_serial_number_id));
 		
 		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
@@ -7987,6 +7721,11 @@ function queryAssembly(criteria,formName,subquery){
 		/** @type {QBJoin<db:/stsservoy/idfiles>} */
 		var sbi = sbp.joins.add('db:/stsservoy/idfiles');//CHECK sbp was sbs
 		sbi.on.add(sbp.columns.piecemark_id.eq(sbi.columns.piecemark_id));
+		if (getDeleted){
+			sbi.root.where.add(sbi.columns.delete_flag.eq(99));
+		} else {
+			sbi.root.where.add(sbi.columns.delete_flag.isNull);			
+		}
 		sbi.root.result.add(sbi.columns.idfile_id.max);
 		
 		/** @type {QBJoin<db:/stsservoy/employee>} */
@@ -8117,7 +7856,7 @@ function queryAssembly(criteria,formName,subquery){
 		//st.result.add(idnums.columns.id_serial_number_id.count,'barcode_item_qty');//181 MINORQTY printer.js
 		//st.result.add(id2.columns.id_serial_number_id.count,'bc_barcode_item_qty');//181 MINORQTY printer.js
 
-		sbi.root.result.add(sbi.columns.idfile_id.max);
+		sbi.root.result.add(sbi.columns.idfile_id.max); 
 		jship.root.groupBy.add(jship.columns.name);
 		jship.root.groupBy.add(jship.columns.customer_number);
 		var cols = ['name','barcode_include_prefix','barcode_job_start','barcode_prefix','customer_number'];
@@ -8353,6 +8092,7 @@ function createRouteSummaryForm(query,formName){
  * @properties={typeid:24,uuid:"7139D601-FF2B-4E09-B640-0534E056B713"}
  */
 function viewBTableToFormQB(criteria,formName){
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
 	if (formName.search('summary_info') != -1){
 		dsQuery = queryAssembly(criteria,formName,'stations');
 	} else 	if (formName.search('combo') != -1){
@@ -8370,11 +8110,13 @@ function viewBTableToFormQB(criteria,formName){
 	while (databaseManager.dataSourceExists('mem:'+newDsName)){
 		newDsName = dsName+count++;
 	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
 	/** @type  {JSDataSet} */
 	browseFS2[formName] = databaseManager.createDataSourceByQuery(newDsName,dsQuery,-1);
 	dsQuerySave[formName] = dsQuery;
 	//browseFS2[formName] = adjustBarcodeIdfileCount(browseFS2[formName]);
-	versionForm = globals.getInstanceForm(null);
+	//versionForm = globals.getInstanceForm(null);
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
 	viewBTableCreateForm2(formName,browseFS2[formName]);
 	//tablePrefsLoad(formName)
 }
@@ -8390,7 +8132,8 @@ function viewBTableToFormQB(criteria,formName){
  * @properties={typeid:24,uuid:"85A876B4-08AE-477E-80E4-8BDB4DECE219"}
  */
 function viewBTableCreateForm2(formName,datasource){
-	versionForm = globals.getInstanceForm(null);
+	var matchReg = formName.match(scopes.globals.instanceReg);
+	if (matchReg){versionForm = matchReg[1]}
 	var formNameTable = formName+'_table';
 	scopes.jobs.removeFormHist(formNameTable);
 	
@@ -8439,7 +8182,7 @@ function viewBTableCreateForm2(formName,datasource){
 	var columnCnt = 1; var fieldPos = 0;
 	//var altColNames = i18nColumnNames;
 	for (var index = 0;index < columnNames4.length;index++){
-		if (application.isInDeveloper()){application.output('column barcode '+columnNames4[index])}
+		//if (application.isInDeveloper()){application.output('column barcode '+columnNames4[index])}
 		/** @type {String} */
 		var columnName = columnNames4[index];
 		if (columnName == ""){continue}
@@ -8511,17 +8254,21 @@ function viewBTableCreateForm2(formName,datasource){
 	}
 	last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
 	if (!forms[formName]){
-		//versionForm = globals.getInstanceForm(null);
+		var regexp = new RegExp(/(_[0-9]+)/);
+		var regMatch = formName.match(regexp);
+		if (regMatch){
+			versionForm = regMatch[1];
+		}
 		var newFormName = 'loads_pcmk_combo'+versionForm;
 		solutionModel.cloneForm(newFormName,solutionModel.getForm('loads_pcmk_combo'));
 	}
 	var status = false;
-	if (forms[formName].elements.tabless){
+	if (forms[formName] && forms[formName].elements.tabless){
 		forms[formName].elements.tabless.removeAllTabs();
 		status = forms[formName].elements.tabless.addTab(formNameTable);
 		//forms[formName].controller.loadAllRecords();
 	}
-	if (!status){
+	if (forms[formName] && forms[formName].elements.split && !status){
 		status = forms[formName].elements.split.setLeftForm(formNameTable);		//forms.delete_pcmk_combo.elements.split.setLeftForm(formNameTable);
 	}
 	var relationInfo = solutionModel.getRelation('sts_idfile_to_transactions');
@@ -8757,19 +8504,54 @@ function recallIdfiles(){
 	if (purgeCodes.length == 0){return}
 	//application.output('purgeBarcodeRecords has '+purgeCodes.length+' items '+purgeCodes);
 
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
-	var i =  databaseManager.createSelect("db:/stsservoy/idfiles");
-	i.result.add(i.columns.idfile_id);
-	i.result.add(i.columns.delete_flag);
-	i.result.add(i.columns.deleted_date);
-	i.where.add(i.columns.tenant_uuid.eq(globals.session.tenant_uuid))
-	i.where.add(i.columns.idfile_id.isin(purgeCodes))
-	i.where.add(i.columns.delete_flag.eq(99))
-	var I = databaseManager.getFoundSet(i);
-	var updateI = databaseManager.getFoundSetUpdater(I);
-	updateI.setColumn('delete_flag',null);
-	updateI.setColumn('deleted_date',null);
-	updateI.performUpdate();
+	while (purgeCodes.length != 0){
+		var tempRecall = [];var count = 200;
+		while ((count-- != 0) && (purgeCodes.length != 0)){
+			tempRecall.push(purgeCodes.pop());
+		}
+
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var p = databaseManager.createSelect('db:/stsservoy/idfiles');
+		p.result.distinct = true;
+		p.result.add(p.columns.id_serial_number_id);
+		p.groupBy.add(p.columns.id_serial_number_id);
+		p.where.add(p.columns.idfile_id.isin(tempRecall));
+		var subQ = databaseManager.getDataSetByQuery(p,-1);
+		var subArray = subQ.getColumnAsArray(1);
+		//p.where.add(p.columns.idfile_id.isin(tempDeleteIdfiles));
+		
+		
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var i = databaseManager.createSelect('db:/stsservoy/idfiles');
+		i.result.add(i.columns.idfile_id);
+		i.result.distinct = true;
+		i.where.add(i.columns.id_serial_number_id.isin(subArray));
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var resultII = databaseManager.getFoundSet(i);
+		if (resultII.getSize() == 0){return}
+		var markIdfiles = databaseManager.getFoundSetUpdater(resultII);
+		markIdfiles.setColumn('delete_flag',null);
+		markIdfiles.setColumn('deleted_date',null);
+		var status = markIdfiles.performUpdate();
+		if (application.isInDeveloper()){application.output('idfiles files updated to deleted 99 '+status)}
+
+		
+		
+		
+		/** @type {QBSelect<db:/stsservoy/idfiles>} * /
+		var i =  databaseManager.createSelect("db:/stsservoy/idfiles");
+		i.result.add(i.columns.idfile_id);
+		i.result.add(i.columns.delete_flag);
+		i.result.add(i.columns.deleted_date);
+		i.where.add(i.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+		i.where.add(i.columns.idfile_id.isin(tempRecall))
+		i.where.add(i.columns.delete_flag.eq(99))
+		var I = databaseManager.getFoundSet(i);
+		var updateI = databaseManager.getFoundSetUpdater(I);
+		updateI.setColumn('delete_flag',null);
+		updateI.setColumn('deleted_date',null);
+		updateI.performUpdate(); */
+	}
 	warningsX();
 }
 /**
@@ -10265,29 +10047,141 @@ function testSerialNonOdo(){
  * @properties={typeid:24,uuid:"95A9D836-2F67-4712-8C74-002C06B347B9"}
  */
 function deleteEntireJob(jobId){
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['SHEETS']),true);
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
-	var q = databaseManager.createSelect('db:/stsservoy/sheets');
-	q.result.add(q.columns.sheet_id);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	var Dsheets = databaseManager.getDataSetByQuery(q,-1);
+	var sh = databaseManager.createSelect('db:/stsservoy/sheets');
+	sh.result.add(sh.columns.sheet_id);
+	sh.where.add(sh.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	sh.where.add(sh.columns.job_id.eq(jobId));
+	//var Dsheets = databaseManager.getDataSetByQuery(sh,-1);
+
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['SEQUENCES']),true);
+	/** @type {QBSelect<db:/stsservoy/sequences>} */
+	var sq = databaseManager.createSelect('db:/stsservoy/sequences');
+	sq.result.add(sq.columns.sequence_id);
+	sq.where.add(sq.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	//var Dsequences = databaseManager.getDataSetByQuery(sq,-1);
+
 	
-	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
-	var r = q.joins.add('db:/stsservoy/piecemarks');
-	r.where.add(q.columns.sheet_id.eq(r.columns.sheet_id));
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['LOTS']),true);
+	/** @type {QBSelect<db:/stsservoy/lots>} */
+	var l = databaseManager.createSelect('db:/stsservoy/lots');
+	l.result.add(l.columns.lot_id);
+	l.where.add(l.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	l.where.add(l.columns.sequence_id.isin(sq));
+	//var Dlots = databaseManager.getDataSetByQuery(l,-1);
+
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['PIECEMARKS']),true);
+	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+	var p = databaseManager.createSelect('db:/stsservoy/piecemarks');
+	p.result.add(p.columns.piecemark_id);
+	p.where.add(p.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	p.where.add(p.columns.sheet_id.isin(sh));
+	//var Dpiecemarks = databaseManager.getDataSetByQuery(p,-1)
 	
-	var Dpiecemarks = databaseManager.getFoundSet(r);
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['IDFILES']),true);
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var id = databaseManager.createSelect('db:/stsservoy/idfiles');
+	id.result.distinct = true;
+	id.result.add(id.columns.idfile_id);
+	id.result.add(id.columns.id_serial_number_id);
+	id.where.add(id.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	id.where.add(id.columns.piecemark_id.isin(p));
+	//var Didfiles = databaseManager.getDataSetByQuery(id,-1);
+		
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['TRANSACTIONS']),true);
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var id3 = databaseManager.createSelect('db:/stsservoy/idfiles');
+	id3.result.distinct = true;
+	id3.result.add(id3.columns.idfile_id);
+	id3.where.add(id3.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	id3.where.add(id3.columns.piecemark_id.isin(p));
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var tr = databaseManager.createSelect('db:/stsservoy/transactions');
+	tr.result.add(tr.columns.trans_id);
+	tr.where.add(tr.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	tr.where.add(tr.columns.idfile_id.isin(id3));
+	//var Dtransactions = databaseManager.getDataSetByQuery(tr,-1);
+	
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['LOADS']),true);
+	/** @type {QBSelect<db:/stsservoy/loads>} */
+	var ld = databaseManager.createSelect('db:/stsservoy/loads');
+	ld.result.add(ld.columns.load_id);
+	ld.where.add(ld.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	ld.where.add(ld.columns.job_id.eq(jobId));
+	//var Dloads = databaseManager.getDataSetByQuery(ld,-1);
 	
 	
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['SERIALS']),true);
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var id2 = databaseManager.createSelect('db:/stsservoy/idfiles');
+	id2.result.distinct = true;
+	id2.result.add(id2.columns.id_serial_number_id);
+	id2.where.add(id2.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	id2.where.add(id2.columns.piecemark_id.isin(p));
+	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
+	var sn = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
+	sn.result.add(sn.columns.id_serial_number_id);
+	sn.where.add(sn.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	sn.where.add(sn.columns.id_serial_number_id.isin(id2.columns.id_serial_number_id));
+	//var Dserials = databaseManager.getDataSetByQuery(sn,-1);
 	
-	
-	/** @type {JSFoundSet<db:/stsservoy/lots>} */
-	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-	/** @type {JSFoundSet<db:/stsservoy/sequences>} */
-	/** @type {JSFoundSet<db:/stsservoy/loads>} */
-	/** @type {JSFoundSet<db:/stsservoy/id_serial_numbers>} */
-	/** @type {JSFoundSet<db:/stsservoy/heats>} */
-	
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['SERIALS']),true);
+	var serials = databaseManager.getFoundSet(sn);
+	if (serials.getSize() > 0){
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',[serials.getSize()+' SERIALS']),true);
+		if (application.isInDeveloper()){application.output('serials count '+serials.getSize());}
+		serials.deleteAllRecords();
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['LOADS']),true);
+	var loads = databaseManager.getFoundSet(ld);
+	if (loads.getSize() > 0){
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',[loads.getSize()+' LOADS']),true);
+		if (application.isInDeveloper()){application.output('loads '+loads.getSize());}
+		loads.deleteAllRecords();
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['TRANSACTIONS']),true);
+	var trans = databaseManager.getFoundSet(tr);
+	if (trans.getSize() > 0){
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',[trans.getSize()+' TRANSACTIONS']),true);
+		if (application.isInDeveloper()){application.output('transactions '+trans.getSize());}
+		trans.deleteAllRecords();
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['IDFILES']),true);
+	var idfiles = databaseManager.getFoundSet(id);
+	if (idfiles.getSize() > 0){
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',[idfiles.getSize()+' IDFILES']),true);
+		if (application.isInDeveloper()){application.output('idfiles '+idfiles.getSize());}
+		idfiles.deleteAllRecords();
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['PIECEMARKS']),true);
+	var pcmks = databaseManager.getFoundSet(p);
+	if (pcmks.getSize() > 0){
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',[pcmks.getSize()+' PIECEMARKS']),true);
+		if (application.isInDeveloper()){application.output('piecemarks '+pcmks.getSize());}
+		pcmks.deleteAllRecords();
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['LOTS']),true);
+	var lots = databaseManager.getFoundSet(l);
+	if (lots.getSize() > 0){
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',[lots.getSize()+' LOTS']),true);
+		if (application.isInDeveloper()){application.output('lots '+lots.getSize());}
+		lots.deleteAllRecords();
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['SEQUENCES']),true);
+	var sequences = databaseManager.getFoundSet(sq);
+	if (sequences.getSize() > 0){
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',[sequences.getSize()+' SEQUENCES']),true);
+		if (application.isInDeveloper()){application.output('sequences '+sequences.getSize());}
+		sequences.deleteAllRecords();
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['SHEETS']),true);
+	var sheets = databaseManager.getFoundSet(sh);
+	if (sheets.getSize() > 0){
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',[sheets.getSize()+' SHEETS']),true);
+		if (application.isInDeveloper()){application.output('sheets '+sheets.getSize());}
+		sheets.deleteAllRecords();
+	}	
 }
 /**
  * @properties={typeid:24,uuid:"2130E5D0-977B-4815-999E-4E41BE722DA5"}
@@ -10341,4 +10235,32 @@ function addRouteCode(routeName){
 		rec.route_code = routeName;
 	}
 	return rec;
+}
+/**
+ * @param {String} jobId
+ *
+ * @properties={typeid:24,uuid:"A6E2FFAC-4C72-41AF-A16F-3050DFC19706"}
+ */
+function checkJobEmpty2(jobId){
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var q = databaseManager.createSelect('db:/stsservoy/sheets');
+	q.where.add(q.columns.job_id.eq(jobId));
+	q.where.add(q.columns.delete_flag.isNull);
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var r = q.joins.add('db:/stsservoy/piecemarks');
+	r.on.add(r.columns.sheet_id.eq(q.columns.sheet_id));
+	r.root.where.add(r.columns.delete_flag.isNull);
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var s = r.joins.add('db:/stsservoy/idfiles');
+	s.on.add(s.columns.piecemark_id.eq(r.columns.piecemark_id));
+	s.root.where.add(s.columns.delete_flag.isNull);
+	q.result.add(s.columns.idfile_id);
+	var Q = databaseManager.getDataSetByQuery(q,3);
+	//var idfiles = Q.getColumnAsArray(1);
+	var isEmpty = true;
+	for (var idx = 1;idx <= Q.getMaxRowIndex();idx++){
+		Q.rowIndex = idx;
+		if (Q.idfile_id != null){isEmpty = true;break}
+	}
+	return isEmpty;
 }

@@ -208,6 +208,8 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"54DC4A60-42B4-4132-9020-4439EDCC336E"}
  */
 function onActionDeleteWindow(event) {
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
 	var height = controller.getWindow().getHeight();
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
@@ -253,6 +255,8 @@ function collectAndTab(formName){
  */
 function onShow(firstShow, event) {
 	databaseManager.removeTableFilterParam('stsservoy','deletedRecords');//#task07
+	var filters = databaseManager.getTableFilterParams('stsservoy');
+	if (application.isInDeveloper()){application.output(filters)}
 	return _super.onShow(firstShow, event)
 }
 

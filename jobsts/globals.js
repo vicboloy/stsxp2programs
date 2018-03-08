@@ -251,6 +251,8 @@ var mob = {
 	currentRevision : "", // current revision setting
 	completeAsk : false, // ask if cycle is complete for timed operation
 	completeStatus : 0, // Status is 100%
+	heat : '',
+	heatId : '',
 	idfiles : [], 		// idfile_id list
 	idfileIds : [],		// idfileId array for grabbing with databaseManager.getFoundset.
 	idfilesFS : null, 	// idfiles foundset
@@ -389,7 +391,7 @@ var processCodes = {	all : [
 		i18n.getI18NMessage('sts.status.fab.weldup'),//'Fab Welded',
 		i18n.getI18NMessage('sts.status.fab.fabricated'),//'Fab Fabricated',
 		i18n.getI18NMessage('sts.status.fab.painted'),//'Fab Paint',
-		i18n.getI18NMessage('sts.status.fab.bundled'),//'Fab Bundled',
+		//i18n.getI18NMessage('sts.status.fab.bundled'),//'Fab Bundled',
 		i18n.getI18NMessage('sts.status.fab.move'),//'Fab Move',
 		i18n.getI18NMessage('sts.status.jobsite.painted'),//'Jobsite Painted',
 		i18n.getI18NMessage('sts.status.jobsite.field.work'),//'Jobsite Field Work',
@@ -824,6 +826,7 @@ var rfViews = {
 		locationin : 'O',
 		currentidin : 'R',
 		previousid : 'V',
+		bundleid : 'V',
 		piecemark : 'V',
 		material : 'V',
 		itemlength:'V',
@@ -840,7 +843,6 @@ var rfViews = {
 		heatin : 'R',
 		currentidin : 'R',
 		previousid : 'V',
-		
 		jobnumber : 'V',
 		shoporder : 'V',
 		seqnumber : 'V',
@@ -872,6 +874,7 @@ var rfViews = {
 		genericin : 'R',
 		jobnumberin : 'R',
 		piecemarkin : 'R',
+		piecemark : 'V',
 		material : 'V',
 		itemweight : 'V',
 		itemlength:'V',
@@ -1972,10 +1975,10 @@ function getWorkers(){
 				m.loginToUser[rec.user_uuid] = rec.employee_id;
 			}
 		}
-		if (!l.workerList[rec.employee_number]){
+		if (l.workerList.indexOf(rec.employee_number) == -1){
 			l.workerList.push(rec.employee_number);
 		}
-		if (!session.workerList[rec.employee_number]){
+		if (session.workerList.indexOf(rec.employee_number) == -1){
 			session.workerList.push(rec.employee_number);			
 		}
 	}
@@ -3411,9 +3414,9 @@ function onDataChangeWorker(oldValue, workers, event){
 	session.userEntry = workers;
 	var formName = event.getFormName();
 	var elementName = 'workerin';//event.getElementName();
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
+	//if (forms[formName].entryRequired(elementName)){
+	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
 	var rev = (formName.search('_rev') != -1);
 	if (workers == "" || workers == null){
 		if (formName == 'rf_mobile_view'){
@@ -3462,7 +3465,11 @@ function onDataChangeWorker(oldValue, workers, event){
 		return true
 	}
 	globals.logger(false,message);
-	forms.rf_mobile_view.statusWorker = workers;
+	if (forms.rf_mobile_view.statusWorker != '' && forms.rf_mobile_view.statusWorker.search(workers) == -1 && workers.search('\\.') == -1){
+		forms.rf_mobile_view.statusWorker = forms.rf_mobile_view.statusWorker+'.'+workers;
+	} else {
+		forms.rf_mobile_view.statusWorker = workers;
+	}
 	//forms.rf_transactions.controller.focusField('current',true);
 	if (formName != 'rf_mobile_view'){
 		if (rev){
@@ -4089,6 +4096,9 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			if (sLocation != "" && sLocation != null){
 				batchQ.setColumn('id_location',sLocation)
 			}
+			if (mob.heatId){
+				batchQ.setColumn('heat_id',mob.heatId);
+			}
 			if (updateIdfileStatus ){
 				
 				batchQ.setColumn('status_description_id',statusId)
@@ -4497,7 +4507,7 @@ function rfProcessBarcode(event){
 	}
 	if (!barcodeAttached()){
 		if (application.isInDeveloper()){application.output('ERROR: Database inconsistent with barcode');}//errortypeneeded
-		errorDialogMobile(event,'6002',barcodeErrorField);//6002 This item has no associated piecemark.
+		errorDialogMobile(event,'701',barcodeErrorField);//701 This ID Number Was Not Found. Ticket #262
 		logger(true,i18n.getI18NMessage('sts.txt.barcode.no.idfiles'));
 		rfWindowLastInfoClear();
 		return true;
@@ -4756,9 +4766,9 @@ function onDataChangeLocation(oldValue, newValue, event) {
 	session.userEntry = newValue;
 	var formName = event.getFormName();
 	var elementName = 'locationin';//event.getElementName();
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
+	//if (forms[formName].entryRequired(elementName)){
+	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
 	/** @type {String} */
 	var statusLocation = forms[formName].statusLocation;
 	if (newValue != null && newValue != ""){
@@ -4856,6 +4866,7 @@ function onDataChangeJob(oldValue, newJob, event) {
 		application.output('formname '+formName);
 		if (forms['rf_mobile_view']){forms['rf_mobile_view'].jobNumber = newJob}
 		session.jobNumber = newJob;
+		if (forms['rf_mobile_view']){session.jobId = scopes.globals.getJobIdInfo(newJob).job_id;}
 		return true;
 	}
 	var formName = event.getFormName();
@@ -4866,9 +4877,9 @@ function onDataChangeJob(oldValue, newJob, event) {
 	var baseForm = getBaseFormName(null);
 	var elementName = event.getElementName();
 	if (formName.search('rf_mobile_view') != -1){elementName = 'jobnumberin'}
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
+	//if (forms[formName].entryRequired(elementName)){
+	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
 	if (newJob == "" || newJob == null){
 		forms[formName].controller.focusField(elementName,true);
 		return true;
@@ -4994,7 +5005,7 @@ function onDataChangeBundle(oldValue, bundle, event) {
 	 * job number id
 	 * have idfile -> piecemark -> 
 	 */
-	var formName = event.getFormName();
+	var formName = event.getFormName();//onDataChangeBundle
 	var elementName = event.getElementName();
 	//if (onDataChangeFixEntry(oldValue,bundle,event)){return true;}
 	//if (formName.search('rf_mobile_view') != -1){elementName = 'bundlein'}
@@ -5038,6 +5049,9 @@ function onDataChangeBundle(oldValue, bundle, event) {
 		} else {
 			mob.bundle.Id = bundle;
 		}
+	}
+	if (formName == 'rf_mobile_view'){
+		forms[formName].currentBundle = mob.bundle.Id;
 	}
 	dataChangedBundle(event,formName);
 	return true;
@@ -5634,9 +5648,9 @@ function onDataChangeRevision(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	var formName = event.getFormName();
 	var elementName = event.getElementName();
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
+	//if (forms[formName].entryRequired(elementName)){
+	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
 	session.userEntry = newValue;
 	mob.currentRevision = newValue;
 	///var formName = event.getFormName();
@@ -5681,9 +5695,9 @@ function onDataChangeLoad(oldValue, newValue, event) {
 		return true;
 	}
 
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
+	//if (forms[formName].entryRequired(elementName)){
+	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
 	session.jobIdBack = session.jobId;
 	if (forms[formName].vJobRec && forms[formName].vJobRec.job_id){
 		session.jobId = forms[formName].vJobRec.job_id;
@@ -6644,20 +6658,23 @@ function onDataChangeHeat(oldValue, newValue, event) {
 	session.userEntry = newValue;
 	var formName = event.getFormName();
 	var elementName = event.getElementName();
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
-	rfGetJobIdfileIds();
-	/** @type {QBSelect<db:/stsservoy/heats>} */
+	//if (forms[formName].entryRequired(elementName)){
+	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
+	forms['rf_mobile_view'].heat = newValue;
+	mob.heat = newValue;
+
+	//rfGetJobIdfileIds();
+	/** @type {QBSelect<db:/stsservoy/heats>} * /
 	var s = databaseManager.createSelect('db:/stsservoy/heats');
 	s.result.add(s.columns.heat_number);
 	s.result.add(s.columns.heat_id);
 	s.where.add(s.columns.delete_flag.isNull);
 	s.where.add(s.columns.tenant_uuid.eq(session.tenant_uuid));
-	s.where.add(s.columns.idfile_id.isin(mob.idfileIds));
+	//s.where.add(s.columns.idfile_id.isin(mob.idfileIds));
 	s.where.add(s.columns.heat_number.eq(newValue));
 	
-	/** @type {JSFoundSet<db:/stsservoy/heats>} */
+	/** @type {JSFoundSet<db:/stsservoy/heats>} * /
 	var fs3 = databaseManager.getFoundSet(s);
 	if (fs3.getSize() == 0){
 		globals.logger(true,i18n.getI18NMessage('sts.txt.heat.not.found.this.job',new Array(newValue,session.jobNumber)));
@@ -6679,25 +6696,32 @@ function onDataChangeHeat(oldValue, newValue, event) {
 			//'New HEAT Number?', message, 'NO', 'yes');
 		if (response == i18n.getI18NMessage('sts.btn.no')){
 			newValue = oldValue;
-			forms['rf_mobile_view'].statusHeat = oldValue;
+			forms['rf_mobile_view'].heat = oldValue;
 
 		} else {
 			globals.logger(true,i18n.getI18NMessage('sts.txt.heat.created.for.job.number',new Array(newValue),session.jobNumber));
 			var fs = databaseManager.getFoundSet('stsservoy','heats');
-			/** @type {JSFoundSet<db:/stsservoy/heats>} */
+			/** @type {JSFoundSet<db:/stsservoy/heats>} * /
 			var rec = fs.newRecord();
 			rec.heat_number = newValue;
 			rec.tenant_uuid = session.tenant_uuid;
 			rec.edit_date = new Date();
-			forms['rf_mobile_view'].statusHeat = newValue;
+			forms['rf_mobile_view'].heat = newValue;
 
 		}
-		forms['rf_mobile_view'].statusHeat = oldValue;
+		forms['rf_mobile_view'].heat = oldValue;
 		newValue = oldValue;
 		return true;
 	}
+	if (forms['rf_mobile_view']){
+		var rec = fs3.getRecord(1); 
+		
+		forms['rf_mobile_view'].heat = rec.heat_number;
+		mob.heat = rec.heat_number;
+		mob.heatId = rec.heat_id;
+	}
 	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-	//rfMobileViewNextField(event);
+	//rfMobileViewNextField(event); */
 	return true;
 }
 
@@ -6717,7 +6741,7 @@ function onDataChangeGrade(oldValue, newValue, event) {
 	// blank piecemark grade is a pass
 	session.userEntry = newValue;
 	var formName = event.getFormName();
-	forms['rf_mobile_view'].statusGrade = newValue;
+	forms['rf_mobile_view'].grade = newValue;
 	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	return true;
 }
@@ -6741,9 +6765,9 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 	var piecemark = newValue;
 	var formName = event.getFormName();
 	var elementName = event.getElementName();
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
+	//if (forms[formName].entryRequired(elementName)){
+	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
 	var baseForm = getBaseFormName(null);
 	//application.output('base form '+baseForm);
 	session.jobIdBack = session.jobId;
@@ -6753,12 +6777,9 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q = databaseManager.createSelect('db:/stsservoy/sheets');
 	q.result.add(q.columns.sheet_id);
-	q.where.add(
-	q.and
-		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(q.columns.job_id.eq(session.jobId))
-	);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(session.jobId));
 	/** @type {JSFoundSet<db:/stsservoy/sheets>} */
 	var fs = databaseManager.getFoundSet(q);
 	session.jobId = session.jobIdBack;
@@ -6934,9 +6955,9 @@ function onDataChangeSequence(oldValue, newValue, event) {
 	// Is sequence part of the job?
 	var formName = event.getFormName();
 	var elementName = event.getElementName();
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
+	//if (forms[formName].entryRequired(elementName)){
+	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
 	/** @type {QBSelect<db:/stsservoy/sequences>} */
 	var s = databaseManager.createSelect('db:/stsservoy/sequences');
 	s.result.add(s.columns.sequence_number);
@@ -7252,6 +7273,7 @@ function getCustomersByJob(){
 			/** @type {JSRecord<db:/stsservoy/jobs>} */
 			var rec = J.getRecord(index);
 			custIds.push(rec.customer_id);
+			globals.session.jobId = rec.job_id;
 			index++;
 		}
 		/** @type {QBSelect<db:/stsservoy/customers>} */
@@ -9513,13 +9535,13 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		case 'G':
 			if (forms['rf_mobile_view'].shownFields.indexOf('gradein') == -1){break}
 			if (!data && forms['rf_mobile_view'].elements['gradein']){forms['rf_mobile_view'].grade = '';break;}
-			onDataChangeGrade(oldValue,newValue,event);
+			onDataChangeGrade(oldValue,data,event);
 			break;
 		//H or h - (H)eat
 		case 'H'://(H)eat
 			if (forms['rf_mobile_view'].shownFields.indexOf('heatin') == -1){break}
 			if (!data && forms['rf_mobile_view'].elements['heatin']){forms['rf_mobile_view'].heat = '';break;}
-			onDataChangeHeat(oldValue,newValue,event);
+			onDataChangeHeat(oldValue,data,event);
 			break;
 		//J or j - (J)ob Numbers
 		case 'J':
@@ -9588,10 +9610,10 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		default:
 	}
 	if (forms['rf_mobile_view']){forms['rf_mobile_view'].lastAction = action}
-	var dataProv = forms['rf_mobile_view']['genericInput'] = '';
+	forms['rf_mobile_view'].genericInput = '';
 	if (forms['rf_mobile_view'] &&
 			(forms['rf_mobile_view'].elements['errorWindow'] && !forms['rf_mobile_view'].elements['errorWindow'].visible) &&
-			(forms['mobile_query'].elements['queryText'] && !forms['mobile_query'].elements['queryText'].visible)){
+			(forms['mobile_query'].elements['queryText'] && application.getActiveWindow().controller.getName() != forms.mobile_query.controller.getName())){
 		forms['rf_mobile_view'].controller.focusField('genericin',false);
 	}
 	return true;
@@ -9971,13 +9993,34 @@ function getJobsTenant(){
  * @properties={typeid:24,uuid:"75954A70-C1B3-4CAD-A28C-A92E4800073F"}
  */
 function checkForSerialInput(possSerial){
-	if (length){
-		
-	}
 	/**
 	 * possible outcomes for serial input are length of i(D)_serial_number_for job
 	 * prefixed with P
 	 * bundle number prefixed with BND
 	 */ 
 	
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param heatNum
+ *
+ * @properties={typeid:24,uuid:"CA5A44F5-EE62-48FA-B4D7-792B6C427893"}
+ */
+function createHeat(event,heatNum){
+	globals.logger(true,i18n.getI18NMessage('sts.txt.heat.created.for.job.number',new Array(heatNum,session.jobNumber)));
+	/** @type {JSFoundSet<db:/stsservoy/heats>} */
+	var fs = databaseManager.getFoundSet('db:/stsservoy/heats');
+	var idx = fs.newRecord();
+	/** @type {JSRecord<db:/stsservoy/heats>} */
+	var rec = fs.getRecord(idx);
+	rec.heat_number = heatNum;
+	rec.tenant_uuid = session.tenant_uuid;
+	rec.edit_date = new Date();
+	var status = databaseManager.saveData(rec);
+	if (application.isInDeveloper()){application.output('save status on heat '+status)}
+	forms['rf_mobile_view'].heat = heatNum;
+	mob.heat = heatNum;
+	mob.heatId = rec.heat_id;
+
 }

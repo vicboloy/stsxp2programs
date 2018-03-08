@@ -9,6 +9,7 @@
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
+	onActionClear(event,event.getFormName());
 	globals.setUserFormPermissions(event);
 	scopes.jobs.getJobsList();
 	scopes.jobs.getCustomersList();
@@ -57,7 +58,8 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		vJobNum = null;
 		return false;
 	}
-	var formName = formName.split('_')[0]+'_piecemark_info';
+	var formName = event.getFormName();
+	formName = formName.split('_')[0]+'_piecemark_info';
 	if (forms[formName]){
 		forms[formName].elements.tabless.removeAllTabs();
 		scopes.jobs.removeFormHist(formName+"_table");
@@ -215,6 +217,7 @@ function onActionDeleteWindow(event,winTitle) {
 function collectAndTab(formName){
 	criteria = collectCriteria();
 	//scopes.jobs.viewBTableSQL2(criteria,formName);
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	scopes.jobs.viewBTableSQLSummary(criteria,formName);
 	//var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
 	//var summaryForm = 'loads_summary_info'+versionForm;
@@ -227,7 +230,9 @@ function collectAndTab(formName){
 	if (forms[formName+"_table"] && forms[formName+"_table"].hide){forms[formName+"_table"].hide();}
 	scopes.jobs.removeFormHist(formName+"_table");
 	scopes.jobs.browseJobID = vJobID;
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	scopes.jobs.viewBTableToFormQB(criteria,formName);
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
+	scopes.jobs.warningsX();
 	null;
 }

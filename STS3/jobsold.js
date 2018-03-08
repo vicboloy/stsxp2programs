@@ -1775,6 +1775,9 @@ function getJobTotalWeight(jobId,tenantId,metric,flaggedDeleted){
  * @AllowToRunInFind
  */
 function onGetInformationX(event,flaggedDeleted) {
+	scopes.jobs.warningsYes();
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
+
 	if (!forms[event.getFormName()].jobFound && event.getFormName().search('summary') == -1) {return}
 	var formX = forms[event.getFormName()];
 	var formXName = event.getFormName();
@@ -1800,6 +1803,7 @@ function onGetInformationX(event,flaggedDeleted) {
 		removeFormHist(newFormName+'_table');
 	}
 	formX.collectAndTab(newFormName); //table dataset is built within
+	scopes.jobs.warningsX();
 }
 /**
  * @param {JSEvent} event

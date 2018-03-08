@@ -52,6 +52,12 @@ titleText:"i18n:table.general.delete_flag"
 },
 {
 allowNull:true,
+creationOrderIndex:36,
+dataType:93,
+name:"deleted_date"
+},
+{
+allowNull:true,
 autoEnterSubType:3,
 autoEnterType:1,
 creationOrderIndex:29,

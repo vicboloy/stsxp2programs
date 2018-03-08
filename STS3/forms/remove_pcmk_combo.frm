@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/idfiles",
 extendsID:"A163BD78-4BCF-4D7B-8342-ADBE6CDFDF71",
 items:[
@@ -7,6 +13,17 @@ location:"5,35",
 size:"630,388",
 typeid:16,
 uuid:"0CCE4E42-1398-4AF6-AB7E-F3CF44228929"
+},
+{
+dataProviderID:"purgeJob",
+displayType:4,
+location:"212,4",
+size:"268,26",
+text:"i18n:sts.chk.delete.job",
+toolTipText:"i18n:sts.chk.delete.job",
+transparent:true,
+typeid:4,
+uuid:"314D53BC-A2F3-4267-AA38-521C54743E16"
 },
 {
 customProperties:"methods:{\
@@ -78,6 +95,7 @@ uuid:"DDD39C2C-D5F8-4EB7-993C-8C65142FE0EE"
 }
 ],
 name:"remove_pcmk_combo",
+onShowMethodID:"FCAC3D5A-5C54-4EEF-8CF2-1BA9E3640B24",
 size:"639,461",
 styleName:"sts_one",
 typeid:3,

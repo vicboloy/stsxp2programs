@@ -39,10 +39,6 @@ function onActionClearAll(event) {
  * @properties={typeid:24,uuid:"AEC1BA24-274B-42EC-B7C0-030C214B0A62"}
  */
 function onActionRecallSelected(event) {
-	if (!scopes.globals.purgeBarcodeRecords){
-		scopes.globals.purgeBarcodeRecords = [];
-	}
-	var blowCodes = scopes.globals.purgeBarcodeRecords;
 	globals.doDialog(i18n.getI18NMessage('sts.txt.recall.selected.records'),
 					i18n.getI18NMessage('sts.txt.recall.selected.records')+'?',
 					i18n.getI18NMessage('sts.btn.recall.selected'),
@@ -59,6 +55,11 @@ function onActionRecallSelected(event) {
 	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		return;
 	}
+	if (!scopes.globals.purgeBarcodeRecords){
+		scopes.globals.purgeBarcodeRecords = [];
+	}
+	forms[event.getFormName()].controller.getWindow().toFront();//for some reason, this window causing criteria form to focus???
+	var blowCodes = scopes.globals.purgeBarcodeRecords;
     if (formName == null){
     	var formName = event.getFormName();
     }
@@ -67,19 +68,23 @@ function onActionRecallSelected(event) {
 	var fs = forms[formTable].foundset;
 	var recoverList = [];
 	var i = 1;
+	var nothingSelected = true;
 	while (i <= fs.getSize()){
 		var rec = fs.getRecord(i);
 		if (rec.selection == 1){
-			blowCodes.push(rec.idfile_id+"");
-			//fs.omitRecord(i);
+			nothingSelected = false;
+			if (blowCodes.indexOf(rec.if_idfile_id) == -1){
+				blowCodes.push(rec.if_idfile_id);
+			}
 			recoverList.push(i);
 		}
 		i++;
 	}
+	if (nothingSelected){scopes.jobs.warningsX();return}
 	scopes.jobs.recallIdfiles();
 	while (recoverList.length != 0){
 		fs.setSelectedIndex(recoverList.pop());
-		fs.omitRecord(recoverList.pop());
+		//fs.omitRecord(recoverList.pop());
 	}
 	/** i = 1;
 	while (i <= fs.getSize()){
@@ -91,4 +96,6 @@ function onActionRecallSelected(event) {
 		i++;
 	}*/
 	scopes.globals.purgeBarcodeRecords = new Array();
+	var win = application.getActiveWindow();
+	win.hide();
 }

@@ -996,51 +996,51 @@ function onActionElementPicks(event) {
 	switch (activeEl){
 		case "Seq" :
 			scopes.jobs.jobSequenceNumbers(topForm);
-			arrayInUse = jobInfo.sequence_nums;	
+			arrayInUse = arrayInUse.concat(jobInfo.sequence_nums);	
 			break;
 		case "Sheet":
 			scopes.jobs.jobSheetAndDrawingNumbers(topForm);
-			arrayInUse = jobInfo.sheet_nums;
+			arrayInUse = arrayInUse.concat(jobInfo.sheet_nums);
 			break;
 		case "Lot":
 			scopes.jobs.jobLotNumbers(topForm);
-			arrayInUse = jobInfo.lot_nums;
+			arrayInUse = arrayInUse.concat(jobInfo.lot_nums);
 			break;
 		case "Draw":
 			scopes.jobs.jobSheetAndDrawingNumbers(topForm);
-			arrayInUse = jobInfo.ref_drawings;
+			arrayInUse = arrayInUse.concat(jobInfo.ref_drawings);
 			break;
 		case "Area":
 			scopes.jobs.jobIdfileMiscInfo(topForm);
-			arrayInUse = jobInfo.area_names;
+			arrayInUse = arrayInUse.concat(jobInfo.area_names);
 			break;
 		case "Batch":
 			scopes.jobs.jobIdfileMiscInfo(topForm);
-			arrayInUse = jobInfo.batch_names;
+			arrayInUse = arrayInUse.concat(jobInfo.batch_names);
 			break;
 		case "SO":
 			scopes.jobs.jobIdfileMiscInfo(topForm);
-			arrayInUse = jobInfo.shoporder_nums;
+			arrayInUse = arrayInUse.concat(jobInfo.shoporder_nums);
 			break;
 		case "PcmkRel":
 			scopes.jobs.jobIdfileMiscInfo(topForm);
-			arrayInUse = jobInfo.pcmk_rels;
+			arrayInUse = arrayInUse.concat(jobInfo.pcmk_rels);
 			break;
 		case "FabShop":
 			scopes.jobs.jobStations(topForm); //jobIdfileMiscInfo(topForm);
-			arrayInUse = jobInfo.stations; //active_stations;
+			arrayInUse = arrayInUse.concat(jobInfo.stations); //active_stations;
 			break;
 		case "Pkg":
 			scopes.jobs.jobIdfileMiscInfo(topForm);
-			arrayInUse = jobInfo.package_nums;
+			arrayInUse = arrayInUse.concat(jobInfo.package_nums);
 			break;
 		case "LoadRel":
 			scopes.jobs.jobLoadsAndReleases(topForm);
-			arrayInUse = jobInfo.load_rels;
+			arrayInUse = arrayInUse.concat(jobInfo.load_rels);
 			break;
 		case "LoadNum":
 			scopes.jobs.jobLoadsAndReleases(topForm);
-			arrayInUse = jobInfo.load_nums;
+			arrayInUse = arrayInUse.concat(jobInfo.load_nums);
 			break;
 		default:
 			
@@ -1440,4 +1440,130 @@ function onActionClickSampleDataReset(event){
  */
 function onActionClickPerformanceImport(event) {
 	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.import.performance'),'import_performance_bom',50,50,640,530,false);
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"B86758FB-D92F-4FF7-9CCE-0D6FD4D21200"}
+ */
+function onActionClickInfoSheet(event){
+	// jobNumbers J, Status Codes S, Id serial Numbers D, Users W, Bundle Numbers on Job Number B, 
+	var fileName = scopes.prefs.temppath+'\\infoSheet.txt';
+	var file = plugins.file.createFile(fileName);
+	var created = file.createNewFile();
+	if (false && !created){// unabled to create file
+		if (application.isInDeveloper()){application.output('failed to create file '+fileName)}
+		return;
+	}
+	var text_data = '';
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var q = databaseManager.createSelect('db:/stsservoy/jobs');
+	q.result.add(q.columns.job_number);
+	q.result.add(q.columns.job_id);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.association_id.eq(globals.session.associationId));
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	var jobs = Q.getColumnAsArray(1);
+	var jobIds = Q.getColumnAsArray(2);
+	
+	var idToJob = []
+	for (idx = 0;idx < jobs.length;idx++){
+		idToJob[jobIds[idx]] = jobs[idx];
+	}
+	
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var r = databaseManager.createSelect('db:/stsservoy/status_description');
+	r.result.add(r.columns.status_code);
+	r.where.add(r.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	r.where.add(r.columns.delete_flag.isNull);
+	r.sort.add(r.columns.status_sequence.asc);
+	var R = databaseManager.getDataSetByQuery(r,-1);
+	var statuses = R.getColumnAsArray(1);
+	text_data += 'Jobs:\n\n';
+	
+	seen = [];
+	var workers = globals.session.workerList.sort();
+	for (var idx = 0;idx < jobs.length;idx++){
+		if (seen.indexOf(jobs[idx]) != -1){continue}
+		seen.push(jobs[idx]);
+		text_data += '*J'+jobs[idx]+'*\n\n';
+	}
+	seen = [];
+	text_data += 'Status Codes:\n\n';
+	for (idx = 0;idx < statuses.length;idx++){
+		if (seen.indexOf(statuses[idx]) != -1){continue}
+		seen.push(statuses[idx]);
+		text_data += '*S'+statuses[idx].trim()+'*\n\n';
+	}
+	seen = [];
+	text_data += 'Workers:\n\n';
+	for (idx = 0;idx < workers.length;idx++){
+		if (seen.indexOf(workers[idx]) != -1){continue}
+		seen.push(workers[idx]);
+		text_data += '*W'+workers[idx].trim()+'*\n\n';
+	}
+	if (application.isInDeveloper()){application.output(text_data)}
+	
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var s = databaseManager.createSelect('db:/stsservoy/sheets');
+	s.where.add(s.columns.delete_flag.isNull);
+	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	s.where.add(s.columns.job_id.isin(jobIds));
+	s.result.add(s.columns.job_id);
+	
+	application.output('jobIDS '+jobIds);
+	application.output('jobNums '+jobs);
+	
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var sp = s.joins.add('db:/stsservoy/piecemarks');
+	sp.on.add(s.columns.sheet_id.eq(sp.columns.sheet_id));
+	sp.root.where.add(sp.columns.delete_flag.isNull);
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var si = sp.joins.add('db:/stsservoy/idfiles');
+	si.on.add(sp.columns.piecemark_id.eq(si.columns.piecemark_id));
+	si.root.where.add(si.columns.delete_flag.isNull);
+	/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
+	var sd = si.joins.add('db:/stsservoy/id_serial_numbers');
+	sd.on.add(si.columns.id_serial_number_id.eq(sd.columns.id_serial_number_id));
+	sd.root.sort.add(sd.columns.id_serial_number.asc);
+	sd.root.result.distinct = true;
+	s.result.add(sd.columns.id_serial_number);
+	
+	var serials_txt = '';var count = jobs.length*80*2;
+	var seen = []; var maxIdCount = 80; var skipJob = [];
+	var SSS = databaseManager.getDataSetByQuery(s,-1);
+	for (idx = 1;idx <= SSS.getMaxRowIndex();idx++){
+		SSS.rowIndex = idx;
+		var jobNum = idToJob[SSS.job_id];
+		if (skipJob.indexOf(jobNum) != -1){continue}
+		if (!seen[jobNum]){seen[jobNum] = []}
+		if (seen[jobNum].length < maxIdCount){
+			seen[jobNum].push(SSS.id_serial_number);
+			continue;
+		} else {
+			skipJob.push(jobNum);
+		}
+		//if (count-- < 0){break}
+	}
+	
+	
+	for (idx = 0;idx < jobs.length;idx++){
+		jobNum = jobs[idx];
+		serials_txt += '\n\nJOB '+jobNum+'\n\n';
+		if (!seen[jobNum]){continue}
+		for (var idx2 = 0;idx2 < seen[jobNum].length;idx2++){
+			serials_txt += '*'+seen[jobNum][idx2].trim()+'*\n\n';
+			//var col = idx2*1+1*1;
+			//if (col/4*1 == Math.floor(col/4)*1){serials_txt += "\n"}
+		}
+	}
+	var fileObj = plugins.file.writeTXTFile(file,text_data+'\n'+serials_txt);
+	if (!fileObj){
+		if (application.isInDeveloper()){application.output('failed to write text file '+fileName)}
+		return;
+	}
+	plugins.dialogs.showErrorDialog('1254',i18n.getI18NMessage('1254',[fileName]))
+	//plugins.UserManager.executeCommand('wordpad.exe '+fileName);
+
 }

@@ -10,8 +10,9 @@ function onActionClose(event) {
 	//return;
 	// just close the window to return to base selection, execute a clear on remaining window
 	///var form = event.getFormName();
-	
-	var win = application.getActiveWindow();
+	if (application.isInDeveloper()){application.output('hide window '+event.getFormName())}
+	var win = forms[event.getFormName()].controller.getWindow();
+	//var win = application.getActiveWindow();
 	//application.output(form+' '+win.getName());
 	//win = application.getWindow(win.getName());
 	//forms.delete_record_actual.controller.getWindow().hide();
@@ -19,6 +20,7 @@ function onActionClose(event) {
 	win.hide();
 	//win.destroy();
 	//scopes.jobs.removeFormHist('delete_pcmk_combo_table');
+	//scopes.jobs.warningsX();
 }
 
 /**
@@ -30,6 +32,8 @@ function onActionClose(event) {
  * @properties={typeid:24,uuid:"10165E5B-19D4-4AEB-A67A-45FA10277C2B"}
  */
 function onShow(firstShow, event) {
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
+
 	var formPrefix = event.getFormName().split("_")[0];
 	var formNameTable = formPrefix+'_pcmk_combo_table';
 	var formCombo = formPrefix+'_pcmk_combo';
@@ -40,6 +44,7 @@ function onShow(firstShow, event) {
 	//var success2 = solutionModel.removeForm(formNameTable);
 	//forms[formCriteria].collectCriteria(formCombo);
 	scopes.jobs.viewBTableToFormQB(forms[formCriteria].collectCriteria(formCombo),formCombo);
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
 
 	forms[formCombo].elements.split.setRightForm(formPrefix+'_pcmk_transaction','sts_idfile_to_transactions');
 //	scopes.jobs.hideEmptyColumns(event,1);

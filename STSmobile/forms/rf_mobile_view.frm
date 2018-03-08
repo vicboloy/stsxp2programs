@@ -13,6 +13,7 @@ encapsulation:0,
 extendsID:"72E0B299-FCCD-4C42-8A48-15F726CE17F1",
 items:[
 {
+fontType:"Arial,1,13",
 formIndex:57,
 labelFor:"partnumberin",
 location:"0,21",
@@ -25,6 +26,7 @@ uuid:"00F27929-9282-4FE8-8C9C-76441C99B4FF",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:23,
 horizontalAlignment:2,
 labelFor:"",
@@ -39,6 +41,7 @@ visible:false
 },
 {
 dataProviderID:"sts_idfile_to_pcmks.sts_pcmks_to_sheet.sheet_number",
+fontType:"Arial,1,13",
 formIndex:42,
 horizontalAlignment:4,
 location:"135,233",
@@ -53,6 +56,8 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"sequence",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:68,
 format:"|U",
 location:"99,21",
@@ -75,6 +80,8 @@ borderType:"EmptyBorder,0,0,0,0",
 customProperties:"",
 dataProviderID:"jobNumber",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:51,
 format:"|U",
 location:"99,21",
@@ -94,6 +101,8 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"grade",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:66,
 format:"|U",
 location:"99,21",
@@ -116,6 +125,8 @@ borderType:"EmptyBorder,0,0,0,0",
 customProperties:"",
 dataProviderID:"drawingRevision",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:50,
 format:"|U",
 location:"99,21",
@@ -132,6 +143,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobItemWeight",
+fontType:"Arial,1,13",
 formIndex:59,
 horizontalAlignment:4,
 location:"135,175",
@@ -144,6 +156,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobLoadWeight",
+fontType:"Arial,1,13",
 formIndex:43,
 horizontalAlignment:4,
 location:"152,175",
@@ -157,6 +170,7 @@ visible:false
 {
 dataProviderID:"scopes.globals.mobBundleWeight",
 enabled:false,
+fontType:"Arial,1,13",
 formIndex:13,
 horizontalAlignment:4,
 location:"139,175",
@@ -169,6 +183,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobPreviousStatus",
+fontType:"Arial,1,13",
 formIndex:31,
 horizontalAlignment:4,
 location:"135,233",
@@ -184,6 +199,8 @@ borderType:"EmptyBorder,0,0,0,0",
 customProperties:"",
 dataProviderID:"loadNumber",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:39,
 format:"|U",
 location:"99,21",
@@ -201,6 +218,7 @@ uuid:"139D22AE-29DD-44B8-91E4-2F12F2FEE5CD",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:56,
 labelFor:"",
 location:"0,21",
@@ -213,6 +231,7 @@ uuid:"17C86526-3A36-4A0A-9A26-254EE5349BDD",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:60,
 labelFor:"",
 location:"0,21",
@@ -225,6 +244,7 @@ uuid:"17FDA8D8-3671-4C67-8311-F1D37E7E08CB",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:84,
 horizontalAlignment:2,
 labelFor:"",
@@ -239,6 +259,7 @@ visible:false
 },
 {
 dataProviderID:"sts_idfile_to_statusdescrip.status_code",
+fontType:"Arial,1,13",
 formIndex:46,
 horizontalAlignment:4,
 location:"135,233",
@@ -251,6 +272,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
+fontType:"Arial,1,13",
 formIndex:62,
 horizontalAlignment:4,
 location:"201,175",
@@ -263,6 +285,7 @@ uuid:"1EC42E83-3C0D-40D3-B938-59547C8443F4",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:91,
 labelFor:"bundlein",
 location:"0,21",
@@ -278,9 +301,11 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"partnumber",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:67,
 format:"|U",
-location:"109,31",
+location:"99,21",
 name:"partnumberin",
 onActionMethodID:"-1",
 onDataChangeMethodID:"C4F5F0BB-0AD2-4854-A28A-AD9BDFF663D3",
@@ -296,6 +321,7 @@ uuid:"201F30A2-FA79-417C-B274-7DED05426C5F",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:80,
 horizontalAlignment:2,
 labelFor:"",
@@ -309,6 +335,7 @@ uuid:"21258B57-9F79-406D-87DA-0207F3F25C76",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:5,
 location:"9,175",
 name:"bundlepieceslabel",
@@ -320,6 +347,7 @@ uuid:"26001B70-AAE3-4C8C-A722-CADC8B391A2C",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:58,
 horizontalAlignment:4,
 labelFor:"updateload",
@@ -334,6 +362,7 @@ uuid:"278C8DAF-60FD-4846-9C30-FB9A2687B27A",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:19,
 labelFor:"jobnumberin",
 location:"0,21",
@@ -352,6 +381,7 @@ typeid:7,
 uuid:"2FDEF4AD-9CAA-4F24-A536-E6B78F90E935"
 },
 {
+fontType:"Arial,1,13",
 formIndex:3,
 horizontalAlignment:2,
 labelFor:"",
@@ -366,6 +396,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobLocationWeight",
+fontType:"Arial,1,13",
 formIndex:70,
 horizontalAlignment:4,
 location:"135,175",
@@ -378,6 +409,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobLoadPieces",
+fontType:"Arial,1,13",
 formIndex:34,
 horizontalAlignment:2,
 location:"52,175",
@@ -389,6 +421,7 @@ uuid:"35A6481D-1063-483A-B4E4-F7453BBD59BE",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:52,
 labelFor:"heatin",
 location:"0,21",
@@ -401,6 +434,7 @@ uuid:"379EF623-AA32-4CCF-864E-01B870CBC102",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:81,
 horizontalAlignment:2,
 labelFor:"",
@@ -417,6 +451,7 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"quantity",
 editable:false,
+fontType:"Arial,1,13",
 formIndex:28,
 format:"|U",
 location:"99,21",
@@ -432,6 +467,7 @@ uuid:"3FFBA65C-7604-4746-99D9-16A4CA9FA207",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:87,
 horizontalAlignment:2,
 labelFor:"",
@@ -457,6 +493,7 @@ uuid:"4AA22C5E-5317-45FC-9B6A-1965A312D40C",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:54,
 labelFor:"seqnumberin",
 location:"0,21",
@@ -471,6 +508,7 @@ visible:false
 },
 {
 dataProviderID:"sts_idfile_to_sequence.sequence_number",
+fontType:"Arial,1,13",
 formIndex:72,
 horizontalAlignment:4,
 location:"135,233",
@@ -483,6 +521,7 @@ visible:false
 },
 {
 dataProviderID:"sts_idfile_to_pcmks.piecemark",
+fontType:"Arial,1,13",
 formIndex:47,
 horizontalAlignment:4,
 location:"135,233",
@@ -495,6 +534,7 @@ visible:false
 },
 {
 dataProviderID:"genericInput",
+fontType:"Arial,1,13",
 formIndex:26,
 format:"|U",
 location:"99,21",
@@ -509,6 +549,7 @@ uuid:"52A7A624-E15A-4752-8C48-6AEEE363C9E0",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:48,
 horizontalAlignment:2,
 labelFor:"",
@@ -522,6 +563,7 @@ uuid:"53952713-3865-460F-96E3-CF920D778426",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:38,
 horizontalAlignment:4,
 location:"135,233",
@@ -533,6 +575,20 @@ uuid:"54C405BC-631C-44A8-80D3-81B1CB2C1B42",
 visible:false
 },
 {
+fontType:"Arial,1,13",
+formIndex:17,
+labelFor:"",
+location:"0,233",
+name:"bundleidlabel",
+size:"104,20",
+text:"i18n:sts.label.bundle.number",
+transparent:true,
+typeid:7,
+uuid:"565CDA0F-CD45-48BA-B2DE-7A09FEC79C22",
+visible:false
+},
+{
+fontType:"Arial,1,13",
 formIndex:21,
 labelFor:"currentidin",
 location:"0,21",
@@ -551,6 +607,7 @@ typeid:16,
 uuid:"5D2F3963-1D63-4FB8-A8AA-170E0304D934"
 },
 {
+fontType:"Arial,1,13",
 formIndex:24,
 horizontalAlignment:2,
 labelFor:"",
@@ -564,6 +621,7 @@ uuid:"5F0D2755-0068-448D-9233-BA173C5FF233",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:57,
 labelFor:"quantityin",
 location:"0,21",
@@ -580,6 +638,8 @@ borderType:"EmptyBorder,0,0,0,0",
 customProperties:"",
 dataProviderID:"statusWorker",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:29,
 format:"|U",
 location:"99,21",
@@ -598,6 +658,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
+fontType:"Arial,1,13",
 formIndex:15,
 horizontalAlignment:4,
 location:"206,175",
@@ -611,6 +672,7 @@ visible:false
 },
 {
 dataProviderID:"lastID",
+fontType:"Arial,1,13",
 formIndex:71,
 location:"119,233",
 name:"previousid",
@@ -626,7 +688,7 @@ formIndex:11,
 horizontalAlignment:0,
 location:"37,175",
 name:"bundlepieces",
-size:"75,20",
+size:"94,20",
 transparent:true,
 typeid:7,
 uuid:"6CC78AE5-7BE8-4863-AF31-D84BCBA28791",
@@ -634,6 +696,7 @@ visible:false
 },
 {
 dataProviderID:"sts_idrepfile_idfile.shop_order",
+fontType:"Arial,1,13",
 formIndex:41,
 horizontalAlignment:4,
 location:"135,233",
@@ -645,6 +708,7 @@ uuid:"71A939E5-B57C-4572-B7F8-10603B55FAD4",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:91,
 labelFor:"genericin",
 location:"0,21",
@@ -658,6 +722,7 @@ visible:false
 },
 {
 dataProviderID:"sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_number",
+fontType:"Arial,1,13",
 formIndex:93,
 horizontalAlignment:4,
 location:"135,233",
@@ -674,6 +739,7 @@ customProperties:"",
 dataProviderID:"currentID",
 editable:false,
 enabled:false,
+fontType:"Arial,1,13",
 formIndex:49,
 format:"|U",
 location:"99,21",
@@ -690,6 +756,7 @@ uuid:"7819E826-215E-4A98-9A2B-051F21B1EB3C",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:79,
 horizontalAlignment:2,
 labelFor:"",
@@ -704,6 +771,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobPreviousStatus",
+fontType:"Arial,1,13",
 formIndex:33,
 horizontalAlignment:2,
 location:"37,175",
@@ -715,6 +783,18 @@ uuid:"7C1A7ACB-9AAC-4F32-ABDE-B1A46C20E8BE",
 visible:false
 },
 {
+dataProviderID:"bundle_id",
+formIndex:71,
+location:"119,233",
+name:"bundleid",
+size:"121,20",
+transparent:true,
+typeid:7,
+uuid:"7FC00095-B187-43FB-A429-EEA058FD32E0",
+visible:false
+},
+{
+fontType:"Arial,1,13",
 formIndex:83,
 horizontalAlignment:2,
 labelFor:"",
@@ -742,6 +822,7 @@ uuid:"8037A2FA-9084-41AC-90EE-40E4FB4D579A"
 },
 {
 dataProviderID:"sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_weight",
+fontType:"Arial,1,13",
 formIndex:92,
 location:"135,175",
 name:"jobweight",
@@ -753,6 +834,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobLocationPieces",
+fontType:"Arial,1,13",
 formIndex:8,
 horizontalAlignment:4,
 location:"135,233",
@@ -771,6 +853,7 @@ typeid:7,
 uuid:"83CCC5F1-1738-4321-8064-C3546517FF30"
 },
 {
+fontType:"Arial,1,13",
 formIndex:37,
 horizontalAlignment:4,
 location:"135,233",
@@ -782,6 +865,7 @@ uuid:"86DC9F5F-D13E-4017-B4DE-0CF6D1BAD737",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:77,
 labelFor:"statusin",
 location:"0,21",
@@ -794,6 +878,7 @@ uuid:"8CA7F31E-8129-4030-B925-D18C86746E0D",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:74,
 horizontalAlignment:2,
 labelFor:"",
@@ -808,6 +893,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobItemLength",
+fontType:"Arial,1,13",
 formIndex:4,
 horizontalAlignment:4,
 location:"135,175",
@@ -820,6 +906,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
+fontType:"Arial,1,13",
 formIndex:61,
 horizontalAlignment:4,
 location:"201,175",
@@ -832,6 +919,7 @@ uuid:"8F1ADF44-DEE1-49D2-8CF5-FA82D77239A8",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:7,
 location:"111,175",
 name:"bundleweightlabel",
@@ -844,6 +932,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobLocationPiecemarks",
+fontType:"Arial,1,13",
 formIndex:9,
 horizontalAlignment:4,
 location:"135,233",
@@ -858,6 +947,8 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"piecemark",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:65,
 format:"|U",
 location:"135,145",
@@ -876,6 +967,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobPreviousStatus",
+fontType:"Arial,1,13",
 formIndex:40,
 horizontalAlignment:4,
 location:"135,233",
@@ -887,6 +979,7 @@ uuid:"992BE755-83C2-45ED-9E6A-62F43A51F76B",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:25,
 horizontalAlignment:2,
 labelFor:"",
@@ -904,6 +997,8 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"piecemark",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:67,
 format:"|U",
 location:"99,21",
@@ -933,6 +1028,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
+fontType:"Arial,1,13",
 formIndex:12,
 horizontalAlignment:4,
 location:"201,175",
@@ -945,6 +1041,7 @@ uuid:"9E35FE37-D575-4652-914E-A3147928A995",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:90,
 horizontalAlignment:2,
 labelFor:"",
@@ -959,6 +1056,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobLengthUnits",
+fontType:"Arial,1,13",
 horizontalAlignment:4,
 location:"201,175",
 name:"itemlengthunits",
@@ -973,6 +1071,8 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"statusLocation",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:63,
 format:"|U",
 location:"99,21",
@@ -992,6 +1092,7 @@ uuid:"AA0835B9-C890-4C6C-B820-F9EED1B067C6",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:85,
 horizontalAlignment:2,
 labelFor:"",
@@ -1008,6 +1109,8 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"heat",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:64,
 format:"|U",
 location:"99,21",
@@ -1026,6 +1129,7 @@ uuid:"B2C9C39C-99AB-4EE3-A359-DCB5EEA957B5",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:17,
 labelFor:"",
 location:"0,233",
@@ -1039,6 +1143,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobPreviousStatus",
+fontType:"Arial,1,13",
 formIndex:44,
 horizontalAlignment:4,
 location:"137,175",
@@ -1050,6 +1155,7 @@ uuid:"B6D72546-7A6F-4B6D-9EA1-E57067D79C16",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:57,
 labelFor:"loadnumberin",
 location:"0,21",
@@ -1063,6 +1169,7 @@ visible:false
 },
 {
 dataProviderID:"sts_idfile_to_pcmks.material",
+fontType:"Arial,1,13",
 formIndex:35,
 horizontalAlignment:4,
 location:"135,233",
@@ -1085,6 +1192,7 @@ typeid:7,
 uuid:"BC4C592A-2747-41B3-A461-21A6C8AD229A"
 },
 {
+fontType:"Arial,1,13",
 formIndex:55,
 labelFor:"piecemarkin",
 location:"0,21",
@@ -1099,6 +1207,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobPreviousLocation",
+fontType:"Arial,1,13",
 formIndex:94,
 horizontalAlignment:4,
 location:"135,233",
@@ -1110,6 +1219,7 @@ uuid:"C1087E11-CBFC-4883-8B4E-408D51488A17",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:73,
 horizontalAlignment:2,
 labelFor:"",
@@ -1133,6 +1243,7 @@ uuid:"CF89993A-1B9E-43BE-AAFB-CE8A869F537D"
 },
 {
 dataProviderID:"sts_idrepfile_idfile.sts_idfile_to_pcmks.grade",
+fontType:"Arial,1,13",
 formIndex:36,
 horizontalAlignment:4,
 location:"135,233",
@@ -1144,6 +1255,7 @@ uuid:"D33744D4-5FC8-43E6-A199-306D0420C9B2",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:22,
 horizontalAlignment:2,
 labelFor:"",
@@ -1157,6 +1269,7 @@ uuid:"D7884225-F50C-4B4F-AB43-656DABF5D50E",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:20,
 labelFor:"drawrevin",
 location:"0,21",
@@ -1189,6 +1302,7 @@ uuid:"DB4A8A01-1651-454E-A154-3A4A8883E0AC",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:10,
 horizontalAlignment:2,
 labelFor:"",
@@ -1202,6 +1316,7 @@ uuid:"DF533CFC-B902-4F3E-8AE0-90B8BEE36ABB",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:88,
 horizontalAlignment:2,
 labelFor:"",
@@ -1215,6 +1330,7 @@ uuid:"E07FAACA-4B6B-4BC9-BB94-A18DD318EB3C",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:53,
 horizontalAlignment:4,
 labelFor:"cancelupdate",
@@ -1230,6 +1346,7 @@ visible:false
 },
 {
 dataProviderID:"id_location",
+fontType:"Arial,1,13",
 formIndex:45,
 horizontalAlignment:4,
 location:"135,233",
@@ -1241,6 +1358,7 @@ uuid:"E291464B-F685-40D7-9D88-46497231E2F7",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:30,
 horizontalAlignment:2,
 labelFor:"",
@@ -1257,6 +1375,8 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"currentBundle",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:26,
 format:"|U",
 location:"99,21",
@@ -1273,6 +1393,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
+fontType:"Arial,1,13",
 formIndex:14,
 horizontalAlignment:4,
 location:"201,175",
@@ -1285,6 +1406,7 @@ uuid:"E95CF000-71F7-49DA-BBBD-A3D0BA5AE26D",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:18,
 horizontalAlignment:2,
 labelFor:"",
@@ -1298,6 +1420,7 @@ uuid:"EAAB6791-535F-4F76-8D82-BCB22E1DFE42",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:76,
 horizontalAlignment:2,
 labelFor:"",
@@ -1311,6 +1434,7 @@ uuid:"EADC9049-7C91-4E5D-8586-72FBFA580CB4",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:82,
 horizontalAlignment:2,
 labelFor:"",
@@ -1325,6 +1449,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobPiecesStatus",
+fontType:"Arial,1,13",
 formIndex:32,
 horizontalAlignment:4,
 location:"135,233",
@@ -1339,6 +1464,8 @@ visible:false
 borderType:"EmptyBorder,0,0,0,0",
 dataProviderID:"statusCode",
 editable:false,
+enabled:false,
+fontType:"Arial,1,13",
 formIndex:28,
 format:"|U",
 location:"99,21",
@@ -1355,6 +1482,7 @@ uuid:"EDFE621F-905B-4069-99A9-D21073F19356",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:78,
 horizontalAlignment:2,
 labelFor:"",
@@ -1368,6 +1496,7 @@ uuid:"F40518F4-D344-47F8-BBC5-4B3A032972FB",
 visible:false
 },
 {
+fontType:"Arial,1,13",
 formIndex:27,
 horizontalAlignment:2,
 labelFor:"",
@@ -1383,6 +1512,7 @@ visible:false
 },
 {
 dataProviderID:"scopes.globals.mobWeightUnits",
+fontType:"Arial,1,13",
 formIndex:16,
 horizontalAlignment:4,
 location:"206,175",
@@ -1402,6 +1532,7 @@ typeid:4,
 uuid:"FC7A6E61-10B5-428F-AF90-6CED424C446F"
 },
 {
+fontType:"Arial,1,13",
 formIndex:75,
 horizontalAlignment:2,
 labelFor:"",
@@ -1422,6 +1553,7 @@ typeid:4,
 uuid:"FE0CC532-2E45-4E93-BC1D-28B1604B49CC"
 },
 {
+fontType:"Arial,1,13",
 formIndex:86,
 horizontalAlignment:2,
 labelFor:"loadnumberin",

@@ -11,6 +11,12 @@ var deleteJob = 0;
  */
 var deleteHistory = 0;
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"C2C754BE-44FF-4370-9AB6-128B371BFBF1",variableType:4}
+ */
+var allItemsSelected = 0;
+/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -21,6 +27,9 @@ var deleteHistory = 0;
 function onShow(firstShow, event) {
 	deleteJob = 0;
 	deleteHistory = 0;
+	allItemsSelected = 0;
+	elements.btn_DeleteSelected.text = i18n.getI18NMessage('sts.btn.delete.selected');
+	scopes.jobs.warningsX();
 	return _super.onShow(firstShow, event)
 }
 
@@ -32,7 +41,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"374ED16A-949C-40E1-B082-9095F45463C0"}
  */
 function onActionSelectAll(event) {
-	scopes.jobs.warningsYes();
+	//scopes.jobs.warningsYes();
 	scopes.jobs.warningsMessage('Selecting records, please wait...',true);
 	var formName = event.getFormName();
 	var fs = forms[formName+'_table'].foundset;
@@ -78,9 +87,15 @@ function onActionClearAll(event) {
  */
 function onActionDeleteSelected(event,formName) {
 	scopes.jobs.deleteDataJobId = forms.delete_criteria.vJobID;
-	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.records.selected'),
-		i18n.getI18NMessage('sts.txt.delete.records.selected'),
-		i18n.getI18NMessage('sts.txt.delete'),
+	var message = i18n.getI18NMessage('sts.txt.delete.records.selected');
+	var button = i18n.getI18NMessage('sts.btn.delete');
+	if (deleteHistory){
+		message = i18n.getI18NMessage('sts.txt.delete.records.history');
+		button = i18n.getI18NMessage('sts.btn.purge.selected');
+	}
+	globals.doDialog(message,
+		message,
+		button,
 		i18n.getI18NMessage('sts.txt.cancel'));
 		//'Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
 	if (globals.dialogResponse.toLowerCase() != 'yes'){
@@ -88,10 +103,10 @@ function onActionDeleteSelected(event,formName) {
 		return;
 	}
 	//application.output('ask second question');
-	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.records.selected'),
-			i18n.getI18NMessage('sts.txt.delete.record.permanent'),
+	globals.doDialog(message,
+			message,
 			i18n.getI18NMessage('sts.txt.cancel'),
-			i18n.getI18NMessage('sts.txt.delete'));
+			button);
 	//'Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
 	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		//application.output('delete aborted');
@@ -108,60 +123,42 @@ function onActionDeleteSelected(event,formName) {
 	scopes.jobs.warningsYes();
 	scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',true);
 
-	if (deleteJob){//JOE 20180112
-		
-		scopes.jobs.importRecordsDelete(scopes.jobs.browseJobID);
-		scopes.jobs.warningsMessage('',true);
-		scopes.jobs.warningsX();
-		
-		return;
-	}
-	if (deleteHistory){//JOE 20180112
-		return;
-	}
+	//if (false && deleteJob){//JOE 20180112 20180301 moved to purge for delete entire job
+	//	scopes.jobs.warningsMessage('',true);
+	//	scopes.jobs.importRecordsDelete(scopes.jobs.browseJobID);
+	//	scopes.jobs.warningsX();
+	//	
+	//	return;
+	//}
+	//if (false && deleteHistory){//JOE 20180112 delete history below
+	//	return;
+	//}
 
-	var i = 1;
-	while (i <= fs.getSize()){ // collect selected record idfile id's
+	var recCount = fs.getSize(); var rec = null;
+	while (rec = fs.getRecord(recCount)){
+		recCount++;
+	}
+	recCount = fs.getSize();
+	if (application.isInDeveloper()){application.output('record count for deletioin is '+recCount)}
+	var nothingSelected = true;
+	while (recCount > 0){ // collect selected record idfile id's
 		scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',false);
 
-		var rec = fs.getRecord(i);
+		var rec = fs.getRecord(recCount);
 		if (rec.selection == 1){
-			//var idfileId = rec.idfile_id;
-			scopes.jobs.idfilesToDelete.push(rec.idfile_id+"");
-			//fs.omitRecord(i);
-			omitList.push(i);
+			nothingSelected = false;
+			scopes.jobs.idfilesToDelete.push(rec.if_idfile_id);
+			fs.omitRecord(recCount);
 		}
-		i++;
+		recCount--;
 	}
-	scopes.jobs.deleteIdfiles();
-	if (omitList.length < 100){
-		while (omitList.length != 0){
-			fs.setSelectedIndex(omitList.pop());
-			fs.omitRecord(omitList.pop());
-		}
-	}
-	/**i = 1;
-	while (i <= fs.getSize()){ // collect selected record idfile id's
-		var rec = fs.getRecord(i);
-		if (rec.selection == 1){
-			var idfileId = rec.idfile_id;
-			scopes.jobs.idfilesToDelete.push(idfileId+"");
-			fs.omitRecord(i);
-		}
-		i++;
-	}*/
-	scopes.jobs.idfilesToDelete = new Array();
-	//while (omitList.length > 0){
-		//fs.setSelectedIndexes(omitList);
-		//fs.omitRecord();
-		
-	//}
-	//scopes.jobs.deleteIdfiles();
-	scopes.jobs.warningsX();
+	if (nothingSelected){scopes.jobs.warningsX();return}
+	scopes.jobs.deleteIdfiles(deleteHistory);
 
+	scopes.jobs.idfilesToDelete = new Array();
+	scopes.jobs.warningsX();
 	var win = application.getActiveWindow();
 	win.hide();
-	//forms.delete_pcmk_combo.onHide(event);
 }
 
 /**
@@ -210,3 +207,18 @@ function onHide(event) {
 	return _super.onHide(event)
 }
 
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"A1521C6C-C44D-44F5-B18B-E7D0C6565E43"}
+ */
+function onActionPurgeSelected(event) {
+	if (deleteHistory){
+		elements.btn_DeleteSelected.text = i18n.getI18NMessage('sts.btn.purge.history');
+	} else {
+		elements.btn_DeleteSelected.text = i18n.getI18NMessage('sts.btn.delete.selected');
+	}
+}

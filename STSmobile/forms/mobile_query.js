@@ -60,11 +60,20 @@ function setButtonTextRt(message){
  * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"6918F035-AA61-45C9-884D-B0BC6F85B99D"}
+ * @AllowToRunInFind
  */
 function actionBtn(event){
 	var elName = event.getElementName();
 	var actionIs = elements[elName].text;
 	globals.rfQueryClose(event,actionIs);
+	if (actionIs == i18n.getI18NMessage('sts.btn.yes')){
+		if (approveValue.search('BND') == 0){globals.mob.bundle.Id = approveValue;}
+		var shortMessageHeat = i18n.getI18NMessage('sts.txt.heat.use.new.number');
+		var index = shortMessageHeat.search(':');
+		shortMessageHeat = shortMessageHeat.substring(0,index);
+		var dialogText2 = dialogText.replace(/(\<html\>)|(\<br\>)/g,'');
+		if (dialogText2.search(shortMessageHeat) == 0){globals.createHeat(event,approveValue)}
+	}
 	return actionIs;
 	
 }

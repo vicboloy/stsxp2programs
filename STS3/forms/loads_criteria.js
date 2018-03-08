@@ -13,7 +13,9 @@ function onShow(firstShow, event) {
 		scopes.jobs.getCustomersList();
 		application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);
 		onActionClear(event);
-		}
+		forms[event.getFormName()].versionForm = globals.getInstanceForm(event);
+		forms[event.getFormName()].baseForm = event.getFormName().replace(forms[event.getFormName()].versionForm,'');
+	}
 	globals.setUserFormPermissions(event);
 	//forms.loads_pcmk_combo;
 }
@@ -101,7 +103,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"7A941D9A-5D56-4B77-BC2C-165EC3F8DE8B"}
  */
 function collectCriteria(){
-	versionForm = globals.getInstanceForm(null);
+	//versionForm = globals.getInstanceForm(null);
 	// feeds jobs.viewBTableToForm()
 
 	if (vLoadAll){
@@ -149,7 +151,7 @@ function onActionShowWindow(){
 	//scopes.jobs.xxxviewBTableThrowSplit(event,winTitle);
 	//return;
 	//var formName = event.getFormName();
-	versionForm = globals.getInstanceForm(null);
+	//versionForm = globals.getInstanceForm(null);
 	//application.output('form version '+versionForm);
 	var winTitle = 'Browse Loads'+versionForm;
 	var formName = 'loads_pcmk_combo'+versionForm;
@@ -231,43 +233,57 @@ function onActionClear(event) {
 }
 /**
  * @param criteria
+ * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"691EE7E2-97CD-4BBB-B4A3-57C87D0E87B0"}
  */
-function openBrowseTable(criteria){
+function openBrowseTable(criteria,event){
+	//if (!versionForm){
+		var regexp = new RegExp(/(_[0-9]+)/)
+		versionForm = event.getFormName().match(regexp)[1];
+		if (application.isInDeveloper()){application.output('Version FORM IS '+versionForm)}
+	//}
 	var formName = 'loads_pcmk_combo'+versionForm;
 	scopes.jobs.viewBTableToFormQB(criteria,formName);
 	onActionShowWindow();
 }
 /**
+ * @param {JSEvent} event
  * @properties={typeid:24,uuid:"3261ECE1-7C4F-4E31-8D33-34561FEA55B6"}
  */
-function collectAndBrowse(){
-	//var brDS = scopes.jobs.queryAssembly(criteria,null,'browse');
-	openBrowseTable(collectCriteria());
+function collectAndBrowse(event){
+	versionForm = '';
+	var matchVer = event.getFormName().match(scopes.globals.instanceReg);
+	if (matchVer){
+		versionForm = matchVer[1];
+	}
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
+	openBrowseTable(collectCriteria(),event);
+	scopes.jobs.warningsX();
 }
 /**
  * @properties={typeid:24,uuid:"8ED9C835-157C-438B-956F-62E3E4C26AFF"}
  */
 function collectAndTab(formName){
-	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
+	scopes.jobs.removeFormHist(formName+'_table');
 	criteria = collectCriteria();
 	//scopes.jobs.viewBTableSQL2(criteria,formName);
-	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	scopes.jobs.viewBTableSQLSummary(criteria,formName);
 	var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
 	var summaryForm = 'loads_summary_info'+versionForm;
 	var removeFormName = summaryForm+'_table';
 	forms[summaryForm].elements.tabless.removeAllTabs();
 	scopes.jobs.removeFormHist(removeFormName);
-	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	scopes.jobs.createRouteSummaryForm(summaryQuery,formName.replace('piecemark','summary'));
 
 	forms['loads_piecemark_info'+versionForm].elements.tabless.removeAllTabs();
 	if (forms[formName+"_table"] && forms[formName+"_table"].hide){forms[formName+"_table"].hide();}
 	scopes.jobs.removeFormHist(formName+"_table");
 	scopes.jobs.browseJobID = vJobID;
-	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	scopes.jobs.viewBTableToFormQB(criteria,formName);
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	null;

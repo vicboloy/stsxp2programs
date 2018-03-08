@@ -86,6 +86,13 @@ function onShow(firstShow, event) {
 			win.setSize(330,win.getHeight());
 			
 		}
+		var screenHeight = application.getScreenWidth();
+		var screenWidth = application.getScreenWidth();
+		var x = win.getX();
+		var y = win.getY();
+		if (x+320 > screenWidth){x = screenWidth-320}
+		if (y+480 > screenHeight){y = screenHeight-480}
+		win.setLocation(x,y);
 		
 	}
 	globals.mobForm = i18n.getI18NMessage('sts.mobile.main');

@@ -219,14 +219,14 @@ function onActionRefreshTable(event) {
 	//var args = [];
 	//args.push(scopes.jobs.browseJobID);
 	//var fs = databaseManager.getFoundSet(forms.loads_pcmk_combo_table.controller.getDataSource());
-	/** {String} */
+	/** {String} * /
 	var dsName = 'tableDS';
 	var newDsName = dsName; var count = 1;
 	
 	while (databaseManager.dataSourceExists('mem:'+newDsName)){
 		newDsName = dsName+count++;
 	}
-	/** @type {QBSelect<>} */
+	/ ** @type {QBSelect<>} */
 	///var query = scopes.jobs.dsQuerySave[formName];
 	///scopes.jobs.browseFS2[formName] = databaseManager.createDataSourceByQuery(newDsName, query, -1);
 	//scopes.jobs.viewBTableRemoveColumnArray();

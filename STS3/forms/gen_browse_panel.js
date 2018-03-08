@@ -28,7 +28,7 @@ function onActionHide(event) {
 
 /**
  * 
- * @param event
+ * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"06E6E42C-CC68-43C0-8292-61EEC7F96F34"}
  */
@@ -45,12 +45,15 @@ function onRecordSelection(event) {
 }
 
 /**
- * @param event
+ * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"8F26F009-A366-4722-B951-18EE4D3CBF7E"}
  */
 function onActionHideNoFront(event) {
-	var win = application.getActiveWindow();
+	var formName = event.getFormName();
+	if (application.isInDeveloper()){application.output('Closing found formName is '+formName)}
+	var win = forms[formName].controller.getWindow();
+	//application.getActiveWindow();
 	var winName = win.title;
 	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.opened',new Array(winName)));
 	win.hide();

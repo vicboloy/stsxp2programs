@@ -149,6 +149,13 @@ function onShow(firstShow, event) {
 		//var width = solutionModel.getForm('sts_main_buttons').width;
 		var win = application.getActiveWindow();
 		win.setSize(1000,800);
+		var screenHeight = application.getScreenWidth();
+		var screenWidth = application.getScreenWidth();
+		var x = win.getX();
+		var y = win.getY();
+		if (x+1000 > screenWidth){x = screenWidth-1000}
+		if (y+1000 > screenHeight){y = screenHeight-800}
+		win.setLocation(x,y);
 		//plugins.UserManager.updateClientInfo();
 	}
 	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){

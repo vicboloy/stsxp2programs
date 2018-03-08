@@ -46,3 +46,4 @@ function onActionRecallSelected(event,formName) {
 	var formNamePrefix = event.getFormName().split("_")[0];
 	forms[formNamePrefix+'_pcmk_combo'].onActionRecallSelected(event);
 }
+

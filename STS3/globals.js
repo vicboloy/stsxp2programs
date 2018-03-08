@@ -202,6 +202,10 @@ function initStatusTypes(){
  */
 var aLaborCodes = [];
 /**
+ * @properties={typeid:35,uuid:"20A27450-2211-4BAA-B056-85498C096831",variableType:-4}
+ */
+var instanceReg = null;
+/**
  * @param event
  *
  * @properties={typeid:24,uuid:"C8E73EE3-0C3E-484C-ADE7-ECF0D06813E7"}
@@ -885,6 +889,8 @@ var showElementReferences = false;//20180105 show element references
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
+	scopes.globals.instanceReg = new RegExp(/(_[0-9]+)/);
+
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STS3/globals.js')}
 	var registered = plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
 	//application.output('Client Registered '+registered);
@@ -1657,6 +1663,7 @@ function onActionCloseModal(event) {
 	var formName = event.getFormName();
 	var win = forms[formName].controller.getWindow();
 	win.hide();
+	scopes.jobs.removeFormHist(event.getFormName()+' table');
 	//stopWindowTrack();
 }
 /**

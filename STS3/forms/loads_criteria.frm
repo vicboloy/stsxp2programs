@@ -237,7 +237,8 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 text:"button",
 typeid:7,
-uuid:"6816B68D-AEFA-4F71-A9D9-A5D2E610C885"
+uuid:"6816B68D-AEFA-4F71-A9D9-A5D2E610C885",
+visible:false
 },
 {
 borderType:"EmptyBorder,0,0,0,0",

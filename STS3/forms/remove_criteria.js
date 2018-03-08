@@ -153,6 +153,18 @@ var vCowCode = "";
  */
 var jobFound = false;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"EF1E9C3A-FC10-4EF8-93E9-E6D30CE55022"}
+ */
+var baseForm = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"55D8DAA5-AEF8-4CA9-A8F8-EB610CA3A489"}
+ */
+var versionForm = '';
+/**
  * @param firstShow
  * @param event
  *
@@ -160,6 +172,10 @@ var jobFound = false;
  * @properties={typeid:24,uuid:"E1F92F98-A7A7-46F0-BDD7-FD0D51942170"}
  */
 function onShow(firstShow, event) {
+	if (firstShow){
+		versionForm = scopes.globals.getInstanceForm(event);
+		baseForm = event.getFormName().replace(versionForm,'');
+	}
 	databaseManager.removeTableFilterParam('stsservoy','deletedRecords');//#task07
 	globals.setUserFormPermissions(event);
 	scopes.jobs.getJobsList();

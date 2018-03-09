@@ -7525,6 +7525,8 @@ function queryAssembly(criteria,formName,subquery){
 	/** @type {QBJoin<db:/stsservoy/idfiles>} */
 	var id1 = pmm.joins.add('db:/stsservoy/idfiles');
 	id1.on.add(pmm.columns.piecemark_id.eq(id1.columns.piecemark_id));
+	id1.root.result.distinct = true;
+	id1.root.groupBy.add(id1.columns.id_serial_number_id);
 	if (getDeleted){
 		id1.root.where.add(id1.columns.delete_flag.eq(99));// deleted idfiles still show, fix
 	} else {
@@ -7612,8 +7614,8 @@ function queryAssembly(criteria,formName,subquery){
 		} else {
 			id3.root.where.add(id3.columns.delete_flag.isNull);			
 		}
-		id3.root.where.add(id2.columns.id_serial_number_id.eq(id3.columns.id_serial_number_id));
-		
+		//id3.root.where.add(id2.columns.id_serial_number_id.eq(id3.columns.id_serial_number_id));
+
 		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
 		var sn2 = id2.joins.add('db:/stsservoy/id_serial_numbers');
 		sn2.on.add(id2.columns.id_serial_number_id.eq(sn2.columns.id_serial_number_id));
@@ -7747,8 +7749,8 @@ function queryAssembly(criteria,formName,subquery){
 		var fss2 = databaseManager.getFoundSet(fsds);
 		fss2.loadRecords();
 		var markedIds = [];
-		var idx = 1; 
-		/** @type {JSRecord<string:idfile_id>} */
+		idx = 1; 
+		/** @type {JSRecord<{max:String}>} */
 		var rec = null;
 		while (rec = fss2.getRecord(idx++)){
 			markedIds.push(application.getUUID(rec.max));
@@ -7756,7 +7758,7 @@ function queryAssembly(criteria,formName,subquery){
 		null;
 		// get idfile list that is the first of all idserialnumbers END
 		id1.root.where.add(id1.columns.idfile_id.isin(markedIds));
-		var stShown = [];
+		//var stShown = [];
 		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
 		var sn1 = st.joins.add('db:/stsservoy/id_serial_numbers');
 		sn1.on.add(id1.columns.id_serial_number_id.eq(sn1.columns.id_serial_number_id));
@@ -7852,7 +7854,7 @@ function queryAssembly(criteria,formName,subquery){
 		st.result.add(emp.columns.employee_number,'job_original_employee');//86 ORIGEMPL printer.js
 		st.result.add(assoc.columns.association_name,'pcmk_fab_shop');//32 FABSHOP
 		st.result.add(endCon.columns.end_prep,'bom_end_condition');//213 BOMENDPREP
-		st.result.add(sn2.columns.id_serial_number,'bc_parent_id_serial_number');//207 PARENTID
+		//st.result.add(sn2.columns.id_serial_number,'bc_parent_id_serial_number');//207 PARENTID
 
 		st.result.add(id3.columns.id_serial_number_id.count,'barcode_item_qty');//181 MINORQTY printer.js
 		//st.result.add(idnums.columns.id_serial_number_id.count,'barcode_item_qty');//181 MINORQTY printer.js
@@ -7861,8 +7863,8 @@ function queryAssembly(criteria,formName,subquery){
 		sbi.root.result.add(sbi.columns.idfile_id.max); 
 		jship.root.groupBy.add(jship.columns.name);
 		jship.root.groupBy.add(jship.columns.customer_number);
-		var cols = ['name','barcode_include_prefix','barcode_job_start','barcode_prefix','customer_number'];
-		for (var idx = 0;idx < cols.length;idx++){
+		cols = ['name','barcode_include_prefix','barcode_job_start','barcode_prefix','customer_number'];
+		for (idx = 0;idx < cols.length;idx++){
 			jbcformat.root.groupBy.add(jbcformat.getColumn(cols[idx]));
 		}
 		cols = ['fax','representative','name','phone','customer_number','lsotoload'];
@@ -7889,7 +7891,7 @@ function queryAssembly(criteria,formName,subquery){
 		sn2.root.groupBy.add(sn2.columns.id_serial_number);
 		id3.root.groupBy.add(id3.columns.id_serial_number_id);
 		
-		if (typeof lastForm === 'undefined'){lastForm = null}
+		if (typeof lastForm === 'undefined'){var lastForm = null}
 		if (lastForm && forms[lastForm] && forms[lastForm].printerName){
 			var barPrinter = forms[lastForm].printerName;
 			st.result.addValue(barPrinter,'barcode_printer_name');
@@ -7923,7 +7925,7 @@ function queryAssembly(criteria,formName,subquery){
 		} else {
 			st.sort.add(sn1.columns.id_serial_number);
 		}
-		stShown = [];
+		//stShown = [];
 		return st;
 	}
 	if (subquery == "idnumbers"){

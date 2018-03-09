@@ -245,6 +245,7 @@ function openBrowseTable(criteria,event){
 	//}
 	var formName = 'loads_pcmk_combo'+versionForm;
 	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	scopes.jobs.warningsX();
 	onActionShowWindow();
 }
 /**

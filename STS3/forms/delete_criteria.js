@@ -201,6 +201,7 @@ function onActionDeleteWindow(event,winTitle) {
 	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
 	win.title = winTitle;
 
+	scopes.jobs.warningsX();
 	win.show(forms.delete_record_actual);
 	scopes.jobs.removeFormHist(formName+'_table');
 	//return true;

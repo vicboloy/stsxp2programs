@@ -568,7 +568,7 @@ function getBTFieldData(){
 		68 LINE6PRMPT Character 9 UNUSED,\
 		69 LINE7FLD Character 30 UNUSED,\
 		70 LINE7PRMPT Character 9 UNUSED,\
-		71 LINE8FLD Character 30 piecemark.pm_length_in.READABLE,\
+		71 LINE8FLD Readable 30 piecemark.pm_length_in,\
 		72 LINE8PRMPT Character 9 UNUSED,\
 		73 LINE9FLD Character 30 UNUSED,\
 		74 LINE9PRMPT Character 9 UNUSED,\

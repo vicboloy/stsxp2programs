@@ -59,6 +59,7 @@ function onShow(firstShow, event) {
 	forms[formOverview].elements.tabless.addTab(formNameTable);
 	if (top){scopes.jobs.tablePrefsLoad(top)}
 	if (bot){scopes.jobs.tablePrefsLoad(bot)}
+	scopes.jobs.warningsX();
 }
 /**
  * @properties={typeid:24,uuid:"0257FA0B-56ED-464D-BF0F-D9A274E25857"}

@@ -33,6 +33,7 @@ uuid:"4818201B-01C8-4190-8C27-FC8773DB1CC5"
 },
 {
 extendsID:"51191EB6-5514-497E-91CC-7CE8F82CA59E",
+formIndex:0,
 location:"5,41",
 size:"632,382",
 typeid:16,
@@ -43,12 +44,6 @@ extendsID:"32C27CAC-2195-4B9A-8D52-197B70AC9144",
 location:"119,430",
 typeid:7,
 uuid:"6D1A21DF-A90D-494A-8EAF-1E10022CC194"
-},
-{
-extendsID:"161B1F81-E2C8-47B7-AAAB-9CA252239F8C",
-location:"319,430",
-typeid:7,
-uuid:"9D198D55-8BDC-4C92-855F-8EC0F5838C5C"
 },
 {
 anchors:3,
@@ -87,6 +82,12 @@ extendsID:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8",
 location:"5,430",
 typeid:7,
 uuid:"C18369D0-AAB3-4781-A208-4723BA5C103D"
+},
+{
+extendsID:"FC37B4EA-38CD-41AD-97AF-7FF02D6040DA",
+formIndex:1,
+typeid:7,
+uuid:"EC1C150D-638A-44A1-ADEA-EAC473AE250C"
 }
 ],
 name:"delete_pcmk_combo",

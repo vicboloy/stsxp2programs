@@ -7,18 +7,11 @@
  * @properties={typeid:24,uuid:"8D60FBB7-D72A-4255-8940-61A1BB25EAC1"}
  */
 function onShow(firstShow, event) {
-	///application.output('inside on show loads_pcmk_combo ______________________________________');
-	//foundset.clear(); // and this
-	//databaseManager.setCreateEmptyFormFoundsets(); // maybe on solutionOpen
 	var versionForm = globals.getInstanceForm(event);
 	var formPrefix = event.getFormName().split("_")[0];
 	var formNameTable = formPrefix+'_pcmk_combo_table';
 	var formCombo = formPrefix+'_pcmk_combo';
-	///var formCriteria = formPrefix+'_criteria';
 	scopes.jobs.removeFormHist(formNameTable);
-	//var success = history.removeForm(formNameTable);
-	//var success2 = solutionModel.removeForm(formNameTable);
-	//forms[formCriteria].collectCriteria(formCombo);
 	var origFormName = formPrefix+'_pcmk_transaction';
 	var rightFormName = origFormName+versionForm;
 	if (!forms[rightFormName]){
@@ -28,12 +21,8 @@ function onShow(firstShow, event) {
 	forms[formCombo+versionForm].elements.split.setRightForm(rightFormName,relationInfo.name+versionForm);
 	//hideColumns(event,0);
 	var bot = forms[formCombo+versionForm].elements.split.getRightForm().controller.getName();
-	///var top = forms[formCombo].elements.split.getLeftForm().controller.getName();
-	//forms[formOverview].elements.tabless.addTab(formNameTable); // add tab to main window to see subset of this table
 	scopes.jobs.tableHideFieldsReset()
 	scopes.jobs.findEmptyColumns(event,0)
-	//scopes.jobs.findEmptyColumns(event,1)
-	///scopes.jobs.tablePrefsLoad(top);
 	scopes.jobs.tablePrefsLoad(bot);
 	return _super.onShow(firstShow, event)
 }

@@ -218,6 +218,7 @@ function onActionDeleteWindow(event) {
 	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
 	win.title = 'Job Piecemark Recall';
 
+	scopes.jobs.warningsX();
 	win.show(forms.recall_record_actual);
 	scopes.jobs.removeFormHist('recall_pcmk_combo_table');
 }

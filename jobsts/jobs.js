@@ -5919,9 +5919,11 @@ function warningsX(){
 	if (globals.session.appName.search('mobile') != -1){return}
 	//application.output('close warning window');
 	forms.messagesWarnings.message = '';
-	application.updateUI();
+	application.updateUI()
+	var win = application.getWindow('STS Message');
+	if (win && win.controller.getName() != 'messagesWarnings'){return}
 	/** @type {JSWindow} */
-	var win = scopes.jobs.warnWindow;
+	//var win = scopes.jobs.warnWindow;
 	if (win){
 		win.hide();
 		win.destroy();

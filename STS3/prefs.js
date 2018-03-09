@@ -2078,6 +2078,14 @@ function tabContentFormat(tabContents,tabSpec){
 			//}
 			
 			break;
+		case 'Readable':
+			a = (forms['barcode_idlabel'].vJobMetric) ? a : scopes.jobs.fracToDec(a);
+			break;
+		case 'Logical':
+			a = (a == null || a == 0) ? 'T' : 'F';
+			break;
+		case 'Character':
+			break;
 		default:
 	}
 	a = blanks+a;

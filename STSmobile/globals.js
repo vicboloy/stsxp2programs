@@ -10,6 +10,8 @@ var statusId = "";
  * @SuppressWarnings(wrongparameters)
  */
 function onSolutionOpen(){
+	//var appWidth = application.getScreenWidth();
+	//viewport = viewport.replace('320',appWidth);
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STSmobile/globals.js');}
 	plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
 	if (application.isInDeveloper()){application.output('license mobile '+plugins.UserManager.getSettingsProperty('license.0.licenses'))}

@@ -1,6 +1,16 @@
 encapsulation:28,
 items:[
 {
+dataProviderID:"scopes.globals.viewport",
+displayType:8,
+editable:false,
+location:"124,85",
+name:"viewPort",
+size:"8,8",
+typeid:4,
+uuid:"6895E383-403E-459E-9ED9-FA2132664517"
+},
+{
 background:"#00ffff",
 dataProviderID:"dialogText",
 displayType:8,

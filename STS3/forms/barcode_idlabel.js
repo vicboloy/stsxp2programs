@@ -197,7 +197,8 @@ function collectCriteria(formName){
 		statusa : scopes.globals.csvToFabCodes(vFabShop),
 		sonum : scopes.globals.arrayToString(vSONum),
 		sonuma : scopes.globals.csvToArray(vSONum),
-		sortby : labelPrintOrder
+		sortby : labelPrintOrder,
+		minors : vMinors // ticket #278
 	}
 	if (1==1){return criteria;}
 	// feeds jobs.viewBTableToForm()
@@ -302,3 +303,4 @@ function collectAndTab(formName){
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	null;
 }
+

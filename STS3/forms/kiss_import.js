@@ -364,6 +364,7 @@ function onShow(firstShow, event) {
 	elements.btn_Clear.enabled = true;
 	elements.jobEntry.requestFocus(false);
 	currentAssocName = globals.session.association;
+	application.setValueListItems('stsvl_jobs_association',scopes.jobs.getJobsList());
 }
 /**
  * @param event

@@ -1,4 +1,11 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E6ACD79F-9580-4503-8227-20DA820D96D5"}
+ */
+var viewport = '<html><head></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
+
+/**
  * @properties={typeid:35,uuid:"CB70B0E1-B12B-430A-B70D-F6D112AC04B6",variableType:-4}
  */
 var JSSecurity = {READ:1, INSERT:2, UPDATE:4, DELETE:8, TRACKING:16, VIEWABLE:1, ACCESSIBLE:2};

@@ -2,12 +2,15 @@ customProperties:"methods:{\
 onRecordSelectionMethodID:{\
 arguments:null,\
 parameters:null\
+},\
+onSortCmdMethodID:{\
+arguments:null,\
+parameters:null\
 }\
 }",
 dataSource:"db:/stsservoy/status_description",
 encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
-initialSort:"status_sequence asc, status_code asc",
 items:[
 {
 anchors:11,
@@ -95,7 +98,8 @@ uuid:"BCA1855A-49BE-46C0-AA83-24D8004DF59B"
 name:"status_description_lst",
 navigatorID:"-1",
 onNewRecordCmdMethodID:"0",
-onRecordSelectionMethodID:"514DDB1A-4603-4296-9EDC-E58AC014716D",
+onRecordSelectionMethodID:"-1",
+onSortCmdMethodID:"0",
 scrollbars:32,
 showInMenu:false,
 size:"191,404",

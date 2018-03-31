@@ -21,6 +21,12 @@ var association = "";
  */
 var isAdminAccount = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"119B1918-A7FD-42FC-A40B-038758BA20B4"}
+ */
+var userMobileViewList = null;
+/**
  * @properties={typeid:24,uuid:"ABA5AEB5-9EA0-4D10-BAE9-AB3561481EEA"}
  * @SuppressWarnings(wrongparameters)
  */
@@ -96,6 +102,7 @@ function onShow(firstShow, event) {
 	association = "";
 	getEmployees();
 	updateFields(event);
+	scopes.jobs.onMobileViewLoadValueList();
 	//return _super.onShow(firstShow, event)
 }
 
@@ -130,7 +137,15 @@ function onRecordSelection(event) {
 		isAdminAccount = (rec.logic_flag == 1) ? i18n.getI18NMessage('sts.txt.login.administrative') : i18n.getI18NMessage('sts.txt.login.shop');
 	}
 	userGroups = databaseManager.getFoundSetDataProviderAsArray(users_to_user_groups,'group_uuid').join('\n');
-
+	if (rec.logic_flag){
+		application.setValueListItems('stsvlt_remoteViews',globals.session.rfViewsOffice);
+		if (application.isInDeveloper()){application.output('remoteView office '+globals.session.rfViewsOffice)}
+	} else {
+		application.setValueListItems('stsvlt_remoteViews',globals.session.rfViewsMobile);		
+		if (application.isInDeveloper()){application.output('remoteView Mobile '+globals.session.rfViewsMobile)}
+	}
+	application.updateUI();
+	scopes.jobs.onLoadRemoteViews(event);
 	updateFields(event);
 	//return _super.onRecordSelection(event)
 }
@@ -240,6 +255,7 @@ function saveEdits(event, record, stopEdit) {
 		/** @type {JSRecord<db:/stsservoy/employee>} */
 		var rec = fs.getRecord(1);
 	}
+	scopes.jobs.onSaveRemoteViews(event);
 	databaseManager.saveData();
 	if (!user_password){
 		globals.errorDialogMobile(event,'1251','userPass','');

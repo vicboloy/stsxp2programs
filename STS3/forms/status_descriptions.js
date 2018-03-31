@@ -1,4 +1,7 @@
-
+/**
+ * @properties={typeid:35,uuid:"01F18381-836E-4BD7-BCD1-5D93D9BCEEF4",variableType:-4}
+ */
+var currentSort = null;
 /**
  * Callback method for when form is shown.
  *

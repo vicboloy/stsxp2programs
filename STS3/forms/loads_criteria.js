@@ -140,7 +140,8 @@ function collectCriteria(){
 		sheetnuma : scopes.globals.csvToArray(vSheetNum),
 		statusa : scopes.globals.csvToFabCodes(vFabShop),
 		sonum : scopes.globals.arrayToString(vSONum),
-		sonuma : scopes.globals.csvToArray(vSONum)
+		sonuma : scopes.globals.csvToArray(vSONum),
+		minors : vMinors
 	}
 	return criteria;
 }
@@ -241,7 +242,7 @@ function openBrowseTable(criteria,event){
 	//if (!versionForm){
 		var regexp = new RegExp(/(_[0-9]+)/)
 		versionForm = event.getFormName().match(regexp)[1];
-		if (application.isInDeveloper()){application.output('Version FORM IS '+versionForm)}
+		//if (application.isInDeveloper()){application.output('Version FORM IS '+versionForm)}
 	//}
 	var formName = 'loads_pcmk_combo'+versionForm;
 	scopes.jobs.viewBTableToFormQB(criteria,formName);

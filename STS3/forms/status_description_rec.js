@@ -65,6 +65,7 @@ function onShowStatusDescr(firstShow, event) {
 		forms.status_description_rec.elements.btn_Edit.visible = false;
 	}
 	getStatusList();
+	controller.sort('sts_status_description_to_associations.association_name asc, status_sequence asc');
 }
 /**
  * Perform the element default action.
@@ -116,6 +117,14 @@ function onActionEdit(event) {
  * @AllowToRunInFind
  */
 function onEdit(event,editStatus){
+	if (editStatus){
+		forms['status_descriptions'].currentSort = foundset.getCurrentSort();
+	} else {
+		if (forms['status_descriptions'].currentSort){
+			controller.sort(forms['status_descriptions'].currentSort);
+		}
+	}
+	if (application.isInDeveloper()){application.output('sort '+forms['status_descriptions'].currentSort)}
 	databaseManager.nullColumnValidatorEnabled = false;
 	editFlag = editStatus;
 	forms.status_description_table.controller.enabled = (!editStatus);
@@ -130,9 +139,6 @@ function onEdit(event,editStatus){
 		elements.req_xfer_status.enabled = true;
 	} else {
 		elements.req_xfer_status.enabled = false;
-	}
-	if (!editStatus){
-		forms.status_description_lst.controller.sort('status_sequence asc,status_code asc');
 	}
 }
 
@@ -182,8 +188,9 @@ function onActionSaveEdit(event) {
 	onEdit(event,false);
 	databaseManager.saveData(foundset);
 	getStatusList();
-	forms.status_description_lst.controller.sort('status_sequence asc, status_code asc');
-
+	if (forms['status_descriptions'].currentSort) {
+		controller.sort(forms['status_descriptions'].currentSort);
+	}
 	//forms.status_description_lst.foundset.loadRecords();
 	//databaseManager.setAutoSave(true);
 }

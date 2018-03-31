@@ -15,7 +15,7 @@ parameters:null\
 dataSource:"db:/stsservoy/status_description",
 encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
-initialSort:"status_sequence asc, status_code asc",
+initialSort:"sts_status_description_to_associations.association_name asc, status_sequence asc",
 items:[
 {
 extendsID:"309DAEC2-F9E3-4DBF-8718-0884B5FE1FBF",

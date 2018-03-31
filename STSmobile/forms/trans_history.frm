@@ -75,6 +75,16 @@ typeid:7,
 uuid:"AF2D2100-34C7-44EB-A1E1-15D7077F0B63"
 },
 {
+dataProviderID:"scopes.globals.viewport",
+displayType:8,
+editable:false,
+location:"57,35",
+name:"viewPort",
+size:"8,8",
+typeid:4,
+uuid:"E12D246A-8185-4D10-B8C9-FA06FB049675"
+},
+{
 borderType:"LineBorder,1,#000000",
 dataProviderID:"trans_code",
 fontType:"Arial,1,13",

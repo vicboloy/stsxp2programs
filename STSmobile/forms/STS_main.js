@@ -1,4 +1,16 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F45C245C-50C2-496A-8670-EAB5D6A7176E"}
+ */
+var debugInfo = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C01663D5-C228-4689-B3D7-6F703B3077C9"}
+ */
+var metaData = '<meta content="width=device-width, initial-scale=45" name="viewport">';
+/**
  * Callback method when form is (re)loaded.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -10,7 +22,7 @@ function onLoad(event) {
 		var callback = plugins.WebClientUtils.generateCallbackScript(globals.rfPageIsLoaded, [], true);
 		var script = 'function p2pageLoaded(){' + callback + '}';
 		//var script = 'function p2pageLoaded(){alert("here");}';
-		var markup = '<html><head><script type="text/javascript">var deviceName = "device";' + script + 
+		var markup = '<html><head>'+metaData+'<script type="text/javascript">var deviceName = "device";' + script + 
 			'</script></head><body onload="p2pageLoaded()">' +
 			'<button type="button" onClick="p2pageLoaded()">TEST</button>'+
 			'<button type="button" onClick="alert(\'alert\')">TEST</button>'+
@@ -27,7 +39,11 @@ function onLoad(event) {
 		'</script></head><body onload="rfExitPage()">' +
 		//'<script type="text/javascript" charset="utf-8" src="ebapi-modules.js"></script>'+
 		'</body></html>';
-	globals.rfHtml = markup;
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		//scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale=1.5');
+		//plugins.WebClientUtils.
+		//globals.rfHtml = globals.rfHtmlTest;
+	}
 		
 	}
 	//var newArray = 
@@ -80,9 +96,10 @@ function onShow(firstShow, event) {
 		}
 		
 
+		var win = application.getActiveWindow();
+		
 		var width = application.getScreenWidth();
 		if (width > 400 && application.getSolutionName() != "STSx"){
-			var win = application.getActiveWindow();
 			win.setSize(330,win.getHeight());
 			
 		}
@@ -90,6 +107,7 @@ function onShow(firstShow, event) {
 		var screenWidth = application.getScreenWidth();
 		var x = win.getX();
 		var y = win.getY();
+		debugInfo = 'Width: '+screenWidth+',Height: '+screenHeight;
 		if (x+320 > screenWidth){x = screenWidth-320}
 		if (y+480 > screenHeight){y = screenHeight-480}
 		win.setLocation(x,y);
@@ -97,6 +115,7 @@ function onShow(firstShow, event) {
 	}
 	globals.mobForm = i18n.getI18NMessage('sts.mobile.main');
 	globals.mobProg = i18n.getI18NMessage('sts.mobile.main');
+	elements.mainMenu.requestFocus();
 	//var licCount = plugins.UserManager.Server().getSettingsProperty('license.0.licenses');
 	//plugins.dialogs.showErrorDialog('Message','License count'+licCount);
 	//globals.rfGetLocalStorage('deviceName'); //JOE DISABLE

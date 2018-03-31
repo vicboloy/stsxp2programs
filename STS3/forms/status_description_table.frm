@@ -1,5 +1,4 @@
 dataSource:"db:/stsservoy/status_description",
-initialSort:"status_sequence asc, status_code asc",
 items:[
 {
 height:516,

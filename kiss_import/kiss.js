@@ -714,10 +714,6 @@ var lastMainPcmk = '';
  */
 var lastMainQuant = 0;
 /**
- * @properties={typeid:35,uuid:"287F9B00-47B8-4468-B2F5-551174B205F2",variableType:-4}
- */
-var endVars = null;
-/**
  * @properties={typeid:35,uuid:"C4720209-B1B7-4A15-93C6-CB8923C3A4A7",variableType:-4}
  */
 var pMark = {
@@ -727,6 +723,28 @@ var pMark = {
  cSheetNum : null,
  cFinish :null
 };
+/**
+ * @properties={typeid:35,uuid:"1F27477B-D0AE-446A-B472-2FE75327FA67",variableType:-4}
+ */
+var subAssemWtAdded = [];
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"5F8EC351-9487-42BD-A37B-404723605473",variableType:8}
+ */
+var totAssemWt = 0.0;
+/**
+ * @properties={typeid:35,uuid:"95C61F71-73FF-41B8-B669-C456412F85DF",variableType:-4}
+ */
+var currentPcmkIdfiles = [];
+/**
+ * @properties={typeid:35,uuid:"D37B6CFF-B3D1-444F-A7BB-9BE645F817DD",variableType:-4}
+ */
+var currentPcmkParentPcmk = [];
+/**
+ * @properties={typeid:35,uuid:"287F9B00-47B8-4468-B2F5-551174B205F2",variableType:-4}
+ */
+var endVars = null;
 /**
  * @param {JSEvent} event
  * @param {String} xmlRequest
@@ -1010,15 +1028,6 @@ function parseIntoLinesFS(textString){
 
 /**
  * @AllowToRunInFind
- *
- * @properties={typeid:24,uuid:"F8AEDE29-C4D9-48E9-A5C5-4AA7211A4808"}
- */
-function importPopKISSTable(event) {
-	if (application.isInDeveloper()){
-		var maxRecCount = -1;
-	}
-
-	/**
 	 * 
 	 * Header - H, JobNumber (String), Job Name (String), , Date (Date), Time (Time), Metric (T, F)
 	 * Loads - T, Load Number (String), Trailer Number (String), Carrier (String), Capacity (kg), 
@@ -1036,9 +1045,13 @@ function importPopKISSTable(event) {
 	 * Assigned Load - U, Load # (String), Sequence (String), Lot # (String), Quantity (#)
 	 * Load - O, Load # (String), Sequence (String), Lot # (String ), Date Loaded (Date), Quantity (#)
 	 * Return - Q, Load # (String), Sequence (String), Lot # (String ), Date Returned (Date), Quantity (#)
-	 */
-	//globals.showProgressInit(event);
-	//globals.showProgressUpdate(null,'Parsing Import File');
+ *
+ * @properties={typeid:24,uuid:"F8AEDE29-C4D9-48E9-A5C5-4AA7211A4808"}
+ */
+function importPopKISSTable(event) {
+	if (application.isInDeveloper()){
+		var maxRecCount = -1;
+	}
 
 	warningsYes();
 	clearKissTables();
@@ -1137,6 +1150,8 @@ function importPopKISSTable(event) {
 		 */
 		if  (lineType == "*" && skippedFirst){
 			exitSequences = true ;
+			subAssemWtAdded = [];//20180328 clear check array for sub assembly weight adds
+			totAssemWt = 0;
 			continue;
 		}
 		if (lineType == "D"){
@@ -1328,21 +1343,46 @@ function importPopSaveDetailRow(){
 		var thisSeqCnt = seqInfo.cnt;
 		newRec.sequence_number = seqInfo.seq; //set sequence and sequence_count for each iteration of newRow to be added to dataset
 		newRec.sequence_quantity = seqInfo.cnt; //these are fixed
-		if (pMark.cMark.toLowerCase() == pMark.cParent.toLowerCase()){
+		if (newRec.piecemark.toLowerCase() == newRec.parent_piecemark.toLowerCase()){
+			currentPcmkParentPcmk[seqInfo.seq] = newRec;
 			parentRec = newRec;
+			scopes.jobs.tmpParentRecId = newRec.import_table_id;
 			var newQuant = Math.floor(newRec.sequence_quantity*1); // depends upon the incoming dataset
 			newRec.sequence_quantity = Math.floor(newQuant).toFixed();
+			if (newRec.sequence_quantity < newRec.item_qty){newRec.item_qty = newRec.sequence_quantity}
 			var popCount = parentRec.sequence_quantity; // control how many FS GUIDs must be associated with newRec
-		} else { //minor mark encountered
+		} else { //minor mark encountered, only capture weight for the subassembly counts for the item
 			//add weight to parent mark with sequence
+			var idx = tableFS.getRecordIndex(currentPcmkParentPcmk[seqInfo.seq]);
+			if (application.isInDeveloper()){application.output(' get record index of parent pcmk '+idx)}
+			parentRec = tableFS.getRecord(idx);
+			if (!parentRec){
+				/** @type {QBSelect<db:/stsservoy/import_table>} */
+				var qq = databaseManager.createSelect('db:/stsservoy/import_table');
+				qq.where.add(qq.columns.import_table_id.eq(scopes.jobs.tmpParentRecId));
+				var Q = databaseManager.getFoundSet(qq);
+				if (Q.getSize() == 1){
+					parentRec = Q.getRecord(1);
+				}
+			}
 			newRec.item_qty = Math.floor(newRec.pcmk_qty/parentRec.pcmk_qty * thisSeqCnt).toFixed();				
 			popCount = newRec.sequence_quantity;
+			//if (subAssemWtAdded.indexOf(newRec.piecemark) == -1){//20180328 add weight to the piecemark record
+			//	subAssemWtAdded.push(newRec.piecemark);
 			parentRec.item_weight = parentRec.item_weight*1 + (newRec.item_weight * newRec.item_qty);
 			parentRec.total_label_wt = parentRec.item_weight*1 * parentRec.item_qty;
+			//	totAssemWt = parentRec.item_weight*1;
+			//} else {
+			//	parentRec.item_weight = totAssemWt;
+			//}
 		}
 		if (!newRec.set_bc_qty){
 			var setQuant = newRec.item_qty;
-			if ((newRec.sequence_quantity == null || newRec.sequence_quantity == '') && newRec.sequence_quantity < setQuant) {setQuant = newRec.sequence_quantity}
+			if ((newRec.sequence_quantity == null || newRec.sequence_quantity == '') 
+					&& newRec.sequence_quantity < setQuant) {
+						setQuant = newRec.sequence_quantity;
+						newRec.item_qty = setQuant;
+			}
 			if (newRec.piecemark != newRec.parent_piecemark && globals.session.appName == 'STS X Embedded') {setQuant = 1}
 			var q = scopes.prefs.qtyPrompt;
 			var w = scopes.prefs.wtPrompt;
@@ -4076,6 +4116,7 @@ function verifyImportQuants(last,current,event){
  */
 function performImportTable(){
 	var startImport = new Date();
+	
 	if (application.isInDeveloper()){application.output('begin import '+new Date())}
 	scopes.jobs.importRecords_sheet();
 	scopes.jobs.saveBarCodeSerial();

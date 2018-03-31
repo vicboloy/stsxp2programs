@@ -39,6 +39,7 @@ uuid:"2E8F9AC8-850C-42C4-A634-5EE705253E09"
 },
 {
 dataProviderID:"vJobNumber",
+displayType:2,
 formIndex:7,
 format:"|U",
 location:"24,59",
@@ -50,7 +51,8 @@ selectOnEnter:true,
 size:"153,26",
 tabSeq:1,
 typeid:4,
-uuid:"360D61F9-E679-412C-89D6-668B6A766BE1"
+uuid:"360D61F9-E679-412C-89D6-668B6A766BE1",
+valuelistID:"8A89996A-201D-4649-B6E6-20EB194D9480"
 },
 {
 location:"10,90",
@@ -263,7 +265,7 @@ onShowMethodID:"D7B53EDF-884A-4CFA-9DCB-374EF0C391F0",
 onSortCmdMethodID:"-1",
 showInMenu:true,
 size:"500,294",
-styleName:"sts_one",
+styleName:"sts_two",
 typeid:3,
 uuid:"C251C71D-C610-4509-A117-663D55B03720",
 view:0

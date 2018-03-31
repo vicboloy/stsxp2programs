@@ -198,6 +198,16 @@ typeid:7,
 uuid:"5E85E465-49C7-4F5A-8FD2-A6CD496AA1EE"
 },
 {
+dataProviderID:"scopes.globals.viewport",
+displayType:8,
+editable:false,
+location:"60,70",
+name:"viewPort",
+size:"8,8",
+typeid:4,
+uuid:"5F12853E-9746-4F37-9C6E-52CC1DD3152D"
+},
+{
 dataProviderID:"transaction_start",
 formIndex:36,
 location:"137,105",
@@ -519,6 +529,7 @@ uuid:"DC3BA429-0473-4296-885D-0C52259AB97E"
 },
 {
 dataProviderID:"worker5_id",
+formIndex:1,
 location:"137,380",
 name:"worker5_id",
 size:"82,20",

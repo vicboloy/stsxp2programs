@@ -107,7 +107,8 @@ function collectCriteria(){
 		sheetnuma : scopes.globals.csvToArray(vSheetNum),
 		statusa : scopes.globals.csvToFabCodes(vFabShop),
 		sonum : scopes.globals.arrayToString(vSONum),
-		sonuma : scopes.globals.csvToArray(vSONum)
+		sonuma : scopes.globals.csvToArray(vSONum),
+		minors : 1
 	}
 	return criteria;
 	//scopes.jobs.removeFormHist(formName+"_table");

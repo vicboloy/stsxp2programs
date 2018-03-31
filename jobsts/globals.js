@@ -653,6 +653,8 @@ var session = {
 	sessionId : "",
 	sessionIp : "",
 	station : "",
+	rfViewsOffice  : [],
+	rfViewsMobile : [],
 	program : "",
 	//statusCode : "",
 	statusCodes : [],
@@ -843,6 +845,7 @@ var rfViews = {
 		heatin : 'R',
 		currentidin : 'R',
 		previousid : 'V',
+		piecemark : 'V',
 		jobnumber : 'V',
 		shoporder : 'V',
 		seqnumber : 'V',
@@ -856,6 +859,7 @@ var rfViews = {
 		
 		jobnumber : 'V',
 		previousid : 'V',
+		piecemark : 'V',
 		
 		jobweight : 'V',
 		seqnumber : 'V',
@@ -940,6 +944,7 @@ var rfViews = {
 		workerin : 'O',
 		currentidin : 'R',
 		previousid : 'V',
+		piecemark : 'V',
 		jobnumber : 'V',
 		seqnumber : 'V',
 		prevstatus : 'V',
@@ -958,6 +963,7 @@ var rfViews = {
 		drawrevin : 'R',
 		currentidin : 'R',
 		previousid : 'V',
+		piecemark : 'V',
 		jobnumber : 'V',
 		seqnumber : 'V',
 		prevstatus : 'V',
@@ -975,6 +981,7 @@ var rfViews = {
 		workerin : 'O',
 		currentidin : 'R',
 		previousid : 'V',
+		piecemark : 'V',
 		jobnumber : 'V',
 		seqnumber : 'V',
 		prevstatus : 'V',
@@ -994,6 +1001,7 @@ var rfViews = {
 		drawrevin : 'R',
 		currentidin : 'R',
 		previousid : 'V',
+		piecemark : 'V',
 		jobnumber : 'V',
 		seqnumber : 'V',
 		prevstatus : 'V',
@@ -1440,10 +1448,15 @@ function formVerifyStatus(){
 function rfF2SwitchPlants(){
 	var thisFunction = thisFuncName(arguments.callee.toString());
 	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
-	if (thisFunction == flagFunction){return}
-	if (l.nonOffices.length == 1){return}
-	flagFunction = thisFunction;
 	var formName = application.getActiveWindow().controller.getName();
+	if (thisFunction == flagFunction && forms[formName].elements.elDivisionChg.visible){
+		forms[formName].elements.elDivisionChg.visible = false;
+		forms[formName].elements.elDivisionChg.enabled = true;
+		return;
+	}
+	if (l.nonOffices.length == 1){return}
+	forms['rf_mobile_view'].genericInput = '';
+	flagFunction = thisFunction;
 	globals.mobDisableForm(true);
 	// More than one association?
 	var assocNames = [];
@@ -1454,6 +1467,7 @@ function rfF2SwitchPlants(){
 			assocNames.push(assocName);
 		}
 	}
+	assocNames.sort();
 	rfF2Division = ""; // valuelist selection of empty string deselects selection in list window
 	forms[formName].elements.elDivisionChg.visible = true;
 	forms[formName].elements.elDivisionChg.enabled = true;
@@ -1482,11 +1496,13 @@ function rfF8Reversal(){
 	 * only employees with same association may reverse the scan
 	 * is there a reversal capability in the employee record
 	 */
+	//forms['rf_mobile_view'].genericInput = '';
 	if (application.isInDeveloper()){application.output('reversal entered')}
 	var formName = application.getActiveWindow().controller.getName();
 	if (mob.statusCode == ""){return}
 	var thisFunction = thisFuncName(arguments.callee.toString());
 	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	forms['rf_mobile_view'].genericInput = '';
 	var inProgress = (thisFunction == flagFunction); // toggle function
 	flagFunction = (inProgress) ? null : thisFunction;
 	//forms[formName].elements.transShop.transparent = false;
@@ -1497,19 +1513,24 @@ function rfF8Reversal(){
 	//functionKeyProcedure[8] = 'globals.rfF8done';
 	//plugins.window.createShortcut('F8',functionKeyProcedure[8]);
 	flagF8 = (flagFunction != null);
+	application.updateUI();
 	if (flagF8){
 		//f8ReversalColor = forms[formName].elements.transShop.background;
 		forms[formName].elements.transShop.bgcolor = 'Yellow';
 		f8ReversalText = forms[formName].viewTitle;
 		forms[formName].viewTitle = "Status Reversal "+session.association;
 		forms[formName].controller.focusField(globals.session.errorElement,false);
+		forms['rf_mobile_view'].genericInput = '';
 	} else {
 		forms[formName].controller.focusField(globals.session.errorElement,false);
 		forms[formName].viewTitle = f8ReversalText;
+		forms['rf_mobile_view'].genericInput = '';
 	}
 	forms[formName].elements.statusin.enabled = !flagF8;
 	forms[formName].elements.workerin.enabled = !flagF8;
 	forms[formName].elements.transShop.transparent = !flagF8;
+	//forms['rf_mobile_view'].genericInput = '';
+
 }
 /**
  * @properties={typeid:24,uuid:"7EEC836A-4FFC-4842-A0B6-8E99E066519D"}
@@ -1617,7 +1638,7 @@ function rfF8ReversalTransaction(){
 			fsUpdater.setColumn('trailer_labor_quantity',0);
 			fsUpdater.performUpdate(); //411 100% complete Removed From the STOP Status Code.
 			errorDialogMobile('rf_mobile_view.currentidin',411,'currentidin','');
-			return null;
+			//return null;
 		}
 	}
 	fsUpdater.setColumn('trans_status',removeStatus);
@@ -1662,6 +1683,7 @@ function rfF8ReversalPrep(){
 	 * update button
 	 */
 	 /** @type {JSFoundSet<db:/stsservoy/transactions>} */
+	forms['rf_mobile_view'].genericInput = '';
 	var transactions = rfLatestTransaction(mobRepIdfileId);
 	var transSize = transactions.getSize();
 	var removal = (transSize != 0);
@@ -1679,6 +1701,7 @@ function rfF8ReversalPrep(){
 	//var stat = rec.trans_status;
 	//mob.statusRemove = stat;
 	///var id = mob.barcode;
+	forms['rf_mobile_view'].genericInput = '';
 }
 /**
  * 
@@ -1692,6 +1715,7 @@ function rfF3(){
 	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
 	var inProgress = (thisFunction == flagFunction); // toggle function
 	flagFunction = (inProgress) ? null : thisFunction;
+	forms['rf_mobile_view'].genericInput = '';
 
 	var form = forms.rf_mobile_view;//ticket #151 regarding MC9690 navigation with arrow keys
 	if (form.elements.tablessHistory.visible){
@@ -2497,6 +2521,7 @@ function rfFunctionKeys(screen){
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f8.status.reverse');//'F8 - Remove Status'
 			functionKeyProcedure[dex] = 'globals.rfF8Reversal';
 			plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
+			//plugins.window.createShortcut('control F8',functionKeyProcedure[dex]);
 			dex = 9;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f9.inspection.doc');//'F9 - Inspection Doc'
 			break;
@@ -2938,30 +2963,36 @@ function onSetCurrentFocus(event){
 /**
  * Modify rfChangeWindow, getMenuList, rfFunctionKeys to show rfViews
  * @properties={typeid:24,uuid:"C23097C7-0091-41B2-8224-026404DC4274"}
+ * @AllowToRunInFind
  */
 function getMenuList(){
-	if (session.appName == "STSx"){
+	if (session.appName.search(/(STS3)|(STSx)/) != -1){//was "STSx" 20180326 to enable showing mobile menus for mobile computer vs desktop
 		var office = false;
 	} else {
 		office = isOfficeFunction(null);
 	}
 	var progList = new Array;
+	session.rfViewsMobile = [];
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.inspections'));
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.inspections.w.revs'));//Inspections w/Rev's
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.shipping'));//Shipping
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.transactions'));//Transactions
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.transactions.w.revs'));//Transactions w/Rev's
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.receiving'));//Receiving
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.sample'));//Sample
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.build.bundles'));//Build Bundles
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.saw'));//Saw
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.final.ship'));//Final Ship
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.ship.by.sequence'));//Ship By Sequence
+
+	session.rfViewsOffice = [];
+	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.status'));//Status
+	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.find.piece.marks'));//Find Piece Marks
 	if (!office){
-		progList.push(i18n.getI18NMessage('sts.mobile.inspections'));
-		progList.push(i18n.getI18NMessage('sts.mobile.inspections.w.revs'));//Inspections w/Rev's
-		progList.push(i18n.getI18NMessage('sts.mobile.shipping'));//Shipping
-		progList.push(i18n.getI18NMessage('sts.mobile.transactions'));//Transactions
-		progList.push(i18n.getI18NMessage('sts.mobile.transactions.w.revs'));//Transactions w/Rev's
-		progList.push(i18n.getI18NMessage('sts.mobile.receiving'));//Receiving
-		progList.push(i18n.getI18NMessage('sts.mobile.sample'));//Sample
-		progList.push(i18n.getI18NMessage('sts.mobile.build.bundles'));//Build Bundles
-		progList.push(i18n.getI18NMessage('sts.mobile.saw'));//Saw
-	}
-	progList.push(i18n.getI18NMessage('sts.mobile.status'));//Status
-	progList.push(i18n.getI18NMessage('sts.mobile.find.piece.marks'));//Find Piece Marks
-	if (!office){
-		progList.push(i18n.getI18NMessage('sts.mobile.final.ship'));//Final Ship
-		progList.push(i18n.getI18NMessage('sts.mobile.ship.by.sequence'));//Ship By Sequence
+		progList = progList.concat(session.rfViewsMobile);
+		progList = progList.concat(session.rfViewsOffice);
+	} else {
+		progList = progList.concat(session.rfViewsOffice);		
 	}
 	if (session.appName == "STS X Embedded"){
 		progList = new Array();
@@ -2970,16 +3001,27 @@ function getMenuList(){
 		progList.push(i18n.getI18NMessage('sts.mobile.transactions'));//Transactions
 	}
 	progList.sort();
-	progList.push(i18n.getI18NMessage('sts.mobile.exit'));//'Exit'
-	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
-	//progList.push('Build Bundles');
-	//progList.push('Inspections');
-	//progList.push("Inspections w/Rev's");
-	//progList.push('Shipping');
-	//progList.push('Transactions');
-	//progList.push("Transactions w/Rev's");
-	//progList.push("window2");
-	application.setValueListItems('rfProgramList',progList);
+	session.rfViewsMobile.sort();
+	session.rfViewsOffice.sort();
+	var permittedProgs = [];
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.field_name.eq('userRemoteViews'));
+	q.where.add(q.columns.user_uuid.eq(globals.session.loginId));
+	var Q = databaseManager.getFoundSet(q);
+	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
+	var rec = null; var idx = 1;
+	while (rec = Q.getRecord(idx++)){
+		if (progList.indexOf(rec.field_value) != -1){
+			permittedProgs.push(rec.field_value);
+		}
+	}
+	if (application.isInDeveloper()){application.output('permitted progs '+permittedProgs+' current '+progList);}
+	permittedProgs = permittedProgs.sort();
+	permittedProgs.push(i18n.getI18NMessage('sts.mobile.exit'));//'Exit'
+	application.setValueListItems('rfProgramList',permittedProgs);
+	return progList;
 }
 /**
  * Returns an array with 'FabShopName, StatusWord' from a valueListArray from getValueListArray function
@@ -3108,6 +3150,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
 	r.result.add(r.columns.status_description_id);
 	r.where.add(r.columns.delete_flag.isNull);
 	r.where.add(r.columns.idfile_id.isin(idfileList));
+	if (application.isInDeveloper()){application.output('idfileList for transactions '+idfileList);}
 	///r.where.add(r.columns.location.eq(sLocation));
 	r.where.add(r.columns.status_description_id.eq(endStation));
 	if (timed){
@@ -3115,12 +3158,11 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
 		r.where.add(r.columns.quantity.eq(maxPercent));
 	}
 	var resultR = databaseManager.getFoundSet(r);
-	var index = 0;
-	while (index < resultR.getSize()){
+	var index = resultR.getSize(); var rec = null;
+	while (rec = resultR.getRecord(++index)){
 		index = resultR.getSize();
-		rec = resultR.getRecord(resultR.getSize());
 	}
-	mob.idValues.complete = index;
+	mob.idValues.complete = resultR.getSize();
 	null;
 }
 /**
@@ -3221,11 +3263,21 @@ function onDataChangeStatus(oldValue, newValue, event) {
 		return true;	
 	}
 	mob.statusCode = newValue;
-	forms.rf_mobile_view.statusCode = newValue;
+	forms['rf_mobile_view'].statusCode = newValue;
 	session.stationId = m.stations[session.associationId+', '+mob.statusCode];
+	var workerRqd = rfCheckRequiredWorkerStatus(newValue);
 	if (formName == "rf_mobile_view"){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-		rfMobileViewNextField(event);
+		forms['rf_mobile_view'].elements['workerin'].bgcolor = (workerRqd) ? 'yellow' : 'white';// 20180312 ticket 271
+		if (workerRqd){
+			if (forms['rf_mobile_view'].requiredFields.indexOf('workerin') == -1){// 20180312 ticket 271
+				forms['rf_mobile_view'].requiredFields.unshift('workerin');
+			}
+		} else {
+			forms['rf_mobile_view'].requiredFields[forms['rf_mobile_view'].requiredFields.indexOf('workerin')] = '';
+			forms['rf_mobile_view'].statusWorker = '';
+		}
+		//if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
+		//rfMobileViewNextField(event);
 	}// else {
 	//	rfEmptyNextField(event,'location');
 	//}
@@ -3465,11 +3517,11 @@ function onDataChangeWorker(oldValue, workers, event){
 		return true
 	}
 	globals.logger(false,message);
-	if (forms.rf_mobile_view.statusWorker != '' && forms.rf_mobile_view.statusWorker.search(workers) == -1 && workers.search('\\.') == -1){
-		forms.rf_mobile_view.statusWorker = forms.rf_mobile_view.statusWorker+'.'+workers;
-	} else {
-		forms.rf_mobile_view.statusWorker = workers;
-	}
+	//if (forms.rf_mobile_view.statusWorker != '' && forms.rf_mobile_view.statusWorker.search(workers) == -1 && workers.search('\\.') == -1){
+	//	forms.rf_mobile_view.statusWorker = forms.rf_mobile_view.statusWorker+'.'+workers;
+	//} else {
+	forms.rf_mobile_view.statusWorker = workers;//restore single entry for workers ticket #277
+	//}
 	//forms.rf_transactions.controller.focusField('current',true);
 	if (formName != 'rf_mobile_view'){
 		if (rev){
@@ -3975,6 +4027,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	// status out of order, then false
 	// if okay for other stations, then true
 	
+	var transDate = new Date();
 	globals.logger(true,i18n.getI18NMessage('sts.txt.transactions.save.scan'));
 	//worker_id,worker2_id,worker3_id,worker4_id,worker5_id, tenant_uuid, employee_id,fabshop_id (guids)
 	//location, status, code, edit_date
@@ -4023,6 +4076,8 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			if (application.isInDeveloper()){application.output('status trans rec found. updating');}
 			// dialog for completion of timed event
 			newRec.transaction_end = mob.timedEnd;
+		} else {
+			mob.timedEnd = null;
 		}
 		if (routeOK){
 			if (application.isInDeveloper()){application.output('newRec created for status '+mob.statusCode);}
@@ -4036,20 +4091,25 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			newRecB.employee_id = session.employeeId; //globals.mobLoggedEmployeeId;//UUID
 			newRecB.idfile_id = mob.idfiles[index];
 			newRecB.location = mob.locationArea;
-			newRecB.transaction_date = new Date();//date;//mob.timedBegin;
+			newRecB.transaction_date = transDate;//new Date();//date;//mob.timedBegin;
 			newRecB.transaction_start = date;//mob.timedBegin;
 			newRecB.tenant_uuid = session.tenant_uuid;
 			newRecB.trans_status = mob.statusCode;
 			newRecB.trans_code = rfTransCode();
 			newRecB.revision_level = mob.currentRevision;
 			newRecB.load_id = session.loadId; //UPDATE to only update on SHIP
-			if (mob.timedEnd != ""){
+			if (application.isInDeveloper()){application.output(newRecB.trans_id+' X1 mob.timed B:'+mob.timedBegin+' E:'+mob.timedEnd)}
+			if (!mob.timedBegin){newRecB.quantity = 1;}
+			if (mob.timedEnd){
+				if (application.isInDeveloper()){application.output(mob.percent+' X2 mob.timed B:'+mob.timedBegin+' E:'+mob.timedEnd)}
 				isTimedEnd = true;
 				newRecB.transaction_end = mob.timedEnd;
 				newRecB.transaction_duration = mob.timedDuration;
 				if (mob.percent > 0){newRecB.trailer_labor_percentage = mob.percent}
-				if (mob.percent == 100.0){newRecB.trailer_labor_quantity = 1}
-				if (mob.completeStatus == 1){newRecB.quantity = 100;mob.completeStatus = 0}//Set up as per ticket #103
+				if (mob.percent == 100.0){
+					newRecB.trailer_labor_quantity = 1;
+					newRecB.quantity = 1;
+				}
 			}
 			for (var index2 = 0; index2 < currentWorkers.length; index2++) {
 				switch (index2) {
@@ -4072,6 +4132,11 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 				}
 			}
 		}
+	}
+	if (mob.timedEnd){
+		mob.timedBegin = null;
+		mob.timedEnd = null;
+		if (mob.completeStatus == 1){newRecB.quantity = 1;mob.completeStatus = 0}//Set up as per ticket #103
 	}
 	//var dbStatus = databaseManager.commitTransaction();
 	if (routeOK){
@@ -4142,16 +4207,20 @@ function setFocus(){
 function showHelp(){
 	var winName = application.getActiveWindow();
 	var formName = winName.controller.getName();
+	forms[formName].grantFocus = 'elHelp';//tell genericin that this needs focus
 	functionKeyProvider = -1;
 	functionKeyProvider = null;
 	if (!forms[formName].elements.elHelp){
-		application.output('formname '+formName+' not active.');
+		if (application.isInDeveloper()){application.output('formname '+formName+' not active.');}
 		return
 	}
 	var vis = (forms[formName].elements.elHelp.visible);
 	forms[formName].elements.elHelp.visible = !vis;
 	forms[formName].elements.elHelp.enabled = !vis;
-	if (vis){return}
+	if (vis){
+		if (forms[formName].elements['genericin']){forms[formName].elements['genericin'].requestFocus()}
+		return;
+	}
 	if (!mobileWindows[formName]){
 		/** @type {QBSelect<db:/stsservoy/i18n_table>} */
 		var i18 = databaseManager.createSelect('db:/stsservoy/i18n_table');
@@ -4386,6 +4455,15 @@ function rfLogout(){
  */
 function rfExitBrowser(){
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		if (forms['rf_mobile_view'] && forms['rf_mobile_view'].elements['windowClosed']){
+			forms['rf_mobile_view'].elements['windowClosed'].visible = true;
+		}
+		if (forms['STS_main'] && forms['STS_main'].elements['windowClosed']){
+			forms['STS_main'].elements['windowClosed'].visible = true;
+		}
+		application.updateUI();
+		//security.logout('STSmobile');
+
 		var jsToExecute = "application.quit();";
 		try {
 			plugins.WebClientUtils.executeClientSideJS(jsToExecute);
@@ -4411,6 +4489,7 @@ function rfExitBrowser(){
 function onActionHelp(event) {
 	var form = event.getFormName();
 	var elName = event.getElementName();
+	grantFocus = elName;
 	var actionName = functionKeyProvider;
 	var funcIndex = functionKeyDescrip.indexOf(actionName);
 	if (!functionKeyProcedure[funcIndex]){return}
@@ -4418,7 +4497,7 @@ function onActionHelp(event) {
 	forms[form].elements[elName].visible = false;
 	forms[form].elements[elName].enabled = false;
 	functionKeyProvider = "";
-	if (actionName == ""){return}
+	if (actionName == ""){grantFocus = null;return}
 	
 	eval(progEx);
 }
@@ -4538,7 +4617,7 @@ function rfProcessBarcode(event){
 			switch (session.program){
 				//case 'Build Bundles2':
 				case mobileWindows[i18n.getI18NMessage('sts.mobile.build.bundles')]://Bundles
-					rfMobileViewNextField(event);
+					//rfMobileViewNextField(event);
 					if (application.isInDeveloper()){application.output('add to bundle');}
 					if (flagF8){
 						if (!bundleCheckIdInside()){
@@ -5298,7 +5377,7 @@ function rfSaveTransaction(event){
 			transFS.employee_id = session.employeeId; //globals.mobLoggedEmployeeId;//UUID
 			transFS.idfile_id = mob.idfiles[index];
 			transFS.location = mob.locationArea;
-			transFS.transaction_date = new Date();//date;//mob.timedBegin;
+			transFS.transaction_date = date;//new Date();//date;//mob.timedBegin;
 			transFS.transaction_start = date;//mob.timedBegin;
 			transFS.tenant_uuid = session.tenant_uuid;
 			transFS.trans_status = mob.statusCode;
@@ -5306,6 +5385,8 @@ function rfSaveTransaction(event){
 			if (event.getFormName() == 'rf_bundles'){
 				transFS.bundle_id = mob.bundle.Id;
 			}
+			if (application.isInDeveloper()){application.output('timed b:'+mob.timedBegin+ ' e:'+mob.timedEnd)}
+			if (mob.timedBegin == '' && mob.timedEnd == ''){transFS.quantity = 1}
 			if (mob.timedEnd != ""){
 				transFS.transaction_end = mob.timedEnd;
 				transFS.transaction_duration = mob.timedDuration;
@@ -5407,6 +5488,7 @@ function bundleCheckIdInsideElsewhere(){
 function rfF4BundleClear(){
 	if (application.isInDeveloper()){application.output(flagFunction);}
 	//flagFunction = null;
+	forms['rf_mobile_view'].genericInput = '';
 	var thisFunction = thisFuncName(arguments.callee.toString());
 	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
 	var inProgress = (thisFunction == flagFunction); // toggle function
@@ -5517,6 +5599,7 @@ function rfF8BundleRemoveFrom(){
 	if (forms[formName].currentBundle == "" || forms[formName].currentStatus == "" || forms[formName].currentJob == ""){return}
 	var thisFunction = thisFuncName(arguments.callee.toString());
 	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	forms['rf_mobile_view'].genericInput = '';
 	var inProgress = (thisFunction == flagFunction); // toggle function
 	flagFunction = (inProgress) ? null : thisFunction;
 	flagF8 = (flagFunction != null);
@@ -5547,12 +5630,14 @@ function rfF8BundleRemoveFrom(){
  * @properties={typeid:24,uuid:"2A4C51DF-ADA9-41D8-A90C-58CD628A7D94"}
  */
 function rfF5BundlePrint(){
-	
+	forms['rf_mobile_view'].genericInput = '';
+
 }
 /**
  * @properties={typeid:24,uuid:"C6BC4E31-48AF-4700-B20B-19AE5A8F3D9A"}
  */
 function rfF6BundlePrintList(){
+	forms['rf_mobile_view'].genericInput = '';
 	
 }
 /**
@@ -5652,10 +5737,11 @@ function onDataChangeRevision(oldValue, newValue, event) {
 	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
 	//}
 	session.userEntry = newValue;
+	if (forms['rf_mobile_view']){forms['rf_mobile_view'].drawingRevision = newValue}
 	mob.currentRevision = newValue;
 	///var formName = event.getFormName();
 	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-	rfEmptyNextField(event,'currentidin');
+	//rfEmptyNextField(event,'currentidin');
 	return true
 }
 /**
@@ -6635,8 +6721,8 @@ function rfGetSpecsItem(){
 		mobItemWeight = sts_idrepfile_idfile.sts_idfile_to_pcmks.item_weight;
 		mobItemWidth = sts_idrepfile_idfile.sts_idfile_to_pcmks.item_width;
 	} else {
-		mobItemLength = sts_idrepfile_idfile.sts_idfile_to_pcmks.item_length_in;
-		mobItemLength = ftDecToString('INCHES',sts_idrepfile_idfile.sts_idfile_to_pcmks.item_length_in,12,'');
+		mobItemLength = sts_idrepfile_idfile.sts_idfile_to_pcmks.item_length;
+		mobItemLength = mmToFeet(mobItemLength);//ftDecToString('FEET',sts_idrepfile_idfile.sts_idfile_to_pcmks.item_length_in,12,'');
 		scopes.globals.mobItemWeight = sts_idrepfile_idfile.sts_idfile_to_pcmks.item_weight_lbs.toString();
 		mobItemWeight= sts_idrepfile_idfile.sts_idfile_to_pcmks.item_weight_lbs.toString();
 		mobItemWidth = sts_idrepfile_idfile.sts_idfile_to_pcmks.item_width_in;
@@ -8591,6 +8677,7 @@ function collectCriteria2(event){
 	var soNum = scopes.globals.arrayToString(forms[formName].vSONum);
 	var idNum = scopes.globals.arrayToString(forms[formName].vIDNumber);
 	var piecemark = forms[formName].vPiecemark;
+	var minors = forms[formName].vMinors;
 	var criteria = {
 		area: area, 
 		batch: batch,
@@ -8606,7 +8693,8 @@ function collectCriteria2(event){
 		pkgnum : pkgNum,
 		seqnum : seqNum,
 		sheetnum : sheetNum,
-		sonum : soNum
+		sonum : soNum,
+		minors : minors
 	}
 	var queryText = scopes.jobs.viewBTableSQL(criteria,formName);
 	var fs = databaseManager.getDataSetByQuery('stsservoy', queryText, [] , -1);
@@ -9458,6 +9546,7 @@ function onActionGeneric(event) {
  * @AllowToRunInFind
  */
 function onDataChangeGeneric(oldValue, newValue, event) {
+	newValue = newValue.toUpperCase();//Android seems to ignore the case request
 	scopes.fs.checkComFabsuite();
 	var action = newValue.substr(0,1);
 	var data = newValue.replace(action,'');
@@ -9488,6 +9577,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		var formMV = forms['rf_mobile_view'];
 		for (var idx = 0;idx < idxId;idx++){
 			var fld = reqFlds[idx];
+			if (fld == ''){continue}//get rid of cleared required codes
 			var fldProv = formMV.elements[fld].getDataProviderID();
 			if (formMV[fldProv] == ''){
 				var placeText = i18n.getI18NMessage(formMV.elements[fld].placeholderText);
@@ -9629,6 +9719,7 @@ function dataEntryComplete(event){
 	var entryList = forms['rf_mobile_view'].requiredFields;
 	for (var index = 0;index < entryList.length-1;index++){
 		var entry = entryList[index];
+		if (entry == ''){continue}//20180312 some entries cleared due to workers
 		var dataProv = forms['rf_mobile_view'].elements[entry].getDataProviderID();
 		if (forms['rf_mobile_view'][dataProv] == ''){
 			errorDialogMobile(event,1228,'genericin',entry);//Requred Entries Are Not Yet Complete. 1228
@@ -10023,4 +10114,26 @@ function createHeat(event,heatNum){
 	mob.heat = heatNum;
 	mob.heatId = rec.heat_id;
 
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param status
+ *
+ * @properties={typeid:24,uuid:"BE6B9C88-0721-4E83-A84D-C7CE0417D18C"}
+ */
+function rfCheckRequiredWorkerStatus(status){
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var r = databaseManager.createSelect('db:/stsservoy/status_description');
+	r.where.add(r.columns.tenant_uuid.eq(session.tenant_uuid));
+	r.where.add(r.columns.status_code.eq(status));
+	r.where.add(r.columns.delete_flag.isNull);
+	r.where.add(r.columns.association_id.eq(session.associationId));
+	var R = databaseManager.getFoundSet(r);
+	var workerRqd = false;
+	if (R.getSize() > 0){
+		/** @type {JSRecord<db:/stsservoy/status_description>} */
+		var rec = R.getRecord(1);
+		workerRqd = (rec.emp_number_required != null);
+	}
+	return workerRqd;
 }

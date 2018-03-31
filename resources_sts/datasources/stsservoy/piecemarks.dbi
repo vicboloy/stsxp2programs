@@ -262,6 +262,14 @@ titleText:"i18n:table.piecemarks.parent_piecemark_flag"
 },
 {
 allowNull:true,
+creationOrderIndex:44,
+dataType:12,
+flags:4,
+length:36,
+name:"parent_template_id"
+},
+{
+allowNull:true,
 creationOrderIndex:41,
 dataType:12,
 length:12,

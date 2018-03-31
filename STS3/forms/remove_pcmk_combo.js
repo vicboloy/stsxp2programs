@@ -108,6 +108,8 @@ function onActionRemoveSelected(event) {
 		//removeList.push(i-1); //selection is array, which is zero-based, records are one-based
 	}
 	scopes.jobs.purgeDeletedIdfiles();
+	scopes.jobs.warningsX();
+	
 	var win = application.getActiveWindow();
 	win.hide();
 }

@@ -15,6 +15,14 @@ function charLength()
 }
 
 /**
+ * @properties={type:12,typeid:36,uuid:"C2F17457-2B30-4ECD-9596-765F6F3491CC"}
+ */
+function feet_length()
+{
+	return globals.ftDecToString('INCHES',item_length_in,null);
+}
+
+/**
  * @properties={type:4,typeid:36,uuid:"CB271987-A2F4-4EBF-8319-269AD353CF47"}
  */
 function freeCheck()

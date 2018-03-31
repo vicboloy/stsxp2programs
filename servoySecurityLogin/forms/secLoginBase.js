@@ -204,7 +204,10 @@ function callError(msg){
  * @properties={typeid:24,uuid:"A3E09D87-2EED-4CA4-8E02-C5014E5AA356"}
  */
 function onLoad(event) {
-
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		var newScale = Math.floor(application.getScreenWidth()/240*10)/10;
+		scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale='+newScale);
+	}
 	textAreaString = "";
 	for (var item in plugins){
 		if (application.isInDeveloper()){application.output('loaded '+item)}

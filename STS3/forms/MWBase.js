@@ -428,6 +428,12 @@ var criteria = {};
  */
 var vFilteredCount = "";
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"E5FED131-BF5C-4DB7-B775-3A3DD15A05AB",variableType:4}
+ */
+var vMinors = 0;
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"C6697CA6-332A-4DF6-8554-ACECAB1B107D"}
@@ -473,6 +479,12 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
 	var win = application.createWindow(windowTitle, JSWindow.WINDOW);
 	var xBeg = xOrigin;
 	var yBeg = yOrigin;
+	if (application.getApplicationType() == APPLICATION_TYPES.SMART_CLIENT){//20180326 screen too small adjust main view for scroll bars
+		var screenW = application.getScreenWidth()-xOrigin;
+		var screenH = application.getScreenHeight()-yOrigin;
+		xWidth = (xWidth > screenW) ? screenW : xWidth;
+		yHeight = (yHeight > screenH) ? screenH : yHeight;
+	}
 	var xEnd = xOrigin+xWidth;
 	var yEnd = yOrigin+yHeight;
 	win.setInitialBounds(xBeg, yBeg, xEnd, yEnd);
@@ -664,7 +676,7 @@ function onActionLogonUserManage(event) {
  * @properties={typeid:24,uuid:"0BD62770-5A9E-45E0-85B0-3DB856E01950"}
  */
 function onActionSTSLogonManage(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.logon.user.management'),'tenant_users_m',50,50,920,410,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.logon.user.management'),'tenant_users_m',50,50,1100,420,false);
 }
 /**
  * @param event

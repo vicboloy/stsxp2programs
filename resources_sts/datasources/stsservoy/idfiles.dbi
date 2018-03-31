@@ -349,6 +349,14 @@ titleText:"i18n:table.idfiles.original_quantity"
 },
 {
 allowNull:true,
+creationOrderIndex:65,
+dataType:12,
+flags:4,
+length:36,
+name:"parent_piecemark_id"
+},
+{
+allowNull:true,
 creationOrderIndex:16,
 dataType:12,
 length:20,

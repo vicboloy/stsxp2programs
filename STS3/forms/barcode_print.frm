@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/jobs",
 encapsulation:60,
 extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
@@ -79,7 +85,7 @@ uuid:"FB94BA9B-9D1D-4667-8809-B6D32180A844"
 ],
 name:"barcode_print",
 navigatorID:"-1",
-onHideMethodID:"89C9B487-F698-454D-8492-73F53E0E0792",
+onHideMethodID:"C1E9C383-F757-4DAA-84C5-15E8A88D0CA3",
 onShowMethodID:"67FCCE4A-1B5E-4B17-B184-931356A3ABE7",
 showInMenu:true,
 size:"475,500",

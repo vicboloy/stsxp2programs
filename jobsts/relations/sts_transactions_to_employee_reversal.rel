@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/employee",
+items:[
+{foreignColumnName:"employee_id",primaryDataProviderID:"trans_reversal_worker",typeid:23,uuid:"381D1B13-6961-4E06-BBE4-0E241C95FB96"}
+],
+joinType:1,
+name:"sts_transactions_to_employee_reversal",
+primaryDataSource:"db:/stsservoy/transactions",
+typeid:22,
+uuid:"0B7D0B5C-6017-47DA-96BF-49082491074D"

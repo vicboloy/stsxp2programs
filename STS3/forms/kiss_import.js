@@ -94,6 +94,18 @@ var entryOrder = [];
  * @properties={typeid:35,uuid:"AFAC0BFC-86EE-4035-8A29-E52E00E956B5"}
  */
 var texts="";
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"33C6139F-AB1C-448E-A069-0155DA1BFB12",variableType:4}
+ */
+var useKissFile = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"3CA31ADD-5773-4284-8C01-560010BEB67C",variableType:4}
+ */
+var verifyJobFabsuite = 0;
 //------------------------------------------------------------------------------------------------
 /**
  *
@@ -195,35 +207,36 @@ function fileReceipt(file){
  */
 function getKissFile(event){
 	scopes.jobs.warningsYes();
-	var verified = scopes.fs.verifyKissImportFilters(event);
-	if (!verified){
-		var response = globals.DIALOGS.showQuestionDialog(
-		i18n.getI18NMessage('1221'),//import filters may not apply
-		i18n.getI18NMessage('1221'),
-		i18n.getI18NMessage('sts.btn.no'),
-		i18n.getI18NMessage('sts.btn.yes'));
-		if (response == i18n.getI18NMessage('sts.btn.no')){
-			scopes.jobs.warningsX();
-			return;
+	if (!useKissFile){
+		var verified = scopes.fs.verifyKissImportFilters(event);
+		if (!verified){
+			var response = globals.DIALOGS.showQuestionDialog(
+			i18n.getI18NMessage('1221'),//import filters may not apply
+			i18n.getI18NMessage('1221'),
+			i18n.getI18NMessage('sts.btn.no'),
+			i18n.getI18NMessage('sts.btn.yes'));
+			if (response == i18n.getI18NMessage('sts.btn.no')){
+				scopes.jobs.warningsX();
+				return;
+			}
 		}
+		elements.btn_GetKiss.enabled = false;
+		elements.btn_Close.enabled = false;
+		elements.btn_Clear.enabled = false;
+		var servoyDir = scopes.prefs.importpath;
+		//var servoyDir = plugins.UserManager.Client().userDir;
+		var randFile = 'Import'+new Date().getTime()+'.kss';
+		var servoyDir = servoyDir+'\\'+randFile;
+		servoyDir = servoyDir.replace('[A-Za-z]//','');
+		application.output('Import file '+servoyDir);
+		var request = '<FabSuiteXMLRequest>\n\
+			<ExportJob>\n\
+			<JobNumber>'+vJobNumber+'</JobNumber>\n\
+			<FileName>'+servoyDir+'</FileName>\n\
+			<IncludeLotNumbers>1</IncludeLotNumbers>\n\
+			</ExportJob>\n\
+			</FabSuiteXMLRequest>';
 	}
-	elements.btn_GetKiss.enabled = false;
-	elements.btn_Close.enabled = false;
-	elements.btn_Clear.enabled = false;
-	var servoyDir = scopes.prefs.importpath;
-	//var servoyDir = plugins.UserManager.Client().userDir;
-	var randFile = 'Import'+new Date().getTime()+'.kss';
-	var servoyDir = servoyDir+'\\'+randFile;
-	servoyDir = servoyDir.replace('[A-Za-z]//','');
-	application.output('Import file '+servoyDir);
-	var request = '<FabSuiteXMLRequest>\n\
-		<ExportJob>\n\
-		<JobNumber>'+vJobNumber+'</JobNumber>\n\
-		<FileName>'+servoyDir+'</FileName>\n\
-		<IncludeLotNumbers>1</IncludeLotNumbers>\n\
-		</ExportJob>\n\
-		</FabSuiteXMLRequest>';
-
 	var success = history.removeForm('kiss_barcode_request');
 	if (success){
 		var success2 = solutionModel.removeForm('kiss_barcode_request');
@@ -236,6 +249,46 @@ function getKissFile(event){
 
 	var filters = {Sequence:vSeqNumber,LotNumber:vLotNumber,MainMark:vPartNumber,DrawingNumber:vDrawingNumber}
 	if (application.isInDeveloper()){application.output('kiss on server');}
+	if (useKissFile){
+		//push file to server
+		var homeDir = scopes.prefs.temppath;
+		servoyDir = scopes.prefs.importpath;
+		if (application.isInDeveloper()){
+			homeDir = servoyDir;
+		}
+		if (application.isInDeveloper()){application.output('directory is '+servoyDir)}
+		var servoyDir = plugins.UserManager.Server().servoyDirectory;
+		randFile = 'Import'+new Date().getTime()+'.kss';
+		//servoyDir = servoyDir+'\\'+randFile;
+		//servoyDir = servoyDir.replace('[A-Z]:\\','/');application.output('dir '+servoyDir);
+		var file = plugins.file.showFileOpenDialog(1, homeDir, false, new Array("KISS Files", "kss", "txt"));
+		var file1 = plugins.file.convertToJSFile(file);
+		var kssText = plugins.file.readTXTFile(file1).split('\n');
+		var kssJob = ''; var idx = 6;
+		while (idx++ < 30){
+			/** @type {String} */
+			var kssLine = kssText[idx].split('/n');
+			var kssFlds = kssLine.split(',');
+			if (kssFlds[0] == 'H'){
+				kssJob = kssFlds[1];
+			}
+		}
+		var jobs = application.getValueListArray('stsvl_jobs_association');
+		if (jobs.indexOf(kssJob) == -1){
+			application.output('kss file job number does not match any jobs in association');
+		}
+		if (kssJob != vJobNumber){
+			application.output('kss file job number does not match requested job number');
+		}
+		//plugins.UserManager.copyFileToServer(String filePathToCopy / JSFile fileToCopy)
+		var server = plugins.file.getHomeFolder();
+		var userDir = plugins.UserManager.Server().userDir;
+		application.output('user dir '+userDir);
+		var vOverwrite = false;
+		success = plugins.UserManager.copyFileToServer(file,servoyDir,vOverwrite);
+		application.output(file+' file write to '+servoyDir+ ' server success: '+success);
+		return;
+	}
 	scopes.kiss.importFSOnServer(event,request,filters);//IMPORT 1 importFSOnServer
 	
 	/**

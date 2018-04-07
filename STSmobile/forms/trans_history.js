@@ -33,6 +33,7 @@ function onActionCloseDetail(event) {
 function onRecordSelection(event) {
 	var index = foundset.getSelectedIndex();
 	forms.trans_detail.controller.setSelectedIndex(index);
+	forms.trans_detail.getTransactionDetails(event);
 	return true;
 }
 

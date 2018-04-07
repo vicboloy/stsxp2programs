@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/jobs",
 encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
@@ -77,6 +83,7 @@ uuid:"E4890FF4-A10F-4BA1-A3F3-9A8E4F7301A3"
 name:"jobs_lst",
 navigatorID:"-1",
 onRecordSelectionMethodID:"0D273E9E-ECB7-4362-9492-21A6DACDA13D",
+onShowMethodID:"593A9BD1-BB9E-4DAD-A223-4C4CD45106A1",
 scrollbars:32,
 size:"201,307",
 styleName:"sts_one",

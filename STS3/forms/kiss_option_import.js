@@ -277,6 +277,14 @@ var endVars = null;
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
+		var keepMinorsPref = scopes.prefs.lKeepMinorPcMarks;
+		var text = elements.keep_minors.titleText;
+		if (keepMinorsPref == 1){
+			text = text.replace(/\(.*\)/,'(default=YES/1)');
+		} else {
+			text = text.replace(/\(.*\)/,'(default=NO/0)');			
+		}
+		elements.keep_minors.titleText = text;
 	//globals.setUserFormPermissions(event);
 //	if (transitionFS){
 //		transitionFS.removeRow(-1);
@@ -314,6 +322,10 @@ function onShow(firstShow, event) {
 		scopes.jobs.importJob.customerId = jobRec.customer_id;
 		scopes.jobs.importJob.jobId = jobRec.job_id;
 		scopes.jobs.importJob.bcFormId = jobRec.barcode_form;//#87ticket#87
+		if (jobRec.keepminors == 1){
+			scopes.jobs.keepMinors = 1;
+			elements.keep_minors.enabled = false;
+		}
 	}
 	foundset.loadRecords(J);//populate windows current record to return specific job info
 	
@@ -388,7 +400,13 @@ function onShow(firstShow, event) {
 	scopes.jobs.importLabelCounts = [];
 	importOption = null;
 	elements.btn_Import.enabled = false;
-	keepMinors = scopes.prefs.lKeepMinorPcMarks;	minorsChanged = false;
+	keepMinors = scopes.prefs.lKeepMinorPcMarks;
+	if (jobRec.keep_minors == 1){//job entry record says keep minors for this job. no override
+		keepMinors = 1;
+		elements.keep_minors.enabled = false;
+	}
+	minorsChanged = false;
+	
 	//index;
 	///var custRec;
 	controller.enabled = true;
@@ -413,7 +431,7 @@ function onShow(firstShow, event) {
 	//importTempTable();
 	scopes.jobs.warningsMessage("Piecemark table view creation posted.",true);
 	null;
-	if (keepMinors == 0) {
+	if (jobRec.keep_minors == 1) {
 		elements.keep_minors.enabled = false;
 		//applyRemoveMinors(transitionFS);
 	} else {

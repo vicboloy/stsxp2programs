@@ -364,11 +364,11 @@ visible:false
 anchors:9,
 enabled:false,
 formIndex:6,
-location:"9,175",
+location:"0,175",
 name:"bundlepieceslabel",
 showClick:false,
 showFocus:false,
-size:"29,20",
+size:"37,20",
 text:"i18n:sts.label.bundle.pieces",
 transparent:true,
 typeid:7,
@@ -1377,7 +1377,7 @@ visible:false
 },
 {
 extendsID:"A4842B95-DD5A-40B3-8202-9B70F65AECF7",
-height:900,
+height:444,
 typeid:19,
 uuid:"C1D97845-7ED0-4731-BFD5-A04FB2388CCB"
 },

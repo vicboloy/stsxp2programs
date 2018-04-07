@@ -884,6 +884,7 @@ function removeWindowTrack(){
 	var windowName = "";
 	for (var index = 0; index < tempLength; index++){
 		windowName = globals.aTrackWindows[index];
+		if (!windowName){continue}
 		if (formName.search(windowName) != 0){
 			tempArray.push(windowName);
 		}

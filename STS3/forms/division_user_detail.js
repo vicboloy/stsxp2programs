@@ -25,7 +25,7 @@ var isAdminAccount = "";
  *
  * @properties={typeid:35,uuid:"119B1918-A7FD-42FC-A40B-038758BA20B4"}
  */
-var userMobileViewList = null;
+var userMobileViewList = '';
 /**
  * @properties={typeid:24,uuid:"ABA5AEB5-9EA0-4D10-BAE9-AB3561481EEA"}
  * @SuppressWarnings(wrongparameters)
@@ -103,6 +103,7 @@ function onShow(firstShow, event) {
 	getEmployees();
 	updateFields(event);
 	scopes.jobs.onMobileViewLoadValueList();
+	onRecordSelection(event);
 	//return _super.onShow(firstShow, event)
 }
 
@@ -138,10 +139,15 @@ function onRecordSelection(event) {
 	}
 	userGroups = databaseManager.getFoundSetDataProviderAsArray(users_to_user_groups,'group_uuid').join('\n');
 	if (rec.logic_flag){
-		application.setValueListItems('stsvlt_remoteViews',globals.session.rfViewsOffice);
+		var officeViewsMobile = globals.session.rfViewsOffice.concat([]);
+		officeViewsMobile.unshift(i18n.getI18NMessage('sts.mobile.allow.no.views'));
+		application.setValueListItems('stsvlt_remoteViews',officeViewsMobile);
 		if (application.isInDeveloper()){application.output('remoteView office '+globals.session.rfViewsOffice)}
 	} else {
-		application.setValueListItems('stsvlt_remoteViews',globals.session.rfViewsMobile);		
+		var allViewsMobile = globals.session.rfViewsMobile.concat(globals.session.rfViewsOffice);
+		allViewsMobile.sort();
+		allViewsMobile.unshift(i18n.getI18NMessage('sts.mobile.allow.no.views'));
+		application.setValueListItems('stsvlt_remoteViews',allViewsMobile);
 		if (application.isInDeveloper()){application.output('remoteView Mobile '+globals.session.rfViewsMobile)}
 	}
 	application.updateUI();
@@ -346,4 +352,20 @@ function updatePassword(event,oldValue,newValue){
 function onDataChangeAccountType(oldValue, newValue, event) {
 	oldValue = newValue;
 	return true
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"4A0B7066-35D2-4D55-8ACB-C361316CD533"}
+ * @AllowToRunInFind
+ */
+function onActionSelectMCView(event) {
+	var showNone = i18n.getI18NMessage('sts.mobile.allow.no.views');
+	if (userMobileViewList && userMobileViewList.search(showNone) != -1){
+		userMobileViewList = '';
+	}
+	null;
 }

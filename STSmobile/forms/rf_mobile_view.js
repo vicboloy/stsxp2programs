@@ -502,6 +502,7 @@ function entryRequired(fieldName){
  * @properties={typeid:24,uuid:"732C6ECD-44F7-49D6-A6D5-EC17AB1671CF"}
  */
 function fieldPrevTab(){
+	if (1==1){return;}
 	var focused = forms.rf_mobile_view.focusGain;
 	var focusIndex = tabFieldOrder.indexOf(focused)
 	var index = (focusIndex == 0) ? 0 : focusIndex-1;
@@ -512,6 +513,7 @@ function fieldPrevTab(){
  * @properties={typeid:24,uuid:"93BEEA58-EBC3-44B1-97CB-20752B43A85B"}
  */
 function fieldNextTab(){
+	if (1==1){return;}
 	var focused = forms.rf_mobile_view.focusGain;
 	var focusIndex = tabFieldOrder.indexOf(focused)
 	var index = (focusIndex == tabFieldOrder.length-1) ? tabFieldOrder.length-1 : focusIndex+1;
@@ -552,4 +554,16 @@ function onFocusGrant(event) {
 	if (grantFocus){
 		elements[focusGrant].requestFocus();
 	}
+}
+
+/**
+ * Handle focus lost event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D86EE3FB-D4D3-4DA9-A743-BDCA55999EFB"}
+ */
+function onFocusLost(event) {
+	globals.spurious = 1;
+	genericInput = '';
 }

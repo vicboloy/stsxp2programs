@@ -178,6 +178,13 @@ titleText:"i18n:table.jobs.job_weight"
 },
 {
 allowNull:true,
+creationOrderIndex:33,
+dataType:4,
+name:"keep_minors",
+titleText:"i18n:table.jobs.keep_minors_import"
+},
+{
+allowNull:true,
 creationOrderIndex:22,
 dataType:12,
 length:50,

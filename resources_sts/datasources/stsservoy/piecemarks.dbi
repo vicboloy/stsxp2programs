@@ -262,6 +262,13 @@ titleText:"i18n:table.piecemarks.parent_piecemark_flag"
 },
 {
 allowNull:true,
+creationOrderIndex:46,
+dataType:12,
+length:36,
+name:"parent_piecemark_id"
+},
+{
+allowNull:true,
 creationOrderIndex:44,
 dataType:12,
 flags:4,
@@ -275,6 +282,13 @@ dataType:12,
 length:12,
 name:"part_serial",
 titleText:"i18n:table.piecemarks.part_serial"
+},
+{
+allowNull:true,
+compatibleColumnTypes:"[[8,17,17]]",
+creationOrderIndex:45,
+dataType:8,
+name:"pcmk_qty"
 },
 {
 allowNull:true,

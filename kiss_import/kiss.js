@@ -1087,6 +1087,7 @@ function importPopKISSTable(event) {
 	
 	recomputeLabelArray = [];
 
+	parentRec = null;
 	parentMarkIndex = [];
 	pMarkString = "";
 	pMarks = [];
@@ -1098,6 +1099,7 @@ function importPopKISSTable(event) {
 	var checkValue = "";
 	var skippedHeader = false;
 	var skippedFirst = false;
+	var firstSaveAttempt = false;
 	currentSequence = "";
 	currentSequenceQty = "";
 	newRow = null;
@@ -1117,7 +1119,7 @@ function importPopKISSTable(event) {
 	tableFS = databaseManager.getFoundSet('stsservoy','import_table');
 	tableFS.loadRecords('select import_table_id order by parent_piecemark, piecemark');
 	var newRecIdx = 0;
-	skippedFirst = false;
+	skippedFirst = false;//DEBUG here to verify KISS import_table setup
 	//var skipMinors = ((newRec.piecemark != newRec.parent_piecemark) && (forms.kiss_import_option.keep_minors == 0));
 	//databaseManager.startTransaction();
 	var filterInData = true; // This determines whether a record is saved to speed up import
@@ -1127,7 +1129,8 @@ function importPopKISSTable(event) {
 		//if (application.isInDeveloper() && diffT > 2000){application.output('index '+index+' of '+lengthResults)}
 		warningsMessage('Process '+index+'/'+lengthResults,false);
 		//if (lineType[0] == '*'){importSubGUID = []}
-		if (lineType[0] == '*' && (tableFS.getSize() + guidsFS.getSize()) > 10){
+		if (lineType[0] == '*' && (tableFS.getSize() + guidsFS.getSize()) > 100){//prematurely saving datasets.  wait until saving at detail record to reset count XXX
+			//if (application.isInDeveloper()){application.output('Saving import table records')}
 			var ok = databaseManager.saveData(tableFS);
 			tableFS.clear();	
 			tableFS.loadRecords('select import_table_id order by parent_piecemark, piecemark');
@@ -1135,6 +1138,7 @@ function importPopKISSTable(event) {
 			guidsFS.clear();
 		}
 		lineArray = results[index].split(',');
+		//if (application.isInDeveloper()){application.output(lineArray)}
 		lineType = lineArray[0];
 		if (!skippedHeader){
 			if (!newKRecord(lineArray)){
@@ -1171,13 +1175,16 @@ function importPopKISSTable(event) {
 				(filterMarks.indexOf(lineArray[dMainMark]) != -1) || (filterMarks.indexOf(lineArray[dPieceMark]) != -1));
 			filterInData = filterInData || (filterMarks.length == 0 && filterDraws.length == 0);
 			//}
-			if (skippedFirst && filterInData) { // save detail indicating new line before processing detail
-				importPopSaveDetailRow();
-			} else {
+			if (filterInData) { // save detail indicating new line before processing detail
+				if (skippedFirst){
+					importPopSaveDetailRow();
+				} else {
 				skippedFirst = true;
+				}
 			}
 		}
 		if (!filterInData){continue}//Filter out input if there are filters
+		//if (application.isInDeveloper()){application.output(lineArray)}
 		var skip = (lineType == "S"); //Sequence line handled out-of-order
 			/** unique piecemarks use piecemark, material, sequence_number, grade.  aggregate these
 			* changed 6/14/2014 
@@ -1345,17 +1352,18 @@ function importPopSaveDetailRow(){
 		newRec.sequence_quantity = seqInfo.cnt; //these are fixed
 		if (newRec.piecemark.toLowerCase() == newRec.parent_piecemark.toLowerCase()){
 			currentPcmkParentPcmk[seqInfo.seq] = newRec;
-			parentRec = newRec;
+			//globals.parentRec = newRec;
 			scopes.jobs.tmpParentRecId = newRec.import_table_id;
 			var newQuant = Math.floor(newRec.sequence_quantity*1); // depends upon the incoming dataset
 			newRec.sequence_quantity = Math.floor(newQuant).toFixed();
+			newRec.item_qty = newRec.sequence_quantity;
 			if (newRec.sequence_quantity < newRec.item_qty){newRec.item_qty = newRec.sequence_quantity}
-			var popCount = parentRec.sequence_quantity; // control how many FS GUIDs must be associated with newRec
+			var popCount = newRec.sequence_quantity; // control how many FS GUIDs must be associated with newRec
 		} else { //minor mark encountered, only capture weight for the subassembly counts for the item
 			//add weight to parent mark with sequence
-			var idx = tableFS.getRecordIndex(currentPcmkParentPcmk[seqInfo.seq]);
-			if (application.isInDeveloper()){application.output(' get record index of parent pcmk '+idx)}
-			parentRec = tableFS.getRecord(idx);
+			//var idx = tableFS.getRecordIndex(currentPcmkParentPcmk[seqInfo.seq]);
+			//if (application.isInDeveloper()){application.output(' get record index of parent pcmk '+idx)}
+			parentRec = currentPcmkParentPcmk[seqInfo.seq]
 			if (!parentRec){
 				/** @type {QBSelect<db:/stsservoy/import_table>} */
 				var qq = databaseManager.createSelect('db:/stsservoy/import_table');
@@ -1376,24 +1384,25 @@ function importPopSaveDetailRow(){
 			//	parentRec.item_weight = totAssemWt;
 			//}
 		}
-		if (!newRec.set_bc_qty){
-			var setQuant = newRec.item_qty;
+		if (true || !newRec.set_bc_qty){
+			var pcmkCount = newRec.item_qty;//number of piecemarks on this label pass
+			var labelCount = pcmkCount;
 			if ((newRec.sequence_quantity == null || newRec.sequence_quantity == '') 
-					&& newRec.sequence_quantity < setQuant) {
-						setQuant = newRec.sequence_quantity;
-						newRec.item_qty = setQuant;
+					&& newRec.sequence_quantity < pcmkCount) {
+						pcmkCount = newRec.sequence_quantity;
+						newRec.item_qty = pcmkCount;
 			}
-			if (newRec.piecemark != newRec.parent_piecemark && globals.session.appName == 'STS X Embedded') {setQuant = 1}
+			if (newRec.piecemark != newRec.parent_piecemark && globals.session.appName == 'STS X Embedded') {pcmkCount = 1}
 			var q = scopes.prefs.qtyPrompt;
 			var w = scopes.prefs.wtPrompt;
-			if (newRec.item_qty*1 > q*1){setQuant = 1}
-			if (newRec.item_weight*1 < w*1){setQuant = 1}
-			newRec.set_bc_qty = setQuant;
-			newRec.last_bc_qty = 0;
-			newRec.barcode_qty = (setQuant == 1) ? setQuant : 1;
-			newRec.last_bc_wt = 0;
-			newRec.total_label_qty = (setQuant == 1) ? 1 : setQuant;
-			newRec.total_label_wt = newRec.item_weight * setQuant;			
+			if (newRec.item_qty*1 > q*1){labelCount = 1}//if number of piecemarks over a certain number, default to a count of 1 label
+			if (newRec.item_weight*1 < w*1){labelCount = 1}// if weight of piecemark is below this weight, default to a count of 1 label
+			newRec.set_bc_qty = labelCount;//number of requested labels
+			newRec.last_bc_qty = 0;//number of piecemarks on last partial barcode
+			newRec.last_bc_wt = 0;//weight of last partial barcode
+			newRec.barcode_qty = (labelCount == 1) ? pcmkCount : 1;//(pcmkCount == 1) ? pcmkCount : 1;//total number of barcodes
+			newRec.total_label_qty = pcmkCount;//count of items each on barcode
+			newRec.total_label_wt = newRec.item_weight * newRec.barcode_qty;	//each barcode weight
 		}
 		/**
 		 * 	var qtyPerBarcode = Math.ceil(qtyPcmk/qtyBarcodes);
@@ -1441,8 +1450,8 @@ function importPopSaveDetailRow(){
 			}
 		}
 		if (newRec.parent_piecemark == newRec.piecemark){lastMainPcmk = newRec.parent_piecemark;lastMainQuant = popQty}
-		if ( false && application.isInDeveloper()){
-			application.output('GUIDs  '+newRec.parent_piecemark+' '+newRec.piecemark+' to pop '+popQty+' of ItemQty:'+newRec.item_qty+' Seq: '+newRec.sequence_number+' SeqQty:'+newRec.sequence_quantity);
+		if (application.isInDeveloper()){
+			//application.output('GUIDs  '+newRec.parent_piecemark+' '+newRec.piecemark+' to pop '+popQty+' of ItemQty:'+newRec.item_qty+' Seq: '+newRec.sequence_number+' SeqQty:'+newRec.sequence_quantity);
 		}
 		//application.output('length before: '+importSubGUID.length);
 		for (var cnt = 1;cnt <= popQty;cnt++){

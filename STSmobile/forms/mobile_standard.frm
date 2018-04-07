@@ -100,7 +100,7 @@ valuelistID:"50572CD7-F913-419A-BC33-20D5675C299F",
 visible:false
 },
 {
-height:449,
+height:320,
 partType:5,
 typeid:19,
 uuid:"A4842B95-DD5A-40B3-8202-9B70F65AECF7"

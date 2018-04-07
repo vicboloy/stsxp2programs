@@ -504,7 +504,7 @@ uuid:"FFEE7548-B6AE-4773-9974-8B211E333390"
 name:"import_table",
 navigatorID:"-1",
 onShowMethodID:"4DF98C5B-E5E6-4A71-AA70-55B102E8A7A8",
-selectionMode:1,
+selectionMode:2,
 size:"1983,136",
 styleName:"sts_one",
 typeid:3,

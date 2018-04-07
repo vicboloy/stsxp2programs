@@ -434,25 +434,48 @@ function onDataChangePrinterPrefs(oldValue, newValue, event) {
 	if (event && event.getElementName() && event.getFormName().search('preferences_printer') == 0){// && (event.getElementName().search(/(printerName)|(labelName)/) != -1)){
 		var formx = forms[event.getFormName()];
 		var elName = event.getElementName();
-		if (elName == 'radioSelect'){
-			var radio = formx.labelType;
-			if (radio == i18n.getI18NMessage('sts.txt.id.label.default')){
-				scopes.printer.idBarcodePrinter = formx.printerName;
-				scopes.printer.idBarcodeLabelFormat = formx.labelName;
-				prefsChanged.push('idBarcodePrinter');
-				prefsChanged.push('idBarcodeLabelFormat');
-			} else if (radio == i18n.getI18NMessage('sts.txt.part.label.default')){
-				scopes.printer.rawMaterialPrinter = formx.printerName;
-				scopes.printer.rawMaterialLabelFormat = formx.labelName;
-				prefsChanged.push('rawMaterialPrinter');
-				prefsChanged.push('rawMaterialLabelFormat');
-			} else if (radio == i18n.getI18NMessage('sts.txt.system.label.default')){
-				scopes.printer.defaultSysPrinter = formx.printerName;
-				scopes.printer.defaultSysLabelFormat = formx.labelName;
-				prefsChanged.push('defaultSysPrinter');
-				prefsChanged.push('defaultSysLabelFormat');
-			} 
-		} 
+		switch (formx.labelType){
+			case i18n.getI18NMessage('sts.txt.id.label.default'):
+				switch (elName){
+					case 'printerName':
+						scopes.printer.idBarcodePrinter = formx.printerName;
+						prefsChanged.push('idBarcodePrinter');
+						break;
+					case 'labelName':
+						scopes.printer.idBarcodeLabelFormat = formx.labelName;
+						prefsChanged.push('idBarcodeLabelFormat');
+						break;
+					default:
+				}
+				break;
+			case i18n.getI18NMessage('sts.txt.part.label.default'):
+				switch (elName){
+					case 'printerName':
+						scopes.printer.rawMaterialPrinter = formx.printerName;
+						prefsChanged.push('rawMaterialPrinter');
+						break;
+					case 'labelName':
+						scopes.printer.rawMaterialLabelFormat = formx.labelName;
+						prefsChanged.push('rawMaterialLabelFormat');
+						break;
+					default:
+				}
+				break;
+			case i18n.getI18NMessage('sts.txt.system.label.default'):
+				switch (elName){
+					case 'printerName':
+						scopes.printer.defaultSysPrinter = formx.printerName;
+						prefsChanged.push('defaultSysPrinter');
+						break;
+					case 'labelName':
+						scopes.printer.defaultSysLabelFormat = formx.labelName;
+						prefsChanged.push('defaultSysLabelFormat');
+						break;
+					default:
+				}
+				break;
+			default:
+		}
 		var el = event.getElementName();
 		var dataProv = formx.elements[el].getDataProviderID();
 		dataProv = dataProv.replace('scopes.printer.','');

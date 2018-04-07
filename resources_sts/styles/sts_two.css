@@ -14,7 +14,7 @@ tabpanel {
 	font-size: 12px;
 }
 
-label, button, field, combobox, check, radio, spinner {
+label, button, field, check, radio, spinner {
 	color: black;
 	font-family: Arial;
 	font-size: 10px;
@@ -38,7 +38,13 @@ field, combobox {
 	margin-right: 3px;
 }
 
-combobox {}
+combobox {
+		color: yellow;
+	font-family: Arial;
+	font-size: 10px;
+	text-align: left;
+	vertical-align: middle;
+}
 
 check {}
 

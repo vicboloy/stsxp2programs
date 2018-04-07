@@ -30,7 +30,16 @@ field, combobox {
 	margin-right: 3px;
 }
 
-combobox {}
+field.required,combobox.required {
+	font-style : bold;
+	color: black;
+	font-family: Arial;
+	font-size: 11px;
+	text-align: left;
+	vertical-align: middle;
+	border-color: yellow;
+	background-color : yellow;
+}
 
 check {}
 

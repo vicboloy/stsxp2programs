@@ -306,6 +306,7 @@ function onShow(firstShow, event) {
 		globals.setUserFormPermissions(event);
 		scopes.jobs.formPermissions(event,true);
 	}
+	//loadFoundset();
 	onActionHeats(event);
 	foundset.loadAllRecords();
 	var path = scopes.prefs.reportpath;
@@ -332,10 +333,14 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"96D0E7FA-8490-4C31-95D5-2F1E3514219D"}
  */
 function onRecordSelection(event, buttonTextSrc) {
-	elements.btn_Delete.visible = (elements.btn_New.visible && globals.checkJobEmpty(job_id) == '');
+	elements.btn_Delete.visible = (elements.btn_New.visible && globals.checkJobEmpty(job_id));
 	//vCustomerNumber = (st2_jobs_to_customers) ? sts_job_to_customer.customer_number : "";
 	//application.setValueListItems('stsvlt_customers',[]);
 	vCustomerId = customer_id;
+	vBarCodeForm = barcode_form;
+	vJobPlant = association_id;
+	vShipTo = ship_to;
+	vRFInterface = rf_interface;
 	onActionHeats(event);
 	null;
 }
@@ -347,12 +352,14 @@ function onRecordSelection(event, buttonTextSrc) {
  * @properties={typeid:24,uuid:"3C12D307-E1E3-4FF5-8808-C2C2A01DC5F6"}
  */
 function onActionSaveEdit(event) {
+	if (!checkSaveRequirements(event)){return}
 	globals.lookupItem2 = vCustomerNumber;
 	label_format = vLabelFormat;
 	metric_job = vMetricJob;
 	rf_interface = vRFInterface;
 	ship_to = vShipTo;
 	customer_id = vCustomerId;
+	association_id = vJobPlant;
 	//vCustomerNumber = null;
 	return _super.onActionSaveEdit(event)
 }
@@ -372,6 +379,8 @@ function onActionHeats(event) {
  * @properties={typeid:24,uuid:"EC7F4AA2-C87F-4391-B698-9E3BE0B7A1D4"}
  */
 function loadFoundset(){
+	databaseManager.removeTableFilterParam('stsservoy','filterCurrentAssoc');
+	
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.result.add(j.columns.job_id);
@@ -380,6 +389,7 @@ function loadFoundset(){
 	var J = databaseManager.getFoundSet(j);
 	
 	foundset.loadRecords(J);
+	databaseManager.addTableFilterParam('stsservoy','jobs','association_id','=',globals.session.associationId,'filterCurrentAssoc');
 }
 /**
  * Perform the element default action.
@@ -395,6 +405,33 @@ function onActionEdit(event) {
 /**
  * @properties={typeid:24,uuid:"087AEC21-D6C3-4058-A495-E85A4ECA352F"}
  */
-function 	additionalEditCancelFunctions(){
+function additionalEditCancelFunctions(){
 	vCustomerId = customer_id;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"BD5BEC82-6ED1-402C-97DC-74DBCEDD0DB5"}
+ */
+function checkSaveRequirements(event){
+	var saveOk = true;
+	if (!vJobPlant){
+		saveOk = false;
+	}
+	if (!job_number){
+		saveOk = false;
+	}
+	if (!vCustomerId){
+		saveOk = false;
+	}
+	if (!vBarCodeForm){
+		saveOk = false;
+	}
+	if (!vRFInterface){
+		saveOk = false;
+	}
+	if (!saveOk){
+		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.missing.entry'),i18n.getI18NMessage('sts.txt.missing.required.job.entries'));
+	}
+	return saveOk;
 }

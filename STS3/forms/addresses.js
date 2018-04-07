@@ -117,7 +117,7 @@ function onAddressTypeChange(event, oldValue, newValue) {
 	e.result.add(e.columns.address_id);
 	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	e.where.add(e.columns.delete_flag.isNull);
-	e.where.add(e.columns.address_type.eq(address_type.trim()));
+	e.where.add(e.columns.address_type.eq(address_type));
 	e.where.add(e.columns.customer_id.eq(entityId));
 	var E = databaseManager.getFoundSet(e);
 	if (E.getSize() > 0){

@@ -31,7 +31,7 @@ uuid:"0EE55360-F14A-4C9B-A4CE-17776E801148"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"sts_transactions_to_employee.employee_number",
+dataProviderID:"sts_transactions_to_employee_logged.employee_number",
 location:"2002,20",
 name:"employee_number",
 size:"78,20",
@@ -78,7 +78,7 @@ uuid:"2B21966B-703E-4C4F-AB1C-B845DD587521"
 },
 {
 anchors:11,
-dataProviderID:"sts_transactions_to_employee.employee_number",
+dataProviderID:"sts_transactions_to_employee_reversal.employee_number",
 location:"648,20",
 name:"trans_reversal_worker",
 size:"61,20",
@@ -631,7 +631,7 @@ uuid:"CBCD5AD2-F312-45F5-B907-4D83C7C2BC37"
 {
 anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
-dataProviderID:"sts_transactions_to_status_description.status_code",
+dataProviderID:"trans_status",
 location:"108,22",
 name:"status_code",
 size:"78,20",

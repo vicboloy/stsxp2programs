@@ -69,9 +69,9 @@ function onActionAddForm(event){
  * @SuppressWarnings(wrongparameters)
  */
 function onActionDelete(event) {
-	var status = globals.checkJobEmpty(job_id);
-	if (status != ''){
-		scopes.globals.errorDialogMobile(event,'1071',null,status);
+	var empty = globals.checkJobEmpty(job_id);
+	if (!empty){
+		scopes.globals.errorDialogMobile(event,'1071',null,empty);
 		return;
 	}
 	var joe = globals.DIALOGS.showQuestionDialog(
@@ -148,17 +148,18 @@ function onEdit(event,editStatus){
 	editFlag = editStatus;
 	//databaseManager.setAutoSave(!editFlag);
 	var formName = event.getFormName();
-	if (forms[formName].elements.tablessX){
-		forms[formName].elements.tablessX.enabled = !editFlag;
+	var form = forms[formName];
+	if (form.elements.tablessX){
+		form.elements.tablessX.enabled = !editFlag;
 	}
 	controller.readOnly = !editFlag;
 	forms.status_description_table.elements.btn_New.visible = !editFlag;
-	elements.btn_Cancel.visible = editFlag;
-	elements.btn_Save.visible = editFlag;
-	elements.btn_Delete.visible = false;
-	elements.btn_Edit.visible = !editFlag;
+	if (elements.btn_Cancel){elements.btn_Cancel.visible = editFlag;}
+	if (elements.btn_Save){elements.btn_Save.visible = editFlag;}
+	if (elements.btn_Delete){elements.btn_Delete.visible = false;}
+	if (elements.btn_Edit){elements.btn_Edit.visible = !editFlag;}
+	vCustomerNumber = (st2_jobs_to_customers) ? sts_job_to_customer.customer_number : "";
 	if (elements.btn_Recalc){
-		vCustomerNumber = (st2_jobs_to_customers) ? sts_job_to_customer.customer_number : "";
 		elements.btn_Recalc.enabled = editFlag;
 	}
 

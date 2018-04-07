@@ -82,7 +82,7 @@ titleText:"i18n:table.import.status"
 {
 allowNull:true,
 compatibleColumnTypes:"[[8,17,17]]",
-creationOrderIndex:37,
+creationOrderIndex:36,
 dataType:8,
 name:"item_length"
 },
@@ -95,14 +95,8 @@ name:"item_qty"
 },
 {
 allowNull:true,
-creationOrderIndex:35,
-dataType:4,
-name:"item_quantity"
-},
-{
-allowNull:true,
 compatibleColumnTypes:"[[8,17,17]]",
-creationOrderIndex:36,
+creationOrderIndex:35,
 dataType:8,
 name:"item_weight"
 },

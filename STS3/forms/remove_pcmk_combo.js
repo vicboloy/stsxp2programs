@@ -126,3 +126,14 @@ function onShow(firstShow, event) {
 	purgeJob = false;
 	return _super.onShow(firstShow, event)
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"4EEBF9AC-FABE-4544-BB9D-A5D66E3542AB"}
+ */
+function onActionDisablePurge(event) {
+	purgeJob = false;//disable purge.  has issues of deleting wrong idfiles
+}

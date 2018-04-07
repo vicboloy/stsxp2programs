@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/employee",
+items:[
+{foreignColumnName:"employee_id",primaryDataProviderID:"employee_id",typeid:23,uuid:"6618B0F1-E48C-4BA2-B527-2063ED061800"}
+],
+joinType:1,
+name:"sts_transactions_to_employee_logged",
+primaryDataSource:"db:/stsservoy/transactions",
+typeid:22,
+uuid:"9D816483-6747-41D7-A595-65E26ADCC7BA"

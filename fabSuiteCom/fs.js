@@ -165,10 +165,11 @@ function getFSLoadNums(jobNumber){
  * @AllowToRunInFind
  * 
  * @param loadNumber
+ * @param makeNewLoad
  *
  * @properties={typeid:24,uuid:"A3D4FB72-755D-4ABD-B03F-984ABB3F80FF"}
  */
-function checkFSLoad(loadNumber){
+function checkFSLoad(loadNumber,makeNewLoad){
 	if (application.isInDeveloper()){application.output(globals.session.jobNumber)}
 	var loadcheck = '<FabSuiteXMLRequest>\
 		<ValTruck>\
@@ -180,6 +181,9 @@ function checkFSLoad(loadNumber){
 		</ValTruck>\
 		</FabSuiteXMLRequest>';
 //		<ActionIfNotExist>0</ActionIfNotExist>\
+	if (makeNewLoad){
+		loadcheck = loadcheck.replace('Nothing','Add');
+	}
 	
 	/** @type {String} */
 	var fsResp = com.call('FabSuiteXML',loadcheck).toString();

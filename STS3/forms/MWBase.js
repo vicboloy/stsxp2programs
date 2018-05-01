@@ -1584,6 +1584,7 @@ function onActionClickInfoSheet(event){
 		serials_txt += '\n\nJOB '+jobNum+'\n\n';
 		if (!seen[jobNum]){continue}
 		for (var idx2 = 0;idx2 < seen[jobNum].length;idx2++){
+			if (!seen[jobNum][idx2]){continue}
 			serials_txt += '*'+seen[jobNum][idx2].trim()+'*\n\n';
 			//var col = idx2*1+1*1;
 			//if (col/4*1 == Math.floor(col/4)*1){serials_txt += "\n"}

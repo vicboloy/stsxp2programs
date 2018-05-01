@@ -1220,6 +1220,10 @@ var commandPrefixes = {
 	'workerin' : 'W'
 }
 /**
+ * @properties={typeid:35,uuid:"33E6DA1A-7132-4857-A5ED-F5F8A220BED3",variableType:-4}
+ */
+var errorMessageShowing = false;
+/**
  * @AllowToRunInFind
  * 
  * @param assocID
@@ -1530,6 +1534,9 @@ function rfF8Reversal(){
 	forms[formName].elements.workerin.enabled = !flagF8;
 	forms[formName].elements.transShop.transparent = !flagF8;
 	//forms['rf_mobile_view'].genericInput = '';
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
+	//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+	}
 
 }
 /**
@@ -2857,6 +2864,7 @@ function rfErrorShow(message){
 	if (application.isInDeveloper()){application.output('rfErrorShow message '+errorMessageMobile)}
 	var formName = getFormName();
 	mobDisableForm(true);
+	session.errorShow = true;
 	errorMessageMobile = (message.split('\n').length > 1) ? message : textWrap(message,25);
 	forms[formName].elements.errorWindow.enabled = true;
 	forms[formName].elements.errorWindow.visible = true;
@@ -2871,38 +2879,27 @@ function rfErrorShow(message){
  * @properties={typeid:24,uuid:"376C6315-A576-4572-AD5F-9208DDF1E543"}
  */
 function rfErrorHide(event) {
+	session.errorShow = false;
 	var formName = session.errorForm;
 	if (!formName){
 		formName = application.getActiveWindow().controller.getName(); // 20150402 in case this is called outside current window
 	}
 	var elName = session.errorElement;
-	if (application.isInDeveloper()){application.output(' REM Focus fields, stayfield:'+forms.rf_mobile_view.stayField+' focusGain:'+forms.rf_mobile_view.focusGain+' focusLost:'+forms.rf_mobile_view.focusLost+' fieldErroredName:'+forms.rf_mobile_view.fieldErroredName);}
-	if (session.errorElementAlt != null && event.getFormName != 'rf_mobile_view'){
-		elName = session.errorElementAlt;
-	}
-	if (application.isInDeveloper()){application.output(' REM rfErrorHide return and activate field:'+elName);}
+	//if (application.isInDeveloper()){application.output(' REM Focus fields, stayfield:'+forms.rf_mobile_view.stayField+' focusGain:'+forms.rf_mobile_view.focusGain+' focusLost:'+forms.rf_mobile_view.focusLost+' fieldErroredName:'+forms.rf_mobile_view.fieldErroredName);}
 	globals.mobDisableForm(false);
 	forms[formName].elements.errorWindow.visible = false;
 	forms[formName].elements.errorWindow.enabled = false;
 	forms[formName].elements.errorWindow.transparent = true;
-	if (application.isInDeveloper()){application.output('elName is '+elName+', formName: '+formName);}
-	//forms[formName].elements[elName].requestFocus();
-	if (formName == 'rf_mobile_view'){
-		forms[formName].controller.focusField('genericin',false);
-	} else {
+	if (formName != 'rf_mobile_view'){
 		if (forms[formName].elements[elName]){forms[formName].controller.focusField(elName,false);}
-	}
-	//forms[formName].elements[elName].selectAll();
-	//forms[formName].elements[elName].requestFocus();
-	if (session.errorForm != null && session.errorElement != null){
-		//forms[session.errorForm].elements[session.errorElement].requestFocus();
-		//forms.rf_transactions.elements.current.requestFocus();
-		//forms[formName].controller.focusField(elName,true);
-		forms[formName].elements[session.errorElement].requestFocus();
-		forms[formName].elements[session.errorElement].selectAll();
-		session.errorForm = null;
-		session.errorElement = null;
-		session.errorElementAlt = null;
+	} else {
+		//forms['rf_mobile_view'].elements['genericinlabel'].requestFocus();
+		///if (event.getElementName() != 'genericin'){
+			forms['rf_mobile_view'].elements['genericin'].requestFocus();
+		//}
+		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
+		//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+		}
 	}
 	session.errorShow = false;
 }
@@ -3204,7 +3201,7 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	if (statusCheck == null){
 		if (application.isInDeveloper()){application.output('REM change Status event '+event.getElementName());}
 		errorDialogMobile(event,401,'statusin',null);//401: This is not a valid status code
-		onFocusClear(event);
+		//onFocusClear(event);
 		return true;
 	}
 	var permitted = [];
@@ -3254,12 +3251,12 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	}
 	if (forbidden.indexOf(m.statusToProcess[newValue]) != -1){
 		errorDialogMobile(event,404,statusField,null);//404 This Is Not A Valid Status Code For This Screen / Operation.
-		onFocusClear(event);
+		//onFocusClear(event);
 		return true;	
 	}
 	if (permitted.indexOf(m.statusToProcess[newValue]) == -1){
 		errorDialogMobile(event,404,statusField,null);//404 This Is Not A Valid Status Code For This Screen / Operation.
-		onFocusClear(event);
+		//onFocusClear(event);
 		return true;	
 	}
 	mob.statusCode = newValue;
@@ -3276,12 +3273,14 @@ function onDataChangeStatus(oldValue, newValue, event) {
 			forms['rf_mobile_view'].requiredFields[forms['rf_mobile_view'].requiredFields.indexOf('workerin')] = '';
 			//forms['rf_mobile_view'].statusWorker = '';//ticket #278
 		}
-		//if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-		//rfMobileViewNextField(event);
-	}// else {
-	//	rfEmptyNextField(event,'location');
-	//}
+	}
 	forms['rf_mobile_view'].genericInput = '';
+	session.errorShow = false;
+	//forms['rf_mobile_view'].elements['genericinlabel'].requestFocus();
+	//forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+	}
 	return true;
 }
 /**
@@ -3311,6 +3310,9 @@ function onFocusClear(event) {
 	if (session.errorShow){return}//don't show next field if error button active
 	var formName = event.getFormName();
 	if (formName == 'rf_mobile_view'){
+		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+		}
 		forms['rf_mobile_view'].elements['genericin'].requestFocus();
 		return;
 	}
@@ -3477,6 +3479,9 @@ function onDataChangeWorker(oldValue, workers, event){
 	var rev = (formName.search('_rev') != -1);
 	if (workers == "" || workers == null){
 		if (formName == 'rf_mobile_view'){
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+			//	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+			}
 			forms['rf_mobile_view'].elements['genericin'].requestFocus();
 		} else {
 			if (rev){
@@ -3639,11 +3644,13 @@ function rfStatusBegin(){
 	return true;
 }
 /**
+ * @param {JSEvent} event
+ * 
  * Sets mob variable if timed transaction and update required.  Uses representative transaction record 
  * and should be duplicated across all transactions for each idfile on the piecemark barcode.
  * @properties={typeid:24,uuid:"BC626FEA-5799-4339-B3A7-959C87EEA9A7"}
  */
-function rfTimed(){
+function rfTimed(event){
 	/**
 	 * x get transactions for this piecemark
 	 * 		sort by time
@@ -3744,6 +3751,9 @@ function rfTimed(){
 						mob.completeStatus = 1;//process complete
 					}
 						
+					//if (event.getElementName() != 'genericin'){
+					//	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+					//}
 					if (application.isInDeveloper()){application.output('message '+message+' response '+response);}
 					return true;
 				} else {
@@ -4260,7 +4270,7 @@ function textWrap(message, length){
 			break;
 		}
 		//if (index > 33){
-			while (message[index] != " " && index != 0){index--}
+			while (message[index] != " " && message[index] != '-' && index != 0){index--}
 			formatted = formatted + utils.stringLeft(message,index)+'<br>';
 			message = utils.stringRight(message,message.length-index);
 			//index = 0;
@@ -4353,39 +4363,13 @@ function errorDialogMobile(event,errorNum,returnField,additionalMsg){
 	if (application.isInDeveloper()){application.output('  REM enter errorDialogMobile')}
 	var mobile = (session.program != "STS Desktop");
 	if (application.isInDeveloper()){application.output('program '+session.program);}
-	session.errorShow = true;
-	if (application.isInDeveloper()){application.output('returnField of errorDialogMobile '+returnField)}
-	if (returnField){
-		session.errorElement = returnField;
-	}
-	//if (event.getFormName() != application.getActiveWindow().controller.getName()){return} // 20150402 for errors originating from input fields 
+	//if (application.isInDeveloper()){application.output('returnField of errorDialogMobile '+returnField)}
 	if (typeof additionalMsg === 'undefined') {additionalMsg = ''}
-	if (session.errorElement){
-		null;
-	} else if (typeof event === 'string') {
-		/** @type {String} */
-		var resetItem = event;
-		resetItem = resetItem.split('.');
-		session.errorForm = resetItem[0];
-		session.errorElement = resetItem[1];
-	} else {
-		if (event){
-			session.errorForm = event.getFormName();
-			session.errorElement = event.getElementName();
-		}
-	}
-	//if (returnField && returnField){
-	if (session.errorForm != 'rf_mobile_view'){
-		session.errorElementAlt = returnField;
-	}
-	//}
 	errorNum = errorNum+"";
 	errorMessage = i18n.getI18NMessage(errorNum);
 	if (!errorMessage){i18n.getI18NMessage("1048")}
 	errorMessage = errorMessage + " " + additionalMsg;
 	if (mobile){
-		forms.rf_mobile_view.fieldErroredName = session.errorElement;
-		if (application.isInDeveloper()){application.output('session.errorElement is '+session.errorElement)}
 		globals.rfErrorShow(errorMessage);
 	} else {
 		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.error.number', new Array(errorNum)),errorMessage);
@@ -4593,6 +4577,14 @@ function rfProcessBarcode(event){
 		rfWindowLastInfoClear();
 		return true;
 	}
+	if (forms['rf_mobile_view'].requiredFields.indexOf('jobnumberin') != -1){//ticket#281, entry for job number limits barcodes to that job
+		var barcodeJobNum = forms['rf_mobile_view'].vJobNumber;//barcodeJobNumber(event);
+		if (barcodeJobNum != mob.job.number){
+			errorDialogMobile(event,'702',barcodeErrorField,mob.job.number);//702 This id is on another job
+			logger(true,i18n.getI18NMessage('702'));
+			return true;
+		}
+	}
 	var onHold = barcodeOnHold(); //first check 1/29/2015 pp 
 	if (onHold){
 		errorDialogMobile(event,'1050',barcodeErrorField);//1050 One or more of the ID Numbers are on Hold.
@@ -4636,6 +4628,13 @@ function rfProcessBarcode(event){
 						rfGetSpecsBundle();
 						mobBundlePieces = mob.bundle.pieces;
 						mobBundleWeight = mob.bundle.weight;
+						//forms['rf_mobile_view'].elements['genericinlabel'].requestFocus();
+						if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+						//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+						}
+						//if (event.getElementName() != 'genericin'){
+						//	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+						//}
 						return true;
 					}
 					// add to bundle
@@ -4696,7 +4695,7 @@ function rfProcessBarcode(event){
 						errorDialogMobile(event,'951',barcodeErrorField);//405 
 						return true;				
 					}
-					if (rfTimed() && (mob.timedError != "")){
+					if (rfTimed(event) && (mob.timedError != "")){
 						errorDialogMobile(event,mob.timedError,barcodeErrorField);
 						logger(true,'Timed status error'+mob.timedError);
 						return true;
@@ -4720,8 +4719,21 @@ function rfProcessBarcode(event){
 	rfGetTransactionList(mob.idfile); // second pass of same transaction list to include new transaction ticket #139
 	if (forms.rf_mobile_view.elements['drawrevin'].visible){
 		barcodeErrorField = 'drawrevin';
-		forms[formName].elements[barcodeErrorField].requestFocus();
-	}	
+		//if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		//	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+		//}
+		//if (event.getElementName() != 'genericin'){
+		//	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+		//}
+	}
+	if (0 && event.getElementName() != 'genericin'){
+		if (0 && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
+			plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+		} else {
+			//forms['rf_mobile_view'].elements['genericinlabel'].requestFocus();
+			forms['rf_mobile_view'].elements['genericin'].requestFocus();
+		}
+	}
 	return null;
 }
 /**
@@ -4847,9 +4859,6 @@ function onDataChangeLocation(oldValue, newValue, event) {
 	session.userEntry = newValue;
 	var formName = event.getFormName();
 	var elementName = 'locationin';//event.getElementName();
-	//if (forms[formName].entryRequired(elementName)){
-	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	//}
 	/** @type {String} */
 	var statusLocation = forms[formName].statusLocation;
 	if (newValue != null && newValue != ""){
@@ -4867,7 +4876,7 @@ function onDataChangeLocation(oldValue, newValue, event) {
 		}
 	}
 	mob.locationArea = newValue;
-	forms.rf_mobile_view.statusLocation = newValue;
+	forms['rf_mobile_view'].statusLocation = newValue;
 	switch (formName){
 		case 'rf_mobile_view':
 			forms['rf_mobile_view'].genericInput = '';
@@ -4943,7 +4952,7 @@ function onDataChangeJob(oldValue, newJob, event) {
 		return true;
 	}
 	session.userEntry = newJob;
-	if (session.program.search('FabSuite')){
+	if (session.program.search('FabSuite') != -1){
 		application.output('formname '+formName);
 		if (forms['rf_mobile_view']){forms['rf_mobile_view'].jobNumber = newJob}
 		session.jobNumber = newJob;
@@ -5014,8 +5023,16 @@ function onDataChangeJob(oldValue, newJob, event) {
 			if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 			var dataProv = forms['rf_mobile_view'].elements['jobnumberin'].getDataProviderID();
 			forms['rf_mobile_view'][dataProv] = newJob;
+			forms['rf_mobile_view'].currentBundle = '';
 			if (application.isInDeveloper()){application.output('job is '+newJob+' dataprov '+dataProv)}
-			forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			///forms['rf_mobile_view'].elements['genericinlabel'].requestFocus();
+			//if (event.getElementName() != 'genericin'){
+				forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			//}
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+			//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+			}
+
 			//forms.rf_mobile_view.fieldNextTab();
 			//forms.rf_mobile_view.elements[forms[formName].currentField].requestFocus();
 			//forms.rf_mobile_view.onElementFocusLost(event);
@@ -5089,33 +5106,9 @@ function onDataChangeBundle(oldValue, bundle, event) {
 	 */
 	var formName = event.getFormName();//onDataChangeBundle
 	var elementName = event.getElementName();
-	//if (onDataChangeFixEntry(oldValue,bundle,event)){return true;}
-	//if (formName.search('rf_mobile_view') != -1){elementName = 'bundlein'}
-	//if (forms[formName].entryRequired && forms[formName].entryRequired(elementName)){
-	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	//}
-
-	/** if (false && bundle == "L"){
-		//onFocusClear(event);
-		if (forms[formName].currentBundle){forms[formName].currentBundle = ''}
-		rfShowBundlesNames(session.jobId);
-		var msg = '';
-		var currBundle = mob.bundlesJobs[session.jobId]
-		if (currBundle){
-			for (var index = 0;index < currBundle.length;index++){
-				msg += currBundle[index]+' ';
-			}
-		}
-		session.errorElementAlt = event.getElementName();//for error return
-		rfErrorShow(msg);
-		return true;
-	} */
 
 	session.userEntry = bundle;
 	if (!bundle || !barcodeIsBundle(bundle)){
-		if (formName == 'rf_mobile_view'){
-			//forms[formName].elements['genericin'].requestFocus();
-		}
 		scopes.globals.rfCreateBundle(event);
 		return;
 	} else {
@@ -5127,16 +5120,18 @@ function onDataChangeBundle(oldValue, bundle, event) {
 			mob.bundle.Id = "";
 			// 730 This Bundle Number Does Not Belong To This Job.
 			errorDialogMobile(event,730,'bundlein',null);
-			return true;
+			return;
 		} else {
 			mob.bundle.Id = bundle;
 		}
 	}
+	session.errorShow = false;
 	if (formName == 'rf_mobile_view'){
 		forms[formName].currentBundle = mob.bundle.Id;
 	}
 	dataChangedBundle(event,formName);
-	return true;
+	session.errorShow = false;
+	return;
 }
 /**
  * @AllowToRunInFind
@@ -5614,7 +5609,11 @@ function rfF8BundleRemoveFrom(){
 			forms[formName].elements.transShop.text = f8ReversalText;
 		}
 	}
-	
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+	}
+
+	//forms['rf_mobile_view'].elements['genericin'].requestFocus();
 }
 /**
  * @properties={typeid:24,uuid:"2A4C51DF-ADA9-41D8-A90C-58CD628A7D94"}
@@ -5641,6 +5640,7 @@ function rfF6BundlePrintList(){
  * @properties={typeid:24,uuid:"F581F607-96B6-4354-8A36-582E90AE4659"}
  */
 function onDataChangeFixEntry(oldValue,newValue,event){
+	//xif (1==1){return}//disabled fixentry on entries xxx
 	if (newValue == null || newValue == ""){return false}
 	var formName = event.getFormName().trim();
 	var elemName = event.getElementName();
@@ -5691,7 +5691,6 @@ function rfGetSpecsBundle(){
 		if (!pcmkSeen[rec.piecemark_id]){
 			pcmkSeen[rec.piecemark_id] = pcmkWght;
 		}
-		//var pcmkWght = (mob.job.metric == 0) ? rec.sts_idfile_to_pcmks.item_weight : rec.sts_idfile_to_pcmks.item_weight_lbs;
 		null;
 		weight = weight*1+rec.summed_quantity*pcmkWght;
 	}
@@ -5743,7 +5742,13 @@ function onDataChangeRevision(oldValue, newValue, event) {
 	mob.currentRevision = newValue;
 	///var formName = event.getFormName();
 	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	//if (event.getElementName() != 'genericin'){
+		forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	//}
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+	}
+
 	//rfEmptyNextField(event,'currentidin');
 	return true
 }
@@ -5778,12 +5783,6 @@ function onDataChangeLoad(oldValue, newValue, event) {
 	var baseForm = getBaseFormName(null);
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	var elementName = event.getElementName();
-	var fsLoadNum = scopes.fs.checkFSLoad(newValue);
-	if (fsLoadNum != null){
-		errorDialogMobile(event,1024,'genericin',fsLoadNum);
-		return true;
-	}
-
 	session.jobIdBack = session.jobId;
 	if (forms[formName].vJobRec && forms[formName].vJobRec.job_id){
 		session.jobId = forms[formName].vJobRec.job_id;
@@ -5794,10 +5793,11 @@ function onDataChangeLoad(oldValue, newValue, event) {
 		session.userEntry = newValue;
 		session.loadNumber = newValue;
 		mobLoadNumber = newValue;
+		loadNumber = newValue;
 		if (application.isInDeveloper() && newValue == "ALL"){
 		}
 	} else {
-		onFocusClear(event);
+		//onFocusClear(event);
 		return true; // resolves ticket #160, check action within STS3
 	}
 	mobLoadWeight = 0;
@@ -5815,7 +5815,13 @@ function onDataChangeLoad(oldValue, newValue, event) {
 			break;
 		default:
 			if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-			forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			//if (event.getElementName() != 'genericin'){
+				forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			//}
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
+			//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+				//plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+			}
 	}
 	return true;
 }
@@ -5908,9 +5914,9 @@ function xmlSuccess(xml){
  * @properties={typeid:24,uuid:"B9F40AA1-D225-4798-B459-69464D66EC48"}
  */
 function loadCreateValid(){
-	session.jobLoads.newRecord();
+	var idx = session.jobLoads.newRecord();
 	/** @type {JSFoundSet<db:/stsservoy/loads>} */
-	var rec = session.jobLoads.getRecord(1);
+	var rec = session.jobLoads.getRecord(idx);
 	rec.job_id = session.jobId;
 	rec.tenant_uuid = session.tenant_uuid;
 	rec.edit_date = new Date();
@@ -5933,12 +5939,10 @@ function loadGetJobDataset(jobId){
 	q.result.add(q.columns.load_id);
 	q.result.add(q.columns.load_number);
 	q.result.add(q.columns.interim_load);
-	q.where.add(
-		q.and
-			.add(q.columns.delete_flag.isNull)
-			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(q.columns.job_id.eq(jobId))
-		);
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(jobId));
+	q.sort.add(q.columns.load_number.desc);
 	var resultQ = databaseManager.getFoundSet(q);
 	return resultQ;
 }
@@ -5948,14 +5952,17 @@ function loadGetJobDataset(jobId){
  * @properties={typeid:24,uuid:"D58305BB-65A5-408E-8A59-65F09D000020"}
  */
 function loadNumberCheck(loadNumber){
+	/** @type {JSFoundSet<db:/stsservoy/loads>} */
 	session.jobLoads = loadGetJobDataset(session.jobId);
 	session.loadId = null;
-	var loadRecs = session.jobLoads; // shorter name for session.jobLoads
-	for (var index = 1;index <= loadRecs.getSize();index++){
-		/** @type {JSFoundSet<db:/stsservoy/loads>} */
-		var rec = loadRecs.getRecord(index);
+	//var loadRecs = session.jobLoads; // shorter name for session.jobLoads
+	
+	/** @type {JSFoundSet<db:/stsservoy/loads>} */
+	var rec = null; var index = 1;
+	while (rec = session.jobLoads.getRecord(index++)){
 		if (rec.load_number*1 == loadNumber*1){
 			session.loadId = rec.load_id;
+			session.loadNextNumber = rec.load_number;
 			break;
 		}
 		if (session.loadNextNumber == ""){session.loadNextNumber = 0}
@@ -5984,11 +5991,20 @@ function loadNumberCheck(loadNumber){
 				//onFocusClear(event);
 				return false;
 			} else {
+				if (session.loadNextNumber){
+					var fsLoadNum = scopes.fs.checkFSLoad(session.loadNextNumber,true);
+					if (fsLoadNum != null){
+						errorDialogMobile(event,1024,'genericin',session.loadNextNumber);
+						return true;
+					}
+				}
 				loadCreateValid();
 			}
 		}
 	}
 	mob.load.currentId = session.loadId;
+	forms['rf_mobile_view'].loadNumber = session.loadNextNumber;
+	forms['rf_mobile_view'].loadNumber = forms['rf_mobile_view'].loadNumber.split('.')[0];
 	return true;
 }
 /**
@@ -6113,6 +6129,7 @@ function rfLocalStorage(storedValue,itemName){
  * @properties={typeid:24,uuid:"FF4938C6-CE14-47A9-9AF6-582042030578"}
  */
 function rfLocalStorageLength(){
+	if (application.isInDeveloper()){verifySerialCodes()}
 	//plugins.WebClientUtils.executeClientSideJS('localStorage.fred="dog";');
 	//plugins.WebClientUtils.executeClientSideJS('alert("ls length "+localStorage.length);');
 	//plugins.WebClientUtils.executeClientSideJS('alert(localStorage.browser);');
@@ -6742,7 +6759,12 @@ function onDataChangeHeat(oldValue, newValue, event) {
 	//}
 	forms['rf_mobile_view'].heat = newValue;
 	mob.heat = newValue;
-	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+	}
+	//if (event.getElementName() != 'genericin'){
+		forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	//}
 
 	//rfGetJobIdfileIds();
 	/** @type {QBSelect<db:/stsservoy/heats>} * /
@@ -6823,7 +6845,9 @@ function onDataChangeGrade(oldValue, newValue, event) {
 	var formName = event.getFormName();
 	forms['rf_mobile_view'].grade = newValue;
 	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	//if (event.getElementName() != 'genericin'){
+		forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	//}
 	return true;
 }
 
@@ -7067,8 +7091,10 @@ function onDataChangeSequence(oldValue, newValue, event) {
 		}
 		default:
 	}
-	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
-	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	//if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
+	//xif (event.getElementName() != 'genericin'){
+		forms['rf_mobile_view'].elements['genericin'].requestFocus();
+	//x}
 	return true
 }
 /**
@@ -7355,6 +7381,8 @@ function getCustomersByJob(){
 			var rec = J.getRecord(index);
 			custIds.push(rec.customer_id);
 			globals.session.jobId = rec.job_id;
+			mob.job.Id = rec.job_id;//set jobid ticket#281
+			mob.job.number = rec.job_number;//set jobnumber ticket#281
 			index++;
 		}
 		/** @type {QBSelect<db:/stsservoy/customers>} */
@@ -9277,18 +9305,20 @@ function rfCreateBundle(event){
 	bundleCreateValid();
 	var formName = event.getFormName();
 	var elementName = event.getElementName();
-	if (forms[formName].entryRequired(elementName)){
-		if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
-	}
+	//if (forms[formName].entryRequired(elementName)){
+		//if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
+	//}
 	//set here iff MC, use single-page dialog
 	var message = i18n.getI18NMessage('sts.txt.use.new.bundle.number')+
 			session.bundlePrefix+session.bundleSuffix;
-	forms.rf_mobile_view.elements.tablessQuery.visible = true;
-	if (forms.rf_mobile_view.elements.tablessQuery.visible){
-		forms.mobile_query.setTitleText(i18n.getI18NMessage('sts.txt.use.new.bundle.number'),session.bundlePrefix+session.bundleSuffix);
-		forms.mobile_query.setButtonTextLt(i18n.getI18NMessage('sts.btn.no'));
-		forms.mobile_query.setButtonTextRt(i18n.getI18NMessage('sts.btn.yes'));
-		forms.mobile_query.elements.btn_respond_lt.requestFocus();
+	forms['rf_mobile_view'].elements.tablessQuery.visible = true;
+	if (forms['rf_mobile_view'].elements.tablessQuery.visible){
+		forms['mobile_query'].setTitleText(i18n.getI18NMessage('sts.txt.use.new.bundle.number'),session.bundlePrefix+session.bundleSuffix);
+		forms['mobile_query'].setButtonTextLt(i18n.getI18NMessage('sts.btn.no'));
+		forms['mobile_query'].setButtonTextRt(i18n.getI18NMessage('sts.btn.yes'));
+		forms['mobile_query'].elements.btn_respond_lt.requestFocus();
+
+		session.errorShow = true;//xxx
 		//forms.mobile_query.controller.focusField('btn_respond_lt',false);
 		// now must use buttons to query a global variable and set/unset visibility of mobile_query form
 		return;
@@ -9299,14 +9329,23 @@ function rfCreateBundle(event){
 		i18n.getI18NMessage('sts.btn.no'),
 		i18n.getI18NMessage('sts.btn.yes'));
 		// 'New Bundle Number?', message, 'NO', 'yes');
+	session.errorShow = false;
 	if (response == i18n.getI18NMessage('sts.btn.no')){
 		mob.bundle.Id = "";
-		onFocusClear(event);
-		return true;
+		session.errorShow = false;
+		//if (event.getElementName() != 'genericin'){
+		//	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+		//}
+		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+			plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+		}
+
+		return;
 	}
+	//session.errorShow = false;
 	mob.bundle.Id = session.bundlePrefix+session.bundleSuffix;
 	forms.rf_mobile_view.currentBundle = mob.bundle.Id;
-	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
+	//if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 	dataChangedBundle(formName);
 
 	//forms.rf_mobile_view.fieldNextTab();
@@ -9331,6 +9370,10 @@ function rfRecordUp(){
 			var field = forms.rf_mobile_view.tabFieldOrder[0];
 			if (application.isInDeveloper()){application.output('REM Bundle reached '+field);}
 			forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+			//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+			}
+
 			//forms.rf_mobile_view.controller.focusField('bundlein',false)
 		}
 		return;
@@ -9431,7 +9474,7 @@ function rfQueryClose(event,btnText){
  */
 function dataChangedBundle(event,formName){
 	rfGetSpecsBundle();
-	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}		
+	//if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}		
 	if (formName == 'rf_mobile_view'){
 		forms['rf_mobile_view'].elements['genericin'].requestFocus();
 	} else {
@@ -9482,7 +9525,7 @@ function getCustomerId(custName){
  * @properties={typeid:24,uuid:"F8ADBEB1-1289-45F4-AE3B-3E68F35340C2"}
  */
 function onActionGeneric(event) {
-	//
+//x	forms['rf_mobile_view'].elements['genericin'].requestFocus();
 }
 
 /**
@@ -9506,7 +9549,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		application.output('Entered code:'+action+' data: '+data);
 		//return true;
 	}
-	var targView = forms.rf_mobile_view;
+	var targView = forms['rf_mobile_view'];
 	//alternatively detect non-prefixed entries
 	//determine prefix for genericin entry
 	var anticipEntry = '';
@@ -9514,12 +9557,17 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		if (forms['rf_mobile_view'].shownFields.indexOf(fld) == -1){continue}
 		if (commandPrefixes[fld] == action){
 			if (action == 'B' && data.search('ND') == 0){data = 'B'+data}
+			if (action == 'P'){
+				if (checkValidSerial(data)){
+					anticipEntry = 'P';
+				}
+			}
 			anticipEntry = fld;
 			break;
 		}
 	}
 	if (application.isInDeveloper()){application.output('field '+anticipEntry+' prefix '+action)}
-	if (anticipEntry == '' && newValue.length == scopes.prefs.barcodeLength){//task #214 accept bar code without prefix I(D) Number
+	if (anticipEntry == '' && newValue.length >= 10){//task #214 accept bar code without prefix I(D) Number
 		/**
 		 * action doesn't apply to other fields
 		 */
@@ -9551,23 +9599,47 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			data = newValue;
 		}
 	}
+	session.errorShow = false;//set genericin as the focus unless there is an error message
 	switch (action.toUpperCase()){
 		//B or b - (B)undle
 		case 'B':
-			if (forms['rf_mobile_view'].shownFields.indexOf('bundlein') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('bundlein') == -1){
+				errorDialogMobile(event,1229,'genericin','Bundle');
+				break;
+			}
 			//if (data.search('BND') != 0 || data != ''){break}
 			//if (!data && forms['rf_mobile_view'].elements['bundlein']){forms['rf_mobile_view'].currentBundle = '';break;}
 			onDataChangeBundle(oldValue,data,event);
+			session.errorShow = false;
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+			//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+			}
+			//if (event.getElementName() != 'genericin'){
+			//	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			//}
 			break;
 		//C or c - Lo(c)ation
 		case 'C':
-			if (forms['rf_mobile_view'].shownFields.indexOf('locationin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('locationin') == -1){
+				errorDialogMobile(event,1229,'genericin','Location');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['locationin']){forms['rf_mobile_view'].statusLocation = '';break;}
 			onDataChangeLocation(oldValue,data,event);
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+				forms['rf_mobile_view'].elements['genericin'].enabled = true;
+				//plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+			}
+			//if (event.getElementName() != 'genericin'){
+			//	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			//}
 			break;
 		//D or d - I(D) Number - complete serialization - typical ID nomenclature
 		case 'D':
-			if (forms['rf_mobile_view'].shownFields.indexOf('currentidin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('currentidin') == -1){
+				errorDialogMobile(event,1229,'genericin','Serial Number');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['currentidin']){break;}
 			if (dataEntryComplete(event)){
 				onDataChangeBarcode2(oldValue,data,event);
@@ -9575,46 +9647,75 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			break;
 		//G or g = (G)rade
 		case 'G':
-			if (forms['rf_mobile_view'].shownFields.indexOf('gradein') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('gradein') == -1){
+				errorDialogMobile(event,1229,'genericin','Grade');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['gradein']){forms['rf_mobile_view'].grade = '';break;}
 			onDataChangeGrade(oldValue,data,event);
+			//if (event.getElementName() != 'genericin'){
+			//	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			//}
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+			//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+			}
+
 			break;
 		//H or h - (H)eat
 		case 'H'://(H)eat
-			if (forms['rf_mobile_view'].shownFields.indexOf('heatin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('heatin') == -1){
+				errorDialogMobile(event,1229,'genericin','Heat');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['heatin']){forms['rf_mobile_view'].heat = '';break;}
 			onDataChangeHeat(oldValue,data,event);
 			break;
 		//J or j - (J)ob Numbers
 		case 'J':
-			if (forms['rf_mobile_view'].shownFields.indexOf('jobnumberin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('jobnumberin') == -1){
+				errorDialogMobile(event,1229,'genericin','Job Number');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['jobnumberin']){forms['rf_mobile_view'].jobNumber = '';break;}
 			onDataChangeJob(oldValue,data,event);
 			break;
 
 		//L or l - (L)oad Numbers
 		case 'L':
-			if (forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') == -1){break}
-			if (!data && forms['rf_mobile_view'].elements['loadnumberin']){forms['rf_mobile_view'].loadNumber = '';break;}
+			if (forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') == -1){
+				errorDialogMobile(event,1229,'genericin','Load');
+				break;
+			}
+			//if (!data && forms['rf_mobile_view'].elements['loadnumberin']){forms['rf_mobile_view'].loadNumber = '';break;}
 			onDataChangeLoad(oldValue,data,event);
 			break;
 		//M or m - piece(m)ark
 		case 'M':
-			if (forms['rf_mobile_view'].shownFields.indexOf('piecemarkin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('piecemarkin') == -1){
+				errorDialogMobile(event,1229,'genericin','Piecemark');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['piecemarkin']){forms['rf_mobile_view'].piecemark = '';break;}
 			onDataChangePiecemark(oldValue,data,event);
 			break;
 		
 		//P or p - (P)art Serial Number [Ex. P0000000001 thru PZZZZZZZZZZ then it is P0000000001 again] - starting point for barcoding w/FS Built In
 		case 'P':
-			if (forms['rf_mobile_view'].shownFields.indexOf('partnumberin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('partnumberin') == -1){
+				errorDialogMobile(event,1229,'genericin','Part Serial');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['partnumberin']){forms['rf_mobile_view'].partnumber = '';break;}
+			//return true;
 			//onDataChangeBarcode2(oldValue,data,event);
 			break;
 
 		//Q or q - (Q)uantity
 		case 'Q':
-			if (forms['rf_mobile_view'].shownFields.indexOf('quantityin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('quantityin') == -1){
+				errorDialogMobile(event,1229,'genericin','Quantity');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['quantityin']){forms['rf_mobile_view'].quantity = '';break;}
 			//onDataChangeQuantity(oldValue,newValue,event);
 			break;
@@ -9626,38 +9727,68 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 
 		//S or s - (S)tatus/Work Station
 		case 'S':
-			if (forms['rf_mobile_view'].shownFields.indexOf('statusin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('statusin') == -1){
+				errorDialogMobile(event,1229,'genericin','Status');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['statusin']){forms['rf_mobile_view'].statusCode = '';break;}
 			onDataChangeStatus(oldValue,data,event);
 			break;
 
 		//U or u - Seq(u)ence Number 
 		case 'U':
-			if (forms['rf_mobile_view'].shownFields.indexOf('seqnumberin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('seqnumberin') == -1){
+				errorDialogMobile(event,1229,'genericin','Sequence');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['seqnumberin']){forms['rf_mobile_view'].sequence = '';break;}
 			onDataChangeSequence(oldValue,data,event);
 			break;
 		//V or v - Re(v)ision
 		case 'V':
-			if (forms['rf_mobile_view'].shownFields.indexOf('drawrevin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('drawrevin') == -1){
+				errorDialogMobile(event,1229,'genericin','Revision');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['drawrevin']){forms['rf_mobile_view'].drawingRevision = '';break;}
 			onDataChangeRevision(oldValue,data,event);
 			break;
 			//E or e - (E)mployee/Worker Number
 		case 'W':
-			if (forms['rf_mobile_view'].shownFields.indexOf('workerin') == -1){break}
+			if (forms['rf_mobile_view'].shownFields.indexOf('workerin') == -1){
+				errorDialogMobile(event,1229,'genericin','Worker');
+				break;
+			}
 			if (!data && forms['rf_mobile_view'].elements['workerin']){forms['rf_mobile_view'].statusWorker = '';break;}
 			onDataChangeWorker(oldValue,data,event)
 			break;
 		default:
+			errorDialogMobile(event,1255,'genericin',newValue);
 	}
 	if (forms['rf_mobile_view']){forms['rf_mobile_view'].lastAction = action}
 	forms['rf_mobile_view'].genericInput = '';
-	if (forms['rf_mobile_view'] &&
+		if (forms['rf_mobile_view'] &&
 			(forms['rf_mobile_view'].elements['errorWindow'] && !forms['rf_mobile_view'].elements['errorWindow'].visible) &&
 			(forms['mobile_query'].elements['queryText'] && application.getActiveWindow().controller.getName() != forms.mobile_query.controller.getName())){
 		forms['rf_mobile_view'].controller.focusField('genericin',false);
 	}
+	if (0 && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
+		forms['rf_mobile_view'].elements['genericin'].enabled = true;
+		plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+		//plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+	}
+	if (0 && forms['rf_mobile_view'] && !session.errorShow){
+			//(forms['rf_mobile_view'].elements['errorWindow'] && !forms['rf_mobile_view'].elements['errorWindow'].visible) &&
+			//(forms['mobile_query'].elements['queryText'] && forms['mobile_query'].elements['queryText'].visible && application.getActiveWindow().controller.getName() != forms.mobile_query.controller.getName())){
+		if (0 && event.getElementName() != 'genericin'){
+			forms['rf_mobile_view'].elements['genericinlabel'].requestFocus();
+			forms['rf_mobile_view'].elements['genericin'].requestFocus();
+		}
+		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
+			plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
+		}
+	}
+	session.errorShow = false;
 	return true;
 }
 /**
@@ -9860,6 +9991,9 @@ function getJobDataFromID(event,barId,clearOrphans){
 	u.on.add(u.columns.job_id.eq(t.columns.job_id));
 	q.root.result.add(u.columns.job_id);
 	q.root.groupBy.add(u.columns.job_id);
+	/** @type {QBJoin<db:/stsservoy/associations>} */
+	var ja = q.joins.add('db:/stsservoy/associations');
+	ja.on.add(ja.columns.association_uuid.eq(u.columns.association_id));
 	var Q4 = databaseManager.getDataSetByQuery(q,-1);
 	Q4.rowIndex = 1;
 	if (!Q4.job_id){
@@ -9909,17 +10043,19 @@ function getJobDataFromID(event,barId,clearOrphans){
 	q.root.result.add(u.columns.association_id);
 	q.root.result.add(u.columns.job_id);
 	q.root.result.add(u.columns.job_number);
-	q.root.result.add(u.columns.job_plant);
+	q.root.result.add(ja.columns.association_name);
 	q.root.groupBy.add(u.columns.association_id);
 	q.root.groupBy.add(u.columns.job_id);
 	q.root.groupBy.add(u.columns.job_number);
-	q.root.groupBy.add(u.columns.job_plant);
+	q.root.groupBy.add(ja.columns.association_name);
  	var Q = databaseManager.getDataSetByQuery(q,1);
 	if (Q.getMaxRowIndex() > 0){
 		Q.rowIndex = 1;
-		mob.job.Id = Q.job_id;
-		mob.job.number = Q.job_number;//Q.association_id;
-		mob.station = Q.job_plant;
+		//if (forms['rf_mobile_view'].requiredFields.indexOf('jobnumberin') == -1){//ticket#281, entry for job number limits barcodes to that job
+		mob.job.Id = Q.job_id;//determin jobid ticket#281 for bundle
+		mob.job.number = Q.job_number;//Q.association_id;//determine jobnumber ticket#281 for bundle changed
+		//}
+		mob.station = Q.association_name;
 		mobIdSerialId = barId;
 	}
 	return false;
@@ -10088,4 +10224,102 @@ function rfCheckRequiredWorkerStatus(status){
 		workerRqd = (rec.emp_number_required != null);
 	}
 	return workerRqd;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"2B3F8512-F7F1-433B-BE4B-480ABD10DFEF"}
+ */
+function barcodeJobNumber(event){
+	var jobId = session.jobId;
+	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
+	var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
+	q.result.add(q.columns.id_serial_number);
+	q.where.add(q.columns.id_serial_number.eq(mob.barcode));
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var s = q.joins.add('db:/stsservoy/idfiles');
+	s.on.add(q.columns.id_serial_number_id.eq(s.columns.id_serial_number_id));
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var t = s.joins.add('db:/stsservoy/piecemarks');
+	t.on.add(s.columns.piecemark_id.eq(t.columns.piecemark_id));
+	/** @type {QBJoin<db:/stsservoy/sheets>} */
+	var u = t.joins.add('db:/stsservoy/sheets');
+	u.on.add(t.columns.sheet_id.eq(u.columns.sheet_id));
+	/** @type {QBJoin<db:/stsservoy/jobs>} */
+	var v = u.joins.add('db:/stsservoy/jobs');
+	v.on.add(u.columns.job_id.eq(v.columns.job_id));
+	//v.root.where.add(v.columns.job_id.eq(jobId));
+	q.result.add(v.columns.job_id);
+	q.result.add(v.columns.job_number);
+	var Q = databaseManager.getDataSetByQuery(q,-1);Q.rowIndex = 1;
+	if (application.isInDeveloper()){application.output(Q.getMaxRowIndex()+' rec: '+Q.job_id+ ','+Q.job_number+' target job number: '+jobId+ ' jobNum: '+mob.job.Id+ ' '+mob.job.number)}
+	return (Q.job_number);
+}
+/**
+ * @param {String} serialNumber
+ *
+ * @properties={typeid:24,uuid:"A5D693FE-6C3C-4E5C-AE0B-F990E29B62DA"}
+ */
+function isPartSerial(serialNumber){
+	var prefix = serialNumber.substr(0,1);
+	if (prefix == 'P'){
+		if (serialNumber.length != 11){return false}//A part serial is ten characters from ZZZ..000.  A 'P' is a Part Serial Prefix
+	}
+}
+/**
+ * @param {String} inSerialization
+ * 
+ * 0000000001
+ * 0000000009
+ * Z000000000
+ * Z000000001
+ * P000000053
+ * ZM00000004
+ *
+ * @properties={typeid:24,uuid:"1D91494B-9B80-4DC3-B1D1-FC4685B13407"}
+ */
+function checkValidSerial(inSerialization){
+	if (application.isInDeveloper()){application.output('\n')}
+	var regexp = new RegExp('^(Z*[A-Z]{0,1})([0-9]+)$');
+	var results = inSerialization.match(regexp);
+	if (application.isInDeveloper()){application.output('Serial In: '+inSerialization+' length: '+inSerialization.length)}
+	if (!results){
+		if (application.isInDeveloper()){application.output('Invalid Serial Number')}
+		return false;
+	}
+	if (application.isInDeveloper()){application.output('\t '+results)}	
+	return true;
+	
+	
+}
+/**
+ * @properties={typeid:24,uuid:"7FC4CDA3-959B-49CC-94D3-C1D37625C0D9"}
+ */
+function verifySerialCodes(){
+	checkValidSerial('0000000001');
+	checkValidSerial('0000000009');
+	checkValidSerial('Z000000000');
+	checkValidSerial('Z000000001');
+	checkValidSerial('P000000053');
+	checkValidSerial('ZM00000004');
+	checkValidSerial('ZZZZZZA004');
+	checkValidSerial('ZZZZZPA004');
+	checkValidSerial('Z010000004');
+	checkValidSerial('ZA00009004');
+	checkValidSerial('3M00000001');
+	checkValidSerial('0000B17N00');
+	checkValidSerial('ZZZA000959');
+}
+/**
+ * @properties={typeid:24,uuid:"0E9E3AFB-C61A-4E22-AFCD-66C9D7E4F2FE"}
+ */
+function focusFirst(){
+	forms['rf_mobile_view'].elements['genericin'].requestFocus();
+}
+/**
+ * @properties={typeid:24,uuid:"9B0243C6-A3C8-4B96-BB3A-5B2ABA62C34E"}
+ */
+function myFocusCallbackMethod(){
+	application.output('returned from click');
 }

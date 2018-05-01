@@ -1461,8 +1461,26 @@ function onActionClickPerformanceImport(event) {
  */
 function onActionClickInfoSheet(event){
 	// jobNumbers J, Status Codes S, Id serial Numbers D, Users W, Bundle Numbers on Job Number B, 
-	var fileName = scopes.prefs.temppath+'\\infoSheet.txt';
+	// jobNumbers J, Status Codes S, Id serial Numbers D, Users W, Bundle Numbers on Job Number B,
+	var temp = scopes.prefs.temppath;
+	var tempDir = plugins.file.convertToJSFile(temp);	
+	if (!tempDir.exists()){
+		if (application.isInDeveloper()){application.output('temp dir not found')}
+		temp = '\\windows\\temp';
+		var drives = ['c','d','e','f','g'];
+		var tempAlt = drives[dIndex]+':'+temp;
+		var dIndex = 0;
+		for (var index = 0;index < drives.length;index++){
+			var tempDir = plugins.file.convertToJSFile(tempAlt);
+			tempAlt = drives[dIndex]+':'+temp;
+			tempDir = plugins.file.convertToJSFile(tempAlt);
+		}
+	} else {
+		tempAlt = temp;
+	}
+	var fileName = tempAlt+'\\infoSheet.txt';
 	var file = plugins.file.createFile(fileName);
+	if (application.isInDeveloper()){application.output('temp file '+fileName)}
 	var created = file.createNewFile();
 	if (false && !created){// unabled to create file
 		if (application.isInDeveloper()){application.output('failed to create file '+fileName)}

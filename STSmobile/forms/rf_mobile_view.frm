@@ -634,6 +634,7 @@ uuid:"54C405BC-631C-44A8-80D3-81B1CB2C1B42",
 visible:false
 },
 {
+dataProviderID:"scopes.globals.viewport2",
 extendsID:"5C78A937-DF8C-4362-834C-C79AA2AE8F40",
 formIndex:0,
 typeid:4,

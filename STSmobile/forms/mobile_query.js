@@ -35,7 +35,7 @@ var approveValue = '';
  * @properties={typeid:24,uuid:"F69C42D1-B570-424F-8C77-9B1488B26343"}
  */
 function setTitleText(message,approvedValue){
-	application.output('approved value '+approvedValue)
+	if (application.isInDeveloper()){application.output('approved value '+approvedValue)}
 	approveValue = approvedValue;
 	dialogText = scopes.globals.textWrap(message,30)+'<br><br><center>'+approvedValue;
 }
@@ -47,6 +47,7 @@ function setTitleText(message,approvedValue){
 function setButtonTextLt(message){
 	//dialogBtnLt = message;
 	elements.btn_respond_lt.text = message;
+	elements.btn_respond_lt.enabled = true;
 }
 /**
  * @param message
@@ -55,6 +56,7 @@ function setButtonTextLt(message){
  */
 function setButtonTextRt(message){
 	elements.btn_respond_rt.text = message;
+	elements.btn_respond_rt.enabled = true;
 }
 /**
  * @param {JSEvent} event

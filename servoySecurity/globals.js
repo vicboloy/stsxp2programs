@@ -1,9 +1,33 @@
-/**
+ /**
+  * 
  * @type {String}
  *
- * @properties={typeid:35,uuid:"E6ACD79F-9580-4503-8227-20DA820D96D5"}
+ * @properties={typeid:35,uuid:"1F71ACC2-81F7-4451-A230-D3C6B56E9770"}
  */
 var viewport = '<html><head></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
+/**
+ * @properties={typeid:35,uuid:"37FC297E-D636-4141-AD24-87FC6C6B87AB",variableType:-4}
+ */
+var viewport2 = new XML(<html>
+<head>
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>
+<script>
+ <![CDATA[
+ function doCallback(genericId) {
+	 //alert("Y");
+	 var textbox = document.getElementById("id4c");
+	 textbox.blur();
+	 alert("T "+textbox);
+	 event.preventDefault();	 
+	 setTimeout(function () {textbox.scrollIntoView();textbox.focus();},5500);
+ }
+ ]]>
+ </script> 
+</head>
+<body>
+ <button id="refocusEntry" onclick="javascript:globals.myFocusCallbackMethod()" style="visibility: hidden"></button>
+</body>
+</html>).toXMLString().replace(']]>', '').replace('<![CDATA[', '');
 
 /**
  * @properties={typeid:35,uuid:"CB70B0E1-B12B-430A-B70D-F6D112AC04B6",variableType:-4}

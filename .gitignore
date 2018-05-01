@@ -8,3 +8,9 @@
 *.pdf
 *.tmp
 .gitignore~
+.buildpath
+.project
+rootmetadata.obj
+solution_settings.obj
+.gitignore
+

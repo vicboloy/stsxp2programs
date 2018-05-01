@@ -360,6 +360,7 @@ function onShowForm(firstShow,event) {
 	//if (firstShow){
 	//	application.output(' REM rf_mobile_view show focus');
 	forms[formName].elements['genericin'].requestFocus();
+	plugins.WebClientUtils.executeClientSideJS('doCallback("genericin");');
 	//}
 }
 /**
@@ -373,6 +374,11 @@ function onShowForm(firstShow,event) {
  */
 function onElementFocusLost(event) {
 	if (elements.errorWindow.visible){return}
+	var elementId = plugins.WebClientUtils.getElementMarkupId(elements.genericin);
+	//var extraJS = 'event.preventDefault();timeout(function () {$'+elementId+'.focus();}, 500);';
+	//var extraJS = 'alert("startJS");event.preventDefault();timeout(function () {document.getElementById("'+elementId+'").focus();}, 500);alert("this is id:'+elementId+'");';
+	//var extraJS = 'alert("startJS");';
+	//plugins.WebClientUtils.executeClientSideJS(extraJS)
 	elements['genericin'].requestFocus();
 }
 
@@ -566,4 +572,17 @@ function onFocusGrant(event) {
 function onFocusLost(event) {
 	globals.spurious = 1;
 	genericInput = '';
+}
+
+/**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D49305CF-0F07-42B3-9F66-123604D7DD22"}
+ */
+function onLoad(event) {
+	application.output('viewport globals '+globals.viewport2+' -end-');
+ // globals.viewPort2 = globals.viewPort2.toXMLString().replace(']]>','').replace('<![CDATA[','');
+
 }

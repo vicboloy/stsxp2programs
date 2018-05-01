@@ -148,6 +148,6 @@ navigatorID:"-1",
 onShowMethodID:"2148D11C-E788-45DB-A736-BFF1D21C1ABA",
 showInMenu:true,
 size:"239,320",
-styleName:"sts_one",
+styleName:"sts_mc",
 typeid:3,
 uuid:"72E0B299-FCCD-4C42-8A48-15F726CE17F1"

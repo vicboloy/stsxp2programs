@@ -1,5 +1,8 @@
 css-profile//styles/servoyCommonsExampleStyle.css=com.servoy.eclipse.core.cssprofile.servoy
 css-profile//styles/servoySecurityExample.css=com.servoy.eclipse.core.cssprofile.servoy
+css-profile//styles/servoy_plugins_de.css=com.servoy.eclipse.core.cssprofile.servoy
+css-profile//styles/sts_mc.css=com.servoy.eclipse.core.cssprofile.servoy
 css-profile//styles/sts_one.css=com.servoy.eclipse.core.cssprofile.servoy
 css-profile//styles/sts_two.css=com.servoy.eclipse.core.cssprofile.servoy
+css-profile//styles/three.css=com.servoy.eclipse.core.cssprofile.servoy
 eclipse.preferences.version=1

@@ -696,7 +696,7 @@ onShowMethodID:"425867EF-E4EB-4E1E-B092-D8AEA4F53963",
 scrollbars:32,
 showInMenu:true,
 size:"240,660",
-styleName:"sts_one",
+styleName:"sts_mc",
 typeid:3,
 uuid:"32179EBA-1B9B-4992-B45E-CD6AEB1C2184",
 view:5

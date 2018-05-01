@@ -109,6 +109,6 @@ onHideMethodID:"-1",
 onLoadMethodID:"28761D3F-8A1A-45E4-BE3B-942E9C29542B",
 onShowMethodID:"B48A3328-0E53-428C-979D-FE0FA2E98598",
 showInMenu:true,
-styleName:"sts_two",
+styleName:"sts_mc",
 typeid:3,
 uuid:"B596C7FF-84CF-4300-BC25-C568F81F7429"

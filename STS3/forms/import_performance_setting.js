@@ -195,7 +195,7 @@ function getInfoFromFiles(){
 	jobUUID = jobRec.job_id;
 	//application.output('job uuid is '+jobUUID);
 	assocUUID = jobRec.association_id;
-	assocName = jobRec.job_plant;
+	assocName = globals.getAssociationName(assocUUID);
 	custId = jobRec.customer_id;
 	
 	var custNumbers = scopes.globals.getCustomersByJob();

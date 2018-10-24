@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/employee",
 encapsulation:0,
 extendsID:"-1",
@@ -24,7 +30,7 @@ location:"5,456",
 name:"btn_Delete",
 onActionMethodID:"F545C75F-A84C-43DF-BA74-1AB91158C183",
 onDoubleClickMethodID:"-1",
-onRenderMethodID:"C74EDC7C-1D05-4C89-A7DD-DDA85668ACD1",
+onRenderMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"85,26",
 tabSeq:-2,
@@ -74,13 +80,13 @@ uuid:"9864A0CA-8B5F-40D4-A7B3-A828CC80B88E"
 anchors:15,
 items:[
 {
-containsFormID:"BB1B2F7E-C46C-4524-95B5-1F69B94CF939",
-location:"195,160",
-name:"Login_Details",
+containsFormID:"35C5A1EF-EACF-4672-A77D-8A91EDF8657F",
+location:"173,162",
+name:"employee_logins",
 relationName:"sts_employee_to_userid",
 text:"i18n:sts.tab.employee.account",
 typeid:15,
-uuid:"1954C50B-5025-4EA1-AB5E-F2ED31E29EF9"
+uuid:"2086C353-DC2E-470F-BBC0-A5EF6CC310CB"
 },
 {
 containsFormID:"4B0A4F42-885F-493A-AF55-DD6A25926088",
@@ -169,6 +175,7 @@ visible:false
 ],
 name:"employee_specs",
 navigatorID:"-1",
+onHideMethodID:"4FCC6ED8-C077-4989-AA97-806EA8CC67E5",
 onRecordSelectionMethodID:"B95D8BF7-792E-41C5-83FE-76D7127C9670",
 onShowMethodID:"636B132D-6A0E-4E10-A916-30A9CBC1B3D6",
 scrollbars:32,

@@ -47,6 +47,10 @@ var vCowCode = "";
  */
 var vUomCodeSpecific = false;
 /**
+ * @properties={typeid:35,uuid:"933181CB-9842-4323-B70B-297543F85D83",variableType:-4}
+ */
+var vJobMetric = true;
+/**
  *
  * @param edit
  *
@@ -92,6 +96,7 @@ function onDataChangeJob(oldValue, newValue, event) {
 	fs.where.add(fs.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var FS = databaseManager.getFoundSet(fs);
+	foundset.removeFoundSetFilterParam('job_cowxref');
 	if (FS.getSize() > 0){
 		vCustomerName = FS.sts_job_to_customer.name;
 		vCustomerNumber = FS.sts_job_to_customer.customer_number;
@@ -101,12 +106,13 @@ function onDataChangeJob(oldValue, newValue, event) {
 		forms.cost_of_work.jobNumber = newValue;
 		forms.cost_of_work.jobID = FS.job_id;
 		forms.cost_of_work.customerID = FS.customer_id;
+		vJobMetric = (FS.metric_job == 1);
 		scopes.globals.vJobIDXref = FS.job_id;
-		foundset.removeFoundSetFilterParam('job_cowxref');
 		foundset.addFoundSetFilterParam('job_id','=',globals.vJobIDXref,'job_cowxref');
 		foundset.loadAllRecords();
 		if (foundset.getSize() == 0){
-			clearForm();
+			vCowCode = '';
+			vCowDescrip = '';
 		}
 		var maxTabs = forms.cost_of_work.elements.tabless.getMaxTabIndex();
 		for (var index = 1;index <= maxTabs;index++){
@@ -175,7 +181,7 @@ function onDataChangeCustCow(oldValue,newValue,event){
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
-	clearForm();
+	//clearForm();
 	if (firstShow){
 		globals.vJobIDXref = "";//clear jobID for this screen
 		vJobNumber = "";vCustomerNumber = "";vCustomerName = "";
@@ -192,6 +198,7 @@ function onShow(firstShow, event) {
 	var idx = 1;
 	/** @type {JSRecord<db:/stsservoy/cowcodes>} */
 	var rec = null;
+	var cowsDescrip = [];
 	while (rec = CW.getRecord(idx++)){
 		cows.push(rec.cow_code);
 		forms.cost_of_work.cowCodes[rec.cow_code] = rec.cowcode_id;
@@ -199,8 +206,13 @@ function onShow(firstShow, event) {
 		forms.cost_of_work.cowCodes[rec.cow_code+"Value"] = rec.uom_dollar;
 		
 	}
-
-	application.setValueListItems('stsvl_cow_codes_list',cows);
+	cows.sort();
+	var cowsDescrip = [];
+	for (var idx = 0; idx < cows.length;idx++){
+		var descrip = forms.cost_of_work.cowCodes[cows[idx]+"Descrip"];
+		cowsDescrip.push(cows[idx]+' - '+descrip);
+	}
+	application.setValueListItems('stsvl_cow_codes_list',cowsDescrip,cows);
 	vUomCodeSpecific = (scopes.prefs.lCowCustSpc == 1);
 	elements.uomCodesSpecific.visible = vUomCodeSpecific;
 	elements.uom_value.editable = vUomCodeSpecific;
@@ -214,9 +226,17 @@ function onShow(firstShow, event) {
 function clearForm(){
 	//cust_cow_code = "";
 	//uom_dollar = 0;
-	vCowCode = "";
-	vCowDescrip = "";
-	
+	forms.cost_of_work.elements.tabless.setTabEnabledAt(3,false);
+	forms.cost_of_work.elements.tabless.setTabEnabledAt(4,false);
+	forms.cost_of_work.elements.tabless.tabIndex = 1;
+	foundset.clear();
+	vCowCode = '';
+	vCowDescrip = '';
+	vJobNumber = '';
+	vPONumber = '';
+	vCustomerID = '';
+	vCustomerName = '';
+	vCustomerNumber = '';
 }
 /**
  * Perform the element default action.
@@ -228,7 +248,7 @@ function clearForm(){
  */
 function deleteRecord(event, index) {
 	editStatus(false);
-	clearForm();
+	//clearForm();
 	return _super.deleteRecord(event, index)
 }
 
@@ -322,6 +342,7 @@ function onRecordSelection(event) {
  */
 function onHide(event) {
 	//foundset.removeFoundSetFilterParam('job_cowxref');
+
 	return _super.onHide(event)
 }
 /**
@@ -330,6 +351,6 @@ function onHide(event) {
  * @properties={typeid:24,uuid:"CEEDD68C-E1A0-47D2-B8B1-74ABBF19B8AA"}
  */
 function onActionClose(event){
-	clearForm();
+	//clearForm();
 	databaseManager.revertEditedRecords(foundset);
 }

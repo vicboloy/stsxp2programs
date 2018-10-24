@@ -105,7 +105,7 @@ typeid:4,
 uuid:"EFDE9738-C3FC-4EAF-AD8D-D122A3F6B8FA"
 }
 ],
-name:"logon_lst",
+name:"unused_logon_lst",
 scrollbars:32,
 size:"522,54",
 styleName:"sts_one",

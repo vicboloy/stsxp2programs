@@ -290,6 +290,10 @@ function initStatusCodes(){
 	}
 	application.setValueListItems('stsvl_status_code',aStatusCodes);
 }
+/**
+ * @properties={typeid:35,uuid:"277A8868-1497-4A12-8859-3EE4EDD5BCFA",variableType:-4}
+ */
+var existingCowsCheckBoxes = new Array();
 //Globals-------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------
@@ -889,6 +893,14 @@ var showElementReferences = false;//20180105 show element references
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
+	//application.setUIProperty("ComboBoxUI.disabledForeground", 'Color.black');
+	//application.setUIProperty('ComboBoxUI.disabledForeground', new Packages.javax.swing.plaf.ColorUIResource(java.awt.Color.decode('#000000')));
+	application.putClientProperty("ComboBoxUI", 'com.sun.java.swing.plaf.motif.MotifComboBoxUI');
+	application.setUIProperty("ComboBox.disabledForeground", new Packages.javax.swing.plaf.ColorUIResource(java.awt.Color.BLACK));
+	application.setUIProperty("TextField.disabledForeground", new Packages.javax.swing.plaf.ColorUIResource(java.awt.Color.BLACK));
+	application.setUIProperty("TextPane.inactiveForeground", new Packages.javax.swing.plaf.ColorUIResource(java.awt.Color.BLACK));
+	application.setUIProperty("TextArea.inactiveForeground", new Packages.javax.swing.plaf.ColorUIResource(java.awt.Color.BLACK));
+	plugins.VelocityReport;
 	scopes.globals.instanceReg = new RegExp(/(_[0-9]+)/);
 
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STS3/globals.js')}
@@ -949,7 +961,9 @@ function onSolutionOpen() {
 	session.program = "STS Desktop";
 	session.login = session.loginUserNum;
 	session.loginDate = new Date();
-	session.capture;
+	session.adminUser = sec_current_user.is_admin_account;
+	session.corpUser = (sec_current_association.association_uuid == sec_current_association.tenant_group_uuid);
+	session.parentAssociationId = sec_current_association.tenant_group_uuid;
 	session.corporate = getAssocCorporate(secCurrentAssociationID);
 	//scopes.globals.getBasePermissions(session.loginId,'FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF'); // using to install FFF on current active app
 	getLoggedEmployee(session.loginId);
@@ -966,13 +980,25 @@ function onSolutionOpen() {
 	}
 	scopes.jobs.i18nTableColumns();
 	databaseManager.removeTableFilterParam('stsservoy','filterCurrentAssoc');//20171228 filter current tenant and assoc for nonOffice access
-	if (!session.corporate){
-		databaseManager.addTableFilterParam('stsservoy','jobs','association_id','=',session.associationId,'filterCurrentAssoc');
+	if (!session.corpUser){//only corp users get access to full association list
+		var tables = ['associations', 'employee', 'status_description', 'users', 'jobs'];
+		for (var idx = 0;idx < tables.length;idx++){
+			var tableCols = databaseManager.getTable('stsservoy',tables[idx]).getColumnNames();
+			var filterName = 'filterAssoc'+tables[idx].toUpperCase();
+			if (tableCols.indexOf('association_id') != -1){
+				databaseManager.addTableFilterParam('stsservoy',tables[idx],'association_id','=',session.associationId,filterName);
+			}
+			if (tableCols.indexOf('association_uuid') != -1){
+				databaseManager.addTableFilterParam('stsservoy',tables[idx],'association_uuid','=',session.associationId,filterName);
+			}
+		}
 	}
 	if (appType == 1){
 		var client = plugins.UserManager.getClientByUID(session.sessionId);
 		client.maxIdleTime = 0;
 	}
+	scopes.jobs.createMissingPermissionGroups();
+	//createPostGreSqlIndexes();//20180925 Tue set up indexing for better speed
 }
 
 /**
@@ -1197,12 +1223,12 @@ function debugPause (){
  */
 function setWindowOpened(windowName){
 	if (globals.aOpenWindows.indexOf(windowName) == -1) {
-		globals.aOpenWindows.push(windowName);
+		globals.aOpenWindows.push(windowName);application.getValueListArray('stsvl_nav_openWindows')
 		//application.setValueListItems('xsts_nav_openWindows',globals.aOpenWindows);
 	//application.output(globals.aOpenWindows); //joeremove
-		application.setValueListItems('sts_nav_openWindows',globals.aOpenWindows);
 //sts_nav_openWindows
 	}
+	application.setValueListItems('stsvl_nav_openWindows',globals.aOpenWindows);//was sts_nav_openWindows 20180802
 }
 /**
  * @param windowName
@@ -1591,13 +1617,18 @@ function onActionCancelEdit(event) {
 	formModeCancel(event);
 }
 /**
- * @param event
+ * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"3482DAE1-3AA8-4BFF-8C84-57BAE8802433"}
+ * @AllowToRunInFind
  */
 function onActionSaveEdit(event) {
 	if (forms[event.getFormName()].onEdit){forms[event.getFormName()].onEdit(event,false)}
+	var formName = event.getFormName();
 	databaseManager.saveData();
+	if (formName.search('tenant_division') != -1){
+		forms[formName].foundset.sort('logic_flag desc, association_name asc');
+	}
 	formModeCancel(event);
 	//databaseManager.setAutoSave(true);
 	
@@ -1747,6 +1778,8 @@ function getAssocCorporate(assocId){
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/associations');
 	q.where.add(q.columns.association_uuid.eq(assocId));
+	q.where.add(q.columns.tenant_group_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.tenant_group_uuid.eq(assocId));
 	var fs = databaseManager.getFoundSet(q);
 	if (fs.getSize() != 0){
 		var rec = fs.getRecord(1);
@@ -1887,4 +1920,135 @@ function confirmDialog(event,i18nString){
 		return false;
 	}
 	return true;
+}
+
+/**
+ * Called when the valuelist needs data, it has 3 modes.
+ * real and display params both null: return the whole list
+ * only display is specified, called by a typeahead, return a filtered list
+ * only real value is specified, called when the list doesnt contain the real value for the give record value, this will insert this value into the existing list
+ *
+ * @param {String} displayValue The value of a lookupfield that a user types
+ * @param realValue The real value for a lookupfield where a display value should be get for
+ * @param {JSRecord} record The current record for the valuelist.
+ * @param {String} valueListName The valuelist name that triggers the method. (This is the FindRecord in find mode, which is like JSRecord has all the columns/dataproviders, but doesn't have its methods)
+ * @param {Boolean} findMode True if foundset of this record is in find mode
+ * @param {Boolean} rawDisplayValue The raw displayValue without being converted to lower case
+ *
+ * @returns {JSDataSet} A dataset with 1 or 2 columns display[,real]
+ *
+ * @properties={typeid:24,uuid:"D499405C-B506-44D5-8C16-7B082F1A816C"}
+ */
+function getDataSetForValueList(displayValue, realValue, record, valueListName, findMode, rawDisplayValue) {
+	var args = null;
+	/** @type QBSelect<db:/example_data/employees> */
+	var query = databaseManager.createSelect('db:/example_data/employees');
+	/** @type  {JSDataSet} */
+	var result = null;
+	if (displayValue == null && realValue == null) {
+		// TODO think about caching this result. can be called often!
+		// return the complete list
+		query.result.add(query.columns.firstname.concat(' ').concat(query.columns.lastname)).add(query.columns.employeeid);
+		result = databaseManager.getDataSetByQuery(query, 100);
+	} else if (displayValue != null) {
+		// TYPE_AHEAD filter call, return a filtered list
+		args = [displayValue + "%", displayValue + "%"];
+		query.result.add(query.columns.firstname.concat(' ').concat(query.columns.lastname)).add(query.columns.employeeid).root.where.add(query.or.add(query.columns.firstname.lower.like(args[0] + '%')).add(query.columns.lastname.lower.like(args[1] + '%')));
+		result = databaseManager.getDataSetByQuery(query, 100);
+	} else if (realValue != null) {
+		// TODO think about caching this result. can be called often!
+		// real object not found in the current list, return 1 row with display,realvalue that will be added to the current list
+		// dont return a complete list in this mode because that will be added to the list that is already there
+		args = [realValue];
+		query.result.add(query.columns.firstname.concat(' ').concat(query.columns.lastname)).add(query.columns.employeeid).root.where.add(query.columns.employeeid.eq(args[0]));
+		result = databaseManager.getDataSetByQuery(query, 1);
+	}
+	return result;
+
+}
+
+/**
+ * @AllowToRunInFind
+ * 
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"939EBF9D-EB98-4C2C-8275-52D576C7211D"}
+ */
+function stopWindowTrackEvent(event){
+	if (!event){return}
+	var formName = event.getFormName();
+	var win = forms[formName].controller.getWindow();
+	if (!win){return}
+	var winName = win.getName();
+	setWindowClosedByName(winName);
+	win.hide();
+	
+	
+	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.closed',new Array(winName)));
+
+	if (formName.search(/_[0-9]+/) != -1){
+		var success = history.removeForm(formName);	//removes the named form from this session, please make sure you called history.remove() first
+		if(success){
+			solutionModel.removeForm(formName);
+		}
+	}
+	return;
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param {String} windowName
+ *
+ * @properties={typeid:24,uuid:"918332A9-B084-4E50-8CEE-69EB6BA56344"}
+ */
+function setWindowClosedByName(windowName){
+	windowName = windowName.replace(/_/g,' ');
+	if (windowName.search('STS - Main') == 0){return}
+	var tempArray2 = new Array;
+	//tempArray2 = globals.aTrackWindows;
+	var tempLength = globals.aTrackWindows.length;
+
+	for (var index = 0; index < tempLength; index++){
+		var windowName2 = globals.aTrackWindows[index];
+		if (windowName.search(windowName2) != 0){
+			tempArray2.push(windowName2);
+		}
+	}
+	globals.aTrackWindows = tempArray2;
+	application.setValueListItems('stsvl_nav_windows',tempArray2);
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"D8CA4A32-E5BE-45F9-88AA-7F03275F6AD5"}
+ */
+function createPostGreSqlIndexes(){
+	//plugins.rawSQL.executeSQL('stsservoy','jobs','');
+	plugins.rawSQL.executeSQL('stsservoy', 'jobs','DROP INDEX IF EXISTS job_idx;');
+	plugins.rawSQL.executeSQL('stsservoy', 'jobs','DROP INDEX IF EXISTS import_tab_idx;');
+	plugins.rawSQL.executeSQL('stsservoy', 'jobs','DROP INDEX IF EXISTS import_guid_idx;');
+	try {		
+		plugins.rawSQL.executeSQL('stsservoy','idfiles','CREATE INDEX CONCURRENTLY bundle_idx ON idfiles (bundle_bc NULLS LAST);');
+	} catch (e) {}
+	try {		
+		plugins.rawSQL.executeSQL('stsservoy','idfiles','CREATE INDEX CONCURRENTLY ship_idx ON idfiles (ship_load_id  NULLS LAST);');
+	} catch (e) {}
+
+	
+	try {
+		plugins.rawSQL.executeSQL('stsservoy', 'jobs', 'CREATE INDEX CONCURRENTLY jobs_idx ON jobs (job_number);');
+	} catch (e) {}
+	try {		
+		plugins.rawSQL.executeSQL('stsservoy','import_table','CREATE INDEX CONCURRENTLY import_tab_idx ON import_table (job_number,parent_piecemark,piecemark);');
+	} catch (e) {}
+	try {		
+		plugins.rawSQL.executeSQL('stsservoy','import_guids','CREATE INDEX CONCURRENTLY import_guid_idx ON import_guids (assem_guid,part_guid);');
+	} catch (e) {}
+	try {		
+		plugins.rawSQL.executeSQL('stsservoy','piecemarks','CREATE INDEX CONCURRENTLY piecemark_idx ON piecemarks (sheet_id,parent_piecemark,piecemark);');
+	} catch (e) {}
+	try {		
+		plugins.rawSQL.executeSQL('stsservoy','idfiles','CREATE INDEX CONCURRENTLY idfile_idx ON idfiles (sequence_id,piecemark_id);');
+	} catch (e) {}
+	
 }

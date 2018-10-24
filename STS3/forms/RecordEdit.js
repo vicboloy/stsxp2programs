@@ -40,6 +40,8 @@ function onActionAdd(event,recordKeyID){
 	onEdit(event,true);
 	newRecord = foundset.newRecord();
 	tenant_uuid = globals.session.tenant_uuid;
+	create_date = new Date();
+	
 	globals.newRecordKey = eval(recordKeyID);
 	if (elements.btn_Heats){
 		elements.btn_Heats.enabled = (validate_heats == 1);
@@ -48,6 +50,15 @@ function onActionAdd(event,recordKeyID){
 		elements.btn_Recalc.enabled = true;
 	}
 	additionalActionAddFunctions();
+	if (forms['jobs_general']){
+		var form = forms['jobs_general']; 
+		form.verifyJobInput(event);
+		if (!form.job_number){
+			form.elements.job_number.requestFocus();
+		}
+		form.keep_minors = (scopes.prefs.lKeepMinorPcMarks) ? 1 : 0;
+		forms['jobs_general']
+	}
 }
 /**
  * @param {JSEvent} event
@@ -69,28 +80,34 @@ function onActionAddForm(event){
  * @SuppressWarnings(wrongparameters)
  */
 function onActionDelete(event) {
-	var empty = globals.checkJobEmpty(job_id);
-	if (!empty){
-		scopes.globals.errorDialogMobile(event,'1071',null,empty);
-		return;
+	var formName = event.getFormName();
+	if (formName == 'routing_codes'){
+		var empty = 'check for routing code use in other jobs'
+	} else {
+		var empty = globals.checkJobEmpty(job_id);
+		if (!empty){
+			scopes.globals.errorDialogMobile(event,'1071',null,empty);
+			return;
+		}
 	}
-	var joe = globals.DIALOGS.showQuestionDialog(
+	var answer = globals.DIALOGS.showQuestionDialog(
 	i18n.getI18NMessage('sts.txt.delete.record'),
-	i18n.getI18NMessage('sts.txt.delete')+'?',
+	i18n.getI18NMessage('sts.txt.delete.record'),
 	i18n.getI18NMessage('sts.txt.delete'),
 	i18n.getI18NMessage('sts.txt.cancel'));
+	if (answer == i18n.getI18NMessage('sts.txt.cancel')){return}
 	//application.output('joe :'+joe+': :'+i18n.getI18NMessage('sts.txt.delete')+':');
 	// addresses #50 part 3 ticket
 	if (globals.DIALOGS.showQuestionDialog(
-		i18n.getI18NMessage('sts.txt.delete.record'),
-		i18n.getI18NMessage('sts.txt.delete')+'?',
-		i18n.getI18NMessage('sts.txt.delete'),
-		i18n.getI18NMessage('sts.txt.cancel')) == i18n.getI18NMessage('sts.txt.delete')){
+		i18n.getI18NMessage('sts.txt.delete.cancel'),
+		i18n.getI18NMessage('sts.txt.delete.cancel'),
+		i18n.getI18NMessage('sts.txt.cancel'),
+		i18n.getI18NMessage('sts.txt.delete')) == i18n.getI18NMessage('sts.txt.delete')){
 		addOnActionDelete();
 		delete_flag = 99;
 		databaseManager.saveData(foundset.getRecord(controller.getSelectedIndex()));
 		foundset.loadRecords();
-		elements.btn_Delete.visible = (globals.checkJobEmpty(job_id) == '');
+		elements.btn_Delete.visible = true;//(globals.checkJobEmpty(job_id) == '');
 	}
 }
 /**
@@ -107,6 +124,30 @@ function onRecordSelection(event,buttonTextSrc) {
 	var formName = event.getFormName();
 	var index = forms[formName].controller.getSelectedIndex();
 	parent.controller.setSelectedIndex(index);
+	var formName = event.getFormName();
+	if (!globals.session.corpUser && formName == 'routing_codes_lst'){
+		var routeId = forms[formName].routing_id;
+		var assocId = globals.session.associationId;
+		databaseManager.removeTableFilterParam('stsservoy','filterAssocSTATUS_DESCRIPTION');
+		/** @type {QBSelect<db:/stsservoy/route_detail>} */
+		var q = databaseManager.createSelect('db:/stsservoy/route_detail');
+		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.e_route_code_id.eq(application.getUUID(routeId)));
+		/** @type {QBJoin<db:/stsservoy/status_description>} */
+		var r = q.joins.add('db:/stsservoy/status_description');
+		r.on.add(r.columns.status_description_id.eq(q.columns.status_description_id));
+		r.root.where.add(r.columns.association_id.not.eq(application.getUUID(assocId)));
+		q.result.add(r.columns.association_id);
+		var Q = databaseManager.getDataSetByQuery(q,-1);
+		var extRtErr = (Q.getMaxRowIndex() > 0);
+		databaseManager.addTableFilterParam('stsservoy','users','association_uuid','=',globals.session.associationId,'filterAssocSTATUS_DESCRIPTION');//Re-enable user assoc table filters
+		var els = forms['routing_codes'].elements;
+		els.btn_Edit.visible = !extRtErr;
+		els.externalRtError.visible = extRtErr;
+		els.btn_Delete.visible = !extRtErr;
+		forms['routing_codes'].noEditFlag = extRtErr;
+		//els.btn_New.visible = !extRtErr;
+	}
 }
 /**
  * Perform the element default action.
@@ -127,6 +168,9 @@ function onActionEdit(event) {
 	var formName = event.getFormName();
 	forms[formName].controller.focusField('btn_Cancel',true);
 	forms[formName].elements.btn_Cancel.requestFocus();
+	if (formName.indexOf('jobs_general') == 0){
+		forms[formName].verifyJobInput(event);
+	}
 	additionalEditFunctions(); //stubbed out on this for extending for other forms
 }
 /**
@@ -143,6 +187,7 @@ function focusCancelButton(){
  * @properties={typeid:24,uuid:"2CA6B5AA-5E72-412F-9002-67AB9698B7E9"}
  */
 function onEdit(event,editStatus){
+	databaseManager.setAutoSave(false);
 	if (typeof codesAvail == 'undefined'){codesAvail = null}
 	if (typeof codesSelect == 'undefined'){codesSelect = null}
 	editFlag = editStatus;
@@ -177,7 +222,8 @@ function onEdit(event,editStatus){
  * @properties={typeid:24,uuid:"C9F5DFA1-D2EA-414C-87B3-A158BD655AB1"}
  */
 function onActionCancelEdit(event) {
-	databaseManager.revertEditedRecords(foundset);
+	var formFoundset = forms[event.getFormName()].foundset;
+	databaseManager.revertEditedRecords(formFoundset);
 	onEdit(event,false);
 	additionalEditCancelFunctions();
 	//databaseManager.setAutoSave(true);
@@ -194,8 +240,9 @@ function onActionCancelEdit(event) {
 function onActionClose(event) {
 	onActionCancelEdit(event);
 	//editStatus(false);
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
+	//globals.stopWindowTrack(event);
+	//globals.mainWindowFront();
 }
 /**
  * Perform the element default action.

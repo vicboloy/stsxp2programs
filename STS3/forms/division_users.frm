@@ -1,5 +1,9 @@
 borderType:"LineBorder,1,#000000",
 customProperties:"methods:{\
+onRecordSelectionMethodID:{\
+arguments:null,\
+parameters:null\
+},\
 onSortCmdMethodID:{\
 arguments:null,\
 parameters:null\
@@ -132,6 +136,7 @@ uuid:"FF2206C2-7E5E-4CCF-95A1-5F0145EBC166"
 }
 ],
 name:"division_users",
+onRecordSelectionMethodID:"4A07D5E6-9D0A-4FAD-B1F7-784D1F142349",
 onSortCmdMethodID:"0",
 scrollbars:32,
 size:"150,352",

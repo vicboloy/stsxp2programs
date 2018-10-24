@@ -32,8 +32,7 @@ function startEditing(event) {
  * @properties={typeid:24,uuid:"62A39563-B392-4E1D-B920-C8E3F51133D5"}
  */
 function onActionClose(event) {
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 
 /**

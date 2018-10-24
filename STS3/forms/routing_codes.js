@@ -81,6 +81,16 @@ var codesAvail = "";
  */
 var codesSelect = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B329E771-DC2B-4F93-A531-F0CF9685C1DD"}
+ */
+var externalRoutingMsg = '';
+/**
+ * @properties={typeid:35,uuid:"A1C09388-01D0-4942-9262-5D8C563150C9",variableType:-4}
+ */
+var noEditFlag = false;
+/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -94,7 +104,11 @@ function onShow(firstShow, event) {
 	// disable form on entry. Must hit edit
 	if (firstShow) {
 		onEdit(event,false);
+		//if (foundset.getSize() > 0){
+		//	foundset.setSelectedIndex(1)
+		//}
 	}
+	foundset.loadAllRecords();
 	globals.setUserFormPermissions(event,null);
 	setRouteCodesLists();
 }
@@ -318,8 +332,7 @@ function uniqueStatusRouteCode (name){
  */
 function onActionClose(event) {
 	onActionCancelEdit(event);
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 
 /**
@@ -472,9 +485,11 @@ function onActionSaveEdit(event) {
  * @properties={typeid:24,uuid:"11524862-D6AD-4E30-A220-00540A2C5154"}
  */
 function onActionAdd(event, recordKeyID) {
+	foundset.newRecord();
 	onEdit(event,true);
 	getAvailableCodes();
-	return _super.onActionAdd(event, recordKeyID)
+	elements.route_code.requestFocus();
+	return;// _super.onActionAdd(event, recordKeyID)
 }
 
 /**
@@ -485,9 +500,10 @@ function onActionAdd(event, recordKeyID) {
  * @properties={typeid:24,uuid:"7580CA30-7A07-4567-9825-96292FE0115B"}
  */
 function onActionCancelEdit(event) {
+	databaseManager.revertEditedRecords(foundset);
 	onEdit(event,false);
 	setRouteCodesLists();
-	return _super.onActionCancelEdit(event)
+	return;
 }
 
 /**
@@ -510,8 +526,13 @@ function onActionEdit(event) {
 function onEdit(event, editing){
 	elements.btn_Cancel.enabled = editing;
 	elements.btn_Cancel.visible = editing;
-	elements.btn_Delete.enabled = !editing;
-	elements.btn_Delete.visible = !editing;
+	if (!noEditFlag){
+		elements.btn_Delete.enabled = !editing;
+		elements.btn_Delete.visible = !editing;
+	} else {
+		elements.btn_Delete.enabled = false;
+		elements.btn_Delete.visible = false;		
+	}
 	elements.btn_Edit.enabled = !editing;
 	elements.btn_New.enabled = !editing;
 	elements.btn_Save.enabled = editing;

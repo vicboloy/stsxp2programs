@@ -1,4 +1,8 @@
 customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+},\
 onShowMethodID:{\
 arguments:null,\
 parameters:null\
@@ -467,7 +471,7 @@ valuelistID:"08308B8A-82EC-4397-87CC-DF0087D34A30"
 name:"carrier_info",
 namedFoundSet:"separate",
 navigatorID:"-1",
-onHideMethodID:"17CF390E-9F2B-4248-BDA8-274828359D3C",
+onHideMethodID:"E2796BCC-C321-4D79-9612-D563951071B8",
 onShowMethodID:"DB785183-C273-4686-9517-00D36B84B139",
 showInMenu:true,
 size:"443,491",

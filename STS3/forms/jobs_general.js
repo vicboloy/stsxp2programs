@@ -194,6 +194,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 		var idx = foundset.getRecordIndex(rec);
 		foundset.setSelectedIndex(idx);
 	}
+	verifyJobInput(event);
 	return true;
 }
 
@@ -225,12 +226,14 @@ function onDataChangeJobNum(oldValue, newValue, event) {
 	} else {
 		if (globals.session.tenantJobArray.indexOf(newValue) != -1){
 			plugins.dialogs.showErrorDialog('1218',i18n.getI18NMessage('1218'));//1218 - This Job Number Already Exists in STS X.
-			newValue = '';
+			job_number = oldValue;
+			verifyJobInput(event);
 			return true;
 		}
 	}
 	
 	globals.onFocusTabsSTS(event);
+	verifyJobInput(event);
 	return true;
 }
 /**
@@ -299,30 +302,55 @@ function onActionRecalcWeight(event) {
 function onShow(firstShow, event) {
 	if (firstShow){
 		elements.ft_projectid.enabled = (scopes.prefs.lFabtrolInstalled == 1);
-		elements.third_party_job_num.enabled = (scopes.prefs.lFabsuiteInstalled==1||scopes.prefs.lFabtrolInstalled==1||scopes.prefs.lRomacInstalled==1);
-		vJobWeightUnits = (metric_job==1) ? 'kgs' : 'lbs';
+		//elements.third_party_job_num.enabled = (scopes.prefs.lFabsuiteInstalled==1||scopes.prefs.lFabtrolInstalled==1||scopes.prefs.lRomacInstalled==1);
 		elements.job_number.requestFocus();
-		globals.getCustomerList();
 		globals.setUserFormPermissions(event);
 		scopes.jobs.formPermissions(event,true);
 	}
+	vJobWeightUnits = (metric_job==1) ? 'kgs' : 'lbs';
+	globals.getCustomerList();
+	elements.labelaseFormat.enabled = (scopes.printer.labeLaseInstalled);
+	elements.btn_Delete.visible = (elements.btn_New.visible && globals.checkJobEmpty(job_id));
+	//elements.btn_Delete.enabled = (globals.checkJobEmpty(job_id));
 	//loadFoundset();
 	onActionHeats(event);
 	foundset.loadAllRecords();
 	var path = scopes.prefs.reportpath;
 	var labelList = [];
-	if (scopes.prefs.labelProgram == 'barTender'){
-		var suffix = '.qdf';
+	if (scopes.printer.barTender_installed){
+		var suffix = ['.btw','.BTW'];
 	} else {
-		suffix = '.btw';
+		suffix = ['.qdf'];
 	}
-	var btwFiles = plugins.file.getFolderContents(path,suffix);
+	suffix = '.btw';
+	var path = plugins.file.getDefaultUploadLocation()+'\\'+scopes.prefs.reportpath;
+	var btwFiles = plugins.file.getFolderContents(path.replace(/\/+/g,'/'),suffix);
 	labelList.push('<NONE>');
 	for (var index = 0;index < btwFiles.length;index++){
 		labelList.push(btwFiles[index].getName());
 	}
+	labelList.sort();
 	application.setValueListItems('stsvl_label_formats',labelList);
-	return _super.onShow(firstShow, event)
+
+	var labelaseList = [];
+	var suffixLabelase = ['.itl','.itlx'];
+	var labFiles = plugins.file.getFolderContents(path.replace(/\/+/g,'/'),suffixLabelase);
+	labelaseList.push('<NONE>');
+	for (index = 0;index < labFiles.length;index++){
+		labelaseList.push(labFiles[index].getName());
+	}
+	if (!label_format){label_format = labelaseList[0]}
+	labelaseList.sort();
+	application.setValueListItems('stsvl_labelase_formats',labelaseList)
+	if (!labelase_format){labelase_format = labelaseList[0]}
+	var minorText = i18n.getI18NMessage('sts.chk.keep.minors.pref.default');
+	if (scopes.prefs.lKeepMinorPcMarks == 1){
+		minorText = minorText+' ('+i18n.getI18NMessage('sts.btn.yes')+')';
+	} else {
+		minorText = minorText+' ('+i18n.getI18NMessage('sts.btn.no')+')';
+	}
+	elements.keep_minors.titleText = minorText.replace(') (','=');
+	return _super.onShow(firstShow, event);
 }
 /**
  * Handle record selected.
@@ -334,6 +362,7 @@ function onShow(firstShow, event) {
  */
 function onRecordSelection(event, buttonTextSrc) {
 	elements.btn_Delete.visible = (elements.btn_New.visible && globals.checkJobEmpty(job_id));
+	//elements.btn_Delete.enabled = (globals.checkJobEmpty(job_id));
 	//vCustomerNumber = (st2_jobs_to_customers) ? sts_job_to_customer.customer_number : "";
 	//application.setValueListItems('stsvlt_customers',[]);
 	vCustomerId = customer_id;
@@ -341,6 +370,7 @@ function onRecordSelection(event, buttonTextSrc) {
 	vJobPlant = association_id;
 	vShipTo = ship_to;
 	vRFInterface = rf_interface;
+	vJobWeightUnits = (metric_job) ? i18n.getI18NMessage('sts.txt.weight.metric') : i18n.getI18NMessage('sts.txt.weight.imperial');
 	onActionHeats(event);
 	null;
 }
@@ -354,13 +384,14 @@ function onRecordSelection(event, buttonTextSrc) {
 function onActionSaveEdit(event) {
 	if (!checkSaveRequirements(event)){return}
 	globals.lookupItem2 = vCustomerNumber;
-	label_format = vLabelFormat;
-	metric_job = vMetricJob;
+	//label_format = vLabelFormat;
+	//metric_job = (vMetricJob == 1);
 	rf_interface = vRFInterface;
 	ship_to = vShipTo;
 	customer_id = vCustomerId;
 	association_id = vJobPlant;
 	//vCustomerNumber = null;
+	barcode_form = vBarCodeForm;
 	return _super.onActionSaveEdit(event)
 }
 /**
@@ -399,7 +430,8 @@ function loadFoundset(){
  * @properties={typeid:24,uuid:"D6F821C2-BAA0-4C87-814E-8F84D3AAE8D7"}
  */
 function onActionEdit(event) {
-	elements.job_number.requestFocus();
+	elements.keep_minors.enabled = !(elements.keep_minors.enabled);
+	elements.keep_minors.enabled = !(elements.keep_minors.enabled);
 	return _super.onActionEdit(event)
 }
 /**
@@ -407,6 +439,12 @@ function onActionEdit(event) {
  */
 function additionalEditCancelFunctions(){
 	vCustomerId = customer_id;
+	vJobPlant = association_id;
+	vRFInterface = rf_interface;
+	vBarCodeForm = barcode_form;
+	vShipTo = ship_to;
+	//vLabelFormat = label_format;
+	vMetricJob = metric_job;
 }
 /**
  * @param event
@@ -434,4 +472,95 @@ function checkSaveRequirements(event){
 		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.missing.entry'),i18n.getI18NMessage('sts.txt.missing.required.job.entries'));
 	}
 	return saveOk;
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"8981BB66-40D4-4F4B-A5EE-763C60758661"}
+ */
+function verifyJobInput(event){
+	var form = forms['jobs_general'];
+	var saveBtn = form.elements.btn_Save;
+	saveBtn.enabled = !(!job_number | !vCustomerId | !vJobPlant | !vRFInterface | !vBarCodeForm);
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"2CDB500B-C043-48EE-AB9D-7A19848C2123"}
+ */
+function onDataChangeRfi(oldValue, newValue, event) {
+	verifyJobInput(event);
+	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"625BDD2E-81B9-43EA-B42E-B43FFD583B2D"}
+ */
+function onDataChangeUseBCForm(oldValue, newValue, event) {
+	verifyJobInput(event);
+	return true
+}
+
+/**
+ * Called before the form component is rendered.
+ *
+ * @param {JSRenderEvent} event the render event
+ *
+ * @properties={typeid:24,uuid:"21162257-42BD-471C-A7E6-8FB55A71E16A"}
+ */
+function onRenderGlobalKeepMinors(event) {
+	if (event.getRenderable()){
+		var minorText = i18n.getI18NMessage('sts.chk.keep.minors.pref.default');
+		if (scopes.prefs.lKeepMinorPcMarks == 1){
+			minorText = minorText+' ('+i18n.getI18NMessage('sts.btn.yes')+')';
+		} else {
+			minorText = minorText+' ('+i18n.getI18NMessage('sts.btn.no')+')';
+		}
+		elements.keep_minors.titleText = minorText.replace(') (','=');
+
+	}
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"94ED588D-AB51-4794-932C-6122FAD1E358"}
+ */
+function onHide(event) {
+	//onActionClose(event);
+	return true;
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"691A3C14-6157-4485-8D52-00584D781908"}
+ */
+function onDataChangeMetricJob(oldValue, newValue, event) {
+	vJobWeightUnits = (newValue) ? i18n.getI18NMessage('sts.txt.weight.metric') : i18n.getI18NMessage('sts.txt.weight.imperial');
+	return true
 }

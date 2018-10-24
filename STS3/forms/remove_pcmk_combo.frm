@@ -18,7 +18,7 @@ uuid:"0CCE4E42-1398-4AF6-AB7E-F3CF44228929"
 dataProviderID:"purgeJob",
 displayType:4,
 location:"212,4",
-onActionMethodID:"4EEBF9AC-FABE-4544-BB9D-A5D66E3542AB",
+onActionMethodID:"-1",
 size:"268,26",
 text:"i18n:sts.chk.delete.job",
 toolTipText:"i18n:sts.chk.delete.job",

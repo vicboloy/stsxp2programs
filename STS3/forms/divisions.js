@@ -64,6 +64,7 @@ function newRecord(event, location, changeSelection) {
 	logic_flag = 0;
 	edit_date = new Date();
 	tenant_uuid = globals.session.tenant_uuid;
+	tenant_group_uuid = globals.session.parentAssociationId;
 	elements.newEntry.requestFocus();
 	forms.tenant_divisions_m.onEdit(event,true);
 	return newRec;
@@ -82,6 +83,9 @@ function onShow(firstShow, event) {
 	globals.setUserFormPermissions(event);
 	showLicensing();
 	editInactive(event);
+	foundset.sort('logic_flag desc, association_name asc');
+	var isCorp = (association_uuid == tenant_group_uuid);
+	elements.btn_New.visible = isCorp;
 	return _super.onShow(firstShow, event);
 }
 /**
@@ -140,9 +144,11 @@ function editInactive(event){
  */
 function buttonsEnabled(enabled){
 	elements.btn_Check.enabled = enabled;
-	elements.btn_Office.enabled = enabled;
-	elements.btn_Rename.enabled = enabled;
-	elements.btn_Rename.visible = enabled;
+	//elements.btn_Office.enabled = enabled;
+	if (association_uuid == tenant_group_uuid){
+		elements.btn_Rename.enabled = enabled;
+		elements.btn_Rename.visible = enabled;
+	}
 	elements.btn_Delete.enabled = enabled;
 	elements.desktop.editable = enabled;
 	elements.mobile.editable = enabled;
@@ -161,35 +167,46 @@ function buttonsEnabled(enabled){
  * @properties={typeid:24,uuid:"10C60271-78D6-4A88-A00B-CA1E56B9C75C"}
  */
 function onDataChangeDivision(oldValue, newValue, event) {
+	forms['tenant_divisions_m'].elements.btn_Save.enabled = false;
 	//ticket#65 name changes that match other records go to that record
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var a = databaseManager.createSelect('db:/stsservoy/associations');
 	a.result.add(a.columns.association_uuid);
 	a.where.add(a.columns.association_name.trim.eq(newValue));
-	a.where.add(a.columns.delete_flag.not.eq(99));
+	//a.where.add(a.columns.delete_flag.not.eq(99));
+	a.where.add(a.or
+		.add(a.columns.delete_flag.not.eq(99))
+		.add(a.columns.delete_flag.isNull)
+		);
 	//.add(a.where.add(a.columns.delete_flag.isNull)))
 	a.where.add(a.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	var A = databaseManager.getFoundSet(a);
-	/** @type {QBSelect<db:/stsservoy/associations>} */
-	var b = databaseManager.createSelect('db:/stsservoy/associations');
-	b.result.add(b.columns.association_uuid);
-	b.where.add(b.columns.association_name.trim.eq(newValue));
-	b.where.add(b.columns.delete_flag.isNull);
+	// ** @type {QBSelect<db:/stsservoy/associations>} */
+	//var b = databaseManager.createSelect('db:/stsservoy/associations');
+	//b.result.add(b.columns.association_uuid);
+	//b.where.add(b.columns.association_name.trim.eq(newValue));
+	//b.where.add(b.columns.delete_flag.isNull);
 	//.add(a.where.add(a.columns.delete_flag.isNull)))
-	b.where.add(b.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	var B = databaseManager.getFoundSet(b);
-	if (B.getSize() > 0){
-		var rec = B.getRecord(1);
-		databaseManager.revertEditedRecords(foundset);
-		var idx = foundset.getRecordIndex(rec);
-		foundset.setSelectedIndex(idx);
-	} else if (A.getSize() > 0){
-		rec = A.getRecord(1);
+	//b.where.add(b.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	//var B = databaseManager.getFoundSet(b);
+	//if (B.getSize() > 0){
+	//	var rec = B.getRecord(1);
+	//	databaseManager.revertEditedRecords(foundset);
+	//	var idx = foundset.getRecordIndex(rec);
+	//	foundset.setSelectedIndex(idx);
+	//} else if (A.getSize() > 0){
+	if (A.getSize() > 0){
+		var rec = A.getRecord(1);
 		databaseManager.revertEditedRecords(foundset);
 		idx = foundset.getRecordIndex(rec);
 		foundset.setSelectedIndex(idx);
+		forms['tenant_divisions_m'].elements.btn_Save.enabled = false;
+		return true;
 	}
-	return true
+	licenses_desktop = 1;
+	licenses_mobile = 0;
+	forms['tenant_divisions_m'].elements.btn_Save.enabled = true;
+	return true;
 }
 
 /**
@@ -212,4 +229,29 @@ function deleteRecord(event, index) {
 	}
 	forms.tenant_divisions_m.onEdit(event,true);
 	return _super.deleteRecord(event, index);
+}
+
+/**
+ * Called before the form component is rendered.
+ *
+ * @param {JSRenderEvent} event the render event
+ *
+ * @properties={typeid:24,uuid:"989E8755-D41B-456B-96AD-6A24039EC4A9"}
+ */
+function onRender(event) {
+	var rec = event.getRecord();
+	if (rec && rec.association_uuid == rec.tenant_group_uuid && event.getRenderable().getName() == 'company_name'){
+		event.getRenderable().bgcolor = 'pink';
+	}
+}
+
+/**
+ * Handle focus lost event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F4013B9F-4ADF-4F64-92ED-7F8681547542"}
+ */
+function onFocusLostDivisionEntry(event) {
+	forms.tenant_divisions_m.elements.btn_Save.enabled = (!(!association_name));
 }

@@ -43,6 +43,8 @@ function onRecordSelection(event) {
 	var instance = scopes.globals.getInstanceForm(event);
 	var rec = foundset.getSelectedRecord();
 	if (!rec){return}
-	var empId = rec.employee_id;forms.employees.foundset.loadRecords()
+	var empId = rec.employee_id;//forms.employees.foundset.loadRecords()
+	databaseManager.revertEditedRecords(forms['employees'+instance].foundset);//20180720 error showing changed foundset, this cleared error
 	forms['employees'+instance].foundset.loadRecords(application.getUUID(empId));
+	null;
 }

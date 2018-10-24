@@ -41,7 +41,7 @@ function getTransactionDetails(event) {
 	if (!foundset){return}
 	var tranEls = ['trans_status','transaction_date','transaction_duration','transaction_start','transaction_end','employee_number','association_name','trans_code',
 	'minor_piecemark','quantity','revision_level','worker_id','worker2_id','worker3_id','worker4_id','worker5_id','trans_reversal_worker','trans_reversal_date',
-	'trailer_labor_percentage','trailer_labor_quantity','gps_record_number','latitude','longitude','location','altitude','bundle_id'];
+	'trailer_labor_percentage','trailer_labor_quantity','gps_record_number','latitude','longitude','location','altitude','bundle_bc'];
 	//for (var index = 0;index < tranEls.length;index++){
 		transStat = '';
 		var transI18 = 'table.transactions.';
@@ -58,7 +58,7 @@ function getTransactionDetails(event) {
 		 transStat += '\n' + i18n.getI18NMessage('table.employee.employee_number') + ': ' + empName;
 		 transStat += '\n' + i18n.getI18NMessage('table.associations.association_name') + ': ' + globals.session.association;
 		 transStat += '\n' + i18n.getI18NMessage(transI18+'trans_code') + ': ' + trans_code;
-		 transStat += '\n' + i18n.getI18NMessage(generalI18+'bundle_id') + ': ' + bundle_id;
+		 transStat += '\n' + i18n.getI18NMessage(generalI18+'bundle_bc') + ': ' + bundle_bc;
 		 transStat += '\n' + i18n.getI18NMessage(transI18+'minor_piecemark') + ': ' + minor_piecemark;
 		 transStat += '\n' + i18n.getI18NMessage(transI18+'quantity') + ': ' + quantity;
 		 transStat += '\n' + i18n.getI18NMessage(generalI18+'revision_level') + ': ' + revision_level;

@@ -48,6 +48,7 @@ function onDataChange(oldValue, newValue, event) {
 	
 	forms.customer_specs.elements.tabs.tabIndex = 2;
 
+	verifyCustomerInput(event);
 	return true;
 }
 /**
@@ -84,6 +85,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 		instance = globals.getInstanceForm(event);
 		forms['customer_specs'+instance].elements.btn_Save.enabled = (!barcode_prefix || !customer_number) ? false : true;
 	}
+	verifyCustomerInput(event);
 	return true;
 }
 /**
@@ -108,6 +110,7 @@ function onShow(firstShow, event) {
 	if (!customer_number){
 		elements.customer_number.requestFocus();
 	}
+	verifyCustomerInput(event);
 }
 
 /**
@@ -141,6 +144,19 @@ function onDataChangeBarCodePrefix(oldValue, newValue, event) {
 	barcode_preamble_length = 5;
 	barcode_fixed_length = 0;
 	var instance = globals.getInstanceForm(event);
-	forms['customer_specs'+instance].elements.btn_Save.enabled = (!barcode_prefix || !customer_number) ? false : true;
+	//forms['customer_specs'+instance].elements.btn_Save.enabled = (!barcode_prefix || !customer_number) ? false : true;
+	verifyCustomerInput(event);
 	return true;
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"520BB145-D5BF-432A-B7FB-585E88EDEA7C"}
+ */
+function verifyCustomerInput(event){
+	var instance_form = globals.getInstanceForm(event);
+	var saveBtn = forms['customer_specs'+instance_form].elements.btn_Save;
+	var form = forms['customer_contact'+instance_form];
+	//saveBtn.enabled = false;
+	saveBtn.enabled = !(!form.customer_number | !form.name | !form.barcode_prefix);
 }

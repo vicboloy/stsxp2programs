@@ -208,7 +208,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"54DC4A60-42B4-4132-9020-4439EDCC336E"}
  */
 function onActionDeleteWindow(event) {
-	scopes.jobs.warningsYes();
+	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
 	var height = controller.getWindow().getHeight();
 	var width = controller.getWindow().getWidth();

@@ -43,7 +43,7 @@ typeid:7,
 uuid:"5C7DB3CE-C3B2-4674-A22B-70701663D8E0"
 },
 {
-anchors:13,
+anchors:0,
 extendsID:"9F957B83-7142-4DB5-BEF2-9BF35E20052B",
 formIndex:7,
 typeid:4,
@@ -53,7 +53,8 @@ uuid:"83549217-B6E7-4528-803C-1CF8CBFAC287"
 extendsID:"5C78A937-DF8C-4362-834C-C79AA2AE8F40",
 formIndex:0,
 typeid:4,
-uuid:"8E89D3E6-54C2-4546-97DC-DC74B56DD980"
+uuid:"8E89D3E6-54C2-4546-97DC-DC74B56DD980",
+visible:true
 },
 {
 extendsID:"E082B205-F6E9-4457-9D80-4E59FA43A491",
@@ -79,7 +80,6 @@ uuid:"A7F8B007-BDFF-4A88-8073-8926A55890F7",
 visible:false
 },
 {
-anchors:13,
 dataProviderID:"scopes.globals.mobMenuProvider",
 displayType:11,
 fontType:"Arial,0,18",
@@ -88,7 +88,7 @@ location:"5,25",
 name:"mainMenu",
 onActionMethodID:"138D6C44-7A06-4841-B9A7-409FF1B186A0",
 onDataChangeMethodID:"-1",
-size:"230,265",
+size:"230,31",
 typeid:4,
 uuid:"ED5A1AE2-8AC5-44DB-8347-4D3042625C80",
 valuelistID:"FB987A2B-8B01-41F8-BAA0-B2752F3002E6"

@@ -1,0 +1,17 @@
+dataSource:"db:/stsservoy/i18n_table",
+encapsulation:60,
+items:[
+{
+height:49,
+partType:5,
+typeid:19,
+uuid:"232230A0-8D24-4518-A9E7-554D103AF7D5"
+}
+],
+name:"i18n_edit_list",
+showInMenu:true,
+size:"694,49",
+styleName:"sts_two",
+typeid:3,
+uuid:"67A9D4E2-8897-4EAE-ACCC-DB7B97E99068",
+view:3

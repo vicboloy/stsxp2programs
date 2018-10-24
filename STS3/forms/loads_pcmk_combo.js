@@ -7,6 +7,7 @@
  * @properties={typeid:24,uuid:"8D60FBB7-D72A-4255-8940-61A1BB25EAC1"}
  */
 function onShow(firstShow, event) {
+	//application.output('REMOVE ');
 	var versionForm = globals.getInstanceForm(event);
 	var formPrefix = event.getFormName().split("_")[0];
 	var formNameTable = formPrefix+'_pcmk_combo_table';

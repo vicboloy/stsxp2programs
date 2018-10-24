@@ -1,0 +1,10 @@
+addEmptyValue:1,
+dataProviderID1:"association_name",
+dataProviderID2:"association_uuid",
+name:"stsvl_jobs_association_thru_rel",
+relationName:"sts_assoc_to_tenant_plants",
+returnDataProviders:2,
+showDataProviders:1,
+typeid:34,
+uuid:"C1C5E8BA-D760-4F02-BD86-F8329A051963",
+valueListType:1

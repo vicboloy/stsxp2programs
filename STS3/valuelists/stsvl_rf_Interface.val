@@ -1,11 +1,9 @@
 addEmptyValue:1,
-customValues:"<NONE>\r
-FabSuite\r
-FabTrol\r
-Romac\r
-Only FabTrol",
+customValues:"i18n:sts.empty.entry\r\
+i18n:sts.interface.fabsuite\r\
+i18n:sts.interface.fabtrol\r\
+i18n:sts.interface.romac\r\
+i18n:sts.interface.fabtrol.only",
 name:"stsvl_rf_Interface",
-returnDataProviders:1,
-showDataProviders:1,
 typeid:34,
 uuid:"A77777B7-95F6-460F-8023-FC73A2BAC602"

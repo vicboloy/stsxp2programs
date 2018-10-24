@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/preferences2",
 extendsID:"34E005CA-7BD4-4026-BB88-1A0E90DD5949",
 items:[
@@ -144,7 +150,7 @@ uuid:"FB6AAB19-037F-4063-8BE5-5EDAB33A76E5"
 ],
 name:"preferences_main",
 navigatorID:"-1",
-onHideMethodID:"D0A287B8-0F23-4C9E-8821-023919515D46",
+onHideMethodID:"AE43F1AB-8D15-4F67-BB67-A2CAFAABA1F7",
 onShowMethodID:"46471F9F-18E4-4ECA-BFB0-3DB75F4EC181",
 size:"698,593",
 styleName:"sts_one",

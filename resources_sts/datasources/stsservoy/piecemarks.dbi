@@ -47,6 +47,14 @@ titleText:"i18n:table.piecemarks.cost_of_work_quantity"
 },
 {
 allowNull:true,
+creationOrderIndex:47,
+dataType:12,
+flags:4,
+length:36,
+name:"cow_xref_id"
+},
+{
+allowNull:true,
 creationOrderIndex:43,
 dataType:93,
 name:"create_date"
@@ -304,7 +312,7 @@ creationOrderIndex:12,
 dataType:12,
 length:10,
 name:"piecemark_unit_of_measure",
-titleText:"i18n:table.piecemarks.piecemark_unit_of_measure"
+titleText:"i18n:table.general.unused"
 },
 {
 allowNull:true,
@@ -313,7 +321,7 @@ creationOrderIndex:31,
 dataType:8,
 length:17,
 name:"piecemark_uom_dollars",
-titleText:"i18n:table.piecemarks.piecemark_uom_dollars"
+titleText:"i18n:table.general.unused"
 },
 {
 allowNull:true,

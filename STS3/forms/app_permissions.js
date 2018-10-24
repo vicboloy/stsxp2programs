@@ -10,7 +10,6 @@
  */
 function onHide(event) {
 	//databaseManager.removeTableFilterParam('stsservoy','filterCurrentTenant');
-	globals.setWindowClosed("");
 	onEdit(event,false);
 	onActionClose(event);
 	return _super.onHide(event)
@@ -26,8 +25,7 @@ function onHide(event) {
  * @properties={typeid:24,uuid:"ECB24AB3-5DAE-46D2-9E35-7361D5FFE6BE"}
  */
 function onActionClose(event) {
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 
 /**

@@ -55,6 +55,10 @@ var baseForm = "";
  */
 var elementShow = 0;
 /**
+ * @properties={typeid:35,uuid:"7C82F09C-B4D9-4574-BAD4-1E7903F9B76A",variableType:-4}
+ */
+var parentEvent = null;
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -151,8 +155,10 @@ function onShow(firstShow, event) {
 	if (firstShow){
 		versionForm = globals.getInstanceForm(event);
 		baseForm = event.getFormName().replace(versionForm,'');
+		parentEvent = event;
 	}
 	globals.setUserFormPermissions(event);
+	var currentForm = event.getFormName();//20181003
 	var formName = scopes.jobs.generalTableOrderTableName;
 	selAvailable = '';
 	selSelected = '';
@@ -171,6 +177,10 @@ function onShow(firstShow, event) {
 	//formy = formName; //formsInUse.pop();
 	//scopes.globals.a.tempHiddenColumns[formy] = [];
 	currentTableName = formName; // formy;
+	if (currentForm == 'piecemarks2'){
+		currentTableName = forms.piecemarks2.elements.tabs.getTabFormNameAt(5);
+	}
+	
 	tablePrefsColumnsToHide(currentTableName);
 	//var tableVersion = globals.getInstanceForm(currentTableName);
 	var elems = forms[currentTableName].elements;
@@ -261,7 +271,7 @@ function onActionShow(event) {
 		if (items.indexOf(item) == -1){
 			avail.push(item);
 		} else {
-			select.unshift(item);
+			select.push(item);//add at end, was unshift to put in first place
 		}
 	}
 	application.setValueListItems('stsvl_catTemp1',avail);
@@ -538,4 +548,17 @@ function setElementCount(){
 	var hideArray = application.getValueListArray('stsvl_catTemp1'); // items to hide, put them last
 	elementCount = hideArray.length;
 	elementShow = showArray.length;
+	if (elementShow > scopes.prefs.maxColumnShow){
+		plugins.dialogs.showErrorDialog('1263',i18n.getI18NMessage('1263'));//Number Of Shown Columns Exceeds Misc Preference Settings.
+	}
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"E6D4E879-C5D1-4F58-8AE2-8CAA5F5E2FDF"}
+ */
+function onActionSave(event) {
+	scopes.jobs.saveTableSettings(event);
 }

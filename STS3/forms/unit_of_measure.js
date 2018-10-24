@@ -150,6 +150,19 @@ function onDataChange(oldValue, newValue, event) {
  */
 function onActionClose(event) {
 	onActionCancelEdit(event);
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"3A8DCDA6-C101-4FB9-9191-6E2B7B9F8861"}
+ */
+function onHide(event) {
+	onActionClose(event);
+	return true
 }

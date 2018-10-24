@@ -82,6 +82,12 @@ var licenseDs = null;
  */
 var userDuration = "";
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"32316AE0-CDBE-45C3-AEE2-9B035E4B6A4E",variableType:4}
+ */
+var activeClients = 0;
+/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -152,6 +158,8 @@ function createLicenseTable(event){
 							i18n.getI18NMessage('table.employee.name'),
 							i18n.getI18NMessage('table.general.application.name'),
 							i18n.getI18NMessage('table.general.ip.address'),
+							i18n.getI18NMessage('table.general.login.time'),
+							i18n.getI18NMessage('table.general.logged.time'),
 							i18n.getI18NMessage('table.general.idle.time'),
 							i18n.getI18NMessage('table.employee.employee_number'),
 							i18n.getI18NMessage('table.users.user_name'),
@@ -169,13 +177,18 @@ function createLicenseTable(event){
 		rowTemplate.push(null);
 		licenseDataFormat.push(JSColumn.TEXT);
 	}
+	forms['view_license'].activeClients = clients.length;
 	for (index = 0;index < clients.length;index++){
 		var clientId = clients[index].clientId;
 		var clientInfo = plugins.UserManager.getClientByUID(clientId);
 		var userIdleDate = clientInfo.idle;
 		var userIdleMillis = userIdleDate.getTime();
+		var userLoginMillis = clientInfo.login;
 
 		var idleSeconds = Math.floor((currentMillis-userIdleMillis)/1000);
+		var logInSeconds = Math.floor((currentMillis-userLoginMillis)/1000);
+		if (idleSeconds < 0){idleSeconds = 0}
+		if (logInSeconds < 0){logInSeconds = 0}
 		var idleText = "";
 		var idleTime = idleSeconds/3600;
 		if (idleTime >= 1){
@@ -185,7 +198,19 @@ function createLicenseTable(event){
 			if (idleTime >= 1) {
 				idleText = Math.floor(idleTime*10)/10+' min';
 			} else {
-				idleText = idleSeconds+' sec';
+				idleText = Math.floor(idleTime*10)/10+' sec';
+			}
+		}
+		var loggedText = "";
+		var loggedTime = logInSeconds/3600;
+		if (loggedTime >= 1){
+			loggedText = Math.floor(loggedTime*10)/10+' hrs';
+		} else {
+			loggedTime = logInSeconds/60;
+			if (loggedTime >= 1) {
+				loggedText = Math.floor(loggedTime*10)/10+' min';
+			} else {
+				loggedText = Math.floor(loggedTime*10)/10+' sec';
 			}
 		}
 		var clientRow = rowTemplate.concat();
@@ -196,6 +221,8 @@ function createLicenseTable(event){
 		if (canKill){
 			clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.application.stop'))] = 'X';
 		}
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.login.time'))] = clientInfo.login.toDateString()+' '+clientInfo.login.toTimeString();
+		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.logged.time'))] = loggedText;
 		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.idle.time'))] = idleText;
 		//clientRow[userTableHeaders.indexOf('IP')] = clients[index].hostAddress;
 		clientRow[userTableHeaders.indexOf(i18n.getI18NMessage('table.general.active'))] = (clients[index].alive) ? 'Active' : 'Inactive';
@@ -243,6 +270,13 @@ function createLicenseTable(event){
 			item = checkForm.newTextField(label,columnPos,21,15,21);
 			item.printSliding = SM_PRINT_SLIDING.GROW_WIDTH | SM_PRINT_SLIDING.ALLOW_MOVE_X;
 			item.name = label; item.editable = false; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+			if (label == i18n.getI18NMessage('table.general.idle.time') || label == i18n.getI18NMessage('table.general.logged.time') ){
+				item.horizontalAlignment = SM_ALIGNMENT.RIGHT;
+			}
+			if (label == i18n.getI18NMessage('table.general.login.time')){
+				null;
+				//item.displayType = 
+			}
 			item.toolTipText = item.text;
 	 	}
 	}

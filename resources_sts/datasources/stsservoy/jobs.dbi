@@ -131,7 +131,7 @@ titleText:"i18n:table.jobs.job_location"
 allowNull:false,
 creationOrderIndex:2,
 dataType:12,
-length:30,
+length:50,
 name:"job_number",
 titleText:"i18n:table.jobs.job_number"
 },
@@ -190,6 +190,13 @@ dataType:12,
 length:50,
 name:"label_format",
 titleText:"i18n:table.jobs.label_format"
+},
+{
+allowNull:true,
+creationOrderIndex:34,
+dataType:12,
+length:50,
+name:"labelase_format"
 },
 {
 allowNull:true,

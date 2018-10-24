@@ -7,6 +7,13 @@ form {
 	border: 0px solid;
 }
 
+tr.noborder {
+	border : 0
+}
+
+td.noborder {
+	border  : 0
+}
 
 tabpanel {
 	color: black;
@@ -31,7 +38,6 @@ field, combobox {
 }
 
 field.required,combobox.required {
-	font-style : bold;
 	color: black;
 	font-family: Arial;
 	font-size: 11px;

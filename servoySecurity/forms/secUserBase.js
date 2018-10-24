@@ -18,7 +18,10 @@ var userGroups = null;
  * @properties={typeid:35,uuid:"3AD72C25-2E35-4E73-B980-02CDFAD81557"}
  */
 var userPassword = null;
-
+/**
+ * @properties={typeid:35,uuid:"EEABB406-2720-4A68-AD2F-2C757651BE8C",variableType:-4}
+ */
+var changeTime = null;
 /**
  * Handle changed data for the userGroups variable
  * Which stores a carriage return-delimted list of linked Group ids
@@ -35,6 +38,9 @@ var userPassword = null;
  * @AllowToRunInFind
  */
 function onDataChangeUserGroups(oldIDs, newIDs, event) {
+	var changeDelta = new Date().getTime()-changeTime;
+	if (changeDelta < 300){return true}
+	
 																			//	Variable Declarations
 	var fs = users_to_user_groups.duplicateFoundSet();						//	The related foundset 
 	var idColumnName = 'group_uuid';											//	The name of the fk id column to set
@@ -50,8 +56,10 @@ function onDataChangeUserGroups(oldIDs, newIDs, event) {
 	if(newIDs.length > oldIDs.length){										//	check difference: id was ADDED
 		id = newIDs[newIDs.length - 1];									//	determine the id, starting with the last element in the array
 		for(i in oldIDs){													//	iterate by the old ids
-			if(oldIDs[i] != newIDs[i])										//	until the corresponding new id doesn't match
+			if(oldIDs[i] != newIDs[i]){										//	until the corresponding new id doesn't match
 				id = newIDs[i];												//	which gives the id that was added
+				break;
+			}
 		}
 		if(fs.newRecord()){													//	create the related record
 			fs[idColumnName] = id;											//	set the foreign key column value
@@ -59,19 +67,35 @@ function onDataChangeUserGroups(oldIDs, newIDs, event) {
 			fs.edit_date = new Date();
 			databaseManager.saveData(fs.getSelectedRecord());				//	save data
 		}
-	} else {																//	id was REMOVED	
-		id = oldIDs[oldIDs.length - 1];									//	determine the id, starting with the last element in the array
-		for(i in newIDs){													//	iterate by the new ids
-			if(oldIDs[i] != newIDs[i])										//	until the corresponding old id doesn't match
-				id = oldIDs[i];												//	which gives the id that was removed
+		for (i in oldIDs){
+			if (oldIDs[i] == id){continue}
+			if(fs.find()){														//	search the foundset
+				fs[idColumnName] = oldIDs[i];											//	by the fk column
+				if(fs.search())																					
+					fs.deleteRecord();											//	delete record
+			}
 		}
-		if(fs.find()){														//	search the foundset
-			fs[idColumnName] = id;											//	by the fk column
-			if(fs.search())																					
-				fs.deleteRecord();											//	delete record
+	} else {//delete the key		
+		id = oldIDs[oldIDs.length - 1];									//	determine the id, starting with the last element in the array
+		//for (i = 0;i < newIDs.length;i++){
+		for(i in newIDs){													//	iterate by the new ids
+			if(oldIDs[i] != newIDs[i]){										//	until the corresponding old id doesn't match
+				id = oldIDs[i];												//	which gives the id that was removed
+				break;
+			}
+		}
+		for (i in oldIDs){
+			//if (oldIDs[i] == id){continue}
+			if(fs.find()){														//	search the foundset
+				fs[idColumnName] = id;											//	by the fk column
+				if(fs.search())																					
+					fs.deleteRecord();											//	delete record
+			}
 		}
 	}
 	updateUI(event);																//	update user interface
+	changeTime = new Date().getTime();
+	if (forms['division_user_details']){forms['division_user_details'].verifyNewUserInput(event);}
 	return true;															//	allow data change
 }
 
@@ -170,8 +194,14 @@ function validateUserName(event){
 		errorMessage = i18n.getI18NMessage('sts.txt.provide.user.name');
 		return false;														//	failed validation
 	}
+	databaseManager.removeTableFilterParam('stsservoy','filterAssocUSERS');//disable USER Filters for user existence check
 	var id = globals.secGetUserID(user_name,tenant_uuid);						//	Check user ID
+	if (!globals.session.corpUser){
+		databaseManager.addTableFilterParam('stsservoy','users','association_uuid','=',globals.session.associationId,'filterAssocUSERS');//Re-enable user assoc table filters
+	}
+
 	if(id && id != user_uuid){												//	It should be unique
+		plugins.dialogs.showErrorDialog('1260',i18n.getI18NMessage('1260'));//User Name Already In Use In A Division.
 		errorMessage = i18n.getI18NMessage('sts.txt.user.name.already.in.use');
 		/** @type {QBSelect<db:/stsservoy/users>} */
 		return false;														//	failed validation

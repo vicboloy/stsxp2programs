@@ -58,6 +58,7 @@ function onRenderRequestBarCount(event) {
 	if (rend){
 		if (rec && !rend.toolTipText){
 			rend.toolTipText = scopes.kiss.importExistingRecStatus(rec);
+			forms['kiss_option_import'].importRecData = rend.toolTipText;
 		}
 		if (rend && rec && rec.lprint != 1 && rec.selected == 1){color = "green"}
 		if (rend && rec && rec.lprint == 1 && rec.selected == 0){color = "yellow"}
@@ -117,7 +118,8 @@ function onRenderRequestBarCount(event) {
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
-	foundset.loadRecords();
+	elements.selection.visible = false;//remove selection tab temporarily as per P2 20180816
+	foundset.loadAllRecords();
 	null;
 	//scopes.kiss.setDbTableCounts(event);
 	//databaseManager.getTableFilterParams('stsservoy');
@@ -212,4 +214,24 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	var rec = foundset.getRecord(idx);
 	if (rec){databaseManager.saveData(rec)}
 	return true;
+}
+/**
+ * @param {Boolean} hide
+ *
+ * @properties={typeid:24,uuid:"48F7E7BB-4D46-4073-A194-3887F2CDAB55"}
+ */
+function hideIgnoredRecords(hide){
+	databaseManager.saveData(foundset);
+	if (hide){
+		/** @type {QBSelect<db:/stsservoy/import_table>} */
+		var q = databaseManager.createSelect('db:/stsservoy/import_table');
+		q.where.add(q.columns.import_status.not.eq(i18n.getI18NMessage('import.ignore')));
+		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		foundset.loadRecords(databaseManager.getFoundSet(q));
+	} else {
+		/** @type {QBSelect<db:/stsservoy/import_table>} */
+		q = databaseManager.createSelect('db:/stsservoy/import_table');
+		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		foundset.loadRecords(databaseManager.getFoundSet(q));
+	}
 }

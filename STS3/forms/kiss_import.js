@@ -206,7 +206,10 @@ function fileReceipt(file){
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
 function getKissFile(event){
-	scopes.jobs.warningsYes();
+	controller.enabled = false;
+	scopes.kiss.saveImportSettings(event);
+
+	scopes.jobs.warningsYes(event);
 	if (!useKissFile){
 		var verified = scopes.fs.verifyKissImportFilters(event);
 		if (!verified){
@@ -223,10 +226,16 @@ function getKissFile(event){
 		elements.btn_GetKiss.enabled = false;
 		elements.btn_Close.enabled = false;
 		elements.btn_Clear.enabled = false;
-		var servoyDir = scopes.prefs.importpath;
-		//var servoyDir = plugins.UserManager.Client().userDir;
+		///var servoyDir = scopes.prefs.importpath;
+		var servoyDir = plugins.UserManager.Client().userDir;
 		var randFile = 'Import'+new Date().getTime()+'.kss';
-		var servoyDir = servoyDir+'\\'+randFile;
+		
+		servoyDir = servoyDir+'\\'+randFile;
+		servoyDir = plugins.file.getDefaultUploadLocation()+scopes.prefs.importpath+"\\"+randFile;
+		///servoyDir = plugins.file.getDefaultUploadLocation()+servoyDir+"\\"+randFile;
+		//servoyDir = servoyDir.replace(/\//g,'\\');
+		application.output('Directory '+servoyDir);
+		servoyDir = servoyDir.replace(/\/+/g,'\\').replace('.','');
 		servoyDir = servoyDir.replace('[A-Za-z]//','');
 		application.output('Import file '+servoyDir);
 		var request = '<FabSuiteXMLRequest>\n\
@@ -289,6 +298,7 @@ function getKissFile(event){
 		application.output(file+' file write to '+servoyDir+ ' server success: '+success);
 		return;
 	}
+	removeJobImportData(scopes.jobs.importJob.jobId);
 	scopes.kiss.importFSOnServer(event,request,filters);//IMPORT 1 importFSOnServer
 	
 	/**
@@ -391,8 +401,8 @@ function onActionAddTenant(event) {
  * @properties={typeid:24,uuid:"14C4356A-ACE9-4C1C-BB23-03CE563F6DDF"}
  */
 function onActionHide(event) {
-	globals.mainWindowFront();
-	globals.stopWindowTrack();
+	globals.stopWindowTrackEvent(event);
+	return true;
 }
 /**
  * Callback method for when form is shown.
@@ -410,6 +420,7 @@ function onShow(firstShow, event) {
 		scopes.fs.importData.lots.push('');
 		scopes.fs.importData.mainMarks.push('');*/
 	}
+	controller.enabled = true;
 	//globals.setUserFormPermissions(event);
 	onActionClearForm(event);
 	elements.btn_GetKiss.enabled = false;
@@ -498,4 +509,50 @@ function onDataChangeLotSeq(oldValue, newValue, event) {
 		vLotAll = (newValue == '') ? 1 : 0;
 	}
 	return true
+}
+/**
+ * @param jobId
+ *
+ * @properties={typeid:24,uuid:"8BC9501F-B6DC-4472-A474-31AB196BBEC3"}
+ */
+function removeJobImportData(jobId){
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var q = databaseManager.createSelect('db:/stsservoy/import_table');
+	q.where.add(q.columns.job_id.eq(jobId));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.result.add(q.columns.import_table_id);
+	var Q = databaseManager.getFoundSet(q);
+	if (application.isInDeveloper()){application.output('size of import table records '+Q.getSize())}
+	var tableIds = [];
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var rec = null; var idx = 1;
+	while (rec = Q.getRecord(idx++)){
+		tableIds.push(rec.import_table_id);
+	}
+	tableIds.sort();
+	/** @type {QBSelect<db:/stsservoy/import_guids>} */
+	var s = databaseManager.createSelect('db:/stsservoy/import_guids');
+	s.where.add(s.columns.import_table_id.isin(tableIds));
+	s.result.add(s.columns.import_guid_uuid);
+	var S = databaseManager.getFoundSet(s);
+	if (application.isInDeveloper()){application.output('size of import guid records '+S.getSize())}
+	success = S.deleteAllRecords();
+	if (application.isInDeveloper()){application.output('Delete job GUIDs: '+success)}
+	var success = Q.deleteAllRecords();
+	if (application.isInDeveloper()){application.output('Delete job import Records: '+success)}
+	null;
+	
+}
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"3F9F8BA4-461C-4292-9413-1E7E3A99396F"}
+ */
+function onHide(event) {
+	globals.stopWindowTrackEvent(event);
+	return _super.onHide(event)
 }

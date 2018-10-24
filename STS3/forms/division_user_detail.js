@@ -133,12 +133,14 @@ function onRecordSelection(event) {
 	assoc.result.add(assoc.columns.logic_flag);
 	/** @type {JSRecord<db:/stsservoy/associations>} */
 	var a = databaseManager.getFoundSet(assoc);
+	rec = null;
 	if (a.getSize() != 0){
+		/** @type {JSFoundSet<db:/stsservoy/associations>} */
 		var rec = a.getRecord(1);
-		isAdminAccount = (rec.logic_flag == 1) ? i18n.getI18NMessage('sts.txt.login.administrative') : i18n.getI18NMessage('sts.txt.login.shop');
+		isAdminAccount = (rec.association_uuid == rec.tenant_group_uuid) ? i18n.getI18NMessage('sts.txt.login.corporate') : '';
 	}
 	userGroups = databaseManager.getFoundSetDataProviderAsArray(users_to_user_groups,'group_uuid').join('\n');
-	if (rec.logic_flag){
+	if (rec && rec.logic_flag){
 		var officeViewsMobile = globals.session.rfViewsOffice.concat([]);
 		officeViewsMobile.unshift(i18n.getI18NMessage('sts.mobile.allow.no.views'));
 		application.setValueListItems('stsvlt_remoteViews',officeViewsMobile);
@@ -174,6 +176,14 @@ function validateUserName(oldValue, newValue, event) {
 	}
 	var validation = _super.validateUserName(oldValue, newValue, event);
 	if (!validation){
+		if (!globals.session.corpUser){//if not CORP skip loading current user
+			databaseManager.revertEditedRecords(foundset);
+			stopEditing(event);
+			//foundset.relookup();
+			foundset.setSelectedIndex(1);
+			verifyNewUserInput(event);
+			return true;			
+		}
 		stopEditing(event);
 		/** @type {QBSelect<db:/stsservoy/users>} */
 		var u = databaseManager.createSelect('db:/stsservoy/users');
@@ -186,9 +196,11 @@ function validateUserName(oldValue, newValue, event) {
 			/** @type {JSRecord<db:/stsservoy/users>} */
 			var rec = U.getRecord(1);
 			foundset.selectRecord(rec.user_uuid);
+			verifyNewUserInput(event);
 			return true;
 		}
 	}
+	verifyNewUserInput(event);
 	return true;
 }
 /**
@@ -368,4 +380,27 @@ function onActionSelectMCView(event) {
 		userMobileViewList = '';
 	}
 	null;
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"C350AD48-8592-4968-977C-2D643E7113A5"}
+ */
+function verifyNewUserInput(event){
+	if (is_account_active == null){is_account_active = false}
+	if (use_dual_entry == null){use_dual_entry = false}
+	if (is_admin_account == null){is_admin_account = false}
+	var form = forms['division_user_detail'];
+	var saveBtn = form.elements.btn_Save;
+	saveBtn.enabled = !(!form.user_name || !form.association_uuid || !userGroups);
+}
+/**
+ * Handle focus lost event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"146E2F02-6B16-463F-9F54-924C2E4E1C3F"}
+ */
+function onFocusLostPermGroups(event) {
+	verifyNewUserInput(event);
 }

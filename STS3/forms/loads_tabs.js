@@ -22,7 +22,7 @@ function onHide(event) {
  */
 function onShow(firstShow, event) {
 	if (firstShow){
-		versionForm = globals.getInstanceForm(event);
+		versionForm = globals.getInstanceForm(event.getFormName());
 		baseForm = event.getFormName().replace(versionForm,'');
 	}
 }

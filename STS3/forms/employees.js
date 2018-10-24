@@ -49,6 +49,7 @@ function onLoadEmployees(event) {
 	if (globals.employeesDividerLocation == 0.0) {
 		elements.tabs.dividerLocation = 270.0;
 	}
+	databaseManager.saveData(foundset);
 }
 
 /**
@@ -61,7 +62,7 @@ function onLoadEmployees(event) {
  */
 function onShow(firstShow, event) {
 	//if (firstShow){foundset.loadAllRecords();}
-	onLoadCreateRecord(event);
+	//onLoadCreateRecord(event);
 	if (firstShow){
 		scopes.jobs.formPermissions(event,false);
 	}

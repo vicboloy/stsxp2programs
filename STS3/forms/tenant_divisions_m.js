@@ -36,6 +36,7 @@ function onActionClose(event) {
 function onShow(firstShow, event) {
 	globals.setUserFormPermissions(event,false);
 	controller.loadRecords(st2_tenantid_associations);
+	elements.btn_Save.enabled = false;
 	return _super.onShow(firstShow, event)
 }
 /**
@@ -56,6 +57,8 @@ function onEdit(event,editing){
 	elements.btn_Cancel.visible = editing;
 	elements.btn_Edit.enabled = !editing;
 	elements.btn_Edit.visible = !editing;
-	elements.btn_Save.enabled = editing;
+	if (!(!association_name)){
+		elements.btn_Save.enabled = editing;
+	}
 	elements.btn_Save.visible = editing;
 }

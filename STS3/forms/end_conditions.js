@@ -164,8 +164,7 @@ function onDataChange(oldValue, newValue, event) {
  */
 function onActionClose(event) {
 	onActionCancelEdit(event);
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 /**
  * @properties={typeid:24,uuid:"F8C719B4-53B2-491C-B582-F96AE633DEE7"}
@@ -178,4 +177,17 @@ function loadFoundset(){
 	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	var E = databaseManager.getFoundSet(e);
 	foundset.loadRecords(E);
+}
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"11926D97-D10B-4692-B097-261527B82EF8"}
+ */
+function onHide(event) {
+	onActionClose(event);
+	return true
 }

@@ -14,6 +14,8 @@ function addRecord(event) {
 	globals.selectedCustomerIndex = controller.getSelectedIndex();
 	forms[spec_form].onActionEdit(event,true);
 	forms[list_form].controller.newRecord();
+	forms[spec_form].elements.tabs.setTabEnabledAt(4,false);//disable addresses tab after save
+
 	globals.newCustomerRecord = null; //reset customer record for save current edit record
 }
 

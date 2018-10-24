@@ -5,6 +5,9 @@
  * @properties={typeid:24,uuid:"D7C111F4-9C2F-486B-B364-D6F36E7F90C9"}
  */
 function editStatus(edit){
+	if (edit){
+		elements.cowCode.requestFocus();
+	}
 	controller.readOnly = !edit;
 	//elements.btn_New.visible = !edit;
 	elements.btn_New_2.enabled = !edit;
@@ -16,6 +19,8 @@ function editStatus(edit){
 	//elements.btn_Edit.visible = false;
 	elements.btn_Delete.visible = (!edit && (foundset.getSize() != 0));
 	elements.btn_Edit.visible = (!edit && (foundset.getSize() != 0));
+	elements.tabless.enabled = !edit;
+	elements.tabless_1.enabled = !edit;
 }
 /**
  * Perform the element default action.

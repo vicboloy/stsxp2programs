@@ -20,6 +20,12 @@ var printerName = '';
  * @properties={typeid:35,uuid:"ECFB8283-AB57-46B4-B004-F9A91E8505C1"}
  */
 var labelName = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"71800FA6-EF59-4438-A222-DED6000BF595"}
+ */
+var labeLaseTemplate = '';
 
 /**
  * Callback method for when form is shown.
@@ -31,12 +37,14 @@ var labelName = '';
  */
 function onShow(firstShow, event) {
 	if (firstShow){
-		scopes.prefs.getLocalPrinters();
-		scopes.prefs.getBTLabelFormats();
 		elements.btn_UpdatePreferences.enabled = false;
 		elements.btn_SessionPreferences.enabled = false;
 		labelType = i18n.getI18NMessage('sts.txt.id.label.default');
 		printerName = scopes.printer.idBarcodePrinter;
 		labelName = scopes.printer.idBarcodeLabelFormat;
+		labeLaseTemplate = scopes.printer.idLabeLaseTemplate;
 	}
+	scopes.prefs.getLocalPrinters();
+	scopes.prefs.getBTLabelFormats();
+	scopes.prefs.getLabeLaseLabelFormats();
 }

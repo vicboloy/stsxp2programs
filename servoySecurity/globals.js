@@ -6,6 +6,12 @@
  */
 var viewport = '<html><head></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3CC8707C-679F-4555-AAFF-FC0305F56813"}
+ */
+var viewportSrc = '<html><head></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
+/**
  * @properties={typeid:35,uuid:"37FC297E-D636-4141-AD24-87FC6C6B87AB",variableType:-4}
  */
 var viewport2 = new XML(<html>
@@ -252,6 +258,12 @@ var secLicenses = [];
  * @properties={typeid:35,uuid:"3A728C0C-74FE-4A29-8918-C1CD89BFC628"}
  */
 var fabsuiteCom = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C5D26530-8882-49D3-9A47-9767174446B1"}
+ */
+var clientUserAgent = '';
 /**
  * @type {String}
  *
@@ -508,6 +520,7 @@ function secCheckPassword(userID, password){
 function secCreateGroup(groupName, tenantID, appID){
 																		//	variable declarations
 	var groups;															//	the groups foundset
+	var recDate = new Date();
 	
 	if(!groupName){														//	validate input	
 		return null;
@@ -525,6 +538,7 @@ function secCreateGroup(groupName, tenantID, appID){
 				groups.group_name = groupName;							//	set the group name
 				groups.tenant_uuid = tenantID;							//	set the tenant ID
 				groups.application_id = appID;							//	set the app ID
+				groups.edit_date = recDate;
 				if(databaseManager.saveData(groups.getSelectedRecord())){
 					return groups.getSelectedRecord();					//	return the group	
 				}
@@ -730,6 +744,10 @@ function secSetCurrentApplication(applicationID){
  * @AllowToRunInFind
  */
 function secSetCurrentTenant(tenantID){
+	if (!tenantID && (application.getSolutionName().search('STS X Embedded') == -1)){
+		tenantID = secCreateTenant('P2Programs');
+		secCreateUser('P','p',application.getUUID(tenantID));
+	}
 	if (application.getSolutionName().search('STS X Embedded') != -1){//Create tenant for Embedded otherwise, all zeroes
 		/** @type {QBSelect<db:/stsservoy/tenant_list>} */
 		var q = databaseManager.createSelect('db:/stsservoy/tenant_list');
@@ -838,13 +856,16 @@ function secCreateAssociation(assocName){
 		} 			//  only one admin association
 		
 		assoc.tenant_uuid = secCurrentTenantID;
-		if(!assoc.search() && assoc.newRecord()){						//	association name is unique. create the association record
+		var search = assoc.search(); var idx = null;
+		if(!search && (idx = assoc.newRecord())){						//	association name is unique. create the association record
+			assoc.getRecord(idx);
 			assoc.association_name = assocName;							//	set the company name
 			assoc.tenant_uuid = secCurrentTenantID;
 			if (assocName == "ADMIN"){
 				assoc.tenant_group_uuid = secCurrentTenantID;
 				assoc.association_name = "OFFICE";
 				assoc.logic_flag = 1;
+				assoc.licenses_desktop = 1;
 			}
 			if (application.isInDeveloper()){application.output('Create assoc '+assocName+' in UUID '+secCurrentTenantID);}
 			//associationArray.push(assoc.association_uuid);
@@ -1015,6 +1036,7 @@ function secGetUserID2(userName, tenantID) {
  * @AllowToRunInFind
  */
 function getTenantCount(){
+	var creDate = new Date();
 	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
 	var tent = databaseManager.getFoundSet('stsservoy','tenant_list');
 	tent.loadAllRecords();
@@ -1036,6 +1058,7 @@ function getTenantCount(){
 				rec2.employee_lastname = "Parks";
 				rec2.employee_number = "P2";
 				rec2.employee_workphone = "512-858-2007";
+				rec2.edit_date = creDate;
 				databaseManager.saveData(rec2);
 				empID = rec2.employee_id;
 			}
@@ -1052,7 +1075,7 @@ function getTenantCount(){
 		adminUser.employee_id = empID;
 		//getBasePermissions(adminUser.user_uuid,tenantRec.tenant_uuid);
 		databaseManager.saveData();
-		var tablesToClear = ['addresses','carrier','cow_xref','cowcodes','customers','employee','employee_class','end_conditions',
+		var tablesToClear = ['addresses','carrier','cow_xref','cowcodes','customers','employee_class','end_conditions',
 		'heats','id_serial_numbers','idfiles','jobs','labor_codes','labor_department','last_id_serial','loads','lots',
 		'piecemarks','preferences2','rf_transactions','route_detail','routings','sequences','sheets','status_description',
 		'transactions','uom_types'
@@ -1064,6 +1087,8 @@ function getTenantCount(){
 			var fs = databaseManager.getFoundSet('stsservoy',tablesToClear[index]);
 			fs.loadRecords();
 			if (fs.getSize() == 0){continue}
+			var rec = null; idx = 0;
+			fs.deleteAllRecords();
 			var table = databaseManager.getTable('stsservoy',tablesToClear[index]);
 			/* @type {Array} */
 			var tableNames = table.getColumnNames();
@@ -1080,7 +1105,7 @@ function getTenantCount(){
 	}
 	databaseManager.saveData();
 	if (application.getSolutionName() != 'STS X Embedded'){
-		databaseManager.addTableFilterParam('stsservoy','tenant_list','tenant_uuid','=','EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE','noEmbedded');
+		databaseManager.addTableFilterParam('stsservoy','tenant_list','tenant_uuid','!=','EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE','noEmbedded');
 	}
 	tent.loadAllRecords();
 	return tent.getSize();
@@ -1916,12 +1941,42 @@ function secCheckLicense(solutionName,tenantID,userID){
 	var clientArray = plugins.UserManager.getClients();
 
 	//licensed += ' clients '+clientArray.length;
+	var clientsOverIdle = [];
+	var currentDate = new Date();
+	var maxIdle = getPrefsMaxIdleMinutes(tenantID);
+	var clientOver = '';
+	var clientDeskTimedOut = '';
+	var clientMobileTimedOut = '';
+	var clientMaxTime = 0;
+	var clientDeskMaxTime = 0;
+	var clientMobileMaxTime = 0;
 	for (var index = 0;index < clientArray.length;index++){
 		var client = clientArray[index];
-		client = client.clientId;
+		var clientId = client.clientId;
 		var clientInfo = plugins.UserManager.getClientByUID(client);
-		var clientSolution = clientInfo.solutionName;
-		application.output('clientSolution '+clientSolution);
+		var clientSolution = (clientInfo.solutionName) ? clientInfo.solutionName : 'Login';
+		var clientIdle = (clientInfo.idle) ? clientInfo.idle : currentDate;
+		var clientIdleTime = (currentDate - clientIdle.getTime())/60000;
+		if (clientSolution.search('mobile') != -1){
+			if (clientIdleTime > clientMobileMaxTime){
+				clientMobileMaxTime = clientIdleTime;
+				clientMobileTimedOut = clientId;
+			}
+		} 
+		if (clientSolution.search('STS3') != -1){
+			if (clientIdleTime > clientDeskMaxTime){
+				clientDeskMaxTime = clientIdleTime;
+				clientDeskTimedOut = clientId;
+			}
+			
+		}
+		//application.output('client idletime '+clientIdleTime);
+		//if ((currentDate - clientIdle.getTime() > maxIdle)){
+		//	clientsOverIdle[client] = clientIdleTime;
+		//	application.output('this client can die');
+		//	clientsOver += client.split('-')[0]+',';
+		//}
+		//application.output('clientSolution '+clientSolution);
 		if (!clientSolution){continue}//REMOVE unable to login verification. Why?
 		
 		if (allUsers.indexOf(clientInfo.userUid+"") == -1){continue} // not in this company
@@ -1937,13 +1992,26 @@ function secCheckLicense(solutionName,tenantID,userID){
 		}
 	}
 	var licAvail = 0;
+	var killed = 'no';
 	if (solutionName.search('mobile') != -1){
 		licAvail = licenseAvail['STSmobile'] - licensesInUse['STSmobile'];
+		if (licAvail == 0 && clientMobileMaxTime > maxIdle){
+			var clientObj = plugins.UserManager.getClientByUID(clientMobileTimedOut);
+			clientObj.shutdown();
+			licAvail = 1;
+			killed = 'yes';
+		}
 	}
 	if (solutionName.search('STS3') != -1){
 		licAvail = licenseAvail['STS3'] - licensesInUse['STS3'];		
+		if (licAvail == 0 && clientDeskMaxTime > maxIdle){
+			clientObj = plugins.UserManager.getClientByUID(clientDeskTimedOut);
+			clientObj.shutdown();
+			licAvail = 1;
+			killed = 'yes';
+		}
 	}
-	licensed += "License:"+licAvail+":"+licenseAvail[solutionName]+":"+licensesInUse[solutionName];
+	licensed += "License:"+licAvail+":"+licenseAvail[solutionName]+":"+licensesInUse[solutionName]+':'+clientOver+' '+clientMaxTime+' max idle pref '+maxIdle+' killed '+killed;
 
 	return licensed;
 }
@@ -2012,6 +2080,7 @@ function getBasePermissions(userId,newTenant){
 	*/
 	var keyMap = [];
 	var grpMap = [];
+	var recDate = new Date();
 	for (var index = 0;index < permsTables.length;index++){
 		var table = databaseManager.getFoundSet('stsservoy',permsTables[index]);
 		var tableIds = databaseManager.getTable(table).getRowIdentifierColumnNames();
@@ -2052,10 +2121,49 @@ function getBasePermissions(userId,newTenant){
 							default:
 						}
 						newRec.tenant_uuid = newTenant;
+						if (!newRec.edit_date){
+							newRec.edit_date = recDate;
+						}
 					}
 					ind1++;
 				}
 			}
 		}
 	}
+}
+/**
+ * @properties={typeid:24,uuid:"ABF6D293-E12A-4135-9A12-7C0F965B8CC7"}
+ * @param tenantID
+ */
+function getPrefsMaxIdleMinutes(tenantID){
+	/** @type {QBSelect<db:/stsservoy/preferences2>} */
+	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
+	q.result.add(q.columns.field_value);
+	q.where.add(q.columns.tenant_uuid.eq(tenantID));
+	q.where.add(q.columns.field_name.eq('maxIdleMinutes'));
+	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	if (Q.getMaxRowIndex() > 0){
+		Q.rowIndex = 1;
+		return Q.field_value;
+	}
+	return 20;
+}
+/**
+ * @properties={typeid:24,uuid:"D73A402F-3408-4BE4-B46C-5D07F89C07AC"}
+ */
+function getBrowserInfo(){
+	null;
+	plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
+	null;
+
+}
+/**
+ * @param userAgent
+ *
+ * @properties={typeid:24,uuid:"5CDAD678-12AB-4030-A185-114CBABCC805"}
+ */
+function storeUserAgentOnLogin(userAgent){
+	globals.clientUserAgent = userAgent;
+	application.output('RM '+userAgent);
 }

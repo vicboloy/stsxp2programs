@@ -59,20 +59,22 @@ function onActionRemoveSelected(event) {
 	null;
 	globals.doDialog(message,
 						message,
-						i18n.getI18NMessage('sts.btn.purge.selected'),
-						i18n.getI18NMessage('sts.txt.cancel'));
+						i18n.getI18NMessage('sts.btn.purge.selected'),//yes
+						i18n.getI18NMessage('sts.btn.cancel'));//no
 		//'Remove Selected Records','Remove the Selected Records?','Remove','Cancel');
 	if (globals.dialogResponse.toLowerCase() != 'yes'){
 		return;
 	}
 	globals.doDialog(message,
 						i18n.getI18NMessage('sts.txt.purge.permanent'),
-						i18n.getI18NMessage('sts.txt.cancel'),
-						i18n.getI18NMessage('sts.btn.purge.selected'));
+						i18n.getI18NMessage('sts.btn.yes'),//yes
+						i18n.getI18NMessage('sts.btn.no'));//no
 		//'Remove Selected Records','This permanently purges/removes records. \nContinue with REMOVE?','Cancel','REMOVE');
 	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		return;
 	}
+	application.output('purging job')
+	//if (1==1){return}
 	if (purgeJob){
 		//Are all idfiles deleted? Meaning NO idfiles on a search through job->sheets->piecemark->idfiles
 		var instance = forms['remove_criteria'].versionForm;
@@ -84,7 +86,7 @@ function onActionRemoveSelected(event) {
 			return;
 		}
 		if (application.isInDeveloper()){application.output('Job Empty. Ok to PURGGE');}
-		scopes.jobs.warningsYes();
+		scopes.jobs.warningsYes(event);
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['JOB']),true);
 		scopes.jobs.deleteEntireJob(jobId);
 		scopes.jobs.warningsX();
@@ -124,6 +126,7 @@ function onActionRemoveSelected(event) {
  */
 function onShow(firstShow, event) {
 	purgeJob = false;
+	foundset.loadAllRecords();
 	return _super.onShow(firstShow, event)
 }
 

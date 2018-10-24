@@ -15,6 +15,7 @@ tabpanel {
 }
 
 label {
+	color :blue;
 	color: black;
 	font-family: Arial;
 	font-size: 11px;
@@ -37,6 +38,7 @@ button, combobox, check, radio, spinner {
 	text-align: left;
 	vertical-align: middle;
 }
+
 
 listbox {
 	color: green;
@@ -76,10 +78,28 @@ label.fieldlabel {
 	font-size: 12px;
 }
 
+label.darker {
+	color: black;
+	
+}
+
 label.title {
 	font-size: 12px;
 }
 
+label.notice {
+	font-size:33px;
+	color:gray;
+	opacity:0.3;
+}
+
+button.notice {
+	color:lime;
+	font-size:100px;
+}
+button.larger, label.larger {
+	font-size: 13px;
+}
 button {}
 
 portal {}

@@ -38,12 +38,23 @@ field, combobox {
 	margin-right: 3px;
 }
 
+field.required,combobox.required,check.required {
+	color: black;
+	font-family: Arial;
+	font-size: 11px;
+	text-align: left;
+	vertical-align: middle;
+	border-color: yellow;
+	background-color : yellow;
+}
+
 combobox {
-		color: yellow;
+		color: black;
 	font-family: Arial;
 	font-size: 10px;
 	text-align: left;
 	vertical-align: middle;
+	background-color:white;
 }
 
 check {}

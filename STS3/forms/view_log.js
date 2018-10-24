@@ -15,8 +15,7 @@ var localTime = "";
 function onActionClose(event) {
 	//forms.sts_nav_default.elements.tabless.visible = true;
 	plugins.scheduler.removeJob('refreshLogger');
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 
 /**
@@ -81,5 +80,6 @@ function onActionFilter(event) {
 function onHide(event) {
 	var jobNames = plugins.scheduler.getCurrentJobNames();
 	if (jobNames.indexOf('refreshLogger') != -1){plugins.scheduler.removeJob('refreshLogger')}
+	onActionClose(event);
 	return _super.onHide(event)
 }

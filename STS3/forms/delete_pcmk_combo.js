@@ -45,12 +45,15 @@ function onActionSelectAll(event) {
 	scopes.jobs.warningsMessage('Selecting records, please wait...',true);
 	var formName = event.getFormName();
 	var fs = forms[formName+'_table'].foundset;
-	var i = 1;
-	while (i <= fs.getSize()){
-		scopes.jobs.warningsMessage('Selecting records, please wait...',false);
-		var rec = fs.getRecord(i++);
-		rec.selection = 1;
-	}
+	var updater = databaseManager.getFoundSetUpdater(fs);
+	updater.setColumn('selection',1);
+	updater.performUpdate();
+	//var i = 1;
+	//while (i <= fs.getSize()){
+	//	scopes.jobs.warningsMessage('Selecting records, please wait...',false);
+	//	var rec = fs.getRecord(i++);
+	//	rec.selection = 1;
+	//}
 	scopes.jobs.warningsMessage('',true);
 	scopes.jobs.warningsX();
 
@@ -66,14 +69,17 @@ function onActionSelectAll(event) {
 function onActionClearAll(event) {
 	var formName = event.getFormName();
 	var fs = forms[formName+'_table'].foundset;
-	scopes.jobs.warningsYes();
+	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage('Clearing Selected Messages, please wait...',true);
-	var i = 1;
-	while (i <= fs.getSize()){
-		scopes.jobs.warningsMessage('Clearing Selected Messages, please wait...',false);
-		var rec = fs.getRecord(i++);
-		rec.selection = 0;
-	}
+	var updater = databaseManager.getFoundSetUpdater(fs);
+	updater.setColumn('selection',0);
+	updater.performUpdate();
+	//var i = 1;
+	//while (i <= fs.getSize()){
+	//	scopes.jobs.warningsMessage('Clearing Selected Messages, please wait...',false);
+	//	var rec = fs.getRecord(i++);
+	//	rec.selection = 0;
+	//}
 	scopes.jobs.warningsMessage('',true);
 	scopes.jobs.warningsX();
 }
@@ -88,30 +94,35 @@ function onActionClearAll(event) {
 function onActionDeleteSelected(event,formName) {
 	scopes.jobs.deleteDataJobId = forms.delete_criteria.vJobID;
 	var message = i18n.getI18NMessage('sts.txt.delete.records.selected');
+	var messageAlt = i18n.getI18NMessage('sts.txt.delete.cancel.records.selected');
 	var button = i18n.getI18NMessage('sts.btn.delete');
 	if (deleteHistory){
 		message = i18n.getI18NMessage('sts.txt.delete.records.history');
+		messageAlt = i18n.getI18NMessage('sts.txt.delete.cancel.records.history')
 		button = i18n.getI18NMessage('sts.btn.purge.selected');
 	}
 	globals.doDialog(message,
 		message,
-		button,
-		i18n.getI18NMessage('sts.txt.cancel'));
+		i18n.getI18NMessage('sts.btn.cancel'),//yes
+		i18n.getI18NMessage('sts.btn.yes'));//no
 		//'Delete Selected Records','Delete the Selected Records?','Delete','Cancel');
-	if (globals.dialogResponse.toLowerCase() != 'yes'){
+	//application.output('1st response:'+globals.dialogResponse)
+	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		//application.output('delete cancelled');
 		return;
 	}
 	//application.output('ask second question');
 	globals.doDialog(message,
-			message,
-			i18n.getI18NMessage('sts.txt.cancel'),
-			button);
+			messageAlt,
+			i18n.getI18NMessage('sts.btn.no'),//yes
+			i18n.getI18NMessage('sts.btn.yes'));//no
 	//'Delete Selected Records','This is a permanent delete. Continue with deletion?','Cancel','Delete');
-	if (globals.dialogResponse.toLowerCase() == 'yes'){
+	//application.output('1st response:'+globals.dialogResponse)
+	if (globals.dialogResponse.toLowerCase() == 'no'){
 		//application.output('delete aborted');
 		return;
 	}
+	///if (1==1){application.output('continue with deletion.');return}
     //application.output('continued with deletion');
     if (formName == null){
     	formName = event.getFormName();
@@ -120,7 +131,7 @@ function onActionDeleteSelected(event,formName) {
 	var formTable = formPrefix+'_pcmk_combo_table';
 	var fs = forms[formTable].foundset;
 	var omitList = [];
-	scopes.jobs.warningsYes();
+	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',true);
 
 	//if (false && deleteJob){//JOE 20180112 20180301 moved to purge for delete entire job

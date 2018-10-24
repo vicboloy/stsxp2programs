@@ -1,4 +1,8 @@
 customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+},\
 onRecordSelectionMethodID:{\
 arguments:null,\
 parameters:null\
@@ -95,6 +99,7 @@ uuid:"3A8B3055-32B0-440B-81FB-B2A90E482E0E"
 },
 {
 anchors:12,
+enabled:false,
 horizontalAlignment:0,
 location:"161,487",
 name:"btn_Save",
@@ -186,6 +191,7 @@ uuid:"CE2D0310-BC47-40AE-94A2-0AC468B2D257"
 ],
 name:"customer_specs",
 navigatorID:"-1",
+onHideMethodID:"79CFCC7F-B3A1-4B57-9D6F-87588AAC03DE",
 onLoadMethodID:"-1",
 onRecordSelectionMethodID:"-1",
 onShowMethodID:"6B4C0C75-68C1-4903-A9B5-F49D0FF64BFF",

@@ -55,6 +55,12 @@ titleText:"i18n:table.users.is_account_active"
 },
 {
 allowNull:true,
+creationOrderIndex:14,
+dataType:4,
+name:"is_admin_account"
+},
+{
+allowNull:true,
 creationOrderIndex:3,
 dataType:93,
 name:"last_login",
@@ -94,6 +100,12 @@ titleText:"i18n:table.general.tenant_uuid"
 },
 {
 allowNull:true,
+creationOrderIndex:13,
+dataType:4,
+name:"use_dual_entry"
+},
+{
+allowNull:true,
 creationOrderIndex:0,
 dataType:12,
 length:50,
@@ -103,9 +115,9 @@ titleText:"i18n:table.users.user_name"
 {
 allowNull:true,
 converterName:"GlobalMethodConverter",
-converterProperties:"#
-#Fri May 28 10:34:47 PDT 2010
-fromObjectMethodName=secEncryptPassword
+converterProperties:"#\
+#Fri May 28 10:34:47 PDT 2010\
+fromObjectMethodName=secEncryptPassword\
 type=TEXT",
 creationOrderIndex:1,
 dataType:12,

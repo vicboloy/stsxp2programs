@@ -49,6 +49,8 @@ var endVars = null;
  * @AllowToRunInFind
  */
 function checkFSJobNumber(importData){
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
+
 	//getProductionControlJobs
 	//plugins.headlessclient
 	var jobs = '	<FabSuiteXMLRequest>\
@@ -84,6 +86,7 @@ function getFabSuiteError(fsResponse){
  * @properties={typeid:24,uuid:"FC886476-C72C-45F3-AA7C-9A60F06A6A1C"}
  */
 function checkFSStatus(status){
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
 	/**	var jobList = '<FabSuiteXMLRequest>\
 			<GetProductionControlJobInformation>\
 			</GetProductionControlJobInformation>\
@@ -170,7 +173,8 @@ function getFSLoadNums(jobNumber){
  * @properties={typeid:24,uuid:"A3D4FB72-755D-4ABD-B03F-984ABB3F80FF"}
  */
 function checkFSLoad(loadNumber,makeNewLoad){
-	if (application.isInDeveloper()){application.output(globals.session.jobNumber)}
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
+	if (application.isInDeveloper()){application.output(globals.session.jobNumber)}//20181003
 	var loadcheck = '<FabSuiteXMLRequest>\
 		<ValTruck>\
 		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
@@ -203,6 +207,7 @@ function checkFSLoad(loadNumber,makeNewLoad){
  * @properties={typeid:24,uuid:"12B338B2-51AC-4A57-BE21-AAC5E081CEFA"}
  */
 function checkFSSequences(sequences, event){
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	if (!sequences){return true}
 	var exceptions = [];
 	importData.newSequences = [];
@@ -274,6 +279,9 @@ function checkFSSequences(sequences, event){
  * @AllowToRunInFind
  */
 function checkFSJob(event) {
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
+
 	if (!scopes.prefs.lFabsuiteInstalled){
 		plugins.dialogs.showErrorDialog('1216',i18n.getI18NMessage('1216'));
 		return;
@@ -324,7 +332,7 @@ function checkFSJob(event) {
 	application.output('job response FS '+fsResp);
 	if (fsResp.search('<JobNumber>') == -1){//This Job Number Was Not Found In FabSuite. - 1030
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('1030'),true);
-		plugins.dialogs.showErrorDialog('1030',i18n.getI18NMessage('1030'));
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1030'),i18n.getI18NMessage('1030'));
 		forms[formName].clearBadEntry(event);
 		globals.session.jobNumber = '';
 		//scopes.globals.errorDialogMobile(event,1030,event.getElementName(),'');
@@ -341,13 +349,13 @@ function checkFSJob(event) {
 		globals.getJobsTenant();
 		if (globals.session.tenantJobArray.indexOf(jobNumber) == -1){
 			scopes.jobs.warningsX();
-			plugins.dialogs.showErrorDialog('1217',i18n.getI18NMessage('1217'));
+			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1217'),i18n.getI18NMessage('1217'));
 			return true;
 		}
 	}
 	if (globals.session.assocJobArray.indexOf(jobNumber) == -1){
 		scopes.jobs.warningsX();
-		plugins.dialogs.showErrorDialog('1215',i18n.getI18NMessage('1215'));
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1215'),i18n.getI18NMessage('1215'));
 		return true;
 	}
 	// 1203 - Collecting job information from STS X
@@ -362,7 +370,7 @@ function checkFSJob(event) {
 		if (globals.session.associationId != scopes.jobs.importJob.associationId){
 			forms.kiss_import.elements.stsJobAssocName.fgcolor = 'red';
 			forms.kiss_import.elements.btnSelect.enabled = false;
-			plugins.dialogs.showErrorDialog('1215',i18n.getI18NMessage('1215'));
+			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1215'),i18n.getI18NMessage('1215'));
 			forms.kiss_import.vJobNumber = '';
 			scopes.jobs.warningsX();
 			return true;
@@ -390,6 +398,7 @@ function checkFSJob(event) {
  * @properties={typeid:24,uuid:"3790F67D-62E4-47B5-B485-96FA922A6C6A"}
  */
 function checkFSLots(lots, event) {
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	if (!lots){return true}
 	var exceptions = [];
 	importData.newLots = [];
@@ -540,6 +549,7 @@ function checkResetToValidEntry(xmlFieldName,validString,enteredString,event){
  * @properties={typeid:24,uuid:"4B7B892A-B0D5-44D2-A20F-501A6A9F5851"}
  */
 function checkFSMainMark(mainMarks,event){
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	// use session.drawings array for STS X Embedded
 	if (!mainMarks){return true}
 	var exceptions = [];
@@ -614,10 +624,14 @@ function checkFSMainMark(mainMarks,event){
  * @properties={typeid:24,uuid:"E92A7A06-BA71-49EB-B32A-9F70F776B5E7"}
  */
 function checkFSDrawingNumber(drawings,event){
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
 	// use session.drawings array for STS X Embedded
 	if (!drawings){return true}
+	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}
 	var exceptions = [];
 	importData.newDraws = [];
+	drawings = drawings.replace(/\./g,',');
+	application.output('\n\n\ndrawings from kiss import view '+drawings);
 	/** @type {Array} */
 	var drawing = drawings.split(',');
 	if (importData.drawings.length > 0){
@@ -777,7 +791,7 @@ function showProgessDone(event){
  * @properties={typeid:24,uuid:"4A3F4C5B-D25D-4DA7-B20A-17CF4D63C1C5"}
  */
 function checkComFabsuite(event){
-	scopes.jobs.warningsYes();
+	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage('Connecting to FabSuite',true);
 	if (!scopes.prefs.lFabsuiteInstalled){
 		scopes.jobs.warningsMessage('FabSuite Is Not Installed',true);
@@ -796,7 +810,7 @@ function checkComFabsuite(event){
 	}
 	if (!com || !com.isJACOBLoaded()) {
 		scopes.jobs.warnings("Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError(),true);
-		globals.DIALOGS.showErrorDialog('Error loading COM','Error loading COM')
+		globals.DIALOGS.showErrorDialog('Error loading COM','Error loading COM');
 		return 'Error Loading COM';
 	}
 	var fsServer = scopes.prefs.fabsuiteServerName;
@@ -934,4 +948,37 @@ function verifyKissImportFilters(event) {
 		
 	}
 	return verMark && verDraw && verLot && verSeq;
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"8F2FF5DA-7A9F-4B2C-B807-C2D6B40C4D5F"}
+ */
+function onDataChangeFSUN(oldValue, newValue, event) {
+	if (!com){
+		checkComFabsuite(event);
+	}
+	var server = scopes.globals.fabsuiteServerName;
+	var fsPass = scopes.globals.fabsuitepassword;
+	var fsPort = scopes.globals.fabsuiteDatabase;
+	var fsUser = scopes.globals.fabsuiteUserid;
+	var verifyUserName = '<FabSuiteXMLRequest>\
+		<StsSetParmExecuteAs>\
+			<IPAddress>'+server+'</IPAddress>\
+			<PortNumber>'+fsPort+'</PortNumber>\
+			<Username>'+fsUser+'</Username>\
+			<Password>'+fsPass+'</Password>\
+			<ExecuteAs>'+newValue+'</ExecuteAs>\
+		</StsSetParmExecuteAs >\
+	</FabSuiteXMLRequest>';
+	var fsResp = com.call('FabSuiteXML',verifyUserName).toString();
+	application.output(fsResp);
+	null;
+	return true;
 }

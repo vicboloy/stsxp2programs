@@ -279,7 +279,7 @@ typeid:7,
 uuid:"54A40414-0C59-4DCF-A192-DFB33482557B"
 },
 {
-anchors:3,
+anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
 dataProviderID:"checklist_barcode",
 location:"2310,20",
@@ -425,7 +425,7 @@ typeid:7,
 uuid:"76A51133-D10F-4CBF-B748-5D7BF8AFDBCB"
 },
 {
-anchors:3,
+anchors:11,
 borderType:"LineBorder,1,#c0c0c0",
 labelFor:"checklist_barcode",
 location:"2310,0",
@@ -542,6 +542,7 @@ uuid:"BAAB5D39-87B5-4AB5-AEE4-9A45975D8C63"
 },
 {
 anchors:11,
+borderType:"LineBorder,1,#c0c0c0",
 horizontalAlignment:2,
 labelFor:"trans_status",
 location:"66,0",
@@ -690,6 +691,7 @@ uuid:"E0272A48-7EDA-49DF-80F8-256FFB86C695"
 },
 {
 anchors:11,
+borderType:"LineBorder,1,#000000",
 dataProviderID:"trans_code",
 location:"66,20",
 name:"trans_status",

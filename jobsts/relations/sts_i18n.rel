@@ -1,0 +1,7 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/i18n_table",
+joinType:1,
+name:"sts_i18n",
+primaryDataSource:"db:/stsservoy/i18n_table",
+typeid:22,
+uuid:"7A858BC0-7978-4C2A-B461-8B837D104482"

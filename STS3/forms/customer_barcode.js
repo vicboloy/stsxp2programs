@@ -53,15 +53,16 @@ function onActionEdit(event,editing){
  */
 function calcBarcode(){
 	//var serial = vSerial;
+	var barcodeLength = scopes.prefs.barcodeLength;
 	vPreamble = (barcode_include_prefix == i18n.getI18NMessage('sts.txt.barcode.include.prefix')) ? barcode_prefix : "";
 	var jobLength = (barcode_preamble_length == 4) ? 2 : 3;
-	var serialLength = (barcode_preamble_length == 4) ? 6 : 5;
+	var serialLength = barcodeLength - barcode_preamble_length;//(barcode_preamble_length == 4) ? 6 : 5;
 	if (vPreamble == ""){
 		jobLength += 2;
 	}
 	barcode_job_length = jobLength;
 	var padJobNumber = vJobNumber;
-	vSerial = "SSSSSSS".substr(0,serialLength);//simplified
+	vSerial = "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSs".substr(0,serialLength);//simplified
 	var jobText = "";
 	elements.barcode_fixed_length.editable = false;
 	if (barcode_job_start == i18n.getI18NMessage('i18n:sts.txt.barcode.first.characters')){

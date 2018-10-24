@@ -28,3 +28,19 @@ function onActionBrowseExit(event) {
 	win.destroy();
 	// TODO Auto-generated method stub
 }
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"6CE119C0-B7B7-4739-A18A-34A66B321F44"}
+ */
+function onHide(event) {
+	var formName = event.getFormName();
+	if (application.isInDeveloper()){application.output('formname hanging table '+formName)}
+	scopes.jobs.removeFormHist(formName + '_table');
+	return _super.onHide(event)
+}

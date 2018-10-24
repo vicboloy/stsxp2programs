@@ -34,15 +34,6 @@ typeid:4,
 uuid:"0A40B5A7-8CCF-44FB-8C59-AF8D770F7DE6"
 },
 {
-dataProviderID:"lsotoload",
-displayType:4,
-location:"156,110",
-name:"soToLoad",
-size:"26,20",
-typeid:4,
-uuid:"29DBB946-88C9-4273-BE50-FA5A10E86BB3"
-},
-{
 dataProviderID:"other2",
 format:"|#(25)",
 location:"113,273",
@@ -51,16 +42,6 @@ size:"140,20",
 text:"Other2",
 typeid:4,
 uuid:"2C718DB9-2E6D-4699-9F23-89A81FE90290"
-},
-{
-location:"146,90",
-showClick:false,
-showFocus:false,
-size:"154,20",
-text:"i18n:sts.txt.set.so.load.no",
-transparent:true,
-typeid:7,
-uuid:"479624A1-E932-4868-9E34-BFD8C184AA98"
 },
 {
 dataProviderID:"customer_number",
@@ -72,6 +53,7 @@ onDataChangeMethodID:"01D244B3-B723-422D-9634-598FA70A6A99",
 placeholderText:"i18n:sts.txt.required.entry",
 selectOnEnter:true,
 size:"140,20",
+styleClass:"required",
 text:"Customer Number",
 typeid:4,
 uuid:"5AAE16EA-077B-4E52-AAF6-F3B762B87804"
@@ -97,6 +79,7 @@ name:"barcode",
 onActionMethodID:"-1",
 onDataChangeMethodID:"335D4639-1D51-4A5B-81B7-6F96A93C57EE",
 size:"54,20",
+styleClass:"required",
 typeid:4,
 uuid:"65953428-EC05-4F25-9445-0D1607FE63EA"
 },
@@ -200,6 +183,7 @@ name:"name",
 onDataChangeMethodID:"34AAA300-B75F-4801-8CF1-003984DEDBA2",
 selectOnEnter:true,
 size:"217,20",
+styleClass:"required",
 text:"Name",
 typeid:4,
 uuid:"D139F046-F398-4E6C-A952-74EE411C2C6E"

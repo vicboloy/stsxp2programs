@@ -63,8 +63,7 @@ function onActionClose(event) {
 		if (forms[tabFormName].onActionClose){forms[tabFormName].onActionClose(event)}
 	}
 
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 
 /**
@@ -77,7 +76,11 @@ function onActionClose(event) {
  * @properties={typeid:24,uuid:"0C8E248C-5C45-4D9F-8A25-00233B2FA859"}
  */
 function onHide(event) {
+	forms.cost_of_work_missing.vShowByPiecemark = 0;
+	forms.cost_of_work_missing.vShowBySheet = 0;
+	application.updateUI();
 	foundset.removeFoundSetFilterParam('job_cowxref');
+	onActionClose(event);
 	return _super.onHide(event)
 }
 

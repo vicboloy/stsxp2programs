@@ -36,24 +36,35 @@ function getQuery(){
  */
 function onShow(firstShow, event) {
 	if (foundset.getSize() == 0 || forms.cost_of_work.jobchangeM){
-		onActionRefresh(event);
 		forms.cost_of_work.jobchangeM = false;
 	}
-	scopes.jobs.tablePrefsLoad('cost_of_work_int');
+	if (firstShow){
+		vShowByPiecemark = 0;
+		vShowBySheet = 0;		
+		onActionRefresh(event);
+		scopes.jobs.tablePrefsLoad('cost_of_work_int');
+	} else {
+		onActionRefresh(event);		
+	}
 	return _super.onShow(firstShow, event)
 }
 /**
  *
- * @param pcmk
- * @param sheet
+ * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"21CDE48C-7E67-4103-A26B-57502A2B1A82"}
  * @SuppressWarnings(wrongparameters)
  */
-function refreshFoundset(pcmk, sheet){
+function refreshFoundset(event){
+	null;
 	databaseManager.revertEditedRecords(foundset);
-	forms.cost_of_work_misslist.elements.piecemark.visible = pcmk;
-	forms.cost_of_work_misslist.elements.sheet_number.visible = sheet;
+	foundset.clear();
+	var pcmkVis = (vShowByPiecemark == 1);
+	var sheetVis = (vShowBySheet == 1);
+	forms.cost_of_work_misslist.elements.piecemark.visible = pcmkVis;
+	forms.cost_of_work_misslist.elements.item_length.visible = pcmkVis;
+	forms.cost_of_work_misslist.elements.sheet_number.visible = sheetVis;
+	application.updateUI();
 	var result = null;
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q =  databaseManager.createSelect("db:/stsservoy/sheets");
@@ -69,26 +80,34 @@ function refreshFoundset(pcmk, sheet){
 	m.result.distinct = true;
 	m.result.add(m.columns.piecemark_id.min);
 	m.result.add(m.columns.material);
-	if (pcmk){m.result.add(m.columns.piecemark)}
-	if (sheet){m.result.add(m.columns.sheet_id)}
+	//m.result.add(m.columns.cost_of_work_code);
+	if (pcmkVis){m.result.add(m.columns.piecemark)}
+	if (sheetVis){m.result.add(m.columns.sheet_id)}
 	m.where.add(m.columns.sheet_id.isin(q))
 	m.where.add(m.columns.delete_flag.isNull)
-	m.where.add(m.columns.cost_of_work_code.isNull);
+	m.where.add(
+		m.or.add(m.columns.cost_of_work_code.isNull).add(m.columns.cost_of_work_code.eq(''))
+		);
 	m.groupBy.add(m.columns.material);
-	if (pcmk){m.groupBy.add(m.columns.piecemark)}
-	if (sheet){m.groupBy.add(m.columns.sheet_id)}
+	//m.groupBy.add(m.columns.cost_of_work_code);
+	if (pcmkVis){m.groupBy.add(m.columns.piecemark)}
+	if (sheetVis){m.groupBy.add(m.columns.sheet_id)}
 	result = databaseManager.getDataSetByQuery(m,-1);
+	//result = databaseManager.getFoundSet(m);
 	foundset.loadRecords(result);
 
-	if (pcmk){
+	if (pcmkVis){
 		foundset.sort('material asc,piecemark asc');
-	} else if (sheet){
+	} else if (sheetVis){
 		foundset.sort('material asc,sheet_id asc');
-	} else if (sheet && pcmk){
+	} else if (sheetVis && pcmkVis){
 		foundset.sort('material asc,piecemark asc,sheet_id asc')
 	} else {
 		foundset.sort('material asc');
 	}
+	forms.cost_of_work_misslist.elements.piecemark.visible = pcmkVis;
+	forms.cost_of_work_misslist.elements.item_length.visible = pcmkVis;
+	forms.cost_of_work_misslist.elements.sheet_number.visible = sheetVis;
 }
 /**
  * Perform the element default action.
@@ -98,12 +117,8 @@ function refreshFoundset(pcmk, sheet){
  * @properties={typeid:24,uuid:"5ABF695A-F0ED-4A56-A7DA-626A54A53BE9"}
  */
 function onActionRefresh(event) {
-	var recCount = foundset.getSize();
-	for (var index = 1;index <= recCount;index++){
-		controller.setSelectedIndex(index);
-		freeField = "";
-	}
-	refreshFoundset((vShowByPiecemark == 1), (vShowBySheet == 1));
+	refreshFoundset(event);
+	forms.cost_of_work_existing.onActionRefresh(event);
 }
 
 /**
@@ -118,25 +133,46 @@ function onActionApply(event) {
 	/**
 	 * set all non-null, non-blank criteria for each selected field
 	 * if (pcmk) then set all with that piecemark text
-	 * if (sheet) then set all with that piecemark
+	 * if (sheet) then set all with that sheet_id
 	 * if (pcmk AND sheet) then set all with that piecemark and sheet_id
 	 */
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.applying.changes'),false);
+	controller.enabled = false;
 	var pcmk = (vShowByPiecemark == 1);
 	var sheet = (vShowBySheet == 1);
-	var count = foundset.getSize();
-	var cowSet = [];
-	for (var index = count;index > 0;index--){
-		controller.setSelectedIndex(index);
-		cowSet[index]=freeField;
+	var fs = forms.cost_of_work_misslist.foundset;
+	var count = fs.getSize();
+	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
+	var rec = null;
+	while (rec = fs.getRecord(count)){
+		count = fs.getSize()+1;
 	}
-	for (index = count;index > 0;index--){
-		controller.setSelectedIndex(index);
+	count = fs.getSize();
+	var selectPcmk = [];
+	var selectSheet = [];
+	var selectMaterial = [];
+	var selectCowCode = [];
+	for (var index = count;index > 0;index--){
+		//controller.setSelectedIndex(index);
+		rec = fs.getRecord(index);
+		if (!rec.freeField){continue}
+		selectMaterial.push(rec.material);
+		selectCowCode.push(rec.freeField);
+		selectSheet.push(rec.sheet_id);
+		selectPcmk.push(rec.piecemark);
+	}
+	var vmaterial = '';
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.applying.changes'),false);
+	while (vmaterial = selectMaterial.pop()){
+		//controller.setSelectedIndex(index);
 		//application.output(controller.getMaxRecordIndex())
-		var vCowCode = cowSet[index];
-		if (vCowCode == "" || vCowCode == null){continue}
-		var vSheetNum = sheet_id;
-		var vPiecemark = piecemark;
-		var vMaterial = material;
+		//var vCowCode = cowSet[index];
+		//if (vCowCode == "" || vCowCode == null){continue}
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.applying.changes'),false);
+		var vCowCode = selectCowCode.pop();
+		var vSheetNum = selectSheet.pop();
+		var vPiecemark = selectPcmk.pop();
+		var vMaterial = vmaterial;
 	    //application.output(index+' '+vMaterial+' '+vPiecemark+' '+vSheetNum+' '+vCowCode);
 		/** @type {QBSelect<db:/stsservoy/piecemarks>} */
 		var m =  databaseManager.createSelect('db:/stsservoy/piecemarks');
@@ -160,8 +196,11 @@ function onActionApply(event) {
 		var fsUpdater = databaseManager.getFoundSetUpdater(fs);
 		fsUpdater.setColumn('cost_of_work_code',vCowCode);
 		fsUpdater.performUpdate();
-		onActionRefresh(event);
 	}
+	databaseManager.saveData(fs);
+	scopes.jobs.warningsX(event);
+	onActionRefresh(event);
+	controller.enabled = true;
 }
 
 /**
@@ -198,10 +237,22 @@ function onActionMuliSelect(event) {
 	var coded = plugins.dialogs.showSelectDialog(i18n.getI18NMessage('sts.txt.cow.select.code'),
 		i18n.getI18NMessage('sts.txt.cow.select.code'),
 		codeList);
-	var recIndexes = foundset.getSelectedIndexes();
+	var fs = forms.cost_of_work_misslist.foundset;
+	var recIndexes = fs.getSelectedIndexes();
 	for (var index = 0;index < recIndexes.length;index++){
 		/** @type {JSRecord<db:/stsservoy/piecemarks>} */
-		var rec = foundset.getRecord(recIndexes[index]);
+		var rec = fs.getRecord(recIndexes[index]);
 		rec.freeField = coded;
 	}
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"8EE56587-50A2-43A3-8A1C-0A7B51B00108"}
+ */
+function showDetail(event){
+	
+	//var  detail = forms['cost_of_work_missing'].vShowDetail;
+	//forms['cost_of_work_existing'].vShowByPiecemark = detail;
+	//forms['cost_of_work_existing'].vShowBySheet = detail;
 }

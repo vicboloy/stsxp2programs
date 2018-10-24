@@ -73,7 +73,7 @@ visible:false
 {
 dataProviderID:"vCustomerNumber",
 editable:false,
-location:"220,5",
+location:"272,5",
 size:"54,20",
 tabSeq:-2,
 transparent:true,
@@ -88,7 +88,7 @@ format:"|U[10]",
 location:"184,55",
 name:"cust_cow_code",
 onDataChangeMethodID:"A3FB6FA6-0AA1-4B64-B700-7EFDE7D15419",
-size:"73,20",
+size:"168,20",
 tabSeq:1,
 typeid:4,
 uuid:"41B0A152-7226-407A-9F48-72118CFE8D3E",
@@ -117,9 +117,9 @@ location:"362,115",
 name:"acls_subcode_label",
 size:"93,20",
 text:"i18n:sts.label.acls.code.sub",
-transparent:true,
 typeid:7,
-uuid:"5EAC73C9-B723-4F61-B0E7-B6D81D402BA7"
+uuid:"5EAC73C9-B723-4F61-B0E7-B6D81D402BA7",
+visible:false
 },
 {
 dataProviderID:"acls_subcode",
@@ -130,7 +130,8 @@ name:"acls_subcode",
 size:"76,20",
 tabSeq:6,
 typeid:4,
-uuid:"6794C3A6-6F4C-4E1C-BA2B-48D04575670F"
+uuid:"6794C3A6-6F4C-4E1C-BA2B-48D04575670F",
+visible:false
 },
 {
 horizontalAlignment:4,
@@ -139,9 +140,9 @@ location:"362,85",
 name:"acls_code_label",
 size:"93,20",
 text:"i18n:sts.label.acls.code",
-transparent:true,
 typeid:7,
-uuid:"68943572-1D1D-4C5B-A310-0B9A7C466657"
+uuid:"68943572-1D1D-4C5B-A310-0B9A7C466657",
+visible:false
 },
 {
 horizontalAlignment:4,
@@ -172,7 +173,8 @@ name:"acls_id",
 size:"76,20",
 tabSeq:4,
 typeid:4,
-uuid:"7C27CFD8-04B4-460D-A7B3-75175AA7A52D"
+uuid:"7C27CFD8-04B4-460D-A7B3-75175AA7A52D",
+visible:false
 },
 {
 dataProviderID:"vJobNumber",
@@ -182,7 +184,8 @@ location:"127,5",
 name:"jobNumberEntry",
 onActionMethodID:"-1",
 onDataChangeMethodID:"8B181E14-8550-4CA1-B338-642F73FA91C4",
-size:"88,20",
+size:"140,22",
+styleClass:"required",
 tabSeq:-2,
 typeid:4,
 uuid:"7DF566B6-E029-46DA-B4BF-097886AFE266",
@@ -212,7 +215,7 @@ uuid:"99AEC406-4B52-474A-84D0-93C2F710FFF4"
 {
 dataProviderID:"vCustomerName",
 editable:false,
-location:"278,5",
+location:"330,5",
 size:"229,20",
 tabSeq:-2,
 transparent:true,
@@ -241,7 +244,8 @@ name:"acls_code",
 size:"76,20",
 tabSeq:5,
 typeid:4,
-uuid:"B19A2337-27EF-4FE9-B7F4-5E06AC481EDC"
+uuid:"B19A2337-27EF-4FE9-B7F4-5E06AC481EDC",
+visible:false
 },
 {
 anchors:15,
@@ -273,7 +277,7 @@ enabled:false,
 location:"184,80",
 name:"cow_code",
 onDataChangeMethodID:"32860792-C16C-463F-9D12-7BF531D473F6",
-size:"73,20",
+size:"168,20",
 tabSeq:2,
 typeid:4,
 uuid:"B51679FC-6838-45F7-8E6F-8FB7CA284FC1",
@@ -325,9 +329,9 @@ location:"362,55",
 name:"acls_id_label",
 size:"93,20",
 text:"i18n:sts.label.acls.id",
-transparent:true,
 typeid:7,
-uuid:"F7DD7FFD-AC0D-41AA-A2DA-6FD9CBA97400"
+uuid:"F7DD7FFD-AC0D-41AA-A2DA-6FD9CBA97400",
+visible:false
 },
 {
 dataProviderID:"uom_dollar",

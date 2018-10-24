@@ -10,16 +10,21 @@ var statusId = "";
  * @SuppressWarnings(wrongparameters)
  */
 function onSolutionOpen(){
+	globals.mob.userAgent = globals.clientUserAgent;
 	//var appWidth = application.getScreenWidth();
 	//viewport = viewport.replace('320',appWidth);
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STSmobile/globals.js');}
 	plugins.UserManager.register( "P2Programs", "q9SA5eCyb085cvATVO8s9onGe3iBzJyCFyAbTPbuHQraeSHsu3pM3DS4nPwTJM/B" );
 	if (application.isInDeveloper()){application.output('license mobile '+plugins.UserManager.getSettingsProperty('license.0.licenses'))}
+	var os = plugins.UserManager.Client().osName;
+	var ip = plugins.UserManager.Client().ipAddress;
+	application.output('client os is '+os+' '+ip);
 	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		var mobileURL = application.getServerURL()+'/servoy-webclient/ss/s/STSmobile';
 		var status = application.showURL(mobileURL,'_blank','height=320,width=240,kiosk=yes,status=no,toolbar=no,menubar=no,location=no,resizable=no,titlebar=no');
 		if (application.isInDeveloper()){application.output('create url '+status)}
 	}
+	plugins.VelocityReport;
 	//secSetCurrentApplication(secGetApplicationID(APPLICATION_NAME));
 	secCurrentUserID = security.getUserUID();
 	globals.secCurrentTenantID = sec_current_user.tenant_uuid;
@@ -38,6 +43,7 @@ function onSolutionOpen(){
 	session.loginId = sec_current_user.user_uuid;
 	session.loginUserNum = sec_current_user.user_name;
 	session.loginUser = sec_current_user.name_first;
+	session.dualEntry = sec_current_user.use_dual_entry;
 	session.associationId = globals.secGetAssocID(session.login);//check for use of secGetAssociationID
 	if (session.associationId == null){
 		session.associationId = secGetAssocID(secCurrentUserName);
@@ -62,7 +68,12 @@ function onSolutionOpen(){
 	globals.DIALOGS.setDialogWidth(200);
 	globals.DIALOGS.setDialogHeight(200);
 	null;
-	if (application.isInDeveloper()){application.output("-----------------------")}
+	//plugins.WebClientUtils.getVersion()
+	// won't show in load onShow if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	//	plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgent,['navigator.userAgent']);
+	//}
+
+	if (application.isInDeveloper()){application.output("-----------------------");application.output('width = '+application.getScreenWidth())}
 	//rfGetLocalStorage('deviceName');
 	//rfGetLocalStorage('deviceName');
 	//rfGetLocalStorage('deviceName');
@@ -70,4 +81,13 @@ function onSolutionOpen(){
 	//application.output('begin retrieve local storage '+session.localStorage);
 	//globals.rfTimerBrowser();
 }
-
+/**
+ * @properties={typeid:24,uuid:"4AA8BF4F-DE1F-4389-A0FA-01053692FB7D"}
+ */
+function createPostGreSqlIndexes(){
+	plugins.rawSQL.executeSQL('stsservoy','jobs',"CREATE INDEX CONCURRENTLY jobIndex ON jobs job_number ");
+	plugins.rawSQL.executeSQL('stsservoy','idfiles',"CREATE INDEX CONCURRENTLY idfileIndex ON idfiles (piecemark_id,sequence_id) ");
+	plugins.rawSQL.executeSQL('stsservoy','piecemarks',"CREATE INDEX CONCURRENTLY pcmkIndex ON piecemarks (sheet_id,parent_piecemark, piecemark, ) ");
+	
+	
+}

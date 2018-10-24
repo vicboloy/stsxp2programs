@@ -209,8 +209,10 @@ function onActionSaveEdit(event) {
 function onDataChangeProcess(oldValue, newValue, event) {
 	if (newValue == ""){
 		globals.errorDialog(-1);
+		verifyStatusInput(event);
 		return false;
 	}
+	verifyStatusInput(event);
 	return true
 }
 /**
@@ -246,6 +248,7 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	}
 	//newValue = newValue.toUpperCase();
 	//changeToStation(event);
+	verifyStatusInput(event);
 	return true;
 }
 
@@ -304,8 +307,7 @@ function onEntryStatusCode(statusCode) {
  */
 function onActionClose(event) {
 	onActionCancelEdit(event);
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 /**
  * Handle changed data.
@@ -325,6 +327,8 @@ function onDataChangeFabShop(oldValue, newValue, event) {
 	}
 	//changeToStation(event);
 	getStatusList();
+	verifyStatusInput(event);
+
 	return true;
 }
 /**
@@ -456,6 +460,7 @@ function UNUSEDonRecordSelection(event, buttonTextSrc) {
  */
 function onFocusGainedFabShop(event) {
 	getFabShops(event);
+	verifyStatusInput(event);
 }
 
 /**
@@ -532,4 +537,43 @@ function onFocusGainedEndFor(event) {
 function onRecordSelection(event) {
 	currProcessNumber = status_sequence;
 	getStatusList();	
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"EBA237AB-8940-4A30-B309-5818995229C8"}
+ */
+function verifyStatusInput(event){
+	var form = forms[event.getFormName()];
+	var saveBtn = form.elements.btn_Save;
+	saveBtn.enabled = !(!association_id || !status_code || !status_sequence);
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"9B4280E2-54DB-4115-A19C-E2F1B193030A"}
+ */
+function onDataChangeProcessType(oldValue, newValue, event) {
+	verifyStatusInput(event);
+	return true
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"C6B53188-48DD-42FE-825E-31127EA1968F"}
+ */
+function onHide(event) {
+	onActionClose(event);
+	return true
 }

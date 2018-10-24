@@ -81,33 +81,39 @@ function onShow(firstShow, event) {
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"F345CEBC-F682-4A06-8D58-221CECC0A46F"}
+ * @AllowToRunInFind
  */
 function onActionDupe(event) {
 	var currentRec = foundset.getSelectedRecord();
+	if (!currentRec){return}
 	var dupeIdx = foundset.duplicateRecord(false);
 	/** @type {JSRecord<db:/stsservoy/groups>} */
 	var dupeRec = foundset.getRecord(dupeIdx);
 	dupeRec.edit_date = new Date();
 	// dup user group - table 'groups' - create new groups uuid with 
-	var newGroupName = currentRec.group_name;
+	var currGroupName = currentRec.group_name;
+	if (currGroupName.indexOf('.') == 0){
+		currGroupName = currGroupName.split('.')[1];
+	}
+	var newGroupName = currGroupName;
 	
 	/** @type {QBSelect<db:/stsservoy/groups>} */
 	var q = databaseManager.createSelect('db:/stsservoy/groups');
 	q.result.add(q.columns.group_name);
-	q.where.add(q.columns.group_name.eq(currentRec.group_name));
+	//q.where.add(q.columns.group_name.upper.eq(currGroupName.toUpperCase()));
 	q.where.add(q.columns.tenant_uuid.eq(currentRec.tenant_uuid));
 	var Q = databaseManager.getFoundSet(q);
 	var existNames = [];
 	for (var index = 1;index <= Q.getSize();index++){
 		/** @type {JSRecord<db:/stsservoy/groups>} */
 		var rec = Q.getRecord(index);
-		existNames.push(rec.group_name);
+		existNames.push(rec.group_name.toUpperCase());
 	}
 	index = 1;
-	while (existNames.indexOf(newGroupName+' Copy '+index) != -1){
-		index++;
+	while (existNames.indexOf(newGroupName.toUpperCase()) != -1){
+		newGroupName = currGroupName +' Copy '+index++;
 	}
-	dupeRec.group_name = newGroupName+' Copy '+index;
+	dupeRec.group_name = newGroupName;
 	databaseManager.saveData(dupeRec);
 	/** @type {QBSelect<db:/stsservoy/group_keys>} */
 	var s = databaseManager.createSelect('db:/stsservoy/group_keys');

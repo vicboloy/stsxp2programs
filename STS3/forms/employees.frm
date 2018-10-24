@@ -39,6 +39,7 @@ onChangeMethodID:"B1A1C77F-17CF-443D-B809-46E96695E39F",
 printable:false,
 size:"771,486",
 tabOrientation:-2,
+tabSeq:-2,
 transparent:true,
 typeid:16,
 uuid:"6063A910-9E01-414D-854A-5CC103D2AA4A"

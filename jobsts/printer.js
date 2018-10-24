@@ -304,7 +304,7 @@ var barTenderTextSpecs = "";
 192 BOMWIDNUM Numeric 10.4 UNKNOWN,\
 193 BOMITEMWT Numeric 10.3 UNKNOWN,\
 194 ERECTDWG Character 15 idfiles.erection_drawing 20,\
-195 BUNDLEID Character 10 idfiles.bundle_id 30,\
+195 BUNDLEID Character 10 idfiles.bundle_bc 30,\
 196 FINISH Character 10 piecemarks.finish 30,\
 197 DETAILMIN Numeric 10.4 piecemarks.saw_minutes (17),\
 198 FABMIN Numeric 10.4 piecemarks.fabrication_minutes (17),\
@@ -395,6 +395,30 @@ var defaultSysLabelFormat = '';
  */
 var userTempPath = '';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3D4152DD-16C9-41AB-ADAE-92AC5C8EFF90"}
+ */
+var labeLaseTemplate = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"34B05B3C-B1AF-450D-B36B-E328CA0B7FFC"}
+ */
+var idLabeLaseTemplate = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"0A2826D8-71BD-4187-8036-815893317953"}
+ */
+var defaultLabeLaseTemplate = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"6759F986-1928-4A00-A1A1-744981A18F22"}
+ */
+var rawLabeLaseTemplate = '';
+/**
  * Red - printed. Yellow - reprint. Green - new print.
  * @param {JSRenderEvent} event
  *
@@ -445,6 +469,10 @@ function onDataChangePrinterPrefs(oldValue, newValue, event) {
 						scopes.printer.idBarcodeLabelFormat = formx.labelName;
 						prefsChanged.push('idBarcodeLabelFormat');
 						break;
+					case 'labeLaseLabel':
+						scopes.printer.idLabeLaseTemplate = formx.labeLaseTemplate;
+						prefsChanged.push('idLabeLaseTemplate');
+						break;
 					default:
 				}
 				break;
@@ -458,6 +486,10 @@ function onDataChangePrinterPrefs(oldValue, newValue, event) {
 						scopes.printer.rawMaterialLabelFormat = formx.labelName;
 						prefsChanged.push('rawMaterialLabelFormat');
 						break;
+					case 'labeLaseLabel':
+						scopes.printer.rawLabeLaseTemplate = formx.labeLaseTemplate;
+						prefsChanged.push('rawLabeLaseTemplate');
+					break;
 					default:
 				}
 				break;
@@ -471,6 +503,9 @@ function onDataChangePrinterPrefs(oldValue, newValue, event) {
 						scopes.printer.defaultSysLabelFormat = formx.labelName;
 						prefsChanged.push('defaultSysLabelFormat');
 						break;
+					case 'labeLaseLabel':
+						scopes.printer.defaultLabeLaseTemplate = formx.labeLaseTemplate;
+						prefsChanged.push('defaultLabeLaseTemplate');
 					default:
 				}
 				break;
@@ -505,14 +540,17 @@ i18n:sts.txt.system.label.default
 	if (newValue == i18n.getI18NMessage('sts.txt.id.label.default')){
 		formx.printerName = scopes.printer.idBarcodePrinter;
 		formx.labelName = scopes.printer.idBarcodeLabelFormat;
+		formx.labeLaseTemplate = scopes.printer.idLabeLaseTemplate;
 	}
 	if (newValue == i18n.getI18NMessage('sts.txt.part.label.default')){
 		formx.printerName = scopes.printer.rawMaterialPrinter;
 		formx.labelName = scopes.printer.rawMaterialLabelFormat;
+		formx.labeLaseTemplate = scopes.printer.rawLabeLaseTemplate;
 	}
 	if (newValue == i18n.getI18NMessage('sts.txt.system.label.default')){
 		formx.printerName = scopes.printer.defaultSysPrinter;
 		formx.labelName = scopes.printer.defaultSysLabelFormat;
+		formx.labeLaseTemplate = scopes.printer.defaultLabeLaseTemplate;
 	}
 	return true
 }
@@ -715,7 +753,7 @@ function getBTFieldData(){
 		192 BOMWIDNUM Numeric 10.4 sheet_bom.bom_item_width 10.4,\
 		193 BOMITEMWT Numeric 10.3 sheet_bom.bom_item_weight 10.3,\
 		194 ERECTDWG Character 15 idfiles.if_erection_drawing 20,\
-		195 BUNDLEID Character 10 idfiles.if_bundle_id 30,\
+		195 BUNDLEID Character 10 idfiles.if_bundle_bc 30,\
 		196 FINISH Character 10 piecemarks.pm_finish 30,\
 		197 DETAILMIN Numeric 10.4 piecemarks.pm_saw_minutes 10.4,\
 		198 FABMIN Numeric 10.4 piecemarks.pm_fabrication_minutes 10.4,\

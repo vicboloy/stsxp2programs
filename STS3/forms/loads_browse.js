@@ -24,6 +24,7 @@ function onShow(firstShow, event) {
 	if (!forms[rightFormName]){
 		solutionModel.cloneForm(rightFormName,solutionModel.getForm(origFormName));
 	}
+	//application.output('REMOVE '+rightFormName);
 	forms[formPrefix].elements.split.setRightForm(rightFormName,'sts_idfile_to_transactions');
 	var top = forms[formPrefix].elements.split.getRightForm().controller.getName();
 	var bot = forms[formPrefix].elements.split.getLeftForm().controller.getName();
@@ -31,4 +32,19 @@ function onShow(firstShow, event) {
 	scopes.jobs.tablePrefsLoad(top);
 	scopes.jobs.tablePrefsLoad(bot);
 	return _super.onShow(firstShow, event)
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"3A38C10B-3502-4524-94DE-D11A2017E1C7"}
+ */
+function onHide(event) {
+	//var instance = scopes.globals.getInstanceForm(event);
+	///form['loads_criteria'+instance].elements['btn_Browse'].enabled = true;
+	return _super.onHide(event)
 }

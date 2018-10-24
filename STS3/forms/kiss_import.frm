@@ -1,4 +1,8 @@
 customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+},\
 onSortCmdMethodID:{\
 arguments:null,\
 parameters:null\
@@ -49,7 +53,9 @@ onDataChangeMethodID:"100148DA-341F-4087-AED3-413147E0B60F",
 placeholderText:"i18n:table.jobs.job_number",
 selectOnEnter:true,
 size:"153,26",
+styleClass:"required",
 tabSeq:1,
+transparent:true,
 typeid:4,
 uuid:"360D61F9-E679-412C-89D6-668B6A766BE1",
 valuelistID:"8A89996A-201D-4649-B6E6-20EB194D9480"
@@ -57,6 +63,7 @@ valuelistID:"8A89996A-201D-4649-B6E6-20EB194D9480"
 {
 dataProviderID:"verifyJobFabsuite",
 displayType:4,
+enabled:false,
 formIndex:18,
 location:"187,313",
 size:"257,20",
@@ -98,6 +105,7 @@ uuid:"8D493CC5-26AA-4B98-A849-C70EC3AFD944"
 {
 dataProviderID:"useKissFile",
 displayType:4,
+enabled:false,
 formIndex:17,
 location:"187,282",
 size:"257,20",
@@ -131,6 +139,7 @@ name:"numLot",
 onActionMethodID:"FA580FD8-5BA3-4072-9970-D83AC77F3E56",
 onDataChangeMethodID:"-1",
 onFocusGainedMethodID:"D73839BE-6A22-4A90-8C1B-8E0D656D880E",
+selectOnEnter:true,
 size:"140,26",
 tabSeq:3,
 typeid:4,
@@ -209,6 +218,7 @@ name:"numSeq",
 onActionMethodID:"FA580FD8-5BA3-4072-9970-D83AC77F3E56",
 onDataChangeMethodID:"EFF99839-30A0-4600-9CD0-BF4DAE3A6177",
 onFocusGainedMethodID:"D73839BE-6A22-4A90-8C1B-8E0D656D880E",
+selectOnEnter:true,
 size:"140,26",
 tabSeq:2,
 typeid:4,
@@ -254,6 +264,7 @@ name:"numPart",
 onActionMethodID:"FA580FD8-5BA3-4072-9970-D83AC77F3E56",
 onDataChangeMethodID:"-1",
 onFocusGainedMethodID:"D73839BE-6A22-4A90-8C1B-8E0D656D880E",
+selectOnEnter:true,
 size:"140,26",
 tabSeq:4,
 typeid:4,
@@ -273,6 +284,7 @@ name:"numDraw",
 onActionMethodID:"FA580FD8-5BA3-4072-9970-D83AC77F3E56",
 onDataChangeMethodID:"-1",
 onFocusGainedMethodID:"D73839BE-6A22-4A90-8C1B-8E0D656D880E",
+selectOnEnter:true,
 size:"140,26",
 tabSeq:5,
 typeid:4,
@@ -282,12 +294,12 @@ uuid:"F9BDDA4B-0085-4D68-B51C-6C146907B92B"
 name:"kiss_import",
 namedFoundSet:"empty",
 navigatorID:"-1",
-onHideMethodID:"F136BFBF-4BE1-48EC-87FE-5C11DFC2727D",
+onHideMethodID:"14C4356A-ACE9-4C1C-BB23-03CE563F6DDF",
 onShowMethodID:"D7B53EDF-884A-4CFA-9DCB-374EF0C391F0",
 onSortCmdMethodID:"-1",
 showInMenu:true,
 size:"500,294",
-styleName:"sts_two",
+styleName:"sts_one",
 typeid:3,
 uuid:"C251C71D-C610-4509-A117-663D55B03720",
 view:0

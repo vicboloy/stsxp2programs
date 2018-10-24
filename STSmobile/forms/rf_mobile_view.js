@@ -239,6 +239,20 @@ var partnumber = '';
  */
 var grantFocus = null;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"26084BDC-CC64-4B5C-B535-E2782E44C86E"}
+ */
+var genericInput2 = "";
+/**
+ * @properties={typeid:35,uuid:"7805EB59-00CC-4CF6-ABD7-B39BFC0A5E53",variableType:-4}
+ */
+var printerQueue = [];
+/**
+ * @properties={typeid:35,uuid:"12C62275-F830-4263-B5E0-03B0EF0C2AEA",variableType:-4}
+ */
+var functionKeyEntered = false;
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -255,6 +269,7 @@ function resetWorkerCode(){
  * @AllowToRunInFind
  */
 function onShowForm(firstShow,event) {
+	var newScale = 1.0;
 	if (firstShow){
 		if (!globals.shortcutsSet){
 			//plugins.window.createShortcut('UP',globals.rfRecordUp,'rf_mobile_view');
@@ -268,7 +283,43 @@ function onShowForm(firstShow,event) {
 		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(1,true);
 		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(2,true);
 		fieldErroredName = '';
+		var scaleWidth = application.getScreenWidth();
+		var currWidth = elements.showHelp.getWidth()+elements.showHelp.getLocationX();
+		
+		width = application.getScreenWidth();
 	}
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		var osName = application.getOSName();
+		var height = application.getScreenHeight();
+		var elWidth = elements.elHelp.getWidth();
+		if (globals.clientUserAgent.search(/iPhone/i) != -1){
+			//newScale = Math.floor(width/240*8)/10;
+			elements.elHelp.setSize(elWidth,55);
+			//scaleWidth = Math.ceil(2*1080/currWidth*10)/10;
+			scaleWidth = Math.ceil(width/240*10)/10;
+			newScale = scaleWidth;
+			scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale='+newScale);
+			newScale = 1.0;
+		} else if (globals.clientUserAgent.search(/Android/i) != -1){
+			scaleWidth = Math.floor(width/240*10)/10;
+			elements.elHelp.setSize(Math.floor(elements.elHelp.getWidth()*scaleWidth),45)
+			//scaleWidth = 0.5;
+			newScale = scaleWidth;
+			//newScale = 0.8;scaleWidth = 1.0;
+			//scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale=1.0');
+			//scaleWidth = 1.0;
+			//var regexp = new RegExp(/(initial-scale=[0-9]\.[0-9])/);
+			//var match = scopes.globals.viewport.match(regexp);
+			//if (match){
+			scopes.globals.viewport = scopes.globals.viewportSrc;//.replace(match[1],'initial-scale=1.0');
+			//}
+			//scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale=1.0');
+			application.output('RM inside Linux show form width '+width+' '+scaleWidth+' vp '+scopes.globals.viewport);
+			newScale = 1.0;
+		}
+		//newScale = 1.0;
+	}
+	//newScale = 1.0;
 	//scopes.jobs.onLoadWindowSize(event);
 	if (application.isInDeveloper()){application.output('fs size '+foundset.getSize())}
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
@@ -289,18 +340,23 @@ function onShowForm(firstShow,event) {
 	statusLocation = "";
 	statusWorker = "";
 	foundset.clear();
-	if (application.isInDeveloper()){application.output('foundset '+foundset)}
+	if (application.isInDeveloper()){application.output('foundset '+foundset+' curr field width '+currWidth)}
 	globals.rfClearMobDetails();
 	globals.mobWeightUnits = (globals.isJobMetric(forms[formName].jobNumber)) ? " kgs" : " lbs";
 	globals.mobLengthUnits = (globals.isJobMetric(forms[formName].jobNumber)) ? " mm" : " ins";
 	lastID = "";
+	forms[formName].functionKeyEntered = false;
 	var show = [];
 	//var focusFirst = "";
 	for (var item in globals.rfViews[showElementsOf]){
+		if (item == 'genericin2' 
+			&& ((application.getApplicationType() == APPLICATION_TYPES.SMART_CLIENT)
+			|| !globals.session.dualEntry)){continue}//CHANGE FROM DUAL ENTRY OPS  //dual entry
 		show.push(item);
 	}
 	while (item = shownFields.pop()){
 		if (show.indexOf(item) == -1){
+			/** @type {JSField} */
 			var element = forms[formName].elements[item];
 			var elementLabel = forms[formName].elements[item+'label'];
 			var elementUnits = forms[formName].elements[item+'units'];
@@ -315,52 +371,70 @@ function onShowForm(firstShow,event) {
 	var fieldLine = 0;
 	for (var index = 0;index < show.length;index++){
 		item = show[index];
-			/** @type {JSField} */
-			element = forms[formName].elements[item];
-			if (!element){continue}
-			element.bgcolor = 'white';
-			elementLabel = forms[formName].elements[item+'label'];
-			elementUnits = forms[formName].elements[item+'units'];
-			var height = element.getHeight();
-			if (newLine){
-				fieldLine++;
-			} else {
-				newLine = true;
+		/** @type {JSField} */
+		element = forms[formName].elements[item];
+		if (!element){continue}
+		element.bgcolor = 'white';
+		elementLabel = forms[formName].elements[item+'label'];
+		elementUnits = forms[formName].elements[item+'units'];
+		height = element.getHeight();
+		width = element.getWidth();
+		application.output('wide '+width+' high '+height+' scale '+newScale+' end x '+element.getLocationX());
+		if (newLine){
+			fieldLine++;
+		} else {
+			newLine = true;
+		}
+		newY = height*fieldLine+padding;//*fieldLine; //+start*1;
+		if (globals.rfViews[showElementsOf][item].search(",") != -1){
+			newLine = false; // continuation of field on same line as last
+		}
+		element.visible = true;
+		var elHeight = Math.floor(element.getHeight() * newScale);
+		elHeight = element.getHeight();
+		elWidth = Math.floor((element.getWidth()-5) * newScale);
+		element.setSize(elWidth,elHeight);
+		element.setLocation(Math.floor(element.getLocationX()*newScale),newY);
+		if (globals.rfViews[showElementsOf][item].search("O|R") != -1){
+			//if (focusFirst == ""){focusFirst = item;tabSequence.push(element)}
+			var fieldValue = element.getDataProviderID();
+			forms['rf_mobile_view'][fieldValue] = "";
+			//tabFieldOrder.push(item);
+			//tabSequence.push(element);
+			if (globals.rfViews[showElementsOf][item].search("R") != -1){
+				requiredFields.push(item);
+				element.bgcolor = 'yellow';
+				element.fgcolor = 'black';
 			}
-			newY = height*fieldLine+padding*fieldLine; //+start*1;
-			if (globals.rfViews[showElementsOf][item].search(",") != -1){
-				newLine = false; // continuation of field on same line as last
-			}
-			element.visible = true;
-			element.setLocation(element.getLocationX(),newY);
-			if (globals.rfViews[showElementsOf][item].search("O|R") != -1){
-				//if (focusFirst == ""){focusFirst = item;tabSequence.push(element)}
-				var fieldValue = element.getDataProviderID();
-				forms['rf_mobile_view'][fieldValue] = "";
-				//tabFieldOrder.push(item);
-				//tabSequence.push(element);
-				if (globals.rfViews[showElementsOf][item].search("R") != -1){
-					requiredFields.push(item);
-					element.bgcolor = 'yellow';
-				}
-			}
-			shownFields.push(item);
-			if (elementLabel){
-				elementLabel.visible = true;
-				elementLabel.setLocation(elementLabel.getLocationX(),newY);
-			}
-			if (elementUnits){
-				elementUnits.visible = true;
-				elementUnits.setLocation(elementUnits.getLocationX(),newY);
-				//elementUnits.putClientProperty('tabSeq',-1);
-			}
+		} else {
+			padding = -1;
+		}
+		shownFields.push(item);
+		var elLabelX = 0;
+		if (elementLabel){
+			elementLabel.visible = true;
+			elementLabel.setLocation(Math.floor(elementLabel.getLocationX()*newScale),newY);
+			var elLabelWidth = Math.floor(elementLabel.getWidth()*newScale);
+			elementLabel.setSize(elLabelWidth,elementLabel.getHeight());
+			//elementLabel.border = 'LineBorder,1,#000000';
+			elLabelX = elementLabel.getLocationX()+elementLabel.getWidth();
+			application.output('RM wide end x labels '+item+' '+elLabelX);
+		}
+		if (elementUnits){
+			elementUnits.visible = true;
+			elementUnits.setLocation(Math.floor(elementUnits.getLocationX()*newScale),newY);
+			var elUnitsWidth = Math.floor(elementUnits.getWidth()*newScale);
+			elementUnits.setSize(elUnitsWidth,elementUnits.getHeight());
+			application.output('RM wide end x units '+Math.floor(elUnitsWidth+element.getLocationX()));
+			//elementUnits.putClientProperty('tabSeq',-1);
+		}
 	}
 	//forms[formName].elements[focusFirst].requestFocus();
 	//controller.setTabSequence(tabSequence);
 	//if (firstShow){
 	//	application.output(' REM rf_mobile_view show focus');
 	forms[formName].elements['genericin'].requestFocus();
-	plugins.WebClientUtils.executeClientSideJS('doCallback("genericin");');
+	//plugins.WebClientUtils.executeClientSideJS('doCallback("genericin");');
 	//}
 }
 /**
@@ -373,13 +447,18 @@ function onShowForm(firstShow,event) {
  * @AllowToRunInFind
  */
 function onElementFocusLost(event) {
+	if (1){return}
 	if (elements.errorWindow.visible){return}
 	var elementId = plugins.WebClientUtils.getElementMarkupId(elements.genericin);
 	//var extraJS = 'event.preventDefault();timeout(function () {$'+elementId+'.focus();}, 500);';
 	//var extraJS = 'alert("startJS");event.preventDefault();timeout(function () {document.getElementById("'+elementId+'").focus();}, 500);alert("this is id:'+elementId+'");';
 	//var extraJS = 'alert("startJS");';
 	//plugins.WebClientUtils.executeClientSideJS(extraJS)
-	elements['genericin'].requestFocus();
+	if (event.getElementName() == 'genericin') {
+		elements['genericin2'].requestFocus();
+	} else {
+		elements['genericin'].requestFocus();
+	}
 }
 
 /**
@@ -582,7 +661,8 @@ function onFocusLost(event) {
  * @properties={typeid:24,uuid:"D49305CF-0F07-42B3-9F66-123604D7DD22"}
  */
 function onLoad(event) {
-	application.output('viewport globals '+globals.viewport2+' -end-');
+	application.output('viewport globals '+globals.viewport+' -end-');
  // globals.viewPort2 = globals.viewPort2.toXMLString().replace(']]>','').replace('<![CDATA[','');
 
 }
+

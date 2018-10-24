@@ -15,6 +15,7 @@ function onShow(firstShow, event) {
 		onActionClear(event);
 		forms[event.getFormName()].versionForm = globals.getInstanceForm(event);
 		forms[event.getFormName()].baseForm = event.getFormName().replace(forms[event.getFormName()].versionForm,'');
+		elements.btn_Browse.enabled  = false;
 	}
 	globals.setUserFormPermissions(event);
 	//forms.loads_pcmk_combo;
@@ -161,13 +162,22 @@ function onActionShowWindow(){
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
 	var yOrigin = controller.getWindow().getY();
-	var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
-	win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
-	win.title = winTitle;
-
-	forms[formName];// pre-load form for speed
-	win.show(forms[formName]);
-	scopes.jobs.removeFormHist(formName+'_table');
+	var winExist = application.getWindow(winTitle);
+	//application.output('window is existing'+winExist);
+	if (!winExist){//20180802 show browse loads if exists or create
+		var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
+		win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
+		win.title = winTitle;
+	
+		forms[formName];// pre-load form for speed
+		scopes.jobs.viewBTableCreateForm2(formName,scopes.jobs.browseFS2[formName]);
+		win.show(forms[formName]);
+	} else {
+		scopes.jobs.viewBTableCreateForm2(formName,scopes.jobs.browseFS2[formName]);
+		winExist.show(formName);//20180802 added
+	}//20180802 show browse loads if exists or create
+	forms[formName].foundset.setSelectedIndex(1);
+	//scopes.jobs.removeFormHist(formName+'_table');
 }
 /**
  * @param itemCSV
@@ -239,11 +249,9 @@ function onActionClear(event) {
  * @properties={typeid:24,uuid:"691EE7E2-97CD-4BBB-B4A3-57C87D0E87B0"}
  */
 function openBrowseTable(criteria,event){
-	//if (!versionForm){
-		var regexp = new RegExp(/(_[0-9]+)/)
-		versionForm = event.getFormName().match(regexp)[1];
-		//if (application.isInDeveloper()){application.output('Version FORM IS '+versionForm)}
-	//}
+	var regexp = new RegExp(/(_[0-9]+)/)
+	versionForm = event.getFormName().match(regexp)[1];
+
 	var formName = 'loads_pcmk_combo'+versionForm;
 	scopes.jobs.viewBTableToFormQB(criteria,formName);
 	scopes.jobs.warningsX();
@@ -254,6 +262,9 @@ function openBrowseTable(criteria,event){
  * @properties={typeid:24,uuid:"3261ECE1-7C4F-4E31-8D33-34561FEA55B6"}
  */
 function collectAndBrowse(event){
+	onActionShowWindow();
+	
+	if (1==1){return}//20180802 disable further info gathering
 	versionForm = '';
 	var matchVer = event.getFormName().match(scopes.globals.instanceReg);
 	if (matchVer){
@@ -261,6 +272,7 @@ function collectAndBrowse(event){
 	}
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	openBrowseTable(collectCriteria(),event);
+
 	scopes.jobs.warningsX();
 }
 /**
@@ -288,6 +300,7 @@ function collectAndTab(formName){
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	scopes.jobs.viewBTableToFormQB(criteria,formName);
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
+	scopes.jobs.viewBTableToFormQB(criteria,'loads_pcmk_combo'+versionForm);//20180802 move query build for browsing table
 	null;
 }
 /**
@@ -302,4 +315,26 @@ function onActionJobNumberList(event) {
 	var jobArray = scopes.jobs.getAllTenantJobs();
 	application.setValueListItems('stsvl_jobs_by_cust',jobArray);//#95 populate jobs list
 	elements.frmJobNum.requestFocus(false);
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F6812572-8D9E-4F46-879D-2AA31C919E33"}
+ */
+function onActionChangeMinors(event) {
+	if (1==1){return;}
+	var instance = globals.getInstanceForm(event);
+	var tableName = 'loads_pcmk_comboREPLACE_table';
+	tableName = tableName.replace('REPLACE',instance);
+	if (forms[tableName]){
+		application.output('remove form '+tableName);
+		forms[tableName].onHide(event);
+	}
+	
+	application.output('--------------------------form name '+ tableName);
+	scopes.jobs.removeFormHist(tableName);//loads_pcmk_combo_3_table
+
 }

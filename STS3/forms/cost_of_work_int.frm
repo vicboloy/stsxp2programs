@@ -3,6 +3,7 @@ extendsID:"347AFD5C-2B9F-44BF-972D-2C1417ED3623",
 items:[
 {
 extendsID:"43E4EE37-5309-41D1-BE3B-960FC530E863",
+location:"518,446",
 tabSeq:-2,
 text:"i18n:sts.btn.add",
 typeid:7,
@@ -18,6 +19,7 @@ uuid:"2F4C1977-5156-4D56-A0DD-1F7BAD1C8442"
 },
 {
 extendsID:"5B837E51-7891-4B7F-99C6-5D1A7F48B816",
+location:"240,446",
 tabSeq:-2,
 text:"i18n:sts.btn.save",
 typeid:7,
@@ -25,7 +27,7 @@ uuid:"622667A7-09F9-464A-81C0-0E287B414340"
 },
 {
 horizontalAlignment:4,
-location:"256,109",
+location:"317,100",
 size:"80,20",
 text:"i18n:sts.label.category.uom.dollars",
 transparent:true,
@@ -36,10 +38,12 @@ uuid:"660BDFA4-3A11-4D48-85A8-6E6005AD0A71"
 dataProviderID:"cow_code",
 displayType:10,
 format:"|U[10]",
-location:"346,19",
+location:"407,10",
+name:"cowCode",
 onDataChangeMethodID:"58754A69-D713-4AA4-827C-281BB12A3884",
 placeholderText:"i18n:sts.txt.required.entry",
 size:"148,20",
+styleClass:"required",
 tabSeq:1,
 typeid:4,
 uuid:"6EF0012C-6800-4587-B769-3FD3BE388F9D",
@@ -48,7 +52,8 @@ valuelistID:"0D1B491C-1470-410B-A552-357F7EC773A7"
 {
 dataProviderID:"cow_description",
 format:"|#(40)",
-location:"346,49",
+location:"407,40",
+name:"cowDescription",
 size:"198,20",
 tabSeq:2,
 typeid:4,
@@ -56,7 +61,7 @@ uuid:"74ED92ED-EE74-40B3-8AEE-D86BBA83C1B6"
 },
 {
 horizontalAlignment:4,
-location:"199,19",
+location:"260,10",
 size:"137,20",
 text:"i18n:sts.label.category.code",
 transparent:true,
@@ -68,7 +73,8 @@ dataProviderID:"uom_code",
 displayType:2,
 editable:false,
 format:"|#(15)",
-location:"346,79",
+location:"407,70",
+name:"cowUOM",
 size:"91,20",
 tabSeq:3,
 typeid:4,
@@ -77,6 +83,7 @@ valuelistID:"0D5F1C3A-6AF5-42C8-9E59-158AC0E0F18A"
 },
 {
 extendsID:"0FFBB695-D6F3-479A-8E51-24945AE31550",
+location:"172,447",
 tabSeq:-2,
 text:"i18n:sts.btn.delete",
 typeid:7,
@@ -95,6 +102,7 @@ typeid:15,
 uuid:"67186D15-375D-409D-A58B-9891501997FE"
 }
 ],
+size:"180,412",
 tabSeq:-2,
 typeid:16,
 uuid:"A75743F9-970B-45AD-8A25-D27477C57637"
@@ -104,19 +112,22 @@ extendsID:"D5DC0A5D-DB9E-4B9A-82C7-8C17F0C7D009",
 items:[
 {
 containsFormID:"1F22433C-90A8-45EB-8141-35F4174CCDA0",
-location:"158,174",
+location:"190,174",
 relationName:"sts_cowcodes",
 text:"cost_of_work_longlist",
 typeid:15,
 uuid:"14D8D5BF-61A0-4918-AE70-6F6C2A3A424C"
 }
 ],
+location:"190,144",
+size:"457,298",
 tabSeq:5,
 typeid:16,
 uuid:"ADB97987-9D3C-4B19-901B-B86DF85F7974"
 },
 {
 extendsID:"693FAE74-C9FB-4E2B-9B87-5719ACCCE461",
+location:"334,445",
 tabSeq:-2,
 text:"i18n:sts.btn.edit",
 typeid:7,
@@ -125,7 +136,7 @@ visible:false
 },
 {
 horizontalAlignment:4,
-location:"167,49",
+location:"228,40",
 size:"169,20",
 text:"i18n:sts.label.category.code.description",
 transparent:true,
@@ -134,7 +145,7 @@ uuid:"C51D6043-6FA4-4B72-9A03-B569285789A8"
 },
 {
 horizontalAlignment:4,
-location:"235,79",
+location:"296,70",
 size:"101,20",
 text:"i18n:sts.label.category.uom",
 transparent:true,
@@ -150,7 +161,8 @@ uuid:"DCBBDDC0-DAD3-4BAB-8FF3-CD73DC5665BE"
 {
 dataProviderID:"uom_dollar",
 format:"#.00",
-location:"346,109",
+location:"407,100",
+name:"cowDollar",
 size:"72,20",
 tabSeq:4,
 typeid:4,
@@ -158,6 +170,7 @@ uuid:"DE90F588-F120-456A-96AB-2D0664D7193C"
 },
 {
 extendsID:"7B1FDBF1-5F85-4AEA-A0A0-FD63AC17DD3A",
+location:"426,446",
 tabSeq:-2,
 text:"i18n:sts.btn.cancel",
 typeid:7,

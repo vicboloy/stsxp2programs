@@ -14,7 +14,11 @@ function onActionAdd(event) {
 	controller.newRecord();
 	tenant_uuid = globals.session.tenant_uuid;
 	application.updateUI();
-	forms["employee_specs"+formRev].onEdit(event,true);
+	var specForm = 'employee_specs'+formRev;
+	forms[specForm].elements.tabs.tabIndex = 1;
+	forms[specForm].onActionEdit(event,true);
+	forms['employee_data'+formRev].elements['employee_number'].requestFocus();
+	forms[specForm].elements.tabs.setTabEnabledAt(3,false);//disable addresses tab after save
 }
 
 /**
@@ -51,7 +55,7 @@ function onShow(firstShow, event) {
  */
 function createEmpList(event){
 	var instance = globals.getInstanceForm(event);
-	scopes.jobs.createEmpAssocList(event);
+	var dataSrcName = scopes.jobs.createEmpAssocList(event);
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var dv = databaseManager.createSelect('db:/stsservoy/associations');
 	dv.result.add(dv.columns.association_uuid);
@@ -62,7 +66,7 @@ function createEmpList(event){
 	/** @type {JSDataSet<association_name:String,association_uuid:String>} */
 	var rec = null; var idx = 1; var divIds = []; 
 	/** @type {Array} */
-	var divNames = []; var divRealNames = [];
+	var divNames = []; var divRealNames = []; var divActives = [];
 	while (rec = DV.getRecord(idx++)){
 		divIds.push(rec.association_uuid);
 		divNames.push(rec.association_name.replace(/ /g,'').toLowerCase());
@@ -73,9 +77,13 @@ function createEmpList(event){
 	} else {
 		lstForm = solutionModel.getForm('employees_lstB'+instance);
 	}
-	lstForm.dataSource = 'mem:employeeDivs';
+	lstForm.dataSource = dataSrcName;// 'mem:employeeDivs'+instance;
+	//var colConflicts = scopes.globals.compareMemTableToColumns(lstForm.dataSource,divNames);
+	//if (application.isInDeveloper()){
+	//	application.output('Table Source columns for Divisions match newcolumns: '+colConflicts);
+	//}
 	lstForm.onRender = lstForm.newMethod('function onRender(event){scopes.jobs.onRenderSetLogical(event)}');
-	var L = databaseManager.getFoundSet('mem:employeeDivs');
+	var L = databaseManager.getFoundSet(dataSrcName);
 	L.loadRecords();
 	var totalWidth = 0;var height = 20;
 	var table = databaseManager.getTable(L);
@@ -86,16 +94,17 @@ function createEmpList(event){
 		var dataProv = table.getColumn(columns[idx]).getDataProviderID();
 		if (dataProv.search('sv_') != -1){continue}
 		if (dataProv.search('_id') != -1){continue}
-		if (dataProvName.search('_') == -1){
+		var showCheck = false;
+		if (dataProvName.search('employee_lastname') != -1){tTip = i18n.getI18NMessage('table.employee.employee_lastname');width = 40;}
+		else if (dataProvName.search('employee_number') != -1){tTip = i18n.getI18NMessage('table.employee.employee_number');width = 35;}
+		else if (dataProvName.search('employee_firstname') != -1){tTip = i18n.getI18NMessage('table.employee.employee_firstname');width = 12}
+		else if (dataProvName.search('association_name') != -1){tTip = i18n.getI18NMessage('table.employee.association.name');width = 20}
+		else {
+			showCheck = true;
 			var width = 10;
 			var idxN = divNames.indexOf(dataProvName);
 			/** @type {String} */
-			var tTip = divRealNames[idxN];
-		} else {
-			if (dataProvName.search('employee_lastname') != -1){tTip = i18n.getI18NMessage('table.employee.employee_lastname');width = 40;}
-			if (dataProvName.search('employee_number') != -1){tTip = i18n.getI18NMessage('table.employee.employee_number');width = 35;}
-			if (dataProvName.search('employee_firstname') != -1){tTip = i18n.getI18NMessage('table.employee.employee_firstname');width = 12}
-			if (dataProvName.search('association_name') != -1){tTip = i18n.getI18NMessage('table.employee.association.name');width = 20}
+			var tTip = divRealNames[idxN]+' '+i18n.getI18NMessage('sts.txt.logon');
 		}
 		//lstForm.newLabel(txt,x,y,width,height)
 		var lbl = lstForm.newLabel(tTip,totalWidth,0,width,height);
@@ -107,7 +116,7 @@ function createEmpList(event){
 		lbl.showFocus = true;
 		lbl.transparent = false;
 		lbl.styleClass = 'sts_one';
-		if (dataProvName.search('_') == -1){
+		if (showCheck){
 			var fld2 = lstForm.newCheck(dataProv,totalWidth,height,width,height);
 		} else {
 			fld2 = lstForm.newTextField(dataProv,totalWidth,height,width,height)

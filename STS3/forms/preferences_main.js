@@ -101,3 +101,18 @@ function onActionUpdatePrefs(event, prefType) {
 	errorMessage = "";
 	application.updateUI();
 }
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"AE43F1AB-8D15-4F67-BB67-A2CAFAABA1F7"}
+ */
+function onHide(event) {
+	globals.stopWindowTrackEvent(event);
+
+	return true
+}

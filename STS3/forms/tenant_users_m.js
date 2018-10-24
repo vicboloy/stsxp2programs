@@ -63,8 +63,6 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"65A69292-B7F4-4F11-9A42-A0078026855A"}
  */
 function onHide(event) {
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
-	globals.setWindowClosed("");
+	onActionClose(event);
 	return true;
 }

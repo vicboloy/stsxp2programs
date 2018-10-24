@@ -261,6 +261,18 @@ var exitSequence = false;
  */
 var minorsChanged = false;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"62396589-65EE-4202-8EEA-10A71808F807"}
+ */
+var importRecData = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"D17DCCE9-B6CA-4CF5-A577-F0ED07CA0E8E",variableType:4}
+ */
+var useKissRoutes = 0;
+/**
  * @properties={typeid:35,uuid:"0879B896-5487-4BA7-8CA3-446FE1770947",variableType:-4}
  */
 var endVars = null;
@@ -277,14 +289,13 @@ var endVars = null;
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
-		var keepMinorsPref = scopes.prefs.lKeepMinorPcMarks;
-		var text = elements.keep_minors.titleText;
-		if (keepMinorsPref == 1){
-			text = text.replace(/\(.*\)/,'(default=YES/1)');
-		} else {
-			text = text.replace(/\(.*\)/,'(default=NO/0)');			
-		}
-		elements.keep_minors.titleText = text;
+
+	controller.enabled = true;
+	elements.btn_Hide.text = i18n.getI18NMessage('sts.btn.import.hide.ignore.items');
+	addWindowList(controller.getWindow().title);
+	var keepMinorsPref = (scopes.prefs.lKeepMinorPcMarks) ? 1 : 0;
+	scopes.jobs.formPermissions(event,true);
+
 	//globals.setUserFormPermissions(event);
 //	if (transitionFS){
 //		transitionFS.removeRow(-1);
@@ -322,14 +333,14 @@ function onShow(firstShow, event) {
 		scopes.jobs.importJob.customerId = jobRec.customer_id;
 		scopes.jobs.importJob.jobId = jobRec.job_id;
 		scopes.jobs.importJob.bcFormId = jobRec.barcode_form;//#87ticket#87
-		if (jobRec.keepminors == 1){
+		if (jobRec.keep_minors == 1){
 			scopes.jobs.keepMinors = 1;
 			elements.keep_minors.enabled = false;
 		}
 	}
 	foundset.loadRecords(J);//populate windows current record to return specific job info
 	
-	scopes.jobs.tempGetIdfilesToBarcodeCount(jobRec.job_id);// test tempGetIdfilesToBarcodeCount // example get item record summed count on field
+	//scopes.jobs.tempGetIdfilesToBarcodeCount(jobRec.job_id);// test tempGetIdfilesToBarcodeCount // example get item record summed count on field
 	
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} 
 	if (foundset.find ()){
@@ -347,16 +358,17 @@ function onShow(firstShow, event) {
 	elements.btn_Import.enabled = false;
 	elements.btn_Apply.enabled = true;
 	var enableDrawing = true;
-	if (scopes.globals.kissJobRf){
-		if ((scopes.globals.kissJobRf.search('FabSuite') != -1) ||
-			(scopes.globals.kissJobRf.search('Romac') != -1)) {
+	var kissJobRf = jobRec.rf_interface;//save rf interface to show/noshow buttons
+	if (kissJobRf){
+		if ((kissJobRf.search(i18n.getI18NMessage('sts.interface.fabsuite')) != -1) ||
+			(kissJobRf.search(i18n.getI18NMessage('sts.interface.romac')) != -1)) {
 				enableDrawing = false;
 			}
 	}
-	elements.drawPrfx.visible = enableDrawing;
-	elements.drawPrfx_label.visible = enableDrawing;
-	elements.drawSufx.visible = enableDrawing;
-	elements.drawSufx_label.visible = enableDrawing;
+	elements.drawPrfx.enabled = enableDrawing;
+	//elements.drawPrfx_label.enabled = enableDrawing;
+	elements.drawSufx.enabled = enableDrawing;
+	//elements.drawSufx_label.enabled = enableDrawing;
 
 	var empArray = [];
 	var empArrayID = [];
@@ -389,10 +401,14 @@ function onShow(firstShow, event) {
 	var rec2 = null;
 	idx = 1;
 	while (rec2 = R.getRecord(idx++)){
+		//application.output('route '+rec2.route_code);
 		jobRoutes.push(rec2.route_code);
 		jobRouteIds.push(rec2.routing_id);
 	}
-	if (application.isInDeveloper()){application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds)}
+	//if (application.isInDeveloper()){
+	jobRoutes.unshift(null);
+	jobRouteIds.unshift(null);
+	application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds);
 	var window = controller.getWindow();
 	var height = window.getHeight();
 	window.setLocation(0, 0);
@@ -400,16 +416,24 @@ function onShow(firstShow, event) {
 	scopes.jobs.importLabelCounts = [];
 	importOption = null;
 	elements.btn_Import.enabled = false;
-	keepMinors = scopes.prefs.lKeepMinorPcMarks;
+	keepMinors = keepMinorsPref;//sts.chk.keep.minors.prefs.default
+	var minorText = i18n.getI18NMessage('sts.chk.keep.minors.job.default');//elements.keep_minors.titleText;
+	if (jobRec.keep_minors){
+		minorText = minorText + ' ('+i18n.getI18NMessage('sts.btn.yes')+')';
+	} else {
+		minorText = minorText + ' ('+i18n.getI18NMessage('sts.btn.no')+')';			
+	}
+	elements.keep_minors.titleText = minorText.replace(') (','=');
 	if (jobRec.keep_minors == 1){//job entry record says keep minors for this job. no override
 		keepMinors = 1;
 		elements.keep_minors.enabled = false;
+	} else {
+		keepMinors = 0;
 	}
 	minorsChanged = false;
 	
 	//index;
 	///var custRec;
-	controller.enabled = true;
 	/** headerKissNames['item_quantity']=i18n.getI18NMessage('table.kiss.marks.total.import.qty');//'Total PcMarks Import Qty';
 	headerKissNames['sequence_quantity']=i18n.getI18NMessage('table.kiss.sequence.qty');//'Import Qty';
 	headerKissNames['set_bc_qty']=i18n.getI18NMessage('table.kiss.marks.full.label');//'Marks Full Label';
@@ -430,24 +454,24 @@ function onShow(firstShow, event) {
 	if (!success || !success2){globals.loggerDev(this,'Form kiss_barcode_request remove fail.')}
 	//importTempTable();
 	scopes.jobs.warningsMessage("Piecemark table view creation posted.",true);
-	null;
-	if (jobRec.keep_minors == 1) {
-		elements.keep_minors.enabled = false;
-		//applyRemoveMinors(transitionFS);
-	} else {
-		elements.keep_minors.enabled = true;
-	}
 	importOption = 'Use Sheet Number Matching';
 
-	saveNotesInto = "<NONE>";
+	saveNotesInto = i18n.getI18NMessage('sts.empty.entry');
+	//Form basic load complete, now set if import_prefs has data for the job to last import setting
+	scopes.kiss.loadImportSettings(event);
+	
 	scopes.jobs.warningsMessage("Setting table order.",true);
 	scopes.jobs.tablePrefsLoad('kiss_option_import');
 	//handle excludes by shape and summaries by piecemark
 	scopes.jobs.warningsMessage("Apply initial preferences to piecemark table.",true);
 	//applyImportPreferences(); 20180110 task disable upon load, use button instead
-	forms['import_table'].foundset.sort('parent_piecemark asc, piecemark asc');
 	databaseManager.saveData(foundset);
+	forms['import_table'].foundset.sort('item_qty desc');
 	scopes.jobs.warningsMessage("Table complete.",true);
+	scopes.jobs.readPieceTables('import');
+	elements.importRecInfo.visible = (application.isInDeveloper());
+	applyImportPreferences(event,true);
+	null;
 }
 /**
  * @properties={typeid:24,uuid:"C010A107-2370-481A-BD1F-99F412CDD06B"}
@@ -655,29 +679,32 @@ function defineExclDataset(){
  */
 function onHide(event) {
 	null;
+	//removeWindowTrack();
+	scopes.jobs.warningsX();
 	//elements.tabless.removeAllTabs();
 	//var success = history.removeForm('kiss_barcode_request');
 	//if (success){
 	//	var success2 = solutionModel.removeForm('kiss_barcode_request');
 	//}
-	globals.setWindowClosed("");
+	//globals.setWindowClosed("");
 	//transitionFS.removeRow(-1);
 	//transitionFSsink.removeRow(-1);
 	//transitionFSsumm.removeRow(-1);
 	history.removeForm('kiss_excludes_lst');
 	solutionModel.removeForm('kiss_excludes_lst');
 	//databaseManager.getTable('kissDatasource');
-	history.removeForm('kiss_option_import');
-	solutionModel.removeForm('kiss_option_import');
+	///history.removeForm('kiss_option_import');
+	///solutionModel.removeForm('kiss_option_import');
 	history.removeForm('kiss_barcode_request');
 	solutionModel.removeForm('kiss_barcode_request');
 	var success = history.removeForm('kiss_excludes_lst');
 	if (application.isInDeveloper()){application.output('kiss_excludes_lst form history removed '+success)}
 	success = solutionModel.removeForm('kiss_excludes_lst');
 	if (application.isInDeveloper()){application.output('kiss_excludes_lst form object removed '+success)}
-	var win = application.getActiveWindow();
-	win.hide();
-	return true
+	//var win = application.getActiveWindow();
+	//win.hide();
+	globals.stopWindowTrackEvent(event);
+	return true;
 }
 /**
  * ColumnNames indexed into the exclusion and retention Foundsets for creating the Foundset 
@@ -926,7 +953,7 @@ function newKRecord(lineArray){
  * @SuppressWarnings(wrongparameters)
  */
 function popKISSTableK() {
-	scopes.jobs.warningsYes();
+	scopes.jobs.warningsYes(event);
 	var beginTime = new Date().getTime();
 	recomputeLabelArray = [];
 	///var lastParent = 0;
@@ -1688,14 +1715,17 @@ function listDataset(db){
  * @properties={typeid:24,uuid:"9656ACD0-4E9A-4481-9798-27C2981D6AE4"}
  * @AllowToRunInFind
  */
-function applyImportPreferences(){
-	var reply = globals.DIALOGS.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),
-		i18n.getI18NMessage('sts.txt.question.discard.types'),
-		[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
-	scopes.jobs.applyDiscardTypes = (reply == i18n.getI18NMessage('sts.btn.yes'));
-
+function applyImportPreferences(event,skipDialog){
+	if (!skipDialog){
+		var reply = globals.DIALOGS.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),
+			i18n.getI18NMessage('sts.txt.question.discard.types'),
+			[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
+		scopes.jobs.applyDiscardTypes = (reply == i18n.getI18NMessage('sts.btn.yes'));
+	} else {
+		scopes.jobs.applyDiscardTypes = true;
+	}
 	scopes.jobs.warningsMessage('Applying import preferences to all rows.',true);
-	//scopes.jobs.warningsYes();
+	//scopes.jobs.warningsYes(event);
 	//scopes.jobs.warningsMessage('Apply import preferences.');
 	elements.btn_Apply.enabled = false;
 	elements.btn_Import.enabled = false;
@@ -2029,5 +2059,51 @@ function verifyImportQuants(last,current,event){
  * @properties={typeid:24,uuid:"F47692AF-8415-47D2-9334-C3D943B4EE62"}
  */
 function onActionMinorMarks(event) {
-	minorsChanged = true;;
+	minorsChanged = true;
+	onActionHideExcludedRecords(event,true);
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ * @parm {Boolean} showAnyway
+ *
+ * @properties={typeid:24,uuid:"F0F2C9B4-55D6-4523-9EF7-1E7548C8B7EF"}
+ */
+function onActionHideExcludedRecords(event,showAnyway) {
+	/**
+	 * i18n:import.create
+i18n:import.update
+i18n:import.summarize
+i18n:import.reprint
+i18n:import.nohist
+i18n:import.ignore
+i18n:import.append
+i18n:import.delete
+Used within keep minor marks checkbox to show excludes
+
+	 */
+	// called from onActionMinorMarks(event) and btn_Hide
+	var form = forms['kiss_option_import'];
+	elements.btn_Hide.enabled = false;
+	var el = form.elements['btn_Hide'];
+	var showText = i18n.getI18NMessage('sts.btn.import.show.ignore.items');
+	var hideText = i18n.getI18NMessage('sts.btn.import.hide.ignore.items');
+
+	if (el.text == showText || showAnyway){
+		forms['import_table'].hideIgnoredRecords(false);
+		el.text = hideText;
+	} else {
+		if (el.text == hideText){
+			forms['import_table'].hideIgnoredRecords(true);
+			el.text = showText;
+		}
+	}
+	elements.btn_Hide.enabled = true;
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var j = databaseManager.createSelect('db:/stsservoy/import_table');
+	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var J = databaseManager.getFoundSet(j);
+	null;
 }

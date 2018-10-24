@@ -101,8 +101,7 @@ function onActionSaveEditCarrier(event){
  * @properties={typeid:24,uuid:"745C0B19-A344-48E6-A10A-C46A89182EC6"}
  */
 function onActionClose(event) {
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 
 /**
@@ -147,4 +146,18 @@ function onShow(firstShow, event) {
 		scopes.jobs.formPermissions(event,true);
 	}
 	return _super.onShow(firstShow, event)
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"E2796BCC-C321-4D79-9612-D563951071B8"}
+ */
+function onHide(event) {
+	onActionClose(event);
+	return _super.onHide(event)
 }

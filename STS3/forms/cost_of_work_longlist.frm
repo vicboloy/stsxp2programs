@@ -2,6 +2,7 @@ dataSource:"db:/stsservoy/cowcodes",
 encapsulation:60,
 items:[
 {
+anchors:11,
 labelFor:"uom",
 location:"144,1",
 name:"uom_label",
@@ -13,7 +14,7 @@ typeid:7,
 uuid:"187A3AE4-1DBB-4A6F-92EA-F609E06E0921"
 },
 {
-anchors:3,
+anchors:11,
 labelFor:"uom_dollar",
 location:"213,0",
 name:"uom_dollar_label",
@@ -25,7 +26,7 @@ typeid:7,
 uuid:"31382E2D-FC3E-42AA-9D74-B2F595077CC5"
 },
 {
-anchors:3,
+anchors:11,
 dataProviderID:"uom_dollar",
 location:"213,20",
 name:"uom_dollar",
@@ -35,6 +36,7 @@ typeid:4,
 uuid:"55AD3787-2EEF-4767-A765-3449AF891209"
 },
 {
+anchors:11,
 labelFor:"cow_code",
 location:"73,0",
 name:"cow_code_label",
@@ -46,6 +48,7 @@ typeid:7,
 uuid:"5890123B-354E-49BF-9BD7-173BF186C07F"
 },
 {
+anchors:11,
 dataProviderID:"uom_code",
 location:"144,21",
 name:"uom",
@@ -55,6 +58,7 @@ typeid:4,
 uuid:"63296F6B-2976-49EB-9899-7419B80179DF"
 },
 {
+anchors:11,
 dataProviderID:"cow_code",
 location:"73,20",
 name:"cow_code",
@@ -74,6 +78,7 @@ typeid:4,
 uuid:"7104D616-2854-4D10-AE99-8CF3B40BDB55"
 },
 {
+anchors:11,
 labelFor:"cow_description",
 location:"0,0",
 name:"cow_description_label",

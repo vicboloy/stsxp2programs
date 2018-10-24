@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/associations",
+items:[
+{foreignColumnName:"logic_flag",operator:261,primaryDataProviderID:"scopes.globals.flagTRUE",typeid:23,uuid:"2DF4D712-CAA4-408C-8ED9-511CCD73CAC7"},
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"tenant_uuid",typeid:23,uuid:"91F06AC0-C00B-4DF1-B221-C6401ACA6BAA"}
+],
+joinType:1,
+name:"sts_assoc_to_tenant_plants",
+primaryDataSource:"db:/stsservoy/tenant_list",
+typeid:22,
+uuid:"FABEB4DA-58DF-4E7D-8190-43B1BF227A0B"

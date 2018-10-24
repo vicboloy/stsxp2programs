@@ -32,6 +32,7 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 	var fs = groups_to_group_keys.duplicateFoundSet();						//	The related foundset 
 	var idColumnName = 'key_uuid';											//	The name of the fk id column to set
 	var id;																	//	the value of the fk id
+	var recDate = new Date();
 	var i;
 	
 	oldIDs = (oldIDs) ? new String(oldIDs).split('\n') : [];				//	split the old id list into an array by carriage return
@@ -53,6 +54,7 @@ function onDataChangeGroupKeys(oldIDs, newIDs, event) {
 		if(fs.newRecord()){													//	create the related record
 			fs[idColumnName] = id;											//	set the foreign key column value
 			fs.tenant_uuid = globals.secCurrentTenantID;
+			fs.edit_date = recDate;
 			databaseManager.saveData(fs.getSelectedRecord());				//	save data
 		}
 	} else {																//	id was REMOVED	
@@ -98,6 +100,7 @@ function onDataChangeGroupUsers(oldValue, newValue, event) {
 	var i;
 	var newIDs =[];
 	var oldIDs = [];
+	var recDate = new Date();
 	
 	oldIDs = (oldIDs) ? new String(oldIDs).split('\n') : [];				//	split the old id list into an array by carriage return
 	oldIDs.sort();															//	sort the array
@@ -113,6 +116,7 @@ function onDataChangeGroupUsers(oldValue, newValue, event) {
 		}
 		if(fs.newRecord()){													//	create the related record
 			fs[idColumnName] = id;											//	set the foreign key column value
+			fs.edit_date = recDate;
 			databaseManager.saveData(fs.getSelectedRecord());				//	save data
 		}
 	} else {																//	id was REMOVED	

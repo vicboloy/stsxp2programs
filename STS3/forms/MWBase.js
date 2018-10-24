@@ -440,6 +440,30 @@ var vMinors = 0;
  */
 var baseForm;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"474E91CD-AE1C-4530-836E-FAE0F55035B4"}
+ */
+var vFinish = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"493F55DE-43AB-4BCC-AFAF-F046E9287058"}
+ */
+var vItemParentPcmk = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"8704AFDE-FBA6-4E27-A3DF-7D93EC354FA3"}
+ */
+var vGrade = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"641DB312-F26E-4AFC-9F99-7F9F4924839D"}
+ */
+var vRouteCode = '';
+/**
  * @param {JSEvent} event System selection event
  * @param windowTitle Window bar title
  * @param formName Main form name for button selection
@@ -548,7 +572,7 @@ function onActionClickUOM(event) {
  * @properties={typeid:24,uuid:"9BFE2D4E-D359-4CAD-A84F-F94DC119456F"}
  */
 function onActionClickCOW(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.cost.of.work'),'cost_of_work',50,50,700,600,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.cost.of.work'),'cost_of_work',50,50,810,600,false);
 }
 /**
  * @param event
@@ -1260,6 +1284,8 @@ function setActiveElement(elementName){
  */
 function onActionClickDeveloper(event) {
 	if (!application.isInDeveloper()){return}
+	scopes.jobs.testSerialNonOdo();
+	if (1==1)return
 	var response = "blah";
 	switch (response){
 		case 'Update Zips':{
@@ -1333,6 +1359,7 @@ function onActionClickDeveloper(event) {
 			perms = databaseManager.getFoundSet('db:/stsservoy/group_keys');
 			perms.loadRecords();
 			index = 1;
+			var updateRec = new Date();
 			while (index <= perms.getSize()){
 				rec = perms.getRecord(index);
 				if (!rec.group_key_uuid){
@@ -1341,6 +1368,7 @@ function onActionClickDeveloper(event) {
 				groupKeys[rec.group_key_uuid] = rec.group_key_uuid;
 				rec.group_uuid = groups[rec.group_id];
 				rec.key_uuid = keys[rec.key_id];
+				rec.edit_date = updateRec;
 				index++;
 			}
 			databaseManager.saveData(perms);
@@ -1355,6 +1383,7 @@ function onActionClickDeveloper(event) {
 					rec.user_group_uuid = application.getUUID();
 				}
 				rec.group_uuid = groups[rec.group_id];
+				rec.edit_date = updateRec;
 				index++;
 			}
 			databaseManager.saveData(perms);
@@ -1416,7 +1445,7 @@ function onActionClickEmployeeView(event) {
  * @properties={typeid:24,uuid:"CFF48241-D9CB-43D9-85B1-44E13D99CBD0"}
  */
 function onActionClickPiecemark(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.piecemark'),'piecemark',50,50,650,400,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.piecemark'),'piecemark2',50,50,800,600,false);
 }
 /**
  * @param event
@@ -1424,7 +1453,7 @@ function onActionClickPiecemark(event) {
  * @properties={typeid:24,uuid:"8FDE0BCB-E5CF-4160-8511-7C8F9670A2D6"}
  */
 function onActionClickPiecemarkView(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.piecemark.view'),'piecemark_view',50,50,700,400,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.piecemark.view'),'piecemark2',50,50,800,600,false);
 }
 /**
  * @param event
@@ -1432,7 +1461,7 @@ function onActionClickPiecemarkView(event) {
  * @properties={typeid:24,uuid:"3D55B20E-1121-48D4-94AD-46F4726D62FF"}
  */
 function onActionClickI18nView(event){
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.i18n.view'),'i18n_edit',50,50,700,400,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.i18n.view'),'i18n_edit',50,50,750,510,false);
 
 }
 /**
@@ -1460,6 +1489,10 @@ function onActionClickPerformanceImport(event) {
  * @properties={typeid:24,uuid:"B86758FB-D92F-4FF7-9CCE-0D6FD4D21200"}
  */
 function onActionClickInfoSheet(event){
+	scopes.globals.setSampleBarsContext();
+	if (1==1){return}
+	
+	
 	// jobNumbers J, Status Codes S, Id serial Numbers D, Users W, Bundle Numbers on Job Number B, 
 	// jobNumbers J, Status Codes S, Id serial Numbers D, Users W, Bundle Numbers on Job Number B,
 	var temp = scopes.prefs.temppath;
@@ -1536,35 +1569,7 @@ function onActionClickInfoSheet(event){
 	}
 	if (application.isInDeveloper()){application.output(text_data)}
 	
-	/** @type {QBSelect<db:/stsservoy/sheets>} */
-	var s = databaseManager.createSelect('db:/stsservoy/sheets');
-	s.where.add(s.columns.delete_flag.isNull);
-	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	s.where.add(s.columns.job_id.isin(jobIds));
-	s.result.add(s.columns.job_id);
-	
-	application.output('jobIDS '+jobIds);
-	application.output('jobNums '+jobs);
-	
-	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
-	var sp = s.joins.add('db:/stsservoy/piecemarks');
-	sp.on.add(s.columns.sheet_id.eq(sp.columns.sheet_id));
-	sp.root.where.add(sp.columns.delete_flag.isNull);
-	/** @type {QBJoin<db:/stsservoy/idfiles>} */
-	var si = sp.joins.add('db:/stsservoy/idfiles');
-	si.on.add(sp.columns.piecemark_id.eq(si.columns.piecemark_id));
-	si.root.where.add(si.columns.delete_flag.isNull);
-	/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
-	var sd = si.joins.add('db:/stsservoy/id_serial_numbers');
-	sd.on.add(si.columns.id_serial_number_id.eq(sd.columns.id_serial_number_id));
-	sd.root.sort.add(sd.columns.id_serial_number.asc);
-	sd.root.result.distinct = true;
-	s.result.add(sd.columns.id_serial_number);
-	
-	var serials_txt = '';var count = jobs.length*80*2;
-	var seen = []; var maxIdCount = 80; var skipJob = [];
-	var SSS = databaseManager.getDataSetByQuery(s,-1);
-	for (idx = 1;idx <= SSS.getMaxRowIndex();idx++){
+	/** for (idx = 1;idx <= SSS.getMaxRowIndex();idx++){
 		SSS.rowIndex = idx;
 		var jobNum = idToJob[SSS.job_id];
 		if (skipJob.indexOf(jobNum) != -1){continue}
@@ -1576,18 +1581,54 @@ function onActionClickInfoSheet(event){
 			skipJob.push(jobNum);
 		}
 		//if (count-- < 0){break}
-	}
+	} */
 	
 	
+	if (application.isInDeveloper()){application.output('jobIDS '+jobIds);}
+	if (application.isInDeveloper()){application.output('jobNums '+jobs);}
+	var serials_txt = '';var count = jobs.length*80*2;
 	for (idx = 0;idx < jobs.length;idx++){
 		jobNum = jobs[idx];
+		var jobId = jobIds[idx];
 		serials_txt += '\n\nJOB '+jobNum+'\n\n';
-		if (!seen[jobNum]){continue}
-		for (var idx2 = 0;idx2 < seen[jobNum].length;idx2++){
-			if (!seen[jobNum][idx2]){continue}
-			serials_txt += '*'+seen[jobNum][idx2].trim()+'*\n\n';
+		/** @type {QBSelect<db:/stsservoy/sheets>} */
+		var s = databaseManager.createSelect('db:/stsservoy/sheets');
+		s.where.add(s.columns.delete_flag.isNull);
+		s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		s.where.add(s.columns.job_id.eq(jobId));
+		s.result.add(s.columns.job_id);
+		
+		/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+		var sp = s.joins.add('db:/stsservoy/piecemarks');
+		sp.on.add(s.columns.sheet_id.eq(sp.columns.sheet_id));
+		sp.root.where.add(sp.columns.delete_flag.isNull);
+		sp.root.where.add(sp.columns.parent_piecemark.eq(sp.columns.piecemark));//restrict printed Barcodes to major marks 20180525
+		/** @type {QBJoin<db:/stsservoy/idfiles>} */
+		var si = sp.joins.add('db:/stsservoy/idfiles');
+		si.on.add(sp.columns.piecemark_id.eq(si.columns.piecemark_id));
+		si.root.where.add(si.columns.delete_flag.isNull);
+		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
+		var sd = si.joins.add('db:/stsservoy/id_serial_numbers');
+		sd.on.add(si.columns.id_serial_number_id.eq(sd.columns.id_serial_number_id));
+		//sd.root.sort.add(sd.columns.id_serial_number.asc);
+		sd.root.result.distinct = true;
+		s.result.add(sd.columns.id_serial_number);
+		
+
+		var seen = []; var maxCount = 80; var skipJob = [];
+		var SSS = databaseManager.getDataSetByQuery(s,-1);
+		var ids = []; var maxIdCount = (maxCount < SSS.getMaxRowIndex()) ? maxCount : SSS.getMaxRowIndex();
+		//if (!seen[jobNum]){continue}
+		for (var idx2 = 0;idx2 < maxIdCount;idx2++){
+			//if (!seen[jobNum][idx2]){continue}
+			SSS.rowIndex = idx2+1;
+			ids.push(SSS.id_serial_number);
 			//var col = idx2*1+1*1;
 			//if (col/4*1 == Math.floor(col/4)*1){serials_txt += "\n"}
+		}
+		ids.sort();
+		for (idx2 = 0;idx2 < maxIdCount;idx2++){
+			serials_txt += '*'+ids.shift().toString().trim()+'*\n\n';			
 		}
 	}
 	var fileObj = plugins.file.writeTXTFile(file,text_data+'\n'+serials_txt);
@@ -1596,6 +1637,15 @@ function onActionClickInfoSheet(event){
 		return;
 	}
 	plugins.dialogs.showErrorDialog('1254',i18n.getI18NMessage('1254',[fileName]))
+	application.executeProgram('rundll32', ['url.dll,FileProtocolHandler', tmpfile]);//execute pdf viewer
 	//plugins.UserManager.executeCommand('wordpad.exe '+fileName);
 
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"8293D5A5-91F5-4916-B2E4-7F37E10FAA32"}
+ */
+function onActionBackupDatabase(event){
+	scopes.globals.backupDatabase(event);
 }

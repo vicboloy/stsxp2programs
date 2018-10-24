@@ -1,4 +1,12 @@
 /**
+ * @properties={type:4,typeid:36,uuid:"02448C82-9572-4D43-AC99-09A5E9C2F99D"}
+ */
+function freeCheck2()
+{
+	return 0;
+}
+
+/**
  * @properties={type:12,typeid:36,uuid:"F06F774E-8806-40A7-8517-75DC1FE5F367"}
  */
 function charWidth()

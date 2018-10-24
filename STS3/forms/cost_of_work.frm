@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/cowcodes",
 encapsulation:60,
 extendsID:"B6CF9948-A35C-4413-A7F5-135E22B132BD",
@@ -7,7 +13,7 @@ anchors:15,
 items:[
 {
 containsFormID:"476231BC-1AAD-45C0-B13E-CDE4E06808B1",
-location:"65,68",
+location:"24,41",
 text:"i18n:sts.tab.cow.category.entry",
 typeid:15,
 uuid:"0CF48095-09BD-41F5-9B27-AD60950D234C"
@@ -28,7 +34,7 @@ uuid:"E16BC0E8-FDF8-4352-976C-427842EC86E9"
 },
 {
 containsFormID:"B7D0937E-A7E4-49B3-BB8E-35855F420FD6",
-location:"0,35",
+location:"61,67",
 relationName:"sts_cowcodes",
 text:"i18n:sts.tab.cow.your.codes",
 typeid:15,
@@ -99,7 +105,7 @@ uuid:"FE9B9522-8AC3-4DE2-97BB-48EA560159F3"
 }
 ],
 name:"cost_of_work",
-onHideMethodID:"4A0686BA-33BF-4794-BB5D-7945C21A6807",
+onHideMethodID:"0C8E248C-5C45-4D9F-8A25-00233B2FA859",
 onShowMethodID:"A0F3DDD6-9707-4057-9E29-7CFD2E51B3D4",
 showInMenu:true,
 size:"698,480",

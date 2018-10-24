@@ -89,7 +89,20 @@ var AUTH_INIT_COMPANY = "secCreateTenantAndUser";
  * @properties={typeid:35,uuid:"EA1E69BB-9C53-41D8-93D1-3CA210A506EA"}
  */
 var AUTH_METHOD_CHECK_LICENSE = 'secCheckLicense';
-
+/**
+ * @properties={typeid:35,uuid:"78BB3585-FC9E-4EB1-9D32-8D0315D53A51",variableType:-4}
+ */
+var anotherName = null;
+/**
+ * @properties={typeid:35,uuid:"40154824-23C7-4831-BABE-559CC955A20C",variableType:-4}
+ */
+var login2 = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"853D0EAF-98BB-4C8D-A54E-9D7C810AD509"}
+ */
+var CHECK_BROWSER = 'getBrowserInfo';
 /**
  * @properties={typeid:24,uuid:"5F3B8ABB-AEC5-4217-967B-77FCB4D07DDA"}
  * @AllowToRunInFind
@@ -116,23 +129,29 @@ function login(){
 		errorMessage = i18n.getI18NMessage('sts.txt.provide.password');
 		return false;
 	}
-	//application.output('before tenantid');
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		security.authenticate(AUTH_SOLUTION,CHECK_BROWSER);//executes servoysecurity globals function
+		//plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
+	}
+
+	application.output('before tenantid');
+	
 	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[userName,companyName]);
 	//application.output('after tenantid'+tenantID+' ID ');
 	var checkLicense = "";
 	var invalidTenant = '';
 	if(tenantID){
-		//application.output('inside tenantID');
+		application.output('inside tenantID');
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
 		if (application.isInDeveloper()){application.output('user ID '+userID+' tenantID '+tenantID);}
 		if(userID){
 			if (application.isInDeveloper()){application.output('passCheck '+userID+' '+password);}
 			var passCheck = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_PASSWORD,[userID, password]);
 			//if (!passCheck && (password == tenantID)){passCheck = true}//TODO REMOVE
-			
+			application.output('before license check');
 			if (application.isInDeveloper()){application.output('passcheck '+passCheck+' '+password+' '+tenantID);}
 			checkLicense = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[application.getSolutionName(),tenantID,userID]);
-			//application.output('license use '+checkLicense);
+			application.output('license use '+checkLicense);
 			if(passCheck && checkLicense.split(':')[1] > 0){
 				if (security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 					globals.secCurrentUserID = userID;
@@ -169,12 +188,13 @@ function login(){
 	var licenseData = checkLicense.split(':');
 	var licRemain = licenseData[1];
 	var licAvail = licenseData[2];
+	if (!invalidTenant){invalidTenant = '';}
 	message += '.\n'+invalidTenant;
 	//var licTotal = licenseData[2];
 	//var licUsed = licenseData[3];
-	application.output('message '+message);
+	application.output('LOGINS message '+message+' '+licenseData);
 	if (licRemain <= 0 && passCheck){
-		message += +'.\n'+i18n.getI18NMessage('sts.txt.license.available',[application.getSolutionName(),licRemain,licAvail]); // only add license info if login failure license-related
+		message += '.\n'+i18n.getI18NMessage('sts.txt.license.available',[application.getSolutionName(),licRemain,licAvail]); // only add license info if login failure license-related
 		message += '.\n'+i18n.getI18NMessage('sts.txt.license.error');
 		errorMessage = licExceeded;
 	}
@@ -202,10 +222,25 @@ function callError(msg){
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"A3E09D87-2EED-4CA4-8E02-C5014E5AA356"}
+ * @AllowToRunInFind
  */
 function onLoad(event) {
+	newScale = 1.0;
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
-		var newScale = Math.floor(application.getScreenWidth()/240*10)/10;
+		var osName = application.getOSName();
+		var width = application.getScreenWidth();
+		var height = application.getScreenHeight();
+		if (osName.search(/(Linux)|(Mac)/i) != -1){
+			var newScale = Math.floor(width/240*10)/10;
+			if (osName.search(/Linux/i) != -1){ 
+				//newScale = Math.floor(1080/240);
+			}			
+		}
+		//newScale = 1.0
+		var win = application.getActiveWindow();
+		var showWidth = win.controller.getWindow().getWidth();
+
+		application.output('RM login newscale '+newScale+' '+showWidth);
 		scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale='+newScale);
 	}
 	textAreaString = "";
@@ -290,11 +325,15 @@ function onLoad(event) {
  */
 function exitBrowser(){
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		plugins.UserManager.Client().clientId;
+		plugins.UserManager.Client().shutdown();
+		
 		var jsToExecute = "application.quit();";
 		plugins.WebClientUtils.executeClientSideJS(jsToExecute);
 	} else {
 		application.exit(); // changes to ensure client quits and web quits
 	}
+	var session = plugins.UserManager.Client().closeSolution();
 }
 /**
  * @type {String}

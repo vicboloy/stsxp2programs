@@ -432,9 +432,11 @@ var dflRouteCode = "NORMAL";
 var validStatusCodes = true;
 /**
  * Keep minor piecemarks during import or not.
- * @properties={typeid:35,uuid:"B691096B-AAE6-4A20-9715-F1AEDA199594",variableType:-4}
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"B691096B-AAE6-4A20-9715-F1AEDA199594",variableType:4}
  */
-var lKeepMinorPcMarks = true;
+var lKeepMinorPcMarks = 0;
 /**
  *
  * @properties={typeid:35,uuid:"E7245799-F08F-42F6-98D9-9F7DF429E629",variableType:-4}
@@ -472,6 +474,18 @@ var smallMadeInFont = true;
  * @properties={typeid:35,uuid:"22289A00-4BA5-4BAE-9246-FDA87996C2D4",variableType:4}
  */
 var maxColumnShow = 15;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"F1DD0133-ABAB-48EF-848D-497217360449",variableType:4}
+ */
+var showManHours = 1;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"743823E3-0F12-47C4-AF81-3CD7A948332F",variableType:4}
+ */
+var maxIdleMinutes = 20;
 //PO Info preferences -----------------------------------------------------------------
 
 /**
@@ -1186,7 +1200,7 @@ var labels = "1 AREA Character 6 idfiles.id_area 10,\
 	192 BOMWIDNUM Numeric 10.4 UNKNOWN,\
 	193 BOMITEMWT Numeric 10.3 UNKNOWN,\
 	194 ERECTDWG Character 15 idfiles.erection_drawing 20,\
-	195 BUNDLEID Character 10 idfiles.bundle_id 30,\
+	195 BUNDLEID Character 10 idfiles.bundle_bc 30,\
 	196 FINISH Character 10 piecemarks.finish 30,\
 	197 DETAILMIN Numeric 10.4 piecemarks.saw_minutes (17),\
 	198 FABMIN Numeric 10.4 piecemarks.fabrication_minutes (17),\
@@ -1522,7 +1536,7 @@ function onActionUpdatePrefs(event) {
 		var form = forms[event.getFormName()];
 		var tempPrefsChanged = form.prefsChanged;
 	}
-	scopes.jobs.warningsYes();
+	scopes.jobs.warningsYes(event);
 	application.updateUI();
 	//var fs = databaseManager.getFoundSet('stsservoy','preferences2');
 	var global_user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
@@ -1559,7 +1573,7 @@ function onActionUpdatePrefs(event) {
 		if (tempPrefsChanged){
 			if (tempPrefsChanged.indexOf(variableX) == -1){continue}//20180108
 		}
-		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.saving.preferences'),true);
+		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.saving.preferences'),false);
 		//variableX = index;
 		variableSetting = prefs[variableX];
 		var variableType = typeof(variableSetting);
@@ -1607,7 +1621,7 @@ function onActionUpdatePrefs(event) {
 	setPrefsClean(event,prefType);
 	globals.onActionCancelButton(event);
 	application.updateUI();
-	scopes.jobs.warningsX();
+	scopes.jobs.warningsX(event);
 }
 /**
  * @properties={typeid:24,uuid:"FAFD3720-4D08-4BE2-A2F6-BCAE870935A0"}
@@ -1615,7 +1629,12 @@ function onActionUpdatePrefs(event) {
 function getBTLabelFormats(){
 	var reportsPath = scopes.prefs.reportpath;
 	var labelList = [];
-	var btwFiles = plugins.file.getFolderContents(reportsPath,".btw");
+	var suffix = ['.btw','.BTW','.qdf'];
+	var path = plugins.file.getDefaultUploadLocation()+reportsPath;
+	path = path.replace(/\/+/g,'\\').replace('.','');
+	application.output('REM label path '+path);
+	var btwFiles = plugins.file.getFolderContents(path,suffix);
+	//var btwFiles = plugins.file.getFolderContents(reportsPath,suffix);
 	labelList.push('<NONE>');
 	for (var index = 0;index < btwFiles.length;index++){
 		labelList.push(btwFiles[index].getName());
@@ -1626,7 +1645,7 @@ function getBTLabelFormats(){
  * @properties={typeid:24,uuid:"2FDB4922-1121-4905-BF7F-EA235F50409D"}
  */
 function getLocalPrinters(){
-	application.setValueListItems('stsvl_get_printer_list',application.getPrinters());
+	application.setValueListItems('stsvl_get_printer_list',application.getPrinters().sort());
 }
 /**
  * @param event {JSEvent}
@@ -1695,20 +1714,68 @@ function onDataChangePrefsGeneral(oldValue, newValue, event,prefsType) {
 	return true;
 }
 /**
- * @param event
+ * @param {JSEvent} event
  * @param updateValue
  * @param prefsType
  *
  * @properties={typeid:24,uuid:"BF49A765-9ECE-4164-AAF0-208CA327A66C"}
+ * @AllowToRunInFind
  */
 function onActionFileOpenDialog(event,updateValue,prefsType) {
 	//var priorPath = (prefsType == 'Printer') ? scopes.printer[updateValue]: scopes.prefs[updateValue];
 	//if (priorPath == "" || priorPath == null){priorPath = "C:\\"}
-	var dirs = plugins.file.showDirectorySelectDialog();
+    var defaultDir = plugins.file.getDefaultUploadLocation();
+    
+	var baseDirObj = plugins.file.convertToJSFile(defaultDir);
+	var dirs = plugins.file.showDirectorySelectDialog(baseDirObj);
+	if (!dirs){return}
+	var intendedDir = dirs.getAbsolutePath();
+	if (intendedDir.indexOf(defaultDir) != 0){
+		application.output('intended '+intendedDir+' default '+defaultDir);
+		scopes.globals.errorDialogMobile(event,1258,'','');//The Base Directory Is Unavailable From This Client
+		//return;
+		// show cannot run this unless it is in network
+	}
 	//var dirs = plugins.file.showFileOpenDialog(2, priorPath, false, fileReceipt2);
-	if (dirs == null){return}
+	var stsTestFile = 'STSTestWriteFile.txt';
+	if (dirs == null){return false}
 	var path = dirs.getAbsolutePath();
+	var file = plugins.file.createFile(stsTestFile);
+	var error = false;
+	if (file.exists()){
+		application.output(stsTestFile+' file exists');
+		if (!file.deleteFile()){
+			application.output(stsTestFile+' file exists but cannot delete');
+			error = true;
+		}
+	} else {
+		if (!file.createNewFile()){
+			application.output(stsTestFile+' could not create');
+			error = true;
+		} else {
+			application.output(stsTestFile+' file created');
+			if (!file.deleteFile()){
+				application.output(stsTestFile+' file deleted');
+				error = true;
+			}
+		}
+	}
+	if (error){
+		application.output(path+' directory access test failed');
+		scopes.globals.errorDialogMobile(event,'1257',null,'');// Cannot Modify File In Directory
+		var form = event.getFormName();
+		var elName = event.getElementName();
+		//forms[form].elements[elName].getDataProviderID();
+		return false;
+	}
+	application.output(path+' path is accessible');
 	///var formName = event.getFormName();
+	//if (path.replace(defaultDir,'')){
+	path = path.replace(defaultDir,'');
+	if (path.search(/[A-Za-z\][:\.]\\/) == -1){
+		path = '.'+path;
+	}
+	//}
 	if (prefsType == "Printer"){
 		scopes.printer[updateValue] = path;
 	} else {
@@ -1716,7 +1783,7 @@ function onActionFileOpenDialog(event,updateValue,prefsType) {
 	}
 	setPrefsDirty(event,prefsType);
 	forms.preferences_printer.prefsChanged.push(updateValue);//20180109 update prefs on button inop from button change
-	
+	return true;
 }
 /**
  * @param event {JSEvent}
@@ -1875,30 +1942,38 @@ function onActionPrintLabels(event) {
  */
 function bartenderPrint(event,txtString){
 	null;
+	var debug = 1;
 	var versionForm = globals.getInstanceForm(event);
 	var formName = event.getFormName();
 	if (formName.search('barcode_piecemark_info') == 0){
 		formName = 'barcode_idlabel'+versionForm;
 	}
-	var reportPth = scopes.prefs.reportpath;
+	var reportPth = scopes.prefs.reportpath.replace('.','');
 	var barForm = forms[formName];
 	
 	var printer = barForm.printerName;
 	var label = barForm.labelName;
-	var tempDir = (barForm.useLocalDirectory) ? barForm.localDir : scopes.prefs.temppath;
-	scopes.jobs.warningsYes();
+	var tempDir = (barForm.useLocalDirectory) ? barForm.localDir : plugins.file.getDefaultUploadLocation()+scopes.prefs.temppath.replace('.','');
+	//tempDir = tempDir.replace(plugins.file.getDefaultUploadLocation(),'');
+	tempDir = tempDir.replace(/\/+/g,'\\').replace('.','');
+	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
 	var line = "";
 	var fileName = tempDir+"\\barcodelabel.txt";
-	var btwFile = reportPth+"\\"+label;
+	fileName = fileName.replace(/\/+/g,'\\');
+	var btwFile = plugins.file.getDefaultUploadLocation()+reportPth+"\\"+label;
+	btwFile = btwFile.replace(/\/+/g,'\\');
+	if (debug){application.output('btwFile bartender print '+btwFile)}//REMOVE
 	var btwExists = plugins.file.createFile(btwFile);
 	if (!btwExists.exists()){
-		globals.DIALOGS.showErrorDialog('1226',i18n.getI18NMessage('1226'));//BarTender Template Does Not Exist in Reports Location
+		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('1226'),i18n.getI18NMessage('1226'));//BarTender Template Does Not Exist in Reports Location
 		scopes.jobs.warningsX();
 		return;
 	}
 
 	var randFileName = tempDir+"\\" + application.getUUID().toString().split("-")[4] +".txt";
+	if (debug){application.output('randfilename bartender print '+randFileName)}//REMOVE
+	randFileName = randFileName.replace(/\/+/g,'\\');
 
 	var status = plugins.file.writeTXTFile(fileName,txtString);
 	if (status){globals.loggerDev(this,'Status write to txt file fail.');}
@@ -1907,7 +1982,8 @@ function bartenderPrint(event,txtString){
 	status = plugins.file.copyFile(fileName,randFileName);
 	null;
 	if (forms[formName].useLabeLasePrinter){
-		var labeLaseFile = tempDir+'/LabeLase1000.txt';
+		var labeLaseFile = tempDir+'\\LabeLase1000.txt';
+		labeLaseFile = labeLaseFile.replace(/\/+/g,'\\');
 		status = plugins.file.copyFile(fileName,labeLaseFile);
 	}
 	/**
@@ -1939,13 +2015,13 @@ function bartenderPrint(event,txtString){
 		com.put("Visible","true");
 		var formats = com.getChildJSCOM("Formats");
 		if (!formats){
-			plugins.dialogs.showErrorDialog('1225',i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
 			scopes.jobs.warningsX();
 			return;
 		}
 		var format = formats.getChildJSCOM("Open","",[btwFile,false,printer]);
 		if (!format){
-			plugins.dialogs.showErrorDialog('1225',i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
 			com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
 			com.release();
 			scopes.jobs.warningsX();
@@ -1957,17 +2033,27 @@ function bartenderPrint(event,txtString){
 		//application.output('btw file '+btwFile);
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
 		var DBs = format.getChildJSCOM("Databases");
+		//var otherDB = format.call('Databases');
+		//var misc = Packages.com.servoyguy.plugins.servoycom.getInt(1);
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
 		if (scopes.printer.barTender_2016){
-			var db = DBs.getChildJSCOM("GetDatabase","",["1"]);
+			var db = DBs.getChildJSCOM("GetDatabase","",[1]);
 			if (!db){
 				db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
+			}
+			if (!db){
+				db = DBs.get('Configuration')+"";
+				var regexp = new RegExp(/SelectCommand.*\[(.*)\].*SelectCommand/);
+				var database = db.match(regexp);
+				if (database){
+					db = DBs.getChildJSCOM('GetDatabase',[database[1]]);
+				}
 			}
 		} else {
 			db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
 		}
 		if (!db){
-			plugins.dialogs.showErrorDialog('1225',i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError(),i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
 			com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
 			com.release();
 			scopes.jobs.warningsX();
@@ -1978,6 +2064,7 @@ function bartenderPrint(event,txtString){
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
 		var oleDb = db.getChildJSCOM("TextFile");
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+		if (debug){application.output('random file name to bartender '+randFileName)}
 		oleDb.put("FileName",randFileName);
 		/**
 		var db = DBs.getChildJSCOM("GetDatabase","",["PostgreSQL35W"]);
@@ -2710,3 +2797,118 @@ function getNonRecordValues(currentRecord,barTenderField){
 function getAddressInfo(){
 	
 }
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ *
+ * @properties={typeid:24,uuid:"16259E66-00F8-4F06-895C-218D6270D5D9"}
+ * @AllowToRunInFind
+ */
+function onDataChangePathEntry(oldValue, newValue, event) {
+	var form = event.getFormName();
+	var el = event.getElementName();
+	var dataProv = forms[form].elements[el].getDataProviderID().split('.')[2];
+	var defaultLoc = plugins.file.getDefaultUploadLocation();
+	try{
+		plugins.file.convertToRemoteJSFile(newValue);//use this to ensure entry is in correct format "/dirName"
+	} catch (e){
+		scopes['prefs'][dataProv] = oldValue;
+		return
+	}
+	
+	var dirNames = newValue.split('/');
+	var parentDir = '/';
+	var createDir = false;
+	for (var index = 1;index < dirNames.length;index++){
+		var contentNames = [];
+		var parentDirObj = plugins.file.convertToRemoteJSFile(parentDir);
+		var dirContents = plugins.file.getRemoteFolderContents(parentDirObj);
+		for (var idx1 = 0;idx1 < dirContents.length;idx1++){contentNames.push(dirContents[idx1].getName().replace('/',''))}
+		if (contentNames.indexOf(dirNames[index]) == -1){
+			createDir = true;
+			break;
+		}
+		parentDir += '/'+dirNames[index];
+	}
+	if (createDir){
+		var response = globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.create.subdirectory'),i18n.getI18NMessage('sts.txt.create.subdirectory'),[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
+		if (response == i18n.getI18NMessage('sts.btn.no')){
+			scopes['prefs'][dataProv] = oldValue;
+			return;
+		}
+	}
+	var fileName = 'STSTestWriteFile.txt';
+	application.output('default server directory '+plugins.file.getDefaultUploadLocation());
+	var tempDir = plugins.file.getHomeFolder();
+	application.output('tempDir '+tempDir);
+	var fileNamePath = tempDir.getAbsolutePath()+'/'+fileName;//local directory
+	application.output('local directory '+fileNamePath);
+	var fileObj = plugins.file.createFile(fileNamePath);
+	application.output('fileObj '+fileObj);
+	var success = fileObj.createNewFile();
+	application.output('create new File success '+success);
+	var consolePath = newValue+'/'+fileName;//remote directory under defaultLocation
+	application.output('remote directory under defaultlocation '+ consolePath);
+	plugins.file.streamFilesToServer(fileObj,consolePath);
+	application.output('stream file to server: fileObj '+fileObj+' consolePath '+consolePath);
+	success = fileObj.deleteFile();
+	application.output('success source file deletion '+success);
+	var item = plugins.file.convertToRemoteJSFile(consolePath);
+	application.output('convert to remote js file '+consolePath+' JSFile '+item);
+	if (item){
+		application.output('remote file copy exists '+item.exists());
+	} else {
+		application.output('remote file copy DNE.');
+	}
+	if (item && item.exists()){
+		//item.deleteFile();
+	}
+	setPrefsDirty(event,'prefs');
+	forms.preferences_printer.prefsChanged.push(forms[form].elements[el].getDataProviderID());//20180109 update prefs on button inop from button change
+
+}
+/**
+ * @properties={typeid:24,uuid:"60760702-97A9-4A08-BC84-5CD4A262EAF4"}
+ */
+function getLabeLaseLabelFormats(){
+	var reportsPath = scopes.prefs.reportpath;
+	var labelList = [];
+	var suffix = ['.itl','.itlx'];
+	var path = plugins.file.getDefaultUploadLocation()+reportsPath;
+	path = path.replace(/\/+/g,'\\').replace('.','');
+	application.output('REM label path '+path);
+	var formatFiles = plugins.file.getFolderContents(path.replace(/\/+/g,'/'),suffix);
+	//var btwFiles = plugins.file.getFolderContents(reportsPath,suffix);
+	labelList.push('<NONE>');
+	for (var index = 0;index < formatFiles.length;index++){
+		labelList.push(formatFiles[index].getName());
+	}
+	application.setValueListItems('stsvl_labelase_formats',labelList);
+}
+
+/**
+ * @param {JSEvent} event
+ * @param updateValue
+ * @param prefsType
+ *
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"F4A66DAB-3398-4103-8DC0-856657597120"}
+ */
+function onActionFileOpenDialogLocal(event,updateValue,prefsType) {	//20180820 created
+	var baseDirObj = (scopes.printer.local_temp_path) ? scopes.printer.local_temp_path : '';
+	var dirs = plugins.file.showDirectorySelectDialog(baseDirObj);
+	if (!dirs){return}
+	var intendedDir = dirs.getAbsolutePath();
+	scopes.printer.userTempPath = intendedDir;
+	setPrefsDirty(event,prefsType);
+	forms.preferences_printer.prefsChanged.push(updateValue);//20180109 update prefs on button inop from button change
+
+}
+
+
+

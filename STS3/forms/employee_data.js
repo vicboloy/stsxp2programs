@@ -16,7 +16,7 @@ var empLoginList = '';
  *
  * @param oldValue
  * @param newValue
- * @param event
+ * @param {JSEvent} event
  *
  * @properties={typeid:24,uuid:"FEBFA4D4-CEDB-42ED-9148-7DB8B0F313E6"}
  */
@@ -26,11 +26,11 @@ function onDataChange(oldValue, newValue, event) {
 	if (globals.newEmployeeRecord == null){
 		globals.newEmployeeRecord = employee_id;
 	}
-	
+	databaseManager.removeTableFilterParam('stsservoy','filterAssocEMPLOYEE');
 	/** @type {QBSelect<db:/stsservoy/employee>} */
 	var e = databaseManager.createSelect('db:/stsservoy/employee'); //#task02
-	e.result.add(e.columns.employee_id);
-	e.where.add(e.columns.employee_number.eq(newValue));
+	//e.result.add(e.columns.employee_id);
+	e.where.add(e.columns.employee_number.eq(newValue.trim()));
 	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	var E = databaseManager.getFoundSet(e);
 	if (E.getSize() > 1){
@@ -43,22 +43,33 @@ function onDataChange(oldValue, newValue, event) {
 			}
 		}
 	}
+	if (!globals.session.corpUser){
+		databaseManager.addTableFilterParam('stsservoy','users','association_uuid','=',globals.session.associationId,'filterAssocEMPLOYEE');//Re-enable user assoc table filters
+	}
 	record = E.getRecord(1);
+	var employeeExists = (E.getSize() != 0);
+	if (employeeExists && !globals.session.corpUser && record.association_uuid != globals.session.associationId){
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1227'),i18n.getI18NMessage('1227'));//employee is in another division 1227
+		employee_number = oldValue;
+		return false;
+	}
 	foundset.sts_employee_container.loadRecords();
-	foundset.setSelectedIndex(foundset.getRecordIndex(record));
+	//foundset.setSelectedIndex(foundset.getRecordIndex(record));
 
 	var instance = scopes.globals.getInstanceForm(event);
-	var rec = foundset.getSelectedRecord();
-	if (!rec){return}
-	var empId = rec.employee_id.toString();
+	//var rec = null;//foundset.getSelectedRecord();
+	//if (!rec){return}
+	//var empId = record.employee_id.toString();
 	var fs = forms['employees_lstB'+instance].foundset;
 	for (var idx = 1;idx <= fs.getSize();idx++){
 		var rec = fs.getRecord(idx);
-		if (rec.employee_id.toString() == empId){
-			fs.setSelectedIndex(idx);
+		if (rec.employee_number == newValue){
+			forms['employees_lstB'+instance].foundset.setSelectedIndex(idx);
+			databaseManager.revertEditedRecords(foundset);
 			break;
 		}
 	}
+	verifyEmployeeInput(event);
 
 	return true;
 }
@@ -116,4 +127,82 @@ function onShow(firstShow, event) {
 	if (firstShow){
 		scopes.jobs.formPermissions(event,false);
 	}
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"AEF52A66-75D9-4B8C-9FFF-FCA362749439"}
+ */
+function verifyEmployeeInput(event){
+	var instance_form = globals.getInstanceForm(event);
+	var saveBtn = forms['employee_specs'+instance_form].elements.btn_Save;
+	//saveBtn.enabled = false;
+	var enableEitherName = (!(!employee_firstname && !employee_lastname));
+	var enableSave = !(!association_uuid || !employee_number || !enableEitherName);
+	saveBtn.enabled = enableSave;
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"83D825BD-4765-4A6F-9533-BFBC8590E967"}
+ */
+function onActionEmployeeFirst(event) {
+	verifyEmployeeInput(event);
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"AF668EB7-66FD-47A8-AD1C-778FBBFD4DB9"}
+ */
+function onActionEmployeeLast(event) {
+	verifyEmployeeInput(event);
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"D066AB87-56BA-4CA5-B2CC-F83A53CC461E"}
+ */
+function onDataChangeDivision(oldValue, newValue, event) {
+	verifyEmployeeInput(event);
+	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"8333A8F7-303A-4B3B-BC78-FC1FC9860E09"}
+ */
+function onDataChangeFirst(oldValue, newValue, event) {
+	verifyEmployeeInput(event);
+	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"BC50AAA6-1725-43BF-9DAB-5CC35169DB03"}
+ */
+function onDataChangeLast(oldValue, newValue, event) {
+	verifyEmployeeInput(event);
+	return true
 }

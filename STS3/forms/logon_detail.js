@@ -350,3 +350,14 @@ function onEdit(editing){
 	}
 	elements.btn_Disconnect.enabled = (editing);
 }
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"DE8A8600-E1ED-4A13-A0F9-AA737556D05F"}
+ */
+function verifyReqUserInput(event){
+	var saveBtn = forms['logons_m'].elements.btn_Save;
+	var form = forms['logon_detail'];
+	saveBtn.enabled = !(!form.assoc | !form.user_name);
+}

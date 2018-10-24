@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/i18n_table",
+items:[
+{foreignColumnName:"message_language",primaryDataProviderID:"scopes.globals.localeSelected",typeid:23,uuid:"27FF38E1-42F4-4A0F-9E42-08ADD62D08F2"}
+],
+joinType:1,
+name:"sts_language",
+primaryDataSource:"db:/stsservoy/i18n_table",
+typeid:22,
+uuid:"22132DF2-33ED-40B7-BED0-434709FCE154"

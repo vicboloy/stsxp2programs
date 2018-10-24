@@ -16,6 +16,7 @@ function onShow(firstShow, event) {
 	//set this up for edit, save, cancel
 	//onActionEdit(event,false);//#task01
 	//controller.readOnly = true;
+	onActionEdit(event,false);
 	globals.setUserFormPermissions(event);
 }
 
@@ -50,12 +51,15 @@ function onActionEdit(event,editStatus){
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
 		if (forms[tabFormName].onActionEdit){forms[tabFormName].onActionEdit(event,editStatus)}
 	}
+	forms['customer_specs'+instance].elements.tabs.setTabEnabledAt(4,true);//enable addresses tab after save
+
 	elements.btn_Cancel.visible = editStatus;
 	elements.btn_Delete.visible = !editStatus;
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Edit.visible = !editStatus;
 	forms['customers_rec'+instance].controller.enabled = !editStatus;
 	editCustomerFlag = editStatus;
+	
 	databaseManager.setAutoSave(false);
 }
 /**
@@ -92,6 +96,8 @@ function onActionSaveEdit(event){
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
 		if (forms[tabFormName].onActionSaveEdit){forms[tabFormName].onActionSaveEdit(event)}
 	}
+	var instance = globals.getInstanceForm(event);
+
 }
 
 /**
@@ -108,7 +114,20 @@ function onActionClose(event) {
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
 		if (forms[tabFormName].onActionClose){forms[tabFormName].onActionClose(event)}
 	}
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 }
 
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"79CFCC7F-B3A1-4B57-9D6F-87588AAC03DE"}
+ */
+function onHide(event) {
+	onActionClose(event);
+	return true
+}

@@ -35,6 +35,12 @@ var labelName = '';
  */
 var localDir = '';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"1B41F652-4BA2-4088-84E5-DDFE956D4D32"}
+ */
+var labeLaseFormat = '';
+/**
  * print is driven off of the criteria page
  * 
  * only if selection criteria exists and a foundset exists
@@ -59,20 +65,23 @@ function onShow(firstShow, event) {
 		//versionForm = globals.getInstanceForm(event);
 		//baseForm = event.getFormName().replace(versionForm,'');
 		globals.setFieldOrder(event);
-		var printers = application.getPrinters();
+		var printers = application.getPrinters().sort();
 		application.setValueListItems('stsvl_get_printer_list',printers);
 	}
 	if (application.isInDeveloper()){application.output('temp path '+scopes.printer.userTempPath);}
 	localDir = scopes.printer.userTempPath;
 	elements.writeTemp.enabled = (localDir != '');
+	scopes.prefs.getBTLabelFormats();
+	scopes.prefs.getLabeLaseLabelFormats();
 	printerName = scopes.printer.idBarcodePrinter;
 	labelName = scopes.printer.idBarcodeLabelFormat;
-	scopes.prefs.getBTLabelFormats();
+	application.output('scopes.printer.labelLaseFormat'+scopes.printer.idLabeLaseTemplate);
+	labeLaseFormat = scopes.printer.idLabeLaseTemplate;
 	//scopes.prefs.getLabelFormats();
 	printingLabel = scopes.printer.default_label_name;
-	if (firstShow){
-		scopes.jobs.formPermissions(event,true);
-	}
+	//if (firstShow){
+	scopes.jobs.formPermissions(event,true);
+	//}
 		
 }
  
@@ -85,12 +94,16 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onActionPrint(event) {
-	var printers = application.getPrinters()
+	var printers = application.getPrinters().sort();
+	var debug = 1;
 	if (printers.indexOf(printerName) == -1){
 		globals.DIALOGS.showErrorDialog('1252',i18n.getI18NMessage('1252'));//Selected Printer Not Available.  Please Select Another.
 		return false;		
 	}
-	var fileBtw = scopes.prefs.reportpath+'\\'+labelName;
+	var fileBtw = plugins.file.getDefaultUploadLocation()+scopes.prefs.reportpath+'\\'+labelName;
+	fileBtw = fileBtw.replace(/\/+/g,'\\').replace('.','');
+	if (debug){application.output('fileBTW '+fileBtw);}
+
 	var fileObj = plugins.file.createFile(fileBtw);
 	if (!fileObj.exists()){
 		globals.DIALOGS.showErrorDialog('1253',i18n.getI18NMessage('1253'));//BarTender File Does Not Exist. Please Select Another.
@@ -257,9 +270,9 @@ function collectCriteria(formName){
 function onActionClear(event) {
 	var formName = event.getFormName();
 	forms[formName].foundset.clear();
-	forms[formName].elements.btn_Print.enabled = false;
+	//forms[formName].elements.btn_Print.enabled = false;
 	forms[formName].elements.btn_PrintSelected.enabled = false;
-	forms[formName].elements.btn_PrintAll.enabled = false;
+	//forms[formName].elements.btn_PrintAll.enabled = false;
 	var form = forms[formName];
 	for (var element in forms[formName].elements){
 		if (element.search('frm') == 0 && element.search(/JobNum/) == -1){elements[element].enabled = false;}
@@ -304,3 +317,40 @@ function collectAndTab(formName){
 	null;
 }
 
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"B5CD1955-B3E4-40AD-9D87-003EFAE6FF64"}
+ */
+function onActionBarTenderPrinter(event) {
+	checkPrinterSelection(event);
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"5B2F9750-65E9-465D-A92B-FEECFCB58618"}
+ */
+function checkPrinterSelection(event){
+	var form = forms[event.getFormName()];
+	var btDataProv = elements.useBarTender.getDataProviderID();
+	var llDataProv = elements.useLabeLase.getDataProviderID();
+	
+	var noPrinter =  (form[btDataProv] == 0 && form[llDataProv] == 0);
+	if (noPrinter){
+		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('1267'),i18n.getI18NMessage('1267'));
+	}
+
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"F3B38C06-5F13-42F3-8255-2887B749C020"}
+ */
+function onActionLabeLasePrinter(event) {
+	checkPrinterSelection(event);
+}

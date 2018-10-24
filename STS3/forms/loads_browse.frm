@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/idfiles",
 extendsID:"A163BD78-4BCF-4D7B-8342-ADBE6CDFDF71",
 items:[
@@ -50,6 +56,7 @@ uuid:"E718B53C-D7A2-4B6C-97A6-86C822241F72"
 ],
 name:"loads_browse",
 namedFoundSet:"empty",
+onHideMethodID:"3A38C10B-3502-4524-94DE-D11A2017E1C7",
 onShowMethodID:"DBCAA96E-A13B-49F3-9DB9-BC2B9572A5F3",
 showInMenu:false,
 size:"507,452",

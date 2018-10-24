@@ -42,9 +42,10 @@ function onEdit(event,editStatus){
 	forms["employee_specs"+formRev].elements.btn_Save.visible = editStatus;
 	forms["employee_specs"+formRev].elements.btn_Edit.visible = !editStatus;
 	forms["employee_specs"+formRev].elements.btn_Delete.visible = !editStatus;
-	forms["logon_detail"+formRev].controller.enabled = editStatus;
-	forms["logon_detail"+formRev].elements.btn_Disconnect.enabled = editStatus;
-	forms["logon_detail"+formRev].elements.btn_Update.enabled = editStatus;
+	forms["employee_logins"+formRev].controller.enabled = editStatus;
+	forms["employee_logins"+formRev].elements.btn_Activate.enabled = editStatus;
+	forms["employee_logins"+formRev].elements.btn_Deactivate.enabled = editStatus;
+	forms["employee_logins"+formRev].elements.btn_DisableAll.enabled = editStatus;
 	forms["addressesEmployee"+formRev].elements.btn_New.enabled = editStatus;
 	
 }
@@ -70,7 +71,7 @@ function onActionEdit(event, editStatus) {
 	elements.btn_Edit.visible = !editStatus;
 	forms["employees_rec"+formRev].controller.enabled = !editStatus;
 	forms['employees_rec'+formRev].elements.btn_New.visible = !editStatus;
-	if (!editStatus && forms['employees_rec'+formRev].currentRecord){
+	if (forms['employees_rec'+formRev].currentRecord && event.getElementName() != 'btn_New'){//remove !editStatus
 		forms['employees_rec'+formRev].refreshUsers(event);
 		var empId = forms['employees_rec'+formRev].currentRecord.employee_id;
 		var fs = forms['employees_lstB'+formRev].foundset;
@@ -84,7 +85,7 @@ function onActionEdit(event, editStatus) {
 		}
 	}
 	forms['employees_rec'+formRev].currentRecord = foundset.getSelectedRecord();
-	
+	forms['employee_login_lst'+formRev].onRecordSelection(event);
 	databaseManager.setAutoSave(false);
 }
 
@@ -111,7 +112,9 @@ function onActionCancelEdit(event) {
  * @properties={typeid:24,uuid:"7C64DFF6-6587-439E-B5C3-F9204FDA3248"}
  */
 function onActionSaveEdit(event){
+	//error 1259 cannot save unless Emp id, division, first/last name
 	var rec = foundset.getRecord(controller.getSelectedIndex());
+	var currentEmpId = rec.employee_id;
 	rec.tenant_uuid = scopes.globals.session.tenant_uuid;
 	databaseManager.saveData(rec);
 	application.setValueListItems('stsvlt_customers',globals.getCustomerList());
@@ -121,6 +124,11 @@ function onActionSaveEdit(event){
 		if (forms[tabFormName].onActionSaveEdit){forms[tabFormName].onActionSaveEdit(event)}
 	}
 	onActionEdit(event,false);
+	elements.tabs.setTabEnabledAt(3,true);//disable addresses tab after save
+	forms['employees_lst'+scopes.globals.getInstanceForm(event)].foundset.clear();
+	forms['employees_rec'+scopes.globals.getInstanceForm(event)].refreshUsers(event);
+	//onActionEdit(event,true);
+	//onActionEdit(event,false);
 }
 
 /**
@@ -187,11 +195,7 @@ function onActionClose(event) {
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
 		if (forms[tabFormName].onActionClose){forms[tabFormName].onActionClose(event)}
 	}
-	globals.stopWindowTrack();
-	globals.mainWindowFront();
-	//globals.updateWindowFS();
-	//globals.stopWindowTrack();
-	//globals.mainWindowFront();
+	globals.stopWindowTrackEvent(event);
 
 }
 
@@ -228,6 +232,8 @@ function onShow(firstShow, event) {
 function onRecordSelection(event) {
 	var instance = globals.getInstanceForm(event);
 	employeeFullName = employee_firstname+' '+employee_middlename+' '+employee_lastname;
+	employeeFullName = employeeFullName.replace(/  /g,' ');
+	forms['employee_logins'+instance].fullUserName = employeeFullName;
 	if (forms['employees_rec'+instance].elements.btn_New.enabled){ //#task01
 		elements.btn_Delete.visible =  (employee_number != "P2") // protect admin account
 	}
@@ -242,4 +248,18 @@ function onRecordSelection(event) {
 		user_uuid = rec.user_uuid;
 	}
 	null;
+}
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"4FCC6ED8-C077-4989-AA97-806EA8CC67E5"}
+ */
+function onHide(event) {
+	onActionClose(event);
+	return true
 }

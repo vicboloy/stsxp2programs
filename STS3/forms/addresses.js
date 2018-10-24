@@ -10,23 +10,29 @@ var editAddressFlag = false;
  *
  * @properties={typeid:24,uuid:"1965D683-4062-420F-A3A7-09CE735A5E8E"}
  */
-function delSelectedAddress(event) {
+function onActionDeleteAddress(event) {
+	var isDeployed = addressIsDeployed(event,address_id);
+	if (isDeployed != ''){
+		globals.DIALOGS.showErrorDialog('1262',i18n.getI18NMessage('1262')+' '+isDeployed);
+		return;
+	}
 	globals.doDialog(i18n.getI18NMessage('sts.txt.delete.record'),i18n.getI18NMessage('sts.txt.delete.this.address.question'),i18n.getI18NMessage('sts.txt.delete'),i18n.getI18NMessage('sts.txt.cancel'));
 	if (globals.dialogResponse.toLowerCase() == 'yes'){
 		delete_flag = 99;
 		edit_date = new Date();
 		var rec = foundset.getSelectedRecord();
 		databaseManager.saveData(rec);
-		if (foundset.getSize() == 0){
-			//var topForm = globals.getParentForm();
-			//while (true){
+		onActionEdit(event,false);
+		//if (foundset.getSize() == 0){
+		//	//var topForm = globals.getParentForm();
+		//	//while (true){
 				//for (element in forms[topForm]){
 					
 				//}
 				//forms.customer_specs.elements.
 			//} set up for multiple windows
-			if (forms.customer_specs.onActionEdit){forms.customer_specs.onActionEdit(event,false)}
-		}
+		//	if (forms.customer_specs.onActionEdit){forms.customer_specs.onActionEdit(event,false)}
+		//}
 	}
 }
 
@@ -36,7 +42,7 @@ function delSelectedAddress(event) {
  * @properties={typeid:24,uuid:"3268BC50-5A10-4EE0-9547-CC071F13BFDA"}
  * @AllowToRunInFind
  */
-function addNewAddress(event) {
+function onActionAddAddress(event) {
 	var formRev = scopes.globals.getInstanceForm(event);
 	//onActionEdit(event,true);
 	var form = application.getActiveWindow();
@@ -50,7 +56,8 @@ function addNewAddress(event) {
 	_super.newRecord(event,null,true,true);
 	customer_id = entityId;
 	tenant_uuid = globals.session.tenant_uuid;
-	onActionEdit(event,true);
+	onActionEditAddress(event,true);
+	elements.address_type.requestFocus();
 }
 
 /**
@@ -88,6 +95,7 @@ function onDataChangeZipCode(oldValue, newValue, event) {
 			// set focus to state field
 		}
 	}
+	verifyRequiredFields();
 	return true
 }
 
@@ -126,8 +134,9 @@ function onAddressTypeChange(event, oldValue, newValue) {
 		databaseManager.revertEditedRecords(foundset);
 		var index = foundset.getRecordIndex(rec);
 		controller.setSelectedIndex(index);
-		onActionCancelEdit(event);
+		//onActionCancelEdit(event);
 	}
+	verifyRequiredFields();
  	return true
 }
 /**
@@ -137,25 +146,16 @@ function onAddressTypeChange(event, oldValue, newValue) {
  * @properties={typeid:24,uuid:"D92C5F5E-161C-410F-A7DA-0243B2333602"}
  */
 function onActionEdit(event, editStatus) {
-	editAddressFlag = editStatus;
-	controller.readOnly = !editStatus;
-	elements.btn_Delete.visible = editStatus;
-	elements.btn_New.visible = editStatus;
-	elements.tabless.readOnly = !editStatus;
-	elements.editMessage.visible = editStatus;
-	elements.btn_Delete.enabled = (foundset.getSize() != 0 && !(!foundset.address_type));
-
-	databaseManager.setAutoSave(false);
-	//var count = databaseManager.getFoundSetCount(foundset);
-	if (editStatus && foundset.getSize() == 0){
-		//controller.newRecord();
-		addNewAddress(event);
-	}
-	elements.btn_New.enabled = true;
-	var addTypeValue = elements.address_type.getDataProviderID();
-	if (editStatus && !foundset[addTypeValue]){
-		elements.address_type.requestFocus()
-		elements.btn_New.enabled = false;
+	if (!editStatus){
+		elements.btn_Cancel.visible = false;
+		elements.btn_Delete.visible = false;
+		elements.btn_Edit.visible = false;
+		elements.btn_New.visible = false;
+		elements.btn_Save.visible = false;
+		controller.readOnly = true;
+	} else {
+		onEditAddress(event,false);
+		
 	}
 }
 /**
@@ -164,8 +164,8 @@ function onActionEdit(event, editStatus) {
  * @properties={typeid:24,uuid:"FF7606F7-99DE-4C97-8E9E-385A230040D9"}
  * @AllowToRunInFind
  */
-function onActionSaveEdit(event) {
-	//onActionEdit(event, false);
+function onActionSaveEditAddress(event) {
+	onEditAddress(event, false);
 	var formName = application.getActiveWindow().getName();
 	var instance = globals.getInstanceForm(event);
 	var isCustAddr = (formName.search('Cust') != -1);
@@ -186,9 +186,9 @@ function onActionSaveEdit(event) {
  *
  * @properties={typeid:24,uuid:"E71A7A0A-4F5D-4AE6-AC22-33D055AD20FB"}
  */
-function onActionCancelEdit(event) {
-	onActionEdit(event,false);
+function onActionCancelEditAddress(event) {
 	databaseManager.revertEditedRecords(foundset);
+	onEditAddress(event,false);
 }
 /**
  * Perform the element default action.
@@ -198,7 +198,7 @@ function onActionCancelEdit(event) {
  * @properties={typeid:24,uuid:"24D5F6D8-B068-4741-8454-B8460E276AAD"}
  */
 function onActionClose(event) {
-	onActionCancelEdit(event);
+	onEditAddress(event,false);
 	globals.setWindowClosed(event.getFormName());
 	globals.mainWindowFront();
 }
@@ -263,4 +263,147 @@ function onRecordSelection(event) {
 		elements.address_type.requestFocus();
 	}
 	return _super.onRecordSelection(event)
+}
+/**
+ * @properties={typeid:24,uuid:"7D07BB26-5EA1-4955-8E5E-9BC26A72E920"}
+ */
+function verifyRequiredFields(){
+	var verified = !(!address_type || !line1 || !city || !state || !zip_postal_code);
+	elements.btn_Save.visible = verified;
+	return verified;
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"4FEEB701-F5E3-4B25-8378-38D0272CA2D9"}
+ */
+function onDataChangeLineOne(oldValue, newValue, event) {
+	verifyRequiredFields();
+	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"AE642025-4410-4ACC-B53E-27C75C98BC42"}
+ */
+function onDataChangeCity(oldValue, newValue, event) {
+	verifyRequiredFields();
+	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"670194D5-B3B8-4B18-9EA1-C7CFA1F53C30"}
+ */
+function onDataChangeState(oldValue, newValue, event) {
+	verifyRequiredFields();
+	return true
+}
+/**
+ * @param {JSEvent} event
+ * @param {Boolean} editStatus
+ *
+ * @properties={typeid:24,uuid:"0B000ACA-8383-4412-9150-C5144AC959DE"}
+ */
+function onActionEditAddress(event,editStatus) {
+	onEditAddress(event,true);
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"6D40277F-0DA8-4901-9C86-B7F422FA4AF6"}
+ */
+function onActionEditAddressCancel(event){
+	databaseManager.revertEditedRecords(foundset);
+	onEditAddress(event,false);
+	
+}
+/**
+ * @param {JSEvent} event
+ * @param editStatus
+ *
+ * @properties={typeid:24,uuid:"19F5B7E2-7B6B-489D-B8EB-9895EBA9EE6A"}
+ */
+function onEditAddress(event,editStatus){
+	var instance = globals.getInstanceForm(event);
+	if (1==0 && !editStatus && forms['customer_specs'+instance].elements.btn_Edit.visible){
+		databaseManager.revertEditedRecords(foundset);
+		elements.btn_Cancel.visible = false;
+		elements.btn_Delete.visible = false;
+		elements.btn_Edit.visible = false;
+		elements.btn_New.visible = false;
+		elements.btn_Save.visible = false;
+		controller.readOnly = true;
+		return;
+	}
+	if (editStatus && event.getElementName() != 'btn_New'){
+		databaseManager.revertEditedRecords(foundset);
+	}
+	if (foundset.getSize() > 0){
+		elements.btn_Delete.visible = !editStatus;
+		elements.btn_Edit.visible = !editStatus;
+		elements.btn_Cancel.visible = editStatus;
+		elements.btn_Save.visible = editStatus;
+	} else {
+		elements.btn_Delete.visible = false;
+		elements.btn_Edit.visible = false;
+		elements.btn_Cancel.visible = false;
+		
+	}
+	elements.btn_New.visible = !editStatus;
+	controller.readOnly = !editStatus;
+	//var addTypeValue = elements.address_type.getDataProviderID();
+	//if (editStatus && !foundset[addTypeValue]){
+	//	elements.address_type.requestFocus();
+	//	elements.btn_New.enabled = true;
+	//}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"1CC25228-E625-4795-8E73-269B60373A81"}
+ */
+function onActionCancelEdit(event){
+	databaseManager.revertEditedRecords(foundset);
+	onActionEdit(event,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param rec
+ *
+ * @properties={typeid:24,uuid:"AE2B7426-4581-4EDC-B8B2-A94F535F6228"}
+ */
+function addressIsDeployed(event,addressId){
+	//check jobs table
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var q = databaseManager.createSelect('db:/stsservoy/jobs');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.ship_to.eq(addressId));
+	var Q = databaseManager.getFoundSet(q);
+	if (Q.getSize() > 0){
+		return '[jobs]';
+	}
+	return '';
 }

@@ -123,6 +123,9 @@ function onShow(firstShow, event) {
 	} else {
 		elements.userName.requestFocus();
 	}
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
+	}
 }
 
 /**

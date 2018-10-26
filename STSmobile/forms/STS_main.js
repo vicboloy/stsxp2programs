@@ -19,6 +19,9 @@ var metaData = '';//<meta content="width=device-width, initial-scale=45" name="v
  * @AllowToRunInFind
  */
 function onLoad(event) {
+	if (globals.clientUserAgent){
+		globals.mob.userAgent = globals.clientUserAgent;
+	}
 	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//JOE DISABLE
 		var callback = plugins.WebClientUtils.generateCallbackScript(globals.rfPageIsLoaded, [], true);
 		var script = 'function p2pageLoaded(){' + callback + '}';
@@ -56,13 +59,13 @@ function onLoad(event) {
 		var screenHeight = application.getScreenHeight();
 		var screenWidth = application.getScreenWidth();
 		var newScale = 1.0;
-		if (globals.clientUserAgent.search(/iPhone/i) != -1){
+		if (globals.clientUserAgent.search(/(iPhone|iPad)/i) != -1 || osName.search(/Mac/i) != -1){
 			screenHeight = 50;
 			elements.elHelp.setSize(elWidth,screenHeight+15);
 			elements.mainMenu.setSize(elWidth,screenHeight);
 			newScale = Math.floor(width/240*10)/10;
 			//newScale = 0.5;
-			scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale='+newScale);
+			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
 			application.output('RM main onLoad newscale '+newScale+'\n'+scopes.globals.viewport);
 
 		} else if (globals.clientUserAgent.search(/Android/i) != -1) {
@@ -137,7 +140,7 @@ function onShow(firstShow, event) {
 		
 
 
-		if (globals.clientUserAgent.search(/(Android)|(iPhone)/i) == -1){
+		if (globals.clientUserAgent.search(/(Android)|(iPhone)|(iPad)/i) == -1 && application.getOSName().search(/Mac/i) == -1){
 			//screenHeight = 30;
 			//elements.elHelp.setSize(elWidth,screenHeight);
 			//elements.mainMenu.setSize(elWidth,screenHeight);

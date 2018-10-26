@@ -627,7 +627,7 @@ visible:false
 {
 dataProviderID:"genericInput",
 formIndex:28,
-format:"|U",
+format:"|U[35]",
 location:"118,21",
 name:"genericin",
 onActionMethodID:"-1",
@@ -1049,6 +1049,7 @@ visible:false
 anchors:9,
 extendsID:"E082B205-F6E9-4457-9D80-4E59FA43A491",
 formIndex:2,
+location:"180,0",
 tabSeq:-2,
 typeid:7,
 uuid:"83CCC5F1-1738-4321-8064-C3546517FF30"

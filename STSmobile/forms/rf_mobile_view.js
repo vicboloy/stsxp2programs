@@ -269,6 +269,7 @@ function resetWorkerCode(){
  * @AllowToRunInFind
  */
 function onShowForm(firstShow,event) {
+	var maxY = 21;
 	var newScale = 1.0;
 	if (firstShow){
 		if (!globals.shortcutsSet){
@@ -283,43 +284,11 @@ function onShowForm(firstShow,event) {
 		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(1,true);
 		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(2,true);
 		fieldErroredName = '';
-		var scaleWidth = application.getScreenWidth();
-		var currWidth = elements.showHelp.getWidth()+elements.showHelp.getLocationX();
-		
-		width = application.getScreenWidth();
 	}
-	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
-		var osName = application.getOSName();
-		var height = application.getScreenHeight();
-		var elWidth = elements.elHelp.getWidth();
-		if (globals.clientUserAgent.search(/iPhone/i) != -1){
-			//newScale = Math.floor(width/240*8)/10;
-			elements.elHelp.setSize(elWidth,55);
-			//scaleWidth = Math.ceil(2*1080/currWidth*10)/10;
-			scaleWidth = Math.ceil(width/240*10)/10;
-			newScale = scaleWidth;
-			scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale='+newScale);
-			newScale = 1.0;
-		} else if (globals.clientUserAgent.search(/Android/i) != -1){
-			scaleWidth = Math.floor(width/240*10)/10;
-			elements.elHelp.setSize(Math.floor(elements.elHelp.getWidth()*scaleWidth),45)
-			//scaleWidth = 0.5;
-			newScale = scaleWidth;
-			//newScale = 0.8;scaleWidth = 1.0;
-			//scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale=1.0');
-			//scaleWidth = 1.0;
-			//var regexp = new RegExp(/(initial-scale=[0-9]\.[0-9])/);
-			//var match = scopes.globals.viewport.match(regexp);
-			//if (match){
-			scopes.globals.viewport = scopes.globals.viewportSrc;//.replace(match[1],'initial-scale=1.0');
-			//}
-			//scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale=1.0');
-			application.output('RM inside Linux show form width '+width+' '+scaleWidth+' vp '+scopes.globals.viewport);
-			newScale = 1.0;
-		}
-		//newScale = 1.0;
-	}
-	//newScale = 1.0;
+	var scaleWidth = application.getScreenWidth();
+	var currWidth = elements.showHelp.getWidth()+elements.showHelp.getLocationX();
+	
+	width = application.getScreenWidth();
 	//scopes.jobs.onLoadWindowSize(event);
 	if (application.isInDeveloper()){application.output('fs size '+foundset.getSize())}
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
@@ -366,6 +335,43 @@ function onShowForm(firstShow,event) {
 			if (elementUnits){elementUnits.visible = false;}
 		}
 	}
+
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		var osName = application.getOSName();
+		var height = application.getScreenHeight();
+		var elWidth = elements.elHelp.getWidth();
+		var estimatedHeight = (show.length+1)*21;
+		var scaleY = Math.floor(10*height/(show.length*21))/10;
+		var scaleX = Math.floor(width/(elements.elHelp.getWidth()+elements.elHelp.getLocationX())*10)/10;
+		application.output('+ + + + + + + RM globals.clientUserAgent = '+globals.clientUserAgent);
+		if (globals.clientUserAgent.search(/(iPhone|iPad)/i) != -1 || osName.search(/Mac/i) != -1){
+			elements.elHelp.setSize(elWidth,55);
+			scaleWidth = (scaleY < scaleX) ? scaleY : scaleX;scaleWidth = scaleWidth - 0.1;
+			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+scaleWidth);
+			newScale = 1.0;
+		} else if (globals.clientUserAgent.search(/Android/i) != -1 || osName.search(/Linux/i)){
+			if (application.isInDeveloper()){application.output('is Android')}
+			scaleWidth = Math.floor(width/240*10)/10;
+			scaleWidth = (scaleY < scaleX) ? scaleY : scaleX;
+			elements.elHelp.setSize(Math.floor(elements.elHelp.getWidth()*scaleWidth),45)
+			//scaleWidth = 0.5;
+			newScale = scaleWidth;
+			//newScale = 0.8;scaleWidth = 1.0;
+			//scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale=1.0');
+			//scaleWidth = 1.0;
+			var regexp = new RegExp(/(initial-scale=[0-9]\.[0-9])/);
+			var match = scopes.globals.viewport.match(regexp);
+			if (match){
+				scopes.globals.viewport = scopes.globals.viewport.replace(match[1],'initial-scale='+scaleWidth);
+			}
+			//scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale=1.0');
+			//application.output('RM inside Linux show form width '+width+' '+scaleWidth+' vp '+scopes.globals.viewport);
+			newScale = 1.0;
+		}
+		//newScale = 1.0;
+	}
+	//newScale = 1.0;
+	var trueHeight = 21;
 	var newLine = true;
 	var newY = 0;
 	var fieldLine = 0;
@@ -379,7 +385,7 @@ function onShowForm(firstShow,event) {
 		elementUnits = forms[formName].elements[item+'units'];
 		height = element.getHeight();
 		width = element.getWidth();
-		application.output('wide '+width+' high '+height+' scale '+newScale+' end x '+element.getLocationX());
+		//application.output('wide '+width+' high '+height+' scale '+newScale+' end x '+element.getLocationX());
 		if (newLine){
 			fieldLine++;
 		} else {
@@ -389,9 +395,10 @@ function onShowForm(firstShow,event) {
 		if (globals.rfViews[showElementsOf][item].search(",") != -1){
 			newLine = false; // continuation of field on same line as last
 		}
-		element.visible = true;
+		element.visible = true;element.enabled = true;
 		var elHeight = Math.floor(element.getHeight() * newScale);
-		elHeight = element.getHeight();
+		trueHeight += elHeight+padding;
+		//elHeight = element.getHeight();
 		elWidth = Math.floor((element.getWidth()-5) * newScale);
 		element.setSize(elWidth,elHeight);
 		element.setLocation(Math.floor(element.getLocationX()*newScale),newY);
@@ -412,20 +419,20 @@ function onShowForm(firstShow,event) {
 		shownFields.push(item);
 		var elLabelX = 0;
 		if (elementLabel){
-			elementLabel.visible = true;
+			elementLabel.visible = true;elementLabel.enabled = true;
 			elementLabel.setLocation(Math.floor(elementLabel.getLocationX()*newScale),newY);
 			var elLabelWidth = Math.floor(elementLabel.getWidth()*newScale);
 			elementLabel.setSize(elLabelWidth,elementLabel.getHeight());
 			//elementLabel.border = 'LineBorder,1,#000000';
 			elLabelX = elementLabel.getLocationX()+elementLabel.getWidth();
-			application.output('RM wide end x labels '+item+' '+elLabelX);
+			//application.output('RM wide end x labels '+item+' '+elLabelX);
 		}
 		if (elementUnits){
-			elementUnits.visible = true;
+			elementUnits.visible = true;elementUnits.enabled = true;
 			elementUnits.setLocation(Math.floor(elementUnits.getLocationX()*newScale),newY);
 			var elUnitsWidth = Math.floor(elementUnits.getWidth()*newScale);
 			elementUnits.setSize(elUnitsWidth,elementUnits.getHeight());
-			application.output('RM wide end x units '+Math.floor(elUnitsWidth+element.getLocationX()));
+			//application.output('RM wide end x units '+Math.floor(elUnitsWidth+element.getLocationX()));
 			//elementUnits.putClientProperty('tabSeq',-1);
 		}
 	}
@@ -434,6 +441,7 @@ function onShowForm(firstShow,event) {
 	//if (firstShow){
 	//	application.output(' REM rf_mobile_view show focus');
 	forms[formName].elements['genericin'].requestFocus();
+	application.output('RM trueHeight '+trueHeight);
 	//plugins.WebClientUtils.executeClientSideJS('doCallback("genericin");');
 	//}
 }

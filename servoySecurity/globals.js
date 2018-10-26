@@ -2154,7 +2154,9 @@ function getPrefsMaxIdleMinutes(tenantID){
  */
 function getBrowserInfo(){
 	null;
-	plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
+	if (!globals.clientUserAgent){
+		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
+	}
 	null;
 
 }

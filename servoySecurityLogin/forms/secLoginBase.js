@@ -241,7 +241,7 @@ function onLoad(event) {
 		var showWidth = win.controller.getWindow().getWidth();
 
 		application.output('RM login newscale '+newScale+' '+showWidth);
-		scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale='+newScale);
+		scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
 	}
 	textAreaString = "";
 	for (var item in plugins){

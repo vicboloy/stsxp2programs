@@ -849,12 +849,12 @@ var rfViews = {
 		currentidin : 'R',
 		previousid : 'V',
 		bundleid : 'V',
+		bundlepieces : 'V,',
+		bundleweight : 'V',
 		piecemark : 'V',
 		material : 'V',
 		itemlength:'V',
-		itemweight : 'V',
-		bundlepieces : 'V,',
-		bundleweight : 'V'
+		itemweight : 'V'
 	},
 	'Saw' : {
 		genericin : 'R',
@@ -951,6 +951,8 @@ var rfViews = {
 		locationin : 'O',
 		currentidin : 'R',
 		previousid : 'V',
+		shippieces : 'V,',
+		shipweight : 'V',
 		sheetnumber : 'V',
 		seqnumber : 'V',
 		piecemark : 'V',
@@ -958,9 +960,7 @@ var rfViews = {
 		itemlength:'V',
 		itemweight : 'V',
 		shoporder : 'V',
-		ps : 'V',
-		shippieces : 'V,',
-		shipweight : 'V'
+		ps : 'V'
 
 	},
 	'Transactions' : {
@@ -12383,5 +12383,5 @@ function renderPrintCancel(event){
  */
 function storeUserAgent(userAgent){
 	if (application.isInDeveloper()){application.output('inside store user agent from web browser')}
-	globals.mob.userAgent = userAgent;
+	globals.mob.userAgent = userAgent+' '+application.getScreenWidth()+' x '+application.getScreenHeight();
 }

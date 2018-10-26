@@ -116,6 +116,7 @@ function onFocusLost(event) {
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"512C7CD9-95A7-40F7-A473-10411521055E"}
+ * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
 	if (elements.companyName.visible){
@@ -123,9 +124,36 @@ function onShow(firstShow, event) {
 	} else {
 		elements.userName.requestFocus();
 	}
+	var win = application.getActiveWindow();
+
+	if (application.getScreenWidth() <= 250){
+		forms.secLoginExample.hideLogo();
+	} else {
+		forms.secLoginExample.showLogo();
+	}
+	newScale = 1.0;
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		var osName = application.getOSName();
+		var width = application.getScreenWidth();
+
+		if (osName.search(/(Linux)|(Mac)/i) != -1){
+			var newScale = Math.floor(width/240*10)/10;
+			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
+			if (osName.search(/Linux/i) != -1){ 
+				newScale = Math.floor(width/240*10)/10;
+				scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
+				//scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale='+newScale);  
+				//scopes.globals.viewport = scopes.globals.viewport.replace('user-scalable=1','user-scalable=0');
+				
+				newScale = 1.0;
+			}			
+		}
+
+		application.output('RM login newscale '+newScale+' '+width+' '+osName);
 		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
 	}
+
+	errorMessage = application.getScreenWidth()+' x '+application.getScreenHeight();
 }
 
 /**
@@ -148,4 +176,10 @@ function enableLicenseWarn(message){
 	forms['secLoginExample'].licenseErrorMessage = message;
 	forms['secLoginExample'].elements.btn_License.visible = true;
 	forms['secLoginExample'].elements.btn_License.requestFocus();
+}
+/**
+ * @properties={typeid:24,uuid:"35111C51-18B3-44C1-BAEC-2B94CDFAB6C1"}
+ */
+function showLogo(){
+	elements.banner.visible = true;
 }

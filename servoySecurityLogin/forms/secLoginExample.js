@@ -141,7 +141,7 @@ function onShow(firstShow, event) {
 			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
 			if (osName.search(/Linux/i) != -1){ 
 				newScale = Math.floor(width/240*10)/10;
-				scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
+				scopes.globals.viewport = scopes.globals.viewportSrc;//.replace('initial-scale=1.0','initial-scale='+newScale);
 				//scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale='+newScale);  
 				//scopes.globals.viewport = scopes.globals.viewport.replace('user-scalable=1','user-scalable=0');
 				

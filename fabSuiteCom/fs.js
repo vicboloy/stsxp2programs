@@ -207,7 +207,7 @@ function checkFSLoad(loadNumber,makeNewLoad){
  * @properties={typeid:24,uuid:"12B338B2-51AC-4A57-BE21-AAC5E081CEFA"}
  */
 function checkFSSequences(sequences, event){
-	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
+	if (application.getSolutionName() == 'STSmobile' && globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	if (!sequences){return true}
 	var exceptions = [];
 	importData.newSequences = [];
@@ -398,7 +398,7 @@ function checkFSJob(event) {
  * @properties={typeid:24,uuid:"3790F67D-62E4-47B5-B485-96FA922A6C6A"}
  */
 function checkFSLots(lots, event) {
-	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
+	if (application.getSolutionName() == 'STSmobile' && globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	if (!lots){return true}
 	var exceptions = [];
 	importData.newLots = [];
@@ -549,7 +549,7 @@ function checkResetToValidEntry(xmlFieldName,validString,enteredString,event){
  * @properties={typeid:24,uuid:"4B7B892A-B0D5-44D2-A20F-501A6A9F5851"}
  */
 function checkFSMainMark(mainMarks,event){
-	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
+	if (application.getSolutionName() == 'STSmobile' && globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	// use session.drawings array for STS X Embedded
 	if (!mainMarks){return true}
 	var exceptions = [];
@@ -624,7 +624,7 @@ function checkFSMainMark(mainMarks,event){
  * @properties={typeid:24,uuid:"E92A7A06-BA71-49EB-B32A-9F70F776B5E7"}
  */
 function checkFSDrawingNumber(drawings,event){
-	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
+	if (application.getSolutionName() == 'STSmobile' && globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
 	// use session.drawings array for STS X Embedded
 	if (!drawings){return true}
 	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}
@@ -981,4 +981,164 @@ function onDataChangeFSUN(oldValue, newValue, event) {
 	application.output(fsResp);
 	null;
 	return true;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"2ADDF248-A0B7-4035-A6BD-FC85698CCB18"}
+ */
+function fabSuiteSaved(event){
+	var saved = true;
+	// is fs installed
+	application.output('fabsuite installed '+scopes.prefs.lFabsuiteInstalled);
+	saved = (scopes.prefs.lFabsuiteInstalled == 0);
+	if (saved){return true}
+	// is fs available
+	application.output('fabsuite pinged for access');
+	saved = !saved && fabSuitePing(event);
+	application.output('fabsuite pinged for access '+saved);
+	// is this an fs job - check job entry
+	application.output('fabsuite rf job '+globals.mob.job.rf);
+	saved = saved && (globals.mob.job.rf.toUpperCase() != i18n.getI18NMessage('sts.interface.fabsuite').toUpperCase());
+	application.output('fabsuite rf job '+globals.mob.job.rf+' '+saved);
+	// is this an fs approved process, so far all are approved except bundle
+	application.output('fabsuite approved process '+!fabSuiteProcess());
+	saved = saved && (fabSuiteProcess());
+	application.output('fabsuite approved process '+!fabSuiteProcess()+' '+saved);
+	// check for required data
+	// send to fs for update
+	application.output('update fabsuite')
+	saved = saved && fabSuiteUpdate();
+	application.output('update fabsuite'+saved);
+	// return error message
+	return saved;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"467A321D-A423-46A7-98F3-B6A1E478AE55"}
+ */
+function fabSuitePing(event){
+	var fsPing = '<FabSuiteXMLRequest>\
+		<Ping>\
+		</Ping>\
+		</FabSuiteXMLRequest>';
+	if (com){
+		var fsResp = com.call('FabSuiteXML',fsPing);
+		if (fabSuiteResponse(fsResp) == ''){
+			return true;
+		}
+	}
+	globals.rfErrorShow(i18n.getI18NMessage('1170'));
+	return false;
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * TODO generated, please specify type and doc for the params
+ * @param {String} fsResp
+ *
+ * @properties={typeid:24,uuid:"1C8461C0-6130-45E2-A750-802B7D59CB96"}
+ */
+function fabSuiteResponse(fsResp){
+	fsResp = fsResp + '';
+	if (fsResp && fsResp.search('<Successful>1') == -1){
+		return getFabSuiteError(fsResp);
+	}
+	return '';
+}
+/**
+ * @properties={typeid:24,uuid:"40A1E878-6BFA-4978-8E17-C4542FDC4F6F"}
+ */
+function fabSuiteProcess(){
+	var valid = true;
+	var currentView = globals.session.program;
+	var invalids = [i18n.getI18NMessage('sts.mobile.build.bundles')];
+	for (var index = 0;index < invalids.length;index++){
+		if (invalids[index] == currentView){return false}
+	}
+	return valid;
+}
+/**
+ * @properties={typeid:24,uuid:"C01EB622-287B-46CE-9059-98E767D10B88"}
+ */
+function fabSuiteUpdate(){//shopFloorSave
+	var date = new Date();//flow down from data update
+
+	var pieceMark = globals.mob.piecemark.piecemark;//exclude this when showing assembly, no minors
+	var station = globals.mob.statusCode3rdParty;//required
+	var quantity = globals.mob.idfiles.length;//required
+	var mainMark = globals.mob.piecemark.parent_piecemark;
+	var employee = 'admin';//required employee that completed the work
+
+	if (!pieceMark || !station || !quantity || !mainMark || !employee){
+		globals.rfErrorShow(i18n.getI18NMessage('1017'));
+		return false;
+	}
+	
+	var commitType = 'Save';//Save/Delete/required use F8 to indicate removal
+	var jobNumber = globals.mob.job.number;
+	var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];
+	var lotNumber = globals.mob.piecemark.lot;
+	var instanceNumbers = globals.mob.idfile.pcmk_instance;//accepts only numeric values, as well as hyphen
+	//var serialNumber = 'FS-5319D7A3-D71F-11E5-8AFE-A292F4137E41';
+	//serialNumber = globals.mob.idfile.guid_minor;
+	//serialNumber = globals.mob.idfile.guid_major;
+	serialNumber = globals.mob.barcode;
+	//serialNumber = '';
+	var day = date.getDate();//this changes unless the 
+	if (day < 10){day = "0"+day}
+	var month = date.getMonth()+1;
+	if (month < 10){month = "0"+month}
+	var execDate = date.getFullYear()+'-'+month+'-'+day;//required
+	var hours = 0;
+	var batchId = '';
+	var _commitType = '<CommitType>'+commitType+'</CommitType>\n';
+	var _jobNumber = '<JobNumber>'+jobNumber+'</JobNumber>\n';
+	var _mainMark = '<MainMark>'+mainMark+'</MainMark>\n';
+	var _pieceMark = '<PieceMark>'+pieceMark+'</PieceMark>\n';
+	var _sequence = '<Sequence>'+sequence+'</Sequence>\n';
+	var _lotNumber = '<LotNumber>'+lotNumber+'</LotNumber>\n';
+	var _station = '<Station>'+station+'</Station>\n';
+	var _quantity = '<Quantity>'+quantity+'</Quantity>\n';
+	var _instanceNumbers = '<InstanceNumbers>'+instanceNumbers+'</InstanceNumbers>\n';
+	var _serialNumber = '<BarcodeSerialNumber>'+serialNumber+'</BarcodeSerialNumber>\n';
+	var _employee = '<Employee>'+employee+'</Employee>\n';
+	var _execDate = '<Date>'+execDate+'</Date>\n';
+	var _hours = '<Hours>'+hours+'</Hours>\n';
+	var _batchId = '<BatchID>'+batchId+'</BatchID>\n';
+
+	var saveDataXML = '<FabSuiteXMLRequest>\
+	<ShopFloorSave>\
+	TYPE JOBNUMBER MAJOR MINOR SEQUENCENUM LOTNUMBER STATION QUANTITY INSTANCES SERIALNUM EMPLOYEE DATE HOURS BATCH \
+	</ShopFloorSave>\
+	</FabSuiteXMLRequest>';
+	saveDataXML = saveDataXML.replace('TYPE',_commitType);
+	saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
+	saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
+	saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
+	saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence);
+	saveDataXML = (!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
+	saveDataXML = saveDataXML.replace('STATION',_station);
+	saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
+	saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
+	saveDataXML = (!serialNumber) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber);
+	saveDataXML = saveDataXML.replace('EMPLOYEE',_employee);
+	saveDataXML = saveDataXML.replace('DATE',_execDate);
+	saveDataXML = (!hours) ? saveDataXML.replace('HOURS','') : saveDataXML.replace('HOURS',_hours);
+	saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId);
+	application.output(saveDataXML);
+	var fsResp = com.call('FabSuiteXML',saveDataXML);
+	application.output('RESPONSE: '+fsResp);
+	var fsErr = fabSuiteError(fsResp);
+	if (fsErr != ''){
+		globals.rfErrorShow(fsErr);
+	}
+	return true;
+	// RESPONSE: <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+	//<FabSuiteXMLResponse xmlns="http://www.fabsuite.com/xml/fabsuite-xml-response-v0108.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	//  <XMLError>Fatal Error (9, 7): expected end of tag 'CommitType'</XMLError>
+	//</FabSuiteXMLResponse>
+  
 }

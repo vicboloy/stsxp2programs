@@ -6597,6 +6597,7 @@ function getJobIdInfo(jobNum){
 	 */
 	globals.session.jobId = jobId;
 	globals.session.jobNumber = jobNum;
+	globals.session.jobIsFabSuite = rec.rf_interface == i18n.getI18NMessage('sts.interface.fabsuite');
 	importJob.jobId = jobId;
 	importJob.jobNumber = jobNum
 	var jobAssocName = globals.m.assocs[jobAssocId];

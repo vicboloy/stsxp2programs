@@ -376,6 +376,12 @@ titleText:"i18n:table.idfiles.parent.piecemark.id"
 },
 {
 allowNull:true,
+creationOrderIndex:69,
+dataType:4,
+name:"pcmk_instance"
+},
+{
+allowNull:true,
 creationOrderIndex:15,
 dataType:12,
 length:20,

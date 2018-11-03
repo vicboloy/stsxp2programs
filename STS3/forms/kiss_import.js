@@ -219,6 +219,7 @@ function getKissFile(event){
 			i18n.getI18NMessage('sts.btn.no'),
 			i18n.getI18NMessage('sts.btn.yes'));
 			if (response == i18n.getI18NMessage('sts.btn.no')){
+				controller.enabled = true;
 				scopes.jobs.warningsX();
 				return;
 			}

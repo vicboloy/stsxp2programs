@@ -253,6 +253,10 @@ var printerQueue = [];
  */
 var functionKeyEntered = false;
 /**
+ * @properties={typeid:35,uuid:"91B5C845-EE4E-4F6F-88D6-D6B7A5ECCEC0",variableType:-4}
+ */
+var vSequenceList = [];
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -295,6 +299,7 @@ function onShowForm(firstShow,event) {
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 
 	}
+	globals.getSequenceNumbers();
 	requiredFields = [];
 	var formName = event.getFormName();
 	var tabSequence = [];

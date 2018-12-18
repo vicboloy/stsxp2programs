@@ -273,6 +273,16 @@ var importRecData = '';
  */
 var useKissRoutes = 0;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"4DF90D97-5960-4CC1-9C2C-B2FF372F77DC"}
+ */
+var importFile = '';
+/**
+ * @properties={typeid:35,uuid:"BEB40A18-ECAF-4CD6-A62E-63B30052A0F2",variableType:-4}
+ */
+var deleteKiss = true;
+/**
  * @properties={typeid:35,uuid:"0879B896-5487-4BA7-8CA3-446FE1770947",variableType:-4}
  */
 var endVars = null;
@@ -318,6 +328,7 @@ function onShow(firstShow, event) {
 	jobName = job.name;
 	jobDate = job.date;
 	jobMetric = job.metricFlag;
+	//application.output('RM Job Number for Import '+jobNumber,LOGGINGLEVEL.DEBUG);
 	///var customerArray = [];
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
@@ -370,9 +381,9 @@ function onShow(firstShow, event) {
 	elements.drawSufx.enabled = enableDrawing;
 	//elements.drawSufx_label.enabled = enableDrawing;
 
-	var empArray = [];
+	/** var empArray = [];
 	var empArrayID = [];
-	/** @type {QBSelect<db:/stsservoy/employee>} */
+	/ ** @type {QBSelect<db:/stsservoy/employee>} * /
 	var empFS = databaseManager.createSelect('db:/stsservoy/employee');
 	empFS.result.add(empFS.columns.employee_id);
 	empFS.result.add(empFS.columns.employee_number);	
@@ -380,14 +391,16 @@ function onShow(firstShow, event) {
 	empFS.where.add(empFS.columns.delete_flag.isNull);
 	var E = databaseManager.getFoundSet(empFS);
 	var idx = 1;
-	/** @type {JSRecord<db:/stsservoy/employee>} */
+	/** @type {JSRecord<db:/stsservoy/employee>} * /
 	var rec = null;
 	while (rec = E.getRecord(idx++)){
 		empArray.push(rec.employee_number);
 		empArrayID.push(rec.employee_id);
 	}
 	if (application.isInDeveloper()){application.setValueListItems('stsvl_employee',empArray)}
-	employeeNumber = globals.session.loginUserNum;
+	*/
+	//employeeNumber = globals.session.loginUserNum;
+	employeeNumber = globals.session.employeeNum;
 	if (application.isInDeveloper()){application.output('employee number '+employeeNumber)}
 	var jobRoutes = [];
 	var jobRouteIds = [];
@@ -666,6 +679,7 @@ function defineExclDataset(){
 	item.onDataChange=newMethod;
 	elements.tabless1.addTab('kiss_excludes_lst');
 	excludeFS.sort(1,true);
+	scopes.jobs.warningsX(event);
 }
 /**
  * Handle hide window. No use removing form or history on Hide,
@@ -679,6 +693,9 @@ function defineExclDataset(){
  */
 function onHide(event) {
 	null;
+	if (deleteKiss){
+		scopes.kiss.removeImportFileFromServer(jobNumber);
+	}
 	//removeWindowTrack();
 	scopes.jobs.warningsX();
 	//elements.tabless.removeAllTabs();
@@ -1935,9 +1952,9 @@ function saveDetailRow2K(){
 		scopes.prefs.qtyPrompt; //id counts greater than this number are prompted
 		scopes.prefs.wtPrompt; //weights less than this are one, else max
 		// set_bc_qty, last_bc_qty, barcode_qty, total_label_qty, ext_wt_qty from item_quantity
-		newRow[fieldOrderTempTable['set_bc_qty']] = (newSeqCount > scopes.prefs.qtyPrompt) ? newSeqCount : 1;
-		newRow[fieldOrderTempTable['last_bc_qty']] = (newSeqCount > scopes.prefs.qtyPrompt) ? newSeqCount : 1;
-		newRow[fieldOrderTempTable['barcode_qty']] = (newSeqCount > scopes.prefs.qtyPrompt) ? 1: newSeqCount;
+		newRow[fieldOrderTempTable['set_bc_qty']] = (newSeqCount*1 > scopes.prefs.qtyPrompt*1) ? newSeqCount : 1;
+		newRow[fieldOrderTempTable['last_bc_qty']] = (newSeqCount*1 > scopes.prefs.qtyPrompt*1) ? newSeqCount : 1;
+		newRow[fieldOrderTempTable['barcode_qty']] = (newSeqCount*1 > scopes.prefs.qtyPrompt*1) ? 1: newSeqCount;
 		newRow[fieldOrderTempTable['total_label_qty']] = (newSeqCount == newRow[fieldOrderTempTable['set_bc_qty']]) ? newSeqCount : 1;
 		newRow[fieldOrderTempTable['ext_wt_qty']] = newRow[fieldOrderTempTable['barcode_qty']] * newRow[fieldOrderTempTable['item_weight']]
 		newRow[fieldOrderTempTable['guid_hideindex']] = guidPoolIndex-1;
@@ -2106,4 +2123,31 @@ Used within keep minor marks checkbox to show excludes
 	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	var J = databaseManager.getFoundSet(j);
 	null;
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"FC8DF0C8-6E51-48F8-96E5-9899530B13A0"}
+ */
+function onActionSelections(event) {
+	var tableRecs = forms.import_table.foundset.getSelectedRecords();
+	if (tableRecs.length == 0){return}
+	/** @type {Array} */
+	var choices = application.getValueListArray('vl_import_actions');
+	//choices.unshift(i18n.getI18NMessage('sts.empty.entry'));
+	choices.unshift(null);
+	//application.output('RM choices '+choices);globals.DIALOGS.showsel
+	var action = scopes.globals.DIALOGS.showSelectDialog(i18n.getI18NMessage('sts.txt.import.change.actions'),i18n.getI18NMessage('sts.txt.import.change.actions.select'),choices);
+	if (!action || action == i18n.getI18NMessage('sts.empty.entry')){return}
+	application.output(action);
+	var rec = null;var idx = 0;
+	for (idx = 0;idx < tableRecs.length;idx++){
+		rec = tableRecs[idx];
+		//application.output('selected; '+rec.piecemark+' '+rec.material+' '+rec.import_status);
+		rec.import_status = action;
+	}
+	databaseManager.saveData(forms.import_table.foundset);
 }

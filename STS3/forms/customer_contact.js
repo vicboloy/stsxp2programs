@@ -121,6 +121,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"F3522909-E2C5-44A3-B127-98E0A96272B5"}
  */
 function onRecordSelection(event) {
+	if (foundset.getSize() == 0){return}
 	if (!customer_number){
 		elements.customer_number.requestFocus();
 	}

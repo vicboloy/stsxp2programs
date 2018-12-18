@@ -970,7 +970,8 @@ function onSolutionOpen() {
 	loginUserInfo(secCurrentUserID);
 	globals.getAssociation(secCurrentAssociationID);
 	session.association = mobAssoc;
-	onStartLoadPrefs("");	
+	onStartLoadPrefs("");
+	globals.createStations();
 	globals.getMappings();
 	application.setValueListItems('stsvl_fab_shop',l.assocs);
 	databaseManager.removeTableFilterParam('stsservoy','filterCurrentTenant');//20171228 filter current tenant and assoc for nonOffice access
@@ -990,6 +991,52 @@ function onSolutionOpen() {
 			}
 			if (tableCols.indexOf('association_uuid') != -1){
 				databaseManager.addTableFilterParam('stsservoy',tables[idx],'association_uuid','=',session.associationId,filterName);
+			}
+		}
+	}
+	if (application.isInDeveloper()){
+		var filters = databaseManager.getTableFilterParams('stsservoy','filterCurrentAssoc');
+		application.output('Filters: '+filters);
+		// REM get table names and columns 
+		//
+		if (1==0){
+			application.output('Table\tColumn\tType\tLength\tPKEY\tUUID');
+			var tables = databaseManager.getTableNames('stsservoy');
+			for (var tdex = 0;tdex < tables.length;tdex++){
+				var table = databaseManager.getTable('db:/stsservoy/'+tables[tdex]);
+				var columns = table.getColumnNames();
+				for (var jdex = 0;jdex < columns.length;jdex++){
+					var jCol = table.getColumn(columns[jdex]);
+					var length = jCol.getLength();
+					var typeNum = jCol.getType();
+					var type = '';
+					var uuid = '';
+					var pkey = '';
+					switch (typeNum){
+						case JSColumn.INTEGER :
+							type = 'Integer';
+							break;
+						case JSColumn.TEXT:
+							type = 'Text';
+							break;
+						case JSColumn.NUMBER:
+							type = 'Real';
+							break;
+						case JSColumn.DATETIME:
+							type = 'DateTime';
+							break;
+						default:
+							null;
+					}
+					if (jCol.hasFlag(JSColumn.UUID_COLUMN)){
+						uuid = 'UUID';
+					}
+					if (jCol.getRowIdentifierType() == JSColumn.PK_COLUMN){
+						pkey = 'PKey';
+					}
+					application.output('db:/stsservoy/'+tables[tdex]+'\t'+columns[jdex]+'\t'+type+'\t'+length+'\t'+pkey+'\t'+uuid);
+					
+				}
 			}
 		}
 	}
@@ -2002,7 +2049,7 @@ function stopWindowTrackEvent(event){
  * @properties={typeid:24,uuid:"918332A9-B084-4E50-8CEE-69EB6BA56344"}
  */
 function setWindowClosedByName(windowName){
-	windowName = windowName.replace(/_/g,' ');
+	var windowNameAlt = windowName.replace(/_/g,' ');
 	if (windowName.search('STS - Main') == 0){return}
 	var tempArray2 = new Array;
 	//tempArray2 = globals.aTrackWindows;
@@ -2010,7 +2057,7 @@ function setWindowClosedByName(windowName){
 
 	for (var index = 0; index < tempLength; index++){
 		var windowName2 = globals.aTrackWindows[index];
-		if (windowName.search(windowName2) != 0){
+		if (windowName.search(windowName2) != 0 && windowNameAlt.search(windowName2) != 0){
 			tempArray2.push(windowName2);
 		}
 	}

@@ -359,7 +359,7 @@ horizontalAlignment:4,
 labelFor:"frmPiecemark",
 location:"15,88",
 name:"lblPiecemark",
-text:"i18n:sts.label.piecemark_",
+text:"i18n:sts.label.piecemark",
 transparent:true,
 typeid:7,
 uuid:"91D0EEC6-D9C9-4A70-95C4-95E12BB2599C"

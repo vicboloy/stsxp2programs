@@ -93,7 +93,7 @@ var rfShipStatus = "WELD";
  *
  * @properties={typeid:35,uuid:"378F3A67-9C88-413C-B808-C9CD95A30A4A"}
  */
-var defaultRfPrinter = "";
+var defaultRfPrinter = i18n.getI18NMessage('sts.empty.entry');
 /**
  * @type {String}
  *
@@ -192,7 +192,7 @@ var printIdQty = false;
  *
  * @properties={typeid:35,uuid:"9886C929-C9AC-483B-A290-212D968C6FA9",variableType:-4}
  */
-var rfRefresh = false;
+var rfRefresh = true;
 /**
  *
  * @properties={typeid:35,uuid:"21067B16-5B30-4C62-8800-9C56D23B2E29",variableType:-4}
@@ -403,7 +403,7 @@ var wtPrompt = 0.000000;
  *
  * @properties={typeid:35,uuid:"4A49D468-DCAF-4954-A5D3-1712FA52481D",variableType:8}
  */
-var qtyPrompt = 9.000000;
+var qtyPrompt = 30.000000;
 /**
  * @type {String}
  *
@@ -424,7 +424,7 @@ var paintDelay = 0.000000;
  *
  * @properties={typeid:35,uuid:"5C2046B4-55DA-4DF2-B659-54E1559EE541"}
  */
-var dflRouteCode = "NORMAL";
+var dflRouteCode = "";
 /**
  *
  * @properties={typeid:35,uuid:"A097C175-2832-4DC0-822B-F9F2CECD592F",variableType:-4}
@@ -441,7 +441,7 @@ var lKeepMinorPcMarks = 0;
  *
  * @properties={typeid:35,uuid:"E7245799-F08F-42F6-98D9-9F7DF429E629",variableType:-4}
  */
-var lOnlyOneCustPerJob = false;
+var lOnlyOneCustPerJob = true;
 /**
  * @type {String}
  *
@@ -461,7 +461,7 @@ var stsInstalled = "Fabricator";
  *
  * @properties={typeid:35,uuid:"6B01A835-DDB7-4E78-903E-975105584CAB"}
  */
-var stsCustomerNum = "STS";
+var stsCustomerNum = "P2PROG";
 /**
  *
  * @properties={typeid:35,uuid:"7DE1951C-F66E-4864-9D79-F60F582BE6FF",variableType:-4}
@@ -473,7 +473,7 @@ var smallMadeInFont = true;
  *
  * @properties={typeid:35,uuid:"22289A00-4BA5-4BAE-9246-FDA87996C2D4",variableType:4}
  */
-var maxColumnShow = 15;
+var maxColumnShow = 100;
 /**
  * @type {Number}
  *
@@ -642,49 +642,49 @@ var screenFull = false;
  *
  * @properties={typeid:35,uuid:"04F8B40B-DC0A-46DD-861F-5F8FF1240D9F"}
  */
-var localpath = "C:\STSSOURCE\DATA";
+var localpath = "";
 /**
  * @type {String}
  *
  *
  * @properties={typeid:35,uuid:"5C31E0F4-A0FD-4879-999C-68C221EB3B50"}
  */
-var datapath = "C:\STSSOURCE\DATA";
+var datapath = "";
 /**
  * @type {String}
  *
  *
  * @properties={typeid:35,uuid:"5F0706C5-3A2C-4CAD-8211-CB94E8C0E4EC"}
  */
-var temppath = "C:\STSSOURCE\TEMP";
+var temppath = "";
 /**
  * @type {String}
  *
  *
  * @properties={typeid:35,uuid:"973012E1-93D0-4894-98FC-5F2662768729"}
  */
-var importpath = "C:\STSSOURCE\IMPORT";
+var importpath = "";
 /**
  * @type {String}
  *
  *
  * @properties={typeid:35,uuid:"DDFDAB27-0BB8-4755-80B4-3CBA7435C126"}
  */
-var foxfirepath = "C:\STSSOURCE\FOXFIRE";
+var foxfirepath = "";
 /**
  * @type {String}
  *
  *
  * @properties={typeid:35,uuid:"F84869B9-583A-4E89-935E-27985E0306CC"}
  */
-var reportpath = "C:\STSSOURCE\REPORTS";
+var reportpath = "";
 /**
  * @type {String}
  *
  *
  * @properties={typeid:35,uuid:"F4640503-4D5C-442F-82BD-4BA344C9EABC"}
  */
-var xportpath = "I:\LBA\STS_MARKOFF";
+var xportpath = "";
 /**
  * @type {String}
  *
@@ -920,6 +920,12 @@ var fabsuiteRootPath = "";
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"29E365E6-7B39-4BF3-98E3-F61A3D9F01A5"}
+ */
+var userFabsuiteRootPath = '';
+/**
+ * @type {String}
+ *
 *
  * @properties={typeid:35,uuid:"7A124B92-A69A-47EB-A2FF-EC290E32A32D"}
  */
@@ -1091,7 +1097,7 @@ var labels = "1 AREA Character 6 idfiles.id_area 10,\
 	83 LODSHIPTO Character 10 loads.ship_to->/addresses/,\
 	84 LOT Character 11 lots.lot 15,\
 	85 MRR Character 10 idfiles.mrr 15,\
-	86 ORIGEMPL Character 5 idfiles.original_employee->/employees/,\
+	86 ORIGEMPL Character 5 idfiles.original_employee_uuid->/employees/,\
 	87 OTHRXTIME Character 8 loads.sent_other DATETIME,\
 	88 PANTXTIME Character 8 loads.sent_paint DATETIME,\
 	89 PCCOLOR Character 10 idfiles.piece_color 20,\
@@ -1444,6 +1450,10 @@ var labelFields = ['AREA',
 	'BOMFINISH',
 	'PRIORITY',
 	'BOMLGTCHAR'];
+/**
+ * @properties={typeid:35,uuid:"DAB42457-A82D-45A8-B525-C1D2FB13C9BA",variableType:-4}
+ */
+var prefsChangedOutside = [];
 // _________________________________________________________________________________________________
 /**
  * moved to globals. scopes.globals.
@@ -1529,13 +1539,13 @@ function onActionUpdatePrefs(event) {
 	var prefs = scopes.prefs;
 	prefType = (event.getFormName().search('printer') != -1) ? 'Printer' : 'Prefs';
 	var description = "Global Preference";
-	if (prefType == "Printer"){
-		prefs = scopes.printer;
-		description = "Global Printer";
-		forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
+		if (prefType == "Printer"){
+			prefs = scopes.printer;
+			description = "Global Printer";
+			forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
 		var form = forms[event.getFormName()];
 		var tempPrefsChanged = form.prefsChanged;
-	}
+		}
 	scopes.jobs.warningsYes(event);
 	application.updateUI();
 	//var fs = databaseManager.getFoundSet('stsservoy','preferences2');
@@ -1618,8 +1628,8 @@ function onActionUpdatePrefs(event) {
 	}
 	if (application.isInDeveloper()){application.output('comitted '+committed)}
 	tempPrefsChanged = [];
-	setPrefsClean(event,prefType);
-	globals.onActionCancelButton(event);
+		setPrefsClean(event,prefType);
+		globals.onActionCancelButton(event);
 	application.updateUI();
 	scopes.jobs.warningsX(event);
 }
@@ -1730,8 +1740,8 @@ function onActionFileOpenDialog(event,updateValue,prefsType) {
 	var dirs = plugins.file.showDirectorySelectDialog(baseDirObj);
 	if (!dirs){return}
 	var intendedDir = dirs.getAbsolutePath();
-	if (intendedDir.indexOf(defaultDir) != 0){
-		application.output('intended '+intendedDir+' default '+defaultDir);
+	if (intendedDir.indexOf(defaultDir) != 0 && updateValue.search('user') != 0){
+		//application.output('intended '+intendedDir+' default '+defaultDir);
 		scopes.globals.errorDialogMobile(event,1258,'','');//The Base Directory Is Unavailable From This Client
 		//return;
 		// show cannot run this unless it is in network
@@ -1743,32 +1753,32 @@ function onActionFileOpenDialog(event,updateValue,prefsType) {
 	var file = plugins.file.createFile(stsTestFile);
 	var error = false;
 	if (file.exists()){
-		application.output(stsTestFile+' file exists');
+		//application.output(stsTestFile+' file exists');
 		if (!file.deleteFile()){
-			application.output(stsTestFile+' file exists but cannot delete');
+			//application.output(stsTestFile+' file exists but cannot delete');
 			error = true;
 		}
 	} else {
 		if (!file.createNewFile()){
-			application.output(stsTestFile+' could not create');
+			//application.output(stsTestFile+' could not create');
 			error = true;
 		} else {
-			application.output(stsTestFile+' file created');
+			//application.output(stsTestFile+' file created');
 			if (!file.deleteFile()){
-				application.output(stsTestFile+' file deleted');
+				//application.output(stsTestFile+' file deleted');
 				error = true;
 			}
 		}
 	}
 	if (error){
-		application.output(path+' directory access test failed');
+		//application.output(path+' directory access test failed');
 		scopes.globals.errorDialogMobile(event,'1257',null,'');// Cannot Modify File In Directory
 		var form = event.getFormName();
 		var elName = event.getElementName();
 		//forms[form].elements[elName].getDataProviderID();
 		return false;
 	}
-	application.output(path+' path is accessible');
+	//application.output(path+' path is accessible');
 	///var formName = event.getFormName();
 	//if (path.replace(defaultDir,'')){
 	path = path.replace(defaultDir,'');
@@ -2909,6 +2919,89 @@ function onActionFileOpenDialogLocal(event,updateValue,prefsType) {	//20180820 c
 	forms.preferences_printer.prefsChanged.push(updateValue);//20180109 update prefs on button inop from button change
 
 }
-
+/**
+ * @properties={typeid:24,uuid:"C3FBC68F-7433-4A8F-BA2B-5C4C8DAA94FC"}
+ */
+function setMissingPrefs(){
+	// local document paths
+	prefsChangedOutside = [];
+	function setEmptyPrefs(){
+		if (!scopes.prefs.reportpath) {scopes.prefs.reportpath = '.\\'} 
+		if (!scopes.prefs.datapath) {scopes.prefs.datapath = '.\\'} 
+		if (!scopes.prefs.importpath) {scopes.prefs.importpath = '.\\'} 
+		if (!scopes.prefs.datapath) {scopes.prefs.datapath = '.\\'} 
+		if (!scopes.prefs.foxfirepath) {scopes.prefs.foxfirepath = '.\\'} 
+		if (!scopes.prefs.temppath) {scopes.prefs.temppath = '.\\'} 
+		if (!scopes.prefs.mtrpath) {scopes.prefs.mtrpath = '.\\'} 
+		if (!scopes.prefs.wh32datapath) {scopes.prefs.wh32datapath = '.\\'} 
+	}
+	if (true || scopes.prefs.reportpath == ''){
+		//var uploadLoc = plugins.file.getDefaultUploadLocation();
+		var dirs = plugins.file.getRemoteFolderContents(plugins.file.convertToRemoteJSFile('/'),null,2);
+		/** @type plugins.file.JSFile */
+		var dir;var dirList = [];
+		for (var index = 0;index < dirs.length;index++){
+			dirList.push(dirs[index].getName());
+		}
+		for (var index = 0;index < dirs.length;index++){
+			dir = dirs[index];
+			if (dir.isDirectory()){
+				var dirName = dir.getName();
+				var dir2 = dirName.toUpperCase();
+				dirName = '.\\'+dirName;
+				switch (dir2){
+					case 'REPORTS':
+					case 'REPORT':
+						if (scopes.prefs.reportpath){break}
+						scopes.prefs.reportpath = dirName;
+						prefsChangedOutside.push('reportpath');
+						break;
+					case 'IMPORT':
+					case 'IMPORTS':
+					if (scopes.prefs.importpath){break}
+						scopes.prefs.importpath = dirName;
+						prefsChangedOutside.push('importpath');
+						break;
+					case 'FOXFIRE':
+						if (scopes.prefs.foxfirepath){break}
+						scopes.prefs.foxfirepath = dirName;
+						prefsChangedOutside.push('foxfirepath');
+						break;
+					case 'EXPORT':
+					case 'EXPORTS':
+					case 'XPORT':
+					case 'XPORTS':
+						if (scopes.prefs.xportpath){break}
+						scopes.prefs.xportpath = dirName;
+						prefsChangedOutside.push('xportpath');
+					break;
+					case 'MTR':
+					case 'MTRPDF':
+						if (scopes.prefs.mtrpath){break}
+						scopes.prefs.mtrpath = dirName;
+						prefsChangedOutside.push('mtrpath');
+					break;
+					case 'WH32':
+					case 'WAREHOUSE':
+					case 'WAREHOUSE32':
+						if (scopes.prefs.wh32datapath){break}
+						scopes.prefs.wh32datapath = dirName;
+						prefsChangedOutside.push('wh32datapath');
+						break;
+					case 'TEMP':
+					case 'TMP':
+						if (scopes.prefs.temppath){break}
+						scopes.prefs.temppath = dirName;
+						prefsChangedOutside.push('temppath');
+						break;
+					default:
+				}
+			}
+		}
+		setEmptyPrefs();
+		//application.output('RM prefschangedoutside '+prefsChangedOutside);
+		//if (prefsChangedOutside && prefsChangedOutside.length > 0){onActionUpdatePrefs(null);}
+	}
+}
 
 

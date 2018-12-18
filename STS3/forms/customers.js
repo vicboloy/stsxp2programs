@@ -8,7 +8,7 @@
  */
 function onLoadCreateRecord(event) {
 	if (controller.getMaxRecordIndex() == 0){
-		controller.newRecord()
+		//controller.newRecord()
 	}
 	if (globals.customersDividerLocation == 0.0) {
 		elements.tabs.dividerLocation = 195.0;
@@ -28,7 +28,7 @@ function onTabChange(previousIndex, event) {
 }
 
 /**
- * Callback method for when form is shown.
+ * Callback method for when form is shown
  *
  * @param {Boolean} firstShow form is shown first time after load
  * @param {JSEvent} event the event that triggered the action
@@ -36,14 +36,21 @@ function onTabChange(previousIndex, event) {
  * @properties={typeid:24,uuid:"782359C0-6519-4B97-B1C4-D2A2D50918EE"}
  */
 function onShow(firstShow, event) {
-	foundset.sts_customer_container;
-	foundset.loadAllRecords();
-	var newFS = foundset.duplicateFoundSet();
-	controller.loadRecords(newFS);
+	var instance = globals.getInstanceForm(event);
+	var spec_form = 'customer_specs'+instance;
+	var list_form = 'customers_lst'+instance;
 	if (foundset.getSize() == 0){
-		databaseManager.setAutoSave(false);
-		foundset.newRecord();
-		//foundset.getRecord(1);
+		forms[spec_form].elements.tabs.enabled = false;
+		
 	}
+	//foundset.sts_customer_container;
+	//foundset.loadAllRecords();
+	//var newFS = foundset.duplicateFoundSet();
+	//controller.loadRecords(newFS);
+	//if (foundset.getSize() == 0){
+		//databaseManager.setAutoSave(false);
+		//foundset.newRecord();
+		//foundset.getRecord(1);
+	//}
 	globals.setUserFormPermissions(event);
 }

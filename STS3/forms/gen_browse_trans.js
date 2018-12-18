@@ -11,4 +11,5 @@ function onShow(firstShow, event) {
 	if (firstShow){
 		scopes.jobs.tablePrefsPreLoad(event.getFormName());
 	}
+	//foundset.sort('transaction_date desc');
 }

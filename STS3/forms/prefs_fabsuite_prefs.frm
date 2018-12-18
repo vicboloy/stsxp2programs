@@ -17,8 +17,13 @@ customProperties:"methods:{\
 onActionMethodID:{\
 arguments:[\
 null,\
-\"'fabsuiteRootPath'\",\
+\"'userFabsuiteRootPath'\",\
 \"'Prefs'\"\
+],\
+parameters:[\
+\"event\",\
+\"updateValue\",\
+\"prefsType\"\
 ]\
 }\
 }",
@@ -192,7 +197,7 @@ typeid:4,
 uuid:"E49C9E2F-F0C2-429B-9DED-D1867842607D"
 },
 {
-dataProviderID:"scopes.prefs.fabsuiteRootPath",
+dataProviderID:"scopes.prefs.userFabsuiteRootPath",
 editable:false,
 location:"156,58",
 name:"fabsuiteRootPath",

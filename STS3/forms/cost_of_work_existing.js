@@ -170,6 +170,7 @@ function onActionCalcCost(event) {
 		piecemarkArray.push(localRec.piecemark_id);
 	}
 	
+	var skipEmpty = ['',null];
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
 	i.result.add(i.columns.idfile_id);
@@ -177,7 +178,7 @@ function onActionCalcCost(event) {
 	i.where.add(i.columns.delete_flag.isNull);
 	i.where.add(i.columns.piecemark_id.isin(piecemarkArray));
 	if (skipShipped){
-		i.where.add(i.columns.ship_load_id.isNull);
+		i.where.add(i.columns.ship_load_id.not.isin(skipEmpty));
 	}
 	var I = databaseManager.getFoundSet(i);
 	
@@ -282,7 +283,7 @@ function onActionRefresh(event) {
 	m.where.add(m.columns.delete_flag.isNull);
 	
 	
-	
+	var skipEmpty = ['',null];
 	if (vKeepExistingCosts){m.where.add(m.columns.cost_each.not.eq(0))}
 	m.groupBy.add(m.columns.material);
 	m.groupBy.add(m.columns.cost_of_work_code);
@@ -292,7 +293,7 @@ function onActionRefresh(event) {
 	/** @type {QBJoin<db:/stsservoy/idfiles>} */
 	var i = m.joins.add('db:/stsservoy/idfiles');
 	i.on.add(i.columns.piecemark_id.eq(m.columns.piecemark_id));
-	if (vKeepCostsShipped){m.where.add(i.columns.ship_load_id.isNull);}//this is not shipped
+	if (!vKeepCostsShipped){m.where.add(i.columns.ship_load_id.not.isin(skipEmpty));}//this is not shipped
 	
 	var result = databaseManager.getDataSetByQuery(m,-1);
 	foundset.loadRecords(result);

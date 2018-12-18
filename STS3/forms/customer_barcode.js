@@ -93,7 +93,7 @@ function calcBarcode(){
  * @properties={typeid:24,uuid:"CA1F3FAF-44CB-4CFD-9254-11AC247B61BE"}
  */
 function onShow(firstShow, event) {
-	calcBarcode();
+	if (foundset.getSize() != 0){calcBarcode();}
 }
 
 

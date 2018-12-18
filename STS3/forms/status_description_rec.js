@@ -537,6 +537,7 @@ function onFocusGainedEndFor(event) {
 function onRecordSelection(event) {
 	currProcessNumber = status_sequence;
 	getStatusList();	
+	thirdPartyActive(event);
 }
 /**
  * @param {JSEvent} event
@@ -575,5 +576,36 @@ function onDataChangeProcessType(oldValue, newValue, event) {
  */
 function onHide(event) {
 	onActionClose(event);
+	return true
+}
+/**
+ * generated, please specify type and doc for the params
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"F795622C-1509-4C3C-A708-686A4FE1822A"}
+ */
+function thirdPartyActive(event){
+	var show = (status_type != i18n.getI18NMessage('sts.status.fab.bundled'));
+	elements.thirdpty_station_name.visible = show;
+	elements.fabtrol_labor_code.visible = show;
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"46026BC9-627D-4EE6-BC74-773646E58E71"}
+ */
+function onDataChangeThirdPartyStation(oldValue, newValue, event) {
+	var form = forms[event.getFormName()];
+	var dataProv = elements[event.getElementName()].getDataProviderID();
+	var status3rdParty = scopes.fs.checkFSStatus(newValue);
+	if (status3rdParty != null){
+		form[dataProv] = oldValue;
+	}
 	return true
 }

@@ -404,3 +404,22 @@ function verifyNewUserInput(event){
 function onFocusLostPermGroups(event) {
 	verifyNewUserInput(event);
 }
+
+/**
+ * Handle changed data.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"159F638A-59EE-402F-B93F-7C0A57E561AF"}
+ */
+function onDataChangeActive(oldValue, newValue, event) {
+	if (!employee_id && newValue){
+		is_account_active = 0;
+		scopes.globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.active.login.warn'),i18n.getI18NMessage('sts.txt.active.login.warn'))
+	}
+	return true
+}

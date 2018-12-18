@@ -6,6 +6,15 @@
  */
 function onSolutionOpenClear() {
 	plugins.maintenance.setMaintenanceMode(true);
+	var table = 'idfiles';
+	//var column = 'original_employee_uuid';
+	//var oldColumn = 'original_employee';
+	//var table = databaseManager.getTable('stsservoy',table);
+	try {
+		null;
+		//plugins.rawSQL.executeSQL('stsservoy','idfiles','ALTER TABLE idfiles DROP COLUMN original_employee;');
+		//application.output('delete original_employee column from idfiles table');
+	} catch (e) {}
 	try {
 		plugins.rawSQL.executeSQL('stsservoy', 'addresses', 'CREATE INDEX CONCURRENTLY address_customerid_idx ON addresses (customer_id);');
 	} catch (e) {}

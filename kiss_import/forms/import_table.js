@@ -119,6 +119,12 @@ function onRenderRequestBarCount(event) {
  */
 function onShow(firstShow, event) {
 	elements.selection.visible = false;//remove selection tab temporarily as per P2 20180816
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var q = databaseManager.createSelect('db:/stsservoy/import_table');
+	//q.where.add(q.columns.import_status.not.eq(i18n.getI18NMessage('import.ignore')));
+	q.where.add(q.columns.job_number.eq(forms['kiss_option_import'].jobNumber));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	foundset.loadRecords(databaseManager.getFoundSet(q));
 	foundset.loadAllRecords();
 	null;
 	//scopes.kiss.setDbTableCounts(event);
@@ -226,12 +232,14 @@ function hideIgnoredRecords(hide){
 		/** @type {QBSelect<db:/stsservoy/import_table>} */
 		var q = databaseManager.createSelect('db:/stsservoy/import_table');
 		q.where.add(q.columns.import_status.not.eq(i18n.getI18NMessage('import.ignore')));
+		q.where.add(q.columns.job_number.eq(forms['kiss_option_import'].jobNumber));
 		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 		foundset.loadRecords(databaseManager.getFoundSet(q));
 	} else {
 		/** @type {QBSelect<db:/stsservoy/import_table>} */
 		q = databaseManager.createSelect('db:/stsservoy/import_table');
 		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.job_number.eq(forms['kiss_option_import'].jobNumber));
 		foundset.loadRecords(databaseManager.getFoundSet(q));
 	}
 }

@@ -84,7 +84,8 @@ function onShow(firstShow, event) {
 	showLicensing();
 	editInactive(event);
 	foundset.sort('logic_flag desc, association_name asc');
-	var isCorp = (association_uuid == tenant_group_uuid);
+	var isCorp = globals.session.corpUser;//(association_uuid == tenant_group_uuid);
+	if (application.isInDeveloper()){application.output('isCorp '+isCorp+' assocUUID '+association_uuid+' TenantGroupUUID '+tenant_group_uuid)}
 	elements.btn_New.visible = isCorp;
 	return _super.onShow(firstShow, event);
 }

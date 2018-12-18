@@ -1,6 +1,6 @@
 dataSource:"db:/stsservoy/transactions",
 encapsulation:60,
-initialSort:"edit_date asc",
+initialSort:"transaction_date desc",
 items:[
 {
 anchors:11,

@@ -213,6 +213,7 @@ function onActionClose(event) {
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	if (foundset.getSize() == 0){return}
 	var formRev = scopes.globals.getInstanceForm(event);
 	
 	//onEditAddress(event,false);

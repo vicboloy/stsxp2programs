@@ -112,7 +112,7 @@ function collectCriteria(){
 	} else {
 		loadAll = scopes.globals.arrayToString(vLoadNum);
 	}
-	
+	application.output('criteria '+vLoadNum+' '+loadAll)
 	criteria = {
 		area: scopes.globals.arrayToString(vArea),
 		areaa: scopes.globals.csvToArray(vArea),
@@ -123,8 +123,8 @@ function collectCriteria(){
 		fabshop: scopes.globals.arrayToString(vFabShop),
 		fabshopa: scopes.globals.csvToFabshopID(vFabShop),
 		jobid : vJobID,
-		loadall : loadAll,
-		loadalla : scopes.globals.csvToArray(vLoadAll),
+		loadall : vLoadAll,
+		loadalla : scopes.globals.convertLoadToId(vLoadNum,false),
 		loadrel : scopes.globals.convertLoadToId(vLoadRel,false),
 		loadrela : scopes.globals.csvToArray(vLoadRel),
 		lotnum : scopes.globals.convertLotToId(vLotNum,false), //ticket#7
@@ -157,7 +157,7 @@ function onActionShowWindow(){
 	//application.output('form version '+versionForm);
 	var winTitle = 'Browse Loads'+versionForm;
 	var formName = 'loads_pcmk_combo'+versionForm;
-	//application.output('formname '+formName);
+	//application.output('RM formname '+formName+' version '+versionForm);
 	var height = controller.getWindow().getHeight();
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
@@ -174,8 +174,10 @@ function onActionShowWindow(){
 		win.show(forms[formName]);
 	} else {
 		scopes.jobs.viewBTableCreateForm2(formName,scopes.jobs.browseFS2[formName]);
+		//application.output('RM formname '+formName);
 		winExist.show(formName);//20180802 added
 	}//20180802 show browse loads if exists or create
+	//application.output('RM formname '+formName);
 	forms[formName].foundset.setSelectedIndex(1);
 	//scopes.jobs.removeFormHist(formName+'_table');
 }

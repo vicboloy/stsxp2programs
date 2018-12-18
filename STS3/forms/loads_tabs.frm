@@ -60,7 +60,7 @@ items:[
 containsFormID:"03B971AF-4EE9-463D-AA21-FCD759058D24",
 location:"210,35",
 name:"View_Summary_Info",
-text:"i18n:sts.tab.load.summary.info",
+text:"i18n:sts.tab.load.status.summary",
 typeid:15,
 uuid:"D56F9949-9E9E-4A9F-97D9-E5A3465C18CA"
 },

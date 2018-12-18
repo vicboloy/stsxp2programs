@@ -9,6 +9,7 @@ function addRecord(event) {
 	var instance = globals.getInstanceForm(event);
 	var spec_form = 'customer_specs'+instance;
 	var list_form = 'customers_lst'+instance;
+	forms[spec_form].elements.tabs.enabled = true;
 	forms[spec_form].elements.tabs.tabIndex = 1;
 	databaseManager.setAutoSave(false);
 	globals.selectedCustomerIndex = controller.getSelectedIndex();

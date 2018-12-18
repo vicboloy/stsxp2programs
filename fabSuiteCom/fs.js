@@ -86,7 +86,10 @@ function getFabSuiteError(fsResponse){
  * @properties={typeid:24,uuid:"FC886476-C72C-45F3-AA7C-9A60F06A6A1C"}
  */
 function checkFSStatus(status){
-	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
+	var winName = application.getActiveWindow().getName();
+	var formName = application.getWindow(winName).controller.getName();
+	if (scopes.prefs.lFabsuiteInstalled == 0){return null}//20181003
+	scopes.fs.checkComFabsuite(null);
 	/**	var jobList = '<FabSuiteXMLRequest>\
 			<GetProductionControlJobInformation>\
 			</GetProductionControlJobInformation>\
@@ -107,9 +110,12 @@ function checkFSStatus(status){
 	
 	/** @type {String} */
 	var fsResp = com.call('FabSuiteXML',station).toString();
-	//if (fsResp.search('<Successful>1') == -1){
-	if (fsResp == ''){
-		return getFabSuiteError(fsResp);
+	scopes.jobs.warningsX(null);
+	if (fsResp.search('<Successful>0') != -1){
+	//if (fsResp == ''){
+		var error = getFabSuiteError(fsResp);
+		scopes.globals.errorDialogMobile(null,'1220',null,error);
+		return error;
 	}
 	return null;
 
@@ -172,8 +178,9 @@ function getFSLoadNums(jobNumber){
  *
  * @properties={typeid:24,uuid:"A3D4FB72-755D-4ABD-B03F-984ABB3F80FF"}
  */
-function checkFSLoad(loadNumber,makeNewLoad){
-	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
+function checkFSLoad(loadNumber,destination,makeNewLoad){
+	//if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
+	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
 	if (application.isInDeveloper()){application.output(globals.session.jobNumber)}//20181003
 	var loadcheck = '<FabSuiteXMLRequest>\
 		<ValTruck>\
@@ -182,16 +189,21 @@ function checkFSLoad(loadNumber,makeNewLoad){
 		<ActionIfNotExist>\
 		Nothing\
 		</ActionIfNotExist>\
+		DEST\
 		</ValTruck>\
 		</FabSuiteXMLRequest>';
 //		<ActionIfNotExist>0</ActionIfNotExist>\
 	if (makeNewLoad){
 		loadcheck = loadcheck.replace('Nothing','Add');
 	}
-	
+	if (!destination){
+		loadcheck = loadcheck.replace('DEST','');
+	} else {
+		loadcheck = loadcheck.replace('DEST','<Destination>'+destination+'</Destination>');		
+	}
 	/** @type {String} */
 	var fsResp = com.call('FabSuiteXML',loadcheck).toString();
-	if (fsResp.search('<Successful>1') == -1){
+	if (fsResp.search('<Successful>0') != -1){
 		return getFabSuiteError(fsResp);
 	}
 	return null;
@@ -791,6 +803,14 @@ function showProgessDone(event){
  * @properties={typeid:24,uuid:"4A3F4C5B-D25D-4DA7-B20A-17CF4D63C1C5"}
  */
 function checkComFabsuite(event){
+	if (com){
+		var ping = '<FabSuiteXMLRequest><Ping></Ping></FabSuiteXMLRequest>';
+		var respons = com.call('FabSuiteXML',ping).toString();
+		application.output('PING: |'+respons);
+		if (respons.search("<Successful>1") != -1){
+			return '';
+		}
+	}
 	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage('Connecting to FabSuite',true);
 	if (!scopes.prefs.lFabsuiteInstalled){
@@ -978,16 +998,18 @@ function onDataChangeFSUN(oldValue, newValue, event) {
 		</StsSetParmExecuteAs >\
 	</FabSuiteXMLRequest>';
 	var fsResp = com.call('FabSuiteXML',verifyUserName).toString();
-	application.output(fsResp);
+	if (application.isInDeveloper()){application.output(fsResp);}
+	scopes.jobs.warningsX(event);
+	
 	null;
 	return true;
 }
 /**
- * @param event
+ * @param commitType
  *
  * @properties={typeid:24,uuid:"2ADDF248-A0B7-4035-A6BD-FC85698CCB18"}
  */
-function fabSuiteSaved(event){
+function fabSuiteSaved(commitType){
 	var saved = true;
 	// is fs installed
 	application.output('fabsuite installed '+scopes.prefs.lFabsuiteInstalled);
@@ -995,26 +1017,28 @@ function fabSuiteSaved(event){
 	if (saved){return true}
 	// is fs available
 	application.output('fabsuite pinged for access');
-	saved = !saved && fabSuitePing(event);
+	saved = !saved && fabSuitePing(null);
 	application.output('fabsuite pinged for access '+saved);
+	if (!saved){return false}
 	// is this an fs job - check job entry
 	application.output('fabsuite rf job '+globals.mob.job.rf);
 	saved = saved && (globals.mob.job.rf.toUpperCase() != i18n.getI18NMessage('sts.interface.fabsuite').toUpperCase());
+	if (!saved){return true}
 	application.output('fabsuite rf job '+globals.mob.job.rf+' '+saved);
 	// is this an fs approved process, so far all are approved except bundle
 	application.output('fabsuite approved process '+!fabSuiteProcess());
 	saved = saved && (fabSuiteProcess());
+	if (!saved){return true}
 	application.output('fabsuite approved process '+!fabSuiteProcess()+' '+saved);
 	// check for required data
 	// send to fs for update
 	application.output('update fabsuite')
-	saved = saved && fabSuiteUpdate();
+	saved = saved && fabSuiteUpdate(commitType);
 	application.output('update fabsuite'+saved);
 	// return error message
 	return saved;
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"467A321D-A423-46A7-98F3-B6A1E478AE55"}
@@ -1062,31 +1086,45 @@ function fabSuiteProcess(){
 }
 /**
  * @properties={typeid:24,uuid:"C01EB622-287B-46CE-9059-98E767D10B88"}
+ * @AllowToRunInFind
  */
-function fabSuiteUpdate(){//shopFloorSave
-	var date = new Date();//flow down from data update
+function fabSuiteUpdate(commitType){//shopFloorSave
+	if (commitType.search(/(Save)|(Delete)/) != 0){return false}
+	var date = globals.mob.date;//new Date();//flow down from data update
 
 	var pieceMark = globals.mob.piecemark.piecemark;//exclude this when showing assembly, no minors
 	var station = globals.mob.statusCode3rdParty;//required
 	var quantity = globals.mob.idfiles.length;//required
 	var mainMark = globals.mob.piecemark.parent_piecemark;
 	var employee = 'admin';//required employee that completed the work
-
+	if (scopes.prefs.lFabsuitePassWorker == 1){
+		var firstEmp = forms.rf_mobile_view.statusWorker.split('.')[0];
+		if (false && globals.mob.reverseWorker){//disable transaction reversal by anyone for a specific worker
+			firstEmp = globals.mob.reverseWorker;
+		}
+		if (firstEmp){
+			if (globals.m.employee3rdParty[firstEmp]){
+				employee = globals.m.employee3rdParty[firstEmp];
+			}
+		}
+	}
+	//employee = 'admin';
 	if (!pieceMark || !station || !quantity || !mainMark || !employee){
 		globals.rfErrorShow(i18n.getI18NMessage('1017'));
 		return false;
 	}
 	
-	var commitType = 'Save';//Save/Delete/required use F8 to indicate removal
+	//var commitType = 'Save';//Save/Delete/required use F8 to indicate removal
 	var jobNumber = globals.mob.job.number;
 	var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];
 	var lotNumber = globals.mob.piecemark.lot;
 	var instanceNumbers = globals.mob.idfile.pcmk_instance;//accepts only numeric values, as well as hyphen
-	//var serialNumber = 'FS-5319D7A3-D71F-11E5-8AFE-A292F4137E41';
+	instanceNumbers = '';
+	var serialNumber = 'FS-5319D7A3-D71F-11E5-8AFE-A292F4137E41';
 	//serialNumber = globals.mob.idfile.guid_minor;
 	//serialNumber = globals.mob.idfile.guid_major;
 	serialNumber = globals.mob.barcode;
-	//serialNumber = '';
+	serialNumber = '';
 	var day = date.getDate();//this changes unless the 
 	if (day < 10){day = "0"+day}
 	var month = date.getMonth()+1;
@@ -1133,7 +1171,8 @@ function fabSuiteUpdate(){//shopFloorSave
 	application.output('RESPONSE: '+fsResp);
 	var fsErr = fabSuiteError(fsResp);
 	if (fsErr != ''){
-		globals.rfErrorShow(fsErr);
+		globals.rfErrorShow('FabSuite: '+fsErr);
+		return false;
 	}
 	return true;
 	// RESPONSE: <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
@@ -1141,4 +1180,81 @@ function fabSuiteUpdate(){//shopFloorSave
 	//  <XMLError>Fatal Error (9, 7): expected end of tag 'CommitType'</XMLError>
 	//</FabSuiteXMLResponse>
   
+}
+/**
+ * @AllowToRunInFind
+ *
+ * @properties={typeid:24,uuid:"1543AA60-CC91-42EF-95C4-1C0D9529508B"}
+ */
+function checkFSNextLoad(){
+	// quick check assemblies
+	
+	var check = '<FabSuiteXMLRequest>\
+		<GetAssemblies>\
+		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
+		<Filters>\
+			<Filter>\
+				<FilterType>MainMark</FilterType>\
+				<FilterValue>8B2</FilterValue>\
+			</Filter>\
+		</Filters>\
+		</GetAssemblies>\
+		</FabSuiteXMLRequest>';
+	var two = com.call('FabSuiteXML',check);
+	plugins.XmlReader.readXmlDocumentFromString(two);
+	if (application.isInDeveloper()){application.output(check+'\n'+two.toString())}
+	
+	
+	//if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
+	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
+	if (application.isInDeveloper()){application.output(globals.session.jobNumber)}//20181003
+	var loadcheck = '<FabSuiteXMLRequest>\
+		<MaxTruck>\
+		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
+		</MaxTruck>\
+		</FabSuiteXMLRequest>';
+	
+	/** @type {String} */
+	var fsResp = com.call('FabSuiteXML',loadcheck).toString();
+	if (fsResp.search('<Successful>0') != -1){
+		return getFabSuiteError(fsResp);
+	}
+	var regexp = new RegExp('<NextAvailableLoadNumber>(.*)<\/NextAvailableLoadNumber>');
+	var truck = fsResp.match(regexp);
+	var nextTruck = null;
+	if (truck){
+		nextTruck = truck[1];
+	}
+	//if (application.isInDeveloper()){application.output('max truck: '+fsResp)}
+	return nextTruck;
+
+}
+/**
+ * @param {String} jobNumber
+ *
+ * @properties={typeid:24,uuid:"9E66A4F5-24F9-4DC1-A9A7-EABAF87CD0FF"}
+ */
+function getFSInterimLoadDests(jobNumber){
+	//get list of interim ship dests
+	// ... FS GetLoads, destination is company code of interim load destination FSReq IntermediateCompanyCodes
+	// return an array
+	var destArray = new Array();
+	var interimDests =  '<FabSuiteXMLRequest>\
+		<IntermediateCompanyCodes>\
+		<JobNumber>'+jobNumber+'</JobNumber>\
+		</IntermediateCompanyCodes>\
+		</FabSuiteXMLRequest>';
+	/** @type {String} */
+	var dests = com.call('FabSuiteXML',interimDests).toString();
+	var lines = dests.split('\n');
+	var regX = new RegExp(/<CompanyCode>(.*)<\/CompanyCode>/);
+	for (var idx = 0;idx < lines.length;idx++){
+		var dest = regX.exec(lines[idx]);
+		if (dest){
+			destArray.push(dest[1])
+			application.output('RM: Dest: '+dest[1]);
+		}
+		
+	}
+	return destArray;
 }

@@ -153,7 +153,7 @@ function onShow(firstShow, event) {
 		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
 	}
 
-	errorMessage = application.getScreenWidth()+' x '+application.getScreenHeight();
+	errorMessage = '';//application.getScreenWidth()+' x '+application.getScreenHeight();
 }
 
 /**

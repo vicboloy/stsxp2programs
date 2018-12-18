@@ -1108,11 +1108,15 @@ function onActionElementPicks(event) {
 		}
 		return true;
 	}
+	//application.output(arrayInUse); 
 	if (arrayInUse && (arrayInUse.length > 0 || (arrayInUse[0] == " " && arrayInUse.length == 1))){
 		forms[formName].elements[elementName].bgcolor = 'white';
 		multiSelectFieldName = elementName;
 		forms[formName].elements.frmMultiSelect.visible = true;
 		forms[formName].elements.frmMultiSelect.requestFocus();
+		if (!forms[formName].versionForm){
+			forms[formName].versionForm = globals.getInstanceForm(event);
+		}
 		application.setValueListItems('vl_barcode_idlabel_multiselect'+forms[formName].versionForm,arrayInUse);
 		//forms[formName].elements.frmMultiSelect.requestFocus();
 		forms[formName].controller.focusField('frmMultiSelect',false);

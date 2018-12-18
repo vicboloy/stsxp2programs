@@ -53,3 +53,17 @@ function onShow1(firstShow, event) {
 	var newFS = foundset.duplicateFoundSet();
 	controller.loadRecords(newFS);
 }
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"56FE9312-D769-4F31-AAE4-D3116D1F1278"}
+ */
+function onHide(event) {
+	globals.stopWindowTrackEvent(event);
+	return true
+}

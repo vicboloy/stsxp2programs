@@ -95,6 +95,12 @@ var entryOrder = [];
  */
 var texts="";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"9007E7EB-8E8E-4566-AC97-3A325C3A3539"}
+ */
+var randFile = '';
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"33C6139F-AB1C-448E-A069-0155DA1BFB12",variableType:4}
@@ -207,6 +213,7 @@ function fileReceipt(file){
  */
 function getKissFile(event){
 	controller.enabled = false;
+	randFile = 'Import_'+vJobNumber+'_'+new Date().getTime()+'.kss';
 	scopes.kiss.saveImportSettings(event);
 
 	scopes.jobs.warningsYes(event);
@@ -229,7 +236,6 @@ function getKissFile(event){
 		elements.btn_Clear.enabled = false;
 		///var servoyDir = scopes.prefs.importpath;
 		var servoyDir = plugins.UserManager.Client().userDir;
-		var randFile = 'Import'+new Date().getTime()+'.kss';
 		
 		servoyDir = servoyDir+'\\'+randFile;
 		servoyDir = plugins.file.getDefaultUploadLocation()+scopes.prefs.importpath+"\\"+randFile;
@@ -268,7 +274,7 @@ function getKissFile(event){
 		}
 		if (application.isInDeveloper()){application.output('directory is '+servoyDir)}
 		var servoyDir = plugins.UserManager.Server().servoyDirectory;
-		randFile = 'Import'+new Date().getTime()+'.kss';
+		//randFile = 'Import_'+vJobNumber+'_'+new Date().getTime()+'.kss';
 		//servoyDir = servoyDir+'\\'+randFile;
 		//servoyDir = servoyDir.replace('[A-Z]:\\','/');application.output('dir '+servoyDir);
 		var file = plugins.file.showFileOpenDialog(1, homeDir, false, new Array("KISS Files", "kss", "txt"));
@@ -299,7 +305,7 @@ function getKissFile(event){
 		application.output(file+' file write to '+servoyDir+ ' server success: '+success);
 		return;
 	}
-	removeJobImportData(scopes.jobs.importJob.jobId);
+	removeJobImportData(vJobNumber);
 	scopes.kiss.importFSOnServer(event,request,filters);//IMPORT 1 importFSOnServer
 	
 	/**
@@ -516,14 +522,15 @@ function onDataChangeLotSeq(oldValue, newValue, event) {
  *
  * @properties={typeid:24,uuid:"8BC9501F-B6DC-4472-A474-31AB196BBEC3"}
  */
-function removeJobImportData(jobId){
+function removeJobImportData(jobNumber){
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
-	q.where.add(q.columns.job_id.eq(jobId));
+	q.where.add(q.columns.job_number.eq(jobNumber));
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.result.add(q.columns.import_table_id);
 	var Q = databaseManager.getFoundSet(q);
 	if (application.isInDeveloper()){application.output('size of import table records '+Q.getSize())}
+	//application.output('size of import table records '+Q.getSize())
 	var tableIds = [];
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var rec = null; var idx = 1;
@@ -537,6 +544,7 @@ function removeJobImportData(jobId){
 	s.result.add(s.columns.import_guid_uuid);
 	var S = databaseManager.getFoundSet(s);
 	if (application.isInDeveloper()){application.output('size of import guid records '+S.getSize())}
+	//application.output('size of import guid records '+S.getSize())
 	success = S.deleteAllRecords();
 	if (application.isInDeveloper()){application.output('Delete job GUIDs: '+success)}
 	var success = Q.deleteAllRecords();

@@ -101,6 +101,13 @@ name:"import_area"
 },
 {
 allowNull:true,
+creationOrderIndex:33,
+dataType:12,
+length:100,
+name:"import_file"
+},
+{
+allowNull:true,
 creationOrderIndex:29,
 dataType:12,
 flags:4,
@@ -162,6 +169,13 @@ autoEnterType:1,
 creationOrderIndex:30,
 dataType:93,
 name:"modification_date"
+},
+{
+allowNull:true,
+creationOrderIndex:32,
+dataType:12,
+length:36,
+name:"original_employee"
 },
 {
 allowNull:true,

@@ -32,5 +32,5 @@ function onActionCopyToClipboard(event) {
 	var form = forms[event.getFormName()]
 	var el = form.elements[event.getElementName()];
 	var datProv = el.getDataProviderID();
-	application.setClipboardContent(form[datProv]);
+	application.setClipboardContent(form[datProv].replace(i18n.getI18NMessage('sts.server.default.dir')+': ',''));
 }

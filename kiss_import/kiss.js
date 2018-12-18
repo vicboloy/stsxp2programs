@@ -1055,12 +1055,13 @@ function parseIntoLinesFS(textString){
  * @properties={typeid:24,uuid:"F8AEDE29-C4D9-48E9-A5C5-4AA7211A4808"}
  */
 function importPopKISSTable(event) {
+	var recDate = new Date();
 	if (application.isInDeveloper()){
 		var maxRecCount = -1;
 	}
 
 	warningsYes();
-	clearKissTables(event);
+	clearKissTables(event,recDate);
 	scopes.jobs.readSheets(scopes.jobs.importJob.jobId);
 	scopes.jobs.readPiecemarks();
 
@@ -1166,7 +1167,7 @@ function importPopKISSTable(event) {
 	//var skipMinors = ((newRec.piecemark != newRec.parent_piecemark) && (forms.kiss_import_option.keep_minors == 0));
 	//databaseManager.startTransaction();
 	var filterInData = true; // This determines whether a record is saved to speed up import
-	var startT = new Date().getTime();
+	var startT = new Date().getTime(); var lastLineType = '';//this serves to ensure that unsequenced items are captured as well
 	for (var index = 0;index < lengthResults;index++){
 		var diffT = new Date().getTime() - startT;
 		//if (application.isInDeveloper() && diffT > 2000){application.output('index '+index+' of '+lengthResults)}
@@ -1182,6 +1183,7 @@ function importPopKISSTable(event) {
 		}
 		lineArray = results[index].split(',');
 		//if (application.isInDeveloper()){application.output(lineArray)}
+		lastLineType = lineType;
 		lineType = lineArray[0];
 		if (!skippedHeader){
 			if (!newKRecord(lineArray)){
@@ -1222,7 +1224,7 @@ function importPopKISSTable(event) {
 			//}
 			if (filterInData) { // save detail indicating new line before processing detail
 				if (skippedFirst){
-					importPopSaveDetailRow(event);
+					importPopSaveDetailRow(event,recDate);
 				} else {
 				skippedFirst = true;
 				}
@@ -1249,6 +1251,7 @@ function importPopKISSTable(event) {
 				newRecIdx = tableFS.newRecord(false);
 				countPcmks++;
 				newRec = tableFS.getSelectedRecord();
+				newRec.modification_date = recDate;
 				newRec.parent_piecemark = lineArray[dMainMark];
 				newRec.piecemark = lineArray[dPieceMark];
 				newRec.grade = lineArray[dGrade];
@@ -1297,13 +1300,20 @@ function importPopKISSTable(event) {
 				//if (filterInData){
 					sequenceArr.push({seq:lineArray[sSeq],cnt:Math.floor(lineArray[sQty])});
 					sequence.cnt = 0;sequence.seq = "";
-					if (false && application.isInDeveloper()){application.output('>> Seq '+lineArray[sSeq]+':'+lineArray[sQty])}
+					if (application.isInDeveloper()){application.output('RM >> Seq '+lineArray[sSeq]+':'+lineArray[sQty])}
 				//}
 				break;
 			case 'Z':
+				if (lastLineType != 'S' && lastLineType != 'Z' && newRec.parent_piecemark.toUpperCase() == newRec.piecemark.toUpperCase()){
+					sequenceArr.push({seq:'',cnt:newRec.item_qty});//now need to make sure that cnt is set to remaining after all sequences captured
+					// the following record is 'Y' line, calc unsequenced items there
+				}
 				//importMainGUID.push(lineArray[zAssemGuid]);
 				break;
 			case 'Y':
+				if (sequenceArr[0] && sequenceArr[0].cnt == 0){
+					if (sequenceArr.length == 1){sequenceArr[0].cnt = newRec.pcmk_qty;break;}//handle unsequenced pcmk
+				}
 				//if (!skipMinors){
 					var mainAssem = lineArray[yAssemGuid];
 					var subAssem = lineArray[yPartGuid];
@@ -1316,7 +1326,7 @@ function importPopKISSTable(event) {
 		if (maxRecCount == 0){break}
 	}
 	//if (filterInData) { // save detail indicating new line before processing detail
-	importPopSaveDetailRow(event);
+	importPopSaveDetailRow(event,recDate);
 	//}
 	//databaseManager.commitTransaction();
 	
@@ -1337,7 +1347,7 @@ function importPopKISSTable(event) {
  * @properties={typeid:24,uuid:"5F82CA96-A481-477B-9631-01DFAB816913"}
  * @param {JSEvent} event
  */
-function importPopSaveDetailRow(event){
+function importPopSaveDetailRow(event,recDate){
 	/**
 	 * Split out Sequences
 	 * 		slide it from the bottom of the array and get the count and name
@@ -1355,6 +1365,13 @@ function importPopSaveDetailRow(event){
 		null;
 	}
 	
+	if (newRec.parent_piecemark.toUpperCase() == newRec.piecemark.toUpperCase()){
+		if (sequenceArr) {application.output('RM sequence begin |'+sequenceArr[0].seq+'|:'+sequenceArr[0].cnt);}
+		for (var idx = 1;idx < sequenceArr.length;idx++){//adjust unsequenced pcmks count
+			sequenceArr[0].cnt = sequenceArr[0].cnt - sequenceArr[idx].cnt;
+			//application.output('RM sequence |'+sequenceArr[idx].seq+'|:'+sequenceArr[idx].cnt);
+		}
+	}
 	var firstPass = true;//Control duplicate records to create Sequences
 	
 	var tempSequences = sequenceArr.concat([]);
@@ -1452,8 +1469,14 @@ function importPopSaveDetailRow(event){
 			newRec.set_bc_qty = labelCount;//number of requested labels
 			newRec.last_bc_qty = 0;//number of piecemarks on last partial barcode
 			newRec.last_bc_wt = 0;//weight of last partial barcode
-			newRec.barcode_qty = (labelCount == 1) ? pcmkCount : 1;//(pcmkCount == 1) ? pcmkCount : 1;//total number of barcodes
+			newRec.barcode_qty = (labelCount == 1) ? pcmkCount : 1;//(pcmkCount == 1) ? pcmkCount : 1;//total number of piecemarks on barcode
 			newRec.total_label_qty = pcmkCount;//count of items each on barcode
+			if (pcmkCount > q || (w > 0 && newRec.item_weight > w)){
+				newRec.set_bc_qty = 1;
+				newRec.barcode_qty = pcmkCount;
+				newRec.total_label_qty = pcmkCount
+				newRec.total_label_wt = pcmkCount * newRec.itemWeight;
+			}
 		} else {
 			newRec.barcode_qty = Math.ceil(labelCount/newRec.set_bc_qty);
 			if (newRec.barcode_qty != (labelCount/newRec.set_bc_qty)){
@@ -1529,6 +1552,8 @@ function importPopSaveDetailRow(event){
 			r.part_guid = importSubGUID.shift();
 			r.import_table_id = newRec.import_table_id;
 			r.edit_date = editDate;
+			r.modification_date = recDate;
+
 		}
 		//application.output('length after: '+importSubGUID.length);
 		//if (importSubGUID.length > 0){
@@ -1557,14 +1582,32 @@ function newKRecord(lineArray){
  * @properties={typeid:24,uuid:"7DD4D865-2423-48F1-837D-F2AD5E8E1434"}
  * 
  * @param {JSEvent} event
+ * @param recDate
  */
-function clearKissTables(event){
+function clearKissTables(event,recDate){
 	null;
 	var formName = event.getFormName();
 	//var q = databaseManager.getDataSetByQuery('stsservoy','DELETE FROM import_table;',[],1);
 	
+	var expired = new Date(recDate);
+	expired.setDate(expired.getDate() - 1);
+	//application.output('RM date rec date '+new Date(recDate)+' expires before '+new Date(expired));
+	
 	var tenantId = globals.session.tenant_uuid;
 	var jobId = forms[formName].job_id;
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var xt = databaseManager.createSelect('db:/stsservoy/import_table');
+	xt.result.add(xt.columns.import_table_id);
+	xt.where.add(xt.columns.modification_date.lt(expired));
+	var XT = databaseManager.getFoundSet(xt);
+	if (XT.getSize() > 0){XT.deleteAllRecords()}
+
+	/** @type {QBSelect<db:/stsservoy/import_guids>} */
+	var xg = databaseManager.createSelect('db:/stsservoy/import_guids');
+	xg.result.add(xg.columns.import_guid_uuid);
+	xg.where.add(xg.columns.modification_date.lt(expired));
+	var XG = databaseManager.getFoundSet(xg);
+	if (XG.getSize() > 0){XG.deleteAllRecords()}
 
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var t = databaseManager.createSelect('db:/stsservoy/import_table');
@@ -2145,14 +2188,21 @@ function saveImportSettings(event){
 	var formName = event.getFormName();
 	var form = forms[formName];
 	if (formName == 'kiss_option_import'){
-		var jobId = form.job_id;
 		var jobNumber = form.job_number;
 	}
 	if (formName == 'kiss_import'){
-		jobId = form.vJobId;
 		jobNumber = form.vJobNumber;
 	}
 
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var j = databaseManager.createSelect('db:/stsservoy/jobs');
+	j.where.add(j.columns.job_number.eq(jobNumber));
+	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var J = databaseManager.getFoundSet(j);
+	J.loadRecords();
+	var recJ = J.getRecord(1);
+	var jobId = recJ.job_id;
+	
 	/** @type {QBSelect<db:/stsservoy/import_prefs>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_prefs');
 	q.result.add(q.columns.import_pref_id);
@@ -2184,6 +2234,7 @@ function saveImportSettings(event){
 		rec.keep_minors = form.keepMinors;
 		rec.use_kiss_route_codes = form.useImportRouting;
 		rec.job_metric = form.jobMetric;
+		rec.original_employee_uuid = form.employeeNumber;
 	}
 	if (formName == "kiss_import"){
 		rec.job_number = form.vJobNumber;
@@ -2191,6 +2242,7 @@ function saveImportSettings(event){
 		rec.sequence_numbers = form.vSeqNumber;
 		rec.part_numbers = form.vPartNumber;
 		rec.lot_numbers = form.vLotNumber;
+		rec.import_file = form.randFile;
 	}
 	jobPrefsRec = rec;
 	databaseManager.saveData(rec);
@@ -4423,15 +4475,23 @@ function importExistingRecStatus(record){
 function loadImportSettings(event){
 	var formName = event.getFormName();
 	var form = forms[formName];
-	if (formName == 'kiss_option_import'){
-		var jobId = form.job_id;
+	if (form.job_number){
 		var jobNumber = form.job_number;
 	}
-	if (formName == 'kiss_import'){
-		jobId = form.vJobId;
+	if (form.vJobNumber){
 		jobNumber = form.vJobNumber;
 	}
 
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var j = databaseManager.createSelect('db:/stsservoy/jobs');
+	j.where.add(j.columns.job_number.eq(jobNumber));
+	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var J = databaseManager.getFoundSet(j);
+	J.loadRecords();
+	var recJ = J.getRecord(1);
+	var jobId = recJ.job_id;
+
+	
 	/** @type {QBSelect<db:/stsservoy/import_prefs>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_prefs');
 	q.result.add(q.columns.import_pref_id);
@@ -4443,7 +4503,8 @@ function loadImportSettings(event){
 	var rec = null;
 	if (Q.getSize() > 0){
 		rec = Q.getRecord(1);
-	} else if (Q.getSize() == 0){
+	}
+	else if (Q.getSize() == 0){
 		var idx = Q.newRecord();
 		rec = Q.getRecord(idx);
 		rec.association_uuid = globals.session.associationId;
@@ -4462,7 +4523,7 @@ function loadImportSettings(event){
 		if (rec.import_area){form.importArea = rec.import_area}
 		if (rec.import_routing_id){form.importRouting = rec.import_routing_id}
 		if (rec.keep_minors){form.keepMinors = rec.keep_minors}
-
+		if (rec.import_file){form.importFile = rec.import_file}
 	}
 	if (formName == 'kiss_import'){
 		if (rec.drawing_numbers){form.vDrawingNumber = rec.drawing_numbers;}
@@ -4470,6 +4531,7 @@ function loadImportSettings(event){
 		if (rec.part_numbers){form.vPartNumber = rec.part_numbers;}
 		if (rec.lot_numbers){form.vLotNumber = rec.lot_numbers;}
 	}
+	databaseManager.saveData(rec);
 	return rec;
 	
 }
@@ -4562,4 +4624,29 @@ function getDrawingNums(){
 		}
 	}
 	return sheetArray;
+}
+/**
+ * @param jobNumber
+ *
+ * @properties={typeid:24,uuid:"8860CA71-EE7E-46E6-AABA-97715A1E334D"}
+ */
+function removeImportFileFromServer(jobNumber){
+	/** @type {QBSelect<db:/stsservoy/import_prefs>} */
+	var q = databaseManager.createSelect('db:/stsservoy/import_prefs');
+	q.result.add(q.columns.import_file);
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.job_number.eq(jobNumber));
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	if (Q.getMaxRowIndex() == 0){return}
+	Q.rowIndex = 1;
+	var randFile = Q.import_file;
+	var servoyDir = scopes.prefs.importpath+"\\"+randFile;
+	servoyDir = servoyDir.replace(/\\+/g,'/').replace('.','');
+	//application.output('RM import file path '+servoyDir);
+
+	var remoteFile = plugins.file.convertToRemoteJSFile(servoyDir);
+	if (remoteFile.exists()){
+		//application.output('remove remote file '+servoyDir);
+		remoteFile.deleteFile();
+	}
 }

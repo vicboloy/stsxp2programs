@@ -30,7 +30,7 @@ uuid:"02AFFF91-CAC5-4018-AD93-0D5F702E8483"
 formIndex:8,
 location:"11,28",
 size:"153,26",
-text:"i18n:sts.label.job.number",
+text:"i18n:sts.label.job.num",
 transparent:true,
 typeid:7,
 uuid:"10BE9C0F-43B9-4B67-B3F1-A7D813B92E44"
@@ -63,6 +63,7 @@ valuelistID:"8A89996A-201D-4649-B6E6-20EB194D9480"
 {
 dataProviderID:"verifyJobFabsuite",
 displayType:4,
+editable:false,
 enabled:false,
 formIndex:18,
 location:"187,313",
@@ -83,7 +84,7 @@ uuid:"51D550CC-90A6-4C2A-95E4-D3FE86BDA0FD"
 {
 location:"10,276",
 size:"153,26",
-text:"i18n:sts.label.drawing.number",
+text:"i18n:sts.label.sheet.number",
 transparent:true,
 typeid:7,
 uuid:"7C42EB23-F589-40EB-BDB1-E90F68E1F11A"
@@ -105,6 +106,7 @@ uuid:"8D493CC5-26AA-4B98-A849-C70EC3AFD944"
 {
 dataProviderID:"useKissFile",
 displayType:4,
+editable:false,
 enabled:false,
 formIndex:17,
 location:"187,282",
@@ -148,7 +150,7 @@ uuid:"A2071EE6-7C95-4FEC-BF72-F9FFF93E4083"
 {
 location:"10,214",
 size:"153,26",
-text:"i18n:sts.label.part.number",
+text:"i18n:sts.label.piecemark",
 transparent:true,
 typeid:7,
 uuid:"B26FA399-383A-4D18-9DC6-2D8385F68EB5"

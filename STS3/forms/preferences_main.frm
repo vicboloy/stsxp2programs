@@ -78,13 +78,6 @@ typeid:15,
 uuid:"87B851A0-D57F-40B6-BCAE-461023F62532"
 },
 {
-containsFormID:"AFA286CD-7451-49C2-A2BE-48E8FCF2CCA1",
-location:"474,184",
-text:"i18n:sts.tab.rf.screen.settings",
-typeid:15,
-uuid:"950813DD-C31F-4775-9DFE-DB40B900A440"
-},
-{
 containsFormID:"0ABA9A34-522B-4564-BEC6-282A67EC1E25",
 location:"409,164",
 text:"i18n:sts.tab.other.applications",

@@ -152,7 +152,9 @@ function validatePassword(event){
 			return false;													//	failed validation
 		}
 		user_password = userPassword;										//	set the password
-		is_account_active = 1;												//  Password is set, so make account active
+		if (employee_id){
+			is_account_active = 1;												//  Password is set, so make account active
+		}
 		userPassword = null;												//	clear pw variable
 		passwordConfirm = null;												//	clear pw confirm variable
 	}

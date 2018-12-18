@@ -851,7 +851,7 @@ function secCreateAssociation(assocName){
 	if(assoc.find()){													//	Search the associations table...
 		assoc.association_name = assocName;								//	...by association name
 		if (assocName == 'ADMIN'){
-			assoc.association_name = "OFFICE";
+			assoc.association_name = "CORP";
 			assoc.logic_flag = 1;
 		} 			//  only one admin association
 		
@@ -861,17 +861,18 @@ function secCreateAssociation(assocName){
 			assoc.getRecord(idx);
 			assoc.association_name = assocName;							//	set the company name
 			assoc.tenant_uuid = secCurrentTenantID;
+			assoc.licenses_desktop = 1;
+			assoc.licenses_mobile = 1;
 			if (assocName == "ADMIN"){
 				assoc.tenant_group_uuid = secCurrentTenantID;
-				assoc.association_name = "OFFICE";
+				assoc.association_name = "CORP";
 				assoc.logic_flag = 1;
-				assoc.licenses_desktop = 1;
 			}
 			if (application.isInDeveloper()){application.output('Create assoc '+assocName+' in UUID '+secCurrentTenantID);}
 			//associationArray.push(assoc.association_uuid);
 			if(databaseManager.saveData(assoc.getSelectedRecord())){	//	save the record
 				assoc.getSelectedRecord();
-				return assoc.association_uuid;						//	return the associaton id
+				return assoc;						//	return the associaton id
 			}
 		}
 	}
@@ -1042,7 +1043,7 @@ function getTenantCount(){
 	tent.loadAllRecords();
 	var empID = null;
 	if (tent.getSize() == 0){// new install because no tenant found
-		/** @type {JSFoundSet<db:/stsservoy/employee>} */
+		/** @type {JSFoundSet<db:/stsservoy/employee>} * /
 		var empl = databaseManager.getFoundSet('stsservoy','employee');
 		if (empl.find()){
 			empl.employee_number = "P2";
@@ -1062,17 +1063,15 @@ function getTenantCount(){
 				databaseManager.saveData(rec2);
 				empID = rec2.employee_id;
 			}
-		}
+		} */
 		var tenantRec = secCreateTenant('MY COMPANY');
-		databaseManager.saveData();
-		var assocId = secCreateAssociation('SHOP');
-		databaseManager.saveData();
-		var adminAssocId = secCreateAssociation('ADMIN');
-		databaseManager.saveData();
-		var adminUser = secCreateUser('P','p',tenantRec.tenant_uuid);
-		adminUser.association_uuid = adminAssocId;
-		adminUser.name_first = 'P2PROGRAMS';
-		adminUser.employee_id = empID;
+		var assocRec = secCreateAssociation('SHOP');
+		var assocId = assocRec.association_uuid;
+		var adminAssocRec = secCreateAssociation('ADMIN');
+		secCurrentTenantID = tenantRec.tenant_uuid;
+		secCurrentAssociationID = adminAssocRec.association_uuid;
+		//rec2.association_uuid = adminAssocId;
+		//rec2.tenant_uuid = tenantRec.tenant_uuid;
 		//getBasePermissions(adminUser.user_uuid,tenantRec.tenant_uuid);
 		databaseManager.saveData();
 		var tablesToClear = ['addresses','carrier','cow_xref','cowcodes','customers','employee_class','end_conditions',
@@ -1102,6 +1101,17 @@ function getTenantCount(){
 			if (application.isInDeveloper()){application.output('setting tenant and assoc in table '+tablesToClear[index])}
 			tableFS.performUpdate();
 		}
+		var custRec = secCreateP2Customer();
+		var empRec = secCreateP2Employee();
+		var adminAssocId = adminAssocRec.association_uuid;
+		adminAssocRec.tenant_group_uuid = adminAssocId;
+		assocRec.tenant_group_uuid = adminAssocId;
+		databaseManager.saveData();
+		var adminUser = secCreateUser('P','p',tenantRec.tenant_uuid);
+		adminUser.association_uuid = adminAssocId;
+		adminUser.name_first = 'P2PROGRAMS';
+		adminUser.employee_id = empRec.employee_id;
+		adminUser.is_admin_account = 1;
 	}
 	databaseManager.saveData();
 	if (application.getSolutionName() != 'STS X Embedded'){
@@ -2168,4 +2178,120 @@ function getBrowserInfo(){
 function storeUserAgentOnLogin(userAgent){
 	globals.clientUserAgent = userAgent;
 	application.output('RM '+userAgent);
+}
+/**
+ * @properties={typeid:24,uuid:"6954C3DF-E0D3-40E6-8220-3B86643DF763"}
+ */
+function secCreateP2Customer(){
+	var includePre = 'Include Prefix';
+	var jobStart = 'Last Characters of Job Number';
+	var systemLang = i18n.getCurrentLanguage();
+	/** @type {QBSelect<db:/stsservoy/i18n_table>} */
+	var i = databaseManager.createSelect('db:/stsservoy/i18n_table');
+	i.where.add(i.columns.message_language.eq(systemLang));
+	i.where.add(i.columns.message_key.eq('sts.txt.barcode.last.characters'));
+	/** @type {JSFoundSet<db:/stsservoy/i18n_table>} */
+	var I = databaseManager.getFoundSet(i);
+	if (I.getSelectedIndex() != 0){
+		jobStart = I.getRecord(1).message_value;
+	}
+	i = databaseManager.createSelect('db:/stsservoy/i18n_table');
+	i.where.add(i.columns.message_language.eq(systemLang));
+	i.where.add(i.columns.message_key.eq('sts.txt.barcode.include.prefix'));
+	var I = databaseManager.getFoundSet(i);
+	if (I.getSelectedIndex() != 0){
+		includePre = I.getRecord(1).message_value;
+	}
+	
+	/** @type {QBSelect<db:/stsservoy/customers>} */
+	var q = databaseManager.createSelect('db:/stsservoy/customers');
+	q.where.add(q.columns.customer_number.eq('P2PROG'));
+	q.result.add(q.columns.customer_id);
+	var Q = databaseManager.getFoundSet(q);
+	Q.loadRecords();
+	/** @type {JSFoundSet<db:/stsservoy/customers>} */
+	var recC = null;
+	if (Q.getSize() == 0){
+		var idx = Q.newRecord();
+		recC = Q.getRecord(idx);
+	} else {
+		recC = Q.getRecord(1);
+	}
+	recC.customer_number = 'P2PROG';
+	recC.tenant_uuid = secCurrentTenantID;
+	recC.barcode_preamble_length = 5;
+	recC.barcode_job_length = 3;
+	recC.barcode_include_prefix = includePre;
+	recC.barcode_job_start = jobStart;
+	recC.name = 'P2 Programs';
+	recC.barcode_prefix = 'PP';
+	secCreateP2Address(recC.customer_id);
+	databaseManager.saveData(recC);
+	return recC;
+}
+/**
+ * @properties={typeid:24,uuid:"FC325D88-72DF-4E31-A519-00E2E47A20C8"}
+ */
+function secCreateP2Employee(){
+	/** @type {QBSelect<db:/stsservoy/employee>} */
+	var e = databaseManager.createSelect('db:/stsservoy/employee');
+	e.where.add(e.columns.tenant_uuid.eq(secCurrentTenantID));
+	e.where.add(e.columns.employee_number.eq('P2'));
+	e.result.add(e.columns.employee_id);
+	
+	var E = databaseManager.getFoundSet(e);
+	/** @type {JSFoundSet<db:/stsservoy/employee>} */
+	var recE = null;
+	if (E.getSize() == 0){
+		var idxE = E.newRecord();
+		recE = E.getRecord(idxE);
+	} else {
+		recE = E.getRecord(1);
+	}
+	recE.edit_date = new Date();
+	recE.employee_active_flag = 1;
+	recE.employee_email = "paul@p2programs.com";
+	recE.employee_firstname = "Paul";
+	recE.employee_lastname = "Parks";
+	recE.employee_number = "P2";
+	recE.employee_workphone = "512-858-2007";
+	recE.edit_date = new Date();
+	recE.association_uuid = secCurrentAssociationID;
+	recE.tenant_uuid = secCurrentTenantID;
+	secCreateP2Address(recE.employee_id);
+	databaseManager.saveData(recE);
+	return recE;
+}
+/**
+ * @param p2Id
+ *
+ * @properties={typeid:24,uuid:"31CA2689-6328-46AE-9C28-65390DBFD2E2"}
+ */
+function secCreateP2Address(p2Id){
+	/** @type {QBSelect<db:/stsservoy/addresses>} */
+	var a = databaseManager.createSelect('db:/stsservoy/addresses');
+	a.where.add(a.columns.address_type.eq('BILL TO'));
+	a.where.add(a.columns.tenant_uuid.eq(secCurrentTenantID));
+	a.where.add(a.columns.customer_id.eq(p2Id));
+	a.result.add(a.columns.address_id);
+	var A = databaseManager.getFoundSet(a);
+	A.loadRecords();
+	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
+	var recA = null;
+	if (A.getSize() == 0){
+		var idxA = A.newRecord();
+		recA = A.getRecord(idxA);
+	} else {
+		recA = A.getRecord(1);
+	}
+	recA.address_type='BILL TO';
+	recA.city = 'Dripping Springs';
+	recA.state = 'TX';
+	recA.customer_id = p2Id;
+	recA.zip_postal_code = '78620';
+	recA.line1 = 'P.O. Box 1000';
+	recA.tenant_uuid = secCurrentTenantID;
+	recA.country = 'USA';
+	databaseManager.saveData(recA);
+	return recA;
 }

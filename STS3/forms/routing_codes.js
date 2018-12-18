@@ -469,6 +469,8 @@ function onActionSaveEdit(event) {
 		rec2.route_order = (index + 1)*10;
 	}
 	var status = databaseManager.commitTransaction();
+	var record = foundset.getSelectedRecord();
+	databaseManager.saveData(record);
 	// have status_description_id == association_id, status == fabshopName, status
 	//  status_description == globals.aMobAssocs[assocID] = assocName 
 	//  [BF00BA53-8D07-4A70-B835-24D5BD5DAB91="NORTH SITE",FAA9BDE5-6B66-4930-981C-5AF0004EE1A4="SOUTH SITE"]
@@ -486,6 +488,8 @@ function onActionSaveEdit(event) {
  */
 function onActionAdd(event, recordKeyID) {
 	foundset.newRecord();
+	tenant_uuid = globals.session.tenant_uuid;
+	edit_date = new Date();
 	onEdit(event,true);
 	getAvailableCodes();
 	elements.route_code.requestFocus();

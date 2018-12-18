@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/carrier",
 encapsulation:0,
 extendsID:"B437E60E-3696-4619-BACC-D42AE6A64D83",
@@ -41,7 +47,7 @@ uuid:"E867A28B-CD66-44C4-AE75-B141D438ADAE"
 ],
 name:"carriers",
 navigatorID:"-1",
-onHideMethodID:"E21EE873-34C3-488D-8F27-F113B59EAEDE",
+onHideMethodID:"56FE9312-D769-4F31-AAE4-D3116D1F1278",
 onRecordSelectionMethodID:"0D273E9E-ECB7-4362-9492-21A6DACDA13D",
 onShowMethodID:"A1B2FEC9-34A6-46A3-A972-5DE0B0C609B9",
 scrollbars:36,

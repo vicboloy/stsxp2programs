@@ -21,7 +21,7 @@ titleText:"i18n:table.general.altitude"
 },
 {
 allowNull:true,
-creationOrderIndex:36,
+creationOrderIndex:37,
 dataType:12,
 length:30,
 name:"bundle_bc",
@@ -212,6 +212,13 @@ titleText:"i18n:table.transactions.trans_code"
 },
 {
 allowNull:true,
+creationOrderIndex:38,
+dataType:12,
+length:15,
+name:"trans_code2"
+},
+{
+allowNull:true,
 creationOrderIndex:32,
 dataType:93,
 name:"trans_reversal_date",
@@ -233,6 +240,13 @@ dataType:12,
 length:15,
 name:"trans_status",
 titleText:"i18n:table.transactions.trans_status"
+},
+{
+allowNull:true,
+creationOrderIndex:36,
+dataType:12,
+length:15,
+name:"trans_status2"
 },
 {
 allowNull:true,

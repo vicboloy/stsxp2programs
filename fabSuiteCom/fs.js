@@ -585,6 +585,9 @@ function checkFSMainMark(mainMarks,event){
 		</GetAssemblies>\n\
 	</FabSuiteXMLRequest>';
 
+	if (!com){
+		checkComFabsuite(event);
+	}
 	/** @type {String} */
 	var fsResp = com.call('FabSuiteXML',check).toString();
 	var fieldValueName1 = 'MainMark';
@@ -956,7 +959,9 @@ function verifyKissImportFilters(event) {
 	var parts = forms.kiss_import.vPartNumber;
 	var verified = false;
 	if (checkFSJob(event)){
+		if (application.isInDeveloper()){application.output('RM check main mark filter kiss import')}
 		var verMark = checkFSMainMark(parts,event); 
+		if (application.isInDeveloper()){application.output('RM AFTER check main mark filter kiss import')}
 		if (!verMark){forms.kiss_import.vPartNumber = importData.newMarks.join(',')}
 		var verDraw = checkFSDrawingNumber(drawings,event);
 		if (!verDraw){forms.kiss_import.vDrawingNumber = importData.newDraws.join(',')}

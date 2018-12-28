@@ -237,7 +237,7 @@ function browseTable(event){
 		var width = controller.getWindow().getWidth();
 		var xOrigin = controller.getWindow().getX();
 		var yOrigin = controller.getWindow().getY();
-		var tabForm = forms.piecemarks_loads.elements.tabs.getTabFormNameAt(1);
+		var tabForm = forms.piecemarks_loads.elements.tabs.getTabFormNameAt(1);// DEBUG Browse table error 20181220
 		if (tabForm){
 			scopes.jobs.removeFormHist(tabForm+'_table');
 		}

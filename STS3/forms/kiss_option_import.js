@@ -283,6 +283,10 @@ var importFile = '';
  */
 var deleteKiss = true;
 /**
+ * @properties={typeid:35,uuid:"3FE4FF06-B289-44A3-8E4D-99A828F40E35",variableType:-4}
+ */
+var emptyPiecemarkValues = false;
+/**
  * @properties={typeid:35,uuid:"0879B896-5487-4BA7-8CA3-446FE1770947",variableType:-4}
  */
 var endVars = null;
@@ -300,6 +304,7 @@ function onShow(firstShow, event) {
 	if (firstShow){
 	}
 
+	emptyPiecemarkValues = scopes.jobs.checkMissingPMs(event);
 	controller.enabled = true;
 	elements.btn_Hide.text = i18n.getI18NMessage('sts.btn.import.hide.ignore.items');
 	addWindowList(controller.getWindow().title);
@@ -328,6 +333,7 @@ function onShow(firstShow, event) {
 	jobName = job.name;
 	jobDate = job.date;
 	jobMetric = job.metricFlag;
+	importRouting = null;
 	//application.output('RM Job Number for Import '+jobNumber,LOGGINGLEVEL.DEBUG);
 	///var customerArray = [];
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
@@ -485,6 +491,11 @@ function onShow(firstShow, event) {
 	elements.importRecInfo.visible = (application.isInDeveloper());
 	applyImportPreferences(event,true);
 	null;
+	if (emptyPiecemarkValues){
+		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.question.continue.with.import'),
+			i18n.getI18NMessage('sts.txt.import.empty.piecemarks'));
+	}
+	scopes.jobs.warningsX(event);
 }
 /**
  * @properties={typeid:24,uuid:"C010A107-2370-481A-BD1F-99F412CDD06B"}
@@ -679,7 +690,7 @@ function defineExclDataset(){
 	item.onDataChange=newMethod;
 	elements.tabless1.addTab('kiss_excludes_lst');
 	excludeFS.sort(1,true);
-	scopes.jobs.warningsX(event);
+	scopes.jobs.warningsX(null);
 }
 /**
  * Handle hide window. No use removing form or history on Hide,

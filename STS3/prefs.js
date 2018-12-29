@@ -1454,6 +1454,58 @@ var labelFields = ['AREA',
  * @properties={typeid:35,uuid:"DAB42457-A82D-45A8-B525-C1D2FB13C9BA",variableType:-4}
  */
 var prefsChangedOutside = [];
+/**
+ * @properties={typeid:35,uuid:"5AF47F3A-69FA-4A13-B3BB-116F7C94495D",variableType:-4}
+ */
+var defaultTableColumns = [
+'selection',
+'job_number',
+'bc_id_serial_ number',
+'if_original_quantity',
+'job_create_date',
+'sq_sequence_number',
+'lt_lot_number',
+'sh_sheet_number',
+'pm_item_quantity',
+'pm_pcmk_qty',
+'pm_parent_piecemark',
+'pm_piecemark',
+'pm_material',
+'pm_finish',
+'pm_grade',
+'rt_route_code',
+'pm_item_length_in',
+'pm_item_weight',
+'pm_item_length',
+'pm_item_weight_lbs',
+'if_summed_quantity',
+'pm_part_serial',
+'pm_create_date',
+'job_rf_interface',
+'if_id_creation_date',
+'if_edit_date',
+'if_guid_major',
+'if_guid_minor',
+'if_create_date',
+'bc_edit_date',
+'rt_route_description',
+'rt_allow_more_codes',
+'rt_edit_date',
+'pt_association_name',
+'pt_edit_date',
+'barcode_format_customer_name',
+'bc_include_prefix',
+'bc_job_start',
+'bc_prefix',
+'barcode_format_customer_number',
+'job_customer_name',
+'job_customer_number',
+'customer_city',
+'customer_state',
+'cust_addr_line1',
+'cust_zip_code',
+'bc_parent_id_serial'
+];
 // _________________________________________________________________________________________________
 /**
  * moved to globals. scopes.globals.

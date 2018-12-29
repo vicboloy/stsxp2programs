@@ -1770,9 +1770,16 @@ function tablePrefsLoad(formx){
 			if (sets[3] && sets[3] == 0 && globals.a.tempHiddenColumns[formy].indexOf(colName) == -1){
 				globals.a.tempHiddenColumns[formy].push(colName);
 			}
-		} else {
-
-			elems[index].visible = tableHideField(colName,formy);
+		} else {//20181228 table pre-ordering when no table columns have been set
+			var jdex = scopes.prefs.defaultTableColumns.indexOf(colName);
+			//application.output('element name is '+colName);
+			if (jdex != -1){
+				elems[index].setLocation(jdex,elems[index].getLocationY());
+				elems[index].setSize(elems[index].getWidth(),elems[index].getHeight());
+				elems[index].visible = true;
+			} else {
+				elems[index].visible = tableHideField(colName,formy);
+			}
 		}
 	}
 }
@@ -6507,6 +6514,12 @@ function tablePrefsPreLoad(formx){
 				index++;maxIndex = index;
 			}
 		}
+	} else {//20181228 table pre-ordering when no table columns have been set
+		for (var jdex = 0;jdex < scopes.prefs.defaultTableColumns.length;jdex++){
+			var colName = scopes.prefs.defaultTableColumns[jdex];
+			// columnName, columnOrder,columnWidth,columnVisible
+			tableArray.push(new Array(colName,jdex,scopes.prefs.defaultColumnWidth,1));
+		}
 	}
 	tableArray.sort(function(a,b){return a[1]-b[1]});
 	var tableArrayLength = tableArray.length;
@@ -7312,10 +7325,10 @@ function viewBTableSQLSummary(criteria,formName){
 		rec = stFS.getRecord(index);
 		jobDATA.idfiles = jobDATA.idfiles*1 + rec.total_marks;
 		if (rec.piecemark == rec.parent_piecemark){
-			jobDATA.weight = jobDATA.weight*1 + rec.item_weight*rec.item_quantity;
-			jobDATA.weight_lbs = jobDATA.weight_lbs*1 + rec.item_weight_lbs * rec.item_quantity;
+			jobDATA.weight = jobDATA.weight*1 + rec.item_weight*rec.pcmk_qty;
+			jobDATA.weight_lbs = jobDATA.weight_lbs*1 + rec.item_weight_lbs * rec.pcmk_qty;
 		}
-		
+		stFS.getRecord(index+1);
 		index++;
 	}
 		
@@ -7688,36 +7701,36 @@ function queryAssembly(criteria,formName,subquery){
 		/** @type {QBJoin<db:/stsservoy/sheet_bom>} */
 		var shbom = st.joins.add('db:/stsservoy/sheet_bom');
 		shbom.on.add(st.columns.sheet_id.eq(shbom.columns.sheet_id));
-		var tableSB = databaseManager.getTable('stsservoy','sheet_bom');
-		var tableCols = tableSB.getColumnNames();
-		for (var idx = 0;idx < tableCols.length;idx++){
+		//var tableSB = databaseManager.getTable('stsservoy','sheet_bom');
+		//var tableCols = tableSB.getColumnNames();
+		/** for (var idx = 0;idx < tableCols.length;idx++){
 			var colName = tableCols[idx];
 			if (colName.search('bom_') != 0){
 				st.result.add(shbom.columns[colName],'bom_'+colName);
 			}
-		}
+		} */
 		/** @type {QBJoin<db:/stsservoy/end_conditions>} */
 		var endCon = shbom.joins.add('db:/stsservoy/end_conditions');
 		endCon.on.add(shbom.columns.end_condition_id.eq(endCon.columns.end_condition_id));
-		st.result.add(endCon.columns.end_prep,'bom_end_condition');//213 BOMENDPREP
+		//st.result.add(endCon.columns.end_prep,'bom_end_condition');//213 BOMENDPREP
 	}
 	if (subquery == 'browse'){
 		/** @type {QBJoin<db:/stsservoy/customers>} */
 		var jship = stj.joins.add('db:/stsservoy/customers');
 		jship.on.add(stj.columns.ship_to.eq(jship.columns.customer_id));
-		st.result.add(jship.columns.name,'barcode_customer_name');//3 BCCUST printer.js
-		st.result.add(jship.columns.customer_number,'barcode_customer_number');//23 CUSTNUM printer.js
+		//st.result.add(jship.columns.name,'barcode_customer_name');//3 BCCUST printer.js
+		//st.result.add(jship.columns.customer_number,'barcode_customer_number');//23 CUSTNUM printer.js
 	}
 	
 	if (subquery == 'browse'){
 		/** @type {QBJoin<db:/stsservoy/customers>} */
 		var jbcformat = stj.joins.add('db:/stsservoy/customers');
 		jbcformat.on.add(stj.columns.barcode_form.eq(jbcformat.columns.customer_id));
-		st.result.add(jbcformat.columns.name,'barcode_format_customer_name');//52 JOLINE1STR printer.js
-		st.result.add(jbcformat.columns.barcode_include_prefix,'bc_include_prefix');//5 BCINCLDPFX printer.js
-		st.result.add(jbcformat.columns.barcode_job_start,'bc_job_start');//6 BCJOBSTART printer.js
-		st.result.add(jbcformat.columns.barcode_prefix,'bc_prefix');//7 BCPREFIX printer.js
-		st.result.add(jbcformat.columns.customer_number,'barcode_format_customer_number');//4 BCFORM printer.js
+		//st.result.add(jbcformat.columns.name,'barcode_format_customer_name');//52 JOLINE1STR printer.js
+		//st.result.add(jbcformat.columns.barcode_include_prefix,'bc_include_prefix');//5 BCINCLDPFX printer.js
+		//st.result.add(jbcformat.columns.barcode_job_start,'bc_job_start');//6 BCJOBSTART printer.js
+		//st.result.add(jbcformat.columns.barcode_prefix,'bc_prefix');//7 BCPREFIX printer.js
+		//st.result.add(jbcformat.columns.customer_number,'barcode_format_customer_number');//4 BCFORM printer.js
 		
 	}
 	
@@ -7725,12 +7738,12 @@ function queryAssembly(criteria,formName,subquery){
 		/** @type {QBSelect<db:/stsservoy/customers>} */
 		var jcust = stj.joins.add('db:/stsservoy/customers');
 		jcust.on.add(stj.columns.customer_id.eq(jcust.columns.customer_id));
-		st.result.add(jcust.columns.fax,'job_customer_fax');//15 CUSFAX printer.js
-		st.result.add(jcust.columns.representative,'job_customer_rep');//16 CUSFIRST printer.js
-		st.result.add(jcust.columns.name,'job_customer_name');//19 CUSNAME printer.js
-		st.result.add(jcust.columns.phone,'job_customer_phone');//20 CUSPHONE printer.js
-		st.result.add(jcust.columns.customer_number,'job_customer_number');//23 CUSTNUMB printer.js
-		st.result.add(jcust.columns.lsotoload,'job_so_to_load');//130 LSOTOLOAD printer.js
+		//st.result.add(jcust.columns.fax,'job_customer_fax');//15 CUSFAX printer.js
+		//st.result.add(jcust.columns.representative,'job_customer_rep');//16 CUSFIRST printer.js
+		//st.result.add(jcust.columns.name,'job_customer_name');//19 CUSNAME printer.js
+		//st.result.add(jcust.columns.phone,'job_customer_phone');//20 CUSPHONE printer.js
+		//st.result.add(jcust.columns.customer_number,'job_customer_number');//23 CUSTNUMB printer.js
+		//st.result.add(jcust.columns.lsotoload,'job_so_to_load');//130 LSOTOLOAD printer.js
 	}
 	
 	if (subquery == 'browse'){
@@ -7738,10 +7751,10 @@ function queryAssembly(criteria,formName,subquery){
 		var jcustAddr = jcust.joins.add('db:/stsservoy/addresses');
 		jcustAddr.on.add(jcust.columns.customer_id.eq(jcustAddr.columns.customer_id));
 		//JJ//jcustAddr.root.where.add(jcustAddr.columns.address_id.eq(jobShipToId));//20180802 get rid of two lines in view loads screen
-		st.result.add(jcustAddr.columns.city,'customer_city');//14 CUSCITY printer.js
-		st.result.add(jcustAddr.columns.state,'customer_state');//21 CUSSTATE printer.js
-		st.result.add(jcustAddr.columns.line1,'cust_addr_line1');//22 CUSSTREET printer.js
-		st.result.add(jcustAddr.columns.zip_postal_code,'cust_zip_code');//26 CUSZIP printer.js
+		//st.result.add(jcustAddr.columns.city,'customer_city');//14 CUSCITY printer.js
+		//st.result.add(jcustAddr.columns.state,'customer_state');//21 CUSSTATE printer.js
+		//st.result.add(jcustAddr.columns.line1,'cust_addr_line1');//22 CUSSTREET printer.js
+		//st.result.add(jcustAddr.columns.zip_postal_code,'cust_zip_code');//26 CUSZIP printer.js
 	}
 	
 	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
@@ -7823,7 +7836,7 @@ function queryAssembly(criteria,formName,subquery){
 	var rt1 = pmm.joins.add('db:/stsservoy/routings');
 	rt1.on.add(pmm.columns.e_route_code_id.eq(rt1.columns.routing_id));
 	st.groupBy.add(rt1.columns.route_code);
-	st.result.add(rt1.columns.route_code);
+	//st.result.add(rt1.columns.route_code);
 
 	/** @type {QBJoin<db:/stsservoy/idfiles>} */
 	var id1 = pmm.joins.add('db:/stsservoy/idfiles');
@@ -7854,12 +7867,12 @@ function queryAssembly(criteria,formName,subquery){
 	if (subquery == "summarized"){
 		id1.root.result.distinct;
 		id1.root.groupBy.add(id1.columns.piecemark_id);
-		st.result.add(id1.columns.summed_quantity.sum,'piece_count');
+		//st.result.add(id1.columns.summed_quantity.sum,'piece_count');
 	}
 	if (criteria.areaa && criteria.areaa.length > 0){
 		st.where.add(id1.columns.id_location.isin(criteria.areaa));
 		st.groupBy.add(id1.columns.id_location);
-		st.result.add(id1.columns.id_location);
+		//st.result.add(id1.columns.id_location);
 	}
 	if (criteria.batcha && criteria.batcha.length > 0){
 		st.where.add(id1.columns.id_batch.isin(criteria.batcha));
@@ -7994,24 +8007,24 @@ function queryAssembly(criteria,formName,subquery){
 		/** @type {QBJoin<db:/stsservoy/loads>} */
 		var loads = id1.joins.add('db:/stsservoy/loads');
 		loads.on.add(id1.columns.ship_load_id.eq(loads.columns.load_id));
-		st.result.add(loads.columns.bill_of_lading_out,'ship_bol_out');//9 BOLOUT printer.js
-		st.result.add(loads.columns.carrier_number,'ship_carrier_number');//10 CARRNUM  printer.js
-		st.result.add(loads.columns.load_comment,'ship_load_comment');//11 COMMENTS printer.js
-		st.result.add(loads.columns.sent_engineer,'ship_sent_engineer');//30 ENGXTIME printer.js
-		st.result.add(loads.columns.fabricator_invoice,'ship_fabricator_invoiced');//31 FABINVOICE printer.js
-		st.result.add(loads.columns.sent_fabrication,'ship_sent_fabricator');//33 FABXTIME printer.js
-		st.result.add(loads.columns.sent_fireproofer,'ship_sent_fireproofer');//34 FIREXTIME printer.js
-		st.result.add(loads.columns.sent_galvinizer,'ship_sent_galvinizer');//35 GALVXTIME printer.js
-		st.result.add(loads.columns.invoice,'ship_load_invoice');//42 INVOICE printer.js
-		st.result.add(loads.columns.load_number,'ship_load_number');//79 LOADNUM printer.js
-		st.result.add(loads.columns.care_of,'ship_load_care_of');//80 LODCAREOF printer.js
-		st.result.add(loads.columns.load_po,'ship_load_po');//81 LODPO printer.js
-		st.result.add(loads.columns.load_release,'ship_load_release');//82 LODRELEASE printer.js
-		st.result.add(loads.columns.ship_date,'ship_load_date');//107 SHIPLOAD printer.js
-		st.result.add(loads.columns.ship_date,'ship_load_time');//109 SHIPTIME printer.js
-		st.result.add(loads.columns.trailer_information,'ship_load_trailer_info');//111 TRAILINFO printer.js
-		st.result.add(loads.columns.shipped_weight,'ship_load_shipped_weight');//152 SHIPWT printer.js
-		st.result.add(loads.columns.total_weight,'ship_load_total_weight');//153 TOTALWT printer.js
+		//st.result.add(loads.columns.bill_of_lading_out,'ship_bol_out');//9 BOLOUT printer.js
+		//st.result.add(loads.columns.carrier_number,'ship_carrier_number');//10 CARRNUM  printer.js
+		//st.result.add(loads.columns.load_comment,'ship_load_comment');//11 COMMENTS printer.js
+		//st.result.add(loads.columns.sent_engineer,'ship_sent_engineer');//30 ENGXTIME printer.js
+		//st.result.add(loads.columns.fabricator_invoice,'ship_fabricator_invoiced');//31 FABINVOICE printer.js
+		//st.result.add(loads.columns.sent_fabrication,'ship_sent_fabricator');//33 FABXTIME printer.js
+		//st.result.add(loads.columns.sent_fireproofer,'ship_sent_fireproofer');//34 FIREXTIME printer.js
+		//st.result.add(loads.columns.sent_galvinizer,'ship_sent_galvinizer');//35 GALVXTIME printer.js
+		//st.result.add(loads.columns.invoice,'ship_load_invoice');//42 INVOICE printer.js
+		//st.result.add(loads.columns.load_number,'ship_load_number');//79 LOADNUM printer.js
+		//st.result.add(loads.columns.care_of,'ship_load_care_of');//80 LODCAREOF printer.js
+		//st.result.add(loads.columns.load_po,'ship_load_po');//81 LODPO printer.js
+		//st.result.add(loads.columns.load_release,'ship_load_release');//82 LODRELEASE printer.js
+		//st.result.add(loads.columns.ship_date,'ship_load_date');//107 SHIPLOAD printer.js
+		//st.result.add(loads.columns.ship_date,'ship_load_time');//109 SHIPTIME printer.js
+		//st.result.add(loads.columns.trailer_information,'ship_load_trailer_info');//111 TRAILINFO printer.js
+		//st.result.add(loads.columns.shipped_weight,'ship_load_shipped_weight');//152 SHIPWT printer.js
+		//st.result.add(loads.columns.total_weight,'ship_load_total_weight');//153 TOTALWT printer.js
 		
 	}
 
@@ -8019,23 +8032,23 @@ function queryAssembly(criteria,formName,subquery){
 		/** @type {QBJoin<db:/stsservoy/customers>} */
 		var loadsshipto = loads.joins.add('db:/stsservoy/customers');
 		loadsshipto.on.add(loads.columns.ship_to.eq(loadsshipto.columns.customer_number));
-		st.result.add(loadsshipto.columns.customer_number,'ship_customer_number');//83 LODSHIPTO
+		//st.result.add(loadsshipto.columns.customer_number,'ship_customer_number');//83 LODSHIPTO
 	}
 		
 	if (subquery == 'browse'){
 		/** @type {QBJoin<db:/stsservoy/loads>} */
 		var loadsrcv = id1.joins.add('db:/stsservoy/loads');
 		loadsrcv.on.add(id1.columns.received_load_id.eq(loads.columns.load_id));
-		st.result.add(loadsrcv.columns.load_number,'recv_load_number');//99 RECVLOAD printer.js
-		st.result.add(loadsrcv.columns.receipt_date,'recv_load_date');//100 RECVTIME printer.js
-		st.result.add(loadsrcv.columns.receiving_weight,'recv_load_receiving_wt');//149 RECVWT printer.js
+		//st.result.add(loadsrcv.columns.load_number,'recv_load_number');//99 RECVLOAD printer.js
+		//st.result.add(loadsrcv.columns.receipt_date,'recv_load_date');//100 RECVTIME printer.js
+		//st.result.add(loadsrcv.columns.receiving_weight,'recv_load_receiving_wt');//149 RECVWT printer.js
 	}
 	
 	if (subquery == 'browse'){
 		/** @type {QBJoin<db:/stsservoy/heats>} */
 		var heats = id1.joins.add('db:/stsservoy/heats');
 		heats.on.add(id1.columns.heat_id.eq(heats.columns.heat_id));
-		st.result.add(heats.columns.heat_number);//37 HEAT
+		//st.result.add(heats.columns.heat_number);//37 HEAT
 	}
 
 	if (subquery == 'browse'){
@@ -8045,7 +8058,7 @@ function queryAssembly(criteria,formName,subquery){
 		/** @type {QBJoin<db:/stsservoy/associations>} */
 		var assoc = stat2.joins.add('db:/stsservoy/associations');
 		assoc.on.add(stat2.columns.association_id.eq(assoc.columns.association_uuid));
-		st.result.add(assoc.columns.association_name,'pcmk_fab_shop');//32 FABSHOP
+		//st.result.add(assoc.columns.association_name,'pcmk_fab_shop');//32 FABSHOP
 	}
 
 
@@ -8567,6 +8580,7 @@ function viewBTableCreateForm2(formName,datasource){
 	var code2 = 'function onRender3(event){null;}';
 	var code3 = 'function onShow(firstShow,event){if (firstShow){var rec = foundset.getSelectedRecord();scopes.jobs["transactionIdfileId'+versionForm+'"] = rec.if_idfile_id;foundset.getRecordIndex(foundset.getSelectedRecord());}}';
 	//var closeMemTable = 'function onHide(event){scopes.jobs.removeMemoryTable(event.getFormName());}';
+	//var code4 = 'function onResize(event){scopes.jobs.onViewResize(event);}';
 	if (formName.search('barcode') != -1 || formName.search('print') != -1){
 		code2 = 'function onRender3(event){scopes.printer.onRenderPrint(event);}';
 		checkForm.onRender = checkForm.newMethod(code2);
@@ -8574,6 +8588,7 @@ function viewBTableCreateForm2(formName,datasource){
 	if (formName.search('combo') != -1 || formName.search('loads_pcmk_0') != -1){
 		checkForm.onRecordSelection = checkForm.newMethod(code);
 		checkForm.onShow = checkForm.newMethod(code3);
+		//checkForm.onResize = checkForm.newMethod(code4);
 		//checkForm.onHide = checkForm.newMethod(closeMemTable);
 		//checkForm.onRender = checkForm.newMethod(code2);
 	}
@@ -8620,7 +8635,9 @@ function viewBTableCreateForm2(formName,datasource){
 		//if (tableOrderingData[columnDataIndex].length != 4){tableOrderingData[columnDataIndex] = new Array(columnName,0,20,1)} // prefs data incorrect
 		//if (typeof tableOrderingData[columnDataIndex][1] == "string"){tableOrderingData[columnDataIndex][1] = 0}
 		setVisible = !(scopes.globals.hideEmptyColumns == 1 && removeColumns.indexOf(columnName) != -1) &&
-			((scopes.prefs.maxColumnShow == 0) || (columnCnt <= scopes.prefs.maxColumnShow)) && (posArray[3] == 1);
+			((scopes.prefs.maxColumnShow == 0) || (columnCnt <= scopes.prefs.maxColumnShow)) && 
+			(posArray[3] == 1) &&
+			(columnDataIndex != -1 && tableOrderingArray.length > 0);//20181228 table pre-ordering when no table columns have been set
 			//if (posArray[3] == 0){colLength = 0;setVisible = false;}
 		//application.output(columnName+'column count '+columnCnt+' visible '+setVisible+' hideEmpty '+scopes.globals.hideEmptyColumns+' remove '+removeColumns.indexOf(columnName));
 		if (setVisible){columnCnt++}
@@ -11494,4 +11511,25 @@ function checkMissingPMs(event){
 		return true;
 	}
 	return false;
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"30A8770D-A553-4D3C-9E2E-5B2E7B18CD4F"}
+ */
+function onViewResize(event){
+	var formName = event.getFormName();
+	var form = forms[formName];
+	var lowerPanelHeight = form.lowerPanelHeight;
+	if (lowerPanelHeight == 0){return}
+	
+	//if (1==1){return}
+	//var splitLocation = forms[formName].elements['split'].dividerLocation;
+	//var win = form.controller.getWindow();
+	var elHeight = form.elements['split'].getHeight();
+	//var lowerHeight = elHeight - (elHeight - lowerPanelHeight);
+	if (lowerPanelHeight > elHeight - 40){lowerPanelHeight = elHeight - 40}
+	form.elements['split'].dividerLocation = elHeight - lowerPanelHeight;
+	
+	
 }

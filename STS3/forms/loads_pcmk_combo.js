@@ -1,4 +1,10 @@
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"7161EF80-C76A-48B5-BEB6-C57C7651D8DF",variableType:4}
+ */
+var lowerPanelHeight = 0;
+/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -255,4 +261,18 @@ function onActionPrint(event) {
 	var topForm = forms[formName].elements.split.getLeftForm();
 	var topFormName = topForm.controller.getName();
 	forms[topFormName].controller.print(false,true);
+}
+
+/**
+ * Callback method when the user changes tab in a tab panel or divider position in split pane.
+ *
+ * @param {Number} previousIndex index of tab shown before the change
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"BB7D04BE-6FAF-49D2-A543-18EBA1CEAB38"}
+ */
+function onTabChangeSplit(previousIndex, event) {
+	var elHeight = elements.split.getHeight();
+	var newSplit = elements.split.dividerLocation;
+	lowerPanelHeight = elHeight - newSplit;
 }

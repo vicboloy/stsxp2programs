@@ -32,7 +32,7 @@ creationOrderIndex:13,
 dataType:12,
 length:50,
 name:"country",
-titleText:"i18n:table.general.country"
+titleText:"i18n:table.addresses.country"
 },
 {
 allowNull:true,
@@ -41,14 +41,14 @@ dataType:12,
 flags:4,
 length:36,
 name:"customer_id",
-titleText:"i18n:table.general.customer_id"
+titleText:"i18n:table.addresses.customer_id"
 },
 {
 allowNull:true,
 creationOrderIndex:11,
 dataType:4,
 name:"delete_flag",
-titleText:"i18n:table.general.delete_flag"
+titleText:"i18n:table.addresses.delete_flag"
 },
 {
 allowNull:true,
@@ -57,7 +57,7 @@ autoEnterType:1,
 creationOrderIndex:9,
 dataType:93,
 name:"edit_date",
-titleText:"i18n:table.general.edit_date"
+titleText:"i18n:table.addresses.edit_date"
 },
 {
 allowNull:true,
@@ -80,7 +80,7 @@ allowNull:true,
 creationOrderIndex:10,
 dataType:4,
 name:"logic_flag",
-titleText:"i18n:table.general.logic_flag"
+titleText:"i18n:table.addresses.logic_flag"
 },
 {
 allowNull:true,
@@ -105,7 +105,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"tenant_uuid",
-titleText:"i18n:table.general.tenant_uuid"
+titleText:"i18n:table.addresses.tenant_uuid"
 },
 {
 allowNull:true,

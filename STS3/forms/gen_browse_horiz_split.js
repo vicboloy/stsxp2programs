@@ -44,3 +44,14 @@ function onHide(event) {
 	scopes.jobs.removeFormHist(formName + '_table');
 	return _super.onHide(event)
 }
+
+/**
+ * Callback method when form is resized.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"331F8566-6A83-493E-8863-62BA9FD706C7"}
+ */
+function onResizePcmkCombo(event) {
+	//application.output('resizing main form')
+}

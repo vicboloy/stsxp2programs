@@ -1899,7 +1899,7 @@ function readPiecemarksK(){
 		var unique = uniquePiecemark(dsPiecemarks);
 		dsPiecemarkArray[unique] = pmId;
 	}
-	query = "SELECT sum(item_quantity),sum(item_weight*item_quantity) " +
+	query = "SELECT sum(pcmk_quantity),sum(item_weight*pcmk_quantity) " + // item_quantity set to pcmk_qty 20190102
 	"FROM piecemarks " +
 	"WHERE sheet_id IN " + textList + " "+
 	" AND delete_flag IS null " +
@@ -2931,7 +2931,7 @@ function createPiecemarkK(fsRec,unique){
 	rec.finish = fsRec.finish;
 	rec.grade = fsRec.grade;
 	rec.item_length = fsRec.item_length*1;
-	rec.item_quantity = fsRec.item_quantity;
+	rec.item_quantity = fsRec.item_quantity;// needs changed to pcmk_qty from item_quantity
 	rec.item_weight = fsRec.item_weight;
 	rec.item_weight_lbs = scopes.globals.kgToLb(fsRec.item_weight);
 	rec.item_length_in = scopes.globals.mmToIn(fsRec.item_length);

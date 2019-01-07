@@ -41,7 +41,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"cowcode_id",
-titleText:"i18n:table.general.cowcode_id"
+titleText:"i18n:table.cow_xref.cowcode_id"
 },
 {
 allowNull:true,
@@ -56,7 +56,7 @@ allowNull:true,
 creationOrderIndex:8,
 dataType:4,
 name:"delete_flag",
-titleText:"i18n:table.general.delete_flag"
+titleText:"i18n:table.cow_xref.delete_flag"
 },
 {
 allowNull:true,
@@ -65,7 +65,7 @@ autoEnterType:1,
 creationOrderIndex:6,
 dataType:93,
 name:"edit_date",
-titleText:"i18n:table.general.edit_date"
+titleText:"i18n:table.cow_xref.edit_date"
 },
 {
 allowNull:true,
@@ -74,14 +74,14 @@ dataType:12,
 flags:4,
 length:36,
 name:"job_id",
-titleText:"i18n:table.general.job_id"
+titleText:"i18n:table.cow_xref.job_id"
 },
 {
 allowNull:true,
 creationOrderIndex:7,
 dataType:4,
 name:"logic_flag",
-titleText:"i18n:table.general.logic_flag"
+titleText:"i18n:table.cow_xref.logic_flag"
 },
 {
 allowNull:true,

@@ -59,6 +59,12 @@ var elementShow = 0;
  */
 var parentEvent = null;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"1EDA31C6-4F9E-466D-8117-F927297B9B4E"}
+ */
+var elementInfo = '';
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -67,6 +73,10 @@ var parentEvent = null;
  */
 function onActionAvail(event) {
 	setElements('avail');
+	var name = selAvailable.split('\n')[0];
+	if (name){
+		elementInfo = scopes.jobs.determineI18n(name,'name');
+	}
 }
 /**
  * @param event
@@ -85,6 +95,10 @@ function onActionReset(event){
 function onActionSelect(event) {
 	//application.output('selection');
 	setElements('select');
+	var name = selSelected.split('\n')[0];
+	if (name){
+		elementInfo = scopes.jobs.determineI18n(name,'name');
+	}
 }
 /**
  * @param side
@@ -238,6 +252,7 @@ function onShow(firstShow, event) {
 	resetAvailable = application.getValueListArray('stsvl_catTemp1');
 	resetSelected = application.getValueListArray('stsvl_catTemp2');
 	setElementCount();
+	elements.btn_Save.enabled = false;
 }
 
 /**
@@ -539,6 +554,7 @@ function onActionApply(event) {
 		/** @type {Array} */ var tempArray = globals.a.tempHiddenColumns[form];
 		tempArray.push(hideArray[index]);
 	}
+	elements.btn_Save.enabled = true;
 }
 /**
  * @properties={typeid:24,uuid:"087925C3-B29C-4B22-BD62-FB5911B08BC9"}
@@ -561,4 +577,5 @@ function setElementCount(){
  */
 function onActionSave(event) {
 	scopes.jobs.saveTableSettings(event);
+	elements.btn_Save.enabled = false;
 }

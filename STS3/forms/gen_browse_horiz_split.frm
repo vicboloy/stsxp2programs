@@ -2,6 +2,10 @@ customProperties:"methods:{\
 onHideMethodID:{\
 arguments:null,\
 parameters:null\
+},\
+onResizeMethodID:{\
+arguments:null,\
+parameters:null\
 }\
 }",
 encapsulation:60,
@@ -66,6 +70,7 @@ uuid:"C1DDD5FB-0B1A-43D7-B4FA-014BF5FB73A8"
 ],
 name:"gen_browse_horiz_split",
 onHideMethodID:"6CE119C0-B7B7-4739-A18A-34A66B321F44",
+onResizeMethodID:"331F8566-6A83-493E-8863-62BA9FD706C7",
 onShowMethodID:"5D6141D0-3298-4D11-9211-D6536912D19D",
 showInMenu:true,
 size:"642,480",

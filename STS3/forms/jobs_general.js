@@ -280,9 +280,9 @@ function onActionHide(event) {
  *
  * @properties={typeid:24,uuid:"ADDF0C91-C9B7-4BA9-BE2E-B0586A227A18"}
  */
-function onActionRecalcWeight(event) {
+function onActionRecalcWeight(event) {//item_quantity changed to pcmk_qty below 20190102
 	var weightColumn = (metric_job) ? "item_weight" : "item_weight_lbs";
-	var queryWeight =  'select sum('+weightColumn+'*item_quantity) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '
+	var queryWeight =  'select sum('+weightColumn+'*pcmk_qty) from piecemarks inner join sheets on piecemarks.sheet_id = sheets.sheet_id '
 	+ ' and sheets.delete_flag IS NULL'
 	+ ' and sheets.job_id = ? and sheets.tenant_uuid = ? and piecemarks.delete_flag IS NULL and piecemarks.piecemark = piecemarks.parent_piecemark '
 	+ ' inner join idfiles on idfiles.piecemark_id = piecemarks.piecemark_id and idfiles.delete_flag IS NULL'

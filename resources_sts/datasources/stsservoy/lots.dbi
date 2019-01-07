@@ -8,7 +8,7 @@ dataType:12,
 flags:5,
 length:36,
 name:"lot_id",
-titleText:"i18n:lot_uuid"
+titleText:"i18n:table.lots.lot_uuid"
 },
 {
 allowNull:true,
@@ -33,7 +33,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"job_uuid",
-titleText:"i18n:table.jobs.job_uuid"
+titleText:"i18n:table.lots.job_uuid"
 },
 {
 allowNull:true,

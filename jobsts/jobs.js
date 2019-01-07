@@ -1199,7 +1199,7 @@ function readPiecemarks(){
 		var unique = uniquePiecemark(dsPiecemarks);
 		dsPiecemarkArray[unique] = pmId;
 	}
-	query = "SELECT sum(item_quantity),sum(item_weight*item_quantity) " +
+	query = "SELECT sum(pcmk_qty),sum(item_weight*pcmk_qty) " +  // was item_quantity 20190102
 	"FROM piecemarks " +
 	"WHERE sheet_id IN " + textList + " "+
 	" AND delete_flag IS null " +
@@ -1366,8 +1366,12 @@ function createSummedMarks(sourceDb){
 			rec.finish = fsRec.finish;
 			rec.grade = fsRec.grade;
 			rec.item_length = fsRec.item_length*1;
-			rec.item_quantity = fsRec.item_quantity;
+			//rec.item_quantity = fsRec.item_quantity; // change item_quantity to pcmk_qty 20190102
+			//rec.item_length_char = '';//rec.scopes.jobs.decToString('FEET',decimal,length,returnType); // add this readable item_length_in for piecemarks 20190102
 			rec.item_weight = fsRec.item_weight*1;
+			rec.item_weight_lbs = scopes.globals.kgToLb(fsRec.item_weight);
+			rec.item_length_in = scopes.globals.mmToIn(fsRec.item_length);
+			rec.item_length_char = scopes.globals.ftDecToString('INCHES',rec.item_length_in,null);//add readable imperial length
 			rec.parent_piecemark = fsRec.parent_piecemark
 			rec.piecemark = fsRec.piecemark;
 			rec.sheet_id = dsSheetArray["_"+fsRec.sheet_number];
@@ -1771,14 +1775,16 @@ function tablePrefsLoad(formx){
 				globals.a.tempHiddenColumns[formy].push(colName);
 			}
 		} else {//20181228 table pre-ordering when no table columns have been set
-			var jdex = scopes.prefs.defaultTableColumns.indexOf(colName);
-			//application.output('element name is '+colName);
-			if (jdex != -1){
-				elems[index].setLocation(jdex,elems[index].getLocationY());
-				elems[index].setSize(elems[index].getWidth(),elems[index].getHeight());
-				elems[index].visible = true;
-			} else {
-				elems[index].visible = tableHideField(colName,formy);
+			if (formx.search('loads') != -1){
+				var jdex = scopes.prefs.defaultTableColumns.indexOf(colName);
+				//application.output('element name is '+colName);
+				if (jdex != -1){
+					elems[index].setLocation(jdex,elems[index].getLocationY());
+					elems[index].setSize(elems[index].getWidth(),elems[index].getHeight());
+					elems[index].visible = true;
+				} else {
+					elems[index].visible = tableHideField(colName,formy);
+				}
 			}
 		}
 	}
@@ -2194,7 +2200,7 @@ function tablePrefsSave(event){
 	}
 	if (response == i18n.getI18NMessage('sts.btn.modify')){
 		var win = application.createWindow(i18n.getI18NMessage('sts.txt.column.order'), JSWindow.MODAL_DIALOG);
-		win.setInitialBounds(10, 10, 555, 485);
+		win.setInitialBounds(10, 10, 570, 500);
 		win.title = i18n.getI18NMessage('sts.txt.this.is.the.column.settings.window');
 		globals.modalResponse = "";
 		win.show(forms.gen_table_order);
@@ -2503,10 +2509,12 @@ function viewBTableCreateForm(formName){
 		code2 = 'function onRender3(event){scopes.printer.onRenderPrint(event);}';
 	}
 
+	//var codeResize = 'function onRightClick(event){application.output("123456789");}';
 	checkForm.onRecordSelection = checkForm.newMethod(code);
 	checkForm.onRender = checkForm.newMethod(code2);
 	checkForm.navigator = SM_DEFAULTS.NONE;
 	checkForm.view = JSForm.LOCKED_TABLE_VIEW;
+	//var resizeMethod = checkForm.newMethod(codeResize);
 	var last = ""; 
 	var offset = 0;
 	var colLength = 0;
@@ -2800,6 +2808,7 @@ function createPiecemark(fsRec,unique){
 	rec.item_weight = fsRec.item_weight;
 	rec.item_weight_lbs = scopes.globals.kgToLb(fsRec.item_weight);
 	rec.item_length_in = scopes.globals.mmToIn(fsRec.item_length);
+	rec.item_length_char = scopes.globals.ftDecToString('INCHES',rec.item_length_in,null);//add readable imperial length
 	rec.parent_piecemark = fsRec.parent_piecemark
 	rec.piecemark = fsRec.piecemark;
 	rec.sheet_id = dsSheetArray["_"+fsRec.sheet_number];
@@ -7852,16 +7861,16 @@ function queryAssembly(criteria,formName,subquery){
 	}
 	
 	// Show load numbers 20181116
-	/** @type {QBJoin<db:/stsservoy/loads>} 
-	//var ld1 = id1.joins.add('db:/stsservoy/loads');
-	//ld1.on.add(id1.columns.current_load_id.eq(ld1.columns.load_id));
-	/** @type {QBJoin<db:/stsservoy/loads>} 
-	//var ld2 = id1.joins.add('db:/stsservoy/loads');
-	//ld2.on.add(id1.columns.ship_load_id.eq(ld2.columns.load_id));
-	/** @type {QBJoin<db:/stsservoy/loads>} 
-	//var ld3 = id1.joins.add('db:/stsservoy/loads');
-	//ld3.on.add(id1.columns.received_load_id.eq(ld3.columns.load_id));
-	*/
+	/** @type {QBJoin<db:/stsservoy/loads>} */
+	var ld1 = id1.joins.add('db:/stsservoy/loads');
+	ld1.on.add(id1.columns.current_load_id.eq(ld1.columns.load_id));
+	/** @type {QBJoin<db:/stsservoy/loads>} */
+	var ld2 = id1.joins.add('db:/stsservoy/loads');
+	ld2.on.add(id1.columns.ship_load_id.eq(ld2.columns.load_id));
+	/** @type {QBJoin<db:/stsservoy/loads>} */ 
+	var ld3 = id1.joins.add('db:/stsservoy/loads');
+	ld3.on.add(id1.columns.received_load_id.eq(ld3.columns.load_id));
+	
 
 	
 	if (subquery == "summarized"){
@@ -8114,6 +8123,15 @@ function queryAssembly(criteria,formName,subquery){
 		}
 		sbi.root.result.add(sbi.columns.idfile_id.max);
 		
+		//get sequence count of idfiles for piecemarks 20190102
+		/** @type {QBJoin<db:/stsservoy/idfiles>} */
+		var id3 = id1.joins.add('db:/stsservoy/idfiles');
+		id3.on.add(id1.columns.piecemark_id.eq(id3.columns.piecemark_id));
+		id3.root.where.add(id1.columns.sequence_id.eq(id3.columns.sequence_id));
+		//id3.root.result.distinct = true;
+		id3.root.groupBy.add(id3.columns.sequence_id);
+		
+
 		/** @type {QBJoin<db:/stsservoy/employee>} */
 		var emp = id1.joins.add('db:/stsservoy/employee');
 		emp.on.add(id1.columns.original_employee_uuid.eq(emp.columns.employee_number));
@@ -8189,47 +8207,51 @@ function queryAssembly(criteria,formName,subquery){
 		for (var itemDex = 0;itemDex < tables.length;itemDex++){
 			var table = databaseManager.getTable('stsservoy',tables[itemDex]);
 			var cols = table.getColumnNames(); var tableColAlt = ''; var shortTable = '';
+			var tableName = tables[itemDex];
 			for (index = 0;index < cols.length;index++){
-				//if (stShown.indexOf(cols[index]) == -1){
-					switch (tables[itemDex]){
-						case 'jobs' : var tableCol = stj.getColumn(cols[index]);shortTable = 'job_';break;
-						case 'associations': tableCol = stji.getColumn(cols[index]);shortTable = 'pt_';break;
-						case 'id_serial_numbers' : tableCol = sn1.getColumn(cols[index]);shortTable = 'bc_';break;
-						case 'piecemarks' : tableCol = pmm.getColumn(cols[index]);shortTable = 'pm_';break;
-						case 'status_description' : tableCol = stat1.getColumn(cols[index]);shortTable = 'st_';break;
-						case 'idfiles' : tableCol = id1.getColumn(cols[index]);shortTable = 'if_';break;
-						case 'sheets' : tableCol = st.getColumn(cols[index]);shortTable = 'sh_';break;
-						case 'sequences' : tableCol = sq1.getColumn(cols[index]);shortTable = 'sq_';break;
-						case 'lots' : tableCol = lots.getColumn(cols[index]);shortTable = 'lt_';break;
-						case 'routings' : tableCol = route.getColumn(cols[index]);shortTable = 'rt_';break;
-						case 'sheet_bom' : tableCol = shbom.getColumn(cols[index]);shortTable = 'bom_';break;
-						case 'customers' : tableCol = loadsshipto.getColumn(cols[index]);shortTable = 'lds_';break;
-						case 'employee' : tableCol = emp.getColumn(cols[index]);shortTable = 'orig_';break;
-						default: null;
-					}
-					if (cols[index].search(shortTable) != 0){
-						tableColAlt = cols[index];
-						tableColAlt = shortTable+tableColAlt;
-						st.result.add(tableCol,tableColAlt);
-						st.groupBy.add(tableCol);
-						//if (application.isInDeveloper()){application.output('setting alt col as '+tableColAlt)}
-					} else {
-						st.result.add(tableCol);
-						st.groupBy.add(tableCol);
-						//if (application.isInDeveloper()){application.output('setting reg col as '+tableCol+' '+tables[itemDex])}
-					}
-					//stShown.push(cols[index]);
-				//} else {
-				//	if (application.isInDeveloper()){application.output('skipping column '+cols[index]+' '+tables[itemDex])}
-				//}
+				var tableColName = cols[index];
+				switch (tableName){
+					case 'jobs' : var tableCol = stj.getColumn(tableColName);shortTable = 'job_';break;
+					case 'associations': tableCol = stji.getColumn(tableColName);shortTable = 'pt_';break;
+					case 'id_serial_numbers' : tableCol = sn1.getColumn(tableColName);shortTable = 'bc_';break;
+					case 'piecemarks' : tableCol = pmm.getColumn(tableColName);shortTable = 'pm_';break;
+					case 'status_description' : tableCol = stat1.getColumn(tableColName);shortTable = 'st_';break;
+					case 'idfiles' : tableCol = id1.getColumn(tableColName);shortTable = 'if_';break;
+					case 'sheets' : tableCol = st.getColumn(tableColName);shortTable = 'sh_';break;
+					case 'sequences' : tableCol = sq1.getColumn(tableColName);shortTable = 'sq_';break;
+					case 'lots' : tableCol = lots.getColumn(tableColName);shortTable = 'lt_';break;
+					case 'routings' : tableCol = route.getColumn(tableColName);shortTable = 'rt_';break;
+					case 'sheet_bom' : tableCol = shbom.getColumn(tableColName);shortTable = 'bom_';break;
+					case 'customers' : tableCol = loadsshipto.getColumn(tableColName);shortTable = 'lds_';break;
+					case 'employee' : tableCol = emp.getColumn(tableColName);shortTable = 'orig_';break;
+					default: null;
+				}
+				if (tableName == 'piecemarks' && tableColName == 'item_quantity'){continue}//TODO temp remove item_quantity 20190102
+				if (tableColName.search(shortTable) != 0){
+					tableColAlt = tableColName;
+					tableColAlt = shortTable+tableColAlt;
+					st.result.add(tableCol,tableColAlt);
+					st.groupBy.add(tableCol);
+					//if (application.isInDeveloper()){application.output('setting alt col as '+tableColAlt)}
+				} else {
+					st.result.add(tableCol);
+					st.groupBy.add(tableCol);
+					//if (application.isInDeveloper()){application.output('setting reg col as '+tableCol+' '+tables[itemDex])}
+				}
 			}
 		}
-		//st.groupBy.add(ld1.columns.load_number);
-		//st.result.add(ld1.columns.load_number,'ld_current_load_num');
-		//st.groupBy.add(ld2.columns.load_number);
-		//st.result.add(ld2.columns.load_number,'ld_ship_load_num');
-		//st.groupBy.add(ld3.columns.load_number);
-		//st.result.add(ld3.columns.load_number,'ld_receive_load_num');
+		
+		//st.result.addValue(pmm.columfeetLength(),'bb_pcmk_length_char')
+		//st.result.add(pmm.root.getColumn(feetLength,'bb_pcmk_length_char'))
+		
+		st.result.add(id3.columns.idfile_id.count,'pcmk_seq_qty');
+		
+		st.groupBy.add(ld1.columns.load_number);
+		st.result.add(ld1.columns.load_number,'ld_current_load_num');
+		st.groupBy.add(ld2.columns.load_number);
+		st.result.add(ld2.columns.load_number,'ld_ship_load_num');
+		st.groupBy.add(ld3.columns.load_number);
+		st.result.add(ld3.columns.load_number,'ld_receive_load_num');
 
 		st.result.add(jship.columns.name,'barcode_customer_name');//3 BCCUST printer.js
 		st.result.add(jship.columns.customer_number,'barcode_customer_number');//23 CUSTNUM printer.js
@@ -8581,6 +8603,9 @@ function viewBTableCreateForm2(formName,datasource){
 	var code3 = 'function onShow(firstShow,event){if (firstShow){var rec = foundset.getSelectedRecord();scopes.jobs["transactionIdfileId'+versionForm+'"] = rec.if_idfile_id;foundset.getRecordIndex(foundset.getSelectedRecord());}}';
 	//var closeMemTable = 'function onHide(event){scopes.jobs.removeMemoryTable(event.getFormName());}';
 	//var code4 = 'function onResize(event){scopes.jobs.onViewResize(event);}';
+	var codeResize = 'function onRightClick(event){scopes.jobs.onRightClickColumn(event);}';//20190104 auto resize fields
+	var resizeMethod = checkForm.newMethod(codeResize);
+
 	if (formName.search('barcode') != -1 || formName.search('print') != -1){
 		code2 = 'function onRender3(event){scopes.printer.onRenderPrint(event);}';
 		checkForm.onRender = checkForm.newMethod(code2);
@@ -8630,7 +8655,7 @@ function viewBTableCreateForm2(formName,datasource){
 		//if (columnName.search("rowid") != -1){continue}
 		var columnDataIndex = tableOrderingArray.indexOf(columnName);
 		posArray = tableOrderingData[columnDataIndex];
-		if (!posArray){posArray = defArray}
+		if (!posArray){posArray = defArray}//use pre defined view loads array
 		// column not in prefs, add basic config
 		//if (tableOrderingData[columnDataIndex].length != 4){tableOrderingData[columnDataIndex] = new Array(columnName,0,20,1)} // prefs data incorrect
 		//if (typeof tableOrderingData[columnDataIndex][1] == "string"){tableOrderingData[columnDataIndex][1] = 0}
@@ -8640,6 +8665,7 @@ function viewBTableCreateForm2(formName,datasource){
 			(columnDataIndex != -1 && tableOrderingArray.length > 0);//20181228 table pre-ordering when no table columns have been set
 			//if (posArray[3] == 0){colLength = 0;setVisible = false;}
 		//application.output(columnName+'column count '+columnCnt+' visible '+setVisible+' hideEmpty '+scopes.globals.hideEmptyColumns+' remove '+removeColumns.indexOf(columnName));
+		if (formNameTable.search('summary') != -1){setVisible = true;}//Status Summary Table view
 		if (setVisible){columnCnt++}
 		if (!setVisible){var offsetHide = 9999999} else {offsetHide = 0}
 		if (columnName.search(/(_rowid|browsing_id)/) != -1){
@@ -8651,6 +8677,8 @@ function viewBTableCreateForm2(formName,datasource){
 
 	 	last = checkForm.newLabel(columnName,fieldPos*1+offsetHide*1,0,colLength,20);
 	 	last.enabled = false;
+	 	last.onRightClick = resizeMethod;//20190103 calculate and resize all column labels to match selected label on right click
+
 	 	last.borderType = solutionModel.createLineBorder(1,'#000000');
 		if (columnName.search(/(_rowid|browsing_id)/) != -1){
 			last.visible = false;
@@ -8660,13 +8688,14 @@ function viewBTableCreateForm2(formName,datasource){
 	 		last.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST;
 	 	}
 	 	last.labelFor=columnName;//columnNames2[index];
+	 	last.name = columnName+'_label'
 	 	last.dataProviderID = columnName;//columnNames2[index];
 	 	var textName = columnName;
 	 	if (i18nColumnNames[columnName]){
 	 		textName = i18nColumnNames[columnName];
 	 	}
-	 	last.toolTipText = textName;
-	 	last.text = textName;
+	 	last.toolTipText = textName+determineI18n(textName,'source');
+	 	last.text = determineI18n(columnName,'readable');//textName;
 	 	if (columnName == 'selection'){
 	 		//if (formName.search('loads_pcmk_0') == -1){//20181003 no need for checkmark in this view
 		 		//if (removeColumns.indexOf('selection') == -1){setVisible = true}
@@ -8686,7 +8715,7 @@ function viewBTableCreateForm2(formName,datasource){
 		//if (application.isInDeveloper()){application.output('column '+columnName+' = '+altColNames[columnName])}
 		var typeCol = typeof rec[columnName];
 		//application.output('type '+typeCol+ ' '+columnName);
- 		if (typeof rec[columnName] == "number"){
+ 		if (typeof rec[columnName] == "number" || columnName == 'pm_item_length_char'){
  			last.horizontalAlignment = SM_ALIGNMENT.RIGHT;
  		}	
 		last.editable = false;
@@ -10442,11 +10471,12 @@ function updatePiecemark(fsRec,unique){
 	//var rec = dsPiecemarks[pcmkId];
 	rec.edit_date = importDate;
 	rec.item_length = fsRec.item_length*1;
-	rec.item_quantity = fsRec.item_qty;
+	rec.item_quantity = fsRec.pcmk_qty;// fsRec.item_qty;//changed item_quantity to pcmk_qty 20190102
 	rec.pcmk_qty = fsRec.pcmk_qty;
 	rec.item_weight = fsRec.item_weight;
 	rec.item_weight_lbs = scopes.globals.kgToLb(fsRec.item_weight);
 	rec.item_length_in = scopes.globals.mmToIn(fsRec.item_length);
+	rec.item_length_char = scopes.globals.ftDecToString('INCHES',rec.item_length_in,null);//add readable imperial length
 	/**	if (globals.m.routes.indexOf(fsRec.e_route_code_id) == -1){
 	if (globals.session.appName != 'STS X Embedded'){ 
 			rec.e_route_code_id = forms.kiss_option_import.importRouting;
@@ -11520,16 +11550,420 @@ function checkMissingPMs(event){
 function onViewResize(event){
 	var formName = event.getFormName();
 	var form = forms[formName];
-	var lowerPanelHeight = form.lowerPanelHeight;
-	if (lowerPanelHeight == 0){return}
+	form.formResizing = true;
+
+	var lowerPanelHeight = form.lowerPanelHeight*1;
 	
-	//if (1==1){return}
-	//var splitLocation = forms[formName].elements['split'].dividerLocation;
-	//var win = form.controller.getWindow();
 	var elHeight = form.elements['split'].getHeight();
-	//var lowerHeight = elHeight - (elHeight - lowerPanelHeight);
-	if (lowerPanelHeight > elHeight - 40){lowerPanelHeight = elHeight - 40}
-	form.elements['split'].dividerLocation = elHeight - lowerPanelHeight;
+	var minHeight = Math.floor(elHeight*.20);
+	if (lowerPanelHeight == 0){return}
+
+	var newHeight = lowerPanelHeight+0;
+	if (lowerPanelHeight > elHeight - minHeight){newHeight = elHeight - minHeight;}
+	form.elements['split'].dividerLocation = elHeight - newHeight;
 	
-	
+	form.lowerPanelHeight = lowerPanelHeight;//20190104 needed this somehow due to firing of onDataChange for split
+}
+/**
+ * @param columnName
+ * @param typei18n
+ *
+ * @properties={typeid:24,uuid:"4E5DF1DC-1654-4843-990E-320B215C1173"}
+ * @AllowToRunInFind
+ */
+function determineI18n(columnName,typei18n){
+	var column = columnName;
+	var tmp = '';
+	var table = '';
+	/**
+	 * 						case 'jobs' : var tableCol = stj.getColumn(cols[index]);shortTable = 'job_';break;
+						case 'associations': tableCol = stji.getColumn(cols[index]);shortTable = 'pt_';break;
+						case 'id_serial_numbers' : tableCol = sn1.getColumn(cols[index]);shortTable = 'bc_';break;
+						case 'piecemarks' : tableCol = pmm.getColumn(cols[index]);shortTable = 'pm_';break;
+						case 'status_description' : tableCol = stat1.getColumn(cols[index]);shortTable = 'st_';break;
+						case 'idfiles' : tableCol = id1.getColumn(cols[index]);shortTable = 'if_';break;
+						case 'sheets' : tableCol = st.getColumn(cols[index]);shortTable = 'sh_';break;
+						case 'sequences' : tableCol = sq1.getColumn(cols[index]);shortTable = 'sq_';break;
+						case 'lots' : tableCol = lots.getColumn(cols[index]);shortTable = 'lt_';break;
+						case 'routings' : tableCol = route.getColumn(cols[index]);shortTable = 'rt_';break;
+						case 'sheet_bom' : tableCol = shbom.getColumn(cols[index]);shortTable = 'bom_';break;
+						case 'customers' : tableCol = loadsshipto.getColumn(cols[index]);shortTable = 'lds_';break;
+						case 'employee' : tableCol = emp.getColumn(cols[index]);shortTable = 'orig_';break;
+
+	 */
+	if (columnName.search('pm_') == 0){
+		tmp = columnName.replace('pm_','');
+		column = i18n.getI18NMessage('table.piecemarks.'+tmp);
+		table = ' (piecemarks)';
+	}
+	if (columnName.search('lds_') == 0){
+		tmp = columnName.replace('lds_','');
+		column = 'LDS '+i18n.getI18NMessage('table.customers.'+tmp);
+		table = ' (customers)';
+	}
+	if (columnName.search('bom_') == 0){
+		tmp = columnName.replace('bom_','');
+		column = i18n.getI18NMessage('table.sheet_bom.'+tmp);
+		table = ' (sheet_bom)'
+		if (column.search('!') == 0){
+			column = i18n.getI18NMessage('table.sheet_bom.'+columnName);
+		}
+	}
+	if (columnName.search('orig_') == 0){
+		tmp = columnName.replace('orig_','');
+		column = i18n.getI18NMessage('table.employee.'+tmp);
+		table = ' (employee)';
+	}
+	if (columnName.search('bc_') == 0){
+		tmp = columnName.replace('bc_','');
+		column = i18n.getI18NMessage('table.id_serial_numbers.'+tmp);
+		table = ' (id_serial_numbers)';
+		if (column.search('!') == 0){
+			switch (columnName) {
+				case 'bc_prefix':
+					column = i18n.getI18NMessage('table.customers.barcode_prefix');
+					table = ' (customers)';
+					break;
+				case 'bc_include_prefix':
+					column = i18n.getI18NMessage('table.customers.barcode_include_prefix')
+					table = ' (customers)';
+					break;
+				case 'bc_job_start':
+					column = i18n.getI18NMessage('table.customers.barcode_prefix');
+					table = ' (customers)';
+					break;
+				default:
+			}
+		}
+	}
+	if (columnName.search('pt_') == 0){
+		tmp = columnName.replace('pt_','');
+		column = i18n.getI18NMessage('table.associations.'+tmp);
+		table = ' (associations)';
+	}
+	if (columnName.search('lt_') == 0){
+		tmp = columnName.replace('lt_','');
+		column = i18n.getI18NMessage('table.lots.'+tmp);
+		table = ' (lots)';
+	}
+	if (columnName.search('st_') == 0){
+		tmp = columnName.replace('st_','');
+		column = i18n.getI18NMessage('table.status_description.'+tmp);
+		table = ' (status_description)';
+	}
+	if (columnName.search('sh_') == 0){
+		tmp = columnName.replace('sh_','');
+		column = i18n.getI18NMessage('table.sheets.'+tmp);
+		table = ' (sheets)';
+	}
+	if (columnName.search('sq_') == 0){
+		tmp = columnName.replace('sq_','');
+		column = i18n.getI18NMessage('table.sequences.'+tmp);
+		table = ' (sequences)';
+	}
+	if (columnName.search('rt_') == 0){
+		tmp = columnName.replace('rt_','');
+		column = i18n.getI18NMessage('table.routings.'+tmp);
+		table = ' (routings)';
+	}
+	if (columnName.search('if_') == 0){
+		tmp = columnName.replace('if_','');
+		column = i18n.getI18NMessage('table.idfiles.'+tmp);
+		table = ' (idfiles)';
+	}
+	if (columnName.search('customer_') == 0){
+		tmp = columnName.replace('customer_','');
+		column = i18n.getI18NMessage('table.addresses.'+tmp);
+		table = ' (addresses)';
+	}
+	if (columnName.search('cust_') == 0){
+		tmp = columnName.replace('cust_','');
+		column = i18n.getI18NMessage('table.addresses.'+tmp);
+		table = ' (addresses)';
+	}
+	if (columnName.search('ship_load_') == 0){
+		tmp = columnName.replace('ship_load_','');
+		column = i18n.getI18NMessage('table.loads.'+tmp);
+		table = ' (loads)';
+	}
+	if (columnName.search('recv_') == 0){
+		tmp = columnName.replace('recv_','');
+		column = i18n.getI18NMessage('table.loads.'+tmp);
+		table = ' (loads)';
+	}
+	if (columnName.search('ship_') == 0){
+		tmp = columnName.replace('ship_','');
+		column = i18n.getI18NMessage('table.loads.'+tmp);
+		table = ' (idfiles)';
+	}
+	if (columnName.search('job_') == 0){
+		tmp = columnName.replace('job_','');
+		column = i18n.getI18NMessage('table.jobs.'+tmp);
+		table = ' (jobs)';
+		if (column.search('!') == 0){
+			column = i18n.getI18NMessage('table.jobs.'+columnName);
+			table = ' (jobs)';
+		}
+		if (column.search('!') == 0){
+			column = i18n.getI18NMessage('table.customers.'+columnName);
+			table = ' (jobs.customers)';
+		}
+	}
+	/**
+	 * barcode_customer_name
+	 * barcode_customer_number
+	 * barcode_format_customer_name
+	 * bom_end_condition
+	 * btw_file_path
+	 * cust_addr_line1
+	 * cust_zip_code
+	 * heat_number
+	 * if_sequence_id
+	 * job_customer_fax
+	 * job_customer_phone
+	 * job_customer_rep
+	 * job_id
+	 * job_keep_minors
+	 * job_original_employee
+	 * job_so_to_load
+	 * lt_lot_id
+	 * pcmk_fab_shop
+	 * recv_load_date, recv_load_number, recv_load_receiving_wt
+	 * selection
+	 * sh_sheet_comment
+	 * ship_bol_out, ship_carrier_number,ship_customer_number,ship_fabricator_invoice,ship_load_care_of
+	 * 	ship_load_comment,ship_load_date, ship_load_number,ship_load_release,ship_load_shipped_weight,
+	 * 	ship_load_ ...
+	 * 
+	 */
+	if (column.search('_') != -1){
+		switch (columnName){//Derived table columns over multiple joins
+			case 'pcmk_fab_shop':
+				column = i18n.getI18NMessage('table.general.pcmk_fab_shop');
+				table = ' (piecemarks.associations)';
+				break;
+			case 'btw_file_path':
+				column = i18n.getI18NMessage('table.general.btw_file_path');
+				table = ' (preferences2)';
+				break;
+			case 'bc_parent_id_serial':
+				column = i18n.getI18NMessage('table.general.bc_parent_id_serial');
+				table = ' (idfiles.id_serial_numbers)';
+				break;
+			case 'barcode_format_customer_number':
+				column = i18n.getI18NMessage('table.general.barcode_format_customer_number');
+				table = ' (jobs.customers)';
+				break;
+			case 'barcode_format_customer_name':
+				column = i18n.getI18NMessage('table.general.barcode_format_customer_name');
+				table = ' (jobs.customers)';
+				break;
+			case 'job_customer_name':
+				column = i18n.getI18NMessage('table.general.job_customer_name');
+				table = ' (jobs.customers)';
+				break;
+			case 'barcode_customer_name':
+				column = i18n.getI18NMessage('table.general.barcode_customer_name');
+				table = ' (jobs.customers)';
+				break;
+			case 'job_customer_number':
+				column = i18n.getI18NMessage('table.general.job_customer_number');
+				table = ' (jobs.customers)';
+				break;
+			case 'barcode_customer_number':
+				column = i18n.getI18NMessage('table.general.barcode_customer_number');
+				table = ' (jobs.customers)';
+				break;
+			case 'ld_current_load_num':
+				column = i18n.getI18NMessage('table.general.ld_current_load_num');
+				table = ' (idfiles.loads)';
+				break;
+			case 'ld_ship_load_num':
+				column = i18n.getI18NMessage('table.general.ld_ship_load_num');
+				table = ' (idfiles.loads)';
+				break;
+			case 'ld_receive_load_num':
+				column = i18n.getI18NMessage('table.general.ld_receive_load_num');
+				table = ' (idfiles.loads)';
+				break;
+			case 'pcmk_seq_qty':
+				column = i18n.getI18NMessage('table.general.pcmk_seq_qty');
+				table = ' (CALC)';
+				break;
+			case 'bom_end_condition':
+				column = i18n.getI18NMessage('table.general.bom_end_condition');
+				table = ' (end_conditions)';
+				break;
+			case 'heat_number':
+				column = i18n.getI18NMessage('table.general.heat_number');
+				table = ' (heats)';
+				break;
+			case 'job_customer_fax':
+				column = i18n.getI18NMessage('table.general.job_customer_fax');
+				table = ' (customers)';
+				break;
+			case 'job_customer_phone':
+				column = i18n.getI18NMessage('table.general.job_customer_phone');
+				table = ' (customers)';
+				break;
+			case 'job_customer_rep':
+				column = i18n.getI18NMessage('table.general.job_customer_rep');
+				table = ' (customers)';
+				break;
+			case 'job_id':
+				column = i18n.getI18NMessage('table.jobs.job_id');
+				table = ' (jobs)';
+				break;
+			case 'bc_prefix':
+				column = i18n.getI18NMessage('table.general.bc_prefix');
+				table = ' (jobs)'
+				break;
+			case 'job_so_to_load':
+				column = i18n.getI18NMessage('table.general.job_so_to_load');
+				table = ' (idfiles)'
+				break;
+			case 'customer_city':
+				column = i18n.getI18NMessage('table.general.customer_city');
+				table = ' (customers.addresses)'
+				break;
+			case 'customer_state':
+				column = i18n.getI18NMessage('table.general.customer_state');
+				table = ' (customers.addresses)'
+				break;
+			case 'cust_addr_line1':
+				column = i18n.getI18NMessage('table.general.cust_addr_line1');
+				table = ' (customers.addresses)'
+				break;
+			case 'cust_zip_code':
+				column = i18n.getI18NMessage('table.general.cust_zip_code');
+				table = ' (customers.addresses)'
+				break;
+			case 'ship_bol_out':
+				column = i18n.getI18NMessage('table.general.ship_bol_out');
+				table = ' (loads)'
+				break;
+			case 'ship_carrier_number':
+				column = i18n.getI18NMessage('table.general.ship_carrier_number');
+				table = ' (loads)'
+				break;
+			case 'ship_load_comment':
+				column = i18n.getI18NMessage('table.general.ship_load_comment');
+				table = ' (loads)'
+				break;
+			case 'ship_sent_engineer':
+				column = i18n.getI18NMessage('table.general.ship_sent_engineer');
+				table = ' (loads)'
+				break;
+			case 'ship_fabricator_invoice':
+				column = i18n.getI18NMessage('table.general.ship_fabricator_invoice');
+				table = ' (loads)'
+				break;
+			case 'ship_sent_fabricator':
+				column = i18n.getI18NMessage('table.general.ship_sent_fabricator');
+				table = ' (loads)'
+				break;
+			case 'ship_sent_fireproofer':
+				column = i18n.getI18NMessage('table.general.ship_sent_fireproofer');
+				table = ' (loads)'
+				break;
+			case 'ship_sent_galvinizer':
+				column = i18n.getI18NMessage('table.general.ship_sent_galvinizer');
+				table = ' (loads)'
+				break;
+			case 'ship_load_invoice':
+				column = i18n.getI18NMessage('table.general.ship_load_invoice');
+				table = ' (loads)'
+				break;
+			case 'ship_load_number':
+				column = i18n.getI18NMessage('table.general.ship_load_number');
+				table = ' (loads)';
+				break;
+			case 'ship_load_care_of':
+				column = i18n.getI18NMessage('table.general.ship_load_care_of');
+				table = ' (loads)';
+				break;
+			case 'ship_load_po':
+				column = i18n.getI18NMessage('table.general.ship_load_po');
+				table = ' (loads)';
+				break;
+			case 'recv_load_date':
+				column = i18n.getI18NMessage('table.general.recv_load_date');
+				table = ' (loads)';
+				break;
+			case 'recv_load_receiving_wt':
+				column = i18n.getI18NMessage('table.general.recv_load_receiving_wt');
+				table = ' (loads)';
+				break;
+			case 'sh_sheet_comment':
+				column = i18n.getI18NMessage('table.general.sh_sheet_comment');
+				table = ' (sheets)';
+				break;
+			case 'job_original_employee':
+				column = i18n.getI18NMessage('table.general.job_original_employee');
+				table = ' (idfiles.customers)';
+				break;
+			case 'ship_load_total_weight':
+				column = i18n.getI18NMessage('table.general.ship_load_total_weight');
+				table = ' (loads)'
+				break;
+			case 'ship_load_time':
+				column = i18n.getI18NMessage('table.general.ship_load_time');
+				table = ' (loads)'
+				break;
+			case 'ship_load_shipped_weight':
+				column = i18n.getI18NMessage('table.general.ship_load_shipped_weight');
+				table = ' (loads)'
+				break;
+			case 'ship_load_trailer_info':
+				column = i18n.getI18NMessage('table.general.ship_load_trailer_info');
+				table = ' (loads)'
+				break;
+			case 'ship_load_date':
+				column = i18n.getI18NMessage('table.general.ship_load_date');
+				table = ' (loads)'
+				break;
+			case 'ship_load_care_of':
+				column = i18n.getI18NMessage('table.general.ship_load_care_of');
+				table = ' (loads)'
+				break;
+			case 'ship_customer_number':
+				column = i18n.getI18NMessage('table.general.ship_customer_number');
+				table = ' (loads)'
+				break;
+			default:
+		}
+	}
+	if (column.search('_') == 0){
+		//column = columnName;
+	}
+	//if (column.search('_') != -1){
+	//	if (application.isInDeveloper()){application.output('column: '+columnName+' -> '+column)}
+	//}
+	if (typei18n == 'source'){
+		return table;
+	} 
+	return column;
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"A07CC4A2-B285-4095-AD89-FFE1AC131085"}
+ */
+function onRightClickColumn(event){
+	//select all visible labels, from the one element calculate the size
+	var labelName = event.getElementName().replace('_label','');
+	application.output('LabelName '+labelName)
+	var formName = event.getFormName();
+	var form = forms[formName];
+	var colWidth = form.elements[labelName].getWidth();
+	var labelText = determineI18n(labelName,'name');
+	var spacing = colWidth/labelText.length;
+	for (var item in form.elements){
+		if (!form.elements[item].visible){continue}
+		labelName = item.replace('_label','');
+		var h = form.elements[item].getHeight();
+		labelText = determineI18n(labelName,'name');
+		var newW = Math.ceil(labelText.length*spacing);
+		form.elements[item].setSize(newW+1,h);
+	}
 }

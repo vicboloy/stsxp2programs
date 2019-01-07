@@ -15,7 +15,7 @@ allowNull:true,
 creationOrderIndex:6,
 dataType:4,
 name:"delete_flag",
-titleText:"i18n:table.general.delete_flag"
+titleText:"i18n:table.uom_types.delete_flag"
 },
 {
 allowNull:true,
@@ -24,14 +24,14 @@ autoEnterType:1,
 creationOrderIndex:8,
 dataType:93,
 name:"edit_date",
-titleText:"i18n:table.general.edit_date"
+titleText:"i18n:table.uom_types.edit_date"
 },
 {
 allowNull:true,
 creationOrderIndex:5,
 dataType:4,
 name:"logic_flag",
-titleText:"i18n:table.general.logic_flag"
+titleText:"i18n:table.uom_types.logic_flag"
 },
 {
 allowNull:true,
@@ -40,7 +40,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"tenant_uuid",
-titleText:"i18n:table.general.tenant_uuid"
+titleText:"i18n:table.uom_types.tenant_uuid"
 },
 {
 allowNull:true,

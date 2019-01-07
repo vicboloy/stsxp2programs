@@ -5,6 +5,10 @@
  */
 var lowerPanelHeight = 0;
 /**
+ * @properties={typeid:35,uuid:"90525B0F-26A4-4976-A7BA-C03B829B2703",variableType:-4}
+ */
+var formResizing = false;
+/**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
@@ -274,5 +278,8 @@ function onActionPrint(event) {
 function onTabChangeSplit(previousIndex, event) {
 	var elHeight = elements.split.getHeight();
 	var newSplit = elements.split.dividerLocation;
-	lowerPanelHeight = elHeight - newSplit;
+	if (forms[event.getFormName()].formResizing == false){
+		lowerPanelHeight = elHeight - newSplit;
+		forms[event.getFormName()].formResizing = false;
+	}
 }

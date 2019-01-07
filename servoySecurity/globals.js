@@ -1038,11 +1038,16 @@ function secGetUserID2(userName, tenantID) {
  */
 function getTenantCount(){
 	var creDate = new Date();
-	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
-	var tent = databaseManager.getFoundSet('stsservoy','tenant_list');
-	tent.loadAllRecords();
+	/** @type {QBSelect<db:/stsservoy/tenant_list>} */
+	var q = databaseManager.createSelect('db:/stsservoy/tenant_list');
+	q.result.add(q.columns.tenant_uuid);
+	var tent = databaseManager.getFoundSet(q);
+	//var tent = databaseManager.getFoundSet('stsservoy','tenant_list');
+	tent.loadRecords();
 	var empID = null;
-	if (tent.getSize() == 0){// new install because no tenant found
+	var newInstall = false;
+	if (tent.getSize() == 0){// new install because no tenant found, change to zero as a default, change to < 3 for adding companies
+		//newInstall = true;//uncomment for initial install
 		/** @type {JSFoundSet<db:/stsservoy/employee>} * /
 		var empl = databaseManager.getFoundSet('stsservoy','employee');
 		if (empl.find()){
@@ -1082,24 +1087,26 @@ function getTenantCount(){
 		//, 'groups','group_keys','user_groups','permissions','applications','keys'
 		// 'mapping', 'users','applications','associations','barcode_test','i18n_table',
 		// 'ref_types','messages','tenant_list','zipcodes','valuelists'
-		for (var index = 0;index < tablesToClear.length;index++){
-			var fs = databaseManager.getFoundSet('stsservoy',tablesToClear[index]);
-			fs.loadRecords();
-			if (fs.getSize() == 0){continue}
-			var rec = null; idx = 0;
-			fs.deleteAllRecords();
-			var table = databaseManager.getTable('stsservoy',tablesToClear[index]);
-			/* @type {Array} */
-			var tableNames = table.getColumnNames();
-			var tableFS = databaseManager.getFoundSetUpdater(fs);
-			if (tableNames.indexOf('tenant_uuid') != -1){
-				tableFS.setColumn('tenant_uuid',tenantRec.tenant_uuid);
+		if (newInstall){//20190103 ready for additional tenants, this is for initial tenant
+			for (var index = 0;index < tablesToClear.length;index++){
+				var fs = databaseManager.getFoundSet('stsservoy',tablesToClear[index]);
+				fs.loadRecords();
+				if (fs.getSize() == 0){continue}
+				var rec = null; idx = 0;
+				fs.deleteAllRecords();
+				var table = databaseManager.getTable('stsservoy',tablesToClear[index]);
+				/* @type {Array} */
+				var tableNames = table.getColumnNames();
+				var tableFS = databaseManager.getFoundSetUpdater(fs);
+				if (tableNames.indexOf('tenant_uuid') != -1){
+					tableFS.setColumn('tenant_uuid',tenantRec.tenant_uuid);
+				}
+				if (tableNames.indexOf('association_id') != -1){
+					tableFS.setColumn('association_id',assocId);
+				}
+				if (application.isInDeveloper()){application.output('setting tenant and assoc in table '+tablesToClear[index])}
+				tableFS.performUpdate();
 			}
-			if (tableNames.indexOf('association_id') != -1){
-				tableFS.setColumn('association_id',assocId);
-			}
-			if (application.isInDeveloper()){application.output('setting tenant and assoc in table '+tablesToClear[index])}
-			tableFS.performUpdate();
 		}
 		var custRec = secCreateP2Customer();
 		var empRec = secCreateP2Employee();
@@ -1117,6 +1124,8 @@ function getTenantCount(){
 	if (application.getSolutionName() != 'STS X Embedded'){
 		databaseManager.addTableFilterParam('stsservoy','tenant_list','tenant_uuid','!=','EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE','noEmbedded');
 	}
+	databaseManager.saveData(tent);
+	//tent = databaseManager.getFoundSet('db:/stsservoy/tenant_list');
 	tent.loadAllRecords();
 	return tent.getSize();
 }

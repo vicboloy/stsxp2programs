@@ -606,6 +606,7 @@ function saveExclSumms(){
 		}
 	}
 	errorMessage = i18n.getI18NMessage('sts.txt.import.exclusions.saved',new Array(jobImportExc,jobImportSum));
+	scopes.jobs.warningsX(event);
 }
 /**
  * Define the exclusion dataset for the foundset that holds records that are to be discarded

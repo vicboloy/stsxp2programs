@@ -50,6 +50,7 @@ var licenseErrorMessage = "";
 function onDataChangeCompany(oldValue, newValue, event) {
 	globals.companyLoginName = newValue;
 	if (application.isInDeveloper()){application.output('-----'+globals.companyLoginName)}
+	elements.userName.requestFocus();
 	return true
 }
 /**
@@ -154,6 +155,7 @@ function onShow(firstShow, event) {
 	}
 
 	errorMessage = '';//application.getScreenWidth()+' x '+application.getScreenHeight();
+	//errorMessage = plugins.UserManager.Client().ipAddress;
 }
 
 /**

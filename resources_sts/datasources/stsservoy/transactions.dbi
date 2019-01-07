@@ -17,7 +17,7 @@ creationOrderIndex:19,
 dataType:8,
 length:17,
 name:"altitude",
-titleText:"i18n:table.general.altitude"
+titleText:"i18n:table.transactions.altitude"
 },
 {
 allowNull:true,
@@ -25,7 +25,7 @@ creationOrderIndex:37,
 dataType:12,
 length:30,
 name:"bundle_bc",
-titleText:"i18n:table.general.bundle_bc"
+titleText:"i18n:table.transactions.bundle_bc"
 },
 {
 allowNull:true,
@@ -48,13 +48,14 @@ allowNull:true,
 creationOrderIndex:25,
 dataType:4,
 name:"delete_flag",
-titleText:"i18n:table.general.delete_flag"
+titleText:"i18n:table.transactions.delete_flag"
 },
 {
 allowNull:true,
 creationOrderIndex:35,
 dataType:93,
-name:"deleted_date"
+name:"deleted_date",
+titleText:"i18n:table.transactions.deleted_date"
 },
 {
 allowNull:true,
@@ -63,7 +64,7 @@ autoEnterType:1,
 creationOrderIndex:28,
 dataType:93,
 name:"edit_date",
-titleText:"i18n:table.general.edit_date"
+titleText:"i18n:table.transactions.edit_date"
 },
 {
 allowNull:true,
@@ -72,7 +73,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"employee_id",
-titleText:"i18n:table.general.employee_id"
+titleText:"i18n:table.transactions.employee_id"
 },
 {
 allowNull:true,
@@ -97,7 +98,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"idfile_id",
-titleText:"i18n:table.general.idfile_id"
+titleText:"i18n:table.transactions.idfile_id"
 },
 {
 allowNull:true,
@@ -106,7 +107,7 @@ creationOrderIndex:17,
 dataType:8,
 length:17,
 name:"latitude",
-titleText:"i18n:table.general.latitude"
+titleText:"i18n:table.transactions.latitude"
 },
 {
 allowNull:true,
@@ -115,7 +116,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"load_id",
-titleText:"i18n:table.general.load_id"
+titleText:"i18n:table.transactions.load_id"
 },
 {
 allowNull:true,
@@ -130,7 +131,7 @@ allowNull:true,
 creationOrderIndex:24,
 dataType:4,
 name:"logic_flag",
-titleText:"i18n:table.general.logic_flag"
+titleText:"i18n:table.transactions.logic_flag"
 },
 {
 allowNull:true,
@@ -163,7 +164,7 @@ creationOrderIndex:9,
 dataType:12,
 length:10,
 name:"revision_level",
-titleText:"i18n:table.general.revision_level"
+titleText:"i18n:table.transactions.revision_level"
 },
 {
 allowNull:true,
@@ -172,7 +173,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"status_description_id",
-titleText:"i18n:table.general.status_description_id"
+titleText:"i18n:table.transactions.status_description_id"
 },
 {
 allowNull:true,
@@ -182,7 +183,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"tenant_uuid",
-titleText:"i18n:table.general.tenant_uuid"
+titleText:"i18n:table.transactions.tenant_uuid"
 },
 {
 allowNull:true,
@@ -215,7 +216,8 @@ allowNull:true,
 creationOrderIndex:38,
 dataType:12,
 length:15,
-name:"trans_code2"
+name:"trans_code2",
+titleText:"i18n:table.transactions.trans_code2"
 },
 {
 allowNull:true,
@@ -246,7 +248,8 @@ allowNull:true,
 creationOrderIndex:36,
 dataType:12,
 length:15,
-name:"trans_status2"
+name:"trans_status2",
+titleText:"i18n:table.transactions.trans_status2"
 },
 {
 allowNull:true,

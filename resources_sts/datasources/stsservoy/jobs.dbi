@@ -8,7 +8,7 @@ dataType:12,
 flags:5,
 length:36,
 name:"job_id",
-titleText:"i18n:table.general.job_id"
+titleText:"i18n:table.jobs.job_id"
 },
 {
 allowNull:true,
@@ -18,7 +18,7 @@ flags:4,
 foreignType:"associations",
 length:36,
 name:"association_id",
-titleText:"i18n:table.general.association_id"
+titleText:"i18n:table.jobs.association_id"
 },
 {
 allowNull:true,
@@ -42,7 +42,8 @@ titleText:"i18n:table.jobs.bill_to"
 allowNull:true,
 creationOrderIndex:32,
 dataType:93,
-name:"create_date"
+name:"create_date",
+titleText:"i18n:table.jobs.create_date"
 },
 {
 allowNull:false,
@@ -52,7 +53,7 @@ flags:4,
 foreignType:"customers",
 length:36,
 name:"customer_id",
-titleText:"i18n:table.general.customer_id"
+titleText:"i18n:table.jobs.customer_id"
 },
 {
 allowNull:true,
@@ -67,7 +68,7 @@ allowNull:true,
 creationOrderIndex:21,
 dataType:4,
 name:"delete_flag",
-titleText:"i18n:table.general.delete_flag"
+titleText:"i18n:table.jobs.delete_flag"
 },
 {
 allowNull:true,
@@ -76,7 +77,7 @@ autoEnterType:1,
 creationOrderIndex:24,
 dataType:93,
 name:"edit_date",
-titleText:"i18n:table.general.edit_date"
+titleText:"i18n:table.jobs.edit_date"
 },
 {
 allowNull:true,
@@ -149,7 +150,7 @@ creationOrderIndex:13,
 dataType:12,
 length:15,
 name:"job_plant",
-titleText:"i18n:table.general.division"
+titleText:"i18n:table.jobs.job_plant"
 },
 {
 allowNull:true,
@@ -196,14 +197,15 @@ allowNull:true,
 creationOrderIndex:34,
 dataType:12,
 length:50,
-name:"labelase_format"
+name:"labelase_format",
+titleText:"i18n:table.jobs.labelase_format"
 },
 {
 allowNull:true,
 creationOrderIndex:20,
 dataType:4,
 name:"logic_flag",
-titleText:"i18n:table.general.logic_flag"
+titleText:"i18n:table.jobs.logic_flag"
 },
 {
 allowNull:true,
@@ -243,7 +245,7 @@ flags:4,
 foreignType:"addresses",
 length:36,
 name:"ship_to",
-titleText:"i18n:table.general.ship_to"
+titleText:"i18n:table.jobs.ship_to"
 },
 {
 allowNull:true,
@@ -252,7 +254,7 @@ dataType:12,
 flags:4,
 length:36,
 name:"tenant_uuid",
-titleText:"i18n:table.general.tenant_uuid"
+titleText:"i18n:table.jobs.tenant_uuid"
 },
 {
 allowNull:true,

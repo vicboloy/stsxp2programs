@@ -1073,7 +1073,7 @@ var nonRfViews = {
 		qty_labels : '',
 		piecemark : '',
 		sequence_number : '',
-		item_quantity : 'R',
+		pcmk_qty : 'R', // was item_quantity 20190102
 		item_weight : '',
 		cust_cow_code : '',
 		material : '',
@@ -1094,7 +1094,7 @@ var nonRfViews = {
 		qty_labels : '',
 		piecemark : '',
 		sequence_number : '',
-		item_quantity : 'R',
+		pcmk_qty : 'R',  // was item_quantity 20190102 
 		item_weight : '',
 		cust_cow_code : '',
 		material : '',
@@ -6592,7 +6592,7 @@ function ftDecToString(convertType, decimal, length, returnType){
 	*  this function will return the text version of that decimal value
 	*/
 	convertType = convertType.toUpperCase();
-	returnType = returnType.toUpperCase();
+	returnType = (returnType) ? returnType.toUpperCase() : returnType;
 	///var itemdimen = "";
 	var fractionOut = "";
 	var feet = 0;
@@ -6700,7 +6700,7 @@ function ftDecToString(convertType, decimal, length, returnType){
 			space = "";
 			if (feet != 0){length = feet+"'-";} else {length = "0'-"}
 			if (inches != 0){length += inches}else{length += "0"}
-			if (fractionOut != "0\""){
+			if (fractionOut == "0\""){
 				length += "\"";
 				//space = "-";
 			} else {

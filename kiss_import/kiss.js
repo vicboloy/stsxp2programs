@@ -825,8 +825,9 @@ function importFSRequest(event,xmlRequest,filters){
 			plugins.dialogs.showErrorDialog('1170',i18n.getI18NMessage('1170'));
 			return;
 		} */
-		application.output('FS Request For Job Data'+xmlRequest);
-		response = scopes.fs.com.call('FabSuiteXML',xmlRequest);
+		var newDate2 = new Date();
+		scopes.jobs.warningsMessage('FS Request For Job Data '+newDate2,true)
+		var response = scopes.fs.com.call('FabSuiteXML',xmlRequest);
 		response = response.toString();
 		var error = scopes.fs.fabSuiteError(response);
 		application.output(error);
@@ -848,6 +849,8 @@ function importFSRequest(event,xmlRequest,filters){
 			scopes.fs.com.call('FabSuiteXML',xmlClose);
 			scopes.fs.com.release();
 		}
+		newDate2 = new Date();
+		scopes.jobs.warningsMessage('FS Request Done '+newDate2,true)
 		var regX = new RegExp('<FileName>(.*)</FileName>');
 		var fileAndPath = regX.exec(xmlRequest);
 		application.output('file '+fileAndPath[1]);

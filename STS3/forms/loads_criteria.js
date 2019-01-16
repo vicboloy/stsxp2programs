@@ -164,6 +164,8 @@ function onActionShowWindow(){
 	var yOrigin = controller.getWindow().getY();
 	var winExist = application.getWindow(winTitle);
 	//application.output('window is existing'+winExist);
+	scopes.jobs.tableOrderingData = scopes.jobs.tablePrefsPreLoad(formName+'_table');
+
 	if (!winExist){//20180802 show browse loads if exists or create
 		var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
 		win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);

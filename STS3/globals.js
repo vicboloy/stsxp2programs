@@ -893,6 +893,7 @@ var showElementReferences = false;//20180105 show element references
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
+	//scopes.prefs.loadArrays();
 	//application.setUIProperty("ComboBoxUI.disabledForeground", 'Color.black');
 	//application.setUIProperty('ComboBoxUI.disabledForeground', new Packages.javax.swing.plaf.ColorUIResource(java.awt.Color.decode('#000000')));
 	application.putClientProperty("ComboBoxUI", 'com.sun.java.swing.plaf.motif.MotifComboBoxUI');
@@ -1046,6 +1047,7 @@ function onSolutionOpen() {
 	}
 	scopes.jobs.createMissingPermissionGroups();
 	//createPostGreSqlIndexes();//20180925 Tue set up indexing for better speed
+	scopes.prefs.loadArrays();
 }
 
 /**

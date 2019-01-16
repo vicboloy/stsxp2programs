@@ -8,7 +8,7 @@ name:"btn_SettingsLeftPanel",
 onActionMethodID:"9B76F79D-345F-4C2A-830E-CB035E55E972",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"80,26",
+size:"119,26",
 text:"i18n:sts.btn.settings",
 typeid:7,
 uuid:"22FF0AE8-9533-4143-8FB3-8D9C56A32459"
@@ -27,7 +27,7 @@ uuid:"2FBC559C-7671-4B42-92A2-4BDD40EE6F4C"
 {
 anchors:12,
 horizontalAlignment:0,
-location:"90,427",
+location:"134,427",
 name:"btn_MaximizeWindow",
 onActionMethodID:"B5F3140A-92DF-4C0D-A4A0-985F31F6573E",
 onDoubleClickMethodID:"-1",

@@ -1,4 +1,8 @@
 customProperties:"methods:{\
+onLoadMethodID:{\
+arguments:null,\
+parameters:null\
+},\
 onRecordEditStopMethodID:{\
 arguments:null,\
 parameters:null\
@@ -731,6 +735,7 @@ navigatorID:"-1",
 onElementFocusGainedMethodID:"-1",
 onElementFocusLostMethodID:"-1",
 onHideMethodID:"F1E8F18E-430A-4F2F-BDE5-AD466B64DAD1",
+onLoadMethodID:"8118CF9C-4744-4C70-A84D-918AA4205DB1",
 onRecordEditStopMethodID:"-1",
 onRecordSelectionMethodID:"-1",
 onShowAllRecordsCmdMethodID:"-1",

@@ -1049,6 +1049,25 @@ var rfViews = {
 		itemlength:'V',
 		locationpieces: 'V', //comma extends line with next data field after this one
 		locationweight: 'V'
+	},
+	'Checklist Receive' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		stocklocationin : 'R',
+		barcodein : 'R',
+		heatin : 'R',
+		asnin :'R',
+		quantityin : 'R',
+		bundled :'R',
+		printing : 'V',
+		asnnumber : 'V',
+		ponumber : 'V',
+		ordered : 'V',
+		remains : 'V',
+		material : 'V',
+		grade : 'V',
+		itemlength:'V',		
+		itemweight : 'V'
 	}
 }
 /**
@@ -1263,6 +1282,10 @@ var errorMessageShowing = false;
  * @properties={typeid:35,uuid:"C88C3BB3-D1CE-408D-B024-6994E1EE2D50"}
  */
 var localeSelected = '';
+/**
+ * @properties={typeid:35,uuid:"745A0368-ABDE-47BE-B7C5-A5ACAB3DC2E4",variableType:-4}
+ */
+var deBounceBtn = [];
 /**
  * @AllowToRunInFind
  * 
@@ -2510,6 +2533,10 @@ function rfChangeWindow(event,winName){
 		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.ship.by.sequence')];
 		currWin.show('rf_mobile_view');
 		break;
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]://'Checklist Receive'://20190116
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')];
+		currWin.show('rf_mobile_view');
+		break;
 	case mobileWindows[i18n.getI18NMessage('sts.mobile.exit')]://'Exit': 
 		//globals.rfExitMobileClient();
 		showExecLogout();
@@ -3125,7 +3152,8 @@ function getMenuList(){
 	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.saw'));//Saw
 	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.final.ship'));//Final Ship
 	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.ship.by.sequence'));//Ship By Sequence
-
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.checklist.receive'));//Checklist Receive
+	
 	session.rfViewsOffice = [];
 	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.status'));//Status
 	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.find.piece.marks'));//Find Piece Marks
@@ -3507,7 +3535,9 @@ function onStartLoadPrefs(prefsType){
 			} catch (e) {}
 		}
 	}
-	scopes.prefs.setMissingPrefs();
+	if (application.getSolutionName().search('mobile') == -1){
+		scopes.prefs.setMissingPrefs();
+	}
 
 }
 /**
@@ -4270,6 +4300,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			newRecB.transaction_date = transDate;//new Date();//date;//mob.timedBegin;
 			newRecB.transaction_start = date;//mob.timedBegin;
 			newRecB.tenant_uuid = session.tenant_uuid;
+			newRecB.job_uuid = mob.job.Id;//'';//20190108 add job UUID to transactions
 			newRecB.trans_status = mob.statusCode;
 			newRecB.trans_code = rfTransCode();
 			newRecB.revision_level = mob.currentRevision;
@@ -5587,6 +5618,7 @@ function rfSaveTransaction(event){
 			transFS.transaction_date = date;//new Date();//date;//mob.timedBegin;
 			transFS.transaction_start = date;//mob.timedBegin;
 			transFS.tenant_uuid = session.tenant_uuid;
+			transFS.job_uuid = mob.job.Id;//'';//20190108 add job UUID to transactions
 			transFS.trans_status = mob.statusCode;
 			transFS.trans_code = rfTransCode();
 			if (event.getFormName() == 'rf_bundles'){
@@ -12734,4 +12766,20 @@ function createStations(){
 		databaseManager.copyMatchingFields(items[idx],rec);
 	}
 	databaseManager.saveData(S);
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"92C3415A-D36C-4542-938B-F143F3E72E3B"}
+ */
+function deBounce(event){
+	var elButton = event.getElementName();
+	var currTime =  new Date().getTime();
+	if (!globals.deBounceBtn[elButton]){globals.deBounceBtn[elButton] = currTime;return false;}
+	var debounceTime = 60;
+	var diff = (currTime - globals.deBounceBtn[elButton])/1000;
+	///application.output(diff);
+	if (diff < debounceTime){return true}
+	globals.deBounceBtn[elButton] = null;
+	return false;
 }

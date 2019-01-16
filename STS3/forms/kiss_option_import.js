@@ -303,6 +303,7 @@ var endVars = null;
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
+	scopes.jobs.warningsMessage('Opening Import Options Windows',true);
 
 	emptyPiecemarkValues = scopes.jobs.checkMissingPMs(event);
 	controller.enabled = true;
@@ -606,7 +607,7 @@ function saveExclSumms(){
 		}
 	}
 	errorMessage = i18n.getI18NMessage('sts.txt.import.exclusions.saved',new Array(jobImportExc,jobImportSum));
-	scopes.jobs.warningsX(event);
+	scopes.jobs.warningsX(null);
 }
 /**
  * Define the exclusion dataset for the foundset that holds records that are to be discarded
@@ -1844,7 +1845,7 @@ function applyImportPreferences(event,skipDialog){
 	importRecordCount = totRec;
 	scopes.jobs.warningsMessage('Finished applying import prefs.',true);
 	databaseManager.saveData(fs);
-	//scopes.jobs.warningsX();
+	scopes.jobs.warningsX(null);
 }
 /**
  * Handle changed data.
@@ -2162,4 +2163,15 @@ function onActionSelections(event) {
 		rec.import_status = action;
 	}
 	databaseManager.saveData(forms.import_table.foundset);
+}
+
+/**
+ * Callback method when form is (re)loaded.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"8118CF9C-4744-4C70-A84D-918AA4205DB1"}
+ */
+function onLoad(event) {
+	scopes.jobs.warningsMessage('Opening Import Options Windows',true);
 }

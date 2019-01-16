@@ -479,6 +479,7 @@ var vRouteCode = '';
  * @SuppressWarnings(unused)
  */
 function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
+	if (globals.deBounce(event)){return}//20190114 debounce buttons for 60 seconds
 	//application.output(windowTitle);
 	var formNameNew = formName;
 	var baseWinName = windowTitle.replace(' View','');// added 201608 for 'view' forms of 'edit' forms

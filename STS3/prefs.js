@@ -1233,280 +1233,290 @@ var labels = "1 AREA Character 6 idfiles.id_area 10,\
 /**
  * @properties={typeid:35,uuid:"5DDCF579-40D5-485C-97F1-184AFCE4FC33",variableType:-4}
  */
-var labelFields = ['AREA',
-	'BATCH',
-	'BCCUST',
-	'BCFORM',
-	'BCINCLDPFX',
-	'BCJOBSTART',
-	'BCPREFIX',
-	'BCTITLE',
-	'BOLOUT',
-	'CARRNUM',
-	'COMMENTS',
-	'COWCODE',
-	'CTRLNUM',
-	'CUSCITY',
-	'CUSFAX',
-	'CUSFIRST',
-	'CUSLAST',
-	'CUSMIDDLE',
-	'CUSNAME',
-	'CUSPHONE',
-	'CUSSTATE',
-	'CUSSTREET',
-	'CUSTNUM',
-	'CUSTPO',
-	'CUSTSO',
-	'CUSZIP',
-	'DESCR1',
-	'DESCR2',
-	'EDITTIME',
-	'ENGXTIME',
-	'FABINVOICE',
-	'FABSHOP',
-	'FABXTIME',
-	'FIREXTIME',
-	'GALVXTIME',
-	'GRADE',
-	'HEAT',
-	'ID',
-	'IDFORMAT',
-	'IDLOCATION',
-	'IDSTATUS',
-	'INVOICE',
-	'JOBCAREOF',
-	'JOBID',
-	'JOBLOCAT',
-	'JOBNUM',
-	'JOBSHIPTO',
-	'JOBSTRUCT',
-	'JOBTITLE',
-	'JOIDFORMAT',
-	'JOLINE1NUM',
-	'JOLINE1STR',
-	'JOLINE2NUM',
-	'JOLINE2STR',
-	'LINE0FLD',
-	'LINE0PRMPT',
-	'LINE1NUM',
-	'LINE1STR',
-	'LINE2NUM',
-	'LINE2STR',
-	'LINE3FLD',
-	'LINE3PRMPT',
-	'LINE4FLD',
-	'LINE4PRMPT',
-	'LINE5FLD',
-	'LINE5PRMPT',
-	'LINE6FLD',
-	'LINE6PRMPT',
-	'LINE7FLD',
-	'LINE7PRMPT',
-	'LINE8FLD',
-	'LINE8PRMPT',
-	'LINE9FLD',
-	'LINE9PRMPT',
-	'LINEAFLD',
-	'LINEAPRMPT',
-	'LINEBFLD',
-	'LINEBPRMPT',
-	'LOADNUM',
-	'LODCAREOF',
-	'LODPO',
-	'LODRELEASE',
-	'LODSHIPTO',
-	'LOT',
-	'MRR',
-	'ORIGEMPL',
-	'OTHRXTIME',
-	'PANTXTIME',
-	'PCCOLOR',
-	'PCCOWCODE',
-	'PCMARK',
-	'PCRELEASE',
-	'PCUOM',
-	'PORELEASE',
-	'PRODTYPE',
-	'PROJYEAR',
-	'RAWMATLID',
-	'RECACTION',
-	'RECVLOAD',
-	'RECVTIME',
-	'REMAILTIME',
-	'REVLEVEL',
-	'ROUTECODE',
-	'SEMAILTIME',
-	'SEQNUM',
-	'SHEETNUM',
-	'SHIPLOAD',
-	'SHIPTAG',
-	'SHIPTIME',
-	'SITEXTIME',
-	'TRAILINFO',
-	'EDITDATE',
-	'ENGXDATE',
-	'FABXDATE',
-	'FIREXDATE',
-	'GALVXDATE',
-	'IDCREATED',
-	'OTHRXDATE',
-	'PANTXDATE',
-	'RECVDATE',
-	'REMAILDATE',
-	'REQDSHIP',
-	'SCHDSHIP',
-	'SEMAILDATE',
-	'SHIPDATE',
-	'SITEXDATE',
-	'DELETEID',
-	'LOGICFLAG',
-	'LPRINT',
-	'LSOTOLOAD',
-	'METRICJOB',
-	'BCJBSTRT',
-	'BCJOBLGTH',
-	'BCPFXLGTH',
-	'COSTEA',
-	'COWQTY',
-	'FIREPFCF',
-	'INCREMNT',
-	'ITEMWT',
-	'ITEMWTKG',
-	'JOBWT',
-	'LABELBC',
-	'LABELQTY',
-	'LGTNUM',
-	'ORIGQTY',
-	'PCUOMDOLL',
-	'QTY2PRINT',
-	'RECVQTY',
-	'RECVWT',
-	'SEQQTY',
-	'SHIPQTY',
-	'SHIPWT',
-	'TOTALWT',
-	'WIDNUM',
-	'RTBW',
-	'RTSW',
-	'RTBRANCH',
-	'PTFILLET',
-	'PTBRANCH',
-	'MTFILLET',
-	'MTBRANCH',
-	'LINESPEC',
-	'PREHEAT',
-	'SHOPHYDRO',
-	'FLDHYDRO',
-	'PMI',
-	'PWHT',
-	'DRAWNBY',
-	'CHECKBY',
-	'PAINTSYS',
-	'BHN',
-	'BHNMAX',
-	'LINENBR',
-	'REFDWG',
-	'SKETCH',
-	'PHASE',
-	'BOMCOMMENT',
-	'SHEETPO',
-	'PRIORDATE',
-	'MINORID',
-	'MINORQTY',
-	'BOMPARTNUM',
-	'BOMHEAT',
-	'BOMGUID',
-	'BOMGRADE',
-	'BOMSEQNUM',
-	'BOMITEMNUM',
-	'BOMREMARKS',
-	'PARENTPCMK',
-	'BOMQTY',
-	'BOMLGTNUM',
-	'BOMWIDNUM',
-	'BOMITEMWT',
-	'ERECTDWG',
-	'BUNDLEID',
-	'FINISH',
-	'DETAILMIN',
-	'FABMIN',
-	'HANDLMIN',
-	'PAINTMIN',
-	'SAWMIN',
-	'WELDMIN',
-	'RULECODE',
-	'FT_PKGNO',
-	'PCPHASE',
-	'PARENTCOPY',
-	'PARENTID',
-	'CAMBER',
-	'BOMMATL',
-	'BOMSIZE',
-	'BOMRATING',
-	'MATLCLASS',
-	'BOMENDPREP',
-	'GUID',
-	'BOMFINISH',
-	'PRIORITY',
-	'BOMLGTCHAR'];
+var labelFields = [];
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B76D19B0-22FB-4276-961F-73A71B342410"}
+ */
+var labelFieldsTmp = 'AREA,\
+BATCH,\
+BCCUST,\
+BCFORM,\
+BCINCLDPFX,\
+BCJOBSTART,\
+BCPREFIX,\
+BCTITLE,\
+BOLOUT,\
+CARRNUM,\
+COMMENTS,\
+COWCODE,\
+CTRLNUM,\
+CUSCITY,\
+CUSFAX,\
+CUSFIRST,\
+CUSLAST,\
+CUSMIDDLE,\
+CUSNAME,\
+CUSPHONE,\
+CUSSTATE,\
+CUSSTREET,\
+CUSTNUM,\
+CUSTPO,\
+CUSTSO,\
+CUSZIP,\
+DESCR1,\
+DESCR2,\
+EDITTIME,\
+ENGXTIME,\
+FABINVOICE,\
+FABSHOP,\
+FABXTIME,\
+FIREXTIME,\
+GALVXTIME,\
+GRADE,\
+HEAT,\
+ID,\
+IDFORMAT,\
+IDLOCATION,\
+IDSTATUS,\
+INVOICE,\
+JOBCAREOF,\
+JOBID,\
+JOBLOCAT,\
+JOBNUM,\
+JOBSHIPTO,\
+JOBSTRUCT,\
+JOBTITLE,\
+JOIDFORMAT,\
+JOLINE1NUM,\
+JOLINE1STR,\
+JOLINE2NUM,\
+JOLINE2STR,\
+LINE0FLD,\
+LINE0PRMPT,\
+LINE1NUM,\
+LINE1STR,\
+LINE2NUM,\
+LINE2STR,\
+LINE3FLD,\
+LINE3PRMPT,\
+LINE4FLD,\
+LINE4PRMPT,\
+LINE5FLD,\
+LINE5PRMPT,\
+LINE6FLD,\
+LINE6PRMPT,\
+LINE7FLD,\
+LINE7PRMPT,\
+LINE8FLD,\
+LINE8PRMPT,\
+LINE9FLD,\
+LINE9PRMPT,\
+LINEAFLD,\
+LINEAPRMPT,\
+LINEBFLD,\
+LINEBPRMPT,\
+LOADNUM,\
+LODCAREOF,\
+LODPO,\
+LODRELEASE,\
+LODSHIPTO,\
+LOT,\
+MRR,\
+ORIGEMPL,\
+OTHRXTIME,\
+PANTXTIME,\
+PCCOLOR,\
+PCCOWCODE,\
+PCMARK,\
+PCRELEASE,\
+PCUOM,\
+PORELEASE,\
+PRODTYPE,\
+PROJYEAR,\
+RAWMATLID,\
+RECACTION,\
+RECVLOAD,\
+RECVTIME,\
+REMAILTIME,\
+REVLEVEL,\
+ROUTECODE,\
+SEMAILTIME,\
+SEQNUM,\
+SHEETNUM,\
+SHIPLOAD,\
+SHIPTAG,\
+SHIPTIME,\
+SITEXTIME,\
+TRAILINFO,\
+EDITDATE,\
+ENGXDATE,\
+FABXDATE,\
+FIREXDATE,\
+GALVXDATE,\
+IDCREATED,\
+OTHRXDATE,\
+PANTXDATE,\
+RECVDATE,\
+REMAILDATE,\
+REQDSHIP,\
+SCHDSHIP,\
+SEMAILDATE,\
+SHIPDATE,\
+SITEXDATE,\
+DELETEID,\
+LOGICFLAG,\
+LPRINT,\
+LSOTOLOAD,\
+METRICJOB,\
+BCJBSTRT,\
+BCJOBLGTH,\
+BCPFXLGTH,\
+COSTEA,\
+COWQTY,\
+FIREPFCF,\
+INCREMNT,\
+ITEMWT,\
+ITEMWTKG,\
+JOBWT,\
+LABELBC,\
+LABELQTY,\
+LGTNUM,\
+ORIGQTY,\
+PCUOMDOLL,\
+QTY2PRINT,\
+RECVQTY,\
+RECVWT,\
+SEQQTY,\
+SHIPQTY,\
+SHIPWT,\
+TOTALWT,\
+WIDNUM,\
+RTBW,\
+RTSW,\
+RTBRANCH,\
+PTFILLET,\
+PTBRANCH,\
+MTFILLET,\
+MTBRANCH,\
+LINESPEC,\
+PREHEAT,\
+SHOPHYDRO,\
+FLDHYDRO,\
+PMI,\
+PWHT,\
+DRAWNBY,\
+CHECKBY,\
+PAINTSYS,\
+BHN,\
+BHNMAX,\
+LINENBR,\
+REFDWG,\
+SKETCH,\
+PHASE,\
+BOMCOMMENT,\
+SHEETPO,\
+PRIORDATE,\
+MINORID,\
+MINORQTY,\
+BOMPARTNUM,\
+BOMHEAT,\
+BOMGUID,\
+BOMGRADE,\
+BOMSEQNUM,\
+BOMITEMNUM,\
+BOMREMARKS,\
+PARENTPCMK,\
+BOMQTY,\
+BOMLGTNUM,\
+BOMWIDNUM,\
+BOMITEMWT,\
+ERECTDWG,\
+BUNDLEID,\
+FINISH,\
+DETAILMIN,\
+FABMIN,\
+HANDLMIN,\
+PAINTMIN,\
+SAWMIN,\
+WELDMIN,\
+RULECODE,\
+FT_PKGNO,\
+PCPHASE,\
+PARENTCOPY,\
+PARENTID,\
+CAMBER,\
+BOMMATL,\
+BOMSIZE,\
+BOMRATING,\
+MATLCLASS,\
+BOMENDPREP,\
+GUID,\
+BOMFINISH,\
+PRIORITY,\
+BOMLGTCHAR';
 /**
  * @properties={typeid:35,uuid:"DAB42457-A82D-45A8-B525-C1D2FB13C9BA",variableType:-4}
  */
 var prefsChangedOutside = [];
 /**
+ * @type {Array}
  * @properties={typeid:35,uuid:"5AF47F3A-69FA-4A13-B3BB-116F7C94495D",variableType:-4}
  */
-var defaultTableColumns = [
-'selection',
-'job_number',
-'bc_id_serial_ number',
-'if_original_quantity',
-'job_create_date',
-'sq_sequence_number',
-'lt_lot_number',
-'sh_sheet_number',
-//'pm_item_quantity',
-'pm_pcmk_qty',
-'pm_parent_piecemark',
-'pm_piecemark',
-'pm_material',
-'pm_finish',
-'pm_grade',
-'rt_route_code',
-'pm_item_length_in',
-'pm_item_lemgth_char',
-'pm_item_weight',
-'pm_item_length',
-'pm_item_weight_lbs',
-'if_summed_quantity',
-'pm_part_serial',
-'pm_create_date',
-'job_rf_interface',
-'if_id_creation_date',
-'if_edit_date',
-'if_guid_major',
-'if_guid_minor',
-'if_create_date',
-'bc_edit_date',
-'rt_route_description',
-'rt_allow_more_codes',
-'rt_edit_date',
-'pt_association_name',
-'pt_edit_date',
-'barcode_format_customer_name',
-'bc_include_prefix',
-'bc_job_start',
-'bc_prefix',
-'barcode_format_customer_number',
-'job_customer_name',
-'job_customer_number',
-'customer_city',
-'customer_state',
-'cust_addr_line1',
-'cust_zip_code',
-'bc_parent_id_serial'
-];
+var defaultTableColumns = [];
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"37D0BEE5-FDDA-4DA7-9378-E4630E37EA3D"}
+ */
+var defaultTableColumnsTmp = 'selection,\
+job_number,\
+bc_id_serial_ number,\
+if_original_quantity,\
+job_create_date,\
+sq_sequence_number,\
+lt_lot_number,\
+sh_sheet_number,\
+pm_pcmk_qty,\
+pm_parent_piecemark,\
+pm_piecemark,\
+pm_material,\
+pm_finish,\
+pm_grade,\
+rt_route_code,\
+pm_item_length_in,\
+pm_item_lemgth_char,\
+pm_item_weight,\
+pm_item_length,\
+pm_item_weight_lbs,\
+if_summed_quantity,\
+pm_part_serial,\
+pm_create_date,\
+job_rf_interface,\
+if_id_creation_date,\
+if_edit_date,\
+if_guid_major,\
+if_guid_minor,\
+if_create_date,\
+bc_edit_date,\
+rt_route_description,\
+rt_allow_more_codes,\
+rt_edit_date,\
+pt_association_name,\
+pt_edit_date,\
+barcode_format_customer_name,\
+bc_include_prefix,\
+bc_job_start,\
+bc_prefix,\
+barcode_format_customer_number,\
+job_customer_name,\
+job_customer_number,\
+customer_city,\
+customer_state,\
+cust_addr_line1,\
+cust_zip_code,\
+bc_parent_id_serial';
 // _________________________________________________________________________________________________
 /**
  * moved to globals. scopes.globals.
@@ -1982,14 +1992,14 @@ function onActionPrintLabels(event) {
 			var dbField = dbCol[dbCol.length-1];//get unique record field
 			tabContents = rec[dbField];
 			if (typeof tabContents === 'undefined'){
-				//application.output('undefined or unknow - '+scopes.printer.barTenderFields[index]);
+				if (application.isInDeveloper()){application.output('undefined or unknown - '+dbField+' '+scopes.printer.barTenderFields[index]);}
 				var fieldTagName = specObj.name;
 				tabContents = getNonRecordValues(rec,fieldTagName);
 			}
 			if (!tabContents){tabContents = ''}
 			
 			tabContents = tabContentFormat(tabContents,specObj);
-			//application.output('contents '+tabContents);
+			if (application.isInDeveloper()){application.output('contents '+tabContents);}
 			fileLine += tabContents+"\t";
 		}
 		fileLine += "\n";
@@ -2996,7 +3006,7 @@ function setMissingPrefs(){
 		for (var index = 0;index < dirs.length;index++){
 			dirList.push(dirs[index].getName());
 		}
-		for (var index = 0;index < dirs.length;index++){
+		for (index = 0;index < dirs.length;index++){
 			dir = dirs[index];
 			if (dir.isDirectory()){
 				var dirName = dir.getName();
@@ -3055,6 +3065,13 @@ function setMissingPrefs(){
 		//application.output('RM prefschangedoutside '+prefsChangedOutside);
 		//if (prefsChangedOutside && prefsChangedOutside.length > 0){onActionUpdatePrefs(null);}
 	}
+}
+/**
+ * @properties={typeid:24,uuid:"6B9C2ED7-40D7-419C-92C2-DE4FDD2570E7"}
+ */
+function loadArrays(){
+	labelFields = labelFieldsTmp.split(',');
+	defaultTableColumns = defaultTableColumnsTmp.split(',');
 }
 
 

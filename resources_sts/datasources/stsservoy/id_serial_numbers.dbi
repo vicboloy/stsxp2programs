@@ -43,6 +43,15 @@ titleText:"i18n:table.id_serial_numbers.id_serial_number"
 },
 {
 allowNull:true,
+creationOrderIndex:9,
+dataType:12,
+flags:4,
+length:36,
+name:"job_uuid",
+titleText:"i18n:table.id_serial_numbers.job_uuid"
+},
+{
+allowNull:true,
 creationOrderIndex:3,
 dataType:4,
 name:"logic_flag",

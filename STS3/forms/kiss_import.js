@@ -13,7 +13,7 @@ var selectedCust = "";
  *
  * @properties={typeid:35,uuid:"675D86A9-92BD-4BA8-AB98-280CAB563E59"}
  */
-var vJobNumber = '';
+// var vJobNumber = '';
 /**
  * @type {String}
  *
@@ -212,6 +212,7 @@ function fileReceipt(file){
  * @properties={typeid:24,uuid:"B3F01716-FF60-4B1E-94C0-C57744ED6B31"}
  */
 function getKissFile(event){
+	if (globals.deBounce(event)){return}
 	controller.enabled = false;
 	randFile = 'Import_'+vJobNumber+'_'+new Date().getTime()+'.kss';
 	scopes.kiss.saveImportSettings(event);

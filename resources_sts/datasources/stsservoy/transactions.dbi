@@ -102,6 +102,15 @@ titleText:"i18n:table.transactions.idfile_id"
 },
 {
 allowNull:true,
+creationOrderIndex:39,
+dataType:12,
+flags:4,
+length:36,
+name:"job_uuid",
+titleText:"i18n:table.transactions.job_uuid"
+},
+{
+allowNull:true,
 compatibleColumnTypes:"[[8,17,17]]",
 creationOrderIndex:17,
 dataType:8,

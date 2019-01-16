@@ -778,7 +778,7 @@ function getBTFieldData(){
 		217 BOMLGTCHAR Character 15 sheet_bom.bom_item_length.CALC 15,\
 		218 IDFINISH Character 30 idfiles.if_id_finish 30,\
 		219 IDBATCH Character 15 idfiles.if_id_batch 15,\
-		220 SUBCATG Character 10 piecemark.p_subcategory 30,\
+		220 SUBCATG Character 10 piecemark.pm_subcategory 30,\
 		221 LABELFMT Character 60 view.btw_file_path 60,\
 		222 LBLPRNTNAM Character 45 view.barcode_printer_name 55,\
 		223 RTOLET Character 6 sheets.sh_rtolet 6,\

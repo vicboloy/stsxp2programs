@@ -257,6 +257,48 @@ var functionKeyEntered = false;
  */
 var vSequenceList = [];
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"24D8949A-9B0B-4037-9A66-F68D2297DF99"}
+ */
+var asnNumber = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"ABE4BECD-A345-473E-84DE-89B37AD6B52A"}
+ */
+var stockLocation = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3D37E42A-A144-4195-8EEA-4C1F2C89138F"}
+ */
+var bundled = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"ECF3D064-57CA-4EE9-9A21-98FFDE51D56F"}
+ */
+var printEnabled = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"56A23FB9-3DC6-44AA-BECB-B18C53E579AA"}
+ */
+var poNumber = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"081DA295-A142-4574-B98F-A11F88C2B5C2",variableType:4}
+ */
+var invOrdered = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"50105FC7-99F8-4C92-BDC5-AC5C9416FD38",variableType:4}
+ */
+var invRemains = 0;
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){

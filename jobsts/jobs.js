@@ -2062,8 +2062,9 @@ function onGetInformation(event,flaggedDeleted) {
 	if (formX.elements.btn_Browse){
 		formX.elements.btn_Browse.enabled = true;//20180802 browse changed
 	}
-	forms[formName].browseInfoEnable(formName);
-	forms[formName].controller.enabled = true;
+	scopes.jobs.browseInfoEnable(event);
+	//forms[formName].browseInfoEnable(formName);//20190109 print labels inact
+	//forms[formName].controller.enabled = true;//20190109 print labels inact
 
 }
 /**
@@ -2749,6 +2750,7 @@ function createIdfileRecord(pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity,
 	rec.lot_id = lotId;
 	rec.id_serial_number_id = barcodeId;
 	rec.tenant_uuid = globals.session.tenant_uuid;
+	rec.job_uuid = scopes.jobs.importJob.jobId;//20190108 add job uuid
 	rec.original_quantity = origQuant;
 	rec.summed_quantity = summQuantity;
 	rec.id_guid = idBarcode;
@@ -2794,7 +2796,8 @@ function createPiecemark(fsRec,unique){
 		currentPcmkParentId = rec.piecemark_id;
 	}
 	rec.create_date = importDate;
-	rec.job_id = scopes.jobs.importJob.jobId;
+	//rec.job_id = scopes.jobs.importJob.jobId;//20190108 add job uuid
+	rec.job_uuid = scopes.jobs.importJob.jobId;//20190108 add job uuid
 	rec.tenant_uuid = globals.session.tenant_uuid;
 	rec.part_serial = createPartSerial();
 	warningsMessage('Create pm '+unique+' PN: '+rec.part_serial,false);
@@ -2948,7 +2951,7 @@ function createSequenceNumber(sequenceNumber){
 	var recIndex = fs.newRecord(false);
 	var rec = fs.getRecord(recIndex);
 	rec.sequence_number = sequenceNumber;
-	rec.job_id = (scopes.jobs.jobUnderCustomer) ? scopes.jobs.jobUnderCustomer : globals.session.jobId;
+	rec.job_id = scopes.jobs.importJob.jobId;//20190108 add job uuid//(scopes.jobs.jobUnderCustomer) ? scopes.jobs.jobUnderCustomer : globals.session.jobId;
 	rec.tenant_uuid = globals.session.tenant_uuid;
 	dsSequenceArray[unique] = rec.sequence_id;
 	dsSequenceArray[rec.sequence_id] = unique;
@@ -4289,6 +4292,7 @@ function createValidBarcode(){
 	var barRec = barsFS.getRecord(recIndex);
 	barRec.id_serial_number = createBarCodeNextNumber(); 
 	barRec.tenant_uuid = globals.session.tenant_uuid;
+	barRec.job_uuid = scopes.jobs.importJob.jobId;//20190108 add job uuid
 	barRec.edit_date = new Date();
 	createdRecords++;
 	//databaseManager.saveData(barRec);
@@ -6106,7 +6110,7 @@ function warningsYes(event){
 	if (globals.session.appName.search('mobile') != -1){return}
 	if (!scopes.jobs.warnWindow){scopes.jobs.warnWindow = null}
 	if (!scopes.jobs.timeIn){scopes.jobs.timeIn = new Date().getTime()}
-	var win = application.createWindow("STS Message", JSWindow.DIALOG);
+	var win = application.createWindow("STS Message", JSWindow.WINDOW);
 	scopes.jobs.warnWindow = win;
 	var mainApp = application.getWindow();
 	var locX = mainApp.getX() + mainApp.getWidth()/2 - 230;
@@ -9513,6 +9517,7 @@ function createSheetBom(sheetNumber,itemNumber){
 	bomRec.item_number = itemNumber;
 	bomRec.sheet_id = application.getUUID(sheetId);
 	bomRec.tenant_uuid = globals.session.tenant_uuid;
+	bomRec.job_uuid = scopes.jobs.importJob.jobId;//20190108 add job uuid//globals.importJobFS.jobId;
 	if (update){
 		dsSheetArrayRev[unique] = sheetId;
 		dsSheetArray[sheetId] = unique;

@@ -273,6 +273,15 @@ titleText:"i18n:table.sheet_bom.item_width_in"
 },
 {
 allowNull:true,
+creationOrderIndex:37,
+dataType:12,
+flags:4,
+length:36,
+name:"job_uuid",
+titleText:"i18n:table.sheet_bom.job_uuid"
+},
+{
+allowNull:true,
 creationOrderIndex:19,
 dataType:4,
 name:"logic_flag",

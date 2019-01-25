@@ -299,6 +299,58 @@ var invOrdered = 0;
  */
 var invRemains = 0;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"7D957001-7F73-467C-A8F1-C18C7AEF442E"}
+ */
+var finalize = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E5E6C8C7-770D-41DA-9686-272CD9978EB2"}
+ */
+var countryOfOrigin = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"CFD0CBBB-2C2E-4237-AECC-AA77AF12D397"}
+ */
+var billOfLading = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"46C9988F-A266-4A0E-9954-F071E6E5BF1F"}
+ */
+var remarks = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"22D45DD7-6468-4184-859F-0F53031B4E6E"}
+ */
+var invBarCode = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"FAEA342A-65EB-43B0-B0BD-543E3980775D"}
+ */
+var invMaterial = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"A4592E98-3731-486F-A900-A8335621FD46"}
+ */
+var invGrade = '';
+/**
+ * @properties={typeid:35,uuid:"97B26922-5C44-4634-9FAD-16018022A5E3",variableType:-4}
+ */
+var invLine = {};
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"A3FE9FEC-9B1F-4043-91ED-EB56668428BC",variableType:4}
+ */
+var lastQty = 0;
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -360,7 +412,7 @@ function onShowForm(firstShow,event) {
 	if (application.isInDeveloper()){application.output('foundset '+foundset+' curr field width '+currWidth)}
 	globals.rfClearMobDetails();
 	globals.mobWeightUnits = (globals.isJobMetric(forms[formName].jobNumber)) ? " kgs" : " lbs";
-	globals.mobLengthUnits = (globals.isJobMetric(forms[formName].jobNumber)) ? " mm" : " ins";
+	globals.mobLengthUnits = (globals.isJobMetric(forms[formName].jobNumber)) ? " M" : " I";
 	lastID = "";
 	forms[formName].functionKeyEntered = false;
 	var show = [];
@@ -755,3 +807,26 @@ function onLoad(event) {
 
 }
 
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"B6905A91-A661-467C-97F4-F3530F37EF4B"}
+ */
+function onDataChangeQuantity(oldValue, newValue, event) {
+	if (globals.session.program == scopes.globals.mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+		if (quantity*1 < 1 || quantity*1 > invRemains*1){
+			scopes.globals.errorDialogMobile(event,1062,'genericin','Invalid Quantity');
+			quantity = '';
+			return true;
+		}
+		// required values not yet set?, checked at initial entry genericin Q value
+	}
+	return true
+}

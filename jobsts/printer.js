@@ -556,8 +556,9 @@ i18n:sts.txt.system.label.default
 }
 /**
  * @properties={typeid:24,uuid:"AD8B81AF-EA13-4F69-BE11-08F3C1449AF0"}
+ * @param {String} labelFldType
  */
-function getBTFieldData(){
+function getBTFieldData(labelFldType){
 	var barTenderSpecs = "\
 		1 AREA Character 6 idfiles.if_id_area 10,\
 		2 BATCH Character 3 idfiles.if_id_batch 15,\
@@ -803,11 +804,86 @@ function getBTFieldData(){
 		242 OPERATEMP Character 10 sheets.sh_operatemp 10,\
 		243 OPERAPRES Character 10 sheets.sh_operapres 10";
 	
+	var barTenderRawSpecs = '\
+		1 LABELQTY Numeric 4 view.label_count 4 inventory.quantity 4 how many to print being driven by scanners\
+		2 QTY Numeric 14.4 inventory.quantity 4 quantity of inventory item see 1\
+		3 CUSTNUM Character 10 customers.customer_number 14\
+		4 CONTROL Character 15 inventory.control 20\
+		5 MODELPART Character 30 inventory.model_part 40\
+		6 SERIAL Character 40 inventory.serial_number 40\
+		7 IDFLINE2 Character 23 UNUSED - label line 1 and line 2 unused\
+		8 IDSLINE2 Character 23 UNUSED \
+		9 LOCATION Character 10 inventory.location 15\
+		10 WTUOM Character 5 UNUSED - comes from M or I part master table from warehouse package\
+		11 PARTWT Numeric 9.2 inventory.item_weight 9.2 part master table 10 x 40 comes from part master table\
+		12 PARTDESCR Character 60 UNUSED part master table\
+		13 LABELSTYL Character 20 UNUSED \
+		14 LABELFMT Character 30 view.btw_file_path just file name 60\
+		15 HEAT Character 15 inventory.heat 40\
+		16 LGTNUM Numeric 14 4 inventory.item_length_in 14.4\
+		17 CHARLGTH Character 15 inventory.item_length_char 20\
+		18 LBLCONTROL Character 20 UNUSED \
+		19 LBLMODEL Character 20 UNUSED \
+		20 LBLSERIAL Character 20 UNUSED \
+		21 PONUM Character 20 inventory.po_number 30\
+		22 POLINE Numeric 6.2 inventory.po_line_number 6.2\
+		23 LOGICFLAG Logical 1 inventory.logic_flag 1 - T/F\
+		24 POJOBNUM Character 25 jobs.job_number 20\
+		25 LABELNAME Character 20 UNUSED \
+		26 BILLIN Character 10 inventory.bill_of_lading_in 15\
+		27 BILLOUT Character 10 inventory.bill_of_lading_out 15\
+		28 CERTDATE Date 8 inventory.cert_date DATETIME - propane bottles\
+		29 DUEBACK Date 8 inventory.due_back_date DATETIME - blank\
+		30 FILLDATE Date 8 inventory.fill_date DATETIME -blank\
+		31 INVREFER Character 15 inventory.inventory_ref_number 20 - catchall field\
+		32 PLANT Character 6 association.association_name 50\
+		33 PROCESS Character 5 UNUSED - blank -usally stock/receiv/ship/pick/pickstage\
+		34 RECVDATE Date 8 inventory.receive_date DATETIME\
+		35 RECVTIME Character 8 inventory.receive_date DATETIME hh:mm:ss\
+		36 REMARKS Character 32 inventory.remarks 30\
+		37 SHIPDATE Date 8 inventory.ship_date DATETIME\
+		38 SHIPTIME Character 8 inventory.ship_date DATETIME\
+		39 SQFT Numeric 6.2 inventory.item_square_feet 6.2\
+		40 WT Numeric 9.2 inventory.item_weight 9.2\
+		41 SERLPRNTD Logical 1 inventory.lprint 1\
+		42 CUSNAME Character 40 customers.job_customer_name 45\
+		43 RUNDATE Date 8 UNUSED \
+		44 RUNSHIFT Character 2 UNUSED \
+		45 RUNLINENBR Numeric 3 UNUSED \
+		46 RUNCAR Numeric 3 UNUSED \
+		47 RUNFORMNBR Numeric 3 UNUSED \
+		48 CUSOTHER1 Character 25 UNUSED \
+		49 CUSOTHER2 Character 25 UNUSED \
+		50 CUSOTHER3 Character 25 UNUSED \
+		51 POUOM Character 5 UNUSED - how do i order it\
+		52 INVOICEUOM Character 5 UNUSED - how do i invoice it\
+		53 STOCKUOM Character 5 UNUSED - how do i stock it\
+		54 INVPRNTUOM Character 5 UNUSED - which uom to print\
+		55 OEQTY Numeric 8 UNUSED - blank\
+		56 SILO Numeric 6 UNUSED - blank\
+		57 BOXNUM Numeric 6 UNUSED \
+		58 SLDPARTNUM Character 25 UNUSED\
+		59 LBLPRNTNAM Character 45 view.barcode_printer_name 55\
+		60 LABELDESCR Character 35 UNUSED\
+		61 PARTGRP Character 20 UNUSED \
+		62 OEJOBNUM Character 10 UNUSED - order entry qty\
+		63 JOBNUM Character 10 jobs.job_number 20\
+		64 GRADE Character 10 inventory.grade 20\
+		65 EMPLNUM Character 5 employees.employee_number 15\
+		66 FABSHOP Character 5 associations.association_name 50\
+		67 WIDNUM Numeric 10.4 inventory.item_width 10.4\
+		68 QCAPPVD Logical 1 inventory.qc_approved_flag 1\
+	';
+	
+	//if (btType == 'P'){
+	//var labelFldType = 'P';//Piecemark or Raw
+	var pcmkType = [labelFldType,null];
 	/** @type {QBSelect<db:/stsservoy/label_fields>} */
 	var q = databaseManager.createSelect('db:/stsservoy/label_fields');
+	q.where.add(q.columns.label_field_type.isin(pcmkType));
 	q.result.add(q.columns.label_field_id);
 	q.sort.add(q.columns.field_order);
-	var Q = databaseManager.getFoundSet(q);
+	var Q = databaseManager.getFoundSet(q);//TODO change this to get data
 	var existingFields = [];
 	/** @type {JSRecord<db:/stsservoy/label_fields>} */
 	var rec = null; var idx = 1;
@@ -828,46 +904,47 @@ function getBTFieldData(){
 	var btSpecs = [];
 	var saveRecs = false;
 	/** @type{Array} */
-	var specs = barTenderSpecs.split(',');
+	var specs = [];
+	if (labelFldType == 'P'){//(P)iecemark
+		barTenderSpecs.split(',');
+	} else {//(R)aw Material
+		barTenderRawSpecs.split(',');
+	}
+		
 	for (idx = 0;idx < specs.length;idx++){
-		var btSpec = {num: 0, name:'',dbtype:'', size: 0,dbcol:'',dbsize:0}
+		//var btSpec = {field_order: 0, name:'',dbtype:'', size: 0,dbcol:'',dbsize:0,fldtype:labelFldType}
 		var fields = specs[idx].trim().split(/ +/);
-		var btSpec1 = btSpec;
-		btSpec1 = {
-			num : fields[0].trim()*1,
-			name : fields[1],
-			dbtype : fields[2],
+		//var btSpec1 = btSpec;
+		var btSpec = {
+			field_order : fields[0].trim()*1,
+			field_name : fields[1],
+			field_type : fields[2],
 			size : fields[3],
-			dbcol : fields[4],
-			dbsize : fields[5]
+			db_field : fields[4],
+			dbsize : fields[5],
+			label_field_type : labelFldType
 		}
-		btSpecs.push(btSpec1);
-		if (existingFields.indexOf(btSpec1.num) == -1){
+		btSpecs.push(btSpec);
+		if (existingFields.indexOf(btSpec.num) == -1){
 			saveRecs = true;
 			var i2 = Q.newRecord(false);
 			rec = Q.getRecord(i2);
+			databaseManager.copyMatchingFields(btSpec,rec);
 			rec.edit_date = new Date();
-			rec.field_order = btSpec1.num;
-			rec.field_name = btSpec1.name;
-			rec.field_type = btSpec1.dbtype;
-			var widthSpec = btSpec1.size.split('.');
+			//rec.field_order = btSpec1.num;
+			//rec.field_name = btSpec1.name;
+			//rec.field_type = btSpec1.dbtype;
+			var widthSpec = btSpec.size.split('.');
 			rec.field_width = widthSpec[0];
 			rec.field_decimal = (widthSpec[1]) ? widthSpec[1] : 0;
-			rec.db_field = btSpec1.dbcol;
-			if (btSpec1.dbsize == 'DATETIME'){
+			//rec.db_field = btSpec1.dbcol;
+			//rec.label_field_type = btSpec1.fldtype;
+			if (btSpec.dbsize == 'DATETIME'){
 				rec.db_width = 8;
 			} else {
-				application.output('dbsize '+btSpec1.dbsize);
-				rec.db_width = btSpec1.dbsize;				
+				if (application.isInDeveloper()){application.output('dbsize '+btSpec.dbsize);}
+				rec.db_width = btSpec.dbsize;				
 			}
-			/** if (tableColumns[btSpec1.dbcol]){
-				rec.db_width = tableColumns[btSpec1.dbcol]
-			} else if (btSpec1.dbsize){
-				rec.db_width = (btSpec1.dbsize == 'DATETIME') ? 8 : btSpec1.dbsize;
-			} else {
-				rec.db_width = 0;
-			} */
-			
 		}
 	}
 	if (saveRecs){databaseManager.saveData(Q)}
@@ -897,4 +974,126 @@ function getBTFieldTabs(){
 	 'FT_PKGNO','PCPHASE','PARENTCOPY','PARENTID','CAMBER','BOMMATL','BOMSIZE','BOMRATING','MATLCLASS','BOMENDPREP','GUID','BOMFINISH'
 	 ,'PRIORITY','BOMLGTCHAR'];
 	return btTabs;
+}
+
+/**
+ * @param {JSEvent} event
+ * @param {Array} invUUIDs
+ *
+ * @properties={typeid:24,uuid:"2507CDA0-3384-4315-916A-877E6D3F1AA3"}
+ */
+function onActionPrintRMLabels(event,invUUIDs) {
+	//start show printing warning
+	//determine is this metric or imperial labeling?  
+	var metric = false;
+	var form = forms[event.getFormName()];
+	var labelQtyRequested = form.quantity;
+	var defaultPrinter = rawMaterialPrinter;
+	var employeeNumber = globals.session.employeeNum;
+	/** @type {QBSelect<db:/stsservoy/inventory>} */
+	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.inventory_uuid.isin(invUUIDs));
+	/** @type {QBJoin<db:/stsservoy/jobs>} */
+	var r = q.joins.add('db:/stsservoy/jobs');
+	q.where.add(r.columns.job_id.eq(q.columns.job_uuid));
+	/** @type {QBJoin<db:/stsservoy/customers>} */
+	var s = r.joins.add('db:/stsservoy/customers');
+	q.where.add(r.columns.customer_id.eq(s.columns.customer_id));
+	/** @type {QBJoin<db:/stsservoy/associations>} */
+	var t = q.joins.add('db:/stsservoy/associations');
+	q.where.add(t.columns.association_uuid.eq(q.columns.association_uuid));
+	q.result.addValue(form.quantity,'LABELQTY');
+	q.result.add(q.columns.quantity,'QTY');
+	q.result.add(s.columns.customer_number,'CUSTNUM');
+	q.result.add(q.columns.control,'CONTROL');
+	q.result.add(q.columns.model_part,'MODELPART');
+	q.result.add(q.columns.serial_number,'SERIAL');
+	q.result.addValue('X-UNUSED','IDFLINE2');
+	q.result.addValue('X-UNUSED','IDSLINE2');
+	q.result.add(q.columns.location,'LOCATION');
+	q.result.addValue('X-UNUSED','WTUOM');
+	if (metric){
+		q.result.add(q.columns.item_weight,'PARTWT');
+	} else {
+		q.result.add(q.columns.item_weight_lbs,'PARTWT');
+	}
+	q.result.addValue('X-UNUSED','PARTDESCR');
+	q.result.addValue('X-UNUSED','LABELSTYL');
+	q.result.addValue(rawMaterialLabelFormat,'LABELFMT');
+	q.result.add(q.columns.heat,'HEAT');
+	if (metric){
+		q.result.add(q.columns.item_length,'LGTNUM');
+	} else {
+		q.result.add(q.columns.item_length_in,'LGTNUM');
+	}
+	q.result.add(q.columns.item_length_char,'CHARLGTH');
+	q.result.addValue('X-UNUSED','LBLCONTROL');
+	q.result.addValue('X-UNUSED','LBLMODEL');
+	q.result.addValue('X-UNUSED','LBLSERIAL');
+	q.result.add(q.columns.po_number,'PONUM');
+	q.result.add(q.columns.po_line_number,'POLINE');
+	q.result.add(q.columns.logic_flag,'LOGICFLAG');
+	q.result.add(r.columns.job_number,'POJOBNUM');
+	q.result.addValue('X-UNUSED','LABELNAME');
+	q.result.add(q.columns.bill_of_lading_in,'BILLIN');
+	q.result.add(q.columns.bill_of_lading_out,'BILLOUT');
+	q.result.add(q.columns.cert_date,'CERTDATE');
+	q.result.add(q.columns.due_back_date,'DUEBACK');
+	q.result.add(q.columns.fill_date,'FILLDATE');
+	q.result.add(q.columns.inventory_ref_number,'INVREFER');
+	q.result.add(t.columns.association_name,'PLANT');
+	q.result.addValue('X-UNUSED','PROCESS');
+	q.result.add(q.columns.receive_date,'RECVDATE');
+	q.result.add(q.columns.receive_date,'RECVTIME');
+	q.result.add(q.columns.remarks,'REMARKS');
+	q.result.add(q.columns.ship_date,'SHIPDATE');
+	q.result.add(q.columns.ship_date,'SHIPTIME');
+	q.result.add(q.columns.item_square_feet,'SQFT');
+	if (metric){
+		q.result.add(q.columns.item_weight,'WT');
+	} else {
+		q.result.add(q.columns.item_weight_lbs,'WT');
+	}
+	q.result.add(q.columns.lprint,'SERLPRNTD');
+	q.result.add(s.columns.name,'CUSNAME');
+	q.result.addValue('X-UNUSED','RUNDATE');
+	q.result.addValue('X-UNUSED','RUNSHIFT');
+	q.result.addValue('X-UNUSED','RUNLINENBR');
+	q.result.addValue('X-UNUSED','RUNCAR');
+	q.result.addValue('X-UNUSED','RUNFORMNBR');
+	q.result.addValue('X-UNUSED','CUSOTHER1');
+	q.result.addValue('X-UNUSED','CUSOTHER2');
+	q.result.addValue('X-UNUSED','CUSOTHER3');
+	q.result.addValue('X-UNUSED','POUOM');
+	q.result.addValue('X-UNUSED','INVOICEUOM');
+	q.result.addValue('X-UNUSED','STOCKUOM');
+	q.result.addValue('X-UNUSED','INVPRNTUOM');
+	q.result.addValue('X-UNUSED','OEQTY');
+	q.result.addValue('X-UNUSED','SILO');
+	q.result.addValue('X-UNUSED','BOXNUM');
+	q.result.addValue('X-UNUSED','SLDPARTNUM');
+	q.result.addValue(defaultPrinter,'LBLPRNTNAM');
+	q.result.addValue('X-UNUSED','LABELDESCR');
+	q.result.addValue('X-UNUSED','PARTGRP');
+	q.result.addValue('X-UNUSED','OEJOBNUM');
+	q.result.add(r.columns.job_number,'JOBNUM');
+	q.result.add(q.columns.grade,'GRADE');
+	q.result.addValue(globals.session.employeeNum,'EMPLNUM');
+	q.result.add(t.columns.association_name,'FABSHOP');
+	if (metric){
+		q.result.add(q.columns.item_width,'WIDNUM');
+	} else {
+		q.result.add(q.columns.item_width_in,'WIDNUM');
+	}
+	q.result.add(q.columns.qc_approved_flag,'QCAPPVD');
+	var Q = databaseManager.getFoundSet(q);
+	null;
+	scopes.prefs.onActionPrintLabels(event);
+	//close show printing warning
+	
+	//get selected items
+	//collect each item's attributes from inventory
+	//set tabbed file format for raw material 
+	//set all as printed in inventory table
 }

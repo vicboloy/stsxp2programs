@@ -63,6 +63,13 @@ compatibleColumnTypes:"[[8,17,17]]",
 creationOrderIndex:4,
 dataType:8,
 name:"field_width"
+},
+{
+allowNull:true,
+creationOrderIndex:9,
+dataType:12,
+length:3,
+name:"label_field_type"
 }
 ],
 name:"label_fields",

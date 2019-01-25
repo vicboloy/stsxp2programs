@@ -281,6 +281,7 @@ var mob = {
 	transactions : {},	// transaction query results
 	transactionList : [],	// [index] = (trans_id...) list of transactions for the selected barcode, pick one idfile for list
 	locationArea : "", 	// user location.TXT
+	stockLocationArea : "",//add for inventory
 	locationPrev : "",	// previous user enterred location.TXT
 	load :  {
 		interim : false,
@@ -1054,18 +1055,37 @@ var rfViews = {
 		genericin : 'R',
 		genericin2 : 'R',
 		stocklocationin : 'R',
+		countryoriginin : 'O',
+		billofladingin : 'O',
 		barcodein : 'R',
+		bundledin :'R',
+		finalizein : 'O',
+		remarksin : 'O',
 		heatin : 'R',
-		asnin :'R',
 		quantityin : 'R',
-		bundled :'R',
-		printing : 'V',
+		//asnin :'R',
+		//printing : 'V',
+		//spacer : 'V',
+		asnnumber : 'V',
+		lastquantity : 'V',
+		ponumber : 'V',
+		ordered : 'V',
+		remains : 'V',
+		invmaterial : 'V',
+		invgrade : 'V',
+		itemlength:'V',		
+		itemweight : 'V'
+	},
+	'Checklist Status' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		barcodein : 'R',
 		asnnumber : 'V',
 		ponumber : 'V',
 		ordered : 'V',
 		remains : 'V',
-		material : 'V',
-		grade : 'V',
+		invmaterial : 'V',
+		invgrade : 'V',
 		itemlength:'V',		
 		itemweight : 'V'
 	}
@@ -2537,6 +2557,10 @@ function rfChangeWindow(event,winName){
 		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')];
 		currWin.show('rf_mobile_view');
 		break;
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.status')]://'Checklist Status'://20190116
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.status')];
+		currWin.show('rf_mobile_view');
+		break;
 	case mobileWindows[i18n.getI18NMessage('sts.mobile.exit')]://'Exit': 
 		//globals.rfExitMobileClient();
 		showExecLogout();
@@ -3153,6 +3177,7 @@ function getMenuList(){
 	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.final.ship'));//Final Ship
 	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.ship.by.sequence'));//Ship By Sequence
 	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.checklist.receive'));//Checklist Receive
+	session.rfViewsMobile.push(i18n.getI18NMessage('sts.mobile.checklist.status'));//Checklist Status, see rfMobileViews, see rfChangeWindow() 
 	
 	session.rfViewsOffice = [];
 	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.status'));//Status
@@ -5099,8 +5124,13 @@ function onDataChangeLocation(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	session.userEntry = newValue;
 	var formName = event.getFormName();
+	var invUpdate = (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]);
 	mob.locationArea = '';
+	mob.stockLocationArea = '';
 	var elementName = 'locationin';//event.getElementName();
+	if (invUpdate){
+		elementName = 'stocklocationin';
+	}
 	/** @type {String} */
 	var statusLocation = forms[formName].statusLocation;
 	if (newValue != null && newValue != ""){
@@ -5117,8 +5147,13 @@ function onDataChangeLocation(oldValue, newValue, event) {
 			application.setValueListItems('stsvlg_location',statArray);
 		}
 	}
-	mob.locationArea = newValue;
-	forms['rf_mobile_view'].statusLocation = newValue;
+	if (invUpdate){
+		mob.stockLocationArea = newValue;
+		forms['rf_mobile_view'].stockLocation = newValue;
+	} else {
+		mob.locationArea = newValue;
+		forms['rf_mobile_view'].statusLocation = newValue;
+	}
 	switch (formName){
 		case 'rf_mobile_view':
 			//forms['rf_mobile_view'].genericInput = '';
@@ -6370,6 +6405,29 @@ function rfClearMobDetails(){
 	mobPreviousStatus = "";
 	mobItemPieces = "/";
 	mobUnits = "";
+	if (formName == 'rf_mobile_view'){
+		var form = forms[formName];
+		form.location = '';
+		form.stockLocation = '';
+		form.billOfLading = '';
+		form.remarks = '';
+		form.asnNumber = '';
+		form.poNumber = '';
+		form.invOrdered = '';
+		form.invRemains = '';
+		form.invMaterial = '';
+		form.invGrade = '';
+		form.invBarCode = '';
+		form.bundled = '';
+		form.finalize = '';
+		form.countryOfOrigin = '';
+		form.heat = '';
+		form.quantity = '';
+		form.lastQty = '';
+		form.elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic');
+		form.elements['genericin2label'].text = i18n.getI18NMessage('sts.label.generic');
+	}
+	
 	globals.mobIdSerialId = null; // reset mob info area for last item
 }
 /**
@@ -10049,17 +10107,30 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 	
 	session.errorShow = false;//set genericin as the focus unless there is an error message
 	var entryType = '';
+	if (newValue.toUpperCase() == 'XXX'){
+		action = 'XXX';
+	}
+
 	switch (action.toUpperCase()){
 		//B or b - (B)undle
 		case 'B':
 			entryType = 'B';
-			if (forms['rf_mobile_view'].shownFields.indexOf('bundlein') == -1){
-				errorDialogMobile(event,1229,'genericin','Bundle');
+			if (forms['rf_mobile_view'].shownFields.indexOf('bundlein') == -1 &&
+			forms['rf_mobile_view'].shownFields.indexOf('bundledin') == -1){
+				if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+					errorDialogMobile(event,1229,'genericin','Bundle');
+				} else {
+					errorDialogMobile(event,1229,'genericin','Bundled');					
+				}
 				break;
 			}
 			//if (data.search('BND') != 0 || data != ''){break}
 			//if (!data && forms['rf_mobile_view'].elements['bundlein']){forms['rf_mobile_view'].currentBundle = '';break;}
-			onDataChangeBundle(oldValue,data,event);
+			if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+				onDataChangeBundle(oldValue,data,event);
+			} else {
+				form['bundled'] = (data.search('N') == 0) ? i18n.getI18NMessage('sts.btn.no') : i18n.getI18NMessage('sts.btn.yes');
+			}
 			session.errorShow = false;
 			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 			//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
@@ -10071,7 +10142,8 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//C or c - Lo(c)ation
 		case 'C':
 			entryType = 'C';
-			if (forms['rf_mobile_view'].shownFields.indexOf('locationin') == -1){
+			if (forms['rf_mobile_view'].shownFields.indexOf('locationin') == -1 &&
+				forms['rf_mobile_view'].shownFields.indexOf('stocklocationin') == -1){
 				errorDialogMobile(event,1229,'genericin','Location');
 				break;
 			}
@@ -10099,6 +10171,14 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			}
 			break;
 		//G or g = (G)rade
+		case 'F':
+			entryType = 'F';
+			if (forms['rf_mobile_view'].shownFields.indexOf('finalizein') == -1){
+				errorDialogMobile(event,1229,'genericin','Finalize');//2019017 added inventory screen
+				break;
+			}
+			form['finalize'] = (data.search('N') == 0) ? i18n.getI18NMessage('sts.btn.no') : i18n.getI18NMessage('sts.btn.yes');
+			break;
 		case 'G':
 			entryType = 'G';
 			var processGo = (data.match(/[GO]/) && forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') != -1);
@@ -10141,16 +10221,25 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//L or l - (L)oad Numbers
 		case 'L':
 			entryType = 'L';
-			if (forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') == -1){
-				errorDialogMobile(event,1229,'genericin','Load');
+			if (forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') == -1 &&
+			forms['rf_mobile_view'].shownFields.indexOf('billofladingin') == -1){
+				if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+					errorDialogMobile(event,1229,'genericin','Load');
+				} else {
+					errorDialogMobile(event,1229,'genericin','BOL');
+				}
 				break;
 			}
 			//if (!data && forms['rf_mobile_view'].elements['loadnumberin']){forms['rf_mobile_view'].loadNumber = '';break;}
-			onDataChangeLoad(oldValue,data,event);////20181003 start here
-			if (session.interim){
-				forms['rf_mobile_view'].elements['loadnumberinlabel'].text = i18n.getI18NMessage('sts.mobile.entry.load.number.interim');
-			} else {
-				forms['rf_mobile_view'].elements['loadnumberinlabel'].text = i18n.getI18NMessage('sts.mobile.entry.load.number');
+			if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+				onDataChangeLoad(oldValue,data,event);////20181003 start here
+				if (session.interim){
+					forms['rf_mobile_view'].elements['loadnumberinlabel'].text = i18n.getI18NMessage('sts.mobile.entry.load.number.interim');
+				} else {
+					forms['rf_mobile_view'].elements['loadnumberinlabel'].text = i18n.getI18NMessage('sts.mobile.entry.load.number');
+				}
+			} else {//add BOL on checklist receive screen
+				form['billOfLading'] = data;
 			}
 			break;
 		//M or m - piece(m)ark
@@ -10163,7 +10252,17 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			if (!data && forms['rf_mobile_view'].elements['piecemarkin']){forms['rf_mobile_view'].piecemark = '';break;}
 			onDataChangePiecemark(oldValue,data,event);
 			break;
-		
+		case 'O':
+			entryType = 'O';
+			if (newValue.search(/(OFF|ON)/) == 0) {form['printEnabled'] = newValue;}
+			if (form['printEnabled'] != ''){if (application.isInDeveloper()){application.output('Printing '+newValue)}; break}
+			entryType = 'O';
+			if (forms['rf_mobile_view'].shownFields.indexOf('countryoriginin') == -1){
+				errorDialogMobile(event,1229,'genericin','Country Of Origin');
+				break;
+			}
+			forms['rf_mobile_view'].countryOfOrigin = data;
+			break;
 		//P or p - (P)art Serial Number [Ex. P0000000001 thru PZZZZZZZZZZ then it is P0000000001 again] - starting point for barcoding w/FS Built In
 		case 'P':
 			entryType = 'P';
@@ -10183,14 +10282,90 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 				errorDialogMobile(event,1229,'genericin','Quantity');
 				break;
 			}
-			if (!data && forms['rf_mobile_view'].elements['quantityin']){forms['rf_mobile_view'].quantity = '';break;}
-			//onDataChangeQuantity(oldValue,newValue,event);
+			if (data.search(/[^0-9]/) != -1){
+				errorDialogMobile(event,1274,'genericin','Invalid Entry NaN');
+				break;
+			}
+			if (!data && forms['rf_mobile_view'].elements['quantityin']){forms['rf_mobile_view'].quantity = 0;break;}
+			form['quantity'] = data;
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+				// valid number, set received, get job number
+				if (form.quantity == ''){break}
+				//if (form.quantity == 0){return}
+				if (!dataEntryComplete(event)){form.quantity = '';break}
+				var bundled = (form.bundled.toUpperCase() == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
+				var recCount = (bundled) ? 1 : form.quantity;
+				var bndQuantity = (bundled) ? form.quantity : 1;
+				var recvDate = new Date();
+				var barcodeData = {ponumber:form.poNumber,deliverydate:recvDate,billoflading:form.billOfLading,
+					receivingremarks:form.remarks,countryoforigin:form.countryOfOrigin,
+					heatnumber:form.heat,location:form.stockLocation};
+				var invUUIDs = [];
+				for (idx = 1;idx <= recCount;idx++){
+					var stsBarcode = scopes.jobs.createValidBarcodeRM();
+					form.asnNumber = stsBarcode;//ASN is the new barcode number for this checklist receive
+					form.lastQty = form.quantity;
+					var error = scopes.fs.fabsuiteSetReceivedBarcode(event,form.invBarCode,stsBarcode,bndQuantity,barcodeData);
+					if (error.error){break}
+					form.invRemains = error.qtyremaining;
+					if (error.qtyremaining > 0){form.heat = ''}
+					if (error.qtyremaining == 0){
+						//temp display completed message
+						form.heat = '';
+					}
+					var returnObj = scopes.fs.fabsuiteGetReceivedBarcodeInv(event,stsBarcode);
+					//application.output(' RM '+returnObj.jobnumber+ 'bundled '+bundled+' form.bundled '+form.bundled+ ' i18n '+i18n.getI18NMessage('sts.btn.yes').toUpperCase());
+					var assignedJobNumber = returnObj.jobnumber;//valid inventory entry complete from fabsuite
+					var invUUID = scopes.jobs.receiveRawMaterialIntoInventory(event,assignedJobNumber,stsBarcode,bndQuantity);
+					invUUIDs.push(invUUID); //list of invUUID's to print
+				}
+				if (error.error){//fs receive raw material set
+					errorDialogMobile(event,1220,'genericin',error.error);
+					break;
+				} else {
+					scopes.printer.onActionPrintRMLabels(event,invUUIDs);
+					form.quantity = '';
+				}
+				
+			}
 			break;
-
+			
 		//R or r - Use(r)Name - * - FS user name - this is username for fabSuite
 		case 'R':
 			entryType = 'R';
-			onDataChangeRevision(oldValue,newValue,event)
+			if (forms['rf_mobile_view'].shownFields.indexOf('remarksin') == -1 &&
+			forms['rf_mobile_view'].shownFields.indexOf('barcodein') == -1){
+				if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+					errorDialogMobile(event,1229,'genericin','Remarks');
+				} else {
+					errorDialogMobile(event,1229,'genericin','Bar Code');					
+				}
+				break;
+			}
+			if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+				null;
+			} else {
+				if (newValue.search('RC') == 0 && newValue.match(/(RC[0-9]+)/)){
+					form['invBarCode'] = newValue;
+					var invLine = scopes.fs.getReceivedBarcode(event,newValue);
+					if (!(!invLine.error)){//a blank error means there is data returned from fabsuite
+						errorDialogMobile(event,invLine.error,'genericin','');
+						break;
+					}
+					form.invLine = invLine;
+					form.invOrdered = invLine.qtyordered;
+					form.invRemains = invLine.qtyremaining;
+					form.invMaterial = invLine.shape+' '+invLine.dimensions;
+					form.invGrade = invLine.grade;
+					scopes.globals.mobItemLength = scopes.globals.mmToFeet(invLine.length)//scopes.globals.ftDecToString('INCHES',globals.mmToFeet(invLine.length),null);;
+					scopes.globals.mobItemWeight = scopes.globals.kgToLb(invLine.weighteach);
+					application.output(invLine)
+					form.poNumber = invLine.ponumber;
+				} else {
+					form['remarks'] = data;
+				}
+			}
+			//onDataChangeRevision(oldValue,newValue,event)
 			//onDataChangeWorker(oldValue,workers,event);
 			break;
 
@@ -10284,13 +10459,15 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			//}
 			forms['load_info'].comments = data;
 			break;
-			
+		case 'XXX':
+			globals.rfClearMobDetails();
+			break;
 		default:
 			entryType = '-';
 
 			errorDialogMobile(event,1255,'genericin',newValue);
 	}
-	if (forms['rf_mobile_view']){forms['rf_mobile_view'].lastAction = action}
+	if (forms['rf_mobile_view']){forms['rf_mobile_view'].lastAction = action+form['printEnabled']}
 	if (0 && forms['rf_mobile_view'] &&
 		(forms['rf_mobile_view'].elements['errorWindow'] && !forms['rf_mobile_view'].elements['errorWindow'].visible) &&
 		(forms['mobile_query'].elements['queryText'] && application.getActiveWindow().controller.getName() != forms.mobile_query.controller.getName())){
@@ -10322,20 +10499,22 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 	//for (var itm in clientInfo){
 	//	application.output('Client.'+itm+' '+clientInfo[itm]);
 	//}
+	var printEnabledNotice = ' '+form['printEnabled'];
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && session.dualEntry){
 		if (event.getElementName() == 'genericin'){
-			forms['rf_mobile_view'].elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic')+entryType;
+			forms['rf_mobile_view'].elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic')+entryType+printEnabledNotice;
 			forms['rf_mobile_view'].elements['genericin2label'].text = i18n.getI18NMessage('sts.label.generic');
 			forms['rf_mobile_view'].genericInput2 = '';
 			forms['rf_mobile_view'].elements['genericin2'].requestFocus();
 		} else {
-			forms['rf_mobile_view'].elements['genericin2label'].text = i18n.getI18NMessage('sts.label.generic')+entryType;
+			forms['rf_mobile_view'].elements['genericin2label'].text = i18n.getI18NMessage('sts.label.generic')+entryType+printEnabledNotice;
 			forms['rf_mobile_view'].elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic');
 			forms['rf_mobile_view'].genericInput = '';
 			forms['rf_mobile_view'].elements['genericin'].requestFocus();
 		}
 	} else {
 		if (!session.errorShow){
+			forms['rf_mobile_view'].elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic')+entryType+printEnabledNotice;
 			forms['rf_mobile_view'].elements['genericin'].requestFocus();
 		}
 		session.errorShow = false;

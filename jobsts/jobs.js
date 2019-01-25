@@ -11972,3 +11972,77 @@ function onRightClickColumn(event){
 		form.elements[item].setSize(newW+1,h);
 	}
 }
+/**
+ * @properties={typeid:24,uuid:"B1CDC9CD-DEAB-4E1A-AA6E-1887F43D6B88"}
+ */
+function createValidBarcodeRM(){
+	var year = new Date().getFullYear().toString().substr(2,2);
+	barcodePrefix = 'RM'+year;
+	var serial = createBarCodeSerial();
+	var rmBarCode = barcodePrefix+serial;
+	//if (application.isInDeveloper()){application.output('raw material bar code: '+rmBarCode)}
+	return rmBarCode;
+}
+/**
+ * @param {JSEvent} event
+ * @param jobNumber
+ * @param barcode
+ *
+ * @properties={typeid:24,uuid:"760C1AAE-161F-41C0-A2D3-CF49789B574F"}
+ */
+function receiveRawMaterialIntoInventory(event,jobNumber,barcode,quantity){
+	var form = forms[event.getFormName()];
+	var recvDate = new Date();
+	var fsInv = form.invLine;// ponumber,qtyordered,qtyremaining,shape,grade,dimensions,length,weighteach,error
+	var jobInfo = (!jobNumber) ? '' : globals.getJobIdInfo(jobNumber);
+	
+	var modelPart = form.invMaterial;
+	var heat = form.heat;
+	var grade = form.invGrade;
+	
+	var bundled = (form.bundled.toUpperCase() == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
+	var print = (form.printEnabled.toUpperCase() == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
+	var makeQty = (bundled) ? 1 : form.quantity;
+	// ponumber,qtyordered,qtyremaining,shape,grade,dimensions,length,weighteach,error
+	var template = {job_uuid : jobInfo.job_id, 
+					association_uuid : globals.session.associationId,
+					employee_uuid : globals.session.employeeId,
+					inventory_ref_number : form.invBarCode,
+					model_part : form.invMaterial, 
+					quantity : quantity, 
+					serial_number : barcode, 
+					heat : form.heat, 
+					grade : grade, 
+					po_number : form.poNumber, 
+					bill_of_lading_in : form.billOfLading, 
+					receive_date : recvDate, 
+					country_of_origin : form.countryOfOrigin,
+					item_length_char : scopes.globals.mmToFeet(fsInv.length), 
+					item_length : fsInv.length, 
+					item_length_in : scopes.globals.mmToIn(fsInv.length),
+					//item_width : fsInv.width, 
+					//item_width_in : scopes.globals.mmToIn(fsInv.width), 
+					item_weight : fsInv.weighteach, 
+					item_weight_lbs : scopes.globals.kgToLb(fsInv.weighteach), 
+					location : form.stockLocation, 
+					remarks : form.remarks,
+					tenant_uuid : globals.session.tenant_uuid}
+	/** @type {QBSelect<db:/stsservoy/inventory>} */
+	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.where.add(q.columns.job_uuid.eq(template.job_uuid));
+	q.where.add(q.columns.model_part.eq(template.model_part));
+	q.where.add(q.columns.grade.eq(template.grade));
+	q.where.add(q.columns.tenant_uuid.eq(template.tenant_uuid));
+	q.where.add(q.columns.inventory_ref_number.eq(template.inventory_ref_number));
+	q.result.add(q.columns.inventory_uuid);
+	var Q = databaseManager.getFoundSet(q);
+	// do something with import
+	var recIdx = Q.newRecord();
+	/** @type {JSFoundSet<db:/stsservoy/inventory>} */
+	var rec = Q.getRecord(recIdx);
+	databaseManager.copyMatchingFields(template,rec);
+	databaseManager.saveData(rec);
+	return rec.inventory_uuid;//put in array and recall all records for foundset creation and printing
+}
+
+

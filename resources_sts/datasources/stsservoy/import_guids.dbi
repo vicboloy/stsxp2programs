@@ -18,7 +18,7 @@ name:"assem_guid"
 },
 {
 allowNull:true,
-creationOrderIndex:9,
+creationOrderIndex:8,
 dataType:93,
 name:"deletion_date"
 },
@@ -47,7 +47,7 @@ name:"import_table_id"
 },
 {
 allowNull:true,
-creationOrderIndex:8,
+creationOrderIndex:9,
 dataType:93,
 name:"modification_date"
 },

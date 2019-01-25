@@ -1939,10 +1939,15 @@ function onActionFormTemplate(event) {
  * @AllowToRunInFind
  */
 function onActionPrintLabels(event) {
+	var formName = event.getFormName();
 	/**
 	 * collect label fields and then push into tabbed fields with data
 	 */
-	var specs = scopes.printer.getBTFieldData();
+	if (formName.search('rf_mobile_view') != 0){
+		var specs = scopes.printer.getBTFieldData('P');		
+	} else {
+		specs = scopes.printer.getBTFieldData('R');//raw material
+	}
 	var fields = [];
 	for (var idx = 0;idx < specs.length;idx++){
 		fields.push(specs.field_name);
@@ -1950,23 +1955,6 @@ function onActionPrintLabels(event) {
 	var outputFields = [];
 	var outputSpecs = [];
 	if (application.isInDeveloper()){application.output('print label fields')}
-	/** var dbFields = scopes.printer.barTenderTextSpecs.split(",");
-	//scopes.printer.labelFields2 = scopes.printer.labelFields.split(",");
-	var tabCount = scopes.printer.barTenderFields.length;
-
-	for (var index = 0;index < tabCount;index++){
-		application.output('index '+index+" of "+tabCount+" "+dbFields[index]);
-		var fields = dbFields[index].split(" ");
-		var fieldIn = fields[1];
-		var fieldNameDb = fields[4].split(".");
-		var fieldOut = fieldNameDb[fieldNameDb.length-1];
-		var fieldType = fields[2];
-		var fieldSize = fields[3];
-		outputFields.push(fieldOut);
-		outputSpecs.push(new Array(fieldType,fieldSize,fieldIn));
-		//application.output(fieldOut);
-	} */
-	
 	//if (true || true) {return;}
 	var tabCount = specs.length;
 	var formName = event.getFormName();
@@ -3073,5 +3061,3 @@ function loadArrays(){
 	labelFields = labelFieldsTmp.split(',');
 	defaultTableColumns = defaultTableColumnsTmp.split(',');
 }
-
-

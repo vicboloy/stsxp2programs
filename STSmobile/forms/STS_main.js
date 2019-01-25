@@ -66,18 +66,21 @@ function onLoad(event) {
 			newScale = Math.floor(width/240*10)/10;
 			//newScale = 0.5;
 			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
-			application.output('RM main onLoad newscale '+newScale+'\n'+scopes.globals.viewport);
+			if (application.isInDeveloper()){application.output('RM main onLoad newscale '+newScale+'\n'+scopes.globals.viewport);}
 
 		} else if (globals.clientUserAgent.search(/Android/i) != -1) {
 			screenHeight = 50;
 			elements.elHelp.setSize(elWidth,screenHeight+15);
 			elements.mainMenu.setSize(elWidth,screenHeight);
 			scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale=1.0');
+			if (application.isInDeveloper()){application.output('inside android scaling')}
 		} else {
-			screenHeight = Math.floor(application.getScreenHeight()*70)
+			screenHeight = Math.floor(application.getScreenHeight()*.70)
 			elements.elHelp.setSize(elWidth,screenHeight+15);
 			elements.mainMenu.setSize(elWidth,screenHeight);
-			
+			var win = application.getWindow();
+			win.setSize(240,screenHeight);
+			if (application.isInDeveloper()){application.output('at screen height windows '+elWidth+'x'+screenHeight)}
 		}
 	}
 		
@@ -167,7 +170,27 @@ function onShow(firstShow, event) {
 			} else {
 				elements.mainMenu.setSize(230,420);
 			}
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+				screenHeight = application.getScreenHeight();
+				screenWidth = application.getScreenWidth();
+				var appWidth = win.getWidth();
+				var appHeight = Math.floor(screenHeight*0.85);
+				if (application.isInDeveloper()){application.output('screeni '+screenWidth+'x'+screenHeight+' app: '+appWidth+'x'+appHeight);}
+				win.setSize(appWidth,appHeight);
+				elements.mainMenu.setSize(500,480); // This was the change that doesn't go past the end of the screen
+			}
 			
+		} else {
+			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+				screenHeight = application.getScreenHeight();
+				screenWidth = application.getScreenWidth();
+				appWidth = win.getWidth();
+				appHeight = Math.floor(screenHeight*0.3);
+				if (application.isInDeveloper()){application.output('screenp '+screenWidth+'x'+screenHeight+' app: '+appWidth+'x'+appHeight);}
+				win.setSize(appWidth,333);
+				if (application.isInDeveloper()){application.output('screenp '+screenWidth+'x'+screenHeight+' app: '+win.getWidth()+'x'+win.getHeight());}
+				
+			}
 		}
 	}
 	if (false && osName.search(/(Linux)|(Mac)/i) != -1){

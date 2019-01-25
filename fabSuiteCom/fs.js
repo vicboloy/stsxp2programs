@@ -1257,9 +1257,127 @@ function getFSInterimLoadDests(jobNumber){
 		var dest = regX.exec(lines[idx]);
 		if (dest){
 			destArray.push(dest[1])
-			application.output('RM: Dest: '+dest[1]);
+			if (application.isInDeveloper()){application.output('RM: Dest: '+dest[1]);}
 		}
 		
 	}
 	return destArray;
+}
+/**
+ * @param event
+ * @param barcode
+ *
+ * @properties={typeid:24,uuid:"98BAA31B-1A0C-4B8D-B890-B1A57BC11654"}
+ */
+function getReceivedBarcode(event,barcode){
+	//application.output(' barcode: '+barcode)
+	var xmlReadReceive = '<FabSuiteXMLRequest>\
+		<ReceiveChecklistScan>\
+		<ChecklistSerialNumber>'+barcode+'</ChecklistSerialNumber>\
+		</ReceiveChecklistScan>\
+		</FabSuiteXMLRequest>';
+	var rawMat = com.call('FabSuiteXML',xmlReadReceive).toString();
+	application.output(rawMat)
+	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
+	if (!errorMatch){
+		var rawMatFields = {
+			ponumber : rawMat.match(/<PONumber>(.*)<\/PONumber>/)[1],
+			qtyordered : rawMat.match(/<QuantityOrdered>(.*)<\/QuantityOrdered>/)[1],
+			qtyremaining : rawMat.match(/<QuantityRemaining>(.*)<\/QuantityRemaining>/)[1],
+			shape : rawMat.match(/<Shape>(.*)<\/Shape>/)[1],
+			grade : rawMat.match(/<Grade>(.*)<\/Grade>/)[1],
+			dimensions : rawMat.match(/<Dimensions>(.*)<\/Dimensions>/)[1],
+			length : rawMat.match(/<Length>(.*)<\/Length>/)[1],
+			weighteach : rawMat.match(/<WeightEach>(.*)<\/WeightEach>/)[1],
+			error : ''
+		}
+	} else {
+		rawMatFields = {
+			error : errorMatch[1]
+		}
+	}
+	return rawMatFields;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param barcode
+ *
+ * @properties={typeid:24,uuid:"E89D5A56-DFA8-4B96-8D1F-97F5D708ED8F"}
+ */
+function fabsuiteGetReceivedBarcodeInv(event,barcode){
+	var xmlReadReceiveBC = '<FabSuiteXMLRequest>\
+		<ValInventory>\
+		<SerialNumber>'+barcode+'</SerialNumber>\
+		</ValInventory>\
+		</FabSuiteXMLRequest>';
+	var rawMat = com.call('FabSuiteXML',xmlReadReceiveBC).toString();
+	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
+	if (!errorMatch){
+		var rawMatFields = {
+			jobnumber : rawMat.match(/<JobReserve>(.*)<\/JobReserve>/)[1],
+			error : ''
+		}
+	} else {
+		rawMatFields = {
+			error : errorMatch[1]
+		}
+	}
+	return rawMatFields;
+
+}
+/**
+ * @param event
+ * @param barcode
+ * @param qty
+ *
+ * @properties={typeid:24,uuid:"B69F4894-75EB-41A5-B077-4354D815EC78"}
+ */
+function fabsuiteSetReceivedBarcode(event,clBarcode,stsBarcode,qty,bcData){
+	var xmlReadReceiveBC = '<FabSuiteXMLRequest>\
+		<Receive>\
+		<ChecklistSerialNumber>'+clBarcode+'</ChecklistSerialNumber>\
+		<SerialNumber>'+stsBarcode+'</SerialNumber>\
+		<Quantity>'+qty+'</Quantity>\
+		_PO_DD_CO_HT_LO_RM_R2_BL\
+		</Receive>\
+		</FabSuiteXMLRequest>';
+
+	application.output('remarks '+bcData.receivingremarks)
+	xmlReadReceiveBC = (bcData.ponumber) ? xmlReadReceiveBC.replace('_PO','<PONumber>'+bcData.ponumber+'</PONumber>\\\n') : xmlReadReceiveBC.replace('_PO','');
+	xmlReadReceiveBC = (bcData.deliverydate) ? xmlReadReceiveBC.replace('_DD','<DeliveryDate>'+getFsDateFormat(bcData.deliverydate)+'</DeliveryDate>\\\n') : xmlReadReceiveBC.replace('_DD','');
+	xmlReadReceiveBC = (bcData.countryoforigin) ? xmlReadReceiveBC.replace('_CO','<CountryOfOrigin>'+bcData.countryoforigin+'</CountryOfOrigin>\\\n') : xmlReadReceiveBC.replace('_CO','');
+	xmlReadReceiveBC = (bcData.heatnumber) ? xmlReadReceiveBC.replace('_HT','<HeatNumber>'+bcData.heatnumber+'</HeatNumber>\\\n') : xmlReadReceiveBC.replace('_HT','');
+	xmlReadReceiveBC = (bcData.location) ? xmlReadReceiveBC.replace('_LO','<Location>'+bcData.location+'</Location>\\\n') : xmlReadReceiveBC.replace('_LO','');
+	//xmlReadReceiveBC = (bcData.receivingremarks) ? xmlReadReceiveBC.replace('_RM','<Remarks>'+bcData.receivingremarks+'</Remarks>\\\n') : xmlReadReceiveBC.replace('_RM','');
+	xmlReadReceiveBC = (bcData.receivingremarks) ? xmlReadReceiveBC.replace('_R2','<ReceivingRemarks>'+bcData.receivingremarks+'</ReceivingRemarks>\\\n') : xmlReadReceiveBC.replace('_R2','');
+	xmlReadReceiveBC = (bcData.billoflading) ? xmlReadReceiveBC.replace('_BL','<BillOfLadingNumber>'+bcData.billoflading+'</BillOfLadingNumber>\\\n') : xmlReadReceiveBC.replace('_BL','');
+	var rawMat = com.call('FabSuiteXML',xmlReadReceiveBC).toString();
+	application.output('RM '+rawMat)
+	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
+	if (!errorMatch){
+		var rawMatFields = {
+			qtyremaining : rawMat.match(/<QuantityRemaining>(.*)<\/QuantityRemaining>/)[1],
+			error : ''
+		}
+	} else {
+		rawMatFields = {
+			error : errorMatch[1]
+		}
+	}
+	return rawMatFields;
+}
+
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param {Date} date
+ *
+ * @properties={typeid:24,uuid:"6A27ED08-A90A-465C-99D8-6980A09A21A3"}
+ */
+function getFsDateFormat(date){
+	var day = date.getDay();
+	if (day < 10){day = "0"+day}
+	var month = date.getMonth()+1;
+	if (month < 10){month = "0"+month}
+	return date.getFullYear()+'-'+month+'-'+day;
 }

@@ -10033,6 +10033,7 @@ function bartenderPrintEmbed(){
 	if (!com || !com.isJACOBLoaded()) {
 		globals.errorDialog('953');
 		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
+		application.output('RM error loading COM');
 		return;
 	}
 	com.put("Visible","true");
@@ -12041,7 +12042,8 @@ function receiveRawMaterialIntoInventory(event,jobNumber,barcode,quantity){
 	/** @type {JSFoundSet<db:/stsservoy/inventory>} */
 	var rec = Q.getRecord(recIdx);
 	databaseManager.copyMatchingFields(template,rec);
-	databaseManager.saveData(rec);
+	var saved = databaseManager.saveData(rec);
+	if (application.isInDeveloper()){application.output('rec saved '+saved)}
 	return rec.inventory_uuid;//put in array and recall all records for foundset creation and printing
 }
 

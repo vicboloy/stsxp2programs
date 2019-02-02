@@ -74,6 +74,9 @@ function onSolutionOpen(){
 	//}
 
 	if (application.isInDeveloper()){application.output("-----------------------");application.output('width = '+application.getScreenWidth())}
+	scopes.prefs.mobilePrefs = "";
+	scopes.prefs.sts = 'STSmobile';
+
 	//rfGetLocalStorage('deviceName');
 	//rfGetLocalStorage('deviceName');
 	//rfGetLocalStorage('deviceName');

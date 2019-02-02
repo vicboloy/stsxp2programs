@@ -19,6 +19,8 @@ function onActionEnable(event) {
 	elements.lFsLocnBatch.enabled = fabsuiteEnabled;
 	elements.lFsAllowNonSerial.enabled = fabsuiteEnabled;
 	elements.getFabsuiteRootPath.enabled = fabsuiteEnabled;
+	elements.lFsPrintCutList.enabled = fabsuiteEnabled;
+	elements.lFsFlipLocShop.enabled = (fabsuiteEnabled && scopes.prefs.promptFabShop == 1);
 	
 	if (!event){return}
 	scopes.prefs.onDataChangePrefsGeneral(null,null,event,'Prefs');

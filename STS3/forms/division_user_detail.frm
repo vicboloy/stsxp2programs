@@ -50,7 +50,7 @@ uuid:"11F846B8-5AAE-4FE8-9102-1E2A321118E7"
 {
 anchors:6,
 horizontalAlignment:0,
-location:"562,312",
+location:"406,312",
 name:"btn_Cancel",
 onActionMethodID:"C3729BF6-2B55-40D9-96CD-0174C9578481",
 onDoubleClickMethodID:"-1",
@@ -88,6 +88,19 @@ size:"238,20",
 transparent:true,
 typeid:7,
 uuid:"53627910-E249-4196-B021-798E5642AE4F"
+},
+{
+anchors:6,
+horizontalAlignment:0,
+location:"496,312",
+name:"btn_Label_Dest",
+onActionMethodID:"61B75172-A382-46DC-AD79-B1327439BEFF",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"185,26",
+text:"i18n:sts.btn.mc.label.destination",
+typeid:7,
+uuid:"570E6A4C-E7F6-4051-860A-0FD46030AD5F"
 },
 {
 dataProviderID:"passwordConfirm",
@@ -324,7 +337,7 @@ uuid:"F5573C30-ADE1-424E-8500-45CDB9050F7F"
 {
 anchors:6,
 horizontalAlignment:0,
-location:"562,312",
+location:"406,312",
 name:"btn_Edit",
 onActionMethodID:"3A0754AF-9F8E-4F11-8B06-6DE55BFEE243",
 onDoubleClickMethodID:"-1",

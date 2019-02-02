@@ -567,7 +567,7 @@ function getBTFieldData(labelFldType){
 		5 BCINCLDPFX Character 15 customers.bc_include_prefix 15,\
 		6 BCJOBSTART Character 35 customers.bc_job_start 35,\
 		7 BCPREFIX Character 2 customers.bc_prefix 2,\
-		8 BCTITLE Character 26 UNUSED,\
+		8 BCTITLE Character 26 UNUSED 0 ,\
 		9 BOLOUT Character 15 loads.ship_bol_out 15,\
 		10 CARRNUM Character 10 loads.ship_carrier_number 15,\
 		11 COMMENTS Character 50 loads.ship_load_comment 100,\
@@ -609,35 +609,35 @@ function getBTFieldData(labelFldType){
 		47 JOBSHIPTO Character 10 jobs.customer_number,\
 		48 JOBSTRUCT Character 28 jobs.job_structure 50,\
 		49 JOBTITLE Character 28 jobs.job_title 50,\
-		50 JOIDFORMAT Character 9 UNUSED,\
-		51 JOLINE1NUM Character 15 UNUSED,\
+		50 JOIDFORMAT Character 9 UNUSED 0 ,\
+		51 JOLINE1NUM Character 15 UNUSED 0 ,\
 		52 JOLINE1STR Character 30 jobs.barcode_format_customer_name 45,\
-		53 JOLINE2NUM Character 15 UNUSED,\
+		53 JOLINE2NUM Character 15 UNUSED 0 ,\
 		54 JOLINE2STR Character 30 jobs.job_customer_name 45,\
-		55 LINE0FLD Character 30 UNUSED,\
-		56 LINE0PRMPT Character 9 UNUSED,\
-		57 LINE1NUM Character 15 UNUSED,\
-		58 LINE1STR Character 26 UNUSED,\
-		59 LINE2NUM Character 15 UNUSED,\
-		60 LINE2STR Character 26 UNUSED,\
-		61 LINE3FLD Character 30 UNUSED,\
-		62 LINE3PRMPT Character 9 UNUSED,\
-		63 LINE4FLD Character 30 UNUSED,\
-		64 LINE4PRMPT Character 9 UNUSED,\
-		65 LINE5FLD Character 30 UNUSED,\
-		66 LINE5PRMPT Character 9 UNUSED,\
-		67 LINE6FLD Character 30 UNUSED,\
-		68 LINE6PRMPT Character 9 UNUSED,\
-		69 LINE7FLD Character 30 UNUSED,\
-		70 LINE7PRMPT Character 9 UNUSED,\
+		55 LINE0FLD Character 30 UNUSED 0 ,\
+		56 LINE0PRMPT Character 9 UNUSED 0 ,\
+		57 LINE1NUM Character 15 UNUSED 0 ,\
+		58 LINE1STR Character 26 UNUSED 0 ,\
+		59 LINE2NUM Character 15 UNUSED 0 ,\
+		60 LINE2STR Character 26 UNUSED 0 ,\
+		61 LINE3FLD Character 30 UNUSED 0 ,\
+		62 LINE3PRMPT Character 9 UNUSED 0 ,\
+		63 LINE4FLD Character 30 UNUSED 0 ,\
+		64 LINE4PRMPT Character 9 UNUSED 0 ,\
+		65 LINE5FLD Character 30 UNUSED 0 ,\
+		66 LINE5PRMPT Character 9 UNUSED 0 ,\
+		67 LINE6FLD Character 30 UNUSED 0 ,\
+		68 LINE6PRMPT Character 9 UNUSED 0 ,\
+		69 LINE7FLD Character 30 UNUSED 0 ,\
+		70 LINE7PRMPT Character 9 UNUSED 0 ,\
 		71 LINE8FLD Readable 30 piecemark.pm_length_in,\
-		72 LINE8PRMPT Character 9 UNUSED,\
-		73 LINE9FLD Character 30 UNUSED,\
-		74 LINE9PRMPT Character 9 UNUSED,\
-		75 LINEAFLD Character 30 UNUSED,\
-		76 LINEAPRMPT Character 9 UNUSED,\
-		77 LINEBFLD Character 30 UNUSED,\
-		78 LINEBPRMPT Character 9 UNUSED,\
+		72 LINE8PRMPT Character 9 UNUSED 0 ,\
+		73 LINE9FLD Character 30 UNUSED 0 ,\
+		74 LINE9PRMPT Character 9 UNUSED 0 ,\
+		75 LINEAFLD Character 30 UNUSED 0 ,\
+		76 LINEAPRMPT Character 9 UNUSED 0 ,\
+		77 LINEBFLD Character 30 UNUSED 0 ,\
+		78 LINEBPRMPT Character 9 UNUSED 0 ,\
 		79 LOADNUM Character 10 loads.ship_load_number 20,\
 		80 LODCAREOF Character 28 loads.ship_load_care_of 30,\
 		81 LODPO Character 20 loads.ship_load_po 20,\
@@ -646,8 +646,8 @@ function getBTFieldData(labelFldType){
 		84 LOT Character 11 lots.lt_lot 15,\
 		85 MRR Character 10 idfiles.if_mrr 15,\
 		86 ORIGEMPL Character 5 emp.job_original_employee 15,\
-		87 OTHRXTIME Character 8 UNUSED,\
-		88 PANTXTIME Character 8 UNUSED,\
+		87 OTHRXTIME Character 8 UNUSED 0 ,\
+		88 PANTXTIME Character 8 UNUSED 0 ,\
 		89 PCCOLOR Character 10 idfiles.if_piece_color 20,\
 		90 PCCOWCODE Character 10 piecemarks.pm_cost_of_work_code 10,\
 		91 PCMARK Character 30 piecemarks.pm_piecemark 40,\
@@ -657,35 +657,35 @@ function getBTFieldData(labelFldType){
 		95 PRODTYPE Character 3 piecemarks.pm_product_type 10,\
 		96 PROJYEAR Numeric 4 jobs.job_project_year 4,\
 		97 RAWMATLID Character 10 idfiles.if_raw_material_id 40,\
-		98 RECACTION Character 1 UNUSED,\
+		98 RECACTION Character 1 UNUSED 0 ,\
 		99 RECVLOAD Character 10 loadsrcv.recv_load_number 20,\
 		100 RECVTIME Character 8 loadsrcv.recv_load_date DATETIME,\
-		101 REMAILTIME Character 8 UNUSED,\
+		101 REMAILTIME Character 8 UNUSED 0 ,\
 		102 REVLEVEL Character 6 idfiles.if_revision_level 10,\
 		103 ROUTECODE Character 10 piecemarks.rt_route_code 15,\
-		104 SEMAILTIME Character 8 UNUSED,\
+		104 SEMAILTIME Character 8 UNUSED 0 ,\
 		105 SEQNUM Character 20 sequences.sq_sequence_number 30,\
 		106 SHEETNUM Character 8 sheets.sh_sheet_number 20,\
 		107 SHIPLOAD Character 10 loads.ship_load_date DATETIME,\
 		108 SHIPTAG Character 16 piecemarks.pm_ship_tag 20,\
 		109 SHIPTIME Character 8 loads.ship_load_time DATETIME,\
-		110 SITEXTIME Character 8 UNUSED,\
+		110 SITEXTIME Character 8 UNUSED 0 ,\
 		111 TRAILINFO Character 20 loads.ship_load_trailer_info 20,\
 		112 EDITDATE Date 8 idfiles.if_edit_date DATETIME,\
-		113 ENGXDATE Date 8 UNUSED,\
-		114 FABXDATE Date 8 UNUSED,\
-		115 FIREXDATE Date 8 UNUSED,\
-		116 GALVXDATE Date 8 UNUSED,\
+		113 ENGXDATE Date 8 UNUSED 0 ,\
+		114 FABXDATE Date 8 UNUSED 0 ,\
+		115 FIREXDATE Date 8 UNUSED 0 ,\
+		116 GALVXDATE Date 8 UNUSED 0 ,\
 		117 IDCREATED Date 8 id_serial_number.bc_create_date DATETIME,\
-		118 OTHRXDATE Date 8 UNUSED,\
-		119 PANTXDATE Date 8 UNUSED,\
+		118 OTHRXDATE Date 8 UNUSED 0 ,\
+		119 PANTXDATE Date 8 UNUSED 0 ,\
 		120 RECVDATE Date 8 loads.recv_load_date DATETIME,\
-		121 REMAILDATE Date 8 UNUSED,\
+		121 REMAILDATE Date 8 UNUSED 0 ,\
 		122 REQDSHIP Date 8 idfiles.if_required_ship_date DATETIME,\
 		123 SCHDSHIP Date 8 idfiles.if_scheduled_ship_date DATETIME,\
-		124 SEMAILDATE Date 8 UNUSED,\
+		124 SEMAILDATE Date 8 UNUSED 0 ,\
 		125 SHIPDATE Date 8 loads.ship_date DATETIME,\
-		126 SITEXDATE Date 8 UNUSED,\
+		126 SITEXDATE Date 8 UNUSED 0 ,\
 		127 DELETEID Logical 1 idfiles.if_deleted_date DATETIME,\
 		128 LOGICFLAG Logical 1 idfiles.if_logic_flag 1,\
 		129 LPRINT Logical 1 id_serial_number.bc_printed 1,\
@@ -697,16 +697,16 @@ function getBTFieldData(labelFldType){
 		135 COSTEA Numeric 11.4 piecemarks.pm_cost_each 11.4,\
 		136 COWQTY Numeric 10.3 piecemarks.pm_cost_of_work_quantity 10.3,\
 		137 FIREPFCF Numeric 9.2 piecemarks.pm_fireproof_cubic_feet 9.2,\
-		138 INCREMNT Numeric 3 UNUSED,\
+		138 INCREMNT Numeric 3 UNUSED 0 ,\
 		139 ITEMWT Numeric 10.3 piecemarks.pm_item_weight_lbs 10.3,\
 		140 ITEMWTKG Numeric 10.3 piecemarks.pm_item_weight 10.3,\
 		141 JOBWT Numeric 11 jobs.job_weight 11,\
-		142 LABELBC Numeric 5 UNUSED,\
-		143 LABELQTY Numeric 5 UNUSED,\
+		142 LABELBC Numeric 5 UNUSED 0 ,\
+		143 LABELQTY Numeric 5 UNUSED 0 ,\
 		144 LGTNUM Numeric 11.4 piecemarks.pm_item_length 11.4,\
 		145 ORIGQTY Numeric 5 idfiles.if_original_quantity 5,\
 		146 PCUOMDOLL Numeric 11.4 piecemarks.pm_piecemark_uom_dollars 11.4,\
-		147 QTY2PRINT Numeric 5 UNUSED,\
+		147 QTY2PRINT Numeric 5 UNUSED 0 ,\
 		148 RECVQTY Numeric 5 idfiles.if_receive_quantity 5,\
 		149 RECVWT Numeric 10 loads.recv_load_receiving_wt 10,\
 		150 SEQQTY Numeric 5 sequences.sq_sequence_quantity 5,\
@@ -765,7 +765,7 @@ function getBTFieldData(labelFldType){
 		203 RULECODE Character 20 piecemarks.pm_rule_code 20,\
 		204 FT_PKGNO Integer 4 idfiles.if_ft_pkgno 4,\
 		205 PCPHASE Character 10 idfiles.if_piece_phase 15,\
-		206 PARENTCOPY Numeric 4 UNUSED,\
+		206 PARENTCOPY Numeric 4 UNUSED 0 ,\
 		207 PARENTID Character 10 piecemarks.bc_parent_id_serial_number 10,\
 		208 CAMBER Numeric 7.4 piecemarks.pm_camber 7.4,\
 		209 BOMMATL Character 100 sheet_bom.bom_material 110,\
@@ -805,79 +805,82 @@ function getBTFieldData(labelFldType){
 		243 OPERAPRES Character 10 sheets.sh_operapres 10";
 	
 	var barTenderRawSpecs = '\
-		1 LABELQTY Numeric 4 view.label_count 4 inventory.quantity 4 how many to print being driven by scanners\
-		2 QTY Numeric 14.4 inventory.quantity 4 quantity of inventory item see 1\
-		3 CUSTNUM Character 10 customers.customer_number 14\
-		4 CONTROL Character 15 inventory.control 20\
-		5 MODELPART Character 30 inventory.model_part 40\
-		6 SERIAL Character 40 inventory.serial_number 40\
-		7 IDFLINE2 Character 23 UNUSED - label line 1 and line 2 unused\
-		8 IDSLINE2 Character 23 UNUSED \
-		9 LOCATION Character 10 inventory.location 15\
-		10 WTUOM Character 5 UNUSED - comes from M or I part master table from warehouse package\
-		11 PARTWT Numeric 9.2 inventory.item_weight 9.2 part master table 10 x 40 comes from part master table\
-		12 PARTDESCR Character 60 UNUSED part master table\
-		13 LABELSTYL Character 20 UNUSED \
-		14 LABELFMT Character 30 view.btw_file_path just file name 60\
-		15 HEAT Character 15 inventory.heat 40\
-		16 LGTNUM Numeric 14 4 inventory.item_length_in 14.4\
-		17 CHARLGTH Character 15 inventory.item_length_char 20\
-		18 LBLCONTROL Character 20 UNUSED \
-		19 LBLMODEL Character 20 UNUSED \
-		20 LBLSERIAL Character 20 UNUSED \
-		21 PONUM Character 20 inventory.po_number 30\
-		22 POLINE Numeric 6.2 inventory.po_line_number 6.2\
-		23 LOGICFLAG Logical 1 inventory.logic_flag 1 - T/F\
-		24 POJOBNUM Character 25 jobs.job_number 20\
-		25 LABELNAME Character 20 UNUSED \
-		26 BILLIN Character 10 inventory.bill_of_lading_in 15\
-		27 BILLOUT Character 10 inventory.bill_of_lading_out 15\
-		28 CERTDATE Date 8 inventory.cert_date DATETIME - propane bottles\
-		29 DUEBACK Date 8 inventory.due_back_date DATETIME - blank\
-		30 FILLDATE Date 8 inventory.fill_date DATETIME -blank\
-		31 INVREFER Character 15 inventory.inventory_ref_number 20 - catchall field\
-		32 PLANT Character 6 association.association_name 50\
-		33 PROCESS Character 5 UNUSED - blank -usally stock/receiv/ship/pick/pickstage\
-		34 RECVDATE Date 8 inventory.receive_date DATETIME\
-		35 RECVTIME Character 8 inventory.receive_date DATETIME hh:mm:ss\
-		36 REMARKS Character 32 inventory.remarks 30\
-		37 SHIPDATE Date 8 inventory.ship_date DATETIME\
-		38 SHIPTIME Character 8 inventory.ship_date DATETIME\
-		39 SQFT Numeric 6.2 inventory.item_square_feet 6.2\
-		40 WT Numeric 9.2 inventory.item_weight 9.2\
-		41 SERLPRNTD Logical 1 inventory.lprint 1\
-		42 CUSNAME Character 40 customers.job_customer_name 45\
-		43 RUNDATE Date 8 UNUSED \
-		44 RUNSHIFT Character 2 UNUSED \
-		45 RUNLINENBR Numeric 3 UNUSED \
-		46 RUNCAR Numeric 3 UNUSED \
-		47 RUNFORMNBR Numeric 3 UNUSED \
-		48 CUSOTHER1 Character 25 UNUSED \
-		49 CUSOTHER2 Character 25 UNUSED \
-		50 CUSOTHER3 Character 25 UNUSED \
-		51 POUOM Character 5 UNUSED - how do i order it\
-		52 INVOICEUOM Character 5 UNUSED - how do i invoice it\
-		53 STOCKUOM Character 5 UNUSED - how do i stock it\
-		54 INVPRNTUOM Character 5 UNUSED - which uom to print\
-		55 OEQTY Numeric 8 UNUSED - blank\
-		56 SILO Numeric 6 UNUSED - blank\
-		57 BOXNUM Numeric 6 UNUSED \
-		58 SLDPARTNUM Character 25 UNUSED\
-		59 LBLPRNTNAM Character 45 view.barcode_printer_name 55\
-		60 LABELDESCR Character 35 UNUSED\
-		61 PARTGRP Character 20 UNUSED \
-		62 OEJOBNUM Character 10 UNUSED - order entry qty\
-		63 JOBNUM Character 10 jobs.job_number 20\
-		64 GRADE Character 10 inventory.grade 20\
-		65 EMPLNUM Character 5 employees.employee_number 15\
-		66 FABSHOP Character 5 associations.association_name 50\
-		67 WIDNUM Numeric 10.4 inventory.item_width 10.4\
+		1 LABELQTY Numeric 4 view.label_count 4 inventory.quantity 4 how many to print being driven by scanners,\
+		2 QTY Numeric 14.4 inventory.quantity 4 quantity of inventory item see 1,\
+		3 CUSTNUM Character 10 customers.customer_number 14,\
+		4 CONTROL Character 15 inventory.control 20,\
+		5 MODELPART Character 30 inventory.model_part 40,\
+		6 SERIAL Character 40 inventory.serial_number 40,\
+		7 IDFLINE2 Character 23 UNUSED 0  - label line 1 and line 2 unused,\
+		8 IDSLINE2 Character 23 UNUSED 0  ,\
+		9 LOCATION Character 10 inventory.location 15,\
+		10 WTUOM Character 5 UNUSED 0  - comes from M or I part master table from warehouse package,\
+		11 PARTWT Numeric 9.2 inventory.item_weight 9.2 part master table 10 x 40 comes from part master table,\
+		12 PARTDESCR Character 60 UNUSED 0  part master table,\
+		13 LABELSTYL Character 20 UNUSED 0  ,\
+		14 LABELFMT Character 30 view.btw_file_path 60 just file name 60,\
+		15 HEAT Character 15 inventory.heat 40,\
+		16 LGTNUM Numeric 14.4 inventory.item_length_in 14.4,\
+		17 CHARLGTH Character 15 inventory.item_length_char 20,\
+		18 LBLCONTROL Character 20 UNUSED 0  ,\
+		19 LBLMODEL Character 20 UNUSED 0  ,\
+		20 LBLSERIAL Character 20 UNUSED 0  ,\
+		21 PONUM Character 20 inventory.po_number 30,\
+		22 POLINE Numeric 6.2 inventory.po_line_number 6.2,\
+		23 LOGICFLAG Logical 1 inventory.logic_flag 1 - T/F,\
+		24 POJOBNUM Character 25 jobs.job_number 20,\
+		25 LABELNAME Character 20 UNUSED 0  ,\
+		26 BILLIN Character 10 inventory.bill_of_lading_in 15,\
+		27 BILLOUT Character 10 inventory.bill_of_lading_out 15,\
+		28 CERTDATE Date 8 inventory.cert_date DATETIME - propane bottles,\
+		29 DUEBACK Date 8 inventory.due_back_date DATETIME - blank,\
+		30 FILLDATE Date 8 inventory.fill_date DATETIME -blank,\
+		31 INVREFER Character 15 inventory.inventory_ref_number 20 - catchall field,\
+		32 PLANT Character 6 association.association_name 50,\
+		33 PROCESS Character 5 UNUSED 0  - blank -usally stock/receiv/ship/pick/pickstage,\
+		34 RECVDATE Date 8 inventory.receive_date DATETIME,\
+		35 RECVTIME Date 8 inventory.receive_date DATETIME hh:mm:ss,\
+		36 REMARKS Character 32 inventory.remarks 30,\
+		37 SHIPDATE Date 8 inventory.ship_date DATETIME,\
+		38 SHIPTIME Date 8 inventory.ship_date DATETIME,\
+		39 SQFT Numeric 6.2 inventory.item_square_feet 6.2,\
+		40 WT Numeric 9.2 inventory.item_weight 9.2,\
+		41 SERLPRNTD Logical 1 inventory.lprint 1,\
+		42 CUSNAME Character 40 customers.job_customer_name 45,\
+		43 RUNDATE Date 8 UNUSED 0  ,\
+		44 RUNSHIFT Character 2 UNUSED 0 ,\
+		45 RUNLINENBR Numeric 3 UNUSED 0 ,\
+		46 RUNCAR Numeric 3 UNUSED 0 ,\
+		47 RUNFORMNBR Numeric 3 UNUSED 0 ,\
+		48 CUSOTHER1 Character 25 UNUSED 0 ,\
+		49 CUSOTHER2 Character 25 UNUSED 0 ,\
+		50 CUSOTHER3 Character 25 UNUSED 0 ,\
+		51 POUOM Character 5 UNUSED 0  - how do i order it,\
+		52 INVOICEUOM Character 5 UNUSED 0  - how do i invoice it,\
+		53 STOCKUOM Character 5 UNUSED 0  - how do i stock it,\
+		54 INVPRNTUOM Character 5 UNUSED 0  - which uom to print,\
+		55 OEQTY Numeric 8 UNUSED 0  - blank,\
+		56 SILO Numeric 6 UNUSED 0  - blank,\
+		57 BOXNUM Numeric 6 UNUSED 0  ,\
+		58 SLDPARTNUM Character 25 UNUSED 0 ,\
+		59 LBLPRNTNAM Character 45 view.barcode_printer_name 55,\
+		60 LABELDESCR Character 35 UNUSED 0 ,\
+		61 PARTGRP Character 20 UNUSED 0  ,\
+		62 OEJOBNUM Character 10 UNUSED 0  - order entry qty,\
+		63 JOBNUM Character 10 jobs.job_number 20,\
+		64 GRADE Character 10 inventory.grade 20,\
+		65 EMPLNUM Character 5 employees.employee_number 15,\
+		66 FABSHOP Character 5 associations.association_name 50,\
+		67 WIDNUM Numeric 10.4 inventory.item_width 10.4,\
 		68 QCAPPVD Logical 1 inventory.qc_approved_flag 1\
 	';
 	
 	//if (btType == 'P'){
 	//var labelFldType = 'P';//Piecemark or Raw
 	var pcmkType = [labelFldType,null];
+	if (labelFldType == 'R'){
+		pcmkType = [labelFldType];
+	}
 	/** @type {QBSelect<db:/stsservoy/label_fields>} */
 	var q = databaseManager.createSelect('db:/stsservoy/label_fields');
 	q.where.add(q.columns.label_field_type.isin(pcmkType));
@@ -906,14 +909,15 @@ function getBTFieldData(labelFldType){
 	/** @type{Array} */
 	var specs = [];
 	if (labelFldType == 'P'){//(P)iecemark
-		barTenderSpecs.split(',');
+		specs = barTenderSpecs.split(',');
 	} else {//(R)aw Material
-		barTenderRawSpecs.split(',');
+		specs = barTenderRawSpecs.split(',');
 	}
 		
 	for (idx = 0;idx < specs.length;idx++){
 		//var btSpec = {field_order: 0, name:'',dbtype:'', size: 0,dbcol:'',dbsize:0,fldtype:labelFldType}
 		var fields = specs[idx].trim().split(/ +/);
+		if (fields.length < 5){continue}
 		//var btSpec1 = btSpec;
 		var btSpec = {
 			field_order : fields[0].trim()*1,
@@ -925,7 +929,8 @@ function getBTFieldData(labelFldType){
 			label_field_type : labelFldType
 		}
 		btSpecs.push(btSpec);
-		if (existingFields.indexOf(btSpec.num) == -1){
+		//if (application.isInDeveloper()){application.output('btspec '+btSpec)}
+		if (existingFields.indexOf(btSpec.field_order) == -1){
 			saveRecs = true;
 			var i2 = Q.newRecord(false);
 			rec = Q.getRecord(i2);
@@ -983,28 +988,38 @@ function getBTFieldTabs(){
  * @properties={typeid:24,uuid:"2507CDA0-3384-4315-916A-877E6D3F1AA3"}
  */
 function onActionPrintRMLabels(event,invUUIDs) {
-	//start show printing warning
+	
 	//determine is this metric or imperial labeling?  
 	var metric = false;
 	var form = forms[event.getFormName()];
+	if (form.printEnabled == i18n.getI18NMessage('sts.txt.off')){application.output('no printing');return}
 	var labelQtyRequested = form.quantity;
+	//start show printing warning
+	//var countStr = labelQtyRequested;
+	//scopes.globals.errorDialogMobile(event,1220,'sts.txt.printing.inventory.number',countStr);
 	var defaultPrinter = rawMaterialPrinter;
 	var employeeNumber = globals.session.employeeNum;
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.inventory_uuid.isin(invUUIDs));
+	q.result.add(q.columns.serial_number)
+	q.result.add(q.columns.inventory_uuid);
 	/** @type {QBJoin<db:/stsservoy/jobs>} */
 	var r = q.joins.add('db:/stsservoy/jobs');
-	q.where.add(r.columns.job_id.eq(q.columns.job_uuid));
+	r.on.add(q.columns.job_uuid.eq(r.columns.job_id));
+	q.result.add(r.columns.job_number_group)
 	/** @type {QBJoin<db:/stsservoy/customers>} */
 	var s = r.joins.add('db:/stsservoy/customers');
-	q.where.add(r.columns.customer_id.eq(s.columns.customer_id));
+	s.on.add(r.columns.customer_id.eq(s.columns.customer_id));
+	q.result.add(s.columns.customer_number)
 	/** @type {QBJoin<db:/stsservoy/associations>} */
-	var t = q.joins.add('db:/stsservoy/associations');
-	q.where.add(t.columns.association_uuid.eq(q.columns.association_uuid));
-	q.result.addValue(form.quantity,'LABELQTY');
-	q.result.add(q.columns.quantity,'QTY');
+	var t = r.joins.add('db:/stsservoy/associations');
+	t.on.add(t.columns.association_uuid.eq(q.columns.association_uuid));
+	q.result.add(t.columns.association_name);
+	
+	q.result.addValue(form.quantity,'labelqty');
+	q.result.add(q.columns.quantity,'qty');
 	q.result.add(s.columns.customer_number,'CUSTNUM');
 	q.result.add(q.columns.control,'CONTROL');
 	q.result.add(q.columns.model_part,'MODELPART');
@@ -1087,10 +1102,42 @@ function onActionPrintRMLabels(event,invUUIDs) {
 		q.result.add(q.columns.item_width_in,'WIDNUM');
 	}
 	q.result.add(q.columns.qc_approved_flag,'QCAPPVD');
-	var Q = databaseManager.getFoundSet(q);
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	if (Q.getMaxRowIndex() == 0){return}
 	null;
-	scopes.prefs.onActionPrintLabels(event);
+	//scopes.prefs.onActionPrintLabels(event);
+	var specs = getBTFieldData('R');
+	//var tabCount = specs.length;
+	var i = 1; var barcodePrintedArray = [];
+	/** @type {num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number} */
+	var specObj = {num:0,name:'',dbtype:'',size:0,dbcol:'',dbsize:0};
+	var tabContents = '';var fileLine = '';var qIndex = 1;
+	for (qIndex = 1;qIndex <= Q.getMaxRowIndex();qIndex++){
+		Q.rowIndex = qIndex;
+		rec = Q;
+		if (rec.inventory_uuid){barcodePrintedArray.push(rec.inventory_uuid)}
+		for (var index = 0;index < specs.length;index++){
+			specObj = specs[index];
+			/** @type {Array} */
+			//var dbCol = specObj.dbcol.split('.');
+			//var dbField = dbCol[dbCol.length-1];//get unique record field
+			tabContents = rec[specObj.field_name.toLowerCase()];
+			if (typeof tabContents === 'undefined'){
+				if (application.isInDeveloper()){application.output('undefined or unknown - '+specObj.field_name+' '+scopes.printer.barTenderFields[index]);}
+				var fieldTagName = specObj.name;
+				tabContents = scopes.prefs.getNonRecordValues(rec,fieldTagName);
+			}
+			if (!tabContents){tabContents = ''}
+			
+			tabContents = scopes.prefs.tabContentFormat(tabContents,specObj);
+			if (application.isInDeveloper()){application.output('contents '+tabContents);}
+			fileLine += tabContents+"\t";
+		}
+		fileLine += "\n";
+	}
+	scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER
 	//close show printing warning
+	//scopes.globals.rfErrorHide(event);
 	
 	//get selected items
 	//collect each item's attributes from inventory

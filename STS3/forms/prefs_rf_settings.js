@@ -38,3 +38,19 @@ function onDataChangeOffF8Shipping(oldValue, newValue, event) {
 	if (globals.tempPrefsChanged.indexOf('globalF8Off')){globals.tempPrefsChanged.push('globalF8Off');}
 	return true
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"7477A50E-F619-40C3-8D50-BF6821033978"}
+ */
+function onActionPromptFabShop(event) {
+	if (scopes.prefs.promptFabShop != 1){
+		scopes.prefs.lFsFlipPrimSecWhenShop = 0;
+		if (globals.tempPrefsChanged.indexOf('lFsFlipPrimSecWhenShop')){
+			globals.tempPrefsChanged.push('lFsFlipPrimSecWhenShop');//20190201 update this prompt when no longer requesting fabshop
+		}
+	}
+}

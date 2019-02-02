@@ -575,6 +575,11 @@ function onShowForm(firstShow,event) {
 	//	application.output(' REM rf_mobile_view show focus');
 	forms[formName].elements['genericin'].requestFocus();
 	application.output('RM trueHeight '+trueHeight+' est height '+estimatedHeight+' newscale '+newScale);
+	// Final actions
+	printEnabled = i18n.getI18NMessage('sts.txt.on');
+	showPrintSetting(event);
+	finalize = i18n.getI18NMessage('sts.btn.no').toUpperCase();
+	bundled = i18n.getI18NMessage('sts.btn.no').toUpperCase();
 	//plugins.WebClientUtils.executeClientSideJS('doCallback("genericin");');
 	//}
 }
@@ -829,4 +834,19 @@ function onDataChangeQuantity(oldValue, newValue, event) {
 		// required values not yet set?, checked at initial entry genericin Q value
 	}
 	return true
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"BFDA2F71-5E7F-4BEF-A8E4-AFCDDA538C36"}
+ */
+function showPrintSetting(event){
+	
+	var labelText = i18n.getI18NMessage('sts.label.generic');
+	if (printEnabled == i18n.getI18NMessage('sts.txt.on')){
+		elements.genericinlabel.text = labelText+' p-'+i18n.getI18NMessage('sts.txt.on');
+	} else {
+		elements.genericinlabel.text = labelText+' p-'+i18n.getI18NMessage('sts.txt.off');		
+	}
+
 }

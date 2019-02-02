@@ -878,7 +878,7 @@ function focusWindow(){
 	//var winIndex = windowArray.indexOf(windowName.trim());
 	if (windowName == null){return}
 	if (windowName == " "){return}
-	if (windowName.search('STS') == 0){return}//cannot bring main to front, so ignore
+	if (windowName.search('STS - Main') == 0){return}//cannot bring main to front, so ignore
 	var windowx = application.getWindow(windowName.trim());
 	//if (windowName[windowName.length-1] == " "){
 	//	windowName = windowName.slice(0,windowName.length-1);
@@ -892,6 +892,10 @@ function focusWindow(){
 	globals.winTrackProvider = "";
 	//plugins.window.maximize(windowx.title);
 	//plugins.window.maximize(windowName);
+	if (globals.subWindowParentFocus){
+		windowx = application.getWindow(globals.subWindowParentFocus.trim());
+		globals.subWindowParentFocus = '';
+	}
 	windowx.toFront();
 }
 /**
@@ -1653,4 +1657,13 @@ function onActionClickInfoSheet(event){
  */
 function onActionBackupDatabase(event){
 	scopes.globals.backupDatabase(event);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"421DF7CA-7FB9-4378-82A2-43A98B3851BE"}
+ */
+function onActionLabelDestsSet(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.mc.label.destinations'),'mc_label_dests',50,50,520,550,false);
 }

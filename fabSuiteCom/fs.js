@@ -100,6 +100,7 @@ function checkFSStatus(status){
 		status = globals.m.stationsThird[status].toLowerCase();
 	}
 	
+	if (!globals.m.stationsThird[status]){return null}
 	//getFSStations(globals.session.jobNumber);
 	var station = '<FabSuiteXMLRequest>\
 		<ValStation>\
@@ -730,12 +731,12 @@ function serverFSCallRequest(xml){
 		var sample = fsCom.toString();
 		if (sample.search('RemoteCOM') != -1){
 			response = fsCom.call('FabSuiteXML',xmlConnect);
-			fsCom.release();
+			//fsCom.release();
 			return response;
 		}
 	//}
 	response = fsCom.call('FabSuiteXML',xml);
-	fsCom.release();
+	//fsCom.release();
 	return response;
 }
 /**
@@ -1097,6 +1098,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	if (commitType.search(/(Save)|(Delete)/) != 0){return false}
 	var date = globals.mob.date;//new Date();//flow down from data update
 
+	var userEmployee = (globals.m.employee3rdParty[firstEmp]) ? globals.session.employeeNum : '';
 	var pieceMark = globals.mob.piecemark.piecemark;//exclude this when showing assembly, no minors
 	var station = globals.mob.statusCode3rdParty;//required
 	var quantity = globals.mob.idfiles.length;//required
@@ -1151,10 +1153,11 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	var _execDate = '<Date>'+execDate+'</Date>\n';
 	var _hours = '<Hours>'+hours+'</Hours>\n';
 	var _batchId = '<BatchID>'+batchId+'</BatchID>\n';
+	var _asUser = '<AsUser>'+userEmployee+'</AsUser>\n';
 
 	var saveDataXML = '<FabSuiteXMLRequest>\
 	<ShopFloorSave>\
-	TYPE JOBNUMBER MAJOR MINOR SEQUENCENUM LOTNUMBER STATION QUANTITY INSTANCES SERIALNUM EMPLOYEE DATE HOURS BATCH \
+	TYPE JOBNUMBER MAJOR MINOR SEQUENCENUM LOTNUMBER STATION QUANTITY INSTANCES SERIALNUM ASUSER EMPLOYEE DATE HOURS BATCH \
 	</ShopFloorSave>\
 	</FabSuiteXMLRequest>';
 	saveDataXML = saveDataXML.replace('TYPE',_commitType);
@@ -1171,6 +1174,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	saveDataXML = saveDataXML.replace('DATE',_execDate);
 	saveDataXML = (!hours) ? saveDataXML.replace('HOURS','') : saveDataXML.replace('HOURS',_hours);
 	saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId);
+	saveDataXML = (!userEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
 	application.output(saveDataXML);
 	var fsResp = com.call('FabSuiteXML',saveDataXML);
 	application.output('RESPONSE: '+fsResp);
@@ -1339,7 +1343,7 @@ function fabsuiteSetReceivedBarcode(event,clBarcode,stsBarcode,qty,bcData){
 		<ChecklistSerialNumber>'+clBarcode+'</ChecklistSerialNumber>\
 		<SerialNumber>'+stsBarcode+'</SerialNumber>\
 		<Quantity>'+qty+'</Quantity>\
-		_PO_DD_CO_HT_LO_RM_R2_BL\
+		_PO_DD_CO_HT_LO_LO2_RM_BL\
 		</Receive>\
 		</FabSuiteXMLRequest>';
 
@@ -1349,10 +1353,15 @@ function fabsuiteSetReceivedBarcode(event,clBarcode,stsBarcode,qty,bcData){
 	xmlReadReceiveBC = (bcData.countryoforigin) ? xmlReadReceiveBC.replace('_CO','<CountryOfOrigin>'+bcData.countryoforigin+'</CountryOfOrigin>\\\n') : xmlReadReceiveBC.replace('_CO','');
 	xmlReadReceiveBC = (bcData.heatnumber) ? xmlReadReceiveBC.replace('_HT','<HeatNumber>'+bcData.heatnumber+'</HeatNumber>\\\n') : xmlReadReceiveBC.replace('_HT','');
 	xmlReadReceiveBC = (bcData.location) ? xmlReadReceiveBC.replace('_LO','<Location>'+bcData.location+'</Location>\\\n') : xmlReadReceiveBC.replace('_LO','');
-	//xmlReadReceiveBC = (bcData.receivingremarks) ? xmlReadReceiveBC.replace('_RM','<Remarks>'+bcData.receivingremarks+'</Remarks>\\\n') : xmlReadReceiveBC.replace('_RM','');
-	xmlReadReceiveBC = (bcData.receivingremarks) ? xmlReadReceiveBC.replace('_R2','<ReceivingRemarks>'+bcData.receivingremarks+'</ReceivingRemarks>\\\n') : xmlReadReceiveBC.replace('_R2','');
+	xmlReadReceiveBC = (bcData.location2) ? xmlReadReceiveBC.replace('_LO2','<SecondaryLocation>'+bcData.location2+'</SecondaryLocation>\\\n') : xmlReadReceiveBC.replace('_LO2','');
+	xmlReadReceiveBC = (bcData.receivingremarks) ? xmlReadReceiveBC.replace('_RM','<ReceivingRemarks>'+bcData.receivingremarks+'</ReceivingRemarks>\\\n') : xmlReadReceiveBC.replace('_RM','');
 	xmlReadReceiveBC = (bcData.billoflading) ? xmlReadReceiveBC.replace('_BL','<BillOfLadingNumber>'+bcData.billoflading+'</BillOfLadingNumber>\\\n') : xmlReadReceiveBC.replace('_BL','');
 	var rawMat = com.call('FabSuiteXML',xmlReadReceiveBC).toString();
+	if (!rawMat){
+		com = null;
+		checkComFabsuite(event);
+	}
+	rawMat = rawMat.toString();
 	application.output('RM '+rawMat)
 	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
 	if (!errorMatch){
@@ -1375,7 +1384,7 @@ function fabsuiteSetReceivedBarcode(event,clBarcode,stsBarcode,qty,bcData){
  * @properties={typeid:24,uuid:"6A27ED08-A90A-465C-99D8-6980A09A21A3"}
  */
 function getFsDateFormat(date){
-	var day = date.getDay();
+	var day = date.getDate();
 	if (day < 10){day = "0"+day}
 	var month = date.getMonth()+1;
 	if (month < 10){month = "0"+month}

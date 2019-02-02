@@ -136,6 +136,7 @@ var m = {
 	employeeNumbers : [], // list of employee numbers by login_id
 	employee3rdParty : [], // list of employee FS users by employeeName
 	userAssocs : [], // list of userIds to assocationIds
+	i18nMobileViews : [],//mapping 2-way between i18n string and definition used
 	endItem : null
 }
 /**
@@ -1306,6 +1307,12 @@ var localeSelected = '';
  * @properties={typeid:35,uuid:"745A0368-ABDE-47BE-B7C5-A5ACAB3DC2E4",variableType:-4}
  */
 var deBounceBtn = [];
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"6ABE5F4F-4307-4087-B3E6-C8DD3C2B563A"}
+ */
+var labelDestUserID = '';
 /**
  * @AllowToRunInFind
  * 
@@ -10254,8 +10261,8 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			break;
 		case 'O':
 			entryType = 'O';
-			if (newValue.search(/(OFF|ON)/) == 0) {form['printEnabled'] = newValue;}
-			if (form['printEnabled'] != ''){if (application.isInDeveloper()){application.output('Printing '+newValue)}; break}
+			if (newValue.search(/(OFF|ON)/) == 0) {form['printEnabled'] = newValue;break;}
+			//if (form['printEnabled'] != ''){if (application.isInDeveloper()){application.output('Printing '+newValue)}; break}
 			entryType = 'O';
 			if (forms['rf_mobile_view'].shownFields.indexOf('countryoriginin') == -1){
 				errorDialogMobile(event,1229,'genericin','Country Of Origin');
@@ -10299,7 +10306,15 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 				var recvDate = new Date();
 				var barcodeData = {ponumber:form.poNumber,deliverydate:recvDate,billoflading:form.billOfLading,
 					receivingremarks:form.remarks,countryoforigin:form.countryOfOrigin,
-					heatnumber:form.heat,location:form.stockLocation};
+					heatnumber:form.heat,location:form.stockLocation,location2:''};
+				if (scopes.prefs.promptFabShop == 1){//20190201 select where to place raw received if prefs indicate
+					if (scopes.prefs.lFsFlipPrimSecWhenShop == 1){
+						barcodeData.location2 = session.association;//location first, shop second
+					} else {//default
+						barcodeData.location = session.association;						
+						barcodeData.location2 = form.stockLocation;//shop first, location second
+					}
+				}
 				var invUUIDs = [];
 				for (idx = 1;idx <= recCount;idx++){
 					var stsBarcode = scopes.jobs.createValidBarcodeRM();
@@ -10317,7 +10332,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					//application.output(' RM '+returnObj.jobnumber+ 'bundled '+bundled+' form.bundled '+form.bundled+ ' i18n '+i18n.getI18NMessage('sts.btn.yes').toUpperCase());
 					var assignedJobNumber = returnObj.jobnumber;//valid inventory entry complete from fabsuite
 					var invUUID = scopes.jobs.receiveRawMaterialIntoInventory(event,assignedJobNumber,stsBarcode,bndQuantity);
-					invUUIDs.push(invUUID); //list of invUUID's to print
+					invUUIDs.push(invUUID.toString()); //list of invUUID's to print
 				}
 				if (error.error){//fs receive raw material set
 					errorDialogMobile(event,1220,'genericin',error.error);
@@ -10499,7 +10514,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 	//for (var itm in clientInfo){
 	//	application.output('Client.'+itm+' '+clientInfo[itm]);
 	//}
-	var printEnabledNotice = ' '+form['printEnabled'];
+	var printEnabledNotice = ' p-'+form['printEnabled'];
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && session.dualEntry){
 		if (event.getElementName() == 'genericin'){
 			forms['rf_mobile_view'].elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic')+entryType+printEnabledNotice;
@@ -12955,7 +12970,7 @@ function deBounce(event){
 	var elButton = event.getElementName();
 	var currTime =  new Date().getTime();
 	if (!globals.deBounceBtn[elButton]){globals.deBounceBtn[elButton] = currTime;return false;}
-	var debounceTime = 60;
+	var debounceTime = 5;
 	var diff = (currTime - globals.deBounceBtn[elButton])/1000;
 	///application.output(diff);
 	if (diff < debounceTime){return true}

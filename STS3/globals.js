@@ -888,6 +888,18 @@ var formsToRemove = [];
  */
 var showElementReferences = false;//20180105 show element references
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"233CD951-72F1-4BFA-B7B4-8E756008C03F"}
+ */
+var subWindowClose = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"7647CA96-261F-40A3-84CE-C43BD1FEAEBD"}
+ */
+var subWindowParentFocus = '';
+/**
  * Callback method for when solution is opened.
  *
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
@@ -1160,6 +1172,12 @@ function stopWindowTrack(){
 			solutionModel.removeForm(formName)
 		}
 	}
+	if (globals.subWindowParentFocus){
+		win = application.getWindow(globals.subWindowParentFocus);
+		if (win){
+			win.toFront();
+		}
+	}
 	return;
 }
 /**
@@ -1172,7 +1190,15 @@ function stopWindowTrack(){
 function onActionCancelButton(event) {
 	// Generic close on Cancel
 	//var win = application.getActiveWindow();
-	globals.mainWindowFront();
+	if (!globals.subWindowClose){
+		globals.mainWindowFront();
+	} else {
+		var win = application.getWindow(subWindowClose);
+		if (win){
+			win.toFront();
+		}
+	}
+	globals.subWindowClose = '';
 	globals.stopWindowTrack()
 	//win.hide();
 }

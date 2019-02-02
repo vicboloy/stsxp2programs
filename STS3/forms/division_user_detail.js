@@ -5,6 +5,12 @@
  */
 var employeeNumber = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"35D3A952-5344-428C-80DC-EC0707825E9C"}
+ */
+var employeeNum = '';
+/**
  * @properties={typeid:35,uuid:"A3113F28-DACF-4D38-AC63-842C626ADDB5",variableType:-4}
  */
 var populatedEmployees = [];
@@ -26,6 +32,12 @@ var isAdminAccount = "";
  * @properties={typeid:35,uuid:"119B1918-A7FD-42FC-A40B-038758BA20B4"}
  */
 var userMobileViewList = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"029FD687-3D5E-44F7-A23B-9EE5BED6197C"}
+ */
+var employeeName = '';
 /**
  * @properties={typeid:24,uuid:"ABA5AEB5-9EA0-4D10-BAE9-AB3561481EEA"}
  * @SuppressWarnings(wrongparameters)
@@ -123,9 +135,13 @@ function onRecordSelection(event) {
 	elements.userPassConf.placeholderText = message; */
 	var fs = st2_users_to_employee;
 	if (fs){
+		employeeNum = fs.employee_number;
 		employeeNumber = fs.employee_id;
+		employeeName = fs.employee_firstname+' '+fs.employee_lastname;
 	} else {
 		employeeNumber = "";
+		employeeName = "";
+		employeeNum = '';
 	}
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var assoc = databaseManager.createSelect('db:/stsservoy/associations');
@@ -222,6 +238,8 @@ function onEdit(event,editing){
 	elements.btn_Save.visible = editing;
 	elements.btn_Password.enabled = editing;
 	forms.division_users.elements.btn_New.enabled = !editing;
+	var win = forms['mc_label_dests'].controller.getWindow();
+	if (win){win.hide()}
 	updateFields(event);
 }
 /**
@@ -245,6 +263,7 @@ function startEditing(event) {
  * @properties={typeid:24,uuid:"C3729BF6-2B55-40D9-96CD-0174C9578481"}
  */
 function stopEditing(event) {
+	onActionCancelEditLabelDests(event);
 	databaseManager.revertEditedRecords(foundset);
 	onEdit(event,false);
 	//return _super.stopEditing(event)
@@ -422,4 +441,41 @@ function onDataChangeActive(oldValue, newValue, event) {
 		scopes.globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.active.login.warn'),i18n.getI18NMessage('sts.txt.active.login.warn'))
 	}
 	return true
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"61B75172-A382-46DC-AD79-B1327439BEFF"}
+ */
+function onActionSetLabelDests(event) {
+	forms.MWBase.onActionLabelDestsSet(event);
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"A855FEF7-60D1-460D-AAE5-A2C179735D53"}
+ */
+function onActionCancelEditLabelDests(event){
+	var form = forms['division_user_detail'];
+	var userID = application.getUUID(form.user_uuid);
+	/** @type {QBSelect<db:/stsservoy/users>} */
+	var u = databaseManager.createSelect('db:/stsservoy/users');
+	u.result.add(u.columns.user_uuid);
+	u.where.add(u.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	u.where.add(u.columns.user_uuid.eq(userID));
+	var U = databaseManager.getFoundSet(u);
+	if (U.getSize() > 0){return}
+	
+	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
+	var q = databaseManager.createSelect('db:/stsservoy/label_destinations');
+	q.result.add(q.columns.label_destination_uuid);
+	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.user_uuid.eq(userID));
+	var Q = databaseManager.getFoundSet(q);
+	if (Q.getSize() > 0){
+		Q.deleteAllRecords();
+	}
 }

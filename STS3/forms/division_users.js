@@ -34,6 +34,13 @@ function deleteRecord(event, index, stopEdit) {
 		globals.errorDialogMobile(event,'1071','',status); //1071, record has data. will not be deleted.
 		return false;
 	}
+	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
+	var q = databaseManager.createSelect('db:/stsservoy/label_destinations');
+	q.result.add(q.columns.label_destination_uuid);
+	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.user_uuid.eq(application.getUUID(user_uuid)));
+	var Q = databaseManager.getFoundSet(q);
+	var delQ = Q.deleteAllRecords();
 	return _super.deleteRecord(event, index, stopEdit)
 }
 

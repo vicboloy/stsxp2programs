@@ -847,7 +847,7 @@ function importFSRequest(event,xmlRequest,filters){
 		var xmlClose = '<FabSuiteXMLRequest><Close></FabSuiteXMLRequest>';
 		if (application.getSolutionName() == 'STS X Embedded'){
 			scopes.fs.com.call('FabSuiteXML',xmlClose);
-			scopes.fs.com.release();
+			//scopes.fs.com.release();
 		}
 		newDate2 = new Date();
 		scopes.jobs.warningsMessage('FS Request Done '+newDate2,true)

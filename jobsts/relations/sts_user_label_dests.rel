@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/label_destinations",
+items:[
+{foreignColumnName:"user_uuid",primaryDataProviderID:"scopes.globals.labelDestUserID",typeid:23,uuid:"5F8AC80B-39CE-447B-8FA8-B3941DD51D0B"},
+{foreignColumnName:"delete_flag",operator:256,primaryDataProviderID:"scopes.globals.flagFALSE",typeid:23,uuid:"C5BDC064-77F3-4E4E-8E32-0F4F07219A08"}
+],
+joinType:1,
+name:"sts_user_label_dests",
+primaryDataSource:"db:/stsservoy/label_destinations",
+typeid:22,
+uuid:"B9BE274E-4CC6-424B-BE92-3B7F5670A37C"

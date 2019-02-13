@@ -48,10 +48,13 @@ var licenseErrorMessage = "";
  * @properties={typeid:24,uuid:"54BEBCF1-8FB3-4E10-9271-095625FE64B5"}
  */
 function onDataChangeCompany(oldValue, newValue, event) {
-	globals.companyLoginName = newValue;
-	if (application.isInDeveloper()){application.output('-----'+globals.companyLoginName)}
+	if (companyName){
+		companyName = companyName.toUpperCase();
+		companyName = companyName.trim();
+		globals.companyLoginName = companyName;
+	}
 	elements.userName.requestFocus();
-	return true
+	return true;
 }
 /**
  * @properties={typeid:24,uuid:"18D40F0D-FEE3-4AE5-A4DD-1EAD0E888BB2"}
@@ -70,17 +73,7 @@ function hideLogo(){
  *
  * @properties={typeid:24,uuid:"490EFD00-9D7A-4E77-BA36-1B4DE5C89540"}
  */
-function onDataChange(oldValue, newValue, event) {
-	switch (event.getElementName()){
-		case 'companyName':
-			if (!newValue || newValue == ""){
-				elements.companyName.requestFocus();
-				return true;
-			}
-			break;
-		case 'userName':
-		default:
-	}
+function onDataChangeUser(oldValue, newValue, event) {
 	elements.password.requestFocus();
 	return true
 }
@@ -96,7 +89,12 @@ function onFocusLost(event) {
 	var elName = event.getElementName();
 	var formName = event.getFormName();
 	var prov = forms[formName].elements[elName].getDataProviderID();
+	/** @type {String} */
 	var val = controller.getDataProviderValue(prov);
+	//if (val){
+	//	val = val.trim();
+	//	application.updateUI();
+	//}
 	if (!val){
 		if (elName == 'companyName'){
 			forms[formName].elements[elName].requestFocus();

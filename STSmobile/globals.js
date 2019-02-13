@@ -51,14 +51,17 @@ function onSolutionOpen(){
 	getLoggedEmployee(session.loginId);
 	mobLoggedEmployeeId = session.employeeId; //globals.getLoggedEmployee(secCurrentUserID);
 	globals.getMappings();
+	globals.geti18nScreenNameMapping();//20190202 get i18n screen mapping to i18n key
+
 	session.association = m.assocs[session.associationId];
 	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association
 	//application.output()
 	application.setValueListItems('stsvlg_status_codes',globals.m.statusCodesDiv[session.associationId]); // status codes for this association
 	globals.logger(true,i18n.getI18NMessage('sts.txt.application.opened.mobile'));
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
-	globals.getMenuList();
+	scopes.prefs.mobilePrefs = "";
 	globals.onStartLoadPrefs();
+	globals.getMenuList();
 	globals.rfFunctionKeys('STS_main');
 	//globals.functionKeyDescrip[0] = " ";
 	// see: http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html for more info
@@ -74,7 +77,6 @@ function onSolutionOpen(){
 	//}
 
 	if (application.isInDeveloper()){application.output("-----------------------");application.output('width = '+application.getScreenWidth())}
-	scopes.prefs.mobilePrefs = "";
 	scopes.prefs.sts = 'STSmobile';
 
 	//rfGetLocalStorage('deviceName');

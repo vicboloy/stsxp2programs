@@ -236,6 +236,8 @@ function createEditI18nTable(event){
 		}'
 	checkForm.onRecordSelection = checkForm.newMethod(code);
 	checkForm.onShow = checkForm.newMethod(codeTable);
+	checkForm.navigator = SM_DEFAULTS.NONE;
+	checkForm.scrollbars = SM_SCROLLBAR.HORIZONTAL_SCROLLBAR_NEVER;
 
 	var item; var columnPos = 0;var width = 350;
 	var anchors = SM_ANCHOR.NORTH | SM_ANCHOR.EAST | SM_ANCHOR.WEST;

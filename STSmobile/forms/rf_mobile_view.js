@@ -351,6 +351,10 @@ var invLine = {};
  */
 var lastQty = 0;
 /**
+ * @properties={typeid:35,uuid:"98783CF0-21BC-4F13-9852-3D58094026E3",variableType:-4}
+ */
+var printEnabledScreen = false;
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -367,6 +371,7 @@ function resetWorkerCode(){
  * @AllowToRunInFind
  */
 function onShowForm(firstShow,event) {
+	printEnabledScreen = !(!globals.m.i18nMobilePrintViews[globals.session.program.replace('\'','')]);
 	var isAndroid = false;
 	var maxY = 21;
 	var newScale = 1.0;
@@ -507,6 +512,7 @@ function onShowForm(firstShow,event) {
 		//height = element.getHeight();
 		height = solEl.height;//.getHeight();
 		width = element.getWidth();
+		if (item.search('spacer') == 0){continue}//20190211 set non optional / Required entries alignment
 		//application.output('wide '+width+' high '+height+' scale '+newScale+' end x '+element.getLocationX());
 		if (newLine){
 			fieldLine++;
@@ -539,7 +545,7 @@ function onShowForm(firstShow,event) {
 				element.fgcolor = 'black';
 			}
 		} else {
-			padding = -2;
+			//padding = -2;
 			//if (isAndroid){
 			//	padding = 1;
 			//}
@@ -574,12 +580,13 @@ function onShowForm(firstShow,event) {
 	//if (firstShow){
 	//	application.output(' REM rf_mobile_view show focus');
 	forms[formName].elements['genericin'].requestFocus();
-	application.output('RM trueHeight '+trueHeight+' est height '+estimatedHeight+' newscale '+newScale);
 	// Final actions
 	printEnabled = i18n.getI18NMessage('sts.txt.on');
 	showPrintSetting(event);
 	finalize = i18n.getI18NMessage('sts.btn.no').toUpperCase();
 	bundled = i18n.getI18NMessage('sts.btn.no').toUpperCase();
+	elements.genericin.requestFocus();
+	controller.focusField('genericin',false);
 	//plugins.WebClientUtils.executeClientSideJS('doCallback("genericin");');
 	//}
 }
@@ -841,7 +848,8 @@ function onDataChangeQuantity(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"BFDA2F71-5E7F-4BEF-A8E4-AFCDDA538C36"}
  */
 function showPrintSetting(event){
-	
+	var printEnabledScreen = !(!globals.m.i18nMobilePrintViews[globals.session.program]);//20190202 set or unset print enabled screen
+	if (!printEnabledScreen){return}
 	var labelText = i18n.getI18NMessage('sts.label.generic');
 	if (printEnabled == i18n.getI18NMessage('sts.txt.on')){
 		elements.genericinlabel.text = labelText+' p-'+i18n.getI18NMessage('sts.txt.on');

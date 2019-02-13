@@ -187,7 +187,7 @@ uuid:"EE849839-4162-45FF-8E82-244DE6F79ED8"
 formIndex:9,
 location:"15,275",
 name:"btn_FoxfireReports",
-onActionMethodID:"-1",
+onActionMethodID:"DD1F9AC4-6626-499B-B958-42E3A8219F97",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"149,23",

@@ -1095,6 +1095,7 @@ function fabSuiteProcess(){
  * @AllowToRunInFind
  */
 function fabSuiteUpdate(commitType){//shopFloorSave
+	if (!scopes.prefs.lFabsuiteInstalled || !globals.m.employee3rdParty[firstEmp]){return true}//20190202 no fs update possible
 	if (commitType.search(/(Save)|(Delete)/) != 0){return false}
 	var date = globals.mob.date;//new Date();//flow down from data update
 

@@ -136,6 +136,10 @@ function login(){
 
 	application.output('before tenantid');
 	
+	if (companyName){
+		companyName = companyName.toUpperCase().trim();
+	}
+	userName = userName.trim();
 	tenantID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_TENANT_ID,[userName,companyName]);
 	//application.output('after tenantid'+tenantID+' ID ');
 	var checkLicense = "";
@@ -302,7 +306,7 @@ function onLoad(event) {
 	var companyCount = security.authenticate(AUTH_SOLUTION,AUTH_GET_TENANT_COUNT,[])
 	var showCompany = (companyCount > 1);
 	var message = 'Company Count is '+companyCount;
-	if (companyCount == 0){
+	if (companyCount == 0){//if (companyCount == 0){ changed (companyCount != 3)
 		security.authenticate(AUTH_SOLUTION,AUTH_INIT_COMPANY,[]);
 	}
 	if (application.isInDeveloper()){application.output(message);}

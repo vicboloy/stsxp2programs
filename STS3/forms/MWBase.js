@@ -1292,8 +1292,11 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
+	application.output('RM execute FFSTART9');
+	//plugins.UserManager.executeCommand('\\\\p2server01\\STSX\\foxfire\\ff.bat');//\\p2server01\STSX\foxfire
+	application.output('RM finish FFSTART9');application.executeProgram('\\\\p2server01\\STSX\\foxfire\\ff.bat');
 	if (!application.isInDeveloper()){return}
-	scopes.jobs.testSerialNonOdo();
+	//scopes.jobs.testSerialNonOdo();
 	if (1==1)return
 	var response = "blah";
 	switch (response){
@@ -1666,4 +1669,35 @@ function onActionBackupDatabase(event){
  */
 function onActionLabelDestsSet(event) {
 	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.mc.label.destinations'),'mc_label_dests',50,50,520,550,false);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"DD1F9AC4-6626-499B-B958-42E3A8219F97"}
+ * @AllowToRunInFind
+ */
+function onActionFoxFireReports(event){
+	
+	var execPath = scopes.prefs.foxfireexe;
+	if (execPath.search('////') != 0){
+		var serverDir = plugins.file.getDefaultUploadLocation();
+		var reportsDir = scopes.prefs.reportpath;
+		var execPath = serverDir+reportsDir;
+		var regexp = new RegExp(/\\([^\\]*)$/);
+		var execInDir = scopes.prefs.foxfireexe.replace(regexp,'');
+		execInDir = scopes.prefs.foxfireexe;
+		application.executeProgram(scopes.prefs.foxfireexe+'//ffstart9.exe',null,null,execInDir);
+		return;
+	}
+	var serverDir = plugins.file.getDefaultUploadLocation();
+	var reportsDir = scopes.prefs.reportpath;
+	var execPath = serverDir+reportsDir;
+	execPath = execPath.replace('.\\','\\');
+	application.output('test test test test',LOGGINGLEVEL.WARNING);
+	application.output('RM foxfire path '+execPath,LOGGINGLEVEL.DEBUG);
+	plugins.UserManager.executeCommand('\\\\p2server01\\STSX\\foxfire\\ff.bat');//\\p2server01\STSX\foxfire
+	application.output('RM finish FFSTART9');
+	//application.executeProgram('\\\\p2server01\\c\$\\foxfire\\ffstart9.exe');
+
 }

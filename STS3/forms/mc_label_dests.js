@@ -89,7 +89,7 @@ function onShow(firstShow, event) {
 	empName = form.employeeNum+': '+form.employeeName;
 	scopes.prefs.getLocalPrinters();
 	scopes.prefs.getBTLabelFormats();
-	scopes.prefs.getMCScreenNames();
+	scopes.prefs.getMCPrintScreenNames();
 	scopes.prefs.getUsersWithScreenPrintPerms(event);
 	elements.dupeWarning.visible = false;
 	resetView(event);
@@ -199,7 +199,7 @@ function onActionAdd(event){
 	rec.printer_name = printerName;
 	rec.rf_screen_name = screenName;
 	rec.label_template_name = labelName;
-	rec.i18n_label = globals.m.i18nMobileViews[screenName];
+	rec.i18n_label = globals.m.i18nMobilePrintViews[screenName];
 	elements.btn_Save.visible = true;
 	elements.btn_Add.visible = false;
 	elements.btn_Update.visible = true;

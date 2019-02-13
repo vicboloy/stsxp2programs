@@ -674,6 +674,12 @@ var foxfirepath = "";
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"16396C67-8F90-4954-AB5F-B49251921E39"}
+ */
+var foxfireexe = '';
+/**
+ * @type {String}
+ *
  *
  * @properties={typeid:35,uuid:"F84869B9-583A-4E89-935E-27985E0306CC"}
  */
@@ -1243,228 +1249,6 @@ var labels = "1 AREA Character 6 idfiles.id_area 10,\
  */
 var labelFields = [];
 /**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"B76D19B0-22FB-4276-961F-73A71B342410"}
- */
-var labelFieldsTmp = 'AREA,\
-BATCH,\
-BCCUST,\
-BCFORM,\
-BCINCLDPFX,\
-BCJOBSTART,\
-BCPREFIX,\
-BCTITLE,\
-BOLOUT,\
-CARRNUM,\
-COMMENTS,\
-COWCODE,\
-CTRLNUM,\
-CUSCITY,\
-CUSFAX,\
-CUSFIRST,\
-CUSLAST,\
-CUSMIDDLE,\
-CUSNAME,\
-CUSPHONE,\
-CUSSTATE,\
-CUSSTREET,\
-CUSTNUM,\
-CUSTPO,\
-CUSTSO,\
-CUSZIP,\
-DESCR1,\
-DESCR2,\
-EDITTIME,\
-ENGXTIME,\
-FABINVOICE,\
-FABSHOP,\
-FABXTIME,\
-FIREXTIME,\
-GALVXTIME,\
-GRADE,\
-HEAT,\
-ID,\
-IDFORMAT,\
-IDLOCATION,\
-IDSTATUS,\
-INVOICE,\
-JOBCAREOF,\
-JOBID,\
-JOBLOCAT,\
-JOBNUM,\
-JOBSHIPTO,\
-JOBSTRUCT,\
-JOBTITLE,\
-JOIDFORMAT,\
-JOLINE1NUM,\
-JOLINE1STR,\
-JOLINE2NUM,\
-JOLINE2STR,\
-LINE0FLD,\
-LINE0PRMPT,\
-LINE1NUM,\
-LINE1STR,\
-LINE2NUM,\
-LINE2STR,\
-LINE3FLD,\
-LINE3PRMPT,\
-LINE4FLD,\
-LINE4PRMPT,\
-LINE5FLD,\
-LINE5PRMPT,\
-LINE6FLD,\
-LINE6PRMPT,\
-LINE7FLD,\
-LINE7PRMPT,\
-LINE8FLD,\
-LINE8PRMPT,\
-LINE9FLD,\
-LINE9PRMPT,\
-LINEAFLD,\
-LINEAPRMPT,\
-LINEBFLD,\
-LINEBPRMPT,\
-LOADNUM,\
-LODCAREOF,\
-LODPO,\
-LODRELEASE,\
-LODSHIPTO,\
-LOT,\
-MRR,\
-ORIGEMPL,\
-OTHRXTIME,\
-PANTXTIME,\
-PCCOLOR,\
-PCCOWCODE,\
-PCMARK,\
-PCRELEASE,\
-PCUOM,\
-PORELEASE,\
-PRODTYPE,\
-PROJYEAR,\
-RAWMATLID,\
-RECACTION,\
-RECVLOAD,\
-RECVTIME,\
-REMAILTIME,\
-REVLEVEL,\
-ROUTECODE,\
-SEMAILTIME,\
-SEQNUM,\
-SHEETNUM,\
-SHIPLOAD,\
-SHIPTAG,\
-SHIPTIME,\
-SITEXTIME,\
-TRAILINFO,\
-EDITDATE,\
-ENGXDATE,\
-FABXDATE,\
-FIREXDATE,\
-GALVXDATE,\
-IDCREATED,\
-OTHRXDATE,\
-PANTXDATE,\
-RECVDATE,\
-REMAILDATE,\
-REQDSHIP,\
-SCHDSHIP,\
-SEMAILDATE,\
-SHIPDATE,\
-SITEXDATE,\
-DELETEID,\
-LOGICFLAG,\
-LPRINT,\
-LSOTOLOAD,\
-METRICJOB,\
-BCJBSTRT,\
-BCJOBLGTH,\
-BCPFXLGTH,\
-COSTEA,\
-COWQTY,\
-FIREPFCF,\
-INCREMNT,\
-ITEMWT,\
-ITEMWTKG,\
-JOBWT,\
-LABELBC,\
-LABELQTY,\
-LGTNUM,\
-ORIGQTY,\
-PCUOMDOLL,\
-QTY2PRINT,\
-RECVQTY,\
-RECVWT,\
-SEQQTY,\
-SHIPQTY,\
-SHIPWT,\
-TOTALWT,\
-WIDNUM,\
-RTBW,\
-RTSW,\
-RTBRANCH,\
-PTFILLET,\
-PTBRANCH,\
-MTFILLET,\
-MTBRANCH,\
-LINESPEC,\
-PREHEAT,\
-SHOPHYDRO,\
-FLDHYDRO,\
-PMI,\
-PWHT,\
-DRAWNBY,\
-CHECKBY,\
-PAINTSYS,\
-BHN,\
-BHNMAX,\
-LINENBR,\
-REFDWG,\
-SKETCH,\
-PHASE,\
-BOMCOMMENT,\
-SHEETPO,\
-PRIORDATE,\
-MINORID,\
-MINORQTY,\
-BOMPARTNUM,\
-BOMHEAT,\
-BOMGUID,\
-BOMGRADE,\
-BOMSEQNUM,\
-BOMITEMNUM,\
-BOMREMARKS,\
-PARENTPCMK,\
-BOMQTY,\
-BOMLGTNUM,\
-BOMWIDNUM,\
-BOMITEMWT,\
-ERECTDWG,\
-BUNDLEID,\
-FINISH,\
-DETAILMIN,\
-FABMIN,\
-HANDLMIN,\
-PAINTMIN,\
-SAWMIN,\
-WELDMIN,\
-RULECODE,\
-FT_PKGNO,\
-PCPHASE,\
-PARENTCOPY,\
-PARENTID,\
-CAMBER,\
-BOMMATL,\
-BOMSIZE,\
-BOMRATING,\
-MATLCLASS,\
-BOMENDPREP,\
-GUID,\
-BOMFINISH,\
-PRIORITY,\
-BOMLGTCHAR';
-/**
  * @properties={typeid:35,uuid:"DAB42457-A82D-45A8-B525-C1D2FB13C9BA",variableType:-4}
  */
 var prefsChangedOutside = [];
@@ -1473,58 +1257,6 @@ var prefsChangedOutside = [];
  * @properties={typeid:35,uuid:"5AF47F3A-69FA-4A13-B3BB-116F7C94495D",variableType:-4}
  */
 var defaultTableColumns = [];
-/**
- * @type {String}
- *
- * @properties={typeid:35,uuid:"37D0BEE5-FDDA-4DA7-9378-E4630E37EA3D"}
- */
-var defaultTableColumnsTmp = 'selection,\
-job_number,\
-bc_id_serial_ number,\
-if_original_quantity,\
-job_create_date,\
-sq_sequence_number,\
-lt_lot_number,\
-sh_sheet_number,\
-pm_pcmk_qty,\
-pm_parent_piecemark,\
-pm_piecemark,\
-pm_material,\
-pm_finish,\
-pm_grade,\
-rt_route_code,\
-pm_item_length_in,\
-pm_item_lemgth_char,\
-pm_item_weight,\
-pm_item_length,\
-pm_item_weight_lbs,\
-if_summed_quantity,\
-pm_part_serial,\
-pm_create_date,\
-job_rf_interface,\
-if_id_creation_date,\
-if_edit_date,\
-if_guid_major,\
-if_guid_minor,\
-if_create_date,\
-bc_edit_date,\
-rt_route_description,\
-rt_allow_more_codes,\
-rt_edit_date,\
-pt_association_name,\
-pt_edit_date,\
-barcode_format_customer_name,\
-bc_include_prefix,\
-bc_job_start,\
-bc_prefix,\
-barcode_format_customer_number,\
-job_customer_name,\
-job_customer_number,\
-customer_city,\
-customer_state,\
-cust_addr_line1,\
-cust_zip_code,\
-bc_parent_id_serial';
 // _________________________________________________________________________________________________
 /**
  * moved to globals. scopes.globals.
@@ -3002,7 +2734,7 @@ function getLabeLaseLabelFormats(){
 
 /**
  * @param {JSEvent} event
- * @param updateValue
+ * @param {String} updateValue
  * @param prefsType
  *
  * @AllowToRunInFind
@@ -3011,7 +2743,22 @@ function getLabeLaseLabelFormats(){
  */
 function onActionFileOpenDialogLocal(event,updateValue,prefsType) {	//20180820 created
 	var baseDirObj = (scopes.printer.local_temp_path) ? scopes.printer.local_temp_path : '';
-	var dirs = plugins.file.showDirectorySelectDialog(baseDirObj);
+	if (updateValue.search('exe') != -1){
+		var dirs = plugins.file.showFileOpenDialog(1,baseDirObj,false,new Array('EXE','exe'));
+		if (!dirs){return}
+		baseDirObj = scopes.prefs[updateValue];
+		var exepath = dirs.getAbsolutePath();
+		if (updateValue == 'foxfireexe'){
+			if (exepath.search('ffstart9.exe') == -1){return}
+		}
+		scopes.prefs[updateValue] = exepath.replace('\\ffstart9.exe','');
+		setPrefsDirty(event,prefsType);
+		scopes.prefs[updateValue] = exepath;
+		forms.preferences_printer.prefsChanged.push(updateValue);
+		return;
+	} else {
+		var dirs = plugins.file.showDirectorySelectDialog(baseDirObj);
+	}
 	if (!dirs){return}
 	var intendedDir = dirs.getAbsolutePath();
 	scopes.printer.userTempPath = intendedDir;
@@ -3107,13 +2854,41 @@ function setMissingPrefs(){
  * @properties={typeid:24,uuid:"6B9C2ED7-40D7-419C-92C2-DE4FDD2570E7"}
  */
 function loadArrays(){
+	var labelFieldsTmp = 'AREA,BATCH,BCCUST,BCFORM,BCINCLDPFX,BCJOBSTART,BCPREFIX,BCTITLE,BOLOUT,CARRNUM,\
+		COMMENTS,COWCODE,CTRLNUM,CUSCITY,CUSFAX,CUSFIRST,CUSLAST,CUSMIDDLE,CUSNAME,CUSPHONE,CUSSTATE,CUSSTREET,\
+		CUSTNUM,CUSTPO,CUSTSO,CUSZIP,DESCR1,DESCR2,EDITTIME,ENGXTIME,FABINVOICE,FABSHOP,FABXTIME,FIREXTIME,\
+		GALVXTIME,GRADE,HEAT,ID,IDFORMAT,IDLOCATION,IDSTATUS,INVOICE,JOBCAREOF,JOBID,JOBLOCAT,JOBNUM,JOBSHIPTO,\
+		JOBSTRUCT,JOBTITLE,JOIDFORMAT,JOLINE1NUM,JOLINE1STR,JOLINE2NUM,JOLINE2STR,LINE0FLD,LINE0PRMPT,LINE1NUM,\
+		LINE1STR,LINE2NUM,LINE2STR,LINE3FLD,LINE3PRMPT,LINE4FLD,LINE4PRMPT,LINE5FLD,LINE5PRMPT,LINE6FLD,\
+		LINE6PRMPT,LINE7FLD,LINE7PRMPT,LINE8FLD,LINE8PRMPT,LINE9FLD,LINE9PRMPT,LINEAFLD,LINEAPRMPT,LINEBFLD,\
+		LINEBPRMPT,LOADNUM,LODCAREOF,LODPO,LODRELEASE,LODSHIPTO,LOT,MRR,ORIGEMPL,OTHRXTIME,PANTXTIME,PCCOLOR,\
+		PCCOWCODE,PCMARK,PCRELEASE,PCUOM,PORELEASE,PRODTYPE,PROJYEAR,RAWMATLID,RECACTION,RECVLOAD,RECVTIME,\
+		REMAILTIME,REVLEVEL,ROUTECODE,SEMAILTIME,SEQNUM,SHEETNUM,SHIPLOAD,SHIPTAG,SHIPTIME,SITEXTIME,TRAILINFO,\
+		EDITDATE,ENGXDATE,FABXDATE,FIREXDATE,GALVXDATE,IDCREATED,OTHRXDATE,PANTXDATE,RECVDATE,REMAILDATE,REQDSHIP,\
+		SCHDSHIP,SEMAILDATE,SHIPDATE,SITEXDATE,DELETEID,LOGICFLAG,LPRINT,LSOTOLOAD,METRICJOB,BCJBSTRT,BCJOBLGTH,\
+		BCPFXLGTH,COSTEA,COWQTY,FIREPFCF,INCREMNT,ITEMWT,ITEMWTKG,JOBWT,LABELBC,LABELQTY,LGTNUM,ORIGQTY,PCUOMDOLL,\
+		QTY2PRINT,RECVQTY,RECVWT,SEQQTY,SHIPQTY,SHIPWT,TOTALWT,WIDNUM,RTBW,RTSW,RTBRANCH,PTFILLET,PTBRANCH,\
+		MTFILLET,MTBRANCH,LINESPEC,PREHEAT,SHOPHYDRO,FLDHYDRO,PMI,PWHT,DRAWNBY,CHECKBY,PAINTSYS,BHN,BHNMAX,LINENBR,\
+		REFDWG,SKETCH,PHASE,BOMCOMMENT,SHEETPO,PRIORDATE,MINORID,MINORQTY,BOMPARTNUM,BOMHEAT,BOMGUID,BOMGRADE,\
+		BOMSEQNUM,BOMITEMNUM,BOMREMARKS,PARENTPCMK,BOMQTY,BOMLGTNUM,BOMWIDNUM,BOMITEMWT,ERECTDWG,BUNDLEID,FINISH,\
+		DETAILMIN,FABMIN,HANDLMIN,PAINTMIN,SAWMIN,WELDMIN,RULECODE,FT_PKGNO,PCPHASE,PARENTCOPY,PARENTID,CAMBER,\
+		BOMMATL,BOMSIZE,BOMRATING,MATLCLASS,BOMENDPREP,GUID,BOMFINISH,PRIORITY,BOMLGTCHAR';
+
+	var defaultTableColumnsTmp = 'selection,job_number,bc_id_serial_ number,if_original_quantity,job_create_date,\
+		sq_sequence_number,lt_lot_number,sh_sheet_number,pm_pcmk_qty,pm_parent_piecemark,pm_piecemark,pm_material,\
+		pm_finish,pm_grade,rt_route_code,pm_item_length_in,pm_item_lemgth_char,pm_item_weight,pm_item_length,\
+		pm_item_weight_lbs,if_summed_quantity,pm_part_serial,pm_create_date,job_rf_interface,if_id_creation_date,\
+		if_edit_date,if_guid_major,if_guid_minor,if_create_date,bc_edit_date,rt_route_description,rt_allow_more_codes,\
+		rt_edit_date,pt_association_name,pt_edit_date,barcode_format_customer_name,bc_include_prefix,bc_job_start,\
+		bc_prefix,barcode_format_customer_number,job_customer_name,job_customer_number,customer_city,customer_state,\
+		cust_addr_line1,cust_zip_code,bc_parent_id_serial';
 	labelFields = labelFieldsTmp.split(',');
-	defaultTableColumns = defaultTableColumnsTmp.split(',');
+	defaultTableColumns = defaultTableColumnsTmp.replace(/([ \t]+)/g,'').split(',');
 }
 /**
  * @properties={typeid:24,uuid:"7864F523-743F-4876-A117-216FC0D36051"}
  */
-function getMCScreenNames(){
+function getMCPrintScreenNames(){//Print Screen Names
 	/**
 	 * "RF ASN Receiving"    (prints labels)
 "RF Checklist Receive"    (prints labels)
@@ -3184,31 +2959,14 @@ function getMCScreenNames(){
 	 *
 	 */
 	// removed 	 'sts.mobile.cut.cutlist2', as it is a later but duplicated, so unnecessary
-	var mobilePrintViews = [
-	 'sts.mobile.asn.receiving',
-	 'sts.mobile.checklist.receive',
-	 'sts.mobile.checklist.receive.w.rem',
-	 'sts.mobile.checklist.status',
-	 'sts.mobile.build.bundles',
-	 'sts.mobile.inspections',
-	 'sts.mobile.inspections.w.revs',
-	 'sts.mobile.transactions',
-	 'sts.mobile.transactions.w.revs',
-	 'sts.mobile.status',
-	 'sts.mobile.wts.sts.saw',
-	 'sts.mobile.cut.cutlist',
-	 'sts.mobile.cut.cutlist.sts.id',
-	 'sts.mobile.cut.cutlist.sts.minorid',
-	 'sts.mobile.cut.sts.inventory',
-	 'sts.mobile.tfs.inventory',
-	 'sts.mobile.inventory.move',
-	 'sts.mobile.inventory.audit'];
+	var mobilePrintViews = globals.mobilePrintViews.slice(0);
 	var mobileViews = [];
 	for (var idx = 0;idx < mobilePrintViews.length;idx++){
-		var i18nStr = i18n.getI18NMessage(mobilePrintViews[idx]);
+		var viewName = mobilePrintViews[idx];
+		var i18nStr = i18n.getI18NMessage(viewName).replace('\'','');
 		mobileViews.push(i18nStr);
-		globals.m.i18nMobileViews[i18nStr] = mobilePrintViews[idx];
-		globals.m.i18nMobileViews[mobilePrintViews[idx]] = i18nStr;
+		globals.m.i18nMobilePrintViews[i18nStr] = viewName;
+		globals.m.i18nMobilePrintViews[viewName] = i18nStr;
 		
 	}
 	mobileViews.sort();
@@ -3265,4 +3023,42 @@ function getUsersWithScreenPrintPerms(event){
 	nameUsers.unshift('');
 	application.setValueListItems('stsvl_printUsersUuid',nameUsers,uuidUsers);
 	
+}
+/**
+ * @properties={typeid:24,uuid:"B7F28ED3-D52E-4252-B86A-B741F71AE3DB"}
+ */
+function getMCFSScreenNames(){//FabSuite Screen Names
+	var fsImportOnly = ['sts.mobile.cut.cutlist'];
+	var importOnly = (scopes.prefs.lFabsuiteImportOnly);
+	var mobileFSViews = globals.mobileFSViews.slice(0);
+	for (var idx = 0;idx < mobileFSViews.length;idx++){
+		var viewName = mobileFSViews[idx];
+		if (importOnly && fsImportOnly.indexOf(viewName) != -1){continue} 
+		var i18nStr = i18n.getI18NMessage(viewName).replace('\'','');
+		globals.m.i18nMobileFabsuiteViews[i18nStr] = viewName;
+		globals.m.i18nMobileFabsuiteViews[viewName] = i18nStr;
+		
+	}
+}
+/**
+ * @param oldValue
+ * @param newValue
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"D5D70604-99E7-4830-B3E0-5398DA1D271C"}
+ */
+function onDataChangeLocalPathEntry(oldValue, newValue, event) {
+	var fileAndPath = plugins.file.convertToJSFile(newValue);
+	var dirSize = plugins.file.getFileSize(fileAndPath);
+	var form = forms[event.getFormName()];
+	var element = form.elements[event.getElementName()];
+	var dataProv = element.getDataProviderID();
+	if (dirSize == 0){
+		//application.output('error in file size');
+		forms[event.getFormName()][dataProv] = oldValue;
+		return true;
+	}
+	setPrefsDirty(event,'prefs');
+	forms.preferences_printer.prefsChanged.push(dataProv);//20180109 update prefs on button inop from button change
+	return true;
 }

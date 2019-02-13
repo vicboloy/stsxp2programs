@@ -559,7 +559,7 @@ function secCreateGroup(groupName, tenantID, appID){
  * @properties={typeid:24,uuid:"E1D8EF68-9F1F-4E3A-ABEF-CB07A1930235"}
  * @AllowToRunInFind
  */
-function secCreateUser(userName, password, tenantID){
+function secCreateUser(userName, password, tenantID, assocID){
 																		//	local variable declarations
 	var users;															//	users foundset
 
@@ -567,7 +567,8 @@ function secCreateUser(userName, password, tenantID){
 		return null;
 	}		
 	tenantID = (tenantID) ? tenantID : secCurrentTenantID;				//	default is current tenant when null;
-	
+
+	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);	//	get the users foundset
 	if(users.find()){													//	search users table
 		users.user_name = userName;										//	search by user name
@@ -578,6 +579,7 @@ function secCreateUser(userName, password, tenantID){
 				users.user_name = userName;								//	set user name
 				users.user_password = password;							//	set password
 				users.tenant_uuid = tenantID;								//	set the tenant ID
+				users.association_uuid = assocID;
 				users.is_account_active = 1;							// set active account
 				if (userName == 'P2'){
 					users.first_name = "P2 Programs";
@@ -850,29 +852,29 @@ function secCreateAssociation(assocName){
 	assoc = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_ASSOCIATIONS);
 	if(assoc.find()){													//	Search the associations table...
 		assoc.association_name = assocName;								//	...by association name
-		if (assocName == 'ADMIN'){
-			assoc.association_name = "CORP";
+		if (assocName == 'CORP'){
+			//assoc.association_name = "CORP";
 			assoc.logic_flag = 1;
 		} 			//  only one admin association
 		
 		assoc.tenant_uuid = secCurrentTenantID;
 		var search = assoc.search(); var idx = null;
 		if(!search && (idx = assoc.newRecord())){						//	association name is unique. create the association record
-			assoc.getRecord(idx);
-			assoc.association_name = assocName;							//	set the company name
-			assoc.tenant_uuid = secCurrentTenantID;
-			assoc.licenses_desktop = 1;
-			assoc.licenses_mobile = 1;
-			if (assocName == "ADMIN"){
-				assoc.tenant_group_uuid = secCurrentTenantID;
-				assoc.association_name = "CORP";
-				assoc.logic_flag = 1;
+			var rec = assoc.getRecord(idx);
+			rec.association_name = assocName;							//	set the company name
+			rec.tenant_uuid = secCurrentTenantID;
+			rec.licenses_desktop = 1;
+			rec.licenses_mobile = 1;
+			if (assocName == "CORP"){
+				rec.tenant_group_uuid = secCurrentTenantID;
+				rec.association_name = "CORP";
+				rec.logic_flag = 1;
 			}
 			if (application.isInDeveloper()){application.output('Create assoc '+assocName+' in UUID '+secCurrentTenantID);}
 			//associationArray.push(assoc.association_uuid);
-			if(databaseManager.saveData(assoc.getSelectedRecord())){	//	save the record
-				assoc.getSelectedRecord();
-				return assoc;						//	return the associaton id
+			if(databaseManager.saveData(rec)){	//	save the record
+				//assoc.getSelectedRecord();
+				return rec;						//	return the associaton id
 			}
 		}
 	}
@@ -965,6 +967,7 @@ function secCreateTenant(companyName) {
 			tenants.edit_date = new Date();
 			if (application.isInDeveloper()){application.output('tenant Id '+tenants.tenant_uuid )}
 			secCurrentTenantID = tenants.tenant_uuid;
+			application.output('tenant UUID '+tenants.tenant_uuid);
 			if(databaseManager.saveData(tenants.getSelectedRecord())){	//	save the record
 				return tenants.getSelectedRecord();						//	return the tenant id
 			}
@@ -1047,7 +1050,7 @@ function getTenantCount(){
 	var empID = null;
 	var newInstall = false;
 	if (tent.getSize() == 0){// new install because no tenant found, change to zero as a default, change to < 3 for adding companies
-		//newInstall = true;//uncomment for initial install
+		newInstall = true;//uncomment for initial install
 		/** @type {JSFoundSet<db:/stsservoy/employee>} * /
 		var empl = databaseManager.getFoundSet('stsservoy','employee');
 		if (empl.find()){
@@ -1873,11 +1876,18 @@ function ARRAY_getAllServers(){
  * @properties={typeid:24,uuid:"E64C56CB-94C7-40A7-ABF3-F2EC24BB17F6"}
  */
 function secCreateTenantAndUser(){
-	secDeleteTableInfo();
+	//secDeleteTableInfo();
 	databaseManager.saveData();
-	secCreateTenant('Company Name');
-	secCreateAssociation('Shop');
-	secCreateUser('ADMIN','P2PROGRAMS',secCurrentTenantID);
+	var newTenant = secCreateTenant('COMPANY NAME');
+	secCurrentTenantID = newTenant.tenant_uuid;
+	var corpRec = secCreateAssociation('CORP');	
+	var shopRec = secCreateAssociation('SHOP');
+	secCreateUser('P','p',application.getUUID(secCurrentTenantID), application.getUUID(corpRec.association_uuid));
+	var custRec = secCreateP2Customer();
+	var empRec = secCreateP2Employee();
+	var adminAssocId = corpRec.association_uuid;
+	corpRec.tenant_group_uuid = adminAssocId;
+	shopRec.tenant_group_uuid = adminAssocId;
 	databaseManager.saveData();
 }
 /**
@@ -2215,6 +2225,7 @@ function secCreateP2Customer(){
 	/** @type {QBSelect<db:/stsservoy/customers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/customers');
 	q.where.add(q.columns.customer_number.eq('P2PROG'));
+	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(secCurrentTenantID)));
 	q.result.add(q.columns.customer_id);
 	var Q = databaseManager.getFoundSet(q);
 	Q.loadRecords();

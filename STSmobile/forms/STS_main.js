@@ -208,6 +208,7 @@ function onShow(firstShow, event) {
 	}
 	globals.mobForm = i18n.getI18NMessage('sts.mobile.main');
 	globals.mobProg = i18n.getI18NMessage('sts.mobile.main');
+	//globals.geti18nScreenNameMapping();//20190202 get i18n screen mapping to i18n key
 	elements.mainMenu.requestFocus();
 	//var licCount = plugins.UserManager.Server().getSettingsProperty('license.0.licenses');
 	//plugins.dialogs.showErrorDialog('Message','License count'+licCount);

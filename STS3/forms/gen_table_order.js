@@ -97,7 +97,7 @@ function onActionSelect(event) {
 	setElements('select');
 	var name = selSelected.split('\n')[0];
 	if (name){
-		elementInfo = scopes.jobs.determineI18n(name,'name');
+		elementInfo = scopes.jobs.determineI18n(name,'source');
 	}
 }
 /**
@@ -171,6 +171,7 @@ function onShow(firstShow, event) {
 		baseForm = event.getFormName().replace(versionForm,'');
 		parentEvent = event;
 	}
+	elementInfo = i18n.getI18NMessage('sts.txt.table.info.here');
 	globals.setUserFormPermissions(event);
 	var currentForm = event.getFormName();//20181003
 	var formName = scopes.jobs.generalTableOrderTableName;

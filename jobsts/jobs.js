@@ -6332,7 +6332,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.result.add(j.columns.job_id);
-	j.where.add(j.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(application.getUUID(scopes.globals.session.tenant_uuid)));
 	j.where.add(j.columns.delete_flag.isNull);
 	j.where.add(j.columns.job_number.eq(newValue.trim()));
 	var J = databaseManager.getFoundSet(j);
@@ -11946,7 +11946,7 @@ function determineI18n(columnName,typei18n){
 	//	if (application.isInDeveloper()){application.output('column: '+columnName+' -> '+column)}
 	//}
 	if (typei18n == 'source'){
-		return table;
+		return table+' '+column;
 	} 
 	return column;
 }

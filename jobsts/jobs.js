@@ -2201,7 +2201,7 @@ function tablePrefsSave(event){
 	}
 	if (response == i18n.getI18NMessage('sts.btn.modify')){
 		var win = application.createWindow(i18n.getI18NMessage('sts.txt.column.order'), JSWindow.MODAL_DIALOG);
-		win.setInitialBounds(10, 10, 570, 500);
+		win.setInitialBounds(10, 10, 780, 505);
 		win.title = i18n.getI18NMessage('sts.txt.this.is.the.column.settings.window');
 		globals.modalResponse = "";
 		win.show(forms.gen_table_order);
@@ -3862,6 +3862,7 @@ function ximportAmendQuantities(){
 function createBarCodeSerial(){
 	if (barcodePrefix == "") {return ''}
 	var serial = '0';
+	plugins.rawSQL.flushAllClientsCache('stsservoy','last_id_serial');
 	/** @type {JSRecord<db:/stsservoy/last_id_serial>} */
 	var rec = null;
 	/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
@@ -3870,6 +3871,8 @@ function createBarCodeSerial(){
 	b.where.add(b.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	b.where.add(b.columns.prefix.eq(barcodePrefix));
 	var B = databaseManager.getFoundSet(b);
+	var sqlB = "select * from last_id_serial where tenant_uuid = '"+globals.session.tenant_uuid+"' AND prefix = '"+barcodePrefix+"';";
+	var BB = databaseManager.getDataSetByQuery('stsservoy',sqlB,[],-1);
 	if (B.getSize() > 0){
 		rec = B.getRecord(1);
 		serial = (rec.serial) ? rec.serial : 0;
@@ -6432,8 +6435,12 @@ function browseInfoEnable(event){
 	if (forms[formName].elements.btn_PrintAll){
 		forms[formName].elements.btn_PrintAll.enabled = true;
 	}
+	if (forms[formName].elements.btn_Clear){
+		forms[formName].elements.btn_Clear.enabled = true;
+	}
 	for (var element in forms[formName].elements){
 		if (element.search('frm') != -1){
+			if (application.isInDeveloper()){application.output('Enabling form '+formName)}
 			forms[formName].elements[element].enabled = true;
 		}
 	}
@@ -7759,10 +7766,11 @@ function queryAssembly(criteria,formName,subquery){
 		//st.result.add(jcust.columns.lsotoload,'job_so_to_load');//130 LSOTOLOAD printer.js
 	}
 	
-	if (subquery == 'browse'){
+	if (subquery == 'browse' && !(!jobShipToId)){
 		/** @type {QBJoin<db:/stsservoy/addresses>} */
 		var jcustAddr = jcust.joins.add('db:/stsservoy/addresses');
 		jcustAddr.on.add(jcust.columns.customer_id.eq(jcustAddr.columns.customer_id));
+		jcustAddr.root.where.add(jcustAddr.columns.address_id.eq(application.getUUID(jobShipToId)));
 		//JJ//jcustAddr.root.where.add(jcustAddr.columns.address_id.eq(jobShipToId));//20180802 get rid of two lines in view loads screen
 		//st.result.add(jcustAddr.columns.city,'customer_city');//14 CUSCITY printer.js
 		//st.result.add(jcustAddr.columns.state,'customer_state');//21 CUSSTATE printer.js
@@ -8533,6 +8541,7 @@ function createRouteSummaryForm(query,formName){
 		if (application.isInDeveloper()){application.output(rec)}
 	}
 	viewBTableCreateForm2('loads_summary_info'+versionForm,statFS.getDataSource());
+	forms['loads_tabs'+versionForm].elements.tabs.setTabEnabledAt(2,true)
 }
 /**
  * @AllowToRunInFind
@@ -10029,15 +10038,15 @@ function bartenderPrintEmbed(){
 	}
 	
 	//var com = plugins.servoyguy_servoycom.getNewClientJSCOM("SAPI.SpVoice");
-	var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
-	if (!com || !com.isJACOBLoaded()) {
+	globals.btCom = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
+	if (!globals.btCom || !globals.btCom.isJACOBLoaded()) {
 		globals.errorDialog('953');
 		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
 		application.output('RM error loading COM');
 		return;
 	}
-	com.put("Visible","true");
-	var formats = com.getChildJSCOM("Formats");
+	globals.btCom.put("Visible","true");
+	var formats = globals.btCom.getChildJSCOM("Formats");
 	var format = formats.getChildJSCOM("Open","",["c://sample.BTW","false",""]);
 	var DBs = format.getChildJSCOM("Databases");
 	var db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
@@ -10060,8 +10069,8 @@ function bartenderPrintEmbed(){
 	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
 	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
 	//com.getChildJSCOM("Quit","BarTender.Application",[1]);
-	com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
-	com.release();
+	globals.btCom.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+	globals.btCom.release();
 
 }
 /**
@@ -11936,6 +11945,9 @@ function determineI18n(columnName,typei18n){
 				column = i18n.getI18NMessage('table.general.ship_customer_number');
 				table = ' (loads)'
 				break;
+			case 'selection':
+				column = i18n.getI18NMessage('table.general.selection');
+				table = ' (VAL)';
 			default:
 		}
 	}
@@ -11988,6 +12000,7 @@ function createValidBarcodeRM(){
  * @param {JSEvent} event
  * @param jobNumber
  * @param barcode
+ * @param {Number} quantity
  *
  * @properties={typeid:24,uuid:"760C1AAE-161F-41C0-A2D3-CF49789B574F"}
  */
@@ -12002,7 +12015,7 @@ function receiveRawMaterialIntoInventory(event,jobNumber,barcode,quantity){
 	var grade = form.invGrade;
 	
 	var bundled = (form.bundled.toUpperCase() == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
-	var print = (form.printEnabled.toUpperCase() == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
+	var print = (form.printEnabled.toUpperCase() == i18n.getI18NMessage('sts.txt.on').toUpperCase());
 	var makeQty = (bundled) ? 1 : form.quantity;
 	// ponumber,qtyordered,qtyremaining,shape,grade,dimensions,length,weighteach,error
 	var template = {job_uuid : jobInfo.job_id, 
@@ -12012,7 +12025,7 @@ function receiveRawMaterialIntoInventory(event,jobNumber,barcode,quantity){
 					model_part : form.invMaterial, 
 					quantity : quantity, 
 					serial_number : barcode, 
-					heat : form.heat, 
+					heat : heat, 
 					grade : grade, 
 					po_number : form.poNumber, 
 					bill_of_lading_in : form.billOfLading, 

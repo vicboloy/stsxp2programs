@@ -677,7 +677,7 @@ function onActionRoutings(event) {
  * @properties={typeid:24,uuid:"CE4DD060-E710-49BA-9DAB-0760EE82DF4B"}
  */
 function onActionJobs(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.job.information'),'jobs_tabs',50,50,960,450,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.job.information'),'jobs_tabs',50,50,910,475,false);
 }
 /**
  * @param event

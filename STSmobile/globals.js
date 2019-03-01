@@ -10,6 +10,9 @@ var statusId = "";
  * @SuppressWarnings(wrongparameters)
  */
 function onSolutionOpen(){
+	if (scopes.prefs.lFabsuiteInstalled == 1 || scopes.prefs.lFabsuiteInstalled == true){
+		scopes.fs.checkComFabsuite(null);
+	}
 	globals.mob.userAgent = globals.clientUserAgent;
 	//var appWidth = application.getScreenWidth();
 	//viewport = viewport.replace('320',appWidth);
@@ -95,4 +98,11 @@ function createPostGreSqlIndexes(){
 	plugins.rawSQL.executeSQL('stsservoy','piecemarks',"CREATE INDEX CONCURRENTLY pcmkIndex ON piecemarks (sheet_id,parent_piecemark, piecemark, ) ");
 	
 	
+}
+/**
+ * @properties={typeid:24,uuid:"519FB83A-5AB2-46E0-B1DC-FE990F4C124F"}
+ */
+function onSolutionClose(){
+	scopes.fs.fabSuiteClose();
+	scopes.prefs.bartenderClose(null)
 }

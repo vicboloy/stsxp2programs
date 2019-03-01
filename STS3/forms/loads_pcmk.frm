@@ -9,7 +9,7 @@ name:"btn_EditSettingsLeftPanel",
 onActionMethodID:"9B76F79D-345F-4C2A-830E-CB035E55E972",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
-size:"80,26",
+size:"112,26",
 text:"i18n:sts.btn.settings",
 typeid:7,
 uuid:"1ACA64AC-FB8C-40BD-89EC-7AD54ADD54E4"

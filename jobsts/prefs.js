@@ -1024,226 +1024,6 @@ var prefsDirty = false;
  * @properties={typeid:35,uuid:"BDB8F2E6-F38A-4341-914C-C4A81A150F8C",variableType:-4}
  */
 var prefsPrinterDirty = false;
-
-/**
-var labels = "1 AREA Character 6 idfiles.id_area 10,\
-	2 BATCH Character 3 idfiles.id_batch 15,\
-	3 BCCUST Character 16 customers.name 45,\
-	4 BCFORM Character 10 jobs.barcode_form ->,\
-	5 BCINCLDPFX Character 15 customers.barcode_include_prefix 15,\
-	6 BCJOBSTART Character 35 customers.barcode_job_start 35,\
-	7 BCPREFIX Character 2 customers.barcode_prefix 2,\
-	8 BCTITLE Character 26 UNKNOWN,\
-	9 BOLOUT Character 15 loads.bill_of_lading_out 15,\
-	10 CARRNUM Character 10 loads.carrier_number 15,\
-	11 COMMENTS Character 50 loads.load_comment media-inderminate,\
-	12 COWCODE Character 10 piecemarks.cost_of_work_code 10,\
-	13 CTRLNUM Character 30 idfiles.control_number 30,\
-	14 CUSCITY Character 25 customers.addresses.city 50,\
-	15 CUSFAX Character 10 customer.fax 25,\
-	16 CUSFIRST Character 15 customer.representative 25,\
-	17 CUSLAST Character 15 customer.representative 25,\
-	18 CUSMIDDLE Character 15 customer.representative 25,\
-	19 CUSNAME Character 30 customers.name 45,\
-	20 CUSPHONE Character 10 customers.phone 25,\
-	21 CUSSTATE Character 2 customers.addresses.state 2,\
-	22 CUSSTREET Character 30 customers.addresses.line1 (.line2) 100 (100),\
-	23 CUSTNUM Character 10 customers.customer_number 15,\
-	24 CUSTPO Character 20 jobs.customer_po 30,\
-	25 CUSTSO Character 10 idfiles.shop_order 20,\
-	26 CUSZIP Character 9 customers.addresses.zipcodes.zipcode_id 20,\
-	27 DESCR1 Character 30 piecemarks.material 40,\
-	28 DESCR2 Character 30 piecemarks.description 40,\
-	29 EDITTIME Character 8 idfiles.edit_date DATETIME,\
-	30 ENGXTIME Character 8 loads.sent_engineer DATETIME,\
-	31 FABINVOICE Character 10 jobs.loads.fabricator.invoice 15,\
-	32 FABSHOP Character 5 associations.association_name 50,\
-	33 FABXTIME Character 8 loads.sent_fabricator DATETIME,\
-	34 FIREXTIME Character 8 loads.sent_fireproofer DATETIME,\
-	35 GALVXTIME Character 8 loads.sent_galvinizer DATETIME,\
-	36 GRADE Character 10 piecemarks.grade 20,\
-	37 HEAT Character 15 heats.heat_number 40,\
-	38 ID Character 10 id_serial_numbers.id_serial_number 30,\
-	39 IDFORMAT Character 9 UNKNOWN,\
-	40 IDLOCATION Character 10 idfiles.id_location 15,\
-	41 IDSTATUS Character 10 idfiles.status_description.status_code 15,\
-	42 INVOICE Character 10 jobs.loads.invoice 15,\
-	43 JOBCAREOF Character 28 jobs.job_care_of 50,\
-	44 JOBID Character 10 jobs.job_number 20 *** check max size ***,\
-	45 JOBLOCAT Character 28 jobs.job_location 50,\
-	46 JOBNUM Character 10 jobs.job_number 20,\
-	47 JOBSHIPTO Character 10 jobs.addresses->/addresses/,\
-	48 JOBSTRUCT Character 28 jobs.job_structure 50,\
-	49 JOBTITLE Character 28 jobs.job_title 50,\
-	50 JOIDFORMAT Character 9 UNKNOWN,\
-	51 JOLINE1NUM Character 15 *** Manual entry ***,\
-	52 JOLINE1STR Character 30 *** Manual entry ***,\
-	53 JOLINE2NUM Character 15 *** Manual entry ***,\
-	54 JOLINE2STR Character 30 *** Manual entry ***,\
-	55 LINE0FLD Character 30 *** Manual entry ***,\
-	56 LINE0PRMPT Character 9 *** Manual entry ***,\
-	57 LINE1NUM Character 15 *** Manual entry ***,\
-	58 LINE1STR Character 26 *** Manual entry ***,\
-	59 LINE2NUM Character 15 *** Manual entry ***,\
-	60 LINE2STR Character 26 *** Manual entry ***,\
-	61 LINE3FLD Character 30 *** Manual entry ***,\
-	62 LINE3PRMPT Character 9 *** Manual entry ***,\
-	63 LINE4FLD Character 30 *** Manual entry ***,\
-	64 LINE4PRMPT Character 9 *** Manual entry ***,\
-	65 LINE5FLD Character 30 *** Manual entry ***,\
-	66 LINE5PRMPT Character 9 *** Manual entry ***,\
-	67 LINE6FLD Character 30 *** Manual entry ***,\
-	68 LINE6PRMPT Character 9 *** Manual entry ***,\
-	69 LINE7FLD Character 30 *** Manual entry ***,\
-	70 LINE7PRMPT Character 9 *** Manual entry ***,\
-	71 LINE8FLD Character 30 *** Manual entry ***,\
-	72 LINE8PRMPT Character 9 *** Manual entry ***,\
-	73 LINE9FLD Character 30 *** Manual entry ***,\
-	74 LINE9PRMPT Character 9 *** Manual entry ***,\
-	75 LINEAFLD Character 30 *** Manual entry ***,\
-	76 LINEAPRMPT Character 9 *** Manual entry ***,\
-	77 LINEBFLD Character 30 *** Manual entry ***,\
-	78 LINEBPRMPT Character 9 *** Manual entry ***,\
-	79 LOADNUM Character 10 loads.load_number 20,\
-	80 LODCAREOF Character 28 loads.care_of 30,\
-	81 LODPO Character 20 loads.load_po 20,\
-	82 LODRELEASE Character 20 loads.load_release 20,\
-	83 LODSHIPTO Character 10 loads.ship_to->/addresses/,\
-	84 LOT Character 11 lots.lot 15,\
-	85 MRR Character 10 idfiles.mrr 15,\
-	86 ORIGEMPL Character 5 idfiles.original_employee_uuid->/employees/,\
-	87 OTHRXTIME Character 8 loads.sent_other DATETIME,\
-	88 PANTXTIME Character 8 loads.sent_paint DATETIME,\
-	89 PCCOLOR Character 10 idfiles.piece_color 20,\
-	90 PCCOWCODE Character 10 piecemarks.cost_of_work_code 10,\
-	91 PCMARK Character 30 piecemarks.piecemark 40,\
-	92 PCRELEASE Character 3 idfiles.piece_release 10,\
-	93 PCUOM Character 4 piecemarks.unit_of_measure 10 *** is this used ***,\
-	94 PORELEASE Character 20 jobs.PO_release 25,\
-	95 PRODTYPE Character 3 piecemarks.product_type 10,\
-	96 PROJYEAR Character 4 jobs.project_year 0,\
-	97 RAWMATLID Character 10 idfiles.raw_material_id 40,\
-	98 RECACTION Character 1 UNKNOWN,\
-	99 RECVLOAD Character 10 idfiles.received_load_id->//,\
-	100 RECVTIME Character 8 loads.receipt_date DATETIME,\
-	101 REMAILTIME Character 8 UNKNOWN,\
-	102 REVLEVEL Character 6 idfiles.revision_level 10,\
-	103 ROUTECODE Character 10 piecemarks.routings.route_code 15,\
-	104 SEMAILTIME Character 8 UNKNOWN,\
-	105 SEQNUM Character 20 jobs.sequences.sequence_number 30,\
-	106 SHEETNUM Character 8 piecemarks.sheets.sheet_number 20,\
-	107 SHIPLOAD Character 10 loads.ship_date DATETIME,\
-	108 SHIPTAG Character 16 piecemarks.ship_tag 20,\
-	109 SHIPTIME Character 8 loads.ship_date DATETIME,\
-	110 SITEXTIME Character 8 loads.sent_site DATETIME,\
-	111 TRAILINFO Character 20 loads.trailer_information 20,\
-	112 EDITDATE Date 8 idfiles.edit_date DATETIME,\
-	113 ENGXDATE Date 8 loads.sent_engineer DATETIME,\
-	114 FABXDATE Date 8 loads.sent_fabrication DATETIME,\
-	115 FIREXDATE Date 8 loads.sent_fireproofer DATETIME,\
-	116 GALVXDATE Date 8 loads.send_galvinizer DATETIME,\
-	117 IDCREATED Date 8 id_serial_number.edit_date DATETIME,\
-	118 OTHRXDATE Date 8 loads.sent_other DATETIME,\
-	119 PANTXDATE Date 8 loads.sent_painter DATETIME,\
-	120 RECVDATE Date 8 loads.receipt_date DATETIME,\
-	121 REMAILDATE Date 8 UNKNOWN,\
-	122 REQDSHIP Date 8 UNKNOWN,\
-	123 SCHDSHIP Date 8 UNKNOWN,\
-	124 SEMAILDATE Date 8 UNKNOWN,\
-	125 SHIPDATE Date 8 loads.ship_date DATETIME,\
-	126 SITEXDATE Date 8 loads.sent_site DATETIME,\
-	127 DELETEID Logical 1 idfiles.deleted_date DATETIME,\
-	128 LOGICFLAG Logical 1 idfiles.logic_flag 0,\
-	129 LPRINT Logical 1 idfiles.lprint 0,\
-	130 LSOTOLOAD Logical 1 customers.lsotoload 0,\
-	131 METRICJOB Logical 1 jobs.metric_job,\
-	132 BCJBSTRT Numeric 1 customers.barcode_job_start (17) ,\
-	133 BCJOBLGTH Numeric 1 customers.barcode_job_length (17),\
-	134 BCPFXLGTH Numeric 1 customers.barcode_fixed_length (17),\
-	135 COSTEA Numeric 11.4 piecemarks.cost_each (17),\
-	136 COWQTY Numeric 10.3 piecemarks.cost_of_work_quantity (17),\
-	137 FIREPFCF Numeric 9.2 piecemarks.fireproof_cubic_feet (17),\
-	138 INCREMNT Numeric 3 UNKNOWN,\
-	139 ITEMWT Numeric 10.3 piecemarks.item_weight_lbs (17),\
-	140 ITEMWTKG Numeric 10.3 piecemarks.item_weight (17),\
-	141 JOBWT Numeric 11 jobs.job_weight (17),\
-	142 LABELBC Numeric 5 *** calc'ed ***,\
-	143 LABELQTY Numeric 5 *** calc'ed ***,\
-	144 LGTNUM Numeric 11.4 piecemarks.item_length OR item_length_in (17),\
-	145 ORIGQTY Numeric 5 idfiles.original_quantity (17),\
-	146 PCUOMDOLL Numeric 11.4 piecemarks.piecemark_uom_dollars (17),\
-	147 QTY2PRINT Numeric 5 *** calc'ed ***,\
-	148 RECVQTY Numeric 5 *** calc'ed ***,\
-	149 RECVWT Numeric 10 loads.receiving_weight (17),\
-	150 SEQQTY Numeric 5 sequences.sequence_quantity 0,\
-	151 SHIPQTY Numeric 5 sequences.quantity 0,\
-	152 SHIPWT Numeric 10 loads.shipped_weight 17,\
-	153 TOTALWT Numeric 10 loads.total_weight 17,\
-	154 WIDNUM Numeric 10.4 piecemarks.item_weight OR item_weight_lbs (17),\
-	155 RTBW Character 6 sheets.rtbw 6,\
-	156 RTSW Character 6 sheets.rtsw 6,\
-	157 RTBRANCH Character 6 sheets.rtbranch 6,\
-	158 PTFILLET Character 6 sheets.ptfillet 6,\
-	159 PTBRANCH Character 6 sheets.rtbranch 6,\
-	160 MTFILLET Character 6 sheets.mtfillet 6,\
-	161 MTBRANCH Character 6 sheets.mtbranch 6,\
-	162 LINESPEC Character 10 sheets.line_spec 10,\
-	163 PREHEAT Character 15 sheets.preheat 15,\
-	164 SHOPHYDRO Character 6 sheets.shop_hydro 6,\
-	165 FLDHYDRO Character 6 sheets.field_hydro 6,\
-	166 PMI Character 6 sheets.pmi 6,\
-	167 PWHT Character 6 sheets.pwht 6,\
-	168 DRAWNBY Character 5 sheets.drawn_by 5,\
-	169 CHECKBY Character 5 sheets.checked_by 5,\
-	170 PAINTSYS Character 25 sheets.paint_system 25,\
-	171 BHN Character 6 sheets.bhn 6,\
-	172 BHNMAX Character 6 sheets.bhn_maximum 6,\
-	173 LINENBR Character 30 sheets.line_number 30,\
-	174 REFDWG Character 30 sheets.reference_drawing 30,\
-	175 SKETCH Character 10 sheets.sketch 10,\
-	176 PHASE Character 10 idfiles.piece_phase 15,\
-	177 BOMCOMMENT Character 50 sheets.bom_comment MEDIA,\
-	178 SHEETPO Character 20 sheets.sheet_po 20,\
-	179 PRIORDATE Date 8 sheets.prior_date DATETIME,\
-	180 MINORID Character 10 *** piecemarks...idfile...id_serial_numbers.id_serial_number,\
-	181 MINORQTY Numeric 5 *** calc'ed ***,\
-	182 BOMPARTNUM Character 30 UNKNOWN,\
-	183 BOMHEAT Character 15 UNKNOWN,\
-	184 BOMGUID Character 40 UNKNOWN,\
-	185 BOMGRADE Character 10 UNKNOWN,\
-	186 BOMSEQNUM Character 20 UNKNOWN,\
-	187 BOMITEMNUM Character 6 UNKNOWN,\
-	188 BOMREMARKS Character 20 UNKNOWN,\
-	189 PARENTPCMK Character 30 *** piecemarks.parent_piecemark 40,\
-	190 BOMQTY Numeric 5 UNKNOWN,\
-	191 BOMLGTNUM Numeric 11.4 UNKNOWN,\
-	192 BOMWIDNUM Numeric 10.4 UNKNOWN,\
-	193 BOMITEMWT Numeric 10.3 UNKNOWN,\
-	194 ERECTDWG Character 15 idfiles.erection_drawing 20,\
-	195 BUNDLEID Character 10 idfiles.bundle_bc 30,\
-	196 FINISH Character 10 piecemarks.finish 30,\
-	197 DETAILMIN Numeric 10.4 piecemarks.saw_minutes (17),\
-	198 FABMIN Numeric 10.4 piecemarks.fabrication_minutes (17),\
-	199 HANDLMIN Numeric 10.4 piecemarks.handling_minutes (17),\
-	200 PAINTMIN Numeric 10.4 piecemarks.paint_minutes (17),\
-	201 SAWMIN Numeric 10.4 piecemarks.saw_minutes (17),\
-	202 WELDMIN Numeric 10.4 piecemarks.weld_minutes (17),\
-	203 RULECODE Character 20 piecemarks.rule_code 20,\
-	204 FT_PKGNO Integer 4 idfiles.ft_pkgno 0,\
-	205 PCPHASE Character 10 idfiles.piece_phase 15,\
-	206 PARENTCOPY Numeric 4 UNKNOWN,\
-	207 PARENTID Character 10 piecemarks.parent_piecemark...id_serial_numbers.id_serial_number,\
-	208 CAMBER Numeric 7.4 piecemarks.camber (17),\
-	209 BOMMATL Character 100 UNKNOWN,\
-	210 BOMSIZE Character 13 UNKNOWN,\
-	211 BOMRATING Character 15 UNKNOWN,\
-	212 MATLCLASS Character 10 sheetbom.material_class 10,\
-	213 BOMENDPREP Character 6 UNKNOWN,\
-	214 GUID Character 40 idfiles.id_guid 40,\
-	215 BOMFINISH Character 30 UNKNOWN,\
-	216 PRIORITY Character 10 sheets.priority 10,\
-	217 BOMLGTCHAR Character 15 UNKNOWN";
-	*/
 /**
  * @properties={typeid:35,uuid:"5DDCF579-40D5-485C-97F1-184AFCE4FC33",variableType:-4}
  */
@@ -1695,6 +1475,12 @@ function onActionPrintLabels(event) {
 	var outputFields = [];
 	var outputSpecs = [];
 	if (application.isInDeveloper()){application.output('print label fields')}
+	//var useServer = false;
+	//var formName = event.getFormName();
+	var versionForm = globals.getInstanceForm(event);
+	var useServer = (forms['barcode_idlabel'+versionForm].useServerPrinters == 1);
+
+	var labCnt = 0;
 	//if (true || true) {return;}
 	var tabCount = specs.length;
 	var formName = event.getFormName();
@@ -1710,29 +1496,45 @@ function onActionPrintLabels(event) {
 		var rec = fs.getRecord(i++);
 		var tabContents = "";
 		if (rec.selection != 1){continue}
+		labCnt++;
 		if (rec.bc_id_serial_number_id){globals.barcodePrintedArray.push(rec.bc_id_serial_number_id)}
 		itemsSelected = true;
 		for (var index = 0;index < tabCount;index++){
 			/** @type {JSRecord<num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number>} */
 			var specObj = specs[index];
 			/** @type {Array} */
-			var dbCol = specObj.dbcol.split('.');
+			var dbCol = specObj.db_field.split('.');
 			var dbField = dbCol[dbCol.length-1];//get unique record field
 			tabContents = rec[dbField];
 			if (typeof tabContents === 'undefined'){
-				if (application.isInDeveloper()){application.output('undefined or unknown - '+dbField+' '+scopes.printer.barTenderFields[index]);}
-				var fieldTagName = specObj.name;
+				if (application.isInDeveloper()){application.output('undefined or unknown - '+dbField+' '+specObj.field_name);}
+				var fieldTagName = specObj.field_name;
 				tabContents = getNonRecordValues(rec,fieldTagName);
 			}
 			if (!tabContents){tabContents = ''}
 			
 			tabContents = tabContentFormat(tabContents,specObj);
 			if (application.isInDeveloper()){application.output('contents '+tabContents);}
-			fileLine += tabContents+"\t";
+			if (tabContents == ''){
+				fileLine += '\t';
+			} else {
+				fileLine += tabContents+"\t";
+			}
+			//fileLine += tabContents+"\t";
 		}
-		fileLine += "\n";
+		//fileLine += "\n";
+		if (!useServer){//use multipleLines
+			fileLine += "\n";
+		} else {
+			scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER
+			fileLine = '';
+		}
 	}
-	if (itemsSelected){bartenderPrint(event,fileLine);} //BARTENDER
+	if (!useServer && itemsSelected){
+		scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER		
+	}
+	//if (itemsSelected){bartenderPrint(event,fileLine);} //BARTENDER
+	if (application.isInDeveloper()){application.output('Number of labels to printed '+labCnt)}
 }
 /**
  * @param {JSEvent} event
@@ -1757,40 +1559,78 @@ function bartenderPrint(event,txtString){
 	if (formName == 'rf_mobile_view'){
 		label = scopes.printer.rawMaterialLabelFormat;
 		printer = scopes.printer.rawMaterialPrinter;
+		var userDestination = getUserDestination();
+		if (userDestination.printer){
+			printer = userDestination.printer;
+			label = userDestination.label;
+		}
 	}
+	var useServer = false;
+	if (formName.search('barcode_idlabel'+versionForm) == 0) {useServer = (forms['barcode_idlabel'+versionForm].useServerPrinters == 1)}
+	//application.output('barcode_idlabel'+versionForm);
 	var tempDir = (barForm.useLocalDirectory) ? barForm.localDir : plugins.file.getDefaultUploadLocation()+scopes.prefs.temppath.replace('.','');
 	//tempDir = tempDir.replace(plugins.file.getDefaultUploadLocation(),'');
 	tempDir = tempDir.replace(/\/+/g,'\\').replace('.','');
 	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
 	var line = "";
-	var fileName = tempDir+"\\barcodelabel.txt";
-	fileName = fileName.replace(/\/+/g,'\\');
+	//var fileName = tempDir+"\\barcodelabel.txt";//Paul no longer wants this file in temp dir 20190228
+	//fileName = fileName.replace(/\/+/g,'\\');
 	var btwFile = plugins.file.getDefaultUploadLocation()+reportPth+"\\"+label;
 	btwFile = btwFile.replace(/\/+/g,'\\');
 	if (debug){application.output('btwFile bartender print '+btwFile)}//REMOVE
-	var btwExists = plugins.file.createFile(btwFile);
-	if (!btwExists.exists()){
-		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('1226'),i18n.getI18NMessage('1226'));//BarTender Template Does Not Exist in Reports Location
-		scopes.jobs.warningsX();
-		return;
-	}
+	//var btwExists = plugins.file.createFile(btwFile);
+	//if (!btwExists.exists()){
+	//	globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('1226'),i18n.getI18NMessage('1226'));//BarTender Template Does Not Exist in Reports Location
+	//	scopes.jobs.warningsX();
+	//	return;
+	//}
 
 	var randFileName = tempDir+"\\" + application.getUUID().toString().split("-")[4] +".txt";
 	if (debug){application.output('randfilename bartender print '+randFileName)}//REMOVE
 	randFileName = randFileName.replace(/\/+/g,'\\');
 
-	var status = plugins.file.writeTXTFile(fileName,txtString);
+	var status = plugins.file.writeTXTFile(randFileName,txtString);
 	if (status){globals.loggerDev(this,'Status write to txt file fail.');}
-	status = plugins.file.appendToTXTFile(fileName,line + "\n");
+	status = plugins.file.appendToTXTFile(randFileName,line + "\n");
 	if (status){globals.loggerDev(this,'Status append to txt file fail.');}
-	status = plugins.file.copyFile(fileName,randFileName);
+	//status = plugins.file.copyFile(fileName,randFileName);
 	null;
 	if (forms[formName].useLabeLasePrinter){
 		var labeLaseFile = tempDir+'\\LabeLase1000.txt';
 		labeLaseFile = labeLaseFile.replace(/\/+/g,'\\');
-		status = plugins.file.copyFile(fileName,labeLaseFile);
+		status = plugins.file.copyFile(randFileName,labeLaseFile);
 	}
+	/**
+	 * send to barTender Db Automation
+	 * useServer = checkbox on STS barcode label print view {Boolean}
+	 * useBarTender = barTender installed {Boolean}
+	 * rf_mobile_view ONLY uses barTender integration and ONLY when printEnabled on a print view
+	 */
+	if ((forms[formName].useBarTender && useServer) || (formName == 'rf_mobile_view' && forms[formName].printEnabled == i18n.getI18NMessage('sts.txt.on'))){
+		/** @type {JSFoundSet<db:/stsservoy/bt_labels>} */
+		var labelFS = databaseManager.getFoundSet('stsservoy','bt_labels');
+		var idx3 = labelFS.newRecord();
+		/** @type {JSFoundSet<db:/stsservoy/bt_labels>} */
+		var rec = labelFS.getRecord(idx3);
+		rec.bt_btwtemplate = btwFile;
+		rec.bt_copies = "1";//Math.floor(1);
+		rec.bt_print_date = new Date();
+		rec.bt_printer = printer;
+		rec.prime_key = rec.bt_label_id;
+		var labelData = txtString.split('\t');
+		for (var idx4 = 0;idx4 < labelData.length;idx4++){
+			var fieldNum = idx4*1.0+1;
+			var fieldName = 'field_'+Math.floor(fieldNum);
+			var fieldData = labelData[idx4].trim();
+			if (fieldData){//apparently empty data must be null for BarTender
+				rec[fieldName] = fieldData;
+			} else {
+				rec[fieldName] = null;
+			}
+		}
+		databaseManager.saveData(rec);
+	} else {
 	/**
 	 * check for bartender 2016 or greater
 	 * show print status dialog or not t/f
@@ -1802,114 +1642,124 @@ function bartenderPrint(event,txtString){
 	 * control print, won't enable unless printer and btw selected
 	 * create database label
 	 */
-	if (forms[formName].useBarTender || formName == 'rf_mobile_view'){
-		if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
-			globals.errorDialog('952');
-			application.output('RM COM: JACOB NOT INSTALLED');
-			//plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
-			scopes.jobs.warningsX();
-			return;
-		}
-		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
-		var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
-		if (!com || !com.isJACOBLoaded()) {
-			globals.errorDialog('953');
-			application.output('RM COM: Error Loading COM');
-			plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
-			return;
-		}
-		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
-		com.put("Visible","true");//change to false bartender
-		var formats = com.getChildJSCOM("Formats");
-		if (!formats){
-			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
-			scopes.jobs.warningsX();
-			application.output('RM COM: No Formats Found');
-			return;
-		}
-		var format = formats.getChildJSCOM("Open","",[btwFile,false,printer]);
-		if (!format){
-			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
-			application.output('RM COM: No formats format found');
-			com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
-			com.release();
-			scopes.jobs.warningsX();
-			if (1==1){return}
-			// check btwfile for existence
-			//var btwCheck =  (plugins.file.createFile(btwFile));
-			// check empty printer
-		}
-		//application.output('btw file '+btwFile);
-		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
-		var DBs = format.getChildJSCOM("Databases");
-		//var otherDB = format.call('Databases');
-		//var misc = Packages.com.servoyguy.plugins.servoycom.getInt(1);
-		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
-		if (scopes.printer.barTender_2016){
-			var db = DBs.getChildJSCOM("GetDatabase","",[1]);
-			if (!db){
-				application.output('RM COM: No 2016 DB found');
-				db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
+		if (useServer == false && scopes.printer.barTender_installed && formName != 'rf_mobile_view'){
+			if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
+				globals.errorDialog('952');
+				application.output('RM COM: JACOB NOT INSTALLED');
+				//plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
+				scopes.jobs.warningsX();
+				return;
 			}
-			if (!db){
-				application.output('RM COM: No DB \"Text File 1\" found');
-				db = DBs.get('Configuration')+"";
-				var regexp = new RegExp(/SelectCommand.*\[(.*)\].*SelectCommand/);
-				var database = db.match(regexp);
-				application.output('RM COM: bartender database '+database);
-				if (database){
-					db = DBs.getChildJSCOM('GetDatabase',[database[1]]);
-				} else {
-					application.output('RM COM: No DB '+database[1]+' found');					
+			scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+			var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
+			if (!com || !com.isJACOBLoaded()) {
+				globals.errorDialog('953');
+				application.output('RM COM: Error Loading COM');
+				plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
+				return;
+			}
+			scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+			com.put("Visible","true");//change to false bartender
+			var formats = com.getChildJSCOM("Formats");
+			if (!formats){
+				plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+				scopes.jobs.warningsX();
+				application.output('RM COM: No Formats Found');
+				return;
+			}
+			var format = formats.getChildJSCOM("Open","",[btwFile,false,printer]);
+			if (!format){
+				plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+				application.output('RM COM: No formats format found');
+				com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+				com.release();
+				scopes.jobs.warningsX();
+				if (1==1){return}
+				// check btwfile for existence
+				//var btwCheck =  (plugins.file.createFile(btwFile));
+				// check empty printer
+			}
+			//application.output('btw file '+btwFile);
+			scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+			var DBs = format.getChildJSCOM("Databases");
+			//var otherDB = format.call('Databases');
+			//var misc = Packages.com.servoyguy.plugins.servoycom.getInt(1);
+			scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+			if (scopes.printer.barTender_2016){
+				var db = DBs.getChildJSCOM("GetDatabase","",[1]);
+				if (!db){
+					application.output('RM COM: No 2016 DB found');
+					//db = DBs.getChildJSCOM("GetDatabase","",["\"Text File 1\""]);
 				}
-			}
-		} else {
-			db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
-		}
-		if (!db){
-			plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError(),i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
-			com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
-			com.release();
-			scopes.jobs.warningsX();
-			return;
-		}
-		//var setDb = db.getChildJSCOM("TextFile");
-		// Need db.TextFile.FileName = "c:\\barcodelabel.txt"
-		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
-		var oleDb = db.getChildJSCOM("TextFile");
-		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
-		if (debug){application.output('random file name to bartender '+randFileName)}
-		oleDb.put("FileName",randFileName);
-		/**
-		var db = DBs.getChildJSCOM("GetDatabase","",["PostgreSQL35W"]);
-		var ole = db.getChildJSCOM("ODBC");
-		var sql = 'SELECT "bc_id", "bc_text1" FROM "public"."barcode_test" WHERE bc_id <> \'*EX0B022680*\'';
-		ole.put("SQLStatement",sql);
-		ole.put("UserId","DBA");
-		application.output("sql "+ole.get("SQLStatement"));*/
-		//format.put("Printer","Bullzip PDF Printer");
-		format.getChildJSCOM("PrintOut","",["false","false"]);// open bartender, show print dialog
-		//formatsFile.call("ExportToClipboard",0,0);
-		//var comItems = formats.get("NamedSubStrings");
-		//var comMaterial = comItems.get('Item("Material")');
-		//com.getChildJSCOM("Quit","BarTender.Application",[1]);
-		//com.getChildJSCOM("Quit","BarTender.Application",[1]);
-		//com.getChildJSCOM("Quit","BarTender.Application",[1]);
-		com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
-		com.release();//release bartender every time since the program closes each time
-		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
-		if (formName != 'rf_mobile_view'){
-			var reply = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),
-				i18n.getI18NMessage('sts.txt.question.delete.barcode.file'),
-				[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
-			if (reply == i18n.getI18NMessage('sts.btn.yes')){
-				var status = plugins.file.deleteFile(randFileName);
-				if (!status){//1223
-					plugins.dialogs.showErrorDialog('1223',i18n.getI18NMessage('1223'));
+				if (!db){
+					//application.output('RM COM: No DB \"Text File 1\" found');
+					db = DBs.get('Configuration')+"";
+					var regexp = new RegExp(/SelectCommand.*\[(.*)\].*SelectCommand/);
+					var database = db.match(regexp);
+					application.output('RM COM: bartender database '+database+' DB '+database[1]+' DB ');
+					if (!database){
+						plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError(),i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+						com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+						com.release();
+						scopes.jobs.warningsX();
+						return;
+					}
+					var database2 = database[1];
+					database2 = database2.trim();
+					if (database2){
+						db = DBs.getChildJSCOM('GetDatabase',[database2]);
+					} else {
+						application.output('RM COM: No DB '+database2+' found');					
+					}
 				}
+			} //else {
+			//	db = DBs.getChildJSCOM("GetDatabase","",["Text File 1"]);
+			//}
+			if (!db){
+				plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError(),i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+				com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+				com.release();
+				scopes.jobs.warningsX();
+				return;
 			}
-		} else {
-			//status = plugins.file.deleteFile(randFileName);
+			//var setDb = db.getChildJSCOM("TextFile");
+			// Need db.TextFile.FileName = "c:\\barcodelabel.txt"
+			scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+			var oleDb = db.getChildJSCOM("TextFile");
+			scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+			if (debug){application.output('random file name to bartender '+randFileName)}
+			oleDb.put("FileName",randFileName);
+			/**
+			var db = DBs.getChildJSCOM("GetDatabase","",["PostgreSQL35W"]);
+			var ole = db.getChildJSCOM("ODBC");
+			var sql = 'SELECT "bc_id", "bc_text1" FROM "public"."barcode_test" WHERE bc_id <> \'*EX0B022680*\'';
+			ole.put("SQLStatement",sql);
+			ole.put("UserId","DBA");
+			application.output("sql "+ole.get("SQLStatement"));*/
+			//format.put("Printer","Bullzip PDF Printer");
+			format.getChildJSCOM("PrintOut","",["false","true"]);// open bartender, show print dialog
+			//formatsFile.call("ExportToClipboard",0,0);
+			//var comItems = formats.get("NamedSubStrings");
+			//var comMaterial = comItems.get('Item("Material")');
+			//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+			//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+			//com.getChildJSCOM("Quit","BarTender.Application",[1]);
+			com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+			com.release();//release bartender every time since the program closes each time
+			scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+			if (formName != 'rf_mobile_view'){
+				/** var reply = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),
+					i18n.getI18NMessage('sts.txt.question.delete.barcode.file'),
+					[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
+				if (reply == i18n.getI18NMessage('sts.btn.yes')){ */
+//DO NOT DELETE YET					var status = plugins.file.deleteFile(randFileName);
+				/**	if (!status){//1223
+						plugins.dialogs.showErrorDialog('1223',i18n.getI18NMessage('1223'));
+					}
+				} */
+			} else {
+				//status = plugins.file.deleteFile(randFileName);
+			}
 		}
 	}
 	if (event.getFormName() == 'rf_mobile_view'){return}
@@ -2028,32 +1878,32 @@ function getNonRecordValues(currentRecord,barTenderField){
 	application.output(barTenderField);
 	var newVal = "";
 	switch (barTenderField){
-		case 'BCCUST':
-			null;
+		case 'BCCUST':// fld 3
+			newVal = currentRecord.barcode_customer_name;
 			break;
-		case 'BCFORM':
-			null;
+		case 'BCFORM':// fld 4
+			newVal = currentRecord.barcode_format_customer_number
 			break;
-		case 'BCINCLDPFX':
-			null;
+		case 'BCINCLDPFX':// fld 5
+			newVal = currentRecord.bc_include_prefix;
 			break;
-		case 'BCJOBSTART':
-			null;
+		case 'BCJOBSTART':// fld 6
+			newVal = currentRecord.bc_job_start;
 			break;
-		case 'BCPREFIX':
-			null;
+		case 'BCPREFIX':// fld 7
+			newVal = currentRecord.bc_prefix;
 			break;
 		case 'BCTITLE':
 			null;
 			break;
-		case 'BOLOUT':
-			null;
+		case 'BOLOUT':// fld 9
+			newVal = currentRecord.ship_bol_out;
 			break;
-		case 'CARRNUM':
-			null;
+		case 'CARRNUM':// fld 10
+			newVal = currentRecord.ship_carrier_number;
 			break;
-		case 'COMMENTS':
-			null;
+		case 'COMMENTS':// fld 11
+			newVal = currentRecord.ship_load_comment;
 			break;
 		case 'COWCODE':
 			null;
@@ -2061,14 +1911,14 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'CTRLNUM':
 			null;
 			break;
-		case 'CUSCITY':
-			null;
+		case 'CUSCITY':// fld 14
+			newVal = currentRecord.customer_city;
 			break;
-		case 'CUSFAX':
-			null;
+		case 'CUSFAX':// fld 15
+			newVal = currentRecord.job_customer_fax;
 			break;
-		case 'CUSFIRST':
-			null;
+		case 'CUSFIRST':// fld 16
+			newVal = currentRecord.job_customer_rep;
 			break;
 		case 'CUSLAST':
 			null;
@@ -2076,20 +1926,20 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'CUSMIDDLE':
 			null;
 			break;
-		case 'CUSNAME':
-			null;
+		case 'CUSNAME':// fld 19
+			newVal = currentRecord.job_customer_name;
 			break;
-		case 'CUSPHONE':
-			null;
+		case 'CUSPHONE':// fld 20
+			newVal = currentRecord.job_customer_phone;
 			break;
-		case 'CUSSTATE':
-			null;
+		case 'CUSSTATE':// fld 21
+			newVal = currentRecord.customer_state;
 			break;
-		case 'CUSSTREET':
-			null;
+		case 'CUSSTREET'://fld 22
+			newVal = currentRecord.cust_addr_line1;
 			break;
-		case 'CUSTNUM':
-			null;
+		case 'CUSTNUM':// fld 4
+			newVal = currentRecord.barcode_customer_number;
 			break;
 		case 'CUSTPO':
 			null;
@@ -2097,8 +1947,8 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'CUSTSO':
 			null;
 			break;
-		case 'CUSZIP':
-			null;
+		case 'CUSZIP':// fld 26
+			newVal = currentRecord.cust_zip_code;
 			break;
 		case 'DESCR2':
 			null;
@@ -2106,25 +1956,25 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'EDITTIME':
 			null;
 			break;
-		case 'ENGXTIME':
-			null;
+		case 'ENGXTIME':// fld 30
+			newVal = currentRecord.ship_sent_engineer;
 			break;
-		case 'FABINVOICE':
-			null;
+		case 'FABINVOICE':// fld 31
+			newVal = currentRecord.ship_fabricator_invoice;
 			break;
-		case 'FABSHOP':
-			null;
+		case 'FABSHOP':// fld 32
+			newVal = currentRecord.pcmk_fab_shop;
 			break;
-		case 'FABXTIME':
-			null;
+		case 'FABXTIME':// fld 33
+			newVal = currentRecord.ship_sent_fabricator;
 			break;
-		case 'FIREXTIME':
-			null;
+		case 'FIREXTIME':// fld 34
+			newVal = currentRecord.ship_sent_fireproofer;
 			break;
-		case 'GALVXTIME':
-			null;
+		case 'GALVXTIME':// fld 35
+			newVal = currentRecord.ship_sent_galvinizer;
 			break;
-		case 'HEAT':
+		case 'HEAT':// fld 37
 			null;
 			break;
 		case 'IDFORMAT':
@@ -2136,8 +1986,8 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'IDSTATUS':
 			null;
 			break;
-		case 'INVOICE':
-			null;
+		case 'INVOICE':// fld 42
+			newVal = currentRecord.ship_load_invoice;
 			break;
 		case 'JOBCAREOF':
 			null;
@@ -2166,8 +2016,8 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'JOLINE1NUM':
 			null;
 			break;
-		case 'JOLINE1STR':
-			null;
+		case 'JOLINE1STR':// fld 52
+			newVal = currentRecord.barcode_format_customer_name;
 			break;
 		case 'JOLINE2NUM':
 			null;
@@ -2224,7 +2074,7 @@ function getNonRecordValues(currentRecord,barTenderField){
 			null;
 			break;
 		case 'LINE8FLD':
-			null;
+			newVal = currentRecord.pm_item_length_char;
 			break;
 		case 'LINE8PRMPT':
 			null;
@@ -2247,20 +2097,20 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'LINEBPRMPT':
 			null;
 			break;
-		case 'LOADNUM':
-			null;
+		case 'LOADNUM':// fld 79
+			newVal = currentRecord.ship_load_number;
 			break;
-		case 'LODCAREOF':
-			null;
+		case 'LODCAREOF':// fld 80
+			newVal = currentRecord.ship_load_care_of;
 			break;
-		case 'LODPO':
-			null;
+		case 'LODPO':// fld 81
+			newVal = currentRecord.ship_load_po;
 			break;
-		case 'LODRELEASE':
-			null;
+		case 'LODRELEASE':// fld 82
+			newVal = currentRecord.ship_load_release;
 			break;
-		case 'LODSHIPTO':
-			null;
+		case 'LODSHIPTO':// fld 83
+			newVal = currentRecord.ship_customer_number;
 			break;
 		case 'LOT':
 			null;
@@ -2268,8 +2118,8 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'MRR':
 			null;
 			break;
-		case 'ORIGEMPL':
-			null;
+		case 'ORIGEMPL':// fld 86
+			newVal = currentRecord.job_original_employee;
 			break;
 		case 'OTHRXTIME':
 			null;
@@ -2304,11 +2154,11 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'RECACTION':
 			null;
 			break;
-		case 'RECVLOAD':
-			null;
+		case 'RECVLOAD':// fld 99
+			newVal = currentRecord.recv_load_number;
 			break;
-		case 'RECVTIME':
-			null;
+		case 'RECVTIME':// fld 100
+			newVal = currentRecord.recv_load_date;
 			break;
 		case 'REMAILTIME':
 			null;
@@ -2319,20 +2169,20 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'SEMAILTIME':
 			null;
 			break;
-		case 'SHIPLOAD':
-			null;
+		case 'SHIPLOAD':// fld 107
+			newVal = currentRecord.ship_load_date;
 			break;
 		case 'SHIPTAG':
 			null;
 			break;
-		case 'SHIPTIME':
-			null;
+		case 'SHIPTIME':// fld 109
+			newVal = currentRecord.ship_load_time;
 			break;
 		case 'SITEXTIME':
 			null;
 			break;
-		case 'TRAILINFO':
-			null;
+		case 'TRAILINFO':// fld 111
+			newVal = currentRecord.ship_load_trailer_info;
 			break;
 		case 'EDITDATE':
 			null;
@@ -2385,8 +2235,8 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'LOGICFLAG':
 			null;
 			break;
-		case 'LSOTOLOAD':
-			null;
+		case 'LSOTOLOAD':// fld 130
+			newVal = currentRecord.job_so_to_load;
 			break;
 		case 'METRICJOB':
 			null;
@@ -2433,17 +2283,17 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'RECVQTY':
 			null;
 			break;
-		case 'RECVWT':
-			null;
+		case 'RECVWT':// fld 149
+			newVal = currentRecord.recv_load_receiving_wt;
 			break;
 		case 'SHIPQTY':
 			null;
 			break;
-		case 'SHIPWT':
-			null;
+		case 'SHIPWT':// fld 152
+			newVal = currentRecord.ship_load_shipped_weight;
 			break;
-		case 'TOTALWT':
-			null;
+		case 'TOTALWT':// fld 153
+			newVal = currentRecord.ship_load_total_weight;
 			break;
 		case 'RTBW':
 			null;
@@ -2613,8 +2463,8 @@ function getNonRecordValues(currentRecord,barTenderField){
 		case 'MATLCLASS':
 			null;
 			break;
-		case 'BOMENDPREP':
-			null;
+		case 'BOMENDPREP':// fld 213
+			newVal = currentRecord.bom_end_condition;
 			break;
 		case 'GUID':
 			null;
@@ -2627,6 +2477,9 @@ function getNonRecordValues(currentRecord,barTenderField){
 			break;
 		case 'BOMLGTCHAR':
 			null;
+			break;
+		case 'PARENTID':// fld 207
+			newVal = currentRecord.bc_parent_id_serial;
 			break;
 		default:
 
@@ -3061,4 +2914,121 @@ function onDataChangeLocalPathEntry(oldValue, newValue, event) {
 	setPrefsDirty(event,'prefs');
 	forms.preferences_printer.prefsChanged.push(dataProv);//20180109 update prefs on button inop from button change
 	return true;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"D0BF4A75-AB74-4CA9-82A1-04E5569E8059"}
+ */
+function bartenderOpen(event){
+	if (!plugins.servoyguy_servoycom.isJACOBInstalled()) {
+		globals.errorDialog('952');
+		application.output('RM COM: JACOB NOT INSTALLED');
+		//plugins.dialogs.showErrorDialog( "Error", "Jacob is not installed.");
+		scopes.jobs.warningsX();
+		return;
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+	bartenderConnect(event);
+	if (!globals.btCom){return false}
+	if (!globals.btCom || !globals.btCom.isJACOBLoaded()) {
+		globals.errorDialog('953');
+		application.output('RM COM: Error Loading COM');
+		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
+		return;
+	}
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
+	if (application.isInDeveloper()){
+		globals.btCom.put("Visible","true");//change to false bartender
+	} else {
+		globals.btCom.put("Visible","false");//change to false bartender		
+	}
+	return true;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"C202C813-F81C-4B28-A9EC-CA35C0ACE413"}
+ */
+function bartenderClose(event){
+	if (globals.btCom){
+		globals.btCom.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+		globals.btCom.release();
+	}
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"AA6B355F-5B2F-4EC3-A596-490E95783CE9"}
+ */
+function bartenderConnect(event){
+	if (globals.btCom){
+		globals.btCom.release();
+	}
+	globals.btCom = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
+}
+/**
+ * @properties={typeid:24,uuid:"FC92F2E5-B74B-42F5-8E3A-EEF8CB5EEE4A"}
+ */
+function createBtTableLabelFields(){
+	var db = databaseManager.getTable('stsservoy','bt_labels');
+	var fields = db.getColumnNames();
+	var limit = 254;
+	var sqlAddCol = 'ALTER TABLE bt_labels ADD COLUMN NEW_COL_NAME VARCHAR(100);';
+	for (var idx = 1;idx <= limit;idx++){
+		var columnName = "field_"+idx;
+		if (fields.indexOf(columnName) == -1){
+			application.output('create Field '+columnName);
+			var newSql = sqlAddCol.replace('NEW_COL_NAME',columnName);
+			plugins.rawSQL.executeSQL('stsservoy','bt_labels',newSql);
+			plugins.rawSQL.flushAllClientsCache('stsservoy','bt_labels');
+		} else {
+			application.output('skipping field '+columnName)
+		}
+	}
+	
+}
+/**
+ * @properties={typeid:24,uuid:"4ADAE4E5-7CA7-4901-B1D2-3D6D0E637456"}
+ */
+function getUserDestination(){
+	var userUUID = globals.session.loginId;
+	var screenName = globals.session.program;
+	application.output('RM Get User Destination user  id: '+userUUID+' Screen: '+screenName);
+	var destination = {label:null, printer:null}
+	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
+	var dest = databaseManager.createSelect('db:/stsservoy/label_destinations');
+	dest.where.add(dest.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	dest.where.add(dest.columns.user_uuid.eq(application.getUUID(userUUID)));
+	dest.where.add(dest.columns.rf_screen_name.eq(screenName));
+	dest.result.add(dest.columns.label_destination_uuid);
+	var D = databaseManager.getFoundSet(dest);
+	if (D.getSize() == 1){
+		/** @type {JSFoundSet<db:/stsservoy/label_destinations>} */
+		var rec = D.getRecord(1);
+		destination.printer = rec.printer_name;
+		destination.label = rec.label_template_name;
+	}
+	return destination;
+}
+/**
+ * @param {Boolean} server
+ *
+ * @properties={typeid:24,uuid:"F50F52A6-1C10-4494-9AAB-1973662F110C"}
+ */
+function useServerPrinters(server){
+	var printers = [];
+	if (server){
+		var printerList = plugins.UserManager.Server().executeCommand('wmic printer get name');
+		var printerArr = printerList.trim().split('\n');
+		for (var idx = 1;idx < printerArr.length;idx++){
+			printers.push(printerArr[idx].trim());
+		}
+	} else {
+		printers = application.getPrinters();
+	}
+	//application.output('Printers '+printers)
+	printers.sort();
+	return printers;
 }

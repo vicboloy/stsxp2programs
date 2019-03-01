@@ -136,6 +136,20 @@ var aTrackWindows = ['STS - Main'];
  */
 var com = '';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"9A35E6E0-29B5-46D9-BCC0-1D753181CF8D"}
+ */
+var btCom = '';
+/**
+*
+ * @type {String}
+ *
+* @properties={typeid:35,uuid:"96254FD1-F9F3-447E-A057-439BFC5F7C3B"}
+*/
+var fsCom = '';
+
+/**
  * List of idfiles/barcode id_serial_numbers that have been printed.
  * @properties={typeid:35,uuid:"FC357C54-6A5F-4015-AF29-4F2AD3718DB3",variableType:-4}
  */
@@ -2126,4 +2140,11 @@ function createPostGreSqlIndexes(){
 		plugins.rawSQL.executeSQL('stsservoy','idfiles','CREATE INDEX CONCURRENTLY idfile_idx ON idfiles (sequence_id,piecemark_id);');
 	} catch (e) {}
 	
+}
+/**
+ * @properties={typeid:24,uuid:"3389296A-601F-4B81-9DC7-9265E759883F"}
+ */
+function onSolutionClose(){
+	scopes.fs.fabSuiteClose();
+	scopes.prefs.bartenderClose(null);
 }

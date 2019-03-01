@@ -1,64 +1,66 @@
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"068CB534-21FC-4F4D-8096-1B20991BF6B4",variableType:4}
+ * @properties={typeid:35,uuid:"5E6B20CD-CC41-47F6-A35E-589A4C58B4FF",variableType:4}
  */
 var useLocalDirectory = 0;
+
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"3F4EFF4F-88CC-4FBF-B55A-D67BEA97ED54",variableType:4}
+ * @properties={typeid:35,uuid:"565F0E00-E340-4BBA-B591-AA072A6D9491",variableType:4}
  */
 var useLabeLasePrinter = 0;
+
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"322D2EF8-C0BA-4A05-8351-0530156DB9E0",variableType:4}
+ * @properties={typeid:35,uuid:"5E0B70F0-B9A0-4B84-8B4B-1BB9DC1AB722",variableType:4}
  */
 var useBarTender = 0;
+
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"B1326B9E-8FCE-412C-9EA6-08AA349C9481"}
+ * @properties={typeid:35,uuid:"748A4E28-39F6-4739-90AD-DA3774125BFC"}
  */
 var printerName = '';
+
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"0BD2161E-BBA8-449E-8BA4-466177E2AE99"}
+ * @properties={typeid:35,uuid:"2A19B5B3-C4AA-4214-9D3C-9CB0D2E48F09"}
  */
 var labelName = '';
+
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"F69D512D-89C8-4D49-8630-74688C440F10"}
+ * @properties={typeid:35,uuid:"EBC4B8D0-259E-4EF1-85CF-BF0B94D2FA0A"}
  */
 var localDir = '';
+
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"1B41F652-4BA2-4088-84E5-DDFE956D4D32"}
+ * @properties={typeid:35,uuid:"51594784-1190-4D8A-8A4D-B33D65AE445F"}
  */
 var labeLaseFormat = '';
+
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"6F1E0237-5585-4A4E-9740-42FBDA90C34C",variableType:4}
+ * @properties={typeid:35,uuid:"2A6A867D-4BF3-41FA-9245-EADFBFE43FC9",variableType:4}
  */
 var useServerPrinters = 1;
+
 /**
- * print is driven off of the criteria page
- * 
- * only if selection criteria exists and a foundset exists
- * 
- */
- /**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"B8E7F0FB-EDC8-49A9-9958-91E34DDFBC29"}
+ * @properties={typeid:24,uuid:"BC1F3669-10F4-407D-B735-64B0B7BF03D7"}
  */
 function onShow(firstShow, event) {
 	_super.onShow(firstShow, event);
@@ -90,18 +92,18 @@ function onShow(firstShow, event) {
 	//}
 		
 }
- 
+
 /**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"3A786F20-292F-4BD4-BBD5-3F25A07EE1A4"}
+ * @properties={typeid:24,uuid:"4303B193-90CB-4C00-8D27-EB1572FCFEF4"}
  * @AllowToRunInFind
  */
 function onActionPrint(event) {
 	var printers = application.getValueListArray('stsvl_get_printer_list');
-	var debug = 1;
+	var debug = 0;
 	if (printers.indexOf(printerName) == -1){
 		globals.DIALOGS.showErrorDialog('1252',i18n.getI18NMessage('1252'));//Selected Printer Not Available.  Please Select Another.
 		return false;		
@@ -174,10 +176,11 @@ function onActionPrint(event) {
 	var win2 = application.getWindow(returnWin);
 	win2.toFront();
 }
+
 /**
  * @param formName
  *
- * @properties={typeid:24,uuid:"3989EEE5-5DE2-492A-8456-D9EB616B8A63"}
+ * @properties={typeid:24,uuid:"5280D3E4-D850-444C-B86E-221435EE2A8E"}
  */
 function collectCriteria(formName){
 	if (vLoadAll){
@@ -265,12 +268,13 @@ function collectCriteria(formName){
 	return criteria;
 	null;
 }
+
 /**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"7A62A5CE-DDA9-4C58-9D17-136AECB5CFCE"}
+ * @properties={typeid:24,uuid:"FB1D835A-0F7B-4F6F-802A-DA7C63A03F6E"}
  * @AllowToRunInFind
  */
 function onActionClear(event) {
@@ -293,10 +297,11 @@ function onActionClear(event) {
 	}
 	useServerPrinters = 1;
 }
+
 /**
  * @param formName
  *
- * @properties={typeid:24,uuid:"F60EBFE4-5CB9-4AFE-A243-E03AC15290AB"}
+ * @properties={typeid:24,uuid:"F13D3BEC-98AE-4F6B-8547-A104C65413BD"}
  */
 function collectAndTab(formName){
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
@@ -324,21 +329,21 @@ function collectAndTab(formName){
 	null;
 }
 
-
 /**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"B5CD1955-B3E4-40AD-9D87-003EFAE6FF64"}
+ * @properties={typeid:24,uuid:"6EE5CD97-6303-4013-8ADA-CE2355F3EAF1"}
  */
 function onActionBarTenderPrinter(event) {
 	checkPrinterSelection(event);
 }
+
 /**
  * @param {JSEvent} event
  *
- * @properties={typeid:24,uuid:"5B2F9750-65E9-465D-A92B-FEECFCB58618"}
+ * @properties={typeid:24,uuid:"F79462EE-3EA4-4C19-A367-64020671F250"}
  */
 function checkPrinterSelection(event){
 	var form = forms[event.getFormName()];
@@ -351,12 +356,13 @@ function checkPrinterSelection(event){
 	}
 
 }
+
 /**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"F3B38C06-5F13-42F3-8255-2887B749C020"}
+ * @properties={typeid:24,uuid:"81B7CA37-253C-4FC2-BF7A-8C4511137129"}
  */
 function onActionLabeLasePrinter(event) {
 	checkPrinterSelection(event);
@@ -371,7 +377,7 @@ function onActionLabeLasePrinter(event) {
  *
  * @returns {Boolean}
  *
- * @properties={typeid:24,uuid:"5E05D197-475E-4B5F-BB50-FEA18968FE86"}
+ * @properties={typeid:24,uuid:"71968DD8-9ACF-4B4E-B0ED-B56F17B68614"}
  */
 function onDataChangeChgPrinters(oldValue, newValue, event) {
 	var printers = (newValue) ? scopes.prefs.useServerPrinters(true) : scopes.prefs.useServerPrinters(false);

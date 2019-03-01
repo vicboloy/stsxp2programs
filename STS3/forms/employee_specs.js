@@ -72,7 +72,7 @@ function onActionEdit(event, editStatus) {
 	forms["employees_rec"+formRev].controller.enabled = !editStatus;
 	forms['employees_rec'+formRev].elements.btn_New.visible = !editStatus;
 	if (forms['employees_rec'+formRev].currentRecord && event.getElementName() != 'btn_New'){//remove !editStatus
-		forms['employees_rec'+formRev].refreshUsers(event);
+		//forms['employees_rec'+formRev].refreshUsers(event);//20190219 editing employee not synced with list
 		var empId = forms['employees_rec'+formRev].currentRecord.employee_id;
 		var fs = forms['employees_lstB'+formRev].foundset;
 		for (var idx = 1;idx <= fs.getSize();idx++){
@@ -84,7 +84,7 @@ function onActionEdit(event, editStatus) {
 			}
 		}
 	}
-	forms['employees_rec'+formRev].currentRecord = foundset.getSelectedRecord();
+	//forms['employees_rec'+formRev].currentRecord = foundset.getSelectedRecord();//20190219 editing employee not synced with list
 	forms['employee_login_lst'+formRev].onRecordSelection(event);
 	databaseManager.setAutoSave(false);
 }

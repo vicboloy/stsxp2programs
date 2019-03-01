@@ -78,6 +78,7 @@ function onActionEditCarrier(event) {
 function onActionCancelEditCarrier(event) {
 		onEditCarrier(event,false);
 		databaseManager.revertEditedRecords(foundset);
+		databaseManager.revertEditedRecords(forms['carriers_rec'].addressFS);
 	}
 
 	/**
@@ -90,6 +91,7 @@ function onActionSaveEditCarrier(event){
 		tenant_uuid = globals.session.tenant_uuid;
 		edit_date = new Date();
 		databaseManager.saveData(foundset.getSelectedRecord());
+		databaseManager.saveData(forms['carriers_rec'].addressRec);
 		onEditCarrier(event,false);
 	}
 

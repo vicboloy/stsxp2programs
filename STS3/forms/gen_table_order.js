@@ -65,6 +65,10 @@ var parentEvent = null;
  */
 var elementInfo = '';
 /**
+ * @properties={typeid:35,uuid:"AD7F533F-381C-45D6-A782-0B0FE0365393",variableType:-4}
+ */
+var i18nMapping = [];
+/**
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
@@ -171,6 +175,7 @@ function onShow(firstShow, event) {
 		baseForm = event.getFormName().replace(versionForm,'');
 		parentEvent = event;
 	}
+	i18nMapping = [];
 	elementInfo = i18n.getI18NMessage('sts.txt.table.info.here');
 	globals.setUserFormPermissions(event);
 	var currentForm = event.getFormName();//20181003
@@ -210,13 +215,14 @@ function onShow(firstShow, event) {
 
 	for (var index in elems){
 		var name = elems[index].getName();
+		getColumnI18nMapping(event,currentTableName,name);
 		if (name == 'selection'){continue}
 		///if (scopes.jobs.tablePKs.indexOf(name) != -1){continue}
 		///var visible = elems[index].isVisible();
-		if (colAvail.indexOf(name) != -1 || elems[index].visible == false){
-			if (colAvail.indexOf(name) == -1){colAvail.push(name);}
+		if (colAvail.indexOf(i18nMapping[name]) != -1 || elems[index].visible == false){
+			if (colAvail.indexOf(i18nMapping[name]) == -1){colAvail.push(i18nMapping[name]);}
 		} else {
-			colShow.push(new Array(elems[index].getLocationX(),name));
+			colShow.push(new Array(elems[index].getLocationX(),i18nMapping[name]));
 		}
 
 		/**posX = "000000000"+elems[index].getLocationX();
@@ -245,9 +251,9 @@ function onShow(firstShow, event) {
 		if (sortedOrder.indexOf(newShowEl) == -1){sortedOrder.push(newShowEl)}
 	}
 	//colShow.sort();
-	if (elems['selection'] && elems['selection'].visible == false && colAvail.indexOf('selection') == -1){colAvail.unshift('selection')}
+	if (elems['selection'] && elems['selection'].visible == false && colAvail.indexOf('selection') == -1){colAvail.unshift(i18nMapping['selection'])}
 	
-	if (elems['selection'] && elems['selection'].visible == true && sortedOrder.indexOf('selection') == -1){sortedOrder.unshift('selection')}
+	if (elems['selection'] && elems['selection'].visible == true && sortedOrder.indexOf('selection') == -1){sortedOrder.unshift(i18nMapping['selection'])}
 	application.setValueListItems('stsvl_catTemp1',colAvail);
 	application.setValueListItems('stsvl_catTemp2',sortedOrder);
 	resetAvailable = application.getValueListArray('stsvl_catTemp1');
@@ -506,10 +512,11 @@ function onActionApply(event) {
 	//application.output(showArray);
 	var tempEmpty = globals.a.tempHiddenEmpty;
 	for (var item in elems){
-		if (hideArray.indexOf(item) == -1){
-			if (showArray.indexOf(item) == -1){
+		var i18nItem = i18nMapping[item];
+		if (hideArray.indexOf(i18nItem) == -1){
+			if (showArray.indexOf(i18nItem) == -1){
 				//showArray.push(item);
-				doneArray.push(item);
+				doneArray.push(i18nItem);
 			}
 		}
 	}
@@ -518,7 +525,8 @@ function onActionApply(event) {
 	var jsForm = solutionModel.getForm(form);
 	for (var index = 0;index < showArray.length;index++){
 		/** @type String */
-		var name = showArray[index];
+		var i18nName = showArray[index];
+		var name = i18nMapping[i18nName]; 
 		doneArray.push(name);
 		if (!elems[name]){continue}
 		//if (elems[name] == ""){continue}
@@ -532,14 +540,15 @@ function onActionApply(event) {
 		jsField.x = posX;jsField.visible = true;
 		if (jsField.width < 3){jsField.width = 110}
 		posX = (elems[name].getWidth() < 3) ? posX+elems[name].getWidth() : posX+110;
-		if (tempEmpty.indexOf(name) != -1){
+		if (tempEmpty.indexOf(i18nName) != -1){
 			elems[name].visible = false;
 		}
 	}
 
 	for (index = 0;index < hideArray.length;index++){
-		name = hideArray[index];
-		doneArray.push(name);
+		i18nName = hideArray[index];
+		name = i18nMapping[i18nName]; 
+		doneArray.push(i18nName);
 		if (!elems[name]){continue}
 		elems[name].visible = false;
 		/** @type JSForm */
@@ -579,4 +588,21 @@ function setElementCount(){
 function onActionSave(event) {
 	scopes.jobs.saveTableSettings(event);
 	elements.btn_Save.enabled = false;
+}
+/**
+ * @param {JSEvent} event
+ * @param formName
+ *
+ * @properties={typeid:24,uuid:"497F5381-79BD-476B-A791-8B826B1B4ECE"}
+ * @AllowToRunInFind
+ */
+function getColumnI18nMapping(event,tableFormName,elName){
+	var tableI18n = '';
+	if (tableFormName.search('transactions') != -1){
+		tableI18n = i18n.getI18NMessage('sts.table.transactions.'+elName);
+	} else {
+		tableI18n = scopes.jobs.determineI18n(elName,'source');
+	}
+	i18nMapping[tableI18n] = elName;
+	i18nMapping[elName] = tableI18n;
 }

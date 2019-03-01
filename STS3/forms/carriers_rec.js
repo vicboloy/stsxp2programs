@@ -1,4 +1,8 @@
 /**
+ * @properties={typeid:35,uuid:"332FE402-4622-4F72-9188-55118DE52E0A",variableType:-4}
+ */
+var addressRec = null;
+/**
  * @properties={typeid:24,uuid:"C53979B3-7CAF-4472-B6B8-865E64B159E4"}
  */
 function mainWindowFront(){
@@ -16,7 +20,17 @@ function mainWindowFront(){
  */
 function addCarrierRecord(event) {
 	var instance = globals.getInstanceForm(event);
-	forms['carriers_lst'+instance].controller.newRecord();
+	var idx = forms['carriers_lst'+instance].foundset.newRecord();
+	/** @type {JSFoundSet<db:/stsservoy/carrier>} */
+	var rec = forms['carriers_lst'+instance].foundset.getRecord(idx);
+	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
+	var addressFS = databaseManager.getFoundSet('db:/stsservoy/addresses');
+	var addIdx = addressFS.newRecord();
+	addressRec = addressFS.getRecord(addIdx);
+	addressRec.tenant_uuid = globals.session.tenant_uuid;
+	addressRec.address_type = i18n.getI18NMessage('sts.txt.carrier.shipper').toUpperCase();
+	addressRec.edit_date = new Date();
+	rec.carrier_address_uuid = addressRec.address_id;
 	forms['carrier_info'+instance].onEditCarrier(event,true);
 	forms['carrier_info'+instance].elements.carrier_number.requestFocus();
 }

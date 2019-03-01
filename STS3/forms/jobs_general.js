@@ -143,6 +143,12 @@ var vBar1 = "";
  */
 var vBar2 = "";
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C6F31CF3-DA28-4A7F-B1A3-9637D657FC0B"}
+ */
+var vBillTo = '';
+/**
  * Handle changed data.
  *
  * @param {String} oldValue old value
@@ -247,6 +253,7 @@ function loadResetForm(){
 	vCustomerNumber = "";
 	vCustomerName = "";
 	vShipTo = null;
+	vBillTo = null;
 	vCustomerPO = "";
 	vJobCareOf = "";
 	vJobEfficiency = 0;
@@ -369,6 +376,7 @@ function onRecordSelection(event, buttonTextSrc) {
 	vBarCodeForm = barcode_form;
 	vJobPlant = association_id;
 	vShipTo = ship_to;
+	vBillTo = bill_to;
 	vRFInterface = rf_interface;
 	vJobWeightUnits = (metric_job) ? i18n.getI18NMessage('sts.txt.weight.metric') : i18n.getI18NMessage('sts.txt.weight.imperial');
 	onActionHeats(event);
@@ -388,6 +396,7 @@ function onActionSaveEdit(event) {
 	//metric_job = (vMetricJob == 1);
 	rf_interface = vRFInterface;
 	ship_to = vShipTo;
+	bill_to = vBillTo;
 	customer_id = vCustomerId;
 	association_id = vJobPlant;
 	//vCustomerNumber = null;
@@ -443,6 +452,7 @@ function additionalEditCancelFunctions(){
 	vRFInterface = rf_interface;
 	vBarCodeForm = barcode_form;
 	vShipTo = ship_to;
+	vBillTo = bill_to;
 	//vLabelFormat = label_format;
 	vMetricJob = metric_job;
 }

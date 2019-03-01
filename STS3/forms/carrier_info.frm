@@ -55,7 +55,7 @@ name:"carrier_cellphone_label",
 showClick:false,
 showFocus:false,
 size:"159,20",
-text:"i18n:sts.label.carrier.phone.work",
+text:"i18n:sts.label.carrier.phone.cell",
 transparent:true,
 typeid:7,
 uuid:"1CBFE863-1E97-44B2-934F-E663F67522DB"

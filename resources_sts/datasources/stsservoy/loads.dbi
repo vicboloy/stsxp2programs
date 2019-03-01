@@ -36,6 +36,14 @@ titleText:"i18n:table.loads.carrier_number"
 },
 {
 allowNull:true,
+creationOrderIndex:35,
+dataType:12,
+flags:4,
+length:36,
+name:"carrier_uuid"
+},
+{
+allowNull:true,
 creationOrderIndex:34,
 dataType:93,
 name:"create_date",

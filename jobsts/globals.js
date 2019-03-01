@@ -10425,22 +10425,24 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					var error = scopes.fs.fabsuiteSetReceivedBarcode(event,form.invBarCode,stsBarcode,bndQuantity,barcodeData);
 					if (error.error){break}
 					form.invRemains = error.qtyremaining;
-					if (error.qtyremaining > 0){form.heat = ''}
-					if (error.qtyremaining == 0){
-						//temp display completed message
-						form.heat = '';
-					}
 					var returnObj = scopes.fs.fabsuiteGetReceivedBarcodeInv(event,stsBarcode);
 					//application.output(' RM '+returnObj.jobnumber+ 'bundled '+bundled+' form.bundled '+form.bundled+ ' i18n '+i18n.getI18NMessage('sts.btn.yes').toUpperCase());
 					var assignedJobNumber = returnObj.jobnumber;//valid inventory entry complete from fabsuite
 					var invUUID = scopes.jobs.receiveRawMaterialIntoInventory(event,assignedJobNumber,stsBarcode,bndQuantity);
 					invUUIDs.push(invUUID.toString()); //list of invUUID's to print
 				}
+				if (error.qtyremaining > 0){form.heat = ''}
+				if (error.qtyremaining == 0){
+					//temp display completed message
+					form.heat = '';
+				}
 				if (error.error){//fs receive raw material set
 					errorDialogMobile(event,1220,'genericin',error.error);
 					break;
 				} else {
-					scopes.printer.onActionPrintRMLabels(event,invUUIDs);
+					if (form.printEnabled == i18n.getI18NMessage('sts.txt.on')){
+						scopes.printer.onActionPrintRMLabels(event,invUUIDs);
+					}
 					form.quantity = '';
 				}
 				

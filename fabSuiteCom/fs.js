@@ -7,11 +7,6 @@ var fabSuiteLocal = true;
  *
  * @properties={typeid:35,uuid:"65DB1A5C-8B2F-4372-8CD0-DFD0910971C7"}
  */
-var fsCom = '';
-/**
- * @properties={typeid:35,uuid:"3B3513F5-2BC8-48F1-A9BE-E6572B8D1FC4",variableType:-4}
- * @type {JSWindow}
- */
 var progressWin = null;
 /**
  * @type {String}
@@ -19,11 +14,6 @@ var progressWin = null;
  * @properties={typeid:35,uuid:"E037F5AB-3855-4CC8-84B5-0BB6A741A5A2"}
  */
 var progressMsg = '';
-/**
- *
- * @properties={typeid:35,uuid:"4AF6A250-911E-429C-BF69-A6584C229F1E",variableType:-4}
- */
-var com = null;
 /**
  * @properties={typeid:35,uuid:"7B32D49B-6F76-49D6-8A54-0DD88272C561",variableType:-4}
  */
@@ -50,6 +40,7 @@ var endVars = null;
  */
 function checkFSJobNumber(importData){
 	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
+	if (checkComFabsuite(null) != ''){return}
 
 	//getProductionControlJobs
 	//plugins.headlessclient
@@ -61,7 +52,7 @@ function checkFSJobNumber(importData){
 		</FabSuiteXMLRequest>';
 	
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',jobs).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',jobs).toString();
 	if (fsResp.search('<Successful>1') == -1){
 		return getFabSuiteError(fsResp);
 	}
@@ -86,6 +77,7 @@ function getFabSuiteError(fsResponse){
  * @properties={typeid:24,uuid:"FC886476-C72C-45F3-AA7C-9A60F06A6A1C"}
  */
 function checkFSStatus(status){
+	if (checkComFabsuite(null) != ''){return null}
 	var winName = application.getActiveWindow().getName();
 	var formName = application.getWindow(winName).controller.getName();
 	if (scopes.prefs.lFabsuiteInstalled == 0){return null}//20181003
@@ -94,7 +86,7 @@ function checkFSStatus(status){
 			<GetProductionControlJobInformation>\
 			</GetProductionControlJobInformation>\
 			</FabSuiteXMLRequest>';
-		var jobs = com.call('FabSuiteXML',jobList).toString();
+		var jobs = globals.fsCom.call('FabSuiteXML',jobList).toString();
 		//application.output('Jobs are '+jobs);*/
 	if (globals.m.stationsThird[status]){
 		status = globals.m.stationsThird[status].toLowerCase();
@@ -110,7 +102,7 @@ function checkFSStatus(status){
 		</FabSuiteXMLRequest>';
 	
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',station).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',station).toString();
 	scopes.jobs.warningsX(null);
 	if (fsResp.search('<Successful>0') != -1){
 	//if (fsResp == ''){
@@ -127,13 +119,14 @@ function checkFSStatus(status){
  * @properties={typeid:24,uuid:"72206525-A7E1-4FE9-ACA2-2EB1EBF27D06"}
  */
 function getFSStations(jobNumber){
+	if (checkComFabsuite(null) != ''){return null}
 	var listStations = '<FabSuiteXMLRequest>\
 		<GetStations>\
 		<JobNumber>FabSuite2</JobNumber>\
 		</GetStations>\
 		</FabSuiteXMLRequest>';
 	/** @type {String} */
-	var stations = com.call('FabSuiteXML',listStations).toString();
+	var stations = globals.fsCom.call('FabSuiteXML',listStations).toString();
 	var lines = stations.split('\n');
 	var regX = new RegExp(/<StationName>(.*)<\/StationName>/);
 	for (var idx = 0;idx < lines.length;idx++){
@@ -152,6 +145,7 @@ function getFSStations(jobNumber){
  */
 function getFSLoadNums(jobNumber){
 	//include unshipped loads
+	if (checkComFabsuite(null) != ''){return null}
 	var loadNums =  '<FabSuiteXMLRequest>\
 		<GetLoads>\
 		<JobNumber>'+jobNumber+
@@ -159,7 +153,7 @@ function getFSLoadNums(jobNumber){
 		</GetLoads>\
 		</FabSuiteXMLRequest>';
 	/** @type {String} */
-	var loads = scopes.globals.com.call('FabSuiteXML',loadNums).toString();
+	var loads = scopes.globals.fsCom.call('FabSuiteXML',loadNums).toString();
 	var lines = loads.split('\n');
 	var regX = new RegExp(/<StationName>(.*)<\/StationName>/);
 	for (var idx = 0;idx < lines.length;idx++){
@@ -183,6 +177,7 @@ function checkFSLoad(loadNumber,destination,makeNewLoad){
 	//if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
 	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
 	if (application.isInDeveloper()){application.output(globals.session.jobNumber)}//20181003
+	if (checkComFabsuite(null) != ''){return null}
 	var loadcheck = '<FabSuiteXMLRequest>\
 		<ValTruck>\
 		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
@@ -203,7 +198,7 @@ function checkFSLoad(loadNumber,destination,makeNewLoad){
 		loadcheck = loadcheck.replace('DEST','<Destination>'+destination+'</Destination>');		
 	}
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',loadcheck).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',loadcheck).toString();
 	if (fsResp.search('<Successful>0') != -1){
 		return getFabSuiteError(fsResp);
 	}
@@ -222,6 +217,7 @@ function checkFSLoad(loadNumber,destination,makeNewLoad){
 function checkFSSequences(sequences, event){
 	if (application.getSolutionName() == 'STSmobile' && globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	if (!sequences){return true}
+	if (checkComFabsuite(event) != ''){return null}
 	var exceptions = [];
 	importData.newSequences = [];
 	/** @type {Array} */
@@ -243,7 +239,7 @@ function checkFSSequences(sequences, event){
 					</GetSequences>\
 				</FabSuiteXMLRequest>';
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',check).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',check).toString();
 	var fieldValueName1 = 'Sequence';
 	var fsError = fabSuiteError(fsResp);
 	if (fsError){
@@ -256,7 +252,7 @@ function checkFSSequences(sequences, event){
 	var regexp1 = xmlField.replace(/FLD/g,fieldValueName1);
 	var regX1 = new RegExp(regexp1);
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',check).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',check).toString();
 	var items = fsResp.split('\n');
 
 	for (idx = 0;idx < items.length;idx++){
@@ -310,17 +306,14 @@ function checkFSJob(event) {
 		return;
 		
 	}
-	if (!com){
-		application.output('get new COM client');
-		com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
-	}
+	if (checkComFabsuite(event) != ''){return}
 
 	/** @type {String} */
-	var fsUp = com;
+	var fsUp = globals.fsCom;
 	scopes.jobs.warningsMessage('Verifying FabSuite Connection',true);
 
 	application.output('check fabsuite connection');
-	if (!com || (fsUp && fsUp.toString().search('RemoteCOM') == -1)){
+	if (!globals.fsCom || (fsUp && fsUp.toString().search('RemoteCOM') == -1)){
 		var error = checkComFabsuite(event);
 		if (error != ''){
 			globals.DIALOGS.showErrorDialog('FabSuite Connection Failure','Connect Failure: '+error);
@@ -341,7 +334,7 @@ function checkFSJob(event) {
 				</FabSuiteXMLRequest>';
 	scopes.jobs.warningsMessage(i18n.getI18NMessage('1202'),true);
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',check).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',check).toString();
 	application.output('job response FS '+fsResp);
 	if (fsResp.search('<JobNumber>') == -1){//This Job Number Was Not Found In FabSuite. - 1030
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('1030'),true);
@@ -413,6 +406,7 @@ function checkFSJob(event) {
 function checkFSLots(lots, event) {
 	if (application.getSolutionName() == 'STSmobile' && globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	if (!lots){return true}
+	if (checkComFabsuite(event) != ''){return null}
 	var exceptions = [];
 	importData.newLots = [];
 	/** @type {Array} */
@@ -434,7 +428,7 @@ function checkFSLots(lots, event) {
 					</GetLots>\n\
 				</FabSuiteXMLRequest>';
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',check).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',check).toString();
 	var fieldValueName1 = 'LotNumber';
 	var fsError = fabSuiteError(fsResp);
 	if (fsError){
@@ -565,6 +559,7 @@ function checkFSMainMark(mainMarks,event){
 	if (application.getSolutionName() == 'STSmobile' && globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}//20181003
 	// use session.drawings array for STS X Embedded
 	if (!mainMarks){return true}
+	if (checkComFabsuite(event) != ''){return null}
 	var exceptions = [];
 	importData.newMarks = [];
 	/** @type {Array} */
@@ -586,11 +581,8 @@ function checkFSMainMark(mainMarks,event){
 		</GetAssemblies>\n\
 	</FabSuiteXMLRequest>';
 
-	if (!com){
-		checkComFabsuite(event);
-	}
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',check).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',check).toString();
 	var fieldValueName1 = 'MainMark';
 	var fieldValueName2 = 'DrawingNumber';
 	var fsError = fabSuiteError(fsResp);
@@ -644,6 +636,7 @@ function checkFSDrawingNumber(drawings,event){
 	// use session.drawings array for STS X Embedded
 	if (!drawings){return true}
 	if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return true}
+	if (checkComFabsuite(event) != ''){return null}
 	var exceptions = [];
 	importData.newDraws = [];
 	drawings = drawings.replace(/\./g,',');
@@ -668,7 +661,7 @@ function checkFSDrawingNumber(drawings,event){
 	</FabSuiteXMLRequest>';
 
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',check).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',check).toString();
 	var fieldValueName1 = 'MainMark';
 	var fieldValueName2 = 'DrawingNumber';
 	var fsError = fabSuiteError(fsResp);
@@ -717,26 +710,25 @@ function checkFSDrawingNumber(drawings,event){
  * @AllowToRunInFind
  */
 function serverFSCallRequest(xml){
-	//if (!fsCom){
-		var fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
-		var xmlConnect = '<FabSuiteXMLRequest>\
-			<Connect>\
-				<IPAddress>localhost</IPAddress>\
-				<PortNumber>3306</PortNumber>\
-				<Username>admin</Username>\
-				<Password>fab</Password>\
-			</Connect>\
-		</FabSuiteXMLRequest>';
-		var response = 'NO COM';
-		var sample = fsCom.toString();
-		if (sample.search('RemoteCOM') != -1){
-			response = fsCom.call('FabSuiteXML',xmlConnect);
-			//fsCom.release();
-			return response;
-		}
-	//}
-	response = fsCom.call('FabSuiteXML',xml);
-	//fsCom.release();
+	if (!globals.fsCom){
+		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
+	}
+	var xmlConnect = '<FabSuiteXMLRequest>\
+		<Connect>\
+			<IPAddress>localhost</IPAddress>\
+			<PortNumber>3306</PortNumber>\
+			<Username>admin</Username>\
+			<Password>fab</Password>\
+		</Connect>\
+	</FabSuiteXMLRequest>';
+	var response = 'NO COM';
+	var sample = globals.fsCom.toString();
+	if (sample.search('RemoteCOM') != -1){
+		response = globals.fsCom.call('FabSuiteXML',xmlConnect);
+		return response;
+	}
+
+	response = globals.fsCom.call('FabSuiteXML',xml);
 	return response;
 }
 /**
@@ -807,13 +799,23 @@ function showProgessDone(event){
  * @properties={typeid:24,uuid:"4A3F4C5B-D25D-4DA7-B20A-17CF4D63C1C5"}
  */
 function checkComFabsuite(event){
-	if (com){
-		var ping = '<FabSuiteXMLRequest><Ping></Ping></FabSuiteXMLRequest>';
-		var respons = com.call('FabSuiteXML',ping).toString();
-		application.output('PING: |'+respons);
-		if (respons.search("<Successful>1") != -1){
+	if (application.isInDeveloper()){
+		application.output('current FS COM: '+globals.fsCom);
+		application.output('current BT COM: '+globals.btCom);
+	}
+	if (globals.fsCom){
+		if (!fabSuitePing(event)){
+			globals.fsCom.release();
+			globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
+			if (fabSuitePing(event)){
+				return '';
+			}
+		} else {
 			return '';
 		}
+	} else {
+		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
+		return '';
 	}
 	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage('Connecting to FabSuite',true);
@@ -829,10 +831,10 @@ function checkComFabsuite(event){
 		return 'FabSuite Not Installed';
 	}
 	fabSuiteLocal = false;
-	if (!com){
-		com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
+	if (!globals.fsCom){
+		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 	}
-	if (!com || !com.isJACOBLoaded()) {
+	if (!globals.fsCom || !globals.fsCom.isJACOBLoaded()) {
 		scopes.jobs.warnings("Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError(),true);
 		globals.DIALOGS.showErrorDialog('Error loading COM','Error loading COM');
 		return 'Error Loading COM';
@@ -859,13 +861,13 @@ function checkComFabsuite(event){
 		/** @type {String} */
 		var response = 'NO COM';
 		/** @type {String} */
-		var sam2 = com;
+		var sam2 = globals.fsCom;
 		var sample = sam2.toString();
 		if (sample.search('RemoteCOM') != -1){
-			response = com.call('FabSuiteXML',xmlConnect);		
+			response = globals.fsCom.call('FabSuiteXML',xmlConnect);		
 		} else {
-			com = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
-			response = com.call('FabSuiteXML',xmlConnect);	
+			globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
+			response = globals.fsCom.call('FabSuiteXML',xmlConnect);	
 		}
 		var error = fabSuiteError(response);
 		if (!error){
@@ -885,12 +887,12 @@ function checkComFabsuite(event){
 			return error;
 		}
 	}
-	//application.output('com response: |'+response+'|');
+	//application.output('fsCom response: |'+response+'|');
 	if (application.getSolutionName() == 'STS X Embedded'){
 		var xmlVersion = '	<FabSuiteXMLRequest>\
 			<Version/>\
 			</FabSuiteXMLRequest>';
-		var fsResp = com.call('FabSuiteXML',xmlVersion);
+		var fsResp = globals.fsCom.call('FabSuiteXML',xmlVersion);
 		//application.output(fsResp);
 		var regX = new RegExp(/>([0-9]*\..*)</);
 		var version = regX.exec(fsResp);
@@ -987,9 +989,7 @@ function verifyKissImportFilters(event) {
  * @properties={typeid:24,uuid:"8F2FF5DA-7A9F-4B2C-B807-C2D6B40C4D5F"}
  */
 function onDataChangeFSUN(oldValue, newValue, event) {
-	if (!com){
-		checkComFabsuite(event);
-	}
+	if (checkComFabsuite(event) != ''){return true}
 	var server = scopes.globals.fabsuiteServerName;
 	var fsPass = scopes.globals.fabsuitepassword;
 	var fsPort = scopes.globals.fabsuiteDatabase;
@@ -1003,7 +1003,7 @@ function onDataChangeFSUN(oldValue, newValue, event) {
 			<ExecuteAs>'+newValue+'</ExecuteAs>\
 		</StsSetParmExecuteAs >\
 	</FabSuiteXMLRequest>';
-	var fsResp = com.call('FabSuiteXML',verifyUserName).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',verifyUserName).toString();
 	if (application.isInDeveloper()){application.output(fsResp);}
 	scopes.jobs.warningsX(event);
 	
@@ -1054,13 +1054,13 @@ function fabSuitePing(event){
 		<Ping>\
 		</Ping>\
 		</FabSuiteXMLRequest>';
-	if (com){
-		var fsResp = com.call('FabSuiteXML',fsPing);
+	if (globals.fsCom){
+		var fsResp = globals.fsCom.call('FabSuiteXML',fsPing);
 		if (fabSuiteResponse(fsResp) == ''){
 			return true;
 		}
 	}
-	globals.rfErrorShow(i18n.getI18NMessage('1170'));
+	//globals.rfErrorShow(i18n.getI18NMessage('1170'));
 	return false;
 }
 /**
@@ -1097,6 +1097,7 @@ function fabSuiteProcess(){
 function fabSuiteUpdate(commitType){//shopFloorSave
 	if (!scopes.prefs.lFabsuiteInstalled || !globals.m.employee3rdParty[firstEmp]){return true}//20190202 no fs update possible
 	if (commitType.search(/(Save)|(Delete)/) != 0){return false}
+	if (checkComFabsuite(null) != ''){return null}
 	var date = globals.mob.date;//new Date();//flow down from data update
 
 	var userEmployee = (globals.m.employee3rdParty[firstEmp]) ? globals.session.employeeNum : '';
@@ -1177,7 +1178,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId);
 	saveDataXML = (!userEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
 	application.output(saveDataXML);
-	var fsResp = com.call('FabSuiteXML',saveDataXML);
+	var fsResp = globals.fsCom.call('FabSuiteXML',saveDataXML);
 	application.output('RESPONSE: '+fsResp);
 	var fsErr = fabSuiteError(fsResp);
 	if (fsErr != ''){
@@ -1198,7 +1199,8 @@ function fabSuiteUpdate(commitType){//shopFloorSave
  */
 function checkFSNextLoad(){
 	// quick check assemblies
-	
+	if (checkComFabsuite(null) != ''){return null}
+
 	var check = '<FabSuiteXMLRequest>\
 		<GetAssemblies>\
 		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
@@ -1210,7 +1212,7 @@ function checkFSNextLoad(){
 		</Filters>\
 		</GetAssemblies>\
 		</FabSuiteXMLRequest>';
-	var two = com.call('FabSuiteXML',check);
+	var two = globals.fsCom.call('FabSuiteXML',check);
 	plugins.XmlReader.readXmlDocumentFromString(two);
 	if (application.isInDeveloper()){application.output(check+'\n'+two.toString())}
 	
@@ -1225,7 +1227,7 @@ function checkFSNextLoad(){
 		</FabSuiteXMLRequest>';
 	
 	/** @type {String} */
-	var fsResp = com.call('FabSuiteXML',loadcheck).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',loadcheck).toString();
 	if (fsResp.search('<Successful>0') != -1){
 		return getFabSuiteError(fsResp);
 	}
@@ -1248,6 +1250,7 @@ function getFSInterimLoadDests(jobNumber){
 	//get list of interim ship dests
 	// ... FS GetLoads, destination is company code of interim load destination FSReq IntermediateCompanyCodes
 	// return an array
+	if (checkComFabsuite(null) != ''){return new Array()}
 	var destArray = new Array();
 	var interimDests =  '<FabSuiteXMLRequest>\
 		<IntermediateCompanyCodes>\
@@ -1255,7 +1258,7 @@ function getFSInterimLoadDests(jobNumber){
 		</IntermediateCompanyCodes>\
 		</FabSuiteXMLRequest>';
 	/** @type {String} */
-	var dests = com.call('FabSuiteXML',interimDests).toString();
+	var dests = globals.fsCom.call('FabSuiteXML',interimDests).toString();
 	var lines = dests.split('\n');
 	var regX = new RegExp(/<CompanyCode>(.*)<\/CompanyCode>/);
 	for (var idx = 0;idx < lines.length;idx++){
@@ -1276,12 +1279,13 @@ function getFSInterimLoadDests(jobNumber){
  */
 function getReceivedBarcode(event,barcode){
 	//application.output(' barcode: '+barcode)
+	if (checkComFabsuite(event) != ''){return ''}
 	var xmlReadReceive = '<FabSuiteXMLRequest>\
 		<ReceiveChecklistScan>\
 		<ChecklistSerialNumber>'+barcode+'</ChecklistSerialNumber>\
 		</ReceiveChecklistScan>\
 		</FabSuiteXMLRequest>';
-	var rawMat = com.call('FabSuiteXML',xmlReadReceive).toString();
+	var rawMat = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
 	application.output(rawMat)
 	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
 	if (!errorMatch){
@@ -1311,12 +1315,13 @@ function getReceivedBarcode(event,barcode){
  * @properties={typeid:24,uuid:"E89D5A56-DFA8-4B96-8D1F-97F5D708ED8F"}
  */
 function fabsuiteGetReceivedBarcodeInv(event,barcode){
+	if (checkComFabsuite(event) != ''){return null}
 	var xmlReadReceiveBC = '<FabSuiteXMLRequest>\
 		<ValInventory>\
 		<SerialNumber>'+barcode+'</SerialNumber>\
 		</ValInventory>\
 		</FabSuiteXMLRequest>';
-	var rawMat = com.call('FabSuiteXML',xmlReadReceiveBC).toString();
+	var rawMat = globals.fsCom.call('FabSuiteXML',xmlReadReceiveBC).toString();
 	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
 	if (!errorMatch){
 		var rawMatFields = {
@@ -1339,6 +1344,7 @@ function fabsuiteGetReceivedBarcodeInv(event,barcode){
  * @properties={typeid:24,uuid:"B69F4894-75EB-41A5-B077-4354D815EC78"}
  */
 function fabsuiteSetReceivedBarcode(event,clBarcode,stsBarcode,qty,bcData){
+	if (checkComFabsuite(event) != ''){return null}
 	var xmlReadReceiveBC = '<FabSuiteXMLRequest>\
 		<Receive>\
 		<ChecklistSerialNumber>'+clBarcode+'</ChecklistSerialNumber>\
@@ -1357,9 +1363,9 @@ function fabsuiteSetReceivedBarcode(event,clBarcode,stsBarcode,qty,bcData){
 	xmlReadReceiveBC = (bcData.location2) ? xmlReadReceiveBC.replace('_LO2','<SecondaryLocation>'+bcData.location2+'</SecondaryLocation>\\\n') : xmlReadReceiveBC.replace('_LO2','');
 	xmlReadReceiveBC = (bcData.receivingremarks) ? xmlReadReceiveBC.replace('_RM','<ReceivingRemarks>'+bcData.receivingremarks+'</ReceivingRemarks>\\\n') : xmlReadReceiveBC.replace('_RM','');
 	xmlReadReceiveBC = (bcData.billoflading) ? xmlReadReceiveBC.replace('_BL','<BillOfLadingNumber>'+bcData.billoflading+'</BillOfLadingNumber>\\\n') : xmlReadReceiveBC.replace('_BL','');
-	var rawMat = com.call('FabSuiteXML',xmlReadReceiveBC).toString();
+	var rawMat = globals.fsCom.call('FabSuiteXML',xmlReadReceiveBC).toString();
 	if (!rawMat){
-		com = null;
+		//globals.fsCom = null;
 		checkComFabsuite(event);
 	}
 	rawMat = rawMat.toString();
@@ -1390,4 +1396,12 @@ function getFsDateFormat(date){
 	var month = date.getMonth()+1;
 	if (month < 10){month = "0"+month}
 	return date.getFullYear()+'-'+month+'-'+day;
+}
+/**
+ * @properties={typeid:24,uuid:"D9E75BA7-9B3C-4EE9-91FF-87E8BC9D4664"}
+ */
+function fabSuiteClose(){
+	if (globals.fsCom){
+		globals.fsCom.release();
+	}
 }

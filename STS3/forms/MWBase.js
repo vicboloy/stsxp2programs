@@ -418,6 +418,16 @@ var jobIdData = {
 	sheet_ids : null
 };
 /**
+ * @properties={typeid:35,uuid:"72D73CE1-21A2-4F2B-A747-DFC048996309",variableType:-4}
+ */
+var invIdData = {
+	heats: [],
+	controls: [],
+	modelNums : [],
+	serials : [],
+	locations : []
+}
+/**
  * @properties={typeid:35,uuid:"4BB1A477-E902-46F3-8743-74B5817A541C",variableType:-4}
  */
 var criteria = {};
@@ -463,6 +473,37 @@ var vGrade = '';
  * @properties={typeid:35,uuid:"641DB312-F26E-4AFC-9F99-7F9F4924839D"}
  */
 var vRouteCode = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"43157D1E-CE89-4488-885B-0F1550648DFB"}
+ */
+var vControlNumber = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C97BE42C-4297-4896-83C4-88AB5C304DBE"}
+ */
+var vModelPartNum = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"A336E491-7943-4949-BA79-2561C82F7D02"}
+ */
+var vSerialNumRaw = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"861C59DD-EF96-4E6C-B33F-F3AF7CDDC4DE"}
+ */
+var vHeatNum = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"049B9DB4-6B57-4ED7-B083-F07A319D7E46",variableType:4}
+ */
+var vNumLabels = 1;
+
 /**
  * @param {JSEvent} event System selection event
  * @param windowTitle Window bar title
@@ -1023,7 +1064,7 @@ function onActionElementPicks(event) {
 	} else {
 		elementName = buttonName.replace('lbl','frm');
 	}
-	if (forms[formName] && forms[formName].elements['frmJobNum']){
+	if (formName.search('raw') == -1 && forms[formName] && forms[formName].elements['frmJobNum']){
 		var jobNumDP = forms[formName][forms[formName].elements['frmJobNum'].getDataProviderID()];
 		if (!jobNumDP){
 			forms[formName].elements['frmJobNum'].requestFocus();
@@ -1033,6 +1074,7 @@ function onActionElementPicks(event) {
 	var arrayInUse = [];
 	var topForm = application.getActiveWindow().controller.getName();
 	var jobInfo = forms[topForm].jobIdData;
+	var invInfo = forms[topForm].invIdData;
 	var activeEl = setActiveElement(elementName);
 	var returnInfo = null;
 	switch (activeEl){
@@ -1083,6 +1125,26 @@ function onActionElementPicks(event) {
 		case "LoadNum":
 			scopes.jobs.jobLoadsAndReleases(topForm);
 			arrayInUse = arrayInUse.concat(jobInfo.load_nums);
+			break;
+		case 'Heat':
+			scopes.jobs.invHeat(topForm);
+			arrayInUse = arrayInUse.concat(invInfo.heats);
+			break;
+		case 'Control':
+			scopes.jobs.invControls(topForm);
+			arrayInUse = arrayInUse.concat(invInfo.controls);
+			break;
+		case 'Serial':
+			scopes.jobs.invSerials(topForm);
+			arrayInUse = arrayInUse.concat(invInfo.serials);
+			break;
+		case 'Model':
+			scopes.jobs.invModel(topForm);
+			arrayInUse = arrayInUse.concat(invInfo.modelNums);
+			break;
+		case 'Location':
+			scopes.jobs.invLocations(topForm);
+			arrayInUse = arrayInUse.concat(invInfo.locations);
 			break;
 		default:
 			
@@ -1274,6 +1336,12 @@ function setActiveElement(elementName){
 	else if (elementName.search("PcmkRel") != -1){activeEl = "PcmkRel"}
 	else if (elementName.search("FabShop") != -1){activeEl = "FabShop"}
 	else if (elementName.search("Pkg") != -1){activeEl = "Pkg"}
+	else if (elementName.search('Control')!= -1) {activeEl = 'Control'}
+	else if (elementName.search('Location') != -1) {activeEl = 'Location'} 
+	else if (elementName.search('Heat') != -1) {activeEl = 'Heat'}
+	else if (elementName.search('Model') != -1) {activeEl = 'Model'} 
+	else if (elementName.search('Serial') != -1) {activeEl = 'Serial'} 
+
 	else if (elementName.search("Load") != -1){
 		if (elementName.search("Rel") != -1){
 			activeEl = "LoadRel";
@@ -1671,7 +1739,6 @@ function onActionLabelDestsSet(event) {
 	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.mc.label.destinations'),'mc_label_dests',50,50,520,550,false);
 }
 /**
- * TODO generated, please specify type and doc for the params
  * @param event
  *
  * @properties={typeid:24,uuid:"DD1F9AC4-6626-499B-B958-42E3A8219F97"}
@@ -1687,7 +1754,23 @@ function onActionFoxFireReports(event){
 		var regexp = new RegExp(/\\([^\\]*)$/);
 		var execInDir = scopes.prefs.foxfireexe.replace(regexp,'');
 		execInDir = scopes.prefs.foxfireexe;
-		application.executeProgram(scopes.prefs.foxfireexe+'//ffstart9.exe',null,null,execInDir);
+		//C:\FoxFire\ffstart9.exe tenantID,assocID,,,SYSTEM
+		//C:\FoxFire\ffstart9.exe 5242262B-748A-4D67-90E7-57DE90DB1ED1,,,,SYSTEM
+		var assocID = (globals.session.associationId);
+		var emptyParam = '';
+		//application.output('Tenant: '+globals.session.tenant_uuid+' Division: '+assocID+' EmptyParam: '+emptyParam+' Exec dir: '+execInDir);
+		//application.output(scopes.prefs.foxfireexe+'\\ffstart9.exe FoxFire params: '+"["+globals.session.tenant_uuid+","+emptyParam+","+emptyParam+","+emptyParam+",SYSTEM]");
+		//application.output('\\\\p2server01\\STSX\\foxfire\\ff.bat '+globals.session.tenant_uuid+","+emptyParam+","+emptyParam+","+emptyParam+",SYSTEM");
+		if (globals.session.corpUser){
+			//application.executeProgram(scopes.prefs.foxfireexe+'\\ffstart9.exe',[globals.session.tenant_uuid,emptyParam,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
+			//application.output('Tenant: '+globals.session.tenant_uuid+' Division: '+assocID+' Command Line: '+globals.session.tenant_uuid+","+emptyParam+","+emptyParam+","+emptyParam+",SYSTEM");			
+			//plugins.UserManager.executeCommand('f:\\shares\\stsx\\foxfire\\ff.bat '+globals.session.tenant_uuid+","+emptyParam+","+emptyParam+","+emptyParam+",SYSTEM");//\\p2server01\STSX\foxfire
+			application.executeProgramInBackground('f:\\shares\\stsx\\foxfire\\ff.bat',[globals.session.tenant_uuid,emptyParam,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
+		} else {
+			application.executeProgramInBackground('f:\\shares\\stsx\\foxfire\\ff.bat',[globals.session.tenant_uuid,assocID,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
+			//application.output('Tenant: '+globals.session.tenant_uuid+' Division: '+assocID+' Command Line: '+globals.session.tenant_uuid+","+assocID+","+emptyParam+","+emptyParam+",SYSTEM");			
+			//plugins.UserManager.executeCommand('f:\\shares\\stsx\\foxfire\\ff.bat '+globals.session.tenant_uuid+","+assocID+","+emptyParam+","+emptyParam+",SYSTEM");//\\p2server01\STSX\foxfire
+		}
 		return;
 	}
 	var serverDir = plugins.file.getDefaultUploadLocation();
@@ -1700,4 +1783,12 @@ function onActionFoxFireReports(event){
 	application.output('RM finish FFSTART9');
 	//application.executeProgram('\\\\p2server01\\c\$\\foxfire\\ffstart9.exe');
 
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"72B35277-6BDA-4EEB-B461-0B7A2563A285"}
+ */
+function onActionBarcodeLabelsRaw(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.bar.code.labels.raw'),'barcode_print_raw',50,50,620,670,true);
 }

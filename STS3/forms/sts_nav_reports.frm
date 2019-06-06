@@ -115,7 +115,7 @@ uuid:"990CBA9A-0880-4665-B0D9-68BE2F2FA878"
 formIndex:10,
 location:"332,71",
 name:"btn_PartLabels",
-onActionMethodID:"-1",
+onActionMethodID:"72B35277-6BDA-4EEB-B461-0B7A2563A285",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"156,23",

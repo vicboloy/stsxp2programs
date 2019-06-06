@@ -126,7 +126,7 @@ function onActionTemp(event) {
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
-	application.output('RM main onShow begin');
+	//application.output('RM main onShow begin');
 	var win = application.getActiveWindow();
 	var width = application.getScreenWidth();
 	var osName = application.getOSName();

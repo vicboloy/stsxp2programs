@@ -827,7 +827,7 @@ function importFSRequest(event,xmlRequest,filters){
 		} */
 		var newDate2 = new Date();
 		scopes.jobs.warningsMessage('FS Request For Job Data '+newDate2,true)
-		var response = scopes.fs.com.call('FabSuiteXML',xmlRequest);
+		var response = globals.fsCom.call('FabSuiteXML',xmlRequest);
 		response = response.toString();
 		var error = scopes.fs.fabSuiteError(response);
 		application.output(error);

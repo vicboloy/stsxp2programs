@@ -51,7 +51,7 @@ function onShow(firstShow, event) {
 	//plugins.window.removeShortcut('DOWN');
 	//plugins.window.removeShortcut('RIGHT');
 	//plugins.window.removeShortcut('LEFT');
-	if (false){//!globals.shortcutsSet){
+	if (globals.shortcutsSet){
 		plugins.window.createShortcut('UP',globals.rfRecordUp,'rf_mobile_view');
 		plugins.window.createShortcut('DOWN',globals.rfRecordDown,'rf_mobile_view');
 		plugins.window.createShortcut('RIGHT',globals.rfRecordDetail,'rf_mobile_view');

@@ -10,9 +10,6 @@ var statusId = "";
  * @SuppressWarnings(wrongparameters)
  */
 function onSolutionOpen(){
-	if (scopes.prefs.lFabsuiteInstalled == 1 || scopes.prefs.lFabsuiteInstalled == true){
-		scopes.fs.checkComFabsuite(null);
-	}
 	globals.mob.userAgent = globals.clientUserAgent;
 	//var appWidth = application.getScreenWidth();
 	//viewport = viewport.replace('320',appWidth);
@@ -64,6 +61,9 @@ function onSolutionOpen(){
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
 	scopes.prefs.mobilePrefs = "";
 	globals.onStartLoadPrefs();
+	if (scopes.prefs.lFabsuiteInstalled == 1 || scopes.prefs.lFabsuiteInstalled == true){
+		scopes.fs.checkComFabsuite(null);//Log into FabSuite
+	}
 	globals.getMenuList();
 	globals.rfFunctionKeys('STS_main');
 	//globals.functionKeyDescrip[0] = " ";

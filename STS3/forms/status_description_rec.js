@@ -29,6 +29,10 @@ var localStations = [];
  */
 var currProcessNumber = 0;
 /**
+ * @properties={typeid:35,uuid:"DEAC2EF4-E0A9-4CFE-AF43-C99CC3DDAC73",variableType:-4}
+ */
+var waitForIt = false;
+/**
  * @param firstShow
  * @param event
  *
@@ -169,6 +173,7 @@ function onActionCancelEdit(event) {
  * @properties={typeid:24,uuid:"4B659364-1FB2-43AC-9102-A6F96603873D"}
  */
 function onActionSaveEdit(event) {
+	if (waitForIt){return}
 	null;
 	if (association_id == "" || association_id == null){
 		globals.errorDialogMobile(event,-1,"",null);
@@ -601,11 +606,28 @@ function thirdPartyActive(event){
  * @properties={typeid:24,uuid:"46026BC9-627D-4EE6-BC74-773646E58E71"}
  */
 function onDataChangeThirdPartyStation(oldValue, newValue, event) {
+	if (!newValue){return true}
+	waitForIt = true;
 	var form = forms[event.getFormName()];
 	var dataProv = elements[event.getElementName()].getDataProviderID();
 	var status3rdParty = scopes.fs.checkFSStatus(newValue);
 	if (status3rdParty != null){
 		form[dataProv] = oldValue;
 	}
+	if (elements.btn_Cancel){
+		elements.btn_Cancel.requestFocus();
+	}
+	waitForIt = false;
 	return true
+}
+
+/**
+ * Handle focus lost event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"B4B8D7DD-8FD5-4410-B80E-C4BF2F573214"}
+ */
+function onFocusLost3rdStatus(event) {
+	elements.fabtrol_labor_code.requestFocus();
 }

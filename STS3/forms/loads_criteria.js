@@ -282,7 +282,7 @@ function collectAndBrowse(event){
 /**
  * @properties={typeid:24,uuid:"8ED9C835-157C-438B-956F-62E3E4C26AFF"}
  */
-function collectAndTab(formName){
+function collectAndTab(event,formName){
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	scopes.jobs.removeFormHist(formName+'_table');
 	criteria = collectCriteria();

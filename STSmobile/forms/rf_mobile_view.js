@@ -341,6 +341,12 @@ var invMaterial = '';
  */
 var invGrade = '';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"37F7510F-DDEC-4F18-A5E8-740C6159642F"}
+ */
+var invLocation = '';
+/**
  * @properties={typeid:35,uuid:"97B26922-5C44-4634-9FAD-16018022A5E3",variableType:-4}
  */
 var invLine = {};
@@ -354,6 +360,96 @@ var lastQty = 0;
  * @properties={typeid:35,uuid:"98783CF0-21BC-4F13-9852-3D58094026E3",variableType:-4}
  */
 var printEnabledScreen = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B013D8D5-3F69-428F-B89A-A167A1B1E2FD"}
+ */
+var dropWidth = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"07CA0BEF-137E-49DF-8D8D-E382B7ED4FBA"}
+ */
+var dropLength = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"017C4FB9-AC4D-4F07-895D-4D0E09679EE9"}
+ */
+var allLength = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"87994531-5C1E-4AC5-AE95-256502554F75"}
+ */
+var nonStrikeLength = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F6F120F4-FFE8-4979-AAAD-40F94EB01F03"}
+ */
+var rawBarcode = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"63DEC354-6532-42A9-BC84-4B89EA277D5D"}
+ */
+var cutlistBarcode = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"5B07FF28-C17A-4FC6-8E8F-9F1248D7F75A"}
+ */
+var strikeThru = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"0CA34A6C-F4A3-40B4-9E02-CDC6E94D5ECD",variableType:4}
+ */
+var maxQuantity = 0;
+/**
+ * @properties={typeid:35,uuid:"7219C308-D30C-48D7-A6D5-8303790550BF",variableType:-4}
+ */
+var cutListArray = [];
+/**
+ * @properties={typeid:35,uuid:"11138991-1673-4D8F-9E22-5DA78E7CE209",variableType:-4}
+ */
+var tempFS = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C1E844B8-D163-4AFA-A31B-55B4F49CD30E"}
+ */
+var altInputField = 'genericin2';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"5CC3D56A-6461-465D-B8D8-1EE2BA5F814A"}
+ */
+var labelPrintType = '';
+/**
+ * @properties={typeid:35,uuid:"4382EA84-EB9C-454B-9959-57F093AFA6A9",variableType:-4}
+ */
+var vJobMetric = false;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"A1AE5FF1-E756-414D-9D4C-5C9B4D075C03",variableType:4}
+ */
+var associatedCutIdTotal = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"A12019BE-558E-4158-B7AE-223B92A1F803",variableType:4}
+ */
+var associatedCutIdCount = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"AC7DD58E-D819-4D01-B828-C54871853C48"}
+ */
+var associatedCutRatio = '0 of 0';
 /**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
@@ -371,12 +467,14 @@ function resetWorkerCode(){
  * @AllowToRunInFind
  */
 function onShowForm(firstShow,event) {
+
 	printEnabledScreen = !(!globals.m.i18nMobilePrintViews[globals.session.program.replace('\'','')]);
-	var isAndroid = false;
+	var osName = application.getOSName();
+	globals.isAndroid = (globals.clientUserAgent.search(/Android/i) != -1 || osName.search(/Linux/i) != -1);
 	var maxY = 21;
 	var newScale = 1.0;
 	if (firstShow){
-		if (!globals.shortcutsSet){
+		if (!globals.shortcutsSet && !globals.isAndroid){
 			//plugins.window.createShortcut('UP',globals.rfRecordUp,'rf_mobile_view');
 			//plugins.window.createShortcut('DOWN',globals.rfRecordDown,'rf_mobile_view');
 			plugins.window.createShortcut('RIGHT',globals.rfRecordDetail,'rf_mobile_view');
@@ -442,7 +540,6 @@ function onShowForm(firstShow,event) {
 	}
 
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
-		var osName = application.getOSName();
 		var height = Math.floor(application.getScreenHeight() * 0.95);
 		var elWidth = elements.elHelp.getWidth();
 		var estimatedHeight = (show.length+1)*21;
@@ -587,8 +684,11 @@ function onShowForm(firstShow,event) {
 	bundled = i18n.getI18NMessage('sts.btn.no').toUpperCase();
 	elements.genericin.requestFocus();
 	controller.focusField('genericin',false);
-	//plugins.WebClientUtils.executeClientSideJS('doCallback("genericin");');
-	//}
+	elements.genericinnone.visible=true;
+	elements.genericinnone.enabled=true;
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		plugins.WebClientUtils.executeClientSideJS('playSoundX(null);');
+	}
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.
@@ -799,9 +899,9 @@ function onFocusGrant(event) {
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"D86EE3FB-D4D3-4DA9-A743-BDCA55999EFB"}
+ * @properties={typeid:24,uuid:"685877BC-69A6-4DAA-AEFA-DBBEF486131B"}
  */
-function onFocusLost(event) {
+function onFocusLostx(event) {
 	globals.spurious = 1;
 	genericInput = '';
 }
@@ -814,7 +914,11 @@ function onFocusLost(event) {
  * @properties={typeid:24,uuid:"D49305CF-0F07-42B3-9F66-123604D7DD22"}
  */
 function onLoad(event) {
-	application.output('viewport globals '+globals.viewport+' -end-');
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		application.output('viewport globals '+globals.viewport+' -end-');
+		plugins.WebClientUtils.executeClientSideJS('playSoundX("init");');
+	}
+
  // globals.viewPort2 = globals.viewPort2.toXMLString().replace(']]>','').replace('<![CDATA[','');
 
 }
@@ -858,3 +962,111 @@ function showPrintSetting(event){
 	}
 
 }
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"483BE45F-D420-4DD0-A793-7ACAA38670E0"}
+ */
+function onActionLeaveGeneric(event) {
+	application.output('genericinput2 '+genericInput2)
+	//scopes.globals.onDataChangeGeneric('',genericInput2,event);
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"F34ED2C6-696E-4E19-B300-C4BB0F6280F5"}
+ */
+function onDataChangeTestGeneric(oldValue, newValue, event) {
+	application.output('new input value '+newValue);
+	scopes.globals.onDataChangeGeneric(oldValue,newValue,event);
+	return true
+}
+
+/**
+ * Handle focus lost event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"D86EE3FB-D4D3-4DA9-A743-BDCA55999EFB"}
+ * @AllowToRunInFind
+ */
+function onFocusLost(event) {
+	if (globals.clientUserAgent.search(/(iPhone|iPad)/i) != 0 && application.getOSName().search(/Mac/i) != 0){
+		return true;
+	}
+	if (application.isInDeveloper()){application.output('firing onFocusLost '+event.getElementName())}
+	//elements.genericin2.requestFocus();
+	globals.onDataChangeGeneric(null,genericInput,event)
+}
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"22AA4064-ACC3-4A9A-AA7E-FE678CA6005E"}
+ * @AllowToRunInFind
+ */
+function onFocusLost2(event) {
+	if (globals.clientUserAgent.search(/(iPhone|iPad)/i) != 0 && application.getOSName().search(/Mac/i) != 0){
+		return true;
+	}
+	if (application.isInDeveloper()){application.output('firing onFocusLost2 '+event.getElementName())}
+	//elements.genericin.requestFocus();
+	globals.onDataChangeGeneric(null,genericInput2,event)
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"6EFCC200-F57C-4BCF-A33F-F1612B443B31"}
+ * @AllowToRunInFind
+ */
+function onActionEnterKey(event) {
+	if (globals.clientUserAgent.search(/(iPhone|iPad)/i) != 0 && application.getOSName().search(/Mac/i) != 0){
+		return true;
+	}
+	if (application.isInDeveloper()){application.output('firing onActionEnterKey '+event.getElementName())}
+	globals.rfClearPreviousEntry(event);
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"665F4FAF-FDFE-4AF0-9D1D-9448F537FD97"}
+ * @AllowToRunInFind
+ */
+function onDataChangeIOS(oldValue, newValue, event) {
+	if (globals.clientUserAgent.search(/(iPhone|iPad)/i) != -1 || application.getOSName().search(/Mac/i) != -1){
+		if (application.isInDeveloper()){application.output('firing onDataChangeIOS '+event.getElementName())}
+		var form = forms[event.getFormName()];
+		var elName = event.getElementName();
+		application.output('IOS change fired input: '+newValue)
+		if (elName == 'genericin'){
+			form.elements['genericin'].requestFocus();
+		} else {
+			form.elements['genericinnone'].requestFocus();
+			
+		}
+	} else {
+		globals.onDataChangeGeneric(oldValue,newValue,event);
+	}
+	return true
+}
+

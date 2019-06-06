@@ -223,11 +223,12 @@ function onActionDeleteWindow(event) {
 	scopes.jobs.removeFormHist('recall_pcmk_combo_table');
 }
 /**
+ * @param event
  * @param formName
  *
  * @properties={typeid:24,uuid:"C6F23B81-45AB-49E1-BD96-015B55A1F88B"}
  */
-function collectAndTab(formName){
+function collectAndTab(event,formName){
 	criteria = collectCriteria();
 	//scopes.jobs.viewBTableSQL2(criteria,formName);
 	scopes.jobs.viewBTableSQLSummary(criteria,formName);

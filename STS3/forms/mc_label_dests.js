@@ -279,6 +279,7 @@ function onDataChangeScreenName(oldValue, newValue, event) {
 		}
 	}
 	if (recFound){
+		elements.btn_Add.visible = false;
 		fs.setSelectedIndex(idx);
 		rec = fs.getSelectedRecord();
 		printerName = rec.printer_name;

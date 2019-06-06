@@ -51,7 +51,8 @@ function onDataChangeCompany(oldValue, newValue, event) {
 	if (companyName){
 		companyName = companyName.toUpperCase();
 		companyName = companyName.trim();
-		globals.companyLoginName = companyName;
+		globals.companyLoginName = companyName.trim().toUpperCase();
+		elements.userName.requestFocus();
 	}
 	elements.userName.requestFocus();
 	return true;
@@ -74,6 +75,7 @@ function hideLogo(){
  * @properties={typeid:24,uuid:"490EFD00-9D7A-4E77-BA36-1B4DE5C89540"}
  */
 function onDataChangeUser(oldValue, newValue, event) {
+	companyName = companyName.trim().toUpperCase();
 	elements.password.requestFocus();
 	return true
 }

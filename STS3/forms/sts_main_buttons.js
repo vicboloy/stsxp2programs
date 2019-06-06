@@ -157,6 +157,7 @@ function onShow(firstShow, event) {
 		if (y+1000 > screenHeight){y = screenHeight-800}
 		win.setLocation(x,y);
 		//plugins.UserManager.updateClientInfo();
+		globals.setUserFormPermissions(event);
 	}
 	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		// more web storage alert stuff

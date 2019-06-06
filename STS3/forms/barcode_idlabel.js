@@ -100,6 +100,7 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onActionPrint(event) {
+	elements.frmServerPrinters.requestFocus();
 	var printers = application.getValueListArray('stsvl_get_printer_list');
 	var debug = 1;
 	if (printers.indexOf(printerName) == -1){
@@ -165,14 +166,16 @@ function onActionPrint(event) {
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
 	var yOrigin = controller.getWindow().getY();
-	var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
+	var win = application.createWindow(winTitle, JSWindow.DIALOG);
 	win.setInitialBounds(xOrigin+10, yOrigin+10, formWidth, height);
 	win.title = winTitle;
 
 	win.show(forms[newFormName]);
 	scopes.jobs.removeFormHist(newFormName+'_table');
-	var win2 = application.getWindow(returnWin);
-	win2.toFront();
+	//var win2 = application.getWindow(returnWin);
+	//win2.toFront();
+	elements.btn_Clear.enabled = false;
+	elements.btn_PrintSelected.enabled = false;
 }
 /**
  * @param formName
@@ -294,11 +297,12 @@ function onActionClear(event) {
 	useServerPrinters = 1;
 }
 /**
+ * @param event
  * @param formName
  *
  * @properties={typeid:24,uuid:"F60EBFE4-5CB9-4AFE-A243-E03AC15290AB"}
  */
-function collectAndTab(formName){
+function collectAndTab(event,formName){
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
 	criteria = collectCriteria(formName);
 	//scopes.jobs.viewBTableSQL2(criteria,formName);

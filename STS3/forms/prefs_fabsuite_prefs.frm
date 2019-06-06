@@ -86,6 +86,16 @@ typeid:7,
 uuid:"53DD5EFF-7091-4EFB-8DFB-DDD903963480"
 },
 {
+dataProviderID:"scopes.prefs.lFsDoNotPrintScrapLabels",
+displayType:4,
+location:"155,303",
+onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
+size:"435,20",
+text:"i18n:sts.txt.applications.fs.do.not.print.scrap.label",
+typeid:4,
+uuid:"560FDC8F-7383-4D3F-9179-32EABC8AE8CF"
+},
+{
 horizontalAlignment:4,
 labelFor:"fabsuiteServerName",
 location:"5,148",
@@ -148,7 +158,7 @@ typeid:7,
 uuid:"AFE1113E-E5A1-4B03-BEFA-8162CC89D349"
 },
 {
-height:319,
+height:336,
 partType:5,
 typeid:19,
 uuid:"B0B041EF-CCF0-4546-A4FA-3AB5DFDAE997"

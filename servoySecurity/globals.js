@@ -10,28 +10,47 @@ var viewport = '<html><head></head></html><meta name="viewport" content="width=d
  *
  * @properties={typeid:35,uuid:"3CC8707C-679F-4555-AAFF-FC0305F56813"}
  */
-var viewportSrc = '<html><head></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
+var viewportSrc = '<html><head><audio id="playX" src="media:///error.mp3" type="audio/mpeg" onload="auto"></audio>\
+	<audio id="playBeep" src="media:///beep.mp3" type="audio/mpeg" onload="auto"></audio>\
+	<script type="text/javascript">\
+	function playSoundX(init){\
+		if (!(!init)){\
+			document.getElementById("playBeep").play();return;\
+		} else {\
+			document.getElementById("playX").play();\
+		}\
+	}</script></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"7B593A90-23A2-4F1C-BAD1-554CD21DD4ED"}
+ */
+var viewportSrc3 = '<html><head><audio id="playX" src="media:///error.mp3" type="audio/mpeg" onload="auto"></audio>\
+	<audio id="playBeep" src="media:///beep.mp3" type="audio/mpeg" onload="auto"></audio>\
+	<script type="text/javascript">function playSoundX(){var audio = new Audio("media:///error.mp3");audio.play();}</script></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
+//var viewportSrc = '<html><head></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
 /**
  * @properties={typeid:35,uuid:"37FC297E-D636-4141-AD24-87FC6C6B87AB",variableType:-4}
  */
 var viewport2 = new XML(<html>
 <head>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>
-<script>
+<audio id="play" src="media:///error.wav"></audio>
+<script type="text/javascript">
  <![CDATA[
- function doCallback(genericId) {
-	 //alert("Y");
-	 var textbox = document.getElementById("id4c");
-	 textbox.blur();
-	 alert("T "+textbox);
-	 event.preventDefault();	 
-	 setTimeout(function () {textbox.scrollIntoView();textbox.focus();},5500);
+ function playSoundX() {
+	//document.getElementById("play").play();
+	 alert("Y");
+	 //var textbox = document.getElementById("id4c");
+	 //textbox.blur();
+	 //alert("T "+textbox);
+	 //event.preventDefault();	 
+	 //setTimeout(function () {textbox.scrollIntoView();textbox.focus();},5500);
  }
  ]]>
  </script> 
 </head>
 <body>
- <button id="refocusEntry" onclick="javascript:globals.myFocusCallbackMethod()" style="visibility: hidden"></button>
 </body>
 </html>).toXMLString().replace(']]>', '').replace('<![CDATA[', '');
 

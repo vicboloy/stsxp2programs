@@ -219,6 +219,7 @@ function getKissFile(event){
 
 	scopes.jobs.warningsYes(event);
 	if (!useKissFile){
+		scopes.fs.checkComFabsuite(event);
 		var verified = scopes.fs.verifyKissImportFilters(event);
 		if (!verified){
 			var response = globals.DIALOGS.showQuestionDialog(

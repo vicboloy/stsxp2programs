@@ -21,7 +21,7 @@ titleText:"i18n:table.transactions.altitude"
 },
 {
 allowNull:true,
-creationOrderIndex:37,
+creationOrderIndex:38,
 dataType:12,
 length:30,
 name:"bundle_bc",
@@ -45,6 +45,14 @@ titleText:"i18n:table.transactions.checklist_line"
 },
 {
 allowNull:true,
+creationOrderIndex:41,
+dataType:12,
+length:20,
+name:"cut_list_bc",
+titleText:"i18n:table.transactions.cut_list_bc"
+},
+{
+allowNull:true,
 creationOrderIndex:25,
 dataType:4,
 name:"delete_flag",
@@ -63,6 +71,7 @@ autoEnterSubType:3,
 autoEnterType:1,
 creationOrderIndex:28,
 dataType:93,
+defaultFormat:"MM/dd/yyyy hh:mm aa EEE|mask",
 name:"edit_date",
 titleText:"i18n:table.transactions.edit_date"
 },
@@ -169,6 +178,14 @@ titleText:"i18n:table.transactions.quantity"
 },
 {
 allowNull:true,
+creationOrderIndex:40,
+dataType:12,
+length:40,
+name:"raw_material_id",
+titleText:"i18n:table.transactions.raw_material_id"
+},
+{
+allowNull:true,
 creationOrderIndex:9,
 dataType:12,
 length:10,
@@ -222,7 +239,7 @@ titleText:"i18n:table.transactions.trans_code"
 },
 {
 allowNull:true,
-creationOrderIndex:38,
+creationOrderIndex:36,
 dataType:12,
 length:15,
 name:"trans_code2",
@@ -232,6 +249,7 @@ titleText:"i18n:table.transactions.trans_code2"
 allowNull:true,
 creationOrderIndex:32,
 dataType:93,
+defaultFormat:"MM/dd/yyyy hh:mm aa EEE|mask",
 name:"trans_reversal_date",
 titleText:"i18n:table.transactions.trans_reversal_date"
 },
@@ -254,7 +272,7 @@ titleText:"i18n:table.transactions.trans_status"
 },
 {
 allowNull:true,
-creationOrderIndex:36,
+creationOrderIndex:37,
 dataType:12,
 length:15,
 name:"trans_status2",
@@ -264,6 +282,7 @@ titleText:"i18n:table.transactions.trans_status2"
 allowNull:true,
 creationOrderIndex:11,
 dataType:93,
+defaultFormat:"MM/dd/yyyy hh:mm aa EEE|mask",
 name:"transaction_date",
 titleText:"i18n:table.transactions.transaction_date"
 },
@@ -279,6 +298,7 @@ titleText:"i18n:table.transactions.transaction_duration"
 allowNull:true,
 creationOrderIndex:13,
 dataType:93,
+defaultFormat:"MM/dd/yyyy hh:mm aa EEE|mask",
 name:"transaction_end",
 titleText:"i18n:table.transactions.transaction_end"
 },
@@ -286,6 +306,7 @@ titleText:"i18n:table.transactions.transaction_end"
 allowNull:true,
 creationOrderIndex:12,
 dataType:93,
+defaultFormat:"MM/dd/yyyy hh:mm aa EEE|mask",
 name:"transaction_start",
 titleText:"i18n:table.transactions.transaction_start"
 },

@@ -67,6 +67,13 @@ titleText:"i18n:table.inventory.deleted_date"
 },
 {
 allowNull:true,
+creationOrderIndex:38,
+dataType:12,
+length:25,
+name:"disposition"
+},
+{
+allowNull:true,
 creationOrderIndex:30,
 dataType:93,
 name:"due_back_date",

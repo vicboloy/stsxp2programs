@@ -404,6 +404,7 @@ var processCodes = {	all : [
 	transactions : [//'Fab Rel2Fab','Fab Cut','Fab Beam Line','Fab Blasted','Fab Drilled','Fab Layout','Fab Fitup','Fab Welded','Fab Fabricated','Fab Paint','Fab Bundled','Fab Move','Jobsite Painted','Jobsite Field Work','Jobsite Move','Jobsite Issued','Jobsite Erected'],
 		i18n.getI18NMessage('sts.status.fab.rel2fab'),//'Release2Fab,
 		i18n.getI18NMessage('sts.status.fab.cut'),//'Fab Cut',
+		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'),//Fab Cut Raw,
 		i18n.getI18NMessage('sts.status.fab.beam.line'),//'Fab Beam Line',
 		i18n.getI18NMessage('sts.status.fab.blasted'),//'Fab Blasted',
 		i18n.getI18NMessage('sts.status.fab.drilled'),//'Fab Drilled',
@@ -647,6 +648,9 @@ var session = {
 	corpUser : false, //check to see if this is a corp login
 	capture : false,
 	corporate : false,
+	cutlistdata : {},//cutlist piecemark, drop information and other criteria
+	cutlistused : [], // cutlist idfile IDs that are already cut
+	cutlistavail : [], // cutlist idfile IDs that can be cut and assigned
 	browser : "", //navigator.userAgent response from browser
 	dualEntry : false, //whether the STSmobile app is showing dual, alternating entry fields//swap entry fields
 	enterpriseBrowser : "", //deviceName reported by EB, boolean
@@ -687,6 +691,7 @@ var session = {
 	//statusCode : "",
 	statusCodes : [],
 	statusLocation : "",
+	tempFS : null, //temporary foundset for complex table joins
 	userEntry : "",
 	workerList : [],
 	workerListAssoc : [],
@@ -703,6 +708,10 @@ var session = {
 	mainMarks : [], // used in STSx for piecemark lists
 	drawings : [], // used in STSx for drawing list
 	functionName : '',//current function being requested
+	validStatus : [],//collection of company valid status
+	validStatusFS : [],//collection of Fabsuite valid status
+	rawCutPiecemarks : [],//collection of raw cutlist piecemarks that have barcodes to be sent to tfsCut
+	rawCutPiecemarksSelected : [],//collection of piecemarks that have already been selected for cut
 	endItem : 0
 }
 /**
@@ -1092,6 +1101,26 @@ var rfViews = {
 		invgrade : 'V',
 		itemlength:'V',		
 		itemweight : 'V'
+	},
+	'Cut Cutlist Raw' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		statusin : 'R',
+		locationin : 'R',
+		barcodeclin : 'R',
+		strikethruin : 'R',
+		asnin : 'R',//always the fabsuite barcode to check in cut list		asnin : 'R',
+		// ASN / Serial # cutstrikethrough? Y/N Print Out The ID Labels For This Cut List Line? Y/N  if Y send BarTender. MSG: Number of Item Sent To Queue: X MSG: Number Items Already Printed: Y if no strikethrough, fill NONE 
+		quantityin : 'R',
+		dropwidthin : 'R',
+		droplengthin : 'R',
+		invmaterial : 'V',
+		invgrade : 'V',
+		heat : 'V',
+		alllength : 'V',
+		nonstrikelength : 'V',
+		invlocation : 'V',
+		associatecuts : 'V'
 	}
 }
 /**
@@ -1326,6 +1355,22 @@ var mobilePrintViews = [];
  */
 var mobileFSViews = [];
 /**
+ * @properties={typeid:35,uuid:"24904600-D97D-45B4-8E89-3452D1FB3FA6",variableType:-4}
+ */
+var isAndroid = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"5A1DF95F-CE55-4A01-A997-1EC16B590481"}
+ */
+var altInputField = 'genericin';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"33161592-7C7D-4BF3-B9A2-192A860D4711"}
+ */
+var altInputDataProv = 'genericInput';
+/**
  * @AllowToRunInFind
  * 
  * @param assocID
@@ -1420,9 +1465,9 @@ function getMappings(){
 	 'sts.mobile.transactions.w.revs',
 	 'sts.mobile.status',
 	 'sts.mobile.wts.sts.saw',
-	 'sts.mobile.cut.cutlist',
-	 'sts.mobile.cut.cutlist.sts.id',
-	 'sts.mobile.cut.cutlist.sts.minorid',
+	 'sts.mobile.cut.cutlist.raw',
+	 'sts.mobile.cut.cutlist.raw.sts.id',
+	 'sts.mobile.cut.cutlist.raw.sts.minorid',
 	 'sts.mobile.cut.sts.inventory',
 	 'sts.mobile.tfs.inventory',
 	 'sts.mobile.inventory.move',
@@ -1438,7 +1483,7 @@ function getMappings(){
 	 'sts.mobile.inventory.audit.sweep',
 	 'sts.mobile.return.receive',
 	 'sts.mobile.tfs.inventory',
-	 'sts.mobile.cut.cutlist'];
+	 'sts.mobile.cut.cutlist.raw'];
 }
 
 /**
@@ -1915,7 +1960,7 @@ function rfF3(){
 	} else {
 		form.elements.tablessHistory.visible = true;
 		form.elements.tablessHistory.enabled = true;
-		if (!globals.shortcutsSet){
+		if (0 && !globals.shortcutsSet && !isAndroid){
 			plugins.window.createShortcut('UP',globals.rfRecordUp,'rf_mobile_view');
 			plugins.window.createShortcut('DOWN',globals.rfRecordDown,'rf_mobile_view');
 			plugins.window.createShortcut('RIGHT',globals.rfRecordDetail,'rf_mobile_view');
@@ -2204,17 +2249,13 @@ function getWorkers(){
 			}
 		}
 	}
-	/** @type {QBSelect<db:/stsservoy/users>} */
-	var q1 = databaseManager.createSelect('db:/stsservoy/users');
-	/** @type {QBJoin<db:/stsservoy/employee>} */
-	var q2 = q1.joins.add('db:/stsservoy/employee');
-	q2.on.add(q2.columns.employee_id.eq(q1.columns.employee_id));
-	q1.result.add(q2.columns.employee_number);
-	q1.result.add(q2.columns.employee_username);
-	q1.where.add(q1.columns.association_uuid.eq(session.associationId));
-	q1.where.add(q2.columns.employee_active_flag.eq(1));
+	/** @type {QBSelect<db:/stsservoy/employee>} */
+	var q1 = databaseManager.createSelect('db:/stsservoy/employee');
+	q1.where.add(q1.columns.tenant_uuid.eq(session.tenant_uuid));
+	q1.result.add(q1.columns.employee_number);
+	q1.result.add(q1.columns.employee_username);
 	var Q = databaseManager.getDataSetByQuery(q1,-1);
-	var rec = null;index = 1;
+	rec = null;index = 1;
 	for (index = 1;index <= Q.getMaxRowIndex();index++){
 		Q.rowIndex = index;
 		if (m.workerListAssoc.indexOf(Q.employee_number) == -1){
@@ -2612,6 +2653,10 @@ function rfChangeWindow(event,winName){
 		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.status')];
 		currWin.show('rf_mobile_view');
 		break;
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]://20190324
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')];
+		currWin.show('rf_mobile_view');
+		break;
 	case mobileWindows[i18n.getI18NMessage('sts.mobile.exit')]://'Exit': 
 		//globals.rfExitMobileClient();
 		showExecLogout();
@@ -2667,9 +2712,12 @@ function rfDelayFunction(funcName){
 function rfFunctionKeys(screen){
 	if (application.isInDeveloper()){application.output('screen rfFunctionKeys() '+screen)}
 	globals.mobProg = screen;
+	var enableFuctionKeys = true;
 	if (screen == 'rf_mobile_view'){
+		enableFuctionKeys = !globals.isAndroid;
 		screen = session.program;
 	}
+	//enableFuctionKeys = false;
 	// ticket #105 MC window switching under i18n uses strings, i18n strings, so a mapping must be done
 	if (!mobileWindows[screen]){
 		getI18nWindowName(screen);
@@ -2678,13 +2726,15 @@ function rfFunctionKeys(screen){
 	var dex = 0;
 	///var fKey = "";
 	for (var index=0;index < 13;index++){
-		if (index > 0 && index < 11){
+		if (index > 0 && index < 11 && enableFuctionKeys){
 			plugins.window.createShortcut('F'+index,globals.noOperation);
 		}
 		functionKeyProcedure[index] = 'globals.noOperation';
 	}
-	plugins.window.createShortcut('F1','globals.showHelp');
-	plugins.window.createShortcut('F10','globals.showExecLogout');
+	if (enableFuctionKeys){
+		plugins.window.createShortcut('F1','globals.showHelp');
+		plugins.window.createShortcut('F10','globals.showExecLogout');
+	}
 	functionKeyProcedure[10] = 'globals.showExecLogout';
 	functionKeyDescrip = [
 		i18n.getI18NMessage('sts.fkey.info'),
@@ -2717,7 +2767,7 @@ function rfFunctionKeys(screen){
 			dex = 3;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f3.history.list');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF3';
-			plugins.window.createShortcut('F3',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F3',functionKeyProcedure[dex]);}
 			break;
 		//case i18n.getI18NMessage('')://'rf_transactions':
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.transactions')]://'Transactions':
@@ -2730,16 +2780,16 @@ function rfFunctionKeys(screen){
 			dex = 2;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
 			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
-			plugins.window.createShortcut('F2',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F2',functionKeyProcedure[dex]);}
 			dex = 3;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f3.history.list');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF3';
-			plugins.window.createShortcut('F3',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F3',functionKeyProcedure[dex]);}
 			if (!noF8){
 				dex = 8;
 				functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f8.status.reverse');//'F8 - Remove Status'
 				functionKeyProcedure[dex] = 'globals.rfF8Reversal';
-				plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
+				if (enableFuctionKeys){plugins.window.createShortcut('F8',functionKeyProcedure[dex]);}
 				//plugins.window.createShortcut('control F8',functionKeyProcedure[dex]);
 			}
 			dex = 9;
@@ -2752,24 +2802,24 @@ function rfFunctionKeys(screen){
 			dex = 2;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
 			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
-			plugins.window.createShortcut('F2',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F2',functionKeyProcedure[dex]);}
 			dex = 4;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f4.bundle.clear.pieces');//'F4 - Clear Bundle Pieces';
 			functionKeyProcedure[dex] = 'globals.rfF4BundleClear';
-			plugins.window.createShortcut('F4',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F4',functionKeyProcedure[dex]);}
 			dex = 5;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f5.bundle.labels.print');//'F5 - Print Bndl Labels';
 			//functionKeyProcedure[dex] = 'globals.rfF5BundlePrint';
-			plugins.window.createShortcut('F5',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F5',functionKeyProcedure[dex]);}
 			dex = 6;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f6.bundle.print.list');//'F6 - Print Bundle List';
 			functionKeyProcedure[dex] = 'globals.rfF6BundlePrintList';
-			plugins.window.createShortcut('F6',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F6',functionKeyProcedure[dex]);}
 			if (!noF8){
 				dex = 8;
 				functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f8.bundle.remove.from');//'F8 - Remove From Bundle';
 				functionKeyProcedure[dex] = 'globals.rfF8BundleRemoveFrom';
-				plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
+				if (enableFuctionKeys){plugins.window.createShortcut('F8',functionKeyProcedure[dex]);}
 			}
 			break;
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')]://'Shipping2':
@@ -2778,37 +2828,43 @@ function rfFunctionKeys(screen){
 			dex = 2;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
 			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
-			plugins.window.createShortcut('F2',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F2',functionKeyProcedure[dex]);}
 			dex = 3;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f3.ship.ids.not.shipped');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF3IdsNotShipped';
-			plugins.window.createShortcut('F3',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F3',functionKeyProcedure[dex]);}
 			dex = 4;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f4.ship.piecemarks.not.shipped');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF4PcmksNotShipped';
-			plugins.window.createShortcut('F4',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F4',functionKeyProcedure[dex]);}
 			dex = 5;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f5.ship.load.stats');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF5LoadStats';
-			plugins.window.createShortcut('F5',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F5',functionKeyProcedure[dex]);}
 			dex = 6;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f6.ship.print.packing.list');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF6PrintPackingList';
-			plugins.window.createShortcut('F6',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F6',functionKeyProcedure[dex]);}
 			dex = 7;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f7.ship.trailer.info');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF7TrailerInfo';
-			plugins.window.createShortcut('F7',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F7',functionKeyProcedure[dex]);}
 			if (!noF8 && !noF8Ship){
 				dex = 8;
 				functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f8.ship.remove.from.load');//'F8 - Remove Status'
 				functionKeyProcedure[dex] = 'globals.rfF8Reversal';
-				plugins.window.createShortcut('F8',functionKeyProcedure[dex]);
+				if (enableFuctionKeys){plugins.window.createShortcut('F8',functionKeyProcedure[dex]);}
 			}
 			dex = 9;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f9.inspection.doc');//'F8 - Remove Status'
 			functionKeyProcedure[dex] = 'globals.rfF9InspectionDoc';
-			plugins.window.createShortcut('F9',functionKeyProcedure[dex]);
+			if (enableFuctionKeys){plugins.window.createShortcut('F9',functionKeyProcedure[dex]);}
+			break;
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')]://'Shipping2':
+			dex = 2;
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
+			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
+			if (enableFuctionKeys){plugins.window.createShortcut('F2',functionKeyProcedure[dex]);}
 			break;
 		default:
 			
@@ -2817,7 +2873,7 @@ function rfFunctionKeys(screen){
 		dex = 6;
 		functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f6.print.toggle');
 		functionKeyProcedure[dex] = 'globals.rfF6TogglePrint';
-		plugins.window.createShortcut('F6',functionKeyProcedure[dex]);
+		if (enableFuctionKeys){plugins.window.createShortcut('F6',functionKeyProcedure[dex]);}
 	}
 	//functionKeyProvider = -1;
 	functionKeyProvider = "";
@@ -3112,13 +3168,18 @@ function rfErrorVisible(formName){
  * @properties={typeid:24,uuid:"5A682FFE-B5E7-44A9-9D8F-3D61E59BDF86"}
  */
 function rfErrorShow(message){
-	if (application.isInDeveloper()){application.output('rfErrorShow message '+errorMessageMobile)}
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		plugins.WebClientUtils.executeClientSideJS('playSoundX();');
+	} else {
+		application.playSound('media:///error.mp3');
+	}
+
 	var formName = getFormName();
 	var dualEntry = (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT &&
 	forms[formName].elements['genericin2'].visible);
 	session.errorShow = true;
 	if (!dualEntry){
-		mobDisableForm(true);
+		//mobDisableForm(true);//disable lock form? 4/28/2019
 	}
 	errorMessageMobile = (message.split('\n').length > 1) ? message : textWrap(message,25);
 	forms[formName].elements.errorWindow.enabled = true;
@@ -3150,13 +3211,12 @@ function rfErrorHide(event) {
 	if (formName != 'rf_mobile_view'){
 		if (forms[formName].elements[elName]){forms[formName].controller.focusField(elName,false);}
 	} else {
-		//forms['rf_mobile_view'].elements['genericinlabel'].requestFocus();
-		///if (event.getElementName() != 'genericin'){
-			forms['rf_mobile_view'].elements['genericin'].requestFocus();
-		//}
+		rfClearPreviousEntry(event);
+		/** forms['rf_mobile_view'][globals.altInputDataProv] = '';
+		forms['rf_mobile_view'].elements[globals.altInputField].requestFocus();
+
 		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
-		//x	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
-		}
+		} */
 	}
 	session.errorShow = false;
 }
@@ -3242,6 +3302,7 @@ function getMenuList(){
 	pushWindow('sts.mobile.ship.by.sequence');//Ship By Sequence
 	pushWindow('sts.mobile.checklist.receive');//Checklist Receive
 	pushWindow('sts.mobile.checklist.status');//Checklist Status, see rfMobileViews, see rfChangeWindow() 
+	pushWindow('sts.mobile.cut.cutlist.raw');//set windows elements and data sources
 	
 	session.rfViewsOffice = [];
 	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.status'));//Status
@@ -3442,12 +3503,18 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	session.userEntry = newValue;
 	var statusCheck = rfStatusCheck(newValue);
+	if (application.isInDeveloper()){application.output('xxx Checking FS for Status '+newValue)}
+
 	if (statusCheck){
-		var fsStatus = scopes.fs.checkFSStatus(newValue);
-		if (fsStatus != null){
-			errorDialogMobile(event,1024,'genericin',fsStatus);
-			return true;
-		}
+		//var fsStatus = scopes.fs.checkFSStatus(newValue);
+		//if (fsStatus != null){
+		//	if (application.isInDeveloper()){application.output('XXX inside check One, fsStatus null '+newValue)}
+		//	errorDialogMobile(event,1024,globals.altInputField,fsStatus);
+		//	rfClearPreviousEntry(event);
+		//	return true;
+		//}
+	}  else {
+		session.validStatusFS.push(newValue)
 	}
 	//plugins.scheduler.removeJob('updateField')
 	var formName = application.getActiveWindow().controller.getName();
@@ -3464,15 +3531,17 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	if (formName == 'rf_mobile_view'){statusField = 'statusin'}
 	statusCheck = rfStatusCheck(newValue);
 	if (statusCheck == null){
-		if (application.isInDeveloper()){application.output('REM change Status event '+event.getElementName());}
-		errorDialogMobile(event,401,'statusin',null);//401: This is not a valid status code
+		if (application.isInDeveloper()){application.output('XXX inside check Two, fsStatus null '+newValue)}
+		if (application.isInDeveloper()){application.output('REM change Status event '+event.getElementName())}
+		errorDialogMobile(event,401,'genericin',newValue);//401: This is not a valid status code
 		//onFocusClear(event);
+		rfClearPreviousEntry(event);
 		return true;
 	}
 	var permitted = [];
 	var forbidden = [];
 	switch (formName){
-		case i18n.getI18NMessage('sts.mobile.transactions'):// 'rf_transactions':
+		/** case i18n.getI18NMessage('sts.mobile.transactions'):// 'rf_transactions':
 		case i18n.getI18NMessage('sts.mobile.transactions.w.revs')://'rf_transactions_rev':
 			permitted = processCodes.transactions;
 			break;
@@ -3486,7 +3555,7 @@ function onDataChangeStatus(oldValue, newValue, event) {
 			break;
 		case i18n.getI18NMessage('sts.mobile.shipping')://'rf_shipping':
 			permitted = processCodes.shipping;
-			break;
+			break; */
 		case 'rf_mobile_view':
 			switch (session.program){
 				case i18n.getI18NMessage('sts.mobile.receiving')://'Receiving':
@@ -3507,8 +3576,11 @@ function onDataChangeStatus(oldValue, newValue, event) {
 				case i18n.getI18NMessage('sts.mobile.shipping')://'Shipping2':
 					permitted = processCodes.shipping;
 					break;
+				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')://FS Cut List
+					permitted = ['Fab Cut'];//Process codes
+					break;
 				default:
-				permitted = processCodes.all;
+					permitted = processCodes.all;
 			}
 			break;
 		default:
@@ -4563,14 +4635,17 @@ function textWrap(message, length){
 	length = 25;
 	var messLength = message.length;
 	if (messLength < length){return message}
+	message = message.replace(/\//g,'/ ');
 	var index = (message.length > length) ? length : message.length-1;
-	while (index < message.length){
+	var tryCount = 10;
+	while (index < message.length && tryCount > 0){
+		tryCount--;
 		if (message.length-1 == index){
 			formatted = formatted + message;
 			break;
 		}
 		//if (index > 33){
-			while (message[index] != " " && message[index] != '-' && index != 0){index--}
+			while (message[index] != " " && message[index] != '-' && message[index] != '.' && index != 0){index--}
 			formatted = formatted + utils.stringLeft(message,index)+'<br>';
 			message = utils.stringRight(message,message.length-index);
 			//index = 0;
@@ -6489,6 +6564,8 @@ function rfClearMobDetails(){
 		var form = forms[formName];
 		form.location = '';
 		form.stockLocation = '';
+		form.statusLocation = '';
+		form.statusCode = '';
 		form.billOfLading = '';
 		form.remarks = '';
 		form.asnNumber = '';
@@ -6504,6 +6581,14 @@ function rfClearMobDetails(){
 		form.heat = '';
 		form.quantity = '';
 		form.lastQty = '';
+		form.quantity = '';
+		form.rawBarcode = '';
+		form.cutlistBarcode = '';
+		form.strikeThru = '';
+		form.nonStrikeLength = '';
+		form.allLength = '';
+		form.dropLength = '';
+		form.dropWidth = '';
 		form.elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic');
 		form.elements['genericin2label'].text = i18n.getI18NMessage('sts.label.generic');
 	}
@@ -6743,6 +6828,7 @@ function mmToFeet(millimeters){
  * @param returnType
  *
  * @properties={typeid:24,uuid:"6E717C02-AABD-4203-B8E4-7EC66B1C5922"}
+ * @AllowToRunInFind
  */
 function ftDecToString(convertType, decimal, length, returnType){
 	/**
@@ -6761,12 +6847,13 @@ function ftDecToString(convertType, decimal, length, returnType){
 	* pass a numeric value that will be converted to feet and inches and
 	*  this function will return the text version of that decimal value
 	*/
+	if (application.isInDeveloper()){application.output(decimal)}
 	convertType = convertType.toUpperCase();
 	returnType = (returnType) ? returnType.toUpperCase() : returnType;
 	///var itemdimen = "";
 	var fractionOut = "";
 	var feet = 0;
-	var base = 64;                           //denominator of fraction
+	var base = 2;                           //denominator of fraction
 	var number = 0;
 	var fraction = 0;
 	var number2 = 0;
@@ -6778,54 +6865,41 @@ function ftDecToString(convertType, decimal, length, returnType){
 	fraction = decimal - number;
 	switch( convertType ){
 		case 'INCHES':
-			inches = number - (Math.floor(number/12)*12);
-			feet = Math.floor((number - inches)/12);
-			number = number-feet*12 - inches;
-			if (fraction > 0){
-				while (base > 0){
-					number2 = Math.floor(fraction * base);
-					number16 = Math.round(fraction * base);//init16 = ROUND((FRAC * BASE),0)
-					//if (application.isInDeveloper()){application.output(number16+"/"+base);}
-					if (number16/2 != Math.floor(number16/2)){
-						break;
-					}
-					base = base / 2;
-				}
-				fractionOut = number16+"/"+base+'"';
-			} else {
-				if (number == 0){
-					fractionOut = "";
-				} else {
-					fractionOut = number;
-				}
-			}
-			break;
-		case 'FEET':
-			if (number > 0){
-				feet = Math.floor(number/12) //whole feet
-				number = number - (feet *12); //inches
-			} else {
+			inches = number;
+			if (number < 0){
 				feet = 0; //zero feet
-				number = 0; // zero inches
+				inches = 0; // zero inches
 			}
+			//var minVal = 999;
+			//var minInit = 0;
+			//var minBase = 0;
+			if (application.isInDeveloper()){application.output('fraction input: '+fraction)}
 			if (fraction > 0){
-				while (base <= 32){
+				fractionOut = fraction16(fraction);
+				if (fractionOut == "1"){
+					inches += 1;
+					fractionOut = '';
+				}
+				/**
+				while (base <= 16){
 					number2 = Math.floor(fraction * base);
-					if (base == 16){
-						number16 = Math.floor((fraction * base)+.5);
-					}
 					fraction2 = (fraction * base) - number2;
 					if (fraction2 != 0){
+						if (minVal >= fraction2){
+							minVal = fraction2;
+							minInit = number2;
+							minBase = base;
+						}
 						base = base * 2;
 					} else {
 						break;
 					}
 				}
-				if (base <= 32){ //fraction within 32ths of an inch
+				if (base <= 16){ //fraction within 16ths of an inch
 					var itemdimen = feet + "'-" + number + " " + number2 + "/" + base + '"';
 				} else {
-					itemdimen = feet + "'-" + number + " " + number16 + '/16"';
-				}
+					itemdimen = feet + "'-" + number + " " + minInit + '/'+minBase+'"';
+				} */
 			} else {
 				if (number == 0 && feet == 0){
 					itemdimen = '0"';
@@ -6833,55 +6907,144 @@ function ftDecToString(convertType, decimal, length, returnType){
 					itemdimen = feet + "'-" + number + '"';
 				}
 			}
+			//if (application.isInDeveloper()){application.output('fraction: '+number2+'/'+base)}
+			//if (number2 > 0){fractionOut = number2+'/'+base}
+			break;
+		case 'FEET':
+			if (number > 0){
+				feet = Math.floor(number/12) //whole feet
+				inches = number - (feet *12); //inches
+			} else {
+				feet = 0; //zero feet
+				inches = 0; // zero inches
+			}
+			//var minVal = 999;
+			//var minInit = 0;
+			//var minBase = 0;
+			if (application.isInDeveloper()){application.output('fraction input: '+fraction)}
+			if (fraction > 0){
+				fractionOut = fraction16(fraction);
+				if (fractionOut == "1"){
+					inches += 1;
+					fractionOut = '';
+					if (inches/12 == Math.floor(inches/12)){
+						inches -= (12*Math.floor(inches/12));
+						feet += Math.floor(inches/12);
+					}
+				}
+				/**
+				while (base <= 16){
+					var candidate = fraction * base;
+					application.output(candidate+' '+base);
+					if (candidate*1 >= 1){break}
+					base = base * 2;
+				}
+				var round = candidate-Math.floor(candidate);
+				if (candidate*1 < 1 && candidate*1 >= .5){
+					base = base / 2;
+					candidate = Math.ceil(candidate);
+				} else if (candidate < .5){
+					base = 1;
+					candidate = 0;
+				}  else if (round*1 >= .5){
+					base = base / 2;
+					candidate = Math.floor(candidate);
+				} else {
+					candidate = Math.ceil(candidate);
+				}
+				application.output('round: '+round+' '+candidate+'/'+base)
+				if (1==1){return candidate+'/'+base} */
+				/**
+				while (base <= 16){
+					number2 = Math.floor(fraction * base);
+					fraction2 = (fraction * base) - number2;
+					if (fraction2 >= 0){
+						if (minVal >= fraction2){
+							minVal = fraction2;
+							minInit = number2;
+							minBase = base;
+						}
+						base = base * 2;
+					} else {
+						break;
+					}
+				} */
+				//if (base <= 16){ //fraction within 16ths of an inch
+				//	var itemdimen = feet + "'-" + number + " " + number2 + "/" + base + '"';
+				//} else {
+				//	itemdimen = feet + "'-" + number + " " + minInit + '/'+minBase+'"';
+				//}
+			} else {
+				if (number == 0 && feet == 0){
+					itemdimen = '0"';
+				} else {
+					itemdimen = feet + "'-" + number + '"';
+				}
+			}
+			//if (number2 > 0){
+			//	fractionOut = number2+'/'+base
+			//	if (base > 16){fractionOut = minInit + '/'+minBase}
+			//}
+			//if (application.isInDeveloper()){application.output('fraction: '+fractionOut)}
+			
 			break;
 	
 		default:
 			return "";
 	}
-	length = ""; var space = ''; // was var length = ""
-		switch( returnType ){
+	var space = '';
+	var padding = '                                  ';
+	var output = '';
+	switch( returnType ){
 		case 'FEET':
-			feet =  number + "    ";
-			return feet.substr(0,length);
+			output =  feet + padding;
 		case 'INCH':
-			number = number + "    ";
-			return number.substr(0,length);
+			output = inches + padding;
 		case 'NUMERATOR':
-			return number2.toString();
-			break;
-		case 'DENOMINATOR':
-			return (number2 > 0) ? base.toString() : "0";
-			break;
-		case 'FRACTION':
-			if (base < 32) {
-				return (number2 > 0) ? number2 + base : "0000";
+			if (fractionOut.search('/') != -1){
+				output = (fractionOut.split('/')[0]);
 			} else {
-				return number16 + '16';
+				output = '';
 			}
 			break;
+		case 'DENOMINATOR':
+		if (fractionOut.search('/') != -1){
+			output = (fractionOut.split('/')[1]);
+		} else {
+			output = '';
+		}
+			break;
+		case 'FRACTION':
+		output = fraction;
+			break;
 		case 'FRACSLASH':
-			if (base < 32){
-				return (number2 > 0) ? number2 + "/" + base : "0000";
+			output = fractionOut;
+			break;
+		case 'INCHES':
+			space = "";
+			if (inches != 0){output += inches}else{output += "0"}
+			if (fractionOut == "0\"" || fractionOut == 0){
+				output += "\"";
+				//space = "-";
 			} else {
-				return number16 + "/16";
+				output += " "+fractionOut+'"';
+				//fractionOut = "\"";
 			}
 			break;
 		default:
 			space = "";
-			if (feet != 0){length = feet+"'-";} else {length = "0'-"}
-			if (inches != 0){length += inches}else{length += "0"}
-			if (fractionOut == "0\""){
-				length += "\"";
+			if (feet != 0 ){output = feet+"'-";} else {output = "0'-"}
+			if (inches != 0){output += inches}else{output += "0"}
+			if (fractionOut == "0\"" || fractionOut == 0){
+				output += "\"";
 				//space = "-";
 			} else {
-				length += " "+fractionOut;
+				output += " "+fractionOut+'"';
 				//fractionOut = "\"";
 			}
-			//length += space+fractionOut;
-			
-			
-			return length;
+			//length += space+fractionOut;			
 		}
+		return output.substr(0,length);
 
 	/**
 	 * 	Init = INT(itemdec)                 && integer portion of data
@@ -10087,32 +10250,66 @@ function onActionGeneric(event) {
  * @AllowToRunInFind
  */
 function onDataChangeGeneric(oldValue, newValue, event) {
+	if (application.isInDeveloper()){application.output('firing onDataChangeGeneric')}
+	//var timeS = new Date(); var start = timeS.getTime() + 500; var endS = 0;
+	//while (start > endS){
+	//	endS = new Date().getTime();
+	//}
+	//application.output('newValue genericinput '+newValue)
+	var newDate = new Date();
+	if (application.isInDeveloper()){application.output('\nNEW INPUT '+newValue+' '+newDate)}
+	if (newValue){
+		newValue = newValue.replace(/\\t/,'');
+		newValue = newValue.toUpperCase();
+	}
 	var form = forms['rf_mobile_view'];
+	var elName = event.getElementName();
 	if (form.functionKeyEntered){
 		form.functionKeyEntered = false;
-		var el = event.getElementName();
-		(el == 'genericin') ? form.genericInput = '' : form.genericInput2 = ''; 
+		(elName == 'genericin') ? form.genericInput = '' : form.genericInput2 = ''; 
+		rfClearPreviousEntry(event);
 		return;
 	}
-	if (!newValue){return}
+	
 	if (session.errorShow){
 		session.errorShow = false;
 		globals.rfErrorHide(event);
 	}
-	newValue = newValue.toUpperCase();//Android seems to ignore the case request
+
+	//(el == 'genericin') ? form.genericInput2 = '' : form.genericInput = ''; 
+	//(el == 'genericin') ? form.elements['genericin2'].requestFocus() : form.elements['genericin'].requestFocus();
+	//newValue = newValue.toUpperCase();//Android seems to ignore the case request
+	var dataProv = form.elements[elName].getDataProviderID();
+	var formValue = form[dataProv];
+	if (formValue){
+		formValue = formValue.replace(/\\t/,'');
+		formValue = formValue.toUpperCase();
+	}
+	if (application.isInDeveloper()){
+		application.output('input: '+newValue+' understood: '+formValue);
+	}
+	if (newValue != formValue && newValue.length < formValue.length){
+		
+		newValue = formValue; // use formValue in case scanned barcode incomplete during refresh or other
+	}
+	if (!newValue){return}
+	//form[dataProv] = newValue;
 	var action = newValue.substr(0,1);
-	var data = newValue.replace(action,'');
+	var data = newValue.replace(action.toUpperCase(),'').toUpperCase();
 	if (newValue.length > 9 && checkValidSerialID(newValue)){
 		action = 'D';
 		entryType = 'D';
 		data = newValue;
+		if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+			action = 'Piecemark Scan';
+		}
 	}
-	application.output('Entered code:'+action+' data: |'+data+'|'+' Entire entry length '+newValue.length+' |'+newValue+'|');
+	//application.output('Entered code:'+action+' data: |'+data+'|'+' Entire entry length '+newValue.length+' |'+newValue+'|');
 	if (application.isInDeveloper()){
 		application.output('Entered code:'+action+' data: |'+data+'|');
 		//return true;
 	}
-	var targView = forms['rf_mobile_view'];
+	//var targView = forms['rf_mobile_view'];
 	if (flagFunction == 'rfF7TrailerInfo'){//special trailer view processing
 		action = 'TF7'+action;
 	}
@@ -10133,8 +10330,19 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 	}
 	//alternatively detect non-prefixed entries
 	//determine prefix for genericin entry
-	var anticipEntry = '';
-	for (var fld in commandPrefixes){
+	//var anticipEntry = '';
+	if (newValue.search('BND') == 0 && !(!commandPrefixes['bundlein'])){
+		data = newValue;
+	}
+	if (action == 'P'){
+		if (checkValidSerialID(newValue)){
+			anticipEntry = 'D';
+			data = newValue;
+		} else if (checkValidSerial(data)){
+			anticipEntry = 'P';
+		}	
+	}
+	/** for (var fld in commandPrefixes){
 		if (forms['rf_mobile_view'].shownFields.indexOf(fld) == -1){continue}
 		if (commandPrefixes[fld] == action){
 			if (action == 'B' && data.search('ND') == 0){
@@ -10155,9 +10363,9 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			}
 			break;
 		}
-	}
-	if (application.isInDeveloper()){application.output('field '+anticipEntry+' prefix '+action)}
-	if (newValue.length >= 10 && rfOkToProcessId(event)){//task #214 accept bar code without prefix I(D) Number
+	} */
+	//if (application.isInDeveloper()){application.output('field '+anticipEntry+' prefix '+action)}
+	if (newValue.length >= 10 && rfOkToProcessId(event) && action != 'Piecemark Scan'){//task #214 accept bar code without prefix I(D) Number
 		/**
 		 * action doesn't apply to other fields
 		 */
@@ -10245,6 +10453,58 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//C or c - Lo(c)ation
 		case 'C':
 			entryType = 'C';
+			if (newValue.search('CL') == 0 && newValue.length == 12 && 
+					session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+				null;
+				globals.session.rawCutPiecemarksSelected = [];//clear selected entries in raw cutlist pcmk instance selection
+				if (!dataEntryComplete(event,'barcodeclin')){break}
+				// check for CLxxx barcode in FS, comes from FS
+				newValue = scopes.jobs.setProperCLBarcode(event,newValue);
+				if (!newValue){break}
+				clearCutListData(event);
+				globals.rfClearDependentEntries(event,'barcodeclin');
+				session.cutlistdata = scopes.fs.getFSCutList(event,newValue);
+				var askFS = session.cutlistdata;
+				if (!askFS.error){
+					globals.mob.timedBegin = new Date();
+					session.cutlistdata = scopes.jobs.verifyCutListItems(event,session.cutlistdata);
+					//form['cutListArray'] = scopes.jobs.cutListIdentifyArray(event,askFS.cutArray);
+					form['maxQuantity'] = askFS.qtyremaining;
+					form['cutlistBarcode'] = newValue;
+					if (askFS.qtyremaining == 1) {form['quantity'] = "1"}
+					if (askFS.drop){
+						var metric = (askFS.dropType.toUpperCase().search('IN') == -1);
+						if (askFS.drop){
+							if (askFS.dropWidth){
+								form['dropWidth'] = (metric) ? askFS.dropWidth : askFS.dropWidth+' '+askFS.dropWidthType;
+							}
+							if (askFS.dropType.toLowerCase().search('sq') == -1){
+								form['dropLength'] = (metric) ? askFS.dropLength : ftDecToString('FEET',askFS.drop,13,'ALL');
+								form['allLength'] = form['dropLength'];
+								form['dropWidth'] = (metric) ? '0' : '0"';
+							} else {
+								var dLength = askFS.drop / askFS.width;
+								form['dropWidth'] = (metric) ? askFS.width : ftDecToString('INCHES',askFS.width,13,'INCHES')
+								form['dropLength'] = (metric) ? Math.floor(dLength) : ftDecToString('FEET',dLength,13,'ALL');
+							}
+						}
+						if (askFS.shape && askFS.dimensions){form['invMaterial'] = askFS.shape+" "+askFS.dimensions}
+						if (askFS.grade){form['invGrade'] = askFS.grade}
+						if (askFS.location){form['invLocation'] = askFS.location}
+						//if (askFS.dropType && askFS.dropType == "imperial"){form['dropLength'] = askFS.drop+" "+askFS.dropType}
+					}
+					//form['dropWidth'] = (askFS.dropType.search("in") != -1) ? "0\"" : "0 mm";
+				} else {
+					//application.output('error in CLxx number');
+					//show FS error
+					errorDialogMobile(event,1220,'genericin',askFS.error);
+					form['cutlistBarcode'] = '';
+					form['invGrade'] = '';
+					form['invMaterial'] = '';
+					break;
+				}
+				break;
+			}
 			if (forms['rf_mobile_view'].shownFields.indexOf('locationin') == -1 &&
 				forms['rf_mobile_view'].shownFields.indexOf('stocklocationin') == -1){
 				errorDialogMobile(event,1229,'genericin','Location');
@@ -10284,7 +10544,65 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			break;
 		case 'G':
 			entryType = 'G';
-			var processGo = (data.match(/[GO]/) && forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') != -1);
+			if (newValue.match(/(G[O]{0,1})$/) && 
+					session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+				null;// GO or G
+				if (!dataEntryComplete(event,'quantityin')){break}
+				var cutAll = (form.strikeThru == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
+				var shop = globals.session.association;
+				var loc1 = form.statusLocation;
+				var loc2 = loc1;
+				if (scopes.prefs.lFsFlipPrimSecWhenShop){
+					loc1 = shop;
+				} else {
+					loc2 = shop;
+				}
+				null;
+				var TFSresponse = scopes.fs.matchCLtoRMBarcodesProcess(event,null,form.cutlistBarcode,form.asnNumber,form.quantity,cutAll,form.dropWidth,form.dropLength,loc1,loc2);
+				if (!TFSresponse.error){
+					var cutlistData = session.cutlistdata;
+					globals.mob.timedEnd = new Date();
+					scopes.jobs.cutlistInventoryProcess(event,cutlistData,TFSresponse)//process restock or remove inventory number
+					scopes.jobs.cutlistSTSProcess(event,cutlistData,TFSresponse);
+					// push a cut if third party code exists
+					if (globals.m.stationsThird[form.statusCode]){
+						//insert cut call to fabsuite, check dependencies, and execute on STS as well
+						scopes.fs.processRawCutBarcodes(event,cutlistData);
+					}
+					form['heat'] = TFSresponse.heatnumber;
+					form['invLocation'] = form['statusLocation'];
+					if (TFSresponse.rtsmessage){//process STS side, transactions, RM barcode
+						if (TFSresponse.rtsmessage != 'Restock'){
+							//remove inventory number
+							scopes.jobs.updateSTSInventory(event,form.asnNumber,null);
+							//print scrap label, check prefs
+						} else {
+							//update inventory values
+							var inventoryUpdate = scopes.fs.getInventorySerial(event,form.asnNumber);
+							var invBarcode = scopes.jobs.updateSTSInventory(event,form.asnNumber,inventoryUpdate);
+							//print invBarcode
+							if (!(scopes.prefs.lFsDoNotPrintScrapLabels*1) || TFSresponse.rtsmessage == 'Restock'){
+								var tempPrtUUID = getInvUUID(event,form.asnNumber);
+								if (tempPrtUUID){
+									if (!invUUIDs){invUUIDs = new Array()}
+									invUUIDs.push(tempPrtUUID);
+									form['labelPrintType'] = 'material';
+									scopes.printer.onActionPrintRMLabels(event,invUUIDs)
+								}
+							}
+						}
+						if (TFSresponse.rtsmessage != 'No Drop'){//Scrap Restock
+							errorDialogMobile(event,1220,'genericin',TFSresponse.rtsmessage);
+						}
+					}
+					globals.rfClearDependentEntries(event,'locationin');
+				} else {
+					errorDialogMobile(event,1220,'genericin',TFSresponse.error);
+				}
+					
+				break;
+			}
+			var processGo = (newValue.match(/(G[O]{0,1})$/) && forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') != -1);
 			if (forms['rf_mobile_view'].shownFields.indexOf('gradein') == -1 &&
 					!processGo){//Go means process through query dialog 20180829
 				errorDialogMobile(event,1229,'genericin','Grade');
@@ -10324,6 +10642,20 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//L or l - (L)oad Numbers
 		case 'L':
 			entryType = 'L';
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+				var drop = globals.strToDec('FEET',data);
+				if (drop == -1){
+					form['dropLength'] = '';
+					form['dropWidth'] = '';
+					// error 830 invalid length entry
+					errorDialogMobile(event,830,'genericin',data);
+					break;
+				} else {
+					//process cut list here
+					form['dropLength'] = globals.ftDecToString('FEET',drop,13,'ALL');
+				}
+				break;
+			}
 			if (forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') != -1 &&
 					forms['rf_mobile_view'].shownFields.indexOf('jobnumberin') != -1 &&
 					!form['jobNumber']){
@@ -10383,7 +10715,9 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			//return true;
 			//onDataChangeBarcode2(oldValue,data,event);
 			break;
-
+		case 'PIECEMARK SCAN'://MAKE uppercase to select OnAction
+			scopes.jobs.scanCutListPiecemarkBarcodes(event,data);
+			break;
 		//Q or q - (Q)uantity
 		case 'Q':
 			entryType = 'Q';
@@ -10446,6 +10780,17 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					form.quantity = '';
 				}
 				
+			} else if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+				if (!dataEntryComplete(event,'quantityin')){break}
+				//check quantity against availablequanity
+				if (form['maxQuantity']*1 < data*1){
+					errorDialogMobile(event,1062,'genericin','');
+					form['quantity'] = '';
+					break;
+				} else {
+					forms['rf_mobile_view']['quantity'] = Math.floor(data*1).toString();
+					break;
+				}
 			}
 			break;
 			
@@ -10453,18 +10798,27 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		case 'R':
 			entryType = 'R';
 			if (forms['rf_mobile_view'].shownFields.indexOf('remarksin') == -1 &&
-			forms['rf_mobile_view'].shownFields.indexOf('barcodein') == -1){
-				if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+				forms['rf_mobile_view'].shownFields.indexOf('barcodein') == -1 &&
+				forms['rf_mobile_view'].shownFields.indexOf('asnin') == -1 &&
+				forms['rf_mobile_view'].shownFields.indexOf('barcodermin') == -1){
+				if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')] ||
+				session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
 					errorDialogMobile(event,1229,'genericin','Remarks');
 				} else {
 					errorDialogMobile(event,1229,'genericin','Bar Code');					
 				}
 				break;
 			}
-			if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
-				null;
+			if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')] &&
+					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.status')] &&
+					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+				form['remarks'] = data;
 			} else {
-				if (newValue.search('RC') == 0 && newValue.match(/(RC[0-9]+)/)){
+				if (newValue.search('RC') == 0 && newValue.match(/(RC[0-9]+)/) && (
+						session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')] ||
+						session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.status')])){
+					newValue = scopes.jobs.setProperRCBarcode(event,newValue);//ensure barcode is proper length
+					if (!newValue){break}
 					form['invBarCode'] = newValue;
 					var invLine = scopes.fs.getReceivedBarcode(event,newValue);
 					if (!(!invLine.error)){//a blank error means there is data returned from fabsuite
@@ -10480,6 +10834,38 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					scopes.globals.mobItemWeight = scopes.globals.kgToLb(invLine.weighteach);
 					application.output(invLine)
 					form.poNumber = invLine.ponumber;
+					form.asnNumber = scopes.jobs.getChecklistInventory(event,newValue);
+				} else if (newValue.search('RM') == 0 && newValue.match(/(RM[0-9]+)/) &&
+							session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
+					// check RMxxx serial
+					if (!dataEntryComplete(event,'asnin')){break}
+					newValue = scopes.jobs.setProperRMBarcode(event,newValue);
+					if (!newValue){break}
+					//application.output('RM Stick '+newValue)
+					var matchInfo = scopes.fs.matchCLtoRMBarcodes(event,form.cutlistBarcode,newValue);
+					if (!matchInfo.error){
+						form['asnNumber'] = newValue;//Raw Material Stick is Good, Start cutting
+						form['heat'] = matchInfo.heatnumber;
+					} else {
+						errorDialogMobile(event,1220,'genericin',matchInfo.error);
+						break;
+					}
+					var response = i18n.getI18NMessage('sts.btn.no');
+					if (scopes.prefs.lFsPrintIDFromCutList == '1' ){
+						response = globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.question'),i18n.getI18NMessage('sts.txt.question.print.out.cutlist.labels'),i18n.getI18NMessage('sts.btn.no'),i18n.getI18NMessage('sts.btn.yes'));
+					}
+					if (response == i18n.getI18NMessage('sts.btn.no')){
+						var cutarray = globals.session.cutlistdata.cutarray;
+						for (var idx3 = 0;idx3 < cutarray.length;idx3++){
+							var cutItem = cutarray[idx3];
+							cutItem.Barcode = '';cutItem.SerialNumber = '';
+						}
+						globals.session.rawCutPiecemarksSelected = [];
+						break;
+					}//always ask before printing cut list labels for piecemarks
+					form['labelPrintType'] = 'piecemark';
+					//session.rawCutPiecemarks = [];
+					scopes.jobs.printCutListLabels(event);//ask before printing, but need Raw Material Label for the heat number
 				} else {
 					form['remarks'] = data;
 				}
@@ -10493,10 +10879,12 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			entryType = 'S';
 			if (forms['rf_mobile_view'].shownFields.indexOf('statusin') == -1){
 				errorDialogMobile(event,1229,'genericin','Status');
-				break;
+				//break;
+			} else if (!data && forms['rf_mobile_view'].elements['statusin']){
+				forms['rf_mobile_view'].statusCode = '';//break;
+			} else {
+				onDataChangeStatus(oldValue,data,event);
 			}
-			if (!data && forms['rf_mobile_view'].elements['statusin']){forms['rf_mobile_view'].statusCode = '';break;}
-			onDataChangeStatus(oldValue,data,event);
 			break;
 
 		//U or u - Seq(u)ence Number 
@@ -10522,12 +10910,33 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			//E or e - (E)mployee/Worker Number
 		case 'W':
 			entryType = 'W';
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+				drop = globals.strToDec('INCHES',data);
+				if (drop == -1){
+					form['dropWidth'] = '';
+					errorDialogMobile(event,831,'genericin',data);
+				} else {
+					form['dropWidth'] = globals.ftDecToString('INCHES',drop,13,'INCHES');
+				}
+				// process cut list through FS
+				break;
+			}
 			if (forms['rf_mobile_view'].shownFields.indexOf('workerin') == -1){
 				errorDialogMobile(event,1229,'genericin','Worker');
 				break;
 			}
 			if (!data && forms['rf_mobile_view'].elements['workerin']){forms['rf_mobile_view'].statusWorker = '';break;}
 			onDataChangeWorker(oldValue,data,event)
+			break;
+		case 'T':
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+				if (!dataEntryComplete(event,'strikethruin')){break}
+				if (data == i18n.getI18NMessage('sts.txt.reply.yes')){
+					form['strikeThru'] = i18n.getI18NMessage('sts.btn.yes').toUpperCase();
+				} else {
+					form['strikeThru'] = i18n.getI18NMessage('sts.btn.no').toUpperCase();
+				}
+			}
 			break;
 		case 'TF7S':
 			if (data == ''){
@@ -10587,6 +10996,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			errorDialogMobile(event,1255,'genericin',newValue);
 	}
 	if (forms['rf_mobile_view']){forms['rf_mobile_view'].lastAction = action+form['printEnabled']}
+	/**
 	if (0 && forms['rf_mobile_view'] &&
 		(forms['rf_mobile_view'].elements['errorWindow'] && !forms['rf_mobile_view'].elements['errorWindow'].visible) &&
 		(forms['mobile_query'].elements['queryText'] && application.getActiveWindow().controller.getName() != forms.mobile_query.controller.getName())){
@@ -10608,25 +11018,55 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
 		//	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
 		//}
-	}
+	} */
 	
 	var printEnabledNotice = (printEnabledScreen) ? ' p-'+form['printEnabled'] : '';
-	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && session.dualEntry){
+	/** if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && session.dualEntry){
 		if (event.getElementName() == 'genericin'){
 			forms['rf_mobile_view'].genericInput2 = '';
-			forms['rf_mobile_view'].elements['genericin2'].requestFocus();
+			forms['rf_mobile_view'].elements[globals.altInputField].requestFocus();
 		} else {
 			forms['rf_mobile_view'].genericInput = '';
-			forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			forms['rf_mobile_view'].elements[globals.altInputField].requestFocus();
 		}
 	} else {
 		if (!session.errorShow){
-			forms['rf_mobile_view'].elements['genericin'].requestFocus();
+			forms['rf_mobile_view'].elements[globals.altInputField].requestFocus();
 		}
 		session.errorShow = false;
 		forms['rf_mobile_view'].genericInput = '';
+	} */
+	rfClearPreviousEntry(event);
+	/**forms['rf_mobile_view'].elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic')+printEnabledNotice;
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && session.dualEntry){
+		globals.altInputField = (elName == 'genericin') ?  'genericin2' : 'genericin';
+		globals.altInputDataProv = (elName == 'genericin') ?  'genericInput2' : 'genericInput';
+	} else {
+		globals.altInputField = 'genericin';
+		globals.altInputDataProv = 'genericInput';
 	}
-	forms['rf_mobile_view'].elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic')+printEnabledNotice;
+	if (1==1){
+		form[globals.altInputDataProv] = '';
+		form.elements[globals.altInputField].requestFocus();
+		//return true;
+	} */
+	if (session.errorShow){
+		application.updateUI();var count = 1;
+		var timeS = new Date(); var start = timeS.getTime() + 500; var endS = 0;
+		while (start > endS){
+			var temp = new Date();
+			endS = temp.getTime();
+			//if (application.isInDeveloper()){application.output('while loop count '+count++)}
+			if (count > 900){break}
+		 }
+	}
+	formValue = form[dataProv].toUpperCase();
+	if (application.isInDeveloper()){
+		application.output('input: '+newValue+' understood: '+formValue);
+	}
+	//if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	//	plugins.WebClientUtils.executeClientSideJS('playSoundX("init");');
+	//}
 	return true;
 }
 /**
@@ -10635,13 +11075,14 @@ function onDataChangeGeneric(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"F89D71B9-358E-4E27-A026-9BF66DB6B5F5"}
  * @AllowToRunInFind
  */
-function dataEntryComplete(event){
+function dataEntryComplete(event,altField){
 	//if (event){return true}
 	/** @type {Array} */
 	var entryList = forms['rf_mobile_view'].requiredFields;
 	for (var index = 0;index < entryList.length-1;index++){
 		var entry = entryList[index];
 		if ((entry == '') || entry.search('genericin') == 0){continue}//20180312 some entries cleared due to workers
+		if (altField && entry == altField){break}//add alternate ending field
 		var dataProv = forms['rf_mobile_view'].elements[entry].getDataProviderID();
 		if (forms['rf_mobile_view'][dataProv] == ''){
 			errorDialogMobile(event,1228,'genericin',entry);//Requred Entries Are Not Yet Complete. 1228
@@ -11055,20 +11496,32 @@ function checkForSerialInput(possSerial){
  * @properties={typeid:24,uuid:"CA5A44F5-EE62-48FA-B4D7-792B6C427893"}
  */
 function createHeat(event,heatNum){
-	globals.logger(true,i18n.getI18NMessage('sts.txt.heat.created.for.job.number',new Array(heatNum,session.jobNumber)));
-	/** @type {JSFoundSet<db:/stsservoy/heats>} */
-	var fs = databaseManager.getFoundSet('db:/stsservoy/heats');
-	var idx = fs.newRecord();
+	if (!heatNum){mob.heat = '';mob.heatId = null;return null;}
+	/** @type {QBSelect<db:/stsservoy/heats>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/heats');
+	fs.result.add(fs.columns.heat_id);
+	fs.where.add(fs.columns.heat_number.eq(heatNum));
+	var FS = databaseManager.getFoundSet(fs);
+	FS.loadRecords();
+	
 	/** @type {JSRecord<db:/stsservoy/heats>} */
-	var rec = fs.getRecord(idx);
-	rec.heat_number = heatNum;
-	rec.tenant_uuid = session.tenant_uuid;
-	rec.edit_date = new Date();
-	var status = databaseManager.saveData(rec);
-	if (application.isInDeveloper()){application.output('save status on heat '+status)}
+	var rec = null;
+	if (FS.getSize() == 0){
+		var idx = FS.newRecord();
+		rec = FS.getRecord(idx);
+		rec.heat_number = heatNum;
+		rec.tenant_uuid = session.tenant_uuid;
+		rec.edit_date = new Date();
+		var status = databaseManager.saveData(rec);
+		globals.logger(true,i18n.getI18NMessage('sts.txt.heat.created.for.job.number',new Array(heatNum,session.jobNumber)));
+	} else {
+		rec = FS.getRecord(1);
+	}
+	//if (application.isInDeveloper()){application.output('save status on heat '+status)}
 	forms['rf_mobile_view'].heat = heatNum;
 	mob.heat = heatNum;
 	mob.heatId = rec.heat_id;
+	return rec.heat_id;
 
 }
 /**
@@ -13100,4 +13553,205 @@ function rfF6TogglePrint(){
 	var printEnabledNotice = (printEnabledScreen) ? ' p-'+form['printEnabled'] : '';
 	form.elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic')+printEnabledNotice;
 
+}
+/**
+ * @param {String} convType
+ * @param {String} dims
+ *
+ * Return INCHES always INCHES
+ * Accepts FEET or INCHES *formatting* FEET INCHES NUMERATOR DENOMINATOR
+ * 
+ * @properties={typeid:24,uuid:"033BC94E-2025-4DE1-9024-194DAD517482"}
+ * @AllowToRunInFind
+ */
+function strToDec(convType,dims){
+	function checkDenom(number){
+		//application.output(Math.floor(number/2)+ ' ' +Math.ceil(number/2))
+		return (Math.floor(number/2) == Math.ceil(number/2) && number*1 > 1 && number*1 < 17 );
+	}
+	convType = convType.toUpperCase();
+	/** @type {String} */
+	var itemDim = dims.trim().replace(/ +/g,' ').replace(/\.+/g,' ');
+	//if (itemDim.search(/[^ \d'"\-]*/) != -1){return -1}
+
+	var feet = 0;
+	var inches = 0;
+	var numerator = 0;
+	var denominator = 1;
+	
+	
+	var dimStr = itemDim.split(' ');
+	
+	switch (convType) {
+		case "INCHES" :
+			if (dimStr.length > 3 || dimStr.length == 2){return -1}//inches are input INCHES {NUM DENOM}
+			inches = dimStr[0];
+			if (dimStr.length == 3){
+				numerator = dimStr[1];
+				denominator = dimStr[2];
+			}
+			break;
+		case "FEET" :
+		default:
+			//application.output('params '+dimStr.length+' '+dimStr)
+			if (dimStr.length == 3){return -1}//Cannot have missing numerator or denominator
+			feet = dimStr[0];
+			inches = (!dimStr[1]) ? 0 : dimStr[1];
+			numerator = (!dimStr[2]) ? 0 : dimStr[2];
+			denominator = (!dimStr[3]) ? 1 : dimStr[3];// no divide by zero
+	}
+	if (feet == 0 && inches == 0 && numerator == 0){return 0.0}
+	if (!checkDenom(denominator) && denominator != 1){return -1}//no use for odd numbers in denominator, probably mistyped
+	if (numerator*1 > denominator*1){return -1}//input greater than denominator likely mistyped
+	return feet*12 + inches*1 + numerator/denominator;
+}
+/**
+ * @param decimal
+ *
+ * @properties={typeid:24,uuid:"B44597B8-F233-4112-A293-A13CC106E878"}
+ */
+function fraction16(decimal){
+	var pre = 1;
+	var post = 0;
+	var numer = 0;
+	var numerator = 0;
+	var denominator = 0;
+	for (var i = 1;i < 16;i++){
+		var sixteenth = i/16;
+		if (sixteenth*1 < decimal*1){
+			pre = sixteenth
+		}
+		if (sixteenth*1 > decimal*1){
+			post = sixteenth
+		}
+		if (sixteenth*1 == decimal*1){pre = post;numer = i;break}
+		if (post != 0){numer = i;break}
+		
+	}
+	var half = (pre-post)/2+pre*1;
+	if (decimal < half){numerator = numer - 1} else {numerator = numer}
+	denominator = 16;
+	while (true){
+		var newNum = numerator/2;
+		var newDen = denominator/2;
+		if (Math.floor(newNum) == numerator/2 && Math.floor(newDen) == denominator/2){
+			numerator = newNum;
+			denominator = newDen;
+		} else {
+			break;
+		}
+	}
+	//application.output(pre+' '+numer+': '+decimal+' '+post+'     '+numerator+'/'+denominator+' NUMERATOR '+numerator);
+	var fraction = numerator+'/'+denominator;
+	if (numerator == 0){
+		fraction = '';
+	} 
+	if (numerator*1 == -1){
+		//application.output('numerator '+numerator);
+		fraction = '1';
+	}
+	return fraction;
+	
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"1CE3635C-EFBE-4C90-9CA4-8659A7600A12"}
+ */
+function clearCutListData(event){
+	globals.session.cutlistused = [];
+	globals.session.cutlistavail = [];
+	globals.session.cutlistdata = {};
+	var form = forms['rf_mobile_view'];
+	form.associatedCutIdCount = 0;
+	form.associatedCutIdTotal = 0;
+	form.associatedCutRatio = '0 of 0';
+}
+/**
+ * @param event
+ * @param entryField
+ *
+ * @properties={typeid:24,uuid:"5A68C99E-03EE-4E0A-BFF1-AFB8E19D7BBE"}
+ */
+function rfClearDependentEntries(event,entryField){
+	var form = forms['rf_mobile_view'];
+	var currIdx = form['requiredFields'].indexOf(entryField);
+	var lastIdx = form['requiredFields'].length;
+	for (var idx = currIdx+1;idx < lastIdx;idx++){
+		var elName = form['requiredFields'][idx];
+		if (elName == 'strikethruin'){continue}//task361
+		var el = form.elements[elName];
+		var dataProv = el.getDataProviderID();
+		form[dataProv] = '';
+	}
+	
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"FC415B52-5398-4F36-9468-E9C459D9B44B"}
+ * @AllowToRunInFind
+ */
+function rfClearPreviousEntry(event){
+	//if (globals.clientUserAgent.search(/(iPhone|iPad)/i) == -1 && application.getOSName().search(/Mac/i) == -1){
+	//	return true;
+	//}
+
+	if (!event){return}
+	if (application.isInDeveloper()){application.output('firing rfClearPreviousEntry '+event.getElementName())}
+	var elName = event.getElementName();
+	var form = forms[event.getFormName()];
+	//form['genericInput'] =	form['genericInput'].toUpperCase();  
+	//form['genericInput2'] =	form['genericInput2'].toUpperCase();  
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && session.dualEntry){
+		globals.altInputField = (elName == 'genericin') ?  'genericin2' : 'genericin';
+		globals.altInputDataProv = (elName == 'genericin') ?  'genericInput2' : 'genericInput';
+		if (0 && form[globals.altInputDataProv] != ''){
+			if (globals.altInputField == 'genericin' && form['genericInput2'] == ''){
+				globals.altInputField = 'genericin2';
+				globals.altInputDataProv = 'genericInput2';
+			}
+			if (globals.altInputField == 'genericin2' && form['genericInput'] == ''){
+				globals.altInputField = 'genericin';;
+				globals.altInputDataProv = 'genericInput';
+			}
+		}
+		form[globals.altInputDataProv] = '';
+		form.elements[globals.altInputField].requestFocus();
+	} else {
+		var firstPass = form[globals.altInputDataProv];
+		form[globals.altInputDataProv] = '';
+		globals.altInputField = 'genericin';
+		globals.altInputDataProv = 'genericInput';
+		form.elements['genericin'].requestFocus();//added for smart client restore focus 4/30/2019
+		//onDataChangeGeneric('',firstPass,event);
+	}
+}
+/**
+ * @param inches
+ *
+ * @properties={typeid:24,uuid:"C5C80758-D971-49B6-A57A-BED59C3784DE"}
+ */
+function inToMM(inches){
+	return inches*25.4;
+}
+/**
+ * @param event
+ * @param invBarcode
+ *
+ * @properties={typeid:24,uuid:"5B79B1B8-753B-40E3-AA4D-54E5F31166D3"}
+ */
+function getInvUUID(event,invBarcode){
+	/** @type {QBSelect<db:/stsservoy/inventory>} */
+	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.serial_number.eq(invBarcode));
+	q.result.add(q.columns.inventory_uuid);
+	var Q = databaseManager.getFoundSet(q);
+	if (Q.getSize() > 0){
+		/** @type {JSRecord<db:/stsservoy/inventory>} */
+		var rec = Q.getRecord(1);
+		return rec.inventory_uuid;
+	}
+	return null;
 }

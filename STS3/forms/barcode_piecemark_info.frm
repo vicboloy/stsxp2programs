@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/idfiles",
 extendsID:"DAE74AF3-27A9-4DF3-8774-098F9824F3C0",
 items:[
@@ -71,6 +77,7 @@ uuid:"FBE60680-8B1A-4996-9159-D49DF4BAF2D6"
 }
 ],
 name:"barcode_piecemark_info",
+onHideMethodID:"B057EF49-C6A1-4AC8-8355-BDBD2BE5B4D2",
 onRenderMethodID:"C3FC10D9-7AF2-4983-88DF-E79441E9220F",
 onShowMethodID:"FDD2EE60-7C8B-4736-9694-E4D9E8EAF75B",
 size:"702,452",

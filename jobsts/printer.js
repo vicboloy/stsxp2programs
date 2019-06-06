@@ -187,10 +187,10 @@ var rawLabeLaseTemplate = '';
 function onRenderPrint(event){
 	var rec=event.getRecord();
 	var rend=event.getRenderable();
-	var color = rend.bgcolor;
-	if (rec && rec.bc_printed != 1 && rec.selection == 1){rend.bgcolor = "green"}
-	if (rec && rec.bc_printed == 1 && rec.selection == 0){rend.bgcolor = "yellow"}
-	if (rec && rec.bc_printed == 1 && rec.selection == 1){rend.bgcolor = "red"}
+	var color = rend.bgcolor;//rec.bc_printed == 1 ||  removed since table column change names 20190530
+	if (rec && (rec.lprint != 1 || rec.if_lprint != 1) && rec.selection == 1){rend.bgcolor = "green"}
+	if (rec && (rec.lprint == 1 || rec.if_lprint == 1) && rec.selection == 0){rend.bgcolor = "yellow"}
+	if (rec && (rec.lprint == 1 || rec.if_lprint == 1) && rec.selection == 1){rend.bgcolor = "red"}
 
 }
 

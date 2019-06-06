@@ -212,11 +212,12 @@ function onActionDeleteWindow(event,winTitle) {
 	//return true;
 }
 /**
+ * @param event
  * @param formName
  *
  * @properties={typeid:24,uuid:"5CD9BBB2-C6CF-4DD8-BB15-9450C5905D70"}
  */
-function collectAndTab(formName){
+function collectAndTab(event,formName){
 	criteria = collectCriteria();
 	//scopes.jobs.viewBTableSQL2(criteria,formName);
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//

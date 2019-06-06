@@ -980,11 +980,15 @@ var lFsLocnBatch = false;
 /**
  * @properties={typeid:35,uuid:"05B71A8F-DC06-4892-A310-7FB7DA680BE3",variableType:-4}
  */
-var lFsPrintIDFromCutList = false;
+var lFsPrintIDFromCutList = true;
 /**
  * @properties={typeid:35,uuid:"4C0B44D9-5B2E-47B5-91D0-B3B407CE2607",variableType:-4}
  */
 var lFsFlipPrimSecWhenShop = false;
+/**
+ * @properties={typeid:35,uuid:"A546F3D4-282B-44DC-90E9-D11AEE714DB7",variableType:-4}
+ */
+var lFsDoNotPrintScrapLabels = true;
 /**
  */
 
@@ -1460,13 +1464,20 @@ function onActionFormTemplate(event) {
  */
 function onActionPrintLabels(event) {
 	var formName = event.getFormName();
+	var versionForm = scopes.globals.getInstanceForm(event);
+	if (application.isInDeveloper()){application.output('RM formName onActionPrintLabels:'+formName)}
 	/**
 	 * collect label fields and then push into tabbed fields with data
 	 */
-	if (formName.search('rf_mobile_view') != 0){
+	if (formName.search('rf_mobile_view') != 0 && formName.search('raw') == -1){
 		var specs = scopes.printer.getBTFieldData('P');		
-	} else {
+		var srcForm = 'barcode_idlabel'+versionForm;
+	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')) {
+		specs = scopes.printer.getBTFieldData('P');	
+		srcForm = 'rf_mobile_view';
+	}	else {
 		specs = scopes.printer.getBTFieldData('R');//raw material
+		srcForm = 'barcode_id_raw'+versionForm
 	}
 	var fields = [];
 	for (var idx = 0;idx < specs.length;idx++){
@@ -1478,26 +1489,67 @@ function onActionPrintLabels(event) {
 	//var useServer = false;
 	//var formName = event.getFormName();
 	var versionForm = globals.getInstanceForm(event);
-	var useServer = (forms['barcode_idlabel'+versionForm].useServerPrinters == 1);
+	var useServer = (forms[srcForm].useServerPrinters == 1);
+	if (formName == 'rf_mobile_view'){useServer = true}
 
 	var labCnt = 0;
 	//if (true || true) {return;}
 	var tabCount = specs.length;
 	var formName = event.getFormName();
 	var formTable = formName+"_table";
-	/** @type JSFoundSet */
-	var fs = forms[formTable].foundset;
+	
+	if (globals.session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+		fs = globals.session.tempFS;
+	} else {
+		/** @type JSFoundSet */
+		var fs = forms[formTable].foundset;
+	}
+	//application.output(fs.getRecord(1));
+	databaseManager.saveData(fs);//20190531 keep sort on close for printing labels
+	if (formName.search("barcode_") != -1) {
+		var ordered = scopes.jobs.tmp_LabelSort;
+		switch (ordered){
+			case i18n.getI18NMessage('sts.print.order.piecemark'):
+				fs.sort('piecemarks.piecemark asc');
+				break;
+			case i18n.getI18NMessage('sts.print.order.id.number'):
+				if (formName.search('raw') == -1){
+					fs.sort('serial_number asc');
+				} else {
+					fs.sort('serial_number asc');
+				}
+				break;
+			case i18n.getI18NMessage('sts.print.order.drawing.number'):
+				fs.sort('piecemarks.drawing_number asc');
+				break;
+			case i18n.getI18NMessage('sts.print.order.material'):
+				fs.sort('material asc');
+				break;
+			case i18n.getI18NMessage('sts.print.order.part.number'):
+				fs.sort('model_part asc');
+				break;
+			default:
+				if (formName.search('raw') == -1){
+					fs.sort('piecemarks.piecemark asc');
+				} else {
+					fs.sort('id_serial_number asc');
+				}
+		}
+	}
 	var i = 1;
 	var fileLine = "";
-	var itemsSelected = false; globals.barcodePrintedArray = [];
+	var itemsSelected = false; globals.barcodePrintedArray = [];var printedIndexes = [];
 	//var btSpec = {num: 0, name:'', size: 0,dbcol:'',dbtype:'',dbsize:0}
+	var printed = false;
 	while (i <= fs.getSize()){
 		/** @type {JSRecord<selection:Number>} */
 		var rec = fs.getRecord(i++);
 		var tabContents = "";
-		if (rec.selection != 1){continue}
+		if (rec.selection != 1 && globals.session.program != i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){continue}
 		labCnt++;
+		printedIndexes.push(i);//index of  printed elements for later view marking as printed
 		if (rec.bc_id_serial_number_id){globals.barcodePrintedArray.push(rec.bc_id_serial_number_id)}
+		if (rec.inventory_uuid){globals.barcodePrintedArray.push(rec.inventory_uuid)}
 		itemsSelected = true;
 		for (var index = 0;index < tabCount;index++){
 			/** @type {JSRecord<num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number>} */
@@ -1528,10 +1580,36 @@ function onActionPrintLabels(event) {
 		} else {
 			scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER
 			fileLine = '';
+			printed = true;
 		}
 	}
 	if (!useServer && itemsSelected){
-		scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER		
+		scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER	
+		printed = true;	
+	}
+	if (printed){
+		for (var i2 = 0; i2 < printedIndexes.length;i2++){
+			rec = fs.getRecord(printedIndexes[i2]-1);
+			if (rec.inventory_uuid){
+				/** @type {QBSelect<db:/stsservoy/inventory>} */
+				var q = databaseManager.createSelect('db:/stsservoy/inventory');
+				q.where.add(q.columns.inventory_uuid.eq(rec.inventory_uuid));
+				q.result.add(q.columns.inventory_uuid);
+				var Q = databaseManager.getFoundSet(q);
+				if (Q.getSize() != 0){
+					/** @type {JSFoundSet<db:/stsservoy/inventory>} */
+					var rec2 = Q.getRecord(1);
+					rec2.lprint = 1;
+					rec2.edit_date = new Date();
+					databaseManager.saveData(rec2);
+				}
+				
+			}
+			rec.bc_printed = 1;
+		}
+	}
+	if (formName == 'rf_mobile_view'){
+		forms['rf_mobile_view'].tempFS = null;
 	}
 	//if (itemsSelected){bartenderPrint(event,fileLine);} //BARTENDER
 	if (application.isInDeveloper()){application.output('Number of labels to printed '+labCnt)}
@@ -1548,6 +1626,9 @@ function bartenderPrint(event,txtString){
 	var debug = 1;
 	var versionForm = globals.getInstanceForm(event);
 	var formName = event.getFormName();
+	if (formName.search('barcode_piecemark_info_raw') == 0){
+		formName = 'barcode_id_raw'+versionForm;
+	}
 	if (formName.search('barcode_piecemark_info') == 0){
 		formName = 'barcode_idlabel'+versionForm;
 	}
@@ -1555,18 +1636,38 @@ function bartenderPrint(event,txtString){
 	var barForm = forms[formName];
 	
 	var printer = barForm.printerName;
+	//var printerMinor = barForm.printerMinor;
 	var label = barForm.labelName;
+	var labelMinor = barForm.labelName;
+	var printerMinor = '';
+	var useRawSettings = (forms[formName]['labelPrintType'] == 'material');
 	if (formName == 'rf_mobile_view'){
-		label = scopes.printer.rawMaterialLabelFormat;
-		printer = scopes.printer.rawMaterialPrinter;
-		var userDestination = getUserDestination();
-		if (userDestination.printer){
-			printer = userDestination.printer;
-			label = userDestination.label;
+		if (useRawSettings){
+			label = scopes.printer.rawMaterialLabelFormat;
+			printer = scopes.printer.rawMaterialPrinter;
+		} else {
+			label = scopes.printer.idBarcodeLabelFormat;
+			printer = scopes.printer.idBarcodePrinter;
+			labelMinor = label;
+			printerMinor = printer;
 		}
+		var userDestination = getUserDestination();
+		if (userDestination.printerMajor && !useRawSettings){
+			printer = userDestination.printerMajor;
+			label = userDestination.labelMajor;
+			printerMinor = userDestination.printerMinor;
+			labelMinor = userDestination.labelMinor;
+		}
+		if (userDestination.printerRaw && useRawSettings){
+			printer = userDestination.printerRaw;
+			label = userDestination.labelRaw;
+		}
+		forms[formName]['labelPrintType'] = '';
 	}
 	var useServer = false;
 	if (formName.search('barcode_idlabel'+versionForm) == 0) {useServer = (forms['barcode_idlabel'+versionForm].useServerPrinters == 1)}
+	if (formName.search('barcode_id_raw') == 0){useServer = (forms['barcode_id_raw'+versionForm].useServerPrinters == 1)}
+	if (formName == 'rf_mobile_view'){useServer = true}
 	//application.output('barcode_idlabel'+versionForm);
 	var tempDir = (barForm.useLocalDirectory) ? barForm.localDir : plugins.file.getDefaultUploadLocation()+scopes.prefs.temppath.replace('.','');
 	//tempDir = tempDir.replace(plugins.file.getDefaultUploadLocation(),'');
@@ -1578,6 +1679,8 @@ function bartenderPrint(event,txtString){
 	//fileName = fileName.replace(/\/+/g,'\\');
 	var btwFile = plugins.file.getDefaultUploadLocation()+reportPth+"\\"+label;
 	btwFile = btwFile.replace(/\/+/g,'\\');
+	var btwFileMinor = plugins.file.getDefaultUploadLocation()+reportPth+"\\"+labelMinor;
+	btwFileMinor = btwFileMinor.replace(/\/+/g,'\\');
 	if (debug){application.output('btwFile bartender print '+btwFile)}//REMOVE
 	//var btwExists = plugins.file.createFile(btwFile);
 	//if (!btwExists.exists()){
@@ -1593,6 +1696,7 @@ function bartenderPrint(event,txtString){
 	var status = plugins.file.writeTXTFile(randFileName,txtString);
 	if (status){globals.loggerDev(this,'Status write to txt file fail.');}
 	status = plugins.file.appendToTXTFile(randFileName,line + "\n");
+	cleanTempDir(event,tempDir);//20190530
 	if (status){globals.loggerDev(this,'Status append to txt file fail.');}
 	//status = plugins.file.copyFile(fileName,randFileName);
 	null;
@@ -1606,19 +1710,30 @@ function bartenderPrint(event,txtString){
 	 * useServer = checkbox on STS barcode label print view {Boolean}
 	 * useBarTender = barTender installed {Boolean}
 	 * rf_mobile_view ONLY uses barTender integration and ONLY when printEnabled on a print view
+	 * 20190509 printer will be different if printing IDs vs RAW
+	 * ID fields (#189/#91 (PARENTPCMK #189/PCMK #91)) match means ID not match Minor, RAW fields (SHIPTIME #38/none #180)
 	 */
-	if ((forms[formName].useBarTender && useServer) || (formName == 'rf_mobile_view' && forms[formName].printEnabled == i18n.getI18NMessage('sts.txt.on'))){
+	var printMinorLabel = false;//(labelData[189] == labelData[91]);
+	if ((forms[formName].useBarTender && useServer) || 
+			(formName == 'rf_mobile_view' && !useRawSettings) ||
+			(formName == 'rf_mobile_view' && forms[formName].printEnabled == i18n.getI18NMessage('sts.txt.on'))){
+		var labelData = txtString.split('\t');
+		printMinorLabel = (labelData[188] != labelData[90]);//location minus 1 since in array
 		/** @type {JSFoundSet<db:/stsservoy/bt_labels>} */
 		var labelFS = databaseManager.getFoundSet('stsservoy','bt_labels');
 		var idx3 = labelFS.newRecord();
 		/** @type {JSFoundSet<db:/stsservoy/bt_labels>} */
 		var rec = labelFS.getRecord(idx3);
-		rec.bt_btwtemplate = btwFile;
+		if (!printMinorLabel){
+			rec.bt_printer = printer;
+			rec.bt_btwtemplate = btwFile;
+		} else {
+			rec.bt_printer = printerMinor;
+			rec.bt_btwtemplate = btwFileMinor;
+		}
 		rec.bt_copies = "1";//Math.floor(1);
 		rec.bt_print_date = new Date();
-		rec.bt_printer = printer;
 		rec.prime_key = rec.bt_label_id;
-		var labelData = txtString.split('\t');
 		for (var idx4 = 0;idx4 < labelData.length;idx4++){
 			var fieldNum = idx4*1.0+1;
 			var fieldName = 'field_'+Math.floor(fieldNum);
@@ -1667,7 +1782,11 @@ function bartenderPrint(event,txtString){
 				application.output('RM COM: No Formats Found');
 				return;
 			}
-			var format = formats.getChildJSCOM("Open","",[btwFile,false,printer]);
+			if (printMinorLabel){
+				var format = formats.getChildJSCOM("Open","",[btwFileMinor,false,printer]);
+			} else {
+				format = formats.getChildJSCOM("Open","",[btwFile,false,printer]);
+			}
 			if (!format){
 				plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
 				application.output('RM COM: No formats format found');
@@ -1696,7 +1815,7 @@ function bartenderPrint(event,txtString){
 					db = DBs.get('Configuration')+"";
 					var regexp = new RegExp(/SelectCommand.*\[(.*)\].*SelectCommand/);
 					var database = db.match(regexp);
-					application.output('RM COM: bartender database '+database+' DB '+database[1]+' DB ');
+					application.output('RM COM: bartender database '+database+' DB ');
 					if (!database){
 						plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError(),i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
 						com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
@@ -1705,6 +1824,7 @@ function bartenderPrint(event,txtString){
 						return;
 					}
 					var database2 = database[1];
+					application.output('Database used '+database2);
 					database2 = database2.trim();
 					if (database2){
 						db = DBs.getChildJSCOM('GetDatabase',[database2]);
@@ -1744,15 +1864,22 @@ function bartenderPrint(event,txtString){
 			//com.getChildJSCOM("Quit","BarTender.Application",[1]);
 			//com.getChildJSCOM("Quit","BarTender.Application",[1]);
 			//com.getChildJSCOM("Quit","BarTender.Application",[1]);
-			com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
-			com.release();//release bartender every time since the program closes each time
 			scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.barcode.print.working'),true);
 			if (formName != 'rf_mobile_view'){
 				/** var reply = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),
 					i18n.getI18NMessage('sts.txt.question.delete.barcode.file'),
 					[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
 				if (reply == i18n.getI18NMessage('sts.btn.yes')){ */
+				
 //DO NOT DELETE YET					var status = plugins.file.deleteFile(randFileName);
+				while (com.call('isPrinting') == true){
+					application.output('still printing');
+					application.sleep(1000);
+				}
+				com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+				com.release();//release bartender every time since the program closes each time
+				var status = plugins.file.deleteFile(randFileName);
+				application.output('Deleted print barcode label Name '+status);
 				/**	if (!status){//1223
 						plugins.dialogs.showErrorDialog('1223',i18n.getI18NMessage('1223'));
 					}
@@ -1858,10 +1985,11 @@ function tabContentFormat(tabContents,tabSpec){
 			a = hours.substring(hours.length-2,hours.length)+':'+mins.substring(mins.length-2,mins.length)+':'+secs.substring(secs.length-2,secs.length);
 			break;
 		case 'Readable':
-			a = (forms['barcode_idlabel'].vJobMetric) ? a : scopes.jobs.fracToDec(a);
+			//a = scopes.jobs.fracToDec(a);//readable is always Imperial
+			a = globals.ftDecToString('FEET',a,13,'ALL');
 			break;
 		case 'Logical':
-			a = (a == null || a == 0) ? 'T' : 'F';
+			a = (a || a == null || a == 0) ? 'T' : 'F';
 			break;
 		case 'Character':
 			break;
@@ -2881,7 +3009,7 @@ function getUsersWithScreenPrintPerms(event){
  * @properties={typeid:24,uuid:"B7F28ED3-D52E-4252-B86A-B741F71AE3DB"}
  */
 function getMCFSScreenNames(){//FabSuite Screen Names
-	var fsImportOnly = ['sts.mobile.cut.cutlist'];
+	var fsImportOnly = ['sts.mobile.cut.cutlist.raw'];
 	var importOnly = (scopes.prefs.lFabsuiteImportOnly);
 	var mobileFSViews = globals.mobileFSViews.slice(0);
 	for (var idx = 0;idx < mobileFSViews.length;idx++){
@@ -2995,20 +3123,43 @@ function createBtTableLabelFields(){
 function getUserDestination(){
 	var userUUID = globals.session.loginId;
 	var screenName = globals.session.program;
-	application.output('RM Get User Destination user  id: '+userUUID+' Screen: '+screenName);
-	var destination = {label:null, printer:null}
+	if (screenName == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+		var screens = [i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'),
+		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.id'),
+		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minorid')]
+	}
+	//application.output('RM Get User Destination user  id: '+userUUID+' Screen: '+screenName);
+	var destination = {labelRaw:null, printerRaw:null, labelMajor:null, printerMajor:null, labelMinor:null, printerMinor:null}
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var dest = databaseManager.createSelect('db:/stsservoy/label_destinations');
 	dest.where.add(dest.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
 	dest.where.add(dest.columns.user_uuid.eq(application.getUUID(userUUID)));
-	dest.where.add(dest.columns.rf_screen_name.eq(screenName));
+	if (screenName == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+		dest.where.add(dest.columns.rf_screen_name.isin(screens));
+	} else {
+		dest.where.add(dest.columns.rf_screen_name.eq(screenName));
+	}
 	dest.result.add(dest.columns.label_destination_uuid);
 	var D = databaseManager.getFoundSet(dest);
-	if (D.getSize() == 1){
-		/** @type {JSFoundSet<db:/stsservoy/label_destinations>} */
-		var rec = D.getRecord(1);
-		destination.printer = rec.printer_name;
-		destination.label = rec.label_template_name;
+	/** @type {JSFoundSet<db:/stsservoy/label_destinations>} */
+	var rec = null;var idx = 1;
+	if (D.getSize() > 0){
+		while (rec = D.getRecord(idx++)){
+			switch (rec.rf_screen_name) {
+				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.id'):
+					destination.labelMajor = rec.label_template_name;
+					destination.printerMajor = rec.printer_name;
+					break;
+				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minorid'):
+					destination.labelMinor = rec.label_template_name;
+					destination.printerMinor = rec.printer_name;
+					break;
+				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'):
+				default:
+					destination.printerRaw = rec.printer_name;
+					destination.labelRaw = rec.label_template_name;
+			}
+		}
 	}
 	return destination;
 }
@@ -3031,4 +3182,51 @@ function useServerPrinters(server){
 	//application.output('Printers '+printers)
 	printers.sort();
 	return printers;
+}
+/**
+ * @param event
+ * @param tempDir
+ *
+ * @properties={typeid:24,uuid:"44977ACA-E2E0-413B-9164-6DB94A113448"}
+ * @AllowToRunInFind
+ */
+function cleanTempDir(event,tempDir){//20190530 globals.checkedForTempFiles
+	if (globals.checkedForTempFiles){return}// && !application.isInDeveloper()){return}
+	globals.checkedForTempFiles = true;
+	if (tempDir.search('temp') == -1 && tempDir.search('tmp') == -1 ){return}
+	var currDate = new Date();
+	var calcDate = currDate.getTime() - 432000000/5;
+	var delDate = new Date(calcDate)
+	if (application.isInDeveloper()){application.output('current Date: '+currDate+' Delete Date: '+delDate);}
+	var getDir = plugins.file.getFolderContents(tempDir);
+	if (!getDir){
+		getDir = plugins.file.getRemoteFolderContents(tempDir);
+	}
+	for (var idx = 0;idx < getDir.length;idx++){
+		var fileObj = getDir[idx];
+		var fileDate = fileObj.lastModified();
+		var deleteFlag = (fileDate < delDate);
+		if (application.isInDeveloper()){application.output('File name: '+fileObj.getName()+' last mod: '+fileDate+' delete: '+deleteFlag);}
+		if (deleteFlag){
+			fileObj.deleteFile();
+		}
+	}
+	//var delDateSql = utils.dateFormat(delDate,'yyyy-MM-dd HH:mm:ss');
+	//application.output('del date '+delDateSql)
+	/** @type {QBSelect<db:/stsservoy/bt_labels>} */
+	var q = databaseManager.createSelect('db:/stsservoy/bt_labels');
+	//q.where.add(q.columns..eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.bt_print_date.lt(delDate));
+	q.result.add(q.columns.bt_print_date);
+	q.sort.add(q.columns.bt_print_date.asc);
+	var Q = databaseManager.getFoundSet(q);
+	if  (Q.getSize() > 0){
+		Q.deleteAllRecords();
+		/** @type {JSFoundSet<db:/stsservoy/bt_labels>} */
+		//var rec = null; idx = 1;
+		//while (rec = Q.getRecord(idx++)){
+		//	application.output('print date is '+rec.bt_print_date)
+		//}
+		
+	}
 }

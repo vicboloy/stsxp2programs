@@ -142,14 +142,6 @@ var com = '';
  */
 var btCom = '';
 /**
-*
- * @type {String}
- *
-* @properties={typeid:35,uuid:"96254FD1-F9F3-447E-A057-439BFC5F7C3B"}
-*/
-var fsCom = '';
-
-/**
  * List of idfiles/barcode id_serial_numbers that have been printed.
  * @properties={typeid:35,uuid:"FC357C54-6A5F-4015-AF29-4F2AD3718DB3",variableType:-4}
  */
@@ -913,6 +905,10 @@ var subWindowClose = '';
  * @properties={typeid:35,uuid:"7647CA96-261F-40A3-84CE-C43BD1FEAEBD"}
  */
 var subWindowParentFocus = '';
+/**
+ * @properties={typeid:35,uuid:"0DE8844D-42CE-451D-99F3-24F1FF254110",variableType:-4}
+ */
+var checkedForTempFiles = false;
 /**
  * Callback method for when solution is opened.
  *

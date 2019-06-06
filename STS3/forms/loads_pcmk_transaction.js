@@ -6,6 +6,7 @@
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"74C34AE1-9F9E-42E5-B047-457F504A60EE"}
+ * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
 	if (firstShow){

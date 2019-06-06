@@ -265,11 +265,12 @@ function onHide(event) {
 	return _super.onHide(event)
 }
 /**
+ * @param event
  * @param formName
  *
  * @properties={typeid:24,uuid:"32544F3F-97A8-4637-9AD6-EB724614058F"}
  */
-function collectAndTab(formName){
+function collectAndTab(event,formName){
 	criteria = collectCriteria();
 	var prefix = formName.split('_')[0];
 	scopes.jobs.viewBTableSQLSummary(criteria,formName);

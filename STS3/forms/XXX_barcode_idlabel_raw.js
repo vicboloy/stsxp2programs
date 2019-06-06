@@ -1,90 +1,72 @@
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"5E6B20CD-CC41-47F6-A35E-589A4C58B4FF",variableType:4}
+ * @properties={typeid:35,uuid:"4B1B4AF1-DF78-401F-AE5A-8A3F8FB3F369",variableType:4}
  */
 var useLocalDirectory = 0;
 
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"565F0E00-E340-4BBA-B591-AA072A6D9491",variableType:4}
+ * @properties={typeid:35,uuid:"3901890E-CCFB-4753-99FA-AA82E6E76344",variableType:4}
  */
 var useLabeLasePrinter = 0;
 
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"5E0B70F0-B9A0-4B84-8B4B-1BB9DC1AB722",variableType:4}
+ * @properties={typeid:35,uuid:"DF4DCE3D-644E-4148-A276-4EF22C57677A",variableType:4}
  */
 var useBarTender = 0;
 
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"748A4E28-39F6-4739-90AD-DA3774125BFC"}
+ * @properties={typeid:35,uuid:"26AB348B-812B-450E-ACC9-3D78F6437B75"}
  */
 var printerName = '';
 
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"2A19B5B3-C4AA-4214-9D3C-9CB0D2E48F09"}
+ * @properties={typeid:35,uuid:"73BF415C-ABE5-4BF0-92A5-51BAEC4DA6D7"}
  */
 var labelName = '';
 
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"EBC4B8D0-259E-4EF1-85CF-BF0B94D2FA0A"}
+ * @properties={typeid:35,uuid:"E716D63F-AE95-4E43-AF4D-5993004A85BF"}
  */
 var localDir = '';
 
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"51594784-1190-4D8A-8A4D-B33D65AE445F"}
+ * @properties={typeid:35,uuid:"7B268F1F-1DE9-4079-8776-98DBE03F0A04"}
  */
 var labeLaseFormat = '';
 
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"2A6A867D-4BF3-41FA-9245-EADFBFE43FC9",variableType:4}
+ * @properties={typeid:35,uuid:"0276AC13-358B-4030-A285-D74B00F79765",variableType:4}
  */
 var useServerPrinters = 1;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"411DE1E4-6BB2-458E-8148-766447E48F13",variableType:4}
- */
-var allSerialNumbers = 1;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"A0CF2D15-27AF-45E5-8AC7-436D754CC034",variableType:4}
- */
-var useWildCards = 0;
-/**
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"707C7C20-A885-42D1-9E8B-DE3F6F2EA45A",variableType:4}
- */
-var allControlNumbers = 1;
+
 /**
  * Callback method for when form is shown.
  *
  * @param {Boolean} firstShow form is shown first time after load
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"BC1F3669-10F4-407D-B735-64B0B7BF03D7"}
+ * @properties={typeid:24,uuid:"E1329926-BC99-480F-8CED-45AFEF01B6AF"}
  */
 function onShow(firstShow, event) {
 	_super.onShow(firstShow, event);
 	onActionClear(event);
 	//application.output('load printer order label');
 	if (firstShow){
-		labelPrintOrder = i18n.getI18NMessage('sts.print.order.id.number');
 		elements.useBarTender.enabled = (scopes.printer.barTender_installed == 1);
 		useBarTender = (scopes.printer.barTender_installed == 1) ? 1 : 0;
 		elements.useLabeLase.enabled = (scopes.printer.labeLaseInstalled == 1);
@@ -99,10 +81,10 @@ function onShow(firstShow, event) {
 	elements.writeTemp.enabled = (localDir != '');
 	scopes.prefs.getBTLabelFormats();
 	scopes.prefs.getLabeLaseLabelFormats();
-	printerName = scopes.printer.rawMaterialPrinter;//.idBarcodePrinter;
-	labelName = scopes.printer.rawMaterialLabelFormat;// idBarcodeLabelFormat;
-	//application.output('scopes.printer.labelLaseFormat'+scopes.printer.idLabeLaseTemplate);
-	labeLaseFormat = scopes.printer.rawLabeLaseTemplate;//idLabeLaseTemplate;
+	printerName = scopes.printer.idBarcodePrinter;
+	labelName = scopes.printer.idBarcodeLabelFormat;
+	application.output('scopes.printer.labelLaseFormat'+scopes.printer.idLabeLaseTemplate);
+	labeLaseFormat = scopes.printer.idLabeLaseTemplate;
 	//scopes.prefs.getLabelFormats();
 	printingLabel = scopes.printer.default_label_name;
 	//if (firstShow){
@@ -116,16 +98,12 @@ function onShow(firstShow, event) {
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"4303B193-90CB-4C00-8D27-EB1572FCFEF4"}
+ * @properties={typeid:24,uuid:"B8D9AE98-D0D4-4CE5-8AF0-E2CCAAE07027"}
  * @AllowToRunInFind
  */
 function onActionPrint(event) {
-	elements.btn_PrintSelected.enabled = false;
-	elements.btn_Clear.enabled = false;
-	elements.frmServerPrinters.requestFocus();
-	scopes.jobs.labelPrintStatus = event.getFormName();
 	var printers = application.getValueListArray('stsvl_get_printer_list');
-	var debug = 0;
+	var debug = 1;
 	if (printers.indexOf(printerName) == -1){
 		globals.DIALOGS.showErrorDialog('1252',i18n.getI18NMessage('1252'));//Selected Printer Not Available.  Please Select Another.
 		return false;		
@@ -180,11 +158,7 @@ function onActionPrint(event) {
 	versionForm = globals.getInstanceForm(event);
 	var formName = 'barcode_piecemark_info';
 	var formWidth = solutionModel.getForm(formName).width+10;
-	if (event.getFormName().search('raw') == -1){
-		var newFormName = formName+versionForm;
-	} else {
-		newFormName = formName+'_raw'+versionForm;
-	}
+	var newFormName = formName+versionForm;
 	if (!forms[formName]){
 		solutionModel.cloneForm(newFormName,solutionModel.getForm(formName));
 	}
@@ -193,24 +167,20 @@ function onActionPrint(event) {
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
 	var yOrigin = controller.getWindow().getY();
-	var win = application.createWindow(winTitle, JSWindow.DIALOG);
+	var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
 	win.setInitialBounds(xOrigin+10, yOrigin+10, formWidth, height);
 	win.title = winTitle;
 
 	win.show(forms[newFormName]);
 	scopes.jobs.removeFormHist(newFormName+'_table');
-	elements.btn_PrintSelected.enabled = false;
-	elements.btn_Clear.enabled = false;
-	//var win2 = application.getWindow(returnWin);
-	//if (win2){
-	//	win2.toFront();
-	//}
+	var win2 = application.getWindow(returnWin);
+	win2.toFront();
 }
 
 /**
  * @param formName
  *
- * @properties={typeid:24,uuid:"5280D3E4-D850-444C-B86E-221435EE2A8E"}
+ * @properties={typeid:24,uuid:"187FB793-C25D-43EE-A383-39D872B8CA26"}
  */
 function collectCriteria(formName){
 	if (vLoadAll){
@@ -224,14 +194,11 @@ function collectCriteria(formName){
 		areaa: scopes.globals.csvToArray(vArea),
 		batch: scopes.globals.arrayToString(vBatch),
 		batcha: scopes.globals.csvToArray(vBatch),
-		controls : scopes.globals.csvToArray(vControlNumber),//raw material
 		cowcode: scopes.globals.arrayToString(vCowCode),
 		cowcodea:scopes.globals.csvToArray(vCowCode),
 		fabshop: scopes.globals.arrayToString(vFabShop),
 		fabshopa: scopes.globals.csvToFabshopID(vFabShop),
-		heats : scopes.globals.csvToArray(vHeatNum),//raw material
 		jobid : vJobID,
-		location: scopes.globals.csvToArray(vLocation),//raw material
 		loadall : loadAll,
 		loadnum : vLoadNum,
 		loadnuma : scopes.globals.csvToArray(vLoadNum),
@@ -239,7 +206,6 @@ function collectCriteria(formName){
 		loadrela : scopes.globals.csvToArray(vLoadRel),
 		lotnum : scopes.globals.convertLotToId(vLotNum,false), //ticket#7
 		lotnuma : scopes.globals.csvToArray(vLotNum),
-		modelnums : scopes.globals.csvToArray(vModelPartNum),//raw material
 		pcmkrel : scopes.globals.arrayToString(vPcmkRel),
 		pcmkrela : scopes.globals.csvToArray(vPcmkRel),
 		piecemark : vPiecemark,
@@ -248,7 +214,6 @@ function collectCriteria(formName){
 		pkgnuma : scopes.globals.csvToArray(vPkgNum),
 		seqnum : scopes.globals.arrayToString(vSeqNum),
 		seqnuma : scopes.globals.csvToArray(vSeqNum),
-		serials : scopes.globals.csvToArray(vSerialNumRaw),//raw material
 		sheetnum : scopes.globals.arrayToString(vSheetNum),
 		sheetnuma : scopes.globals.csvToArray(vSheetNum),
 		statusa : scopes.globals.csvToFabCodes(vFabShop),
@@ -309,18 +274,18 @@ function collectCriteria(formName){
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"FB1D835A-0F7B-4F6F-802A-DA7C63A03F6E"}
+ * @properties={typeid:24,uuid:"63B2D368-F97D-4E36-96BD-1969D41592F5"}
  * @AllowToRunInFind
  */
 function onActionClear(event) {
 	var formName = event.getFormName();
 	forms[formName].foundset.clear();
 	//forms[formName].elements.btn_Print.enabled = false;
-	forms[formName].elements.btn_PrintSelected.enabled = true;//disabled for raw material
+	forms[formName].elements.btn_PrintSelected.enabled = false;
 	//forms[formName].elements.btn_PrintAll.enabled = false;
 	var form = forms[formName];
-	 for (var element in forms[formName].elements){
-		if (element.search('frm') == 0){elements[element].enabled = true;}
+	for (var element in forms[formName].elements){
+		if (element.search('frm') == 0 && element.search(/JobNum/) == -1){elements[element].enabled = false;}
 		if (forms[formName].elements[element].getElementType() == "CHECK"){
 			var provider = forms[formName].elements[element].getDataProviderID();
 			form[provider] = 0;			
@@ -331,15 +296,13 @@ function onActionClear(event) {
 		forms[formName].elements[element].bgcolor = 'white';
 	}
 	useServerPrinters = 1;
-	allControlNumbers = 1;
-	allSerialNumbers = 1;
 }
 
 /**
  * @param event
  * @param formName
  *
- * @properties={typeid:24,uuid:"F13D3BEC-98AE-4F6B-8547-A104C65413BD"}
+ * @properties={typeid:24,uuid:"94FFBF75-7D22-4106-B62A-2965F8560B1C"}
  */
 function collectAndTab(event,formName){
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
@@ -372,7 +335,7 @@ function collectAndTab(event,formName){
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"6EE5CD97-6303-4013-8ADA-CE2355F3EAF1"}
+ * @properties={typeid:24,uuid:"5FF39823-DB31-4374-9CA6-C1886C59E529"}
  */
 function onActionBarTenderPrinter(event) {
 	checkPrinterSelection(event);
@@ -381,7 +344,7 @@ function onActionBarTenderPrinter(event) {
 /**
  * @param {JSEvent} event
  *
- * @properties={typeid:24,uuid:"F79462EE-3EA4-4C19-A367-64020671F250"}
+ * @properties={typeid:24,uuid:"0FC6BE40-7080-45DE-AD80-3CC810AA55F7"}
  */
 function checkPrinterSelection(event){
 	var form = forms[event.getFormName()];
@@ -400,7 +363,7 @@ function checkPrinterSelection(event){
  *
  * @param {JSEvent} event the event that triggered the action
  *
- * @properties={typeid:24,uuid:"81B7CA37-253C-4FC2-BF7A-8C4511137129"}
+ * @properties={typeid:24,uuid:"206C4F1D-7C35-4DE7-B5D9-D70A7C725AB8"}
  */
 function onActionLabeLasePrinter(event) {
 	checkPrinterSelection(event);
@@ -415,92 +378,10 @@ function onActionLabeLasePrinter(event) {
  *
  * @returns {Boolean}
  *
- * @properties={typeid:24,uuid:"71968DD8-9ACF-4B4E-B0ED-B56F17B68614"}
+ * @properties={typeid:24,uuid:"10E623D0-950A-414C-A08C-9357D9BBC638"}
  */
 function onDataChangeChgPrinters(oldValue, newValue, event) {
 	var printers = (newValue) ? scopes.prefs.useServerPrinters(true) : scopes.prefs.useServerPrinters(false);
 	application.setValueListItems('stsvl_get_printer_list',printers);
-	return true
-}
-
-/**
- * Handle changed data.
- *
- * @param {Number} oldValue old value
- * @param {Number} newValue new value
- * @param {JSEvent} event the event that triggered the action
- *
- * @returns {Boolean}
- *
- * @properties={typeid:24,uuid:"B7450991-0B24-4A27-97EF-2D58D40144BC"}
- */
-function onDataChangeAllControlNums(oldValue, newValue, event) {
-	vControlNumber = '';
-	if (newValue == 0) {
-		elements.frmControlNumber.requestFocus();
-	} else {
-		elements.frmModelPartNumber.requestFocus();
-	}
-	return true
-}
-
-/**
- * Handle changed data.
- *
- * @param {Number} oldValue old value
- * @param {Number} newValue new value
- * @param {JSEvent} event the event that triggered the action
- *
- * @returns {Boolean}
- *
- * @properties={typeid:24,uuid:"C0A60EF7-B497-4C70-AA41-125A96B47C22"}
- */
-function onDataChangeAllSerialNum(oldValue, newValue, event) {
-	vSerialNumRaw = '';
-	(newValue == 0) ? elements.frmSerialNumber.requestFocus() : elements.frmLocation.requestFocus();
-	return true;
-}
-
-/**
- * Handle changed data.
- *
- * @param {String} oldValue old value
- * @param {String} newValue new value
- * @param {JSEvent} event the event that triggered the action
- *
- * @returns {Boolean}
- *
- * @properties={typeid:24,uuid:"9CB66D4D-3040-4A51-9524-15CB3EBCB74C"}
- */
-function onDataChangeControlNum(oldValue, newValue, event) {
-	if (newValue == ''){
-		allControlNumbers = 1;
-		elements.frmModelPartNumber.requestFocus();
-	} else {
-		allControlNumbers = 0;
-		elements.frmControlNumber.requestFocus();
-	}
-	return true;
-}
-
-/**
- * Handle changed data.
- *
- * @param {String} oldValue old value
- * @param {String} newValue new value
- * @param {JSEvent} event the event that triggered the action
- *
- * @returns {Boolean}
- *
- * @properties={typeid:24,uuid:"1511A929-76D4-4B7E-BE38-E9D2DE21ECAE"}
- */
-function onDataChangeSerialNum(oldValue, newValue, event) {
-	if (newValue == ''){
-		allSerialNumbers = 1;
-		elements.frmLocation.requestFocus();
-	} else {
-		allSerialNumbers = 0;
-		elements.frmSerialNumber.requestFocus();
-	}
 	return true
 }

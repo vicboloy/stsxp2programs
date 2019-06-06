@@ -77,41 +77,27 @@ function getFabSuiteError(fsResponse){
  * @properties={typeid:24,uuid:"FC886476-C72C-45F3-AA7C-9A60F06A6A1C"}
  */
 function checkFSStatus(status){
-	if (checkComFabsuite(null) != ''){return null}
 	var winName = application.getActiveWindow().getName();
 	var formName = application.getWindow(winName).controller.getName();
 	if (scopes.prefs.lFabsuiteInstalled == 0){return null}//20181003
-	scopes.fs.checkComFabsuite(null);
-	/**	var jobList = '<FabSuiteXMLRequest>\
-			<GetProductionControlJobInformation>\
-			</GetProductionControlJobInformation>\
-			</FabSuiteXMLRequest>';
-		var jobs = globals.fsCom.call('FabSuiteXML',jobList).toString();
-		//application.output('Jobs are '+jobs);*/
-	if (globals.m.stationsThird[status]){
-		status = globals.m.stationsThird[status].toLowerCase();
-	}
-	
-	if (!globals.m.stationsThird[status]){return null}
-	//getFSStations(globals.session.jobNumber);
 	var station = '<FabSuiteXMLRequest>\
 		<ValStation>\
-		<Station>'+ status + 
-		'</Station>\
+		<Station>'+ status + '</Station>\
 		</ValStation>\
 		</FabSuiteXMLRequest>';
 	
-	/** @type {String} */
-	var fsResp = globals.fsCom.call('FabSuiteXML',station).toString();
-	scopes.jobs.warningsX(null);
-	if (fsResp.search('<Successful>0') != -1){
-	//if (fsResp == ''){
-		var error = getFabSuiteError(fsResp);
-		scopes.globals.errorDialogMobile(null,'1220',null,error);
-		return error;
-	}
+	if (formName.search('status_description') == 0 || !globals.m.stationsThird[status]){
+		scopes.fs.checkComFabsuite(null);
+		/** @type {String} */
+		var fsResp = globals.fsCom.call('FabSuiteXML',station).toString();
+		scopes.jobs.warningsX(null);
+		if (fsResp.search('<Successful>0') != -1){
+			var error = getFabSuiteError(fsResp);
+			scopes.globals.errorDialogMobile(null,'1220',null,error);
+			return error;
+		}
+	} 
 	return null;
-
 }
 /**
  * @param {String} jobNumber
@@ -815,7 +801,7 @@ function checkComFabsuite(event){
 		}
 	} else {
 		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
-		return '';
+		//return '';
 	}
 	scopes.jobs.warningsYes(event);
 	scopes.jobs.warningsMessage('Connecting to FabSuite',true);
@@ -849,6 +835,10 @@ function checkComFabsuite(event){
 		return 'FabSuite Empty Connection Preferences';
 	}
 	var serverList = [fsServer,'localhost']; var server = '';//20180108 if first server identified fails, use localhost
+	var asUser = 'admin';
+	if (globals.session.employeeNum){
+		asUser = globals.m.employee3rdParty[globals.session.employeeNum]
+	}
 	while (server = serverList.pop()){
 		var xmlConnect = '<FabSuiteXMLRequest>\
 								<Connect>\
@@ -856,6 +846,7 @@ function checkComFabsuite(event){
 									<PortNumber>'+fsPort+'</PortNumber>\
 									<Username>'+fsUser+'</Username>\
 									<Password>'+fsPass+'</Password>\
+									<AsUser>'+asUser+'</AsUser>\
 								</Connect>\
 							</FabSuiteXMLRequest>';
 		/** @type {String} */
@@ -869,6 +860,7 @@ function checkComFabsuite(event){
 			globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 			response = globals.fsCom.call('FabSuiteXML',xmlConnect);	
 		}
+		application.output('FABsuite Status: '+response);
 		var error = fabSuiteError(response);
 		if (!error){
 			break;
@@ -1095,28 +1087,35 @@ function fabSuiteProcess(){
  * @AllowToRunInFind
  */
 function fabSuiteUpdate(commitType){//shopFloorSave
-	if (!scopes.prefs.lFabsuiteInstalled || !globals.m.employee3rdParty[firstEmp]){return true}//20190202 no fs update possible
+	//if (!employee){
+	//	employee = 'admin';
+	//}
+
+	if (!scopes.prefs.lFabsuiteInstalled){return true}//20190202 no fs update possible
 	if (commitType.search(/(Save)|(Delete)/) != 0){return false}
 	if (checkComFabsuite(null) != ''){return null}
 	var date = globals.mob.date;//new Date();//flow down from data update
 
-	var userEmployee = (globals.m.employee3rdParty[firstEmp]) ? globals.session.employeeNum : '';
-	var pieceMark = globals.mob.piecemark.piecemark;//exclude this when showing assembly, no minors
-	var station = globals.mob.statusCode3rdParty;//required
-	var quantity = globals.mob.idfiles.length;//required
-	var mainMark = globals.mob.piecemark.parent_piecemark;
-	var employee = 'admin';//required employee that completed the work
-	if (scopes.prefs.lFabsuitePassWorker == 1){
-		var firstEmp = forms.rf_mobile_view.statusWorker.split('.')[0];
+	var equipEmployee = (globals.m.employee3rdParty[globals.session.employeeNum]);
+	var firstEmp = forms.rf_mobile_view.statusWorker.split('.')[0];
+	var employee = equipEmployee;
+	if (scopes.prefs.lFabsuitePassWorker == 1 && !(!firstEmp)){//user is normally operator of scanner, but pass first worker if prefs set
 		if (false && globals.mob.reverseWorker){//disable transaction reversal by anyone for a specific worker
 			firstEmp = globals.mob.reverseWorker;
 		}
-		if (firstEmp){
-			if (globals.m.employee3rdParty[firstEmp]){
-				employee = globals.m.employee3rdParty[firstEmp];
-			}
-		}
+		if (firstEmp && !globals.m.employee3rdParty[firstEmp]){
+			globals.rfErrorShow(i18n.getI18NMessage('1171'));
+			return false;
+		}//20190513 employee not set 1171
+		employee = globals.m.employee3rdParty[firstEmp];
 	}
+	var pieceMark = globals.mob.piecemark.piecemark;//exclude this when showing assembly, no minors
+	var station = globals.mob.statusCode3rdParty;//required
+	if (!station){return true}
+	var quantity = globals.mob.idfiles.length;//required
+	if (!quantity){quantity = 1}
+	var mainMark = globals.mob.piecemark.parent_piecemark;
+	//var employee = 'admin';//required employee that completed the work
 	//employee = 'admin';
 	if (!pieceMark || !station || !quantity || !mainMark || !employee){
 		globals.rfErrorShow(i18n.getI18NMessage('1017'));
@@ -1128,12 +1127,12 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];
 	var lotNumber = globals.mob.piecemark.lot;
 	var instanceNumbers = globals.mob.idfile.pcmk_instance;//accepts only numeric values, as well as hyphen
-	instanceNumbers = '';
+	//instanceNumbers = '';
 	var serialNumber = 'FS-5319D7A3-D71F-11E5-8AFE-A292F4137E41';
 	//serialNumber = globals.mob.idfile.guid_minor;
 	//serialNumber = globals.mob.idfile.guid_major;
 	serialNumber = globals.mob.barcode;
-	serialNumber = '';
+	//serialNumber = '';//enable to stop instances
 	var day = date.getDate();//this changes unless the 
 	if (day < 10){day = "0"+day}
 	var month = date.getMonth()+1;
@@ -1155,7 +1154,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	var _execDate = '<Date>'+execDate+'</Date>\n';
 	var _hours = '<Hours>'+hours+'</Hours>\n';
 	var _batchId = '<BatchID>'+batchId+'</BatchID>\n';
-	var _asUser = '<AsUser>'+userEmployee+'</AsUser>\n';
+	var _asUser = '<AsUser>'+equipEmployee+'</AsUser>\n';
 
 	var saveDataXML = '<FabSuiteXMLRequest>\
 	<ShopFloorSave>\
@@ -1176,7 +1175,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	saveDataXML = saveDataXML.replace('DATE',_execDate);
 	saveDataXML = (!hours) ? saveDataXML.replace('HOURS','') : saveDataXML.replace('HOURS',_hours);
 	saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId);
-	saveDataXML = (!userEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
+	saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
 	application.output(saveDataXML);
 	var fsResp = globals.fsCom.call('FabSuiteXML',saveDataXML);
 	application.output('RESPONSE: '+fsResp);
@@ -1286,7 +1285,7 @@ function getReceivedBarcode(event,barcode){
 		</ReceiveChecklistScan>\
 		</FabSuiteXMLRequest>';
 	var rawMat = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
-	application.output(rawMat)
+	if (application.isInDeveloper()){application.output(rawMat)}
 	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
 	if (!errorMatch){
 		var rawMatFields = {
@@ -1403,5 +1402,499 @@ function getFsDateFormat(date){
 function fabSuiteClose(){
 	if (globals.fsCom){
 		globals.fsCom.release();
+	}
+}
+/**
+ * @param event
+ * @param clBarcode
+ *
+ * @properties={typeid:24,uuid:"D8C8C6CD-31BD-4356-9202-100E6E111252"}
+ * @AllowToRunInFind
+ */
+function getFSCutList(event,clBarcode){
+	scopes.fs.checkComFabsuite(event);
+	var xmlReadReceiveCL = '<FabSuiteXMLRequest>\
+		<ValCutListItem>\
+		<CutListSerialNumber>'+clBarcode+'</CutListSerialNumber>\
+		</ValCutListItem>\
+		</FabSuiteXMLRequest>';
+	/** @type {String} */
+	var cutlistData = globals.fsCom.call('FabSuiteXML',xmlReadReceiveCL);
+	//var xmlArray = plugins.XmlReader.readXmlDocumentFromString(cutlistData);
+
+	cutlistData = cutlistData.toString();
+	application.output('RM\n'+cutlistData);
+	/** @type {String} */
+	var errorMatch = cutlistData.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
+	if (!errorMatch){
+		var partNumberData = cutlistData.match(/<ValCutListItem>([^]*?)<PartNumber\/>/)[1];
+		application.output('cut list fields\n'+partNumberData);
+		var lengthData = partNumberData.match(/<Length UOM="(.*)">(.*)<\/Length>/);
+		var widthData = partNumberData.match(/<Width UOM="(.*)">(.*)<\/Width>/);
+		if (!widthData){widthData = [null,'',0]}
+		var weightData = partNumberData.match(/<Weight UOM="(.*)">(.*)<\/Weight>/);
+		var dropData = partNumberData.match(/<ExpectedDrop UOM="(.*)">(.*)<\/ExpectedDrop>/);
+		var dropReserveData = partNumberData.match(/<DropJobReservePrompt CurrentJobReserve="(.*)" Option="(.*)">(.*)<\/DropJobReservePrompt>/);
+		var dimensionData = partNumberData.match(/<Dimensions Metric="(.*)">(.*)<\/Dimensions>/);
+		var areaData = partNumberData.match(/<Area UOM="(.*)">(.*)<\/Area>/);
+		if (!areaData){areaData = [null,'',0]}
+
+		var cutPartData = cutlistData.match(/<PartNumber\/>([^]*)<CutListItemAvailable>/)[1];
+		cutPartData = cutPartData.toString();
+		var cutPartArray = [];
+		var firstPass = true;
+		var cutPartEl = {pJob :'',pMajor : '',pMinor : '',pSeq : '',pLot : '',pQuant:'',pWidth:'',pWidthType: '',
+			pLength:'',pLengthType: '', pArea:'',pAreaType: '',pRoute: '',pStrikeThru: '',pcmkId: '', idfileId: ''};
+		var emptyData = [null,'',0];
+		while (cutPartData){
+		//for (var i = 0;i < cutPartList.length;i++){
+			//var line = cutPartList[i];
+		    var cutPartDataItem = cutPartData.match(/<CutPart>([^]*?)<\/CutPart>/);//match does not span multiple lines unless include \n
+			if (cutPartDataItem){cutPartDataItem = cutPartDataItem[1]} else {break}
+		    var pJob = cutPartDataItem.match(/<JobNumber>(.*)<\/JobNumber>/);
+		    var pMajor = cutPartDataItem.match(/<MainMark>(.*)<\/MainMark>/);
+		    var pMinor = cutPartDataItem.match(/<PieceMark>(.*)<\/PieceMark>/);
+		    var pSeq = cutPartDataItem.match(/<Sequence>(.*)<\/Sequence>/);
+		    if (!pSeq){pSeq = emptyData}
+		    var pLot = cutPartDataItem.match(/<LotNumber>(.*)<\/LotNumber>/);
+		    if (!pLot){pLot = emptyData}
+		    var pQuant = cutPartDataItem.match(/<Quantity>(.*)<\/Quantity>/);
+		    var pWidth = cutPartDataItem.match(/<Width UOM="(.*)">(.*)<\/Width>/);
+		    if (!pWidth){pWidth = [].concat(emptyData)}
+		    var pLength = cutPartDataItem.match(/<Length UOM="(.*)">1(.*)<\/Length>/);
+		    if (!pLength){pLength = [].concat(emptyData)}
+		    var pArea = cutPartDataItem.match(/<Area UOM="(.*)">(.*)<\/Area>/);
+		    if (!pArea){pArea = [].concat(emptyData)}
+		    var pRoute = cutPartDataItem.match(/<Route>(.*)<\/Route>/);
+		    if (!pRoute){pRoute = emptyData}
+		    var pStrikeThru = cutPartDataItem.match(/<MatchFilter>(.*)<\/MatchFilter>/);
+		    cutPartData = cutPartData.match(/<\/CutPart>([^]*)/);//get last bunch of parts
+		    if (cutPartData){
+		    	cutPartData = cutPartData[1].toString()
+		    	for (var cnt = pQuant[1];cnt != 0;cnt--){
+					var newPart = {};
+			    	for (var item in cutPartEl){newPart[item] = ''}
+			    	newPart.pJob = pJob[1];
+			    	newPart.pMajor = pMajor[1];
+			    	newPart.pMinor = pMinor[1];
+			    	newPart.pSeq = pSeq[1];
+			    	newPart.pLot = pLot[1];
+			    	newPart.pQuant = 1;
+			    	newPart.pLength = pLength[2];
+			    	newPart.pLengthType = pLength[1];
+			    	newPart.pWidth = pWidth[2];
+			    	newPart.pWidthType = pWidth[1];
+			    	newPart.pArea = pArea[2];
+			    	newPart.pAreaType = pArea[1];
+			    	newPart.pRoute = pRoute[1];
+			    	newPart.pStrikeThru = (pStrikeThru[1] == 1);
+				    cutPartArray.push(newPart);
+		    	}
+			    //application.output(cutPartEl);
+		    }
+		}
+		application.output('cutlist: \n');
+		for (var idx = 0;idx < cutPartArray.length;idx++){
+			application.output(cutPartArray[idx]);
+		}
+		var cutlistFields = {
+			serialnumber : cutlistData.match(/<CutListSerialNumber>(.*)<\/CutListSerialNumber>/)[1],
+			qtyremaining : cutlistData.match(/<QuantityRemaining>(.*)<\/QuantityRemaining>/)[1],
+			shape : cutlistData.match(/<Shape>(.*)<\/Shape>/)[1],
+			grade : cutlistData.match(/<Grade>(.*)<\/Grade>/)[1],
+			dimensionsType : (dimensionData[1] == "0") ? "imperial" : "metric",
+			dimensions : dimensionData[2],
+			lengthType : lengthData[1],
+			length : lengthData[2],
+			weightType : weightData[1],
+			weight : weightData[2],
+			dropType : dropData[1],
+			drop : dropData[2],
+			dropWidthType : '',
+			dropWidth : '',
+			dropreservejob : dropReserveData[1],
+			dropreserveroption : dropReserveData[2],
+			dropreserveprompt : dropReserveData[3],
+			widthType : widthData[1],
+			width : widthData[2],
+			cutarray : cutPartArray,
+			error : ''
+		}
+		if (cutlistFields.dropType.search('sq') == -1)
+		if (application.isInDeveloper()){application.output(cutlistFields)}
+	} else {
+		cutlistFields = {
+			error : errorMatch[1]
+		}
+	}
+	return cutlistFields;
+}
+/**
+ * @param event
+ * @param clBarcode
+ * @param rmBarcode
+ *
+ * @properties={typeid:24,uuid:"D9549DD5-7633-46A5-A71D-BB5554C9AB4D"}
+ */
+function matchCLtoRMBarcodes(event,clBarcode,rmBarcode){
+	if (checkComFabsuite(event) != ''){return ''}
+	var xmlReadReceive = '<FabSuiteXMLRequest>\
+		<ValCutListItem>\
+		<CutListSerialNumber>'+clBarcode+'</CutListSerialNumber>\
+		<InventorySerialNumber>'+rmBarcode+'</InventorySerialNumber>\
+		</ValCutListItem>\
+		</FabSuiteXMLRequest>';
+	application.output(xmlReadReceive);
+	var valid = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
+	if (application.isInDeveloper()){application.output(valid)}
+	var errorMatch = valid.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
+	if (!errorMatch){
+		var rawMatFields = {
+			//ponumber : valid.match(/<PONumber>(.*)<\/PONumber>/)[1],
+			//qtyordered : valid.match(/<QuantityOrdered>(.*)<\/QuantityOrdered>/)[1],
+			//qtyremaining : valid.match(/<QuantityRemaining>(.*)<\/QuantityRemaining>/)[1],
+			//shape : valid.match(/<Shape>(.*)<\/Shape>/)[1],
+			//grade : valid.match(/<Grade>(.*)<\/Grade>/)[1],
+			//dimensions : valid.match(/<Dimensions>(.*)<\/Dimensions>/)[1],
+			//length : valid.match(/<Length>(.*)<\/Length>/)[1],
+			//weighteach : valid.match(/<WeightEach>(.*)<\/WeightEach>/)[1],
+			error : ''
+		}
+	} else {
+		rawMatFields = {
+			error : errorMatch[1]
+		}
+	}
+	return rawMatFields;
+
+}
+/**
+ * 
+ * @param event
+ * @param jobNumber
+ * @param clBarcode
+ * @param rmBarcode
+ * @param quantity
+ * @param cutAll
+ * @param dWidth
+ * @param dLength
+ * @param dLocation
+ * @param dLocation2
+ *
+ * @properties={typeid:24,uuid:"C20FCF2D-0B4C-456E-B7B5-59DD4AC158CB"}
+ * @AllowToRunInFind
+ */
+function matchCLtoRMBarcodesProcess(event,jobNumber,clBarcode,rmBarcode,quantity,cutAll,dWidth,dLength,dLocation,dLocation2){
+	if (application.isInDeveloper()){application.output('inside matchCLtoRMBarcodesProcess');}
+	if (checkComFabsuite(event) != ''){return ''}
+	if (application.isInDeveloper()){application.output('inside matchCLtoRMBarcodesProcess past checkComFS');}
+	var RMdata = scopes.jobs.getRMBarcodeSpecs(event,rmBarcode);
+	var uomMetric = (dLength.search(/(['"])/) == -1);
+	var uom = (uomMetric) ? 'MM' : 'IN';
+	var cutListAll = (cutAll) ? 'true' : 'false';
+	var dropLength = (uomMetric) ? dLength : globals.strToDec('FEET',dLength.replace(/[^0-9]/g,' '));//scopes.globals;
+	var dropWidth = (uomMetric) ? dWidth : globals.strToDec('INCHES',dWidth.replace(/[^0-9]/g,' '));//decimal with uom 11.111 in/mm
+	// Start barcode section
+	var rawCuts = globals.session.cutlistdata.cutarray;var nothingHere = true;
+	var addBarcodes = '<PartSerialNumbers>\n';
+	for (var idx = 0;idx < rawCuts.length;idx++){
+		var part = rawCuts[idx];
+		if (!part.pStrikeThru){continue}
+		if (!part.Barcode){continue}//20190603 what do we do if no barcode?
+		var addBarcode = '<PartSerialNumber>\n'+
+		'<JobNumber>'+part.pJob+'</JobNumber>\n'+
+		'<MainMark>'+part.pMajor+'</MainMark>\n'+
+		'<PieceMark>'+part.pMinor+'</PieceMark>\n'+
+		'<Sequence>'+part.pSeq+'</Sequence>\n'+
+		'<LotNumber>'+part.pLot+'</LotNumber>\n'+
+		'<SerialNumber>'+part.Barcode+'</SerialNumber>\n'+
+		'</PartSerialNumber>\n';
+		addBarcodes = addBarcodes+addBarcode;
+		nothingHere = false;
+		
+	}
+	addBarcodes = addBarcodes+'</PartSerialNumbers>\n';
+	if (nothingHere){addBarcodes = '';}
+	// Finish barcode section
+	var xmlReadReceive = '<FabSuiteXMLRequest>\n\
+		<TFSCut>\n\
+		<CutListSerialNumber>'+clBarcode.trim()+'</CutListSerialNumber>\n\
+		<InventorySerialNumber>'+rmBarcode.trim()+'</InventorySerialNumber>\n\
+		<Quantity>'+Math.floor(quantity*1)+'</Quantity>\n\
+		<CutAll>'+cutListAll+'</CutAll>\n\
+		<AsUser>P2</AsUser>\
+		<DropWidth UOM="'+uom+'">'+dropWidth+'</DropWidth>\n\
+		<DropLength UOM="'+uom+'">'+dropLength+'</DropLength>\n\
+		<DropLocation>'+dLocation+'</DropLocation>\n\
+		<DropSecondaryLocation>'+dLocation2+'</DropSecondaryLocation>\n\
+		<Location>'+dLocation+'</Location>\n\
+		<SecondaryLocation>'+dLocation2+'</SecondaryLocation>\n'+
+		addBarcodes+'</TFSCut>\n\
+		</FabSuiteXMLRequest>';
+	//<PieceTrackingUsername>'+username+'</PieceTrackingUsername>\
+	//<AdditionalDrop>'+addlDrop+'</AdditionalDrop>\
+	//<PartSerialNumbers>'+serialNumbers+'</PartSerialNumbers>\
+	if (application.isInDeveloper()){application.output(xmlReadReceive);}
+	/** @type {String} */
+	var valid = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
+	if (application.isInDeveloper()){application.output(valid)}
+	var errorMatch = valid.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
+	if (!errorMatch){
+		var validRTS = valid.match(/<RTSType>(.*)<\/RTSType>/);
+		if (validRTS){validRTS = validRTS[1]}
+		var validPO = valid.match(/<ActualPONumber>(.*)<\/ActualPONumber>/);
+		if (validPO){validPO = validPO[1]}
+		var validBOL = valid.match(/<ActualBillOfLadingNumber>(.*)<\/ActualBillOfLadingNumber>/);
+		if (validBOL){validBOL = validBOL[1]}
+		var validCOO =  valid.match(/<ActualCountryOfOrigin>(.*)<\/ActualCountryOfOrigin>/);
+		if (validCOO){validCOO =  validCOO[1]}
+		var validDropL = valid.match(/<ActualDropLength UOM=".*">(.*)<\/ActualDropLength>/);
+		if (validDropL){validDropL = validDropL[1]}
+		var validDropW = valid.match(/<ActualDropWidth UOM=".*">(.*)<\/ActualDropWidth>/);
+		if (validDropW){validDropW = validDropW[1]}
+		var validDropLoc = valid.match(/<ActualDropLocation>(.*)<\/ActualDropLocation>/)
+		if (validDropLoc){validDropLoc = validDropLoc[1]}
+		var validDropLoc2 = valid.match(/<ActualDropSecondaryLocation>(.*)<\/ActualDropSecondaryLocation>/);
+		if(validDropLoc2){validDropLoc2 = validDropLoc2[1]}
+		var validRestock = valid.match(/<RTSType>(.*)<\/RTSType>/);
+		if (validRestock){validRestock = validRestock[1]}
+		var validHeat = valid.match(/<ActualHeatNumber>(.*)<\/ActualHeatNumber>/);
+		if (validHeat){validHeat = validHeat[1]}
+		var rawMatFields = {
+			restockstatus : validRestock,
+			heatnumber : validHeat,
+		    ponumber : validPO,
+		    bolnumber : validBOL,
+		    countryoforigin : validCOO,
+		    actualdroplength : validDropL,
+			actualdropwidth : validDropW,
+		    actualdroplocation : validDropLoc,
+			actiondroplocation2 : validDropLoc2,
+			metricuom : (uom == "MM"),
+			rtsmessage : validRTS,
+			error : ''
+		}
+	} else {
+		rawMatFields = {
+			error : errorMatch[1]
+		}
+	}
+	/**
+	 *   <TFSCut>
+    <Successful>1</Successful>
+    <RTSType>Restock</RTSType>
+    <ActualHeatNumber>MMMM</ActualHeatNumber>
+    <ActualHeatSerialNumber/>
+    <ActualPONumber>04030</ActualPONumber>
+    <ActualBillOfLadingNumber/>
+    <ActualCountryOfOrigin/>
+    <ActualDropLength UOM="in">1.375</ActualDropLength>
+    <ActualDropLocation>YARD</ActualDropLocation>
+    <ActualDropSecondaryLocation>SHOP</ActualDropSecondaryLocation>
+    <CutPart>
+      <JobNumber>04030</JobNumber>
+      <MainMark>8B1</MainMark>
+      <PieceMark>8B1</PieceMark>
+      <Sequence>3</Sequence>
+      <Quantity>1</Quantity>
+      <InstanceNumbers>1</InstanceNumbers>
+    </CutPart>
+  </TFSCut>
+
+	 * 
+	 */
+	return rawMatFields;
+
+}
+/**
+ * @param event
+ * @param serialNumber
+ *   <ValInventory>
+    <Successful>1</Successful>
+    <Quantity>1</Quantity>
+    <Shape>W</Shape>
+    <Grade>A992</Grade>
+    <Dimensions Metric="0">24 x 68</Dimensions>
+    <Width>
+    <Length UOM="in">480</Length>
+    <PONumber>04030</PONumber>
+    <BillOfLadingNumber>ABCABC</BillOfLadingNumber>
+    <CountryOfOrigin>USA</CountryOfOrigin>
+    <HeatNumber>EAR554</HeatNumber>
+    <HeatSerialNumber/>
+    <Location>SHOP</Location>
+    <SecondaryLocation>YARD</SecondaryLocation>
+    <JobReserve>04030</JobReserve>
+    <WeightEach>1233.7712464</WeightEach>
+  </ValInventory>
+ *
+ * @properties={typeid:24,uuid:"A8AEE402-A847-4FA7-82B9-7C931DBB3FA3"}
+ */
+function getInventorySerial(event,serialNumber){
+	var xmlReadReceive = '<FabSuiteXMLRequest>\
+		<ValInventory>\
+		<SerialNumber>'+serialNumber+'</SerialNumber>\
+		</ValInventory>\
+		</FabSuiteXMLRequest>';
+	if (application.isInDeveloper()){application.output(xmlReadReceive);}
+	/** @type {String} */
+	var valid = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
+	if (application.isInDeveloper()){application.output(valid)}
+	var errorMatch = valid.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
+	if (!errorMatch){
+		var validQuant = valid.match(/<Quantity>(.*)<\/Quantity>/);
+		if (validQuant){validQuant = validQuant[1]}
+		var validShape = valid.match(/<Shape>(.*)<\/Shape>/);
+		if (validShape){validShape = validShape[1]}
+		var validGrade = valid.match(/<Grade>(.*)<\/Grade>/);
+		if (validGrade){validGrade = validGrade[1]}
+		//<Dimensions Metric="0">24 x 68</Dimensions>
+		var validDims = valid.match(/<Dimensions Metric="(.*)">(.*)<\/Dimensions>/);
+		var validMetric = false;
+		if (validDims){
+			validMetric = (validDims[1] == 1);
+			validDims = validDims[2];
+		}
+		var validWidth = valid.match(/<Width UOM="(.*)">(.*)<\/Width>/);
+		var validWUom = false;
+		if (validWidth){
+			validWUom = validWidth[1];
+			validWidth = validWidth[2];
+		}
+	    //<Length UOM="in">480</Length>
+		var validLength = valid.match(/<Length UOM="(.*)">(.*)<\/Length>/);
+		var validLUom = false;
+		if (validLength){
+			validLUom = validLength[1];
+			validLength = validLength[2];
+		}
+		var isMetric = (validLUom != "in");
+		var validPoNumber = valid.match(/<PONumber>(.*)<\/PONumber>/);
+		if (validPoNumber){validPoNumber = validPoNumber[1]}
+		var validBoL = valid.match(/<BillOfLadingNumber>(.*)<\/BillOfLadingNumber>/);
+		if (validBoL){validBoL = validBoL[1]}
+		var validCoO = valid.match(/<CountryOfOrigin>(.*)<\/CountryOfOrigin>/);
+		if (validCoO){validCoO = validCoO[1]}
+		var validHeat = valid.match(/<HeatNumber>(.*)<\/HeatNumber>/);
+		if (validHeat){validHeat = validHeat[1]}
+		var validLoc = valid.match(/<Location>(.*)<\/Location>/);
+		if (validLoc){validLoc = validLoc[1]}
+		var validLoc2 = valid.match(/<SecondaryLocation>(.*)<\/SecondaryLocation>/);
+		if (validLoc2){validLoc2 = validLoc2[1]}
+		var validReserve = valid.match(/<JobReserve>(.*)<\/JobReserve>/);
+		if (validReserve){validReserve = validReserve[1]}
+		var validWeight = valid.match(/<WeightEach>(.*)<\/WeightEach>/);
+		if (validWeight){validWeight = validWeight[1]}
+		var validWidthIn = 0;
+		var validLengthIn = 0;
+		var validWeightLbs = globals.kgToLb(validWeight);
+		
+		if (isMetric){
+			validWidthIn = globals.mmToFeet(validWidth);
+			validLengthIn = globals.mmToFeet(validLength);
+		} else {
+			validWidthIn = validWidth;
+			validLengthIn = validLength;
+			validLength = globals.inToMM(validLengthIn);
+			validWidth = globals.inToMM(validWidthIn);
+		}
+		var validLengthChar = globals.ftDecToString('FEET',validLengthIn,13,'ALL');
+
+		var rawMatFields = {
+			model_part : validShape+' '+validDims,
+			grade : validGrade,
+		    heat : validHeat,
+		    quantity : validQuant,
+		    item_width : validWidth,
+		    item_width_in : validWidthIn,
+			item_weight : validWeight,
+			item_weight_lbs : validWeightLbs,
+			item_length : validLength,
+			item_length_char : validLengthChar,
+			item_length_in : validLengthIn,
+			location : validLoc,
+			location2 :validLoc2,
+			bill_of_lading_in : validBoL,
+			po_number : validPoNumber,
+			job_number : validReserve,
+			error : ''
+		}
+	} else {
+		rawMatFields = {
+			error : errorMatch[1]
+		}
+	}
+	null;
+	return rawMatFields;
+}
+/**
+ * @properties={typeid:24,uuid:"2FBC2EB3-F4B1-4CDD-B32D-683E1990C2C4"}
+ * for internal use only. This is 
+ */
+function exportJob(){
+	var xml='<FabSuiteXMLRequest>\
+		<ExportJob>\
+		<JobNumber>04030</JobNumber>\
+		<Filename>e:\\04030Joe.kss</Filename>\
+		<IncludeLotNumbers>1</IncludeLotNumbers>\
+		</ExportJob>\
+		</FabSuiteXMLRequest>';
+	if (globals.fsCom){
+		var fsResp = globals.fsCom.call('FabSuiteXML',xml);
+		application.output('xml is '+fsResp)
+		if (fabSuiteResponse(fsResp) == ''){
+			return true;
+		}
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param cutlistData
+ *
+ * @properties={typeid:24,uuid:"3D2F68CC-6BEC-45EB-A708-24EEA8616628"}
+ */
+function processRawCutBarcodes(event,cutlistData){
+	var equipEmployee = (globals.m.employee3rdParty[globals.session.employeeNum]);
+	var firstEmp = forms.rf_mobile_view.statusWorker.split('.')[0];
+	var employee = equipEmployee;
+	if (scopes.prefs.lFabsuitePassWorker == 1 && !(!firstEmp)){//user is normally operator of scanner, but pass first worker if prefs set
+		if (false && globals.mob.reverseWorker){//disable transaction reversal by anyone for a specific worker
+			firstEmp = globals.mob.reverseWorker;
+		}
+		if (!(!firstEmp) && !globals.m.employee3rdParty[firstEmp]){
+			globals.rfErrorShow(i18n.getI18NMessage('1171'));
+			return false;
+		}//20190513 employee not set 1171
+		employee = globals.m.employee3rdParty[firstEmp];
+	}
+	globals.mob.statusCode3rdParty = globals.m.stationsThird[forms['rf_mobile_view'].statusCode];//station required var station = 
+	globals.mob.date = new Date();
+	//if (!pieceMark || !station || !quantity || !mainMark || !employee){
+	//	globals.rfErrorShow(i18n.getI18NMessage('1017'));
+	//	return false;
+	//}
+	
+	//var commitType = 'Save';//Save/Delete/required use F8 to indicate removal
+	
+	globals.mob.idfile.pcmk_instance = null;//accepts only numeric values, as well as hyphen var instanceNumbers = 
+	//instanceNumbers = '';
+	var serialNumber = 'FS-5319D7A3-D71F-11E5-8AFE-A292F4137E41';
+	//serialNumber = globals.mob.idfile.guid_minor;
+	//serialNumber = globals.mob.idfile.guid_major;
+	
+	// existing cutlist data are sent to mob data for processing.  Back populate mob data with each cut's entry
+	for (var idx = 0; idx < cutlistData.cutarray.length;idx++){
+		var pcmk = cutlistData.cutarray[idx];
+		globals.mob.job.number = pcmk.pJob;//var jobNumber = 
+		globals.mob.idfiles = pcmk.available;//required var quantity = length 
+		var seqId = scopes.jobs.getSeqId(pcmk.available.job_uuid,pcmk.pSeq);
+		forms['rf_mobile_view'].vSequenceList[pcmk.available.sequence_id] = pcmk.pSeq;// get sequence mapping
+		globals.mob.idfile.sequence_id = pcmk.available.sequence_id;//var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id]
+		globals.mob.piecemark.lot = pcmk.pLot;//var lotNumber = 
+		globals.mob.barcode = pcmk.Barcode;//serialNumber = 
+		globals.mob.piecemark.piecemark = pcmk.pMinor;//var pieceMark = exclude this when showing assembly, no minors
+		globals.mob.piecemark.parent_piecemark = pcmk.pMajor;//var mainMark = 
+		fabSuiteSaved('Save');
 	}
 }

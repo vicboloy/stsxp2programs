@@ -7048,6 +7048,7 @@ function jobSequenceNumbers(topForm){
 	var jobId = jobData.job_id;
 	jobData.sequence_nums = [];
 	jobData.sequence_ids = [];
+	var notDeleted = [0,null];
 	/** @type {QBSelect<db:/stsservoy/sequences>} */
 	var sq = databaseManager.createSelect('db:/stsservoy/sequences');
 	sq.result.add(sq.columns.sequence_id);
@@ -7056,7 +7057,7 @@ function jobSequenceNumbers(topForm){
 	sq.sort.add(sq.columns.sequence_number);
 	sq.where.add(
 	sq.and
-		.add(sq.columns.delete_flag.isNull)
+		.add(sq.columns.delete_flag.isin(notDeleted))
 		.add(sq.columns.tenant_uuid.eq(globals.session.tenant_uuid))
 		.add(sq.columns.job_id.eq(jobId))
 	);
@@ -7089,33 +7090,27 @@ function jobLotNumbers(topForm){
 	
 	jobData.lot_nums = [];
 	jobData.lot_ids = [];
+	var notDeleted = [0,null];
 	/** @type {QBSelect<db:/stsservoy/lots>} */
 	var lt = databaseManager.createSelect('db:/stsservoy/lots');
 	lt.result.add(lt.columns.lot_id);
-	lt.result.add(lt.columns.lot);
+	lt.result.add(lt.columns.lot_number);
 	lt.result.distinct = true;
-	lt.sort.add(lt.columns.lot);
+	lt.sort.add(lt.columns.lot_number);
 	lt.where.add(
 	lt.and
-		.add(lt.columns.delete_flag.isNull)
+		.add(lt.columns.delete_flag.isin(notDeleted))
 		.add(lt.columns.tenant_uuid.eq(globals.session.tenant_uuid))
-		.add(lt.columns.sequence_id.isin(jobData.sequence_ids))
+		.add(lt.columns.job_uuid.eq(jobId))
 	);
+	//.add(lt.columns.sequence_id.isin(jobData.sequence_ids))
 	/** @type {JSFoundSet<db:/stsservoy/lots>} */
 	var fsLot = databaseManager.getFoundSet(lt);
-	var index = 1;
-	while (index <= fsLot.getSize()){
-		var rec = fsLot.getRecord(index);
+	var rec = null; var index = 1;
+	while (rec = fsLot.getRecord(index++)){
+		if (rec.lot_number == ''){continue}
 		jobData.lot_ids.push(rec.lot_id);
-		jobData.lot_nums.push(rec.lot);
-		index++;
-	}
-	// JOE check lot number creation 
-	for (index = jobData.lot_nums.length-1;index != -1;index--){
-		if (jobData.lot_nums[index] == ""){
-			jobData.lot_nums.pop();
-			jobData.lot_ids.pop();
-		}
+		jobData.lot_nums.push(rec.lot_number);
 	}
 }
 /**
@@ -8657,6 +8652,7 @@ function createRouteSummaryForm(query,formName){
 	}
 	viewBTableCreateForm2('loads_summary_info'+versionForm,statFS.getDataSource());
 	forms['loads_tabs'+versionForm].elements.tabs.setTabEnabledAt(2,true)
+	forms['loads_tabs'+versionForm].elements.tabs.setTabEnabledAt(3,true)
 }
 /**
  * @AllowToRunInFind
@@ -8773,6 +8769,7 @@ function viewBTableCreateForm2(formName,datasource){
 	for (var column in rec){
 		if (typeof rec[column] == 'function'){continue}
 		if (columnNames4.indexOf(column) == -1 && columnNames4.indexOf(column) == -1){columnNames4.push(column)}
+		if (!tableOrderingArray){columnNames4.push(column)}//20190610 no columns due to original column ordering array set
 	}
 	var columnCnt = 1; var fieldPos = 0;
 	//var altColNames = i18nColumnNames;
@@ -13235,5 +13232,911 @@ function scanCutListPiecemarkBarcodes(event,barcode){
 		}
 	}
 }
+/**
+ * @AllowToRunInFind
+ * 
+ * @param criteria
+ * @param formName
+ * @param subquery
+ *
+ * @properties={typeid:24,uuid:"31868BBB-5162-4F4C-9F5C-28B0FF7CEB0B"}
+ */
+function queryAssemblyTestUp(criteria,formName,subquery){
+	//application.output('subquery command is '+subquery);
+	/**
+	 * Sequences, Sheets, ShopOrder Numbers, Load Numbers/ALL, Load Releases
+	 * Piecemark, Pcmk Releases, FaB Shop Stations, Lot Numbers, Package Numbers, 
+	 * Areas, Batches, COW Codes 
+	 */
+
+	//databaseManager.removeTableFilterParam('stsservoy',filterName)
+	var doSingleLabel = false;
+	if (subquery == 'singleLabel'){
+		var pcmkID = criteria.piecemarkid.toString();
+		var idfilID = criteria.idfileid.toString();
+		subquery = 'browse';
+		doSingleLabel = true;
+		null;
+	}
+	if (application.isInDeveloper()){application.output('pcmkID: '+pcmkID+' idfilID: '+idfilID)}
+	null;//idserials
+	var jobId = criteria.jobid.toString(); //forms.loads_criteria.vJobID
+	var tenantId = globals.session.tenant_uuid.toString();
+	var jobShipToId = null;
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var ad = databaseManager.createSelect('db:/stsservoy/jobs');
+	ad.result.add(ad.columns.ship_to);
+	ad.where.add(ad.columns.job_id.eq(jobId));
+	ad.where.add(ad.columns.tenant_uuid.eq(tenantId));
+	var AD = databaseManager.getFoundSet(ad);
+	var adRec = AD.getRecord(1);
+	if (adRec && adRec.ship_to){
+		jobShipToId = adRec.ship_to;
+	}
+
+	var getDeleted = false;
+	if (formName.search(/(recall)|(remove)/) != -1){
+		getDeleted = true;
+	}
+    if (subquery == "browse2"){
+    	subquery = "browse";
+    }
+	if (application.isInDeveloper()){application.output('QAssemb '+formName+' get deleted '+getDeleted)}
+	// Get transactions subquery
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var trans = databaseManager.createSelect('db:/stsservoy/sheets');
+	trans.where.add(trans.columns.delete_flag.isNull);
+	trans.where.add(trans.columns.job_id.eq(jobId));
+	trans.where.add(trans.columns.tenant_uuid.eq(tenantId));
+	trans.result.add(trans.columns.sheet_id);
+	if (criteria.sheetnuma && criteria.sheetnuma.length > 0){
+		trans.where.add(trans.columns.sheet_number.isin(criteria.sheetnuma));
+	}
+	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+	var trpm = trans.joins.add('db:/stsservoy/piecemarks',JSRelation.INNER_JOIN,'tpm');
+	trpm.on.add(trans.columns.sheet_id.eq(trpm.columns.sheet_id));
+	trpm.root.where.add(trpm.columns.delete_flag.isNull);
+	trpm.root.where.add(trpm.columns.tenant_uuid.eq(tenantId));
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var trIdf = trans.joins.add('db:/stsservoy/idfiles',JSRelation.INNER_JOIN,'tid');
+	trIdf.on.add(trIdf.columns.piecemark_id.eq(trpm.columns.piecemark_id));
+	if (getDeleted){
+		trIdf.root.where.add(trIdf.columns.delete_flag.eq(99));
+	} else {
+		trIdf.root.where.add(trIdf.columns.delete_flag.isNull);
+	}
+	trIdf.root.where.add(trIdf.columns.tenant_uuid.eq(tenantId));
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var trSd = trans.joins.add('db:/stsservoy/transactions',JSRelation.LEFT_OUTER_JOIN);
+	trSd.on.add(trIdf.columns.idfile_id.eq(trSd.columns.idfile_id));
+	trSd.root.where.add(trSd.root.or
+		.add(trSd.columns.delete_flag.eq(10))
+		.add(trSd.columns.delete_flag.isNull)
+		);
+	trSd.root.where.add(trSd.columns.tenant_uuid.eq(tenantId));
+	trans.result.distinct = true;
+	trans.result.add(trSd.columns.status_description_id);
+	
+	// Get unique idfile subquery -------------------------------------------------------------------
+	if (subquery != 'summary'){
+		/** @type {QBSelect<db:/stsservoy/sheets>} */
+		var uIdfile = databaseManager.createSelect('db:/stsservoy/sheets');
+		uIdfile.where.add(uIdfile.columns.delete_flag.isNull);
+		uIdfile.where.add(uIdfile.columns.job_id.eq(jobId));
+		uIdfile.where.add(uIdfile.columns.tenant_uuid.eq(tenantId));
+		if (criteria.sheetnuma && criteria.sheetnuma.length > 0){
+			uIdfile.where.add(uIdfile.columns.sheet_number.isin(criteria.sheetnuma));
+		}
+		/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+		var uIdpm = uIdfile.joins.add('db:/stsservoy/piecemarks');
+		uIdpm.on.add(uIdfile.columns.sheet_id.eq(uIdpm.columns.sheet_id));
+		uIdpm.root.where.add(uIdpm.columns.delete_flag.isNull);
+		uIdpm.root.where.add(uIdpm.columns.tenant_uuid.eq(tenantId));
+		/** @type {QBJoin<db:/stsservoy/idfiles>} */
+		var uIdIdfile = uIdfile.joins.add('db:/stsservoy/idfiles');
+		uIdIdfile.on.add(uIdIdfile.columns.piecemark_id.eq(uIdpm.columns.piecemark_id));
+		if (getDeleted){
+			uIdIdfile.root.where.add(uIdIdfile.columns.delete_flag.eq(99));		
+		} else {
+			uIdIdfile.root.where.add(uIdIdfile.columns.delete_flag.isNull);		
+		}
+
+		uIdIdfile.root.where.add(uIdIdfile.columns.tenant_uuid.eq(tenantId))
+		/** @type {QBJoin<db:/stsservoy/transactions>} */
+		var uIdTrans = uIdfile.joins.add('db:/stsservoy/transactions');
+		uIdTrans.on.add(uIdTrans.columns.idfile_id.eq(uIdIdfile.columns.idfile_id));
+		uIdTrans.root.where.add(uIdTrans.root.or
+				.add(uIdTrans.columns.delete_flag.eq(10))
+				.add(uIdTrans.columns.delete_flag.isNull)
+			);
+		uIdTrans.root.where.add(uIdTrans.columns.tenant_uuid.eq(tenantId));
+		if (criteria.fabshopa && criteria.fabshopa.length > 0){
+			uIdTrans.root.where.add(uIdTrans.columns.status_description_id.isin(criteria.fabshopa));
+		}
+		uIdfile.result.distinct = true;
+		uIdfile.groupBy.add(uIdIdfile.columns.idfile_id);
+		uIdfile.result.add(uIdIdfile.columns.idfile_id);
+	}
+	// Get unique idfile subquery +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+	
+	// Get unique piecemarks subquery
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var upcmk = databaseManager.createSelect('db:/stsservoy/sheets');
+	upcmk.result.add(upcmk.columns.sheet_id);
+	upcmk.where.add(upcmk.columns.delete_flag.isNull);		
+	upcmk.where.add(upcmk.columns.job_id.eq(jobId));
+	upcmk.where.add(upcmk.columns.tenant_uuid.eq(tenantId));
+	if (criteria.sheetnuma && criteria.sheetnuma.length > 0){
+		upcmk.where.add(upcmk.columns.sheet_number.isin(criteria.sheetnuma));
+	}
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var upmm = upcmk.joins.add('db:/stsservoy/piecemarks');
+	upmm.on.add(upcmk.columns.sheet_id.eq(upmm.columns.sheet_id));
+	upcmk.root.where.add(upmm.root.columns.delete_flag.isNull);
+	upcmk.root.where.add(upmm.columns.tenant_uuid.eq(tenantId));
+	if (criteria.minors != null){
+		if (criteria.minors == 0){
+			upcmk.root.where.add(upmm.columns.piecemark.eq(upmm.columns.parent_piecemark));
+		}
+	}
+
+	upcmk.root.result.distinct = true;
+	upcmk.result.add(upmm.columns.piecemark_id);
+	
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var st = databaseManager.createSelect('db:/stsservoy/sheets');
+	st.sort.add(st.columns.sheet_number);
+	st.where.add(st.columns.delete_flag.isNull);
+	st.where.add(st.columns.job_id.eq(jobId));
+	st.where.add(st.columns.tenant_uuid.eq(tenantId));
+	if (criteria.sheetnuma && criteria.sheetnuma.length > 0){
+		st.where.add(st.columns.sheet_number.isin(criteria.sheetnuma));
+	}databaseManager.getTableFilterParams('stsservoy')
+	/** @type {QBJoin<db:/stsservoy/jobs>} */
+	var stj = st.joins.add('db:/stsservoy/jobs');
+	stj.on.add(st.columns.job_id.eq(stj.columns.job_id));
+	
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/associations>} */
+		var stji = stj.joins.add('db:/stsservoy/associations');
+		stji.on.add(stj.columns.association_id.eq(stji.columns.association_uuid));
+	}
+	
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/sheet_bom>} */
+		var shbom = st.joins.add('db:/stsservoy/sheet_bom');
+		shbom.on.add(st.columns.sheet_id.eq(shbom.columns.sheet_id));
+		/** @type {QBJoin<db:/stsservoy/end_conditions>} */
+		var endCon = shbom.joins.add('db:/stsservoy/end_conditions');
+		endCon.on.add(shbom.columns.end_condition_id.eq(endCon.columns.end_condition_id));
+		//st.result.add(endCon.columns.end_prep,'bom_end_condition');//213 BOMENDPREP
+	}
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/customers>} */
+		var jship = stj.joins.add('db:/stsservoy/customers');
+		jship.on.add(stj.columns.ship_to.eq(jship.columns.customer_id));
+		//st.result.add(jship.columns.name,'barcode_customer_name');//3 BCCUST printer.js
+		//st.result.add(jship.columns.customer_number,'barcode_customer_number');//23 CUSTNUM printer.js
+	}
+	
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/customers>} */
+		var jbcformat = stj.joins.add('db:/stsservoy/customers');
+		jbcformat.on.add(stj.columns.barcode_form.eq(jbcformat.columns.customer_id));
+		//st.result.add(jbcformat.columns.name,'barcode_format_customer_name');//52 JOLINE1STR printer.js
+		//st.result.add(jbcformat.columns.barcode_include_prefix,'bc_include_prefix');//5 BCINCLDPFX printer.js
+		//st.result.add(jbcformat.columns.barcode_job_start,'bc_job_start');//6 BCJOBSTART printer.js
+		//st.result.add(jbcformat.columns.barcode_prefix,'bc_prefix');//7 BCPREFIX printer.js
+		//st.result.add(jbcformat.columns.customer_number,'barcode_format_customer_number');//4 BCFORM printer.js
+		
+	}
+	
+	if (subquery == 'browse'){
+		/** @type {QBSelect<db:/stsservoy/customers>} */
+		var jcust = stj.joins.add('db:/stsservoy/customers');
+		jcust.on.add(stj.columns.customer_id.eq(jcust.columns.customer_id));
+		//st.result.add(jcust.columns.fax,'job_customer_fax');//15 CUSFAX printer.js
+		//st.result.add(jcust.columns.representative,'job_customer_rep');//16 CUSFIRST printer.js
+		//st.result.add(jcust.columns.name,'job_customer_name');//19 CUSNAME printer.js
+		//st.result.add(jcust.columns.phone,'job_customer_phone');//20 CUSPHONE printer.js
+		//st.result.add(jcust.columns.customer_number,'job_customer_number');//23 CUSTNUMB printer.js
+		//st.result.add(jcust.columns.lsotoload,'job_so_to_load');//130 LSOTOLOAD printer.js
+	}
+	
+	if (subquery == 'browse' && !(!jobShipToId)){
+		/** @type {QBJoin<db:/stsservoy/addresses>} */
+		var jcustAddr = jcust.joins.add('db:/stsservoy/addresses');
+		jcustAddr.on.add(jcust.columns.customer_id.eq(jcustAddr.columns.customer_id));
+		jcustAddr.root.where.add(jcustAddr.columns.address_id.eq(jobShipToId.toString()));
+		//JJ//jcustAddr.root.where.add(jcustAddr.columns.address_id.eq(jobShipToId));//20180802 get rid of two lines in view loads screen
+		//st.result.add(jcustAddr.columns.city,'customer_city');//14 CUSCITY printer.js
+		//st.result.add(jcustAddr.columns.state,'customer_state');//21 CUSSTATE printer.js
+		//st.result.add(jcustAddr.columns.line1,'cust_addr_line1');//22 CUSSTREET printer.js
+		//st.result.add(jcustAddr.columns.zip_postal_code,'cust_zip_code');//26 CUSZIP printer.js
+	}
+	
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var pmm = st.joins.add('db:/stsservoy/piecemarks');
+	pmm.on.add(st.columns.sheet_id.eq(pmm.columns.sheet_id));
+	if (0 && doSingleLabel){//HERE
+		st.groupBy.add(pmm.columns.piecemark_id);//pmm.root.result.add(pmm.columns.piecemark_id);
+		pmm.root.where.add(pmm.columns.piecemark_id.eq(pcmkID));
+	}
+
+	var tempPcmks = [];
+	if (criteria.piecemarka){criteria.piecemarka.concat(new Array())}
+	if (criteria.piecemarka){tempPcmks = criteria.piecemarka.concat(new Array());}
+	if (criteria.piecemarka && criteria.piecemarka.length == 1){
+		st.where.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"));
+	} else if (criteria.piecemarka && criteria.piecemarka.length > 1){
+		st.where.add(st.or
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pmm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+		)
+	} // overkill, but satisfies n-1 approach for search criteria
+	if (doSingleLabel){
+		st.where.add(pmm.columns.piecemark_id.eq(pcmkID));
+	}
+	st.where.add(pmm.columns.delete_flag.isNull);
+	
+	st.result.distinct;
+	st.sort.add(pmm.columns.piecemark);
+	st.sort.add(pmm.columns.parent_piecemark);
+
+	st.groupBy.add(pmm.columns.piecemark_id);
+	st.groupBy.add(st.columns.sheet_number);
+	st.groupBy.add(st.columns.sheet_id);
+	
+	var pmTable = databaseManager.getTable('stsservoy','piecemarks');
+	var pmCols = pmTable.getColumnNames();
+	for (var index = 0;index < pmCols.length;index++){
+		st.result.add(pmm.columns[pmCols[index]]);
+	}
+	
+	/** @type {QBJoin<db:/stsservoy/routings>} */
+	var rt1 = pmm.joins.add('db:/stsservoy/routings');
+	rt1.on.add(pmm.columns.e_route_code_id.eq(rt1.columns.routing_id));
+	st.groupBy.add(rt1.columns.route_code);
+	//st.result.add(rt1.columns.route_code);
+
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var id1 = pmm.joins.add('db:/stsservoy/idfiles');
+	id1.on.add(pmm.columns.piecemark_id.eq(id1.columns.piecemark_id));
+	if (subquery == 'browse'){//if (subquery != 'summarized' && subquery != 'stations'){
+		id1.root.result.distinct = true;
+		id1.root.groupBy.add(id1.columns.idfile_id);
+	}
+	if (getDeleted){
+		id1.root.where.add(id1.columns.delete_flag.eq(99));// deleted idfiles still show, fix
+	} else {
+		id1.root.where.add(id1.columns.delete_flag.isNull);
+	}
+	if (0 && doSingleLabel){
+		st.groupBy.add(id1.columns.idfile_id);
+		id1.root.where.add(id1.columns.idfile_id.eq(idfilID));
+	}
+
+	// Show load numbers 20181116
+	/** @type {QBJoin<db:/stsservoy/loads>} */
+	var ld1 = id1.joins.add('db:/stsservoy/loads');
+	ld1.on.add(id1.columns.current_load_id.eq(ld1.columns.load_id));
+	/** @type {QBJoin<db:/stsservoy/loads>} */
+	var ld2 = id1.joins.add('db:/stsservoy/loads');
+	ld2.on.add(id1.columns.ship_load_id.eq(ld2.columns.load_id));
+	/** @type {QBJoin<db:/stsservoy/loads>} */ 
+	var ld3 = id1.joins.add('db:/stsservoy/loads');
+	ld3.on.add(id1.columns.received_load_id.eq(ld3.columns.load_id));
+	
+
+	
+	if (subquery == "summarized"){
+		id1.root.result.distinct;
+		id1.root.groupBy.add(id1.columns.piecemark_id);
+		//st.result.add(id1.columns.summed_quantity.sum,'piece_count');
+	}
+	if (criteria.areaa && criteria.areaa.length > 0){
+		st.where.add(id1.columns.id_location.isin(criteria.areaa));
+		st.groupBy.add(id1.columns.id_location);
+		//st.result.add(id1.columns.id_location);
+	}
+	if (criteria.batcha && criteria.batcha.length > 0){
+		st.where.add(id1.columns.id_batch.isin(criteria.batcha));
+	}
+
+	var skipEmpty = ['',null];
+	if (criteria.loadall == 1){
+		st.where.add(id1.columns.ship_load_id.not.isNull);
+	} else if (criteria.loadalla && criteria.loadalla.length > 0){
+		st.where.add(id1.columns.ship_load_id.isin(criteria.loadalla));
+	}
+
+	if (criteria.pcmkrela && criteria.pcmkrela.length > 0){
+		st.where.add(id1.columns.piece_release.isin(criteria.pcmkrela));
+	}
+	if (criteria.pkgnuma && criteria.pkgnuma.length > 0){
+		st.where.add(id1.columns.ft_pkgno.isin(criteria.pkgnuma));//fabtrol specific
+	}
+	if (criteria.seqida && criteria.seqida.length > 0){
+		st.where.add(id1.columns.sequence_id.isin(criteria.seqida));//fabtrol specific
+	}
+	
+	if (criteria.fabshopa && criteria.fabshopa.length > 0){
+		if (subquery != 'summary'){
+			st.where.add((st.exists(uIdIdfile.root.where.add(id1.columns.idfile_id.eq(uIdIdfile.columns.idfile_id)).root)))
+		}
+	} else {
+		//st.result.add(id1.columns.summed_quantity.sum,'total_marks');		
+	}
+	
+	if (false && subquery == 'browse'){ // will never get parent  piecemark from just the piecemark of the parent, needs to be during import
+		/**
+		 * find idfile parent id_serial_number
+		 * idfile_id -> piecemark_id -> parent_piecemark -> piecemark_id -> idfile_id -> id_serial_number_id -> id_serial_number
+		 * get parent_piecemark piecemark -> get parent_piecemark_id piecemark -> get idfile_id -> get id_serial_number_id -> get parent id_serial_number
+		 */
+		/** @type {QBJoin<db:/stsservoy/piecemarks>} * /
+		var pId = id1.joins.add('db:/stsservoy/piecemarks');
+		pId.on.add(id1.columns.piecemark_id.eq(pId.columns.piecemark_id));
+		pId.root.result.distinct = true;
+		pId.root.groupBy.add(pId.columns.piecemark_id);
+		/** @type {QBJoin<db:/stsservoy/piecemarks>} * /
+		var pId2 = pId.joins.add('db:/stsservoy/piecemarks');
+		pId2.on.add(pId.columns.parent_piecemark.eq(pId2.columns.piecemark));
+		pId2.root.where.add(pId2.columns.tenant_uuid.eq(tenantId));
+		pId2.root.where.add(pId2.columns.sheet_id.eq(pId.columns.sheet_id));
+		pId2.root.result.distinct = true;
+		pId2.root.groupBy.add(pId2.columns.piecemark_id);
+		pId2.root.result.add(pId2.columns.piecemark_id.max);
+		/** @type {QBJoin<db:/stsservoy/idfiles>} * /
+		var pIf = pId2.joins.add('db:/stsservoy/idfiles');
+		pIf.on.add(pId2.columns.piecemark_id.eq(pIf.columns.piecemark_id));
+		pIf.root.result.distinct = true;
+		pIf.root.groupBy.add(pIf.columns.id_serial_number_id); 
+		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} * /
+		var pIs = id1.joins.add('db:/stsservoy/id_serial_numbers',JSRelation.RIGHT_OUTER_JOIN);
+		pIs.on.add(id1.columns.id_serial_number_id.eq(pIs.columns.id_serial_number_id));
+		pIs.root.result.distinct = true;
+		pIs.root.groupBy.add(pIs.columns.id_serial_number);
+		pIs.root.result.add(pIs.columns.id_serial_number); */
+	}
+	// Finish finding parent piecemark
+
+	if (subquery == 'browse'){//-------------------------------------------------------------------------------
+		// TEST PIECEMARK ID COLLECTION
+		/** @type {QBSelect<db:/stsservoy/sheets>} */
+		var sh3 = databaseManager.createSelect('db:/stsservoy/sheets');
+		sh3.where.add(sh3.columns.job_id.eq(jobId));
+		sh3.where.add(sh3.columns.tenant_uuid.eq(tenantId));
+		sh3.where.add(sh3.columns.delete_flag.isNull);
+		/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+		var pm3 = sh3.joins.add('db:/stsservoy/piecemarks'); 
+		pm3.on.add(sh3.columns.sheet_id.eq(pm3.columns.sheet_id));
+		pm3.root.where.add(pm3.columns.delete_flag.isNull);
+		pm3.root.where.add(pm3.columns.parent_piecemark.eq(pm3.columns.piecemark));
+		sh3.result.add(pm3.columns.piecemark_id);
+		sh3.sort.add(pm3.columns.piecemark_id);
+
+		// TEST PIECEMARK ID COLLECTION
+		/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+		var pm2 = pmm.joins.add('db:/stsservoy/piecemarks');
+		pm2.on.add(pmm.columns.parent_piecemark.eq(pm2.columns.piecemark));
+		//pm2.root.where.add(pm2.columns.piecemark_id.isin(pcmkArray));
+		pm2.root.where.add(pm2.columns.piecemark_id.isin(sh3));
+		pm2.root.where.add(pm2.columns.delete_flag.isNull);
+
+		// Get count of id_serial_number_id without the extra group_by settings for all st outputs
+		//st.result.add(sn2.columns.id_serial_number.max,'bc_parent_id_serial_number');//207 PARENTID printer.js
+	}
+	
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/loads>} */
+		var loads = id1.joins.add('db:/stsservoy/loads');
+		loads.on.add(id1.columns.ship_load_id.eq(loads.columns.load_id));
+		//st.result.add(loads.columns.bill_of_lading_out,'ship_bol_out');//9 BOLOUT printer.js
+		//st.result.add(loads.columns.carrier_number,'ship_carrier_number');//10 CARRNUM  printer.js
+		//st.result.add(loads.columns.load_comment,'ship_load_comment');//11 COMMENTS printer.js
+		//st.result.add(loads.columns.sent_engineer,'ship_sent_engineer');//30 ENGXTIME printer.js
+		//st.result.add(loads.columns.fabricator_invoice,'ship_fabricator_invoiced');//31 FABINVOICE printer.js
+		//st.result.add(loads.columns.sent_fabrication,'ship_sent_fabricator');//33 FABXTIME printer.js
+		//st.result.add(loads.columns.sent_fireproofer,'ship_sent_fireproofer');//34 FIREXTIME printer.js
+		//st.result.add(loads.columns.sent_galvinizer,'ship_sent_galvinizer');//35 GALVXTIME printer.js
+		//st.result.add(loads.columns.invoice,'ship_load_invoice');//42 INVOICE printer.js
+		//st.result.add(loads.columns.load_number,'ship_load_number');//79 LOADNUM printer.js
+		//st.result.add(loads.columns.care_of,'ship_load_care_of');//80 LODCAREOF printer.js
+		//st.result.add(loads.columns.load_po,'ship_load_po');//81 LODPO printer.js
+		//st.result.add(loads.columns.load_release,'ship_load_release');//82 LODRELEASE printer.js
+		//st.result.add(loads.columns.ship_date,'ship_load_date');//107 SHIPLOAD printer.js
+		//st.result.add(loads.columns.ship_date,'ship_load_time');//109 SHIPTIME printer.js
+		//st.result.add(loads.columns.trailer_information,'ship_load_trailer_info');//111 TRAILINFO printer.js
+		//st.result.add(loads.columns.shipped_weight,'ship_load_shipped_weight');//152 SHIPWT printer.js
+		//st.result.add(loads.columns.total_weight,'ship_load_total_weight');//153 TOTALWT printer.js
+		
+	}
+
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/customers>} */
+		var loadsshipto = loads.joins.add('db:/stsservoy/customers');
+		loadsshipto.on.add(loads.columns.ship_to.eq(loadsshipto.columns.customer_number));
+		//st.result.add(loadsshipto.columns.customer_number,'ship_customer_number');//83 LODSHIPTO
+	}
+		
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/loads>} */
+		var loadsrcv = id1.joins.add('db:/stsservoy/loads');
+		loadsrcv.on.add(id1.columns.received_load_id.eq(loads.columns.load_id));
+		//st.result.add(loadsrcv.columns.load_number,'recv_load_number');//99 RECVLOAD printer.js
+		//st.result.add(loadsrcv.columns.receipt_date,'recv_load_date');//100 RECVTIME printer.js
+		//st.result.add(loadsrcv.columns.receiving_weight,'recv_load_receiving_wt');//149 RECVWT printer.js
+	}
+	
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/heats>} */
+		var heats = id1.joins.add('db:/stsservoy/heats');
+		heats.on.add(id1.columns.heat_id.eq(heats.columns.heat_id));
+		//st.result.add(heats.columns.heat_number);//37 HEAT
+	}
+
+	if (subquery == 'browse'){
+		/** @type {QBJoin<db:/stsservoy/status_description>} */
+		var stat2 = id1.joins.add('db:/stsservoy/status_description');
+		stat2.on.add(id1.columns.status_description_id.eq(stat2.columns.status_description_id));
+		/** @type {QBJoin<db:/stsservoy/associations>} */
+		var assoc = stat2.joins.add('db:/stsservoy/associations');
+		assoc.on.add(stat2.columns.association_id.eq(assoc.columns.association_uuid));
+		//st.result.add(assoc.columns.association_name,'pcmk_fab_shop');//32 FABSHOP
+	}
 
 
+	/** @type {QBJoin<db:/stsservoy/sequences>} */
+	var sq1 = st.joins.add('db:/stsservoy/sequences');
+	sq1.on.add(sq1.columns.sequence_id.eq(id1.columns.sequence_id));
+	st.sort.add(sq1.columns.sequence_id);
+	st.groupBy.add(sq1.columns.sequence_id);
+	st.where.add(sq1.columns.delete_flag.isNull);
+	st.where.add(sq1.columns.job_id.eq(jobId));
+	st.where.add(sq1.columns.tenant_uuid.eq(tenantId));
+	//st.where.add(sq1.columns.sequence_id.eq(id1.columns.sequence_id));
+	if (criteria.seqnuma && criteria.seqnuma.length > 0){
+		sq1.on.add(id1.columns.sequence_id.eq(sq1.columns.sequence_id));
+		st.where.add(sq1.columns.sequence_number.isin(criteria.seqnuma));
+	}
+	
+	/** @type {QBJoin<db:/stsservoy/lots>} */
+	var lots = st.joins.add('db:/stsservoy/lots');
+	lots.on.add(id1.columns.lot_id.eq(lots.columns.lot_id));
+
+	if (subquery == "browse"){
+		// get idfile list that is the first of all idserialnumbers 
+		/** @type {QBSelect<db:/stsservoy/sheets>} */
+		var sbs = databaseManager.createSelect('db:/stsservoy/sheets');
+		sbs.where.add(sbs.columns.tenant_uuid.eq(tenantId));
+		sbs.where.add(sbs.columns.delete_flag.isNull);
+		sbs.where.add(sbs.columns.job_id.eq(jobId));
+		if (criteria.sheetnuma && criteria.sheetnuma.length > 0){
+			sbs.where.add(sbs.columns.sheet_number.isin(criteria.sheetnuma));
+		}
+		
+
+		/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+		var sbp = sbs.joins.add('db:/stsservoy/piecemarks',JSRelation.RIGHT_OUTER_JOIN);
+		sbp.on.add(sbs.columns.sheet_id.eq(sbp.columns.sheet_id));
+		if (0 && doSingleLabel){
+			sbp.root.where.add(sbp.columns.piecemark_id.eq(pcmkID))
+			sbs.groupBy.add(sbp.columns.piecemark_id)
+			//sbp.root.result.add(sbp.columns.piecemark_id)
+		}
+		
+		/** @type {QBJoin<db:/stsservoy/routings>} */
+		var route = pmm.joins.add('db:/stsservoy/routings');
+		route.on.add(pmm.columns.e_route_code_id.eq(route.columns.routing_id));
+		//st.result.add(route.columns.route_code,'piecemark_route_code');//103 ROUTECODE printer.js
+		
+		/** @type {QBJoin<db:/stsservoy/idfiles>} */
+		var sbi = sbp.joins.add('db:/stsservoy/idfiles');//CHECK sbp was sbs
+		sbi.on.add(sbp.columns.piecemark_id.eq(sbi.columns.piecemark_id));
+		if (getDeleted){
+			sbi.root.where.add(sbi.columns.delete_flag.eq(99));
+		} else {
+			sbi.root.where.add(sbi.columns.delete_flag.isNull);			
+		}
+		if (doSingleLabel){
+			sbi.root.where.add(sbi.columns.idfile_id.eq(idfilID));
+			//sbi.root.result.add(sbi.columns.idfile_id);
+		}
+		sbi.root.result.add(sbi.columns.idfile_id.max);
+		
+		
+		//get sequence count of idfiles for piecemarks 20190102
+		/** @type {QBJoin<db:/stsservoy/idfiles>} */
+		var id3 = id1.joins.add('db:/stsservoy/idfiles');
+		id3.on.add(id1.columns.piecemark_id.eq(id3.columns.piecemark_id));
+		id3.root.where.add(id1.columns.sequence_id.eq(id3.columns.sequence_id));
+		if (0 && doSingleLabel){
+			id3.root.where.add(id3.columns.idfile_id.eq(idfilID));
+			id3.root.result.add(id3.columns.idfile_id);
+		}
+
+		//id3.root.result.distinct = true;
+		id3.root.groupBy.add(id3.columns.sequence_id);
+		
+
+		/** @type {QBJoin<db:/stsservoy/employee>} */
+		var emp = id1.joins.add('db:/stsservoy/employee');
+		emp.on.add(id1.columns.original_employee_uuid.eq(emp.columns.employee_number));
+		//st.result.add(emp.columns.employee_number,'job_employee_number');//86 ORIGEMPL printer.js
+
+		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
+		var sbb = sbi.joins.add('db:/stsservoy/id_serial_numbers');
+		sbb.on.add(sbi.columns.id_serial_number_id.eq(sbb.columns.id_serial_number_id));
+		sbs.result.add(sbb.columns.id_serial_number);
+		sbs.groupBy.add(sbb.columns.id_serial_number);
+		sbs.sort.add(sbb.columns.id_serial_number);
+	
+		// get parent serial number, all that is needed at this level or go too deep 20180922
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var parentId = id1.joins.add('db:/stsservoy/idfiles');
+		parentId.on.add(id1.columns.parent_idfile_id.eq(parentId.columns.idfile_id));
+		/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
+		var parentBC = parentId.joins.add('db:/stsservoy/id_serial_numbers');
+		parentBC.on.add(parentId.columns.id_serial_number_id.eq(parentBC.columns.id_serial_number_id));
+		
+
+		/** var fsds = databaseManager.createDataSourceByQuery('dsa',sbs,-1);
+		var fss2 = databaseManager.getFoundSet(fsds);
+		fss2.loadRecords();
+		var markedIds = [];
+		idx = 1; 
+		/** @type {JSRecord<{max:String}>} * /
+		var rec = null;
+		while (rec = fss2.getRecord(idx++)){
+			markedIds.push(application.getUUID(rec.max));
+		} */
+		
+		//--------------------------------------------------
+		//application.output('before data set by query');
+		var fsds2 = databaseManager.getDataSetByQuery(sbs,-1);
+		//fss2.loadRecords();
+		var markedIds = fsds2.getColumnAsArray(1);
+		//--------------------------------------------------------
+		//application.output('idserial ids length '+markedIds.length);
+		/** idx = 1; 
+		/** @type {JSRecord<{max:String}>} * /
+		var rec = null;
+		while (rec = fss2.getRecord(idx++)){
+			markedIds.push(application.getUUID(rec.max));
+		} */
+
+		null;//STOP here 2
+		// get idfile list that is the first of all idserialnumbers END
+		id1.root.where.add(id1.columns.idfile_id.isin(markedIds));
+
+		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
+		var sn1 = st.joins.add('db:/stsservoy/id_serial_numbers');
+		sn1.on.add(id1.columns.id_serial_number_id.eq(sn1.columns.id_serial_number_id));
+		/** @type {QBJoin<db:/stsservoy/status_description>} */
+		var stat1 = st.joins.add('db:/stsservoy/status_description');
+		stat1.on.add(id1.columns.status_description_id.eq(stat1.columns.status_description_id));
+		stat1.root.result.add(stat1.columns.status_description_id);
+
+		st.result.clear();
+		st.sort.clear();
+		st.groupBy.clear();
+		st.result.addValue(0,"selection");
+		var tables = ['jobs','id_serial_numbers','piecemarks','status_description','idfiles','sheets','sequences','lots','routings','sheet_bom','associations','employee'];
+		for (var itemDex = 0;itemDex < tables.length;itemDex++){
+			var table = databaseManager.getTable('stsservoy',tables[itemDex]);
+			var cols = table.getColumnNames(); var tableColAlt = ''; var shortTable = '';
+			var tableName = tables[itemDex];
+			for (index = 0;index < cols.length;index++){
+				var tableColName = cols[index];
+				switch (tableName){
+					case 'jobs' : var tableCol = stj.getColumn(tableColName);shortTable = 'job_';break;
+					case 'associations': tableCol = stji.getColumn(tableColName);shortTable = 'pt_';break;
+					case 'id_serial_numbers' : tableCol = sn1.getColumn(tableColName);shortTable = 'bc_';break;
+					case 'piecemarks' : tableCol = pmm.getColumn(tableColName);shortTable = 'pm_';break;
+					case 'status_description' : tableCol = stat1.getColumn(tableColName);shortTable = 'st_';break;
+					case 'idfiles' : tableCol = id1.getColumn(tableColName);shortTable = 'if_';break;
+					case 'sheets' : tableCol = st.getColumn(tableColName);shortTable = 'sh_';break;
+					case 'sequences' : tableCol = sq1.getColumn(tableColName);shortTable = 'sq_';break;
+					case 'lots' : tableCol = lots.getColumn(tableColName);shortTable = 'lt_';break;
+					case 'routings' : tableCol = route.getColumn(tableColName);shortTable = 'rt_';break;
+					case 'sheet_bom' : tableCol = shbom.getColumn(tableColName);shortTable = 'bom_';break;
+					case 'customers' : tableCol = loadsshipto.getColumn(tableColName);shortTable = 'lds_';break;
+					case 'employee' : tableCol = emp.getColumn(tableColName);shortTable = 'orig_';break;
+					default: null;
+				}
+				if (tableName == 'piecemarks' && tableColName == 'item_quantity'){continue}//TODO temp remove item_quantity 20190102
+				if (tableColName.search(shortTable) != 0){
+					tableColAlt = tableColName;
+					tableColAlt = shortTable+tableColAlt;
+					st.result.add(tableCol,tableColAlt);
+					st.groupBy.add(tableCol);
+					//if (application.isInDeveloper()){application.output('setting alt col as '+tableColAlt)}
+				} else {
+					st.result.add(tableCol);
+					st.groupBy.add(tableCol);
+					//if (application.isInDeveloper()){application.output('setting reg col as '+tableCol+' '+tables[itemDex])}
+				}
+			}
+		}
+		
+		//st.result.addValue(pmm.columfeetLength(),'bb_pcmk_length_char')
+		//st.result.add(pmm.root.getColumn(feetLength,'bb_pcmk_length_char'))
+		
+		st.result.add(id3.columns.idfile_id.count,'pcmk_seq_qty');
+		
+		st.groupBy.add(ld1.columns.load_number);
+		st.result.add(ld1.columns.load_number,'ld_current_load_num');
+		st.groupBy.add(ld2.columns.load_number);
+		st.result.add(ld2.columns.load_number,'ld_ship_load_num');
+		st.groupBy.add(ld3.columns.load_number);
+		st.result.add(ld3.columns.load_number,'ld_receive_load_num');
+
+		st.result.add(jship.columns.name,'barcode_customer_name');//3 BCCUST printer.js
+		st.result.add(jship.columns.customer_number,'barcode_customer_number');//23 CUSTNUM printer.js
+		st.result.add(jbcformat.columns.name,'barcode_format_customer_name');//52 JOLINE1STR printer.js 
+		st.result.add(jbcformat.columns.barcode_include_prefix,'bc_include_prefix');//5 BCINCLDPFX printer.js
+		st.result.add(jbcformat.columns.barcode_job_start,'bc_job_start');//6 BCJOBSTART printer.js
+		st.result.add(jbcformat.columns.barcode_prefix,'bc_prefix');//7 BCPREFIX printer.js
+		st.result.add(jbcformat.columns.customer_number,'barcode_format_customer_number');//4 BCFORM printer.js
+		st.result.add(jcust.columns.fax,'job_customer_fax');//15 CUSFAX printer.js 'fax','representative','name','phone','customer_number','lsotoload'
+		st.result.add(jcust.columns.representative,'job_customer_rep');//16 CUSFIRST printer.js
+		st.result.add(jcust.columns.name,'job_customer_name');//19 CUSNAME printer.js
+		st.result.add(jcust.columns.phone,'job_customer_phone');//20 CUSPHONE printer.js
+		st.result.add(jcust.columns.customer_number,'job_customer_number');//23 CUSTNUMB printer.js
+		st.result.add(jcust.columns.lsotoload,'job_so_to_load');//130 LSOTOLOAD printer.js
+		if (jcustAddr){
+			st.result.add(jcustAddr.columns.city,'customer_city');//14 CUSCITY printer.js 'city','state','line1','zip_postal_code'
+			st.result.add(jcustAddr.columns.state,'customer_state');//21 CUSSTATE printer.js
+			st.result.add(jcustAddr.columns.line1,'cust_addr_line1');//22 CUSSTREET printer.js
+			st.result.add(jcustAddr.columns.zip_postal_code,'cust_zip_code');//26 CUSZIP printer.js
+		}
+		st.result.add(loads.columns.bill_of_lading_out,'ship_bol_out');//9 BOLOUT printer.js 'bill_of_lading_out','carrier_number','load_comment','sent_engineer','fabricator_invoice','
+		st.result.add(loads.columns.carrier_number,'ship_carrier_number');//10 CARRNUM  printer.js sent_fabrication','sent_fireproofer','sent_galvinizer','invoice','load_number','care_of'
+		st.result.add(loads.columns.load_comment,'ship_load_comment');//11 COMMENTS printer.js ,'load_po','load_release','ship_date','trailer_information','shipped_weight','total_weight'
+		st.result.add(loads.columns.sent_engineer,'ship_sent_engineer');//30 ENGXTIME printer.js
+		st.result.add(loads.columns.fabricator_invoice,'ship_fabricator_invoice');//31 FABINVOICE printer.js
+		st.result.add(loads.columns.sent_fabrication,'ship_sent_fabricator');//33 FABXTIME printer.js
+		st.result.add(loads.columns.sent_fireproofer,'ship_sent_fireproofer');//34 FIREXTIME printer.js
+		st.result.add(loads.columns.sent_galvinizer,'ship_sent_galvinizer');//35 GALVXTIME printer.js
+		st.result.add(loads.columns.invoice,'ship_load_invoice');//42 INVOICE printer.js
+		st.result.add(loads.columns.load_number,'ship_load_number');//79 LOADNUM printer.js
+		st.result.add(loads.columns.care_of,'ship_load_care_of');//80 LODCAREOF printer.js
+		st.result.add(loads.columns.load_po,'ship_load_po');//81 LODPO printer.js
+		st.result.add(loads.columns.load_release,'ship_load_release');//82 LODRELEASE printer.js
+		st.result.add(loads.columns.ship_date,'ship_load_date');//107 SHIPLOAD printer.js
+		st.result.add(loads.columns.ship_date,'ship_load_time');//109 SHIPTIME printer.js
+		st.result.add(loads.columns.trailer_information,'ship_load_trailer_info');//111 TRAILINFO printer.js
+		st.result.add(loads.columns.shipped_weight,'ship_load_shipped_weight');//152 SHIPWT printer.js
+		st.result.add(loads.columns.total_weight,'ship_load_total_weight');//153 TOTALWT printer.js
+		st.result.add(loadsshipto.columns.customer_number,'ship_customer_number');//83 LODSHIPTO
+		st.result.add(loadsrcv.columns.load_number,'recv_load_number');//99 RECVLOAD printer.js
+		st.result.add(loadsrcv.columns.receipt_date,'recv_load_date');//100 RECVTIME printer.js
+		st.result.add(loadsrcv.columns.receiving_weight,'recv_load_receiving_wt');//149 RECVWT printer.js
+		st.result.add(heats.columns.heat_number);//37 HEAT printer.js
+		st.result.add(emp.columns.employee_number,'job_original_employee');//86 ORIGEMPL printer.js
+		st.result.add(assoc.columns.association_name,'pcmk_fab_shop');//32 FABSHOP
+		st.result.add(endCon.columns.end_prep,'bom_end_condition');//213 BOMENDPREP
+		//st.result.add(sn2.columns.id_serial_number,'bc_parent_id_serial_number');//207 PARENTID
+
+		//st.result.add(id3.columns.id_serial_number_id.count,'barcode_item_qty');//181 MINORQTY printer.js
+
+		st.result.add(parentBC.columns.id_serial_number,'bc_parent_id_serial');//20180922 add parent  serial number to output
+		st.groupBy.add(parentBC.columns.id_serial_number);
+
+		sbi.root.result.add(sbi.columns.idfile_id.max); 
+		jship.root.groupBy.add(jship.columns.name);
+		jship.root.groupBy.add(jship.columns.customer_number);
+		cols = ['name','barcode_include_prefix','barcode_job_start','barcode_prefix','customer_number'];
+		for (idx = 0;idx < cols.length;idx++){
+			jbcformat.root.groupBy.add(jbcformat.getColumn(cols[idx]));
+		}
+		cols = ['fax','representative','name','phone','customer_number','lsotoload'];
+		for (idx = 0;idx < cols.length;idx++){
+			jcust.root.groupBy.add(jcust.getColumn(cols[idx]));
+		}
+		if (jcustAddr){
+			cols = ['city','state','line1','zip_postal_code'];
+			for (idx = 0;idx < cols.length;idx++){
+				jcustAddr.root.groupBy.add(jcustAddr.getColumn(cols[idx]));
+			}
+		}
+		cols = ['bill_of_lading_out','carrier_number','load_comment','sent_engineer','fabricator_invoice','sent_fabrication','sent_fireproofer','sent_galvinizer','invoice','load_number','care_of','load_po','load_release','ship_date','trailer_information','shipped_weight','total_weight'];
+		for (idx = 0;idx < cols.length;idx++){
+			loads.root.groupBy.add(loads.getColumn(cols[idx]));
+		}
+		loadsshipto.root.groupBy.add(loadsshipto.columns.customer_number);
+		cols = ['load_number','receipt_date','receiving_weight'];
+		for (idx = 0;idx < cols.length;idx++){
+			loadsrcv.root.groupBy.add(loadsrcv.getColumn(cols[idx]));
+		}
+		heats.root.groupBy.add(heats.columns.heat_number);
+		emp.root.groupBy.add(emp.columns.employee_number);
+		assoc.root.groupBy.add(assoc.columns.association_name);
+		endCon.root.groupBy.add(endCon.columns.end_prep);
+		
+		if (typeof lastForm === 'undefined'){var lastForm = null}
+		if (lastForm && forms[lastForm] && forms[lastForm].printerName){
+			var barPrinter = forms[lastForm].printerName;
+			st.result.addValue(barPrinter,'barcode_printer_name');
+		}
+		var labelPath = scopes.prefs.reportpath;
+		st.result.addValue(labelPath,"btw_file_path");
+		
+		if (criteria.sortby){
+			/**
+			 * i18n:sts.print.order.piecemark
+			 i18n:sts.print.order.id.number
+			 i18n:sts.print.order.drawing.number
+			 i18n:sts.print.order.material
+			 */
+			switch (criteria.sortby){
+			case i18n.getI18NMessage('sts.print.order.piecemark'):
+				st.sort.add(pmm.columns.piecemark);
+				break;
+			case i18n.getI18NMessage('sts.print.order.id.number'):
+				st.sort.add(sn1.columns.id_serial_number);
+				break;
+			case i18n.getI18NMessage('sts.print.order.drawing.number'):
+				st.sort.add(st.columns.sheet_number);
+				break;
+			case i18n.getI18NMessage('sts.print.order.material'):
+				st.sort.add(pmm.columns.material);
+				break;
+			default:
+				st.sort.add(sn1.columns.id_serial_number);
+			} 
+		} else {
+			st.sort.add(sn1.columns.id_serial_number);
+		}
+		//stShown = [];
+
+		return st;
+	}
+	if (subquery == "idnumbers"){
+		/** @type {QBJoin<db:/stsservoy/id_serial_numbers>} */
+		sn1 = st.joins.add('db:/stsservoy/id_serial_numbers');
+		sn1.on.add(id1.columns.id_serial_number_id.eq(sn1.columns.id_serial_number_id));
+		st.result.clear();
+		st.sort.clear();
+		st.groupBy.clear();
+		st.result.distinct = true;
+		st.result.add(sn1.columns.id_serial_number);
+		st.groupBy.add(sn1.columns.id_serial_number);
+		return st;
+	}
+
+	if (subquery == 'piecemark'){
+		id1.root.result.add(id1.columns.summed_quantity);
+		st.result.clear();
+		st.groupBy.clear();
+		st.sort.clear();
+		st.result.distinct = true;
+		st.result.add(id1.columns.summed_quantity.sum,'total_marks');
+		st.groupBy.add(pmm.columns.piecemark_id);
+		for (index = 0;index < pmCols.length;index++){
+			if (pmCols[index] == "piecemark_id"){continue}
+			st.result.add(pmm.columns[pmCols[index]]);
+		}
+		null;
+	}
+
+	if (subquery == 'summarized'){
+		//pmm.parent.result.distinct;
+		st.result.distinct;
+		id1.root.result.distinct;
+		pmm.root.result.distinct;
+		rt1.root.result.distinct;
+		
+		st.groupBy.add(pmm.columns.piecemark_id);
+		id1.root.groupBy.add(id1.columns.piecemark_id);
+		pmm.root.groupBy.add(pmm.columns.piecemark_id);
+		
+		//st.where.add(pmm.columns.piecemark.eq(""));
+		//st.groupBy.add(pmm.columns.material);
+		//st.where.add(pmm.columns.piecemark.eq(""));
+	}
+	
+	if (subquery == 'stations'){
+		st.result.distinct;
+		id1.root.result.add(id1.columns.idfile_id);
+			id1.root.groupBy.add(id1.columns.idfile_id);
+		id1.root.result.add(id1.columns.summed_quantity);
+		id1.root.groupBy.add(id1.columns.summed_quantity);
+		/** @type {QBJoin<db:/stsservoy/transactions>} */
+		var tr2 = st.joins.add('db:/stsservoy/transactions');///2241
+		tr2.on.add(tr2.columns.idfile_id.eq(id1.columns.idfile_id));
+		tr2.root.result.distinct;
+		tr2.root.groupBy.add(tr2.columns.status_description_id);
+		tr2.root.result.add(tr2.columns.status_description_id);
+		tr2.root.where.add((tr2.root.exists(trans.where.add(tr2.columns.status_description_id.eq(tr2.columns.status_description_id)).root)))
+		/** @type {QBJoin<db:/stsservoy/status_description>} */
+		var sd2 = st.joins.add('db:/stsservoy/status_description');
+		sd2.on.add(tr2.columns.status_description_id.eq(sd2.columns.status_description_id));
+		//sd2.root.result.distinct;
+		//sd2.root.groupBy.add(sd2.columns.status_description_id);
+		sd2.root.groupBy.add(sd2.columns.status_code);
+		sd2.root.groupBy.add(sd2.columns.association_id);
+		sd2.root.groupBy.add(sd2.columns.status_sequence);
+		sd2.root.groupBy.add(sd2.columns.status_description);
+		sd2.root.result.add(sd2.columns.status_code);
+		sd2.root.result.add(sd2.columns.association_id);
+		sd2.root.result.add(sd2.columns.status_sequence);
+		sd2.root.result.add(sd2.columns.status_description);
+		if (criteria.statusa && criteria.statusa.length > 0){
+			sd2.root.where.add(sd2.columns.status_code.isin(criteria.statusa))
+		}
+		/** @type {QBJoin<db:/stsservoy/associations>} */
+		var pl2 = st.joins.add('db:/stsservoy/associations');
+		pl2.on.add(pl2.columns.association_uuid.eq(sd2.columns.association_id));
+		pl2.root.groupBy.add(pl2.columns.association_name);
+		pl2.root.result.add(pl2.columns.association_name);
+	}
+    null;
+	return st;
+}
+/**
+ * @param dataSet
+ *
+ * @properties={typeid:24,uuid:"8ED79803-546B-41D8-986B-4FCD1723D82F"}
+ */
+function createViewTable(dataSet){
+	if (1==1) {return}
+	var formFS = databaseManager.getFoundSet(dataSet);
+	formFS.loadRecords();
+	var idx = 1;var rec = null;
+	/** @type {QBSelect<db:/stsservoy/pcmk_instances>} */
+	var viewRec = databaseManager.createSelect('db:/stsservoy/pcmk_instances');
+	/** @type {JSFoundSet<db:/stsservoy/pcmk_instances>} */
+	var newRec = null;
+	while (rec = formFS.getRecord(idx++)){
+		null;
+		null;
+		var seqID_UUID = application.getUUID(rec.sq_sequence_id);
+		var lotID_UUID = application.getUUID(rec.lt_lot_id);
+		var pcmkID_UUID = application.getUUID(rec.pm_piecemark_id);
+		var idfileID_UUID = application.getUUID(rec.if_idfile_id);
+		var jobID_UUID = application.getUUID(rec.job_id);
+		var tenantID_UUID = application.getUUID(rec.job_tenant_uuid);
+		var sheetID_UUID = application.getUUID(rec.sh_sheet_id);
+		var barcodeID_UUID = application.getUUID(rec.bc_id_serial_number_id);
+		var idCount = application.getUUID(rec.if_summed_quantity);
+		viewRec.where.clear();
+		viewRec.result.clear();
+		viewRec.where.add(viewRec.columns.piecemark_uuid.eq(pcmkID_UUID));
+		viewRec.where.add(viewRec.columns.idfile_uuid.eq(idfileID_UUID));
+		viewRec.where.add(viewRec.columns.id_serial_number_uuid.eq(barcodeID_UUID));
+		viewRec.result.add(viewRec.columns.pcmk_instance_uuid);
+		var VR = databaseManager.getFoundSet(viewRec);
+		if (VR.getSize() > 0){
+			var idx2 = VR.newRecord();
+			newRec = VR.getRecord(idx2);
+		} else {
+			newRec = VR.getRecord(1);
+		}
+		newRec.job_uuid = jobID_UUID;
+		newRec.idfile_uuid = idfileID_UUID;
+		newRec.piecemark_uuid = pcmkID_UUID;
+		newRec.id_serial_number_uuid = barcodeID_UUID;
+		newRec.sequence_uuid = seqID_UUID;
+		newRec.lot_uuid = lotID_UUID;
+		newRec.sheet_uuid = sheetID_UUID;
+		newRec.tenant_uuid = tenantID_UUID;
+		databaseManager.saveData(newRec);
+	}
+}

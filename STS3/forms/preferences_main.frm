@@ -137,6 +137,7 @@ visible:true
 {
 extendsID:"523118C1-7958-4892-88F6-C2D96975FEA1",
 location:"608,506",
+text:"i18n:sts.btn.close",
 typeid:7,
 uuid:"FB6AAB19-037F-4063-8BE5-5EDAB33A76E5"
 }

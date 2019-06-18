@@ -4632,6 +4632,7 @@ function showMain(){
  */
 function textWrap(message, length){
 	var formatted = '<html>';
+	var words = message.split('/w');
 	length = 25;
 	var messLength = message.length;
 	if (messLength < length){return message}

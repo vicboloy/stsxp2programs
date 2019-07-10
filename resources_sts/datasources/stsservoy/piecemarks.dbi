@@ -291,6 +291,7 @@ titleText:"i18n:table.piecemarks.parent_piecemark_flag"
 allowNull:true,
 creationOrderIndex:46,
 dataType:12,
+flags:4,
 length:36,
 name:"parent_piecemark_id",
 titleText:"i18n:table.piecemarks.parent_piecemark_id"

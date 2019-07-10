@@ -292,6 +292,7 @@ allowNull:false,
 autoEnterType:2,
 creationOrderIndex:25,
 dataType:12,
+flags:4,
 length:36,
 name:"sheet_id",
 titleText:"i18n:table.sheet_bom.sheet_id"

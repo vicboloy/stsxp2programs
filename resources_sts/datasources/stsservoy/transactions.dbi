@@ -3,7 +3,7 @@ columns:[
 allowNull:false,
 autoEnterSubType:3,
 autoEnterType:2,
-creationOrderIndex:27,
+creationOrderIndex:25,
 dataType:12,
 flags:5,
 length:36,
@@ -21,7 +21,7 @@ titleText:"i18n:table.transactions.altitude"
 },
 {
 allowNull:true,
-creationOrderIndex:38,
+creationOrderIndex:36,
 dataType:12,
 length:30,
 name:"bundle_bc",
@@ -45,7 +45,7 @@ titleText:"i18n:table.transactions.checklist_line"
 },
 {
 allowNull:true,
-creationOrderIndex:41,
+creationOrderIndex:39,
 dataType:12,
 length:20,
 name:"cut_list_bc",
@@ -53,14 +53,14 @@ titleText:"i18n:table.transactions.cut_list_bc"
 },
 {
 allowNull:true,
-creationOrderIndex:25,
+creationOrderIndex:23,
 dataType:4,
 name:"delete_flag",
 titleText:"i18n:table.transactions.delete_flag"
 },
 {
 allowNull:true,
-creationOrderIndex:35,
+creationOrderIndex:33,
 dataType:93,
 name:"deleted_date",
 titleText:"i18n:table.transactions.deleted_date"
@@ -69,7 +69,7 @@ titleText:"i18n:table.transactions.deleted_date"
 allowNull:true,
 autoEnterSubType:3,
 autoEnterType:1,
-creationOrderIndex:28,
+creationOrderIndex:26,
 dataType:93,
 defaultFormat:"MM/dd/yyyy hh:mm aa EEE|mask",
 name:"edit_date",
@@ -111,12 +111,26 @@ titleText:"i18n:table.transactions.idfile_id"
 },
 {
 allowNull:true,
-creationOrderIndex:39,
+creationOrderIndex:37,
 dataType:12,
 flags:4,
 length:36,
 name:"job_uuid",
 titleText:"i18n:table.transactions.job_uuid"
+},
+{
+allowNull:true,
+creationOrderIndex:41,
+dataType:4,
+name:"labor_percentage",
+titleText:"i18n:table.transactions.labor_percentage"
+},
+{
+allowNull:true,
+creationOrderIndex:40,
+dataType:4,
+name:"labor_quantity",
+titleText:"i18n:table.transactions.labor_quantity"
 },
 {
 allowNull:true,
@@ -146,7 +160,7 @@ titleText:"i18n:table.transactions.location"
 },
 {
 allowNull:true,
-creationOrderIndex:24,
+creationOrderIndex:22,
 dataType:4,
 name:"logic_flag",
 titleText:"i18n:table.transactions.logic_flag"
@@ -162,7 +176,7 @@ titleText:"i18n:table.transactions.longitude"
 },
 {
 allowNull:true,
-creationOrderIndex:23,
+creationOrderIndex:21,
 dataType:-7,
 name:"minor_piecemark",
 titleText:"i18n:table.transactions.minor_piecemark"
@@ -178,7 +192,7 @@ titleText:"i18n:table.transactions.quantity"
 },
 {
 allowNull:true,
-creationOrderIndex:40,
+creationOrderIndex:38,
 dataType:12,
 length:40,
 name:"raw_material_id",
@@ -194,7 +208,7 @@ titleText:"i18n:table.transactions.revision_level"
 },
 {
 allowNull:true,
-creationOrderIndex:29,
+creationOrderIndex:27,
 dataType:12,
 flags:4,
 length:36,
@@ -204,7 +218,7 @@ titleText:"i18n:table.transactions.status_description_id"
 {
 allowNull:true,
 autoEnterType:2,
-creationOrderIndex:26,
+creationOrderIndex:24,
 dataType:12,
 flags:4,
 length:36,
@@ -213,25 +227,7 @@ titleText:"i18n:table.transactions.tenant_uuid"
 },
 {
 allowNull:true,
-compatibleColumnTypes:"[[8,17,17]]",
-creationOrderIndex:21,
-dataType:8,
-length:17,
-name:"trailer_labor_percentage",
-titleText:"i18n:table.transactions.trailer_labor_percentage"
-},
-{
-allowNull:true,
-compatibleColumnTypes:"[[8,17,17]]",
-creationOrderIndex:22,
-dataType:8,
-length:17,
-name:"trailer_labor_quantity",
-titleText:"i18n:table.transactions.trailer_labor_quantity"
-},
-{
-allowNull:true,
-creationOrderIndex:30,
+creationOrderIndex:28,
 dataType:12,
 length:15,
 name:"trans_code",
@@ -239,7 +235,7 @@ titleText:"i18n:table.transactions.trans_code"
 },
 {
 allowNull:true,
-creationOrderIndex:36,
+creationOrderIndex:34,
 dataType:12,
 length:15,
 name:"trans_code2",
@@ -247,7 +243,7 @@ titleText:"i18n:table.transactions.trans_code2"
 },
 {
 allowNull:true,
-creationOrderIndex:32,
+creationOrderIndex:30,
 dataType:93,
 defaultFormat:"MM/dd/yyyy hh:mm aa EEE|mask",
 name:"trans_reversal_date",
@@ -255,7 +251,7 @@ titleText:"i18n:table.transactions.trans_reversal_date"
 },
 {
 allowNull:true,
-creationOrderIndex:31,
+creationOrderIndex:29,
 dataType:12,
 flags:4,
 length:36,
@@ -264,7 +260,7 @@ titleText:"i18n:table.transactions.trans_reversal_worker"
 },
 {
 allowNull:true,
-creationOrderIndex:33,
+creationOrderIndex:31,
 dataType:12,
 length:15,
 name:"trans_status",
@@ -272,7 +268,7 @@ titleText:"i18n:table.transactions.trans_status"
 },
 {
 allowNull:true,
-creationOrderIndex:37,
+creationOrderIndex:35,
 dataType:12,
 length:15,
 name:"trans_status2",
@@ -288,7 +284,7 @@ titleText:"i18n:table.transactions.transaction_date"
 },
 {
 allowNull:true,
-creationOrderIndex:34,
+creationOrderIndex:32,
 dataType:12,
 length:12,
 name:"transaction_duration",

@@ -129,6 +129,7 @@ var m = {
 	stationsTimed : [], // stationsTimed[status_description_id.UUID] = stationStatusToEndTiming.UUID
 	stationsTimedEnds : [], // stationsTimed[stationStatusToEndTiming.UUID] = status_description_id.UUID
 	statusToProcess : [], // status_code.TXT to process_code.TXT
+	statusCodeToId : [], // status code mapped to status_id
 	locations : [],		// locations are by division, so only provide those in the division, but don't verify
 	loginToUser : [], 	// mapping from login user.employee_id to employee.employee_id
 	workerList : [],    // workers by employee_number
@@ -221,6 +222,9 @@ var flagFALSE = 0;
  * @properties={typeid:35,uuid:"126B2E5A-C055-42B7-9C4F-77820427FF5B",variableType:-4}
  */
 var l = {
+	laborStations : [], // status codes that are labor stations
+	laborStatStarts : [], //labor stations allowed to start if prior station started
+	laborStatRouted : [], // this station is routed
 	locations : [], 	// locations[index] = (location.TXT..) all user entered locations for organization
 	routes : [], 		// routes[index] = (routing.route_id.UUID...) 
 	routeLegs : [], 	// routeLegs[route_name.TXT][index] = (status_description_id.UUID...)
@@ -321,6 +325,8 @@ var mob = {
 	timedError : "", 	// error raised during timed evaluation
 	timedTargetRec : null, // target rec, used for exact field start
 	userAgent : '', // reported web agent
+	laborPercent : 0, //20190705 labor percent entered in Labor transactions/inspections screen
+	routeId : null, //20190705 route id for piecemark
 	endItem : null
 }
 /**
@@ -712,6 +718,7 @@ var session = {
 	validStatusFS : [],//collection of Fabsuite valid status
 	rawCutPiecemarks : [],//collection of raw cutlist piecemarks that have barcodes to be sent to tfsCut
 	rawCutPiecemarksSelected : [],//collection of piecemarks that have already been selected for cut
+	stationsComplete : [],//20190705 stations complete for this pcmk
 	endItem : 0
 }
 /**
@@ -1121,7 +1128,49 @@ var rfViews = {
 		nonstrikelength : 'V',
 		invlocation : 'V',
 		associatecuts : 'V'
-	}
+	},
+	'Labor Transactions' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		statusin : 'R',
+		locationin : 'O',
+		workerin : 'O',
+		currentidin : 'R',
+		laborin : 'R',
+		locationpieces: 'V', //comma extends line with next data field after this one
+		locationweight: 'V',
+		piecemark : 'V',
+		laborcomplete : 'V',
+		jobnumber : 'V',
+		seqnumber : 'V',
+		prevstatus : 'V',
+		prevlocation : 'V',
+		pcsstatcount : 'V',
+		itemweight : 'V',
+		itemlength:'V'
+	},
+	'Labor Inspections' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		statusin : 'R',
+		locationin : 'O',
+		workerin : 'O',
+		currentidin : 'R',
+		laborin : 'R',
+		piecemark : 'V',
+		laborcomplete : 'V',
+		jobnumber : 'V',
+		seqnumber : 'V',
+		prevstatus : 'V',
+		prevlocation : 'V',
+		pcsstatcount : 'V',
+		itemweight : 'V',
+		itemlength:'V',
+		locationpieces: 'V', //comma extends line with next data field after this one
+		locationweight: 'V'
+		
+	},
+
 }
 /**
  * @properties={typeid:35,uuid:"27E84AA2-A492-48E4-8E9C-7961D804A5A6",variableType:-4}
@@ -1371,6 +1420,10 @@ var altInputField = 'genericin';
  */
 var altInputDataProv = 'genericInput';
 /**
+ * @properties={typeid:35,uuid:"491F2B7A-A8D4-443A-BEF8-DCC3552E981C",variableType:-4}
+ */
+var textColumns = [];
+/**
  * @AllowToRunInFind
  * 
  * @param assocID
@@ -1523,6 +1576,9 @@ function getAssociations(){
  * @SuppressWarnings(wrongparameters)
  */
 function getStatusDescriptions(){
+	l.laborStations = [];
+	l.laborStatRouted = [];
+	l.laborStatStarts = [];
 	l.stations = [];
 	l.statusCodes = [];
 	l.routeDefault = [];
@@ -1535,6 +1591,7 @@ function getStatusDescriptions(){
 	m.stationsTimed = [];
 	m.stationsTimedEnds = [];
 	m.statusToProcess = [];
+	m.statusCodeToId = [];
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var q = databaseManager.createSelect('db:/stsservoy/status_description');
 	q.result.add(q.columns.status_description_id);
@@ -1560,6 +1617,8 @@ function getStatusDescriptions(){
 				m.stationsThird[status] = third;
 			}
 		}
+		if (record.allow_start_prior_not == 1){l.laborStatStarts.push(status)}
+		if (record.labor_percentage_scan == 1){l.laborStations.push(status)}
 		if (l.stations.indexOf(station) == -1){ // get list of all text station names
 			l.stations.push(station);
 		}
@@ -1573,6 +1632,7 @@ function getStatusDescriptions(){
 		if (!m.statusCodesDiv[assocId]){ //status codes by division
 			m.statusCodesDiv[assocId] = [];
 		}
+		m.statusCodeToId[record.status_code] = record.status_description_id;
 		/** @type {Array} */
 		var tempArray = m.statusCodesDiv[assocId];
 			tempArray.push(status);
@@ -1745,7 +1805,7 @@ function rfF8ReversalTransaction(){
 	 * if start transaction, then look for END station and bail
 	 * if end transaction, then look for START station and bail
 	 * 
-	 * remove ENDED transaction if trailer_labor_percent = 0
+	 * remove ENDED transaction if trailer_labor_percent = 0, now labor_percentage labor_quantity
 	 * edit ENDED transaction trailer_labor_quantity=0 and trailer_labor_percent=0, when trailer_labor_percent = 100
 	 * collect all transaction records with that status
 	 * flag=10 for those status transactions, meaning '1' on to '0' off, DE prefixed
@@ -1836,10 +1896,10 @@ function rfF8ReversalTransaction(){
 	var fsUpdater = databaseManager.getFoundSetUpdater(transactionsFS);
 	///var fTimed = (fTransStart || fTransEnd);
 	if (fTransEnd){ // error message with end timed labor percentage = 100
-		var fResetTimed = (rec.trailer_labor_percentage >= 100);
+		var fResetTimed = (rec.labor_percentage >= 100);
 		if (fResetTimed){
-			fsUpdater.setColumn('trailer_labor_percentage',0);
-			fsUpdater.setColumn('trailer_labor_quantity',0);
+			fsUpdater.setColumn('labor_percentage',0);
+			fsUpdater.setColumn('labor_quantity',0);
 			fsUpdater.performUpdate(); //411 100% complete Removed From the STOP Status Code.
 			errorDialogMobile('rf_mobile_view.currentidin',411,'currentidin','');
 			//return null;
@@ -2051,7 +2111,7 @@ function getRoutes(){
  * @SuppressWarnings(wrongparameters)
  */
 function getRouteLegs(){
-	//l.routeLegs = [];//20180827
+	l.routeLegs = [];//20180827
 	/** @type {QBSelect<db:/stsservoy/route_detail>} */
 	var q = databaseManager.createSelect('db:/stsservoy/route_detail');
 	q.result.add(q.columns.route_detail_id);
@@ -2592,6 +2652,14 @@ function rfChangeWindow(event,winName){
 	}
 	winName = mobileWindows[winName];
 	switch(winName)	{
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.labor.transactions')]:
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.labor.transactions')];
+		currWin.show('rf_mobile_view');
+		break;
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.labor.inspections')]:
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.labor.inspections')];
+		currWin.show('rf_mobile_view');
+		break;
 	case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections')]:
 		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.inspections')];//'Inspections'
 		currWin.show('rf_mobile_view');
@@ -2776,6 +2844,8 @@ function rfFunctionKeys(screen){
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.transactions.w.revs')]://"Transactions w/Rev's2":
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections.w.revs')]://"Transactions w/Rev's2":
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections')]://"Transactions w/Rev's2":
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.labor.inspections')]:
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.labor.transactions')]:
 			globals.mobForm = "rf_transactions";
 			dex = 2;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
@@ -3303,6 +3373,8 @@ function getMenuList(){
 	pushWindow('sts.mobile.checklist.receive');//Checklist Receive
 	pushWindow('sts.mobile.checklist.status');//Checklist Status, see rfMobileViews, see rfChangeWindow() 
 	pushWindow('sts.mobile.cut.cutlist.raw');//set windows elements and data sources
+	pushWindow('sts.mobile.labor.inspections');//set windows elements and data sources
+	pushWindow('sts.mobile.labor.transactions');//set windows elements and data sources
 	
 	session.rfViewsOffice = [];
 	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.status'));//Status
@@ -3475,7 +3547,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
 	r.where.add(r.columns.status_description_id.eq(endStation));
 	if (timed){
 		var maxPercent = '100';
-		r.where.add(r.columns.trailer_labor_percentage.eq(maxPercent));
+		r.where.add(r.columns.labor_percentage.eq(maxPercent));
 	}
 	//r.result.distinct = true;
 	r.groupBy.add(r.columns.idfile_id);
@@ -3498,6 +3570,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"26985B1F-17E8-4514-8F2A-6FF5FFBAA236"}
+ * @AllowToRunInFind
  */
 function onDataChangeStatus(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
@@ -3565,11 +3638,13 @@ function onDataChangeStatus(oldValue, newValue, event) {
 					permitted = ['Fab Bundled'];
 					break;
 				case i18n.getI18NMessage('sts.mobile.inspections')://'Inspections2':
+				case i18n.getI18NMessage('sts.mobile.labor.inspections')://'Labor Inspections':
 				case i18n.getI18NMessage('sts.mobile.inspections.w.revs').replace("'","")://'Inspections w/Rev\'s2':
 					permitted = processCodes.inspections.concat(processCodes.transactions);
 					forbidden = processCodes.shipping.concat(processCodes.receiving);
 					break;
 				case i18n.getI18NMessage('sts.mobile.transactions')://'Transactions2':
+				case i18n.getI18NMessage('sts.mobile.labor.transactions')://'Labor Transactions':
 				case i18n.getI18NMessage('sts.mobile.transactions.w.revs').replace("'","")://'Transactions w/Rev\'s2':
 					permitted = processCodes.transactions;
 					break;
@@ -3585,6 +3660,16 @@ function onDataChangeStatus(oldValue, newValue, event) {
 			break;
 		default:
 			permitted = processCodes.all;
+	}
+	//if (session.program.search('Labor') == 0){//20190705 labor transactions can only use status with labor settings 
+		// check globals.l.statuslabor
+	//	if (l.laborStations.indexOf(newValue) == -1){
+	//		errorDialogMobile(event,404,statusField,null);//404 This Is Not A Valid Status Code For This Screen / Operation.
+	//		return true;			
+	//	}
+	//}
+	if (session.program.search('Labor') != 0){//20190708 set non-labor transactions to a mob.percent of 100
+		mob.percent = 100;
 	}
 	if (forbidden.indexOf(m.statusToProcess[newValue]) != -1){
 		errorDialogMobile(event,404,statusField,null);//404 This Is Not A Valid Status Code For This Screen / Operation.
@@ -4029,7 +4114,7 @@ function rfTimed(event){
 				}
 			}
 			if (rec.trans_status == mob.timedEndStat){
-				if (rec.trailer_labor_percentage >= 100){
+				if (rec.labor_percentage >= 100){
 					mob.timedError = "414"; // cannot start timed transaction once labor is at 100%, was 1122
 					return true;
 				}
@@ -4049,7 +4134,7 @@ function rfTimed(event){
 		index = 1;
 		while (rec = transacts.getRecord(index++)){
 			if (rec.trans_status != mob.timedEndStat){continue}
-			if (rec.trailer_labor_percentage == 100.0){break}
+			if (rec.labor_percentage == 100.0){break}
 			if (application.isInDeveloper()){application.output('timed rec adding '+rec);}
 			mob.timedTotalMin = mob.timedTotalMin*1+rec.transaction_duration*1;
 			if (!mob.completeAsk){mob.percent = 100;mob.completeStatus = 1;} // ticket #139 there is no repeat operation for timed operations
@@ -4425,10 +4510,10 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	var isTimedEnd = false; var isTimed = false;
 	// Check 3rd parties here
 //	var commitType = 'Save';//vs 'Delete'
-	if (!rfSaveThirdParties('Save')){return false}
+	if (mob.laborCompleted && !rfSaveThirdParties('Save')){return false}//CHECFS
 	databaseManager.startTransaction();
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-	var newRec = null;
+	var newRec = null;var totalIdfileCnt = mob.idfiles.length;
 	for (index = 0; index < mob.idfiles.length; index++) {//reconsider batch backup here
 		if (rfTransIsTimed()){
 			isTimed = true;
@@ -4473,12 +4558,11 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 				isTimedEnd = true;
 				newRecB.transaction_end = mob.timedEnd;
 				newRecB.transaction_duration = mob.timedDuration;//12 get timedDuration * currentWorkers.length / mob.idfiles.length
-				if (mob.percent > 0){newRecB.trailer_labor_percentage = mob.percent}
-				if (mob.percent == 100.0){
-					newRecB.trailer_labor_quantity = 1;
-					newRecB.quantity = 1;
-				}
 			}
+			if (mob.percent == 0){mob.percent = 100}
+			if (mob.percent > 0){newRecB.labor_percentage = mob.percent}//mob.percent moved outside to enable 100 percent on all status code entries 
+			newRecB.quantity = (!mob.laborCompleted) ? 0 : totalIdfileCnt;// || mob.percent != 100
+			newRecB.labor_quantity = totalIdfileCnt;
 			for (var index2 = 0; index2 < currentWorkers.length; index2++) {
 				switch (index2) {
 				case 0:
@@ -4501,6 +4585,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			}
 		}
 	}
+	databaseManager.saveData(resultQ);
 	if (mob.timedEnd){
 		mob.timedBegin = null;
 		mob.timedEnd = null;
@@ -4921,6 +5006,11 @@ function onActionMainMenu(event) {
  * @AllowToRunInFind
  */
 function onDataChangeBarcode2(oldValue, scannedID, event) {
+	var laborPercent = 0;
+	if (session.program.search('Labor') != -1){//Labor screen is active
+		laborPercent = oldValue;//passed in 'R' code for percent
+		mob.laborPercent = laborPercent;
+	}
 	if (onDataChangeFixEntry(oldValue,scannedID,event)){return true;}
     session.userEntry = scannedID; //session user entry info
     mob.barcode = scannedID;
@@ -4945,6 +5035,34 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
 		globals.logger(true,'Barcode does not exist.');
 		return true;
 	}
+	if (session.program.search('Labor') != -1){
+		if (application.isInDeveloper()){application.output('only process id as in a route with status')}
+		var routeId = rfCheckBarcodeInRoute(oldValue, scannedID, event);
+		mob.routeId = routeId;//20190705 save route id for piecemark
+		var statusCode = forms['rf_mobile_view'].statusCode;
+		if (!statusCode){
+			forms['rf_mobile_view'].currentID = '';
+			globals.errorDialogMobile(event,762,'genericin',null);//status code required
+			return true;
+		}
+		if (!routeId){
+			forms['rf_mobile_view'].currentID = '';
+			globals.errorDialogMobile(event,761,'genericin',null);//This serial number is not routed
+			return true;
+			
+		}
+		if (!rfCheckStatusInRoute(statusCode,routeId)){
+			forms['rf_mobile_view'].currentID = '';
+			globals.errorDialogMobile(event,763,'genericin',null);//This status code not on this pcmks route
+			return true;
+			
+		}
+		//mob.idfile.idfile_id;
+		// This piecemark is already completed transaction already 100%
+		// This piecemark 
+//		return true;
+	}
+
 	mob.barcodeId = barcodeId;
 	rfProcessBarcode(event);
 	rfResetRevisionsField(formName);//clear Revisions field if there
@@ -4955,6 +5073,7 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
  * @param {JSEvent} event the event that triggered the action
  * @properties={typeid:24,uuid:"7B28EFBB-9853-41BD-9E58-29440DEFD658"}
  * @SuppressWarnings(wrongparameters)
+ * @AllowToRunInFind
  */
 function rfProcessBarcode(event){
 	var formName = event.getFormName();
@@ -5008,6 +5127,27 @@ function rfProcessBarcode(event){
 	rfGetTransactionList(mob.idfile); 
 	rfGetJobUnits();
 	rfGetSpecsItem();
+	//20190705 labor transactions/inspections
+	rfCollectStationCompletes();//20190708 percent completion by station
+	var currentPercent = session.stationsComplete[m.statusCodeToId[mob.statusCode]];
+	if (!currentPercent){currentPercent = 0}
+	if (currentPercent == 100){
+		errorDialogMobile(null,1130,'genericin','');
+		return true;
+	}
+	forms['rf_mobile_view'].laborPercentComplete = currentPercent;
+	var futurePercent = (mob.percent == 100) ? 100 : mob.percent*1 + currentPercent*1;
+	mob.percent = ((mob.percent == 100) && currentPercent != 0) ? mob.percent - currentPercent : mob.percent; //20190709 started as labor entry and finished in non-labor
+	//mob.percent = ((mob.percent == 100 || mob.percent == 0) && currentPercent == 100) ? 100 : mob.percent; // on multiscan of a status that is started as a labor scan
+	mob.laborCompleted = (l.laborStations.indexOf(mob.statusCode) == -1 || session.program.search('Labor') == -1 || futurePercent == 100);
+	if (session.program.search('Labor') == 0 && dataEntryComplete(event,'currentidin') && forms['rf_mobile_view'].laborPercentToday == ''){
+		forms['rf_mobile_view'].laborPercentToday = '';
+		var percentComp = session.stationsComplete[application.getUUID(m.statusCodeToId[mob.statusCode])];
+		forms['rf_mobile_view'].laborPercentComplete = (!percentComp) ? 0 : Math.floor(percentComp);
+		return true;
+	}
+	//20190625 for screens that require the serial number to process, ie no percent labor
+
 	switch (formName){
 		case 'rf_mobile_view': {
 			switch (session.program){
@@ -5061,8 +5201,10 @@ function rfProcessBarcode(event){
 					shipped = barcodeShipped();
 					break;
 				case i18n.getI18NMessage('sts.mobile.transactions')://Transactions
+				case i18n.getI18NMessage('sts.mobile.labor.transactions')://Transactions
 				case i18n.getI18NMessage('sts.mobile.transactions.w.revs').replace("'","")://Transactions w/Rev's
 				case i18n.getI18NMessage('sts.mobile.inspections'):
+				case i18n.getI18NMessage('sts.mobile.labor.inspections'):
 				case i18n.getI18NMessage('sts.mobile.inspections.w.revs').replace("'","")://Inspections w/Rev's
 				case i18n.getI18NMessage('sts.mobile.shipping')://Shipping
 				case i18n.getI18NMessage('sts.mobile.sample')://Sample
@@ -5105,10 +5247,14 @@ function rfProcessBarcode(event){
 						logger(true,'Timed status error'+mob.timedError);
 						return true;
 					}
+					//if (session.program.search('Labor') != -1){break}//temporary
 					saveScanTransaction(); // moved to inside rfTimed where the form query on timed end is located
 					rfGetLocationStats2(forms[formName].id_location);
 					rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea);
 					rfWindowLastInfoDisplay(event);
+					rfCollectStationCompletes();//20190708 percent completion by station
+					forms['rf_mobile_view'].laborPercentComplete = session.stationsComplete[m.statusCodeToId[mob.statusCode]];
+
 					//loadGetData();//20181003 need to do twice. 
 					break;
 				case i18n.getI18NMessage('sts.mobile.status')://Status
@@ -5813,8 +5959,8 @@ function rfSaveTransaction(event){
 			if (mob.timedEnd != ""){
 				transFS.transaction_end = mob.timedEnd;
 				transFS.transaction_duration = mob.timedDuration;
-				if (mob.percent > 0){transFS.trailer_labor_percentage = mob.percent}
-				if (mob.percent == 100.0){transFS.trailer_labor_quantity = 1}
+				if (mob.percent > 0){transFS.labor_percentage = mob.percent}
+				if (mob.percent == 100.0){transFS.labor_quantity = 1}
 			}
 			if (forms.rf_mobile_view.currentBundle){
 				transFS.bundle_bc = forms.rf_mobile_view.currentBundle;
@@ -5961,8 +6107,8 @@ function bundleGetTransactions(){
 			transFS.trans_code = rfTransCode();
 			transFS.transaction_end
 			transFS.transaction_duration
-			transFS.trailer_labor_percentage
-			transFS.trailer_labor_quantity
+			transFS.tlabor_percentage
+			transFS.labor_quantity
 			transFS.worker_id = currentWorkers[index2];
 			transFS.worker2_id = currentWorkers[index2];
 			transFS.worker3_id = currentWorkers[index2];
@@ -6590,6 +6736,8 @@ function rfClearMobDetails(){
 		form.allLength = '';
 		form.dropLength = '';
 		form.dropWidth = '';
+		form.currentID = '';
+		form.laborPercentToday = '';
 		form.elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic');
 		form.elements['genericin2label'].text = i18n.getI18NMessage('sts.label.generic');
 	}
@@ -10529,10 +10677,10 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 				break;
 			}
 			if (!data && forms['rf_mobile_view'].elements['currentidin']){break;}
-			if (dataEntryComplete(event)){
+			//20190625 jmc add to account for labor screen
 			forms['rf_mobile_view'].currentID = data; 
-				onDataChangeBarcode2(oldValue,data,event);
-			}
+			onDataChangeBarcode2(oldValue,data,event);
+
 			break;
 		//G or g = (G)rade
 		case 'F':
@@ -10801,7 +10949,8 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			if (forms['rf_mobile_view'].shownFields.indexOf('remarksin') == -1 &&
 				forms['rf_mobile_view'].shownFields.indexOf('barcodein') == -1 &&
 				forms['rf_mobile_view'].shownFields.indexOf('asnin') == -1 &&
-				forms['rf_mobile_view'].shownFields.indexOf('barcodermin') == -1){
+				forms['rf_mobile_view'].shownFields.indexOf('barcodermin') == -1 &&
+				forms['rf_mobile_view'].shownFields.indexOf('laborin') == -1){
 				if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')] ||
 				session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
 					errorDialogMobile(event,1229,'genericin','Remarks');
@@ -10812,7 +10961,9 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			}
 			if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')] &&
 					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.status')] &&
-					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')] &&
+					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.labor.inspections')] &&
+					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.labor.transactions')]){
 				form['remarks'] = data;
 			} else {
 				if (newValue.search('RC') == 0 && newValue.match(/(RC[0-9]+)/) && (
@@ -10867,6 +11018,26 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					form['labelPrintType'] = 'piecemark';
 					//session.rawCutPiecemarks = [];
 					scopes.jobs.printCutListLabels(event);//ask before printing, but need Raw Material Label for the heat number
+				} else if (session.program.search('Labor') == 0){//process Labor Screen with R as final entry and clearing prefix
+					// get transaction list
+					// collect transaction totals for piecemark/idfile list, use single idfile as
+					// if transaction at 100% error showing item complete, last transaction percent is 100 and labor is 1
+					// get percent complete
+					// check prior transaction, to ensure complete or get percent complete
+					// new labor transaction, no percentage, labor total 0, piecemark total 0
+					// check for percent 0 or 100 finish
+					if (data == 0){data = 100}//reduce input to 100 from 0
+					mob.percent = data;
+					if (data != 100 && l.laborStations.indexOf(mob.statusCode) == -1){
+						errorDialogMobile(event,766,'genericin','');//Current Station Requires 100% Completion.
+						break;
+					}
+					form['laborPercentToday'] = data;
+					if (rfDeterminePercent()){
+						onDataChangeBarcode2(mob.percent,forms['rf_mobile_view'].currentID,event);
+					}
+					form['laborPercentToday'] = '';
+					mob.laborCompleted = false;
 				} else {
 					form['remarks'] = data;
 				}
@@ -10884,6 +11055,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			} else if (!data && forms['rf_mobile_view'].elements['statusin']){
 				forms['rf_mobile_view'].statusCode = '';//break;
 			} else {
+				globals.rfClearDependentEntries(event,'statusin');
 				onDataChangeStatus(oldValue,data,event);
 			}
 			break;
@@ -11080,10 +11252,11 @@ function dataEntryComplete(event,altField){
 	//if (event){return true}
 	/** @type {Array} */
 	var entryList = forms['rf_mobile_view'].requiredFields;
-	for (var index = 0;index < entryList.length-1;index++){
+	var endIndex = (!altField) ? entryList.length-1 : entryList.indexOf(altField);
+	for (var index = 0;index < endIndex;index++){
 		var entry = entryList[index];
 		if ((entry == '') || entry.search('genericin') == 0){continue}//20180312 some entries cleared due to workers
-		if (altField && entry == altField){break}//add alternate ending field
+		//if (altField && entry == altField){break}//add alternate ending field
 		var dataProv = forms['rf_mobile_view'].elements[entry].getDataProviderID();
 		if (forms['rf_mobile_view'][dataProv] == ''){
 			errorDialogMobile(event,1228,'genericin',entry);//Requred Entries Are Not Yet Complete. 1228
@@ -13676,10 +13849,10 @@ function clearCutListData(event){
  */
 function rfClearDependentEntries(event,entryField){
 	var form = forms['rf_mobile_view'];
-	var currIdx = form['requiredFields'].indexOf(entryField);
-	var lastIdx = form['requiredFields'].length;
+	var currIdx = form['inputFields'].indexOf(entryField);
+	var lastIdx = form['inputFields'].length;
 	for (var idx = currIdx+1;idx < lastIdx;idx++){
-		var elName = form['requiredFields'][idx];
+		var elName = form['inputFields'][idx];
 		if (elName == 'strikethruin'){continue}//task361
 		var el = form.elements[elName];
 		var dataProv = el.getDataProviderID();
@@ -13756,3 +13929,128 @@ function getInvUUID(event,invBarcode){
 	}
 	return null;
 }
+/**
+ * @param {String} oldValue
+ * @param {String} newValue
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"DAA7FE59-BF61-4939-A323-2933E6D5808E"}
+ */
+function rfCheckBarcodeInRoute(oldValue, bcId,event){
+	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
+	var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
+	q.where.add(q.columns.id_serial_number.eq(bcId));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	/** @type {QBJoin<db:/stsservoy/pcmk_instances>} */
+	var r = q.joins.add('db:/stsservoy/pcmk_instances');
+	r.on.add(r.columns.id_serial_uuid.eq(q.columns.id_serial_number_id));
+	//q.on.add(r.columns.id_serial_uuid.eq(q.columns.id_serial_number_id));
+	//r.root.result.add(r.columns.piecemark_uuid);
+	var s = r.joins.x_pm;
+	q.result.add(s.columns.e_route_code_id);
+	var Q = databaseManager.getDataSetByQuery(q,1);
+	Q.rowIndex = 1;
+	if (application.isInDeveloper()){application.output('route_id: ' +Q.e_route_code_id)}
+	return Q.e_route_code_id;//globals.l.routeLegs[globals.m.routes[Q.e_route_code_id]];
+	//null;
+}
+/**
+ * @param statusCode
+ * @param routeCodeOrId
+ *
+ * @properties={typeid:24,uuid:"10B1039B-0E36-4F47-9D2A-DC6E01C2042E"}
+ */
+function rfCheckStatusInRoute(statusCode, routeCodeOrId){
+	if (routeCodeOrId.toString().length != 36){}//later 
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var q = databaseManager.createSelect('db:/stsservoy/status_description');
+	q.where.add(q.columns.status_code.eq(statusCode));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	var Q = databaseManager.getFoundSet(q);
+	Q.loadRecords();
+	if (Q.getSize() > 0){
+		/** @type {JSFoundSet<db:/stsservoy/status_description>} */
+		var rec = Q.getRecord(1);
+		if (globals.l.routeLegs[routeCodeOrId].indexOf(rec.status_description_id.toString()) != -1){return true}
+	}
+	return false;
+	
+	
+}
+/**
+ * @properties={typeid:24,uuid:"2DB7000D-365F-4E7B-B14D-3E54AC9D6EC7"}
+ */
+function rfCollectStationCompletes(){
+	var skip = ['10','99'];
+	session.stationsComplete = [];
+	var idfileId = mob.idfile.idfile_id;
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.idfile_id.eq(idfileId));
+	q.where.add(q.columns.delete_flag.isNull);
+	q.sort.add(q.columns.edit_date.asc);
+	q.result.add(q.columns.trans_id);
+	var Q = databaseManager.getFoundSet(q);
+	
+	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
+	var rec = null; var index = 1; var percentComp = 0;
+	while (rec = Q.getRecord(index++)){
+		if (rec.delete_flag == 99 || rec.delete_flag == 10){continue}
+		percentComp = (!rec.labor_percentage) ? 0 : rec.labor_percentage;
+		if (!session.stationsComplete[rec.status_description_id]){session.stationsComplete[rec.status_description_id] = 0}
+		session.stationsComplete[rec.status_description_id] += percentComp; 
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"6F21C310-9E3D-48C5-B580-8DCA0DC41AA4"}
+ * Return false if percent doesn't match valid percent inputs
+ */
+function rfDeterminePercent(){
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var q = databaseManager.createSelect('db:/stsservoy/status_description');
+	q.where.add(q.columns.status_code.eq(mob.statusCode));
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	var Q = databaseManager.getFoundSet(q);
+	/** @type {JSFoundSet<db:/stsservoy/status_description>} */
+	var qRec = Q.getRecord(1);
+	var stationId = qRec.status_description_id;
+	var priorStation = getPriorRoutedStation(stationId);
+	var priorStatusPct = (!priorStation) ? 100 : session.stationsComplete[priorStation];
+	var currentPercent = (!session.stationsComplete[stationId]) ? 0 : session.stationsComplete[stationId];
+	forms['rf_mobile_view'].laborPercentComplete = currentPercent;
+	if (mob.percent == 100){mob.percent = 100 - currentPercent}
+	var futurePercent = currentPercent*1 + mob.percent*1;
+	mob.laborCompleted = (futurePercent == 100);
+	if (priorStatusPct < 100 && currentPercent == 100){
+		var percentCompare = Math.floor(priorStatusPct*1) +'>'+Math.floor(futurePercent*1);
+		errorDialogMobile(null,765,'genericin',percentCompare);
+		return false;				
+	}//s765 Current Station Cannot Be More Complete Than Prior Station.
+	if (currentPercent == 100){
+		errorDialogMobile(null,1130,'genericin','');
+		return false;		
+	}//show error that percent is already 100 and complete 1130 This Status Code Is Already 100% Complete.
+	if (futurePercent > 100){
+		errorDialogMobile(null,764,'genericin',futurePercent+'%');
+		return false;
+	}//show error that percent is over 100 CODE 764 Percentage Total Exceeds 100% Complete
+	// if r 0 or 100, set percent to 100, determine if not 100, then set percent to 100-currentPercent
+	// if 100 already, then error message Completed
+	// if r > 0 and r < 100 then percent is currentPercent plus entered percent or an error
+	return true;
+}
+/**
+ * @param currentStationId
+ *
+ * @properties={typeid:24,uuid:"26B76EA0-4002-4D4E-89E4-8B95688C4198"}
+ */
+function getPriorRoutedStation(currentStationId){
+	if (!mob.routeId){return null}
+	var routeList = l.routeLegs[mob.routeId];
+	var rtIndex = routeList.indexOf(currentStationId.toString());
+	if (rtIndex == 0){return null}
+	return routeList[rtIndex-1];
+}
+

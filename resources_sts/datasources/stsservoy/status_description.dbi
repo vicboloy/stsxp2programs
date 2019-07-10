@@ -19,6 +19,13 @@ titleText:"i18n:table.status_description.allow_multi_scan"
 },
 {
 allowNull:true,
+creationOrderIndex:23,
+dataType:4,
+name:"allow_start_prior_not",
+titleText:"i18n:table.status_description.allow_start_prior_not"
+},
+{
+allowNull:true,
 creationOrderIndex:19,
 dataType:12,
 flags:4,
@@ -75,6 +82,13 @@ dataType:12,
 length:15,
 name:"labor_code_department",
 titleText:"i18n:table.status_description.labor_code_department"
+},
+{
+allowNull:true,
+creationOrderIndex:24,
+dataType:4,
+name:"labor_percentage_scan",
+titleText:"i18n:table.status_description.labor_percentage_scan"
 },
 {
 allowNull:true,

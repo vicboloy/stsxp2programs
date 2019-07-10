@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/heats",
+items:[
+{foreignColumnName:"heat_id",primaryDataProviderID:"heat_id",typeid:23,uuid:"B347DB79-8AAA-427B-93BF-75C11502A8B0"}
+],
+joinType:1,
+name:"x_id_ht",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"5A37E9B0-6DBA-4D99-B530-4CAE87E10AF7"

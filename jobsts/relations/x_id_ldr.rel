@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/loads",
+items:[
+{foreignColumnName:"load_id",primaryDataProviderID:"received_load_id",typeid:23,uuid:"5CD1FAD1-C06E-4020-B642-3268586BD29F"}
+],
+joinType:1,
+name:"x_id_ldr",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"DAAD3741-27D8-4A44-A6D0-0522B95506D4"

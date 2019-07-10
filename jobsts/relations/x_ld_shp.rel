@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/customers",
+items:[
+{foreignColumnName:"customer_id",primaryDataProviderID:"ship_to",typeid:23,uuid:"84402E22-A686-4084-A033-D4D3B44C269B"}
+],
+joinType:1,
+name:"x_ld_shp",
+primaryDataSource:"db:/stsservoy/loads",
+typeid:22,
+uuid:"64F09C1A-6AF1-4028-835D-B493E59842D1"

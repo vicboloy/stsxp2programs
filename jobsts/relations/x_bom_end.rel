@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/end_conditions",
+items:[
+{foreignColumnName:"end_condition_id",primaryDataProviderID:"end_condition_id",typeid:23,uuid:"528DA37B-A63A-4272-8408-8D21400F3EBE"}
+],
+joinType:1,
+name:"x_bom_end",
+primaryDataSource:"db:/stsservoy/sheet_bom",
+typeid:22,
+uuid:"6ED05C1C-41CB-4A8D-853D-E0EA9CF61CA3"

@@ -41,7 +41,7 @@ function getTransactionDetails(event) {
 	if (!foundset){return}
 	var tranEls = ['trans_status','transaction_date','transaction_duration','transaction_start','transaction_end','employee_number','association_name','trans_code',
 	'minor_piecemark','quantity','revision_level','worker_id','worker2_id','worker3_id','worker4_id','worker5_id','trans_reversal_worker','trans_reversal_date',
-	'trailer_labor_percentage','trailer_labor_quantity','gps_record_number','latitude','longitude','location','altitude','bundle_bc'];
+	'labor_percentage','labor_quantity','gps_record_number','latitude','longitude','location','altitude','bundle_bc'];
 	//for (var index = 0;index < tranEls.length;index++){
 		transStat = '';
 		var transI18 = 'table.transactions.';
@@ -75,7 +75,7 @@ function getTransactionDetails(event) {
 		 var revEmp = (sts_transactions_to_employee_reversal) ? sts_transactions_to_employee_reversal.employee_number : '';
 		 transStat += '\n' + i18n.getI18NMessage(transI18+'trans_reversal_worker') + ': ' + revEmp;
 		 transStat += '\n' + i18n.getI18NMessage(transI18+'trans_reversal_date') + ': ' + scopes.jobs.formatDate(trans_reversal_date);
-		 transStat += '\n' + i18n.getI18NMessage(transI18+'trailer_labor_percentage') + ': ' + trailer_labor_percentage;
+		 transStat += '\n' + i18n.getI18NMessage(transI18+'labor_percentage') + ': ' + labor_percentage;
 		 var aged = (new Date().getTime() - new Date(transaction_date).getTime())/60000;
 		 transStat += '\n' + i18n.getI18NMessage('sts.time.age.record') + ': ' + scopes.jobs.formatMinutes(aged);
 		 transStat += '\n' + i18n.getI18NMessage(transI18+'gps_record_number') + ': ' + gps_record_number;

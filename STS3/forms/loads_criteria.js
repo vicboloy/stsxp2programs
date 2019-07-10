@@ -287,8 +287,6 @@ function collectAndTab(event,formName){
 	scopes.jobs.removeFormHist(formName+'_table');
 	criteria = collectCriteria();
 	//scopes.jobs.viewBTableSQL2(criteria,formName);
-	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
-	scopes.jobs.viewBTableSQLSummary(criteria,formName);
 	var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
 	var summaryForm = 'loads_summary_info'+versionForm;
 	var removeFormName = summaryForm+'_table';
@@ -305,6 +303,8 @@ function collectAndTab(event,formName){
 	scopes.jobs.viewBTableToFormQB(criteria,formName);
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	scopes.jobs.viewBTableToFormQB(criteria,'loads_pcmk_combo'+versionForm);//20180802 move query build for browsing table
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
+	scopes.jobs.viewBTableSQLSummary(criteria,formName);
 	null;
 }
 /**

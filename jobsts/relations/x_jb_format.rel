@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/customers",
+items:[
+{foreignColumnName:"customer_id",primaryDataProviderID:"barcode_form",typeid:23,uuid:"BB8DBF7D-8416-40D5-90E0-A528CAF25599"}
+],
+joinType:1,
+name:"x_jb_format",
+primaryDataSource:"db:/stsservoy/jobs",
+typeid:22,
+uuid:"D107EAC9-F744-484B-9F80-A8298473DE94"

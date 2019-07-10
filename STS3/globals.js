@@ -910,6 +910,10 @@ var subWindowParentFocus = '';
  */
 var checkedForTempFiles = false;
 /**
+ * @properties={typeid:35,uuid:"951B5489-FD17-456D-B3FA-3BC0CF86D94E",variableType:-4}
+ */
+var useFasterQuery = false;
+/**
  * Callback method for when solution is opened.
  *
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
@@ -2143,4 +2147,118 @@ function createPostGreSqlIndexes(){
 function onSolutionClose(){
 	scopes.fs.fabSuiteClose();
 	scopes.prefs.bartenderClose(null);
+}
+/**
+ * @properties={typeid:24,uuid:"8B7D5000-1EC0-40AB-9744-EE4041D3854B"}
+ */
+function createEmptyRecs(){
+	var jobArray = [];
+	var tenantArray = [];
+	/** @type {QBSelect<db:/stsservoy/tenant_list>} */
+	var tn = databaseManager.createSelect('db:/stsservoy/tenant_list');
+	var TN = databaseManager.getFoundSet(tn);
+	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
+	var recT = null;index = 1;
+	while (recT = TN.getRecord(index++)){
+		tenantArray.push(recT.tenant_uuid);
+	}
+	databaseManager.getTableFilterParams('stsservoy');
+	databaseManager.removeTableFilterParam('stsservoy','secTenantFilter');
+	databaseManager.removeTableFilterParam('stsservoy','Filter_heats');
+	databaseManager.removeTableFilterParam('stsservoy','Filter_idfiles');
+	databaseManager.removeTableFilterParam('stsservoy','filterCurrentTenant');
+	
+	
+	application.output('tenants: '+tenantArray);
+	var jobData = {tenant: null, jobid: null};
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var q = databaseManager.createSelect('db:/stsservoy/jobs');
+	var Q = databaseManager.getFoundSet(q);
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var rec = null;var index = 1;
+	while (rec = Q.getRecord(index++)){
+		var jobd = {};
+		jobd.tenant = rec.tenant_uuid.toString();
+		jobd.jobid = rec.job_id.toString();
+		jobArray.push(jobd);
+	}
+	/** @type {QBSelect<db:/stsservoy/heats>} */
+	var ht = databaseManager.createSelect('db:/stsservoy/heats');
+	ht.where.add(ht.columns.heat_number.eq(''));
+	ht.result.add(ht.columns.heat_id);
+	var HT = databaseManager.getFoundSet(ht);
+	HT.loadRecords();
+	/** @type {JSFoundSet<db:/stsservoy/heats>} */
+	var recHT = null;index = 1;var htTenantFound = [];
+	while (recHT = HT.getRecord(index++)){
+		htTenantFound.push(recHT.tenant_uuid);
+	}
+	for (index = 0;index < tenantArray.length;index++){
+		application.output(tenantArray[index]);
+		if (htTenantFound.indexOf(tenantArray[index]) == -1){
+			application.output(tenantArray[index]+' was not found in heats');
+			//if (1==1){continue}
+			var idx = HT.newRecord();
+			/** @type {JSFoundSet<db:/stsservoy/heats>} */
+			var recHT = HT.getRecord(idx);
+			var table = databaseManager.getTable('db:/stsservoy/heats');
+			var cols = table.getColumnNames();
+			for (var idx1 = 0;idx1 < cols.length;idx1++){
+				recHT.tenant_uuid = tenantArray[index];
+				
+				var col = table.getColumn(cols[idx1]);
+				var colName = cols[idx1];
+				if (recHT[colName] != null){continue}
+				var dataType = col.getTypeAsString();
+				if (dataType != 'TEXT'){continue}
+				application.output('dataType '+colName+' '+dataType);
+				recHT[colName] ='';
+			}
+			databaseManager.saveData(recHT);
+			
+		} else {
+			application.output(tenantArray[index]+' empty/base heat found');
+		}
+	}
+	HT.loadRecords();
+	var heatTenant = [];
+	application.output('empty heat size is '+HT.getSize());
+	index = 1;
+	while (recHT = HT.getRecord(index++)){
+		heatTenant[recHT.tenant_uuid] = recHT.heat_id;
+	}
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var id = databaseManager.createSelect('db:/stsservoy/idfiles');
+	//id.where.add(id.columns.heat_id.isNull);
+	id.result.add(id.columns.idfile_id);
+	var ID = databaseManager.getFoundSet(id);
+	ID.loadRecords();
+	application.output('idfiles '+ID.getSize());
+	table = databaseManager.getTable('db:/stsservoy/idfiles');
+	cols = table.getColumnNames();
+	var textCols = [];
+	for (index = 0;index < cols.length;index++){
+		col = table.getColumn(cols[index]);
+		dataType = col.getTypeAsString();
+		var colLength = col.getLength();
+		if (dataType == 'TEXT' && colLength != 36){textCols.push(cols[index])}
+	}
+	application.output(textCols);
+	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+	var recId = null; index = 1;
+	while (recId = ID.getRecord(index++)){
+		for (var idx2 = 0;idx2 < textCols.length;idx2++){
+			if (recId[textCols[idx2]] == null){recId[textCols[idx2]] = ''}
+		}
+		if (tenantArray.indexOf(recId.tenant_uuid) == -1){continue}
+		//application.output('heat '+heatTenant[recId.tenant_uuid]+ ' tenant '+recId.tenant_uuid);
+		if ((tenantArray.indexOf(recId.tenant_uuid) == -1) && !recId.heat_id){recId.heat_id = heatTenant[recId.tenant_uuid]}
+	}
+	databaseManager.saveData(ID);
+	//for (var index = 0;index < jobArray.length;index++){
+	//	application.output(jobArray[index].jobid+' '+jobArray[index].tenant);
+	//}
+	//application.getUUID();
+	
+	
 }

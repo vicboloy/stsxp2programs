@@ -451,6 +451,20 @@ var associatedCutIdCount = 0;
  */
 var associatedCutRatio = '0 of 0';
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"493E047A-20EF-4C5B-AC24-CF85548F7FBB",variableType:4}
+ */
+var laborPercentComplete = 0;
+/**
+ * @properties={typeid:35,uuid:"0C25792A-54EE-455D-8955-D083516B0437",variableType:-4}
+ */
+var laborPercentToday = null;
+/**
+ * @properties={typeid:35,uuid:"71D92708-6DB3-4071-AE85-07AE3DB1D201",variableType:-4}
+ */
+var inputFields = null;
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -498,6 +512,7 @@ function onShowForm(firstShow,event) {
 	}
 	globals.getSequenceNumbers();
 	requiredFields = [];
+	inputFields = [];
 	var formName = event.getFormName();
 	var tabSequence = [];
 	tabFieldOrder = [];
@@ -636,6 +651,7 @@ function onShowForm(firstShow,event) {
 			forms['rf_mobile_view'][fieldValue] = "";
 			//tabFieldOrder.push(item);
 			//tabSequence.push(element);
+			inputFields.push(item);
 			if (globals.rfViews[showElementsOf][item].search("R") != -1){
 				requiredFields.push(item);
 				element.bgcolor = 'yellow';
@@ -689,6 +705,10 @@ function onShowForm(firstShow,event) {
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		plugins.WebClientUtils.executeClientSideJS('playSoundX(null);');
 	}
+	globals.getStatusDescriptions();
+	globals.getRoutes();
+	globals.getRouteLegs();
+
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.

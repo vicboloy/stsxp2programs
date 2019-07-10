@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/employee",
+items:[
+{foreignColumnName:"employee_id",primaryDataProviderID:"original_employee_uuid",typeid:23,uuid:"A1716E4A-6103-4F62-8182-06A9497C6A73"}
+],
+joinType:1,
+name:"x_idoe_em",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"1203829B-3470-4699-8A6A-7B89594C7A97"

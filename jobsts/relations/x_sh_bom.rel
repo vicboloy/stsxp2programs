@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/sheet_bom",
+items:[
+{foreignColumnName:"sheet_id",primaryDataProviderID:"sheet_id",typeid:23,uuid:"FA0C7FA9-0F80-4A68-A601-E270CA76ECCA"}
+],
+joinType:1,
+name:"x_sh_bom",
+primaryDataSource:"db:/stsservoy/sheets",
+typeid:22,
+uuid:"30E7925F-4020-4F76-AF51-F569FD636528"

@@ -1360,11 +1360,19 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
-	application.output('RM execute FFSTART9');
+	globals.useFasterQuery = !globals.useFasterQuery;
+	if (globals.useFasterQuery){
+		scopes.globals.DIALOGS.showErrorDialog('Change view Loads Method','Using faster Query');
+	} else {
+		scopes.globals.DIALOGS.showErrorDialog('Change view Loads Method','Using Original Query');
+	}
+	//application.output('RM execute FFSTART9');
 	//plugins.UserManager.executeCommand('\\\\p2server01\\STSX\\foxfire\\ff.bat');//\\p2server01\STSX\foxfire
-	application.output('RM finish FFSTART9');application.executeProgram('\\\\p2server01\\STSX\\foxfire\\ff.bat');
+	//application.output('RM finish FFSTART9');application.executeProgram('\\\\p2server01\\STSX\\foxfire\\ff.bat');
 	if (!application.isInDeveloper()){return}
+	if (1==1){return}
 	//scopes.jobs.testSerialNonOdo();
+	scopes.jobs.testViewLoads();
 	if (1==1)return
 	var response = "blah";
 	switch (response){

@@ -261,7 +261,7 @@ uuid:"52A87D08-512D-40E5-AD4A-E9D32A77C13C"
 {
 anchors:11,
 borderType:"LineBorder,1,#000000",
-dataProviderID:"trailer_labor_quantity",
+dataProviderID:"labor_quantity",
 location:"1550,20",
 name:"trailer_labor_quantity",
 size:"78,20",
@@ -443,7 +443,7 @@ uuid:"7C7B900B-D281-4CDF-BDBB-396294393386"
 {
 anchors:11,
 borderType:"LineBorder,1,#000000",
-dataProviderID:"trailer_labor_percentage",
+dataProviderID:"labor_percentage",
 location:"1478,20",
 name:"trailer_labor_percentage",
 size:"78,20",

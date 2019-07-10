@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/idfiles",
+items:[
+{foreignColumnName:"idfile_id",primaryDataProviderID:"parent_idfile_id",typeid:23,uuid:"4EB08A5E-9842-4A0D-800A-766949D55CF8"}
+],
+joinType:1,
+name:"x_pm_ppm",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"D65DFA60-CB4A-4F53-B835-0A7FF1A8980A"

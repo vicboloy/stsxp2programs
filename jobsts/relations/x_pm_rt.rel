@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/routings",
+items:[
+{foreignColumnName:"routing_id",primaryDataProviderID:"e_route_code_id",typeid:23,uuid:"C80F04DE-72DC-4F71-8B7F-13B19E5350E3"}
+],
+joinType:1,
+name:"x_pm_rt",
+primaryDataSource:"db:/stsservoy/piecemarks",
+typeid:22,
+uuid:"EEBE1FDA-4F43-44ED-A418-ED56FE1F9D43"

@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/id_serial_numbers",
+items:[
+{foreignColumnName:"id_serial_number_id",primaryDataProviderID:"id_serial_uuid",typeid:23,uuid:"2EE182CB-3AD3-49AC-B309-6C4793D538ED"}
+],
+joinType:1,
+name:"x_bc",
+primaryDataSource:"db:/stsservoy/pcmk_instances",
+typeid:22,
+uuid:"7B9A5A2E-1982-42E4-ABD6-87E6BB38E68A"

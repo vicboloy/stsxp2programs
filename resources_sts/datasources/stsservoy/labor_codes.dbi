@@ -94,6 +94,7 @@ allowNull:true,
 creationOrderIndex:10,
 dataType:12,
 flags:4,
+foreignType:"tenant_list",
 length:36,
 name:"tenant_uuid",
 titleText:"i18n:table.labor_codes.tenant_uuid"

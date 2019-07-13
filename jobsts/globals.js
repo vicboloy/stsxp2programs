@@ -1424,6 +1424,11 @@ var altInputDataProv = 'genericInput';
  */
 var textColumns = [];
 /**
+ * @properties={typeid:35,uuid:"0FCBFC5A-1875-443D-824A-6210C205C625",variableType:-4}
+ * Are the STSmobile labor screens active
+ */
+var laborScreenActive = false;
+/**
  * @AllowToRunInFind
  * 
  * @param assocID
@@ -2482,6 +2487,7 @@ function barcodeOnHold(){
  * @properties={typeid:24,uuid:"E30FE8EB-E424-403C-BA0F-E98D2E5BB35F"}
  */
 function barcodeShip(){
+	rfCollectStationCompletes();
 	// 1/29/2015 does it have a route and is that route complete?
 	var routeComplete = true;
 	var checkLegs = [];
@@ -2498,7 +2504,8 @@ function barcodeShip(){
 	var stationsDone = mob.transactionList;
 	for (var index = 0;index < checkLegs.length;index++){
 		var routeLeg = checkLegs[index];
-		routeComplete = (stationsDone.indexOf(routeLeg) != -1);
+		//routeComplete = (stationsDone.indexOf(routeLeg) != -1);
+		routeComplete = (session.stationsComplete[routeLeg] == 100);
 		if (!routeComplete){break}
 	}
 	return routeComplete;
@@ -2651,6 +2658,9 @@ function rfChangeWindow(event,winName){
 		getI18nWindowName(winName);
 	}
 	winName = mobileWindows[winName];
+	globals.laborScreenActive = (session.program == i18n.getI18NMessage('sts.mobile.labor.inspections') ||
+		session.program == i18n.getI18NMessage('sts.mobile.labor.transactions'));
+
 	switch(winName)	{
 	case mobileWindows[i18n.getI18NMessage('sts.mobile.labor.transactions')]:
 		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.labor.transactions')];
@@ -2846,6 +2856,9 @@ function rfFunctionKeys(screen){
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections')]://"Transactions w/Rev's2":
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.labor.inspections')]:
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.labor.transactions')]:
+			if (laborScreenActive) {//20190712 as per PParks No F8 on Labor Percentage Screens
+				noF8 = true;
+			}
 			globals.mobForm = "rf_transactions";
 			dex = 2;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
@@ -3251,7 +3264,7 @@ function rfErrorShow(message){
 	if (!dualEntry){
 		//mobDisableForm(true);//disable lock form? 4/28/2019
 	}
-	errorMessageMobile = (message.split('\n').length > 1) ? message : textWrap(message,25);
+	errorMessageMobile = textWrap(message,25);
 	forms[formName].elements.errorWindow.enabled = true;
 	forms[formName].elements.errorWindow.visible = true;
 	forms[formName].elements.errorWindow.transparent = false;
@@ -3668,7 +3681,8 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	//		return true;			
 	//	}
 	//}
-	if (session.program.search('Labor') != 0){//20190708 set non-labor transactions to a mob.percent of 100
+	if (!globals.laborScreenActive){
+		//if (session.program.search('Labor') != 0){//20190708 set non-labor transactions to a mob.percent of 100
 		mob.percent = 100;
 	}
 	if (forbidden.indexOf(m.statusToProcess[newValue]) != -1){
@@ -4510,7 +4524,15 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	var isTimedEnd = false; var isTimed = false;
 	// Check 3rd parties here
 //	var commitType = 'Save';//vs 'Delete'
-	if (mob.laborCompleted && !rfSaveThirdParties('Save')){return false}//CHECFS
+	/** @type {QBSelect<db:/stsservoy/status_description>} */
+	var qq = databaseManager.createSelect('db:/stsservoy/status_description');
+	qq.where.add(qq.columns.status_code.eq(mob.statusCode));
+	qq.where.add(qq.columns.tenant_uuid.eq(session.tenant_uuid));
+	var QQ = databaseManager.getFoundSet(qq);
+	/** @type {JSFoundSet<db:/stsservoy/status_description>} */
+	var qqRec = QQ.getRecord(1);
+	var statusShipType = qqRec.status_type;
+	if (!application.isInDeveloper() && mob.laborCompleted && !rfSaveThirdParties('Save')){return false}//CHECFS
 	databaseManager.startTransaction();
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var newRec = null;var totalIdfileCnt = mob.idfiles.length;
@@ -4550,7 +4572,11 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			newRecB.trans_status = mob.statusCode;
 			newRecB.trans_code = rfTransCode();
 			newRecB.revision_level = mob.currentRevision;
-			newRecB.load_id = session.loadId; //UPDATE to only update on SHIP
+			if (processCodes.shipping.indexOf(statusShipType) != -1){
+				if (session.loadId != null && session.loadId != ''){
+					newRecB.load_id = session.loadId; //UPDATE to only update on SHIP
+				}
+			}
 			if (application.isInDeveloper()){application.output(newRecB.trans_id+' X1 mob.timed B:'+mob.timedBegin+' E:'+mob.timedEnd)}
 			if (!mob.timedBegin){newRecB.quantity = 1;}
 			if (mob.timedEnd){
@@ -4605,14 +4631,16 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 		resultQ = databaseManager.getFoundSet(q);
 		if (resultQ.getSize() > 0){
 			var batchQ = databaseManager.getFoundSetUpdater(resultQ);
-			if (session.loadId != null){
-				batchQ.setColumn('ship_load_id',session.loadId);
-				batchQ.setColumn('current_load_id',session.loadId);
+			if (processCodes.shipping.indexOf(statusShipType) != -1){
+				if (session.loadId != null && session.loadId != ''){
+					batchQ.setColumn('ship_load_id',session.loadId);
+					batchQ.setColumn('current_load_id',session.loadId);
+				}
 			}
-			if (mobLoadNumber != "" && session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')]){
-				batchQ.setColumn('ship_load_id',session.loadId);
-				batchQ.setColumn('current_load_id',session.loadId);
-			}
+			//if (mobLoadNumber != "" && session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')]){
+			//	batchQ.setColumn('ship_load_id',session.loadId);
+			//	batchQ.setColumn('current_load_id',session.loadId);
+			//}
 			if (sLocation != "" && sLocation != null){
 				batchQ.setColumn('id_location',sLocation)
 			}
@@ -4717,8 +4745,37 @@ function showMain(){
  */
 function textWrap(message, length){
 	var formatted = '<html>';
-	var words = message.split('/w');
-	length = 25;
+	/** @type {Array} */
+	var words = message.split(' ');
+	/** @type {String} */
+	var word = '';var msgPart = '';var maxLength = length+5;var longWord = false;var word2 = '';
+	var splitWord = [];//hold long words for splitting non-spaces
+	while (word = words.shift()){
+		longWord = false;
+		while (word.length > maxLength){
+			longWord = true;
+			var subWord = word.substr(0,length);
+			splitWord.push(subWord);
+			word = word.substr(length,word.length);
+			if (word.length <= maxLength){
+				splitWord.push(word);
+			}
+		}
+		while (word2 = splitWord.shift()){
+			words.push(word2);
+		}
+		if (longWord){continue}
+		var tmpPart = tmpPart+' '+word;
+		if (tmpPart.length > length){
+			formatted += msgPart+' '+'\n'+word;tmpPart = word;
+		} else {
+			formatted += ' '+word;
+		}
+	}
+	if (1==1){return formatted}
+	//all below deprecated
+	
+	
 	var messLength = message.length;
 	if (messLength < length){return message}
 	message = message.replace(/\//g,'/ ');
@@ -5007,7 +5064,7 @@ function onActionMainMenu(event) {
  */
 function onDataChangeBarcode2(oldValue, scannedID, event) {
 	var laborPercent = 0;
-	if (session.program.search('Labor') != -1){//Labor screen is active
+	if (globals.laborScreenActive) {//if (session.program.search('Labor') != -1){//Labor screen is active
 		laborPercent = oldValue;//passed in 'R' code for percent
 		mob.laborPercent = laborPercent;
 	}
@@ -5035,7 +5092,8 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
 		globals.logger(true,'Barcode does not exist.');
 		return true;
 	}
-	if (session.program.search('Labor') != -1){
+	
+	if (globals.laborScreenActive) {//20190712 as per PParks No F8 on Labor Percentage Screens
 		if (application.isInDeveloper()){application.output('only process id as in a route with status')}
 		var routeId = rfCheckBarcodeInRoute(oldValue, scannedID, event);
 		mob.routeId = routeId;//20190705 save route id for piecemark
@@ -5131,16 +5189,20 @@ function rfProcessBarcode(event){
 	rfCollectStationCompletes();//20190708 percent completion by station
 	var currentPercent = session.stationsComplete[m.statusCodeToId[mob.statusCode]];
 	if (!currentPercent){currentPercent = 0}
-	if (currentPercent == 100){
+	if (currentPercent == 100 && !flagF8){
 		errorDialogMobile(null,1130,'genericin','');
 		return true;
+	}
+	if (!globals.laborScreenActive && currentPercent > 0){
+		errorDialogMobile(null,767,'genericin','');
+		return true;	
 	}
 	forms['rf_mobile_view'].laborPercentComplete = currentPercent;
 	var futurePercent = (mob.percent == 100) ? 100 : mob.percent*1 + currentPercent*1;
 	mob.percent = ((mob.percent == 100) && currentPercent != 0) ? mob.percent - currentPercent : mob.percent; //20190709 started as labor entry and finished in non-labor
 	//mob.percent = ((mob.percent == 100 || mob.percent == 0) && currentPercent == 100) ? 100 : mob.percent; // on multiscan of a status that is started as a labor scan
-	mob.laborCompleted = (l.laborStations.indexOf(mob.statusCode) == -1 || session.program.search('Labor') == -1 || futurePercent == 100);
-	if (session.program.search('Labor') == 0 && dataEntryComplete(event,'currentidin') && forms['rf_mobile_view'].laborPercentToday == ''){
+	mob.laborCompleted = (l.laborStations.indexOf(mob.statusCode) == -1 || !globals.laborScreenActive || futurePercent == 100);//session.program.search('Labor') == -1
+	if (!flagF8 && globals.laborScreenActive && dataEntryComplete(event,'currentidin') && forms['rf_mobile_view'].laborPercentToday == ''){//session.program.search('Labor') == 0 
 		forms['rf_mobile_view'].laborPercentToday = '';
 		var percentComp = session.stationsComplete[application.getUUID(m.statusCodeToId[mob.statusCode])];
 		forms['rf_mobile_view'].laborPercentComplete = (!percentComp) ? 0 : Math.floor(percentComp);
@@ -5247,7 +5309,7 @@ function rfProcessBarcode(event){
 						logger(true,'Timed status error'+mob.timedError);
 						return true;
 					}
-					//if (session.program.search('Labor') != -1){break}//temporary
+					//if (globals.laborScreenActive){break}//temporary
 					saveScanTransaction(); // moved to inside rfTimed where the form query on timed end is located
 					rfGetLocationStats2(forms[formName].id_location);
 					rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea);
@@ -10562,7 +10624,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			action = newValue;
 		}
 	}
-
+	
 	switch (action.toUpperCase()){
 		case 'NOTHING':
 			break;
@@ -11018,7 +11080,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					form['labelPrintType'] = 'piecemark';
 					//session.rawCutPiecemarks = [];
 					scopes.jobs.printCutListLabels(event);//ask before printing, but need Raw Material Label for the heat number
-				} else if (session.program.search('Labor') == 0){//process Labor Screen with R as final entry and clearing prefix
+				} else if (globals.laborScreenActive){//process Labor Screen with R as final entry and clearing prefix
 					// get transaction list
 					// collect transaction totals for piecemark/idfile list, use single idfile as
 					// if transaction at 100% error showing item complete, last transaction percent is 100 and labor is 1
@@ -11169,66 +11231,19 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			errorDialogMobile(event,1255,'genericin',newValue);
 	}
 	if (forms['rf_mobile_view']){forms['rf_mobile_view'].lastAction = action+form['printEnabled']}
-	/**
-	if (0 && forms['rf_mobile_view'] &&
-		(forms['rf_mobile_view'].elements['errorWindow'] && !forms['rf_mobile_view'].elements['errorWindow'].visible) &&
-		(forms['mobile_query'].elements['queryText'] && application.getActiveWindow().controller.getName() != forms.mobile_query.controller.getName())){
-		forms['rf_mobile_view'].controller.focusField('genericin',false);
-	}
-	//(event.getElementName() == 'genericin') ? forms['rf_mobile_view'].elements['genericin2'].requestFocus() : forms['rf_mobile_view'].elements['genericin'].requestFocus();
-	if (0 && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
-		forms['rf_mobile_view'].elements['genericin'].enabled = true;
-		plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
-		//plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
-	}
-	if (0 && forms['rf_mobile_view'] && !session.errorShow){
-			//(forms['rf_mobile_view'].elements['errorWindow'] && !forms['rf_mobile_view'].elements['errorWindow'].visible) &&
-			//(forms['mobile_query'].elements['queryText'] && forms['mobile_query'].elements['queryText'].visible && application.getActiveWindow().controller.getName() != forms.mobile_query.controller.getName())){
-		if (0 && event.getElementName() != 'genericin'){
-			forms['rf_mobile_view'].elements['genericinlabel'].requestFocus();
-			forms['rf_mobile_view'].elements['genericin'].requestFocus();
-		}
-		//if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//focusFirst()
-		//	plugins.WebClientUtils.executeClientSideJS('',globals.focusFirst());
-		//}
-	} */
 	
 	var printEnabledNotice = (printEnabledScreen) ? ' p-'+form['printEnabled'] : '';
-	/** if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && session.dualEntry){
-		if (event.getElementName() == 'genericin'){
-			forms['rf_mobile_view'].genericInput2 = '';
-			forms['rf_mobile_view'].elements[globals.altInputField].requestFocus();
-		} else {
-			forms['rf_mobile_view'].genericInput = '';
-			forms['rf_mobile_view'].elements[globals.altInputField].requestFocus();
-		}
-	} else {
-		if (!session.errorShow){
-			forms['rf_mobile_view'].elements[globals.altInputField].requestFocus();
-		}
-		session.errorShow = false;
-		forms['rf_mobile_view'].genericInput = '';
-	} */
+
 	rfClearPreviousEntry(event);
-	/**forms['rf_mobile_view'].elements['genericinlabel'].text = i18n.getI18NMessage('sts.label.generic')+printEnabledNotice;
-	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && session.dualEntry){
-		globals.altInputField = (elName == 'genericin') ?  'genericin2' : 'genericin';
-		globals.altInputDataProv = (elName == 'genericin') ?  'genericInput2' : 'genericInput';
-	} else {
-		globals.altInputField = 'genericin';
-		globals.altInputDataProv = 'genericInput';
-	}
-	if (1==1){
-		form[globals.altInputDataProv] = '';
-		form.elements[globals.altInputField].requestFocus();
-		//return true;
-	} */
+
 	if (session.errorShow){
-		application.updateUI();var count = 1;
+		//application.updateUI(55);
+		var count = 1;
 		var timeS = new Date(); var start = timeS.getTime() + 500; var endS = 0;
 		while (start > endS){
 			var temp = new Date();
 			endS = temp.getTime();
+			count++;
 			//if (application.isInDeveloper()){application.output('while loop count '+count++)}
 			if (count > 900){break}
 		 }
@@ -13849,10 +13864,10 @@ function clearCutListData(event){
  */
 function rfClearDependentEntries(event,entryField){
 	var form = forms['rf_mobile_view'];
-	var currIdx = form['inputFields'].indexOf(entryField);
-	var lastIdx = form['inputFields'].length;
+	var currIdx = form['requiredFields'].indexOf(entryField);
+	var lastIdx = form['requiredFields'].length;
 	for (var idx = currIdx+1;idx < lastIdx;idx++){
-		var elName = form['inputFields'][idx];
+		var elName = form['requiredFields'][idx];
 		if (elName == 'strikethruin'){continue}//task361
 		var el = form.elements[elName];
 		var dataProv = el.getDataProviderID();
@@ -13971,7 +13986,7 @@ function rfCheckStatusInRoute(statusCode, routeCodeOrId){
 	if (Q.getSize() > 0){
 		/** @type {JSFoundSet<db:/stsservoy/status_description>} */
 		var rec = Q.getRecord(1);
-		if (globals.l.routeLegs[routeCodeOrId].indexOf(rec.status_description_id.toString()) != -1){return true}
+		if (globals.l.routeLegs[routeCodeOrId] && globals.l.routeLegs[routeCodeOrId].indexOf(rec.status_description_id.toString()) != -1){return true}
 	}
 	return false;
 	
@@ -14023,8 +14038,8 @@ function rfDeterminePercent(){
 	if (mob.percent == 100){mob.percent = 100 - currentPercent}
 	var futurePercent = currentPercent*1 + mob.percent*1;
 	mob.laborCompleted = (futurePercent == 100);
-	if (priorStatusPct < 100 && currentPercent == 100){
-		var percentCompare = Math.floor(priorStatusPct*1) +'>'+Math.floor(futurePercent*1);
+	if (priorStatusPct < 100 && futurePercent == 100){
+		var percentCompare = Math.floor(priorStatusPct*1) +'% ';
 		errorDialogMobile(null,765,'genericin',percentCompare);
 		return false;				
 	}//s765 Current Station Cannot Be More Complete Than Prior Station.

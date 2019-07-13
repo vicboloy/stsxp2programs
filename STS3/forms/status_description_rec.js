@@ -631,3 +631,41 @@ function onDataChangeThirdPartyStation(oldValue, newValue, event) {
 function onFocusLost3rdStatus(event) {
 	elements.fabtrol_labor_code.requestFocus();
 }
+
+/**
+ * Handle changed data.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"29573C44-0E0C-437C-8ED1-868400554BA1"}
+ */
+function onDataChangePercentScan(oldValue, newValue, event) {
+	if (newValue == 1){
+		allow_multi_scan = 1;
+	} else {
+		allow_start_prior_not = 0;
+	}
+	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"8AE6A062-C924-4B48-90DA-57487F9FA0C6"}
+ */
+function onDataChangePriorIncomplete(oldValue, newValue, event) {
+	if (newValue == 1 && labor_percentage_scan == 0){
+		allow_start_prior_not = 0;
+	}
+	return true
+}

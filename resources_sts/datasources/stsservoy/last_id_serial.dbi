@@ -51,6 +51,7 @@ titleText:"i18n:table.last_id_serial.serial"
 allowNull:true,
 creationOrderIndex:2,
 dataType:12,
+foreignType:"tenant_list",
 length:36,
 name:"tenant_uuid",
 titleText:"i18n:table.general.tenant_uuid"

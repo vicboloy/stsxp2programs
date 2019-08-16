@@ -79,7 +79,7 @@ function onActionAvail(event) {
 	setElements('avail');
 	var name = selAvailable.split('\n')[0];
 	if (name){
-		elementInfo = scopes.jobs.determineI18n(name,'name');
+		elementInfo = i18nMapping[name];
 	}
 }
 /**
@@ -101,7 +101,7 @@ function onActionSelect(event) {
 	setElements('select');
 	var name = selSelected.split('\n')[0];
 	if (name){
-		elementInfo = scopes.jobs.determineI18n(name,'source');
+		elementInfo = i18nMapping[name];
 	}
 }
 /**
@@ -140,7 +140,7 @@ function tablePrefsColumnsToHide(tableName){
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
 	prefsFS.result.add(prefsFS.columns.preferences2_id);
-	prefsFS.where.add(prefsFS.columns.user_uuid.eq(application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF')));
+	prefsFS.where.add(prefsFS.columns.user_uuid.isNull);//FFFFFFFF-0000-0000-DDDDDDDDDDDD
 	prefsFS.where.add(prefsFS.columns.form_name.eq(tableName.replace(version,"")));
 	prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	var P = databaseManager.getFoundSet(prefsFS);

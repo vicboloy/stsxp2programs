@@ -1,7 +1,8 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/id_serial_numbers",
 items:[
-{foreignColumnName:"id_serial_number_id",primaryDataProviderID:"id_serial_uuid",typeid:23,uuid:"2EE182CB-3AD3-49AC-B309-6C4793D538ED"}
+{foreignColumnName:"id_serial_number_id",primaryDataProviderID:"id_serial_uuid",typeid:23,uuid:"2EE182CB-3AD3-49AC-B309-6C4793D538ED"},
+{foreignColumnName:"job_uuid",primaryDataProviderID:"job_uuid",typeid:23,uuid:"82C902A5-40AE-4ED6-9AFC-51AD6823A6A3"}
 ],
 joinType:1,
 name:"x_bc",

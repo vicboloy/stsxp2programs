@@ -48,7 +48,7 @@ function deleteRecord(event, index) {
 	ug.result.add(ug.columns.user_group_uuid);
 	ug.where.add(ug.columns.delete_flag.isNull);
 	ug.where.add(ug.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	ug.where.add(ug.columns.group_uuid.eq(group_uuid));
+	ug.where.add(ug.columns.group_uuid.eq(group_uuid.toString()));
 	var UG = databaseManager.getFoundSet(ug);
 
 	if (UG.getSize() > 0){
@@ -101,7 +101,7 @@ function onActionDupe(event) {
 	var q = databaseManager.createSelect('db:/stsservoy/groups');
 	q.result.add(q.columns.group_name);
 	//q.where.add(q.columns.group_name.upper.eq(currGroupName.toUpperCase()));
-	q.where.add(q.columns.tenant_uuid.eq(currentRec.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(currentRec.tenant_uuid.toString()));
 	var Q = databaseManager.getFoundSet(q);
 	var existNames = [];
 	for (var index = 1;index <= Q.getSize();index++){
@@ -118,8 +118,8 @@ function onActionDupe(event) {
 	/** @type {QBSelect<db:/stsservoy/group_keys>} */
 	var s = databaseManager.createSelect('db:/stsservoy/group_keys');
 	s.result.add(s.columns.group_key_uuid);
-	s.where.add(s.columns.tenant_uuid.eq(currentRec.tenant_uuid));
-	s.where.add(s.columns.group_uuid.eq(currentRec.group_uuid));
+	s.where.add(s.columns.tenant_uuid.eq(currentRec.tenant_uuid.toString()));
+	s.where.add(s.columns.group_uuid.eq(currentRec.group_uuid.toString()));
 	var S = databaseManager.getFoundSet(s);
 	var Ssize = S.getSize();
 	for (index = 1;index <= Ssize;index++){
@@ -128,7 +128,7 @@ function onActionDupe(event) {
 		var dupedIdx = S.duplicateRecord(false);
 		var dupedRec = S.getRecord(dupedIdx);
 		dupedRec.edit_date = new Date();
-		dupedRec.group_uuid = dupeRec.group_uuid;
+		dupedRec.group_uuid = dupeRec.group_uuid.toString();
 	}
 	databaseManager.saveData(S);
 }

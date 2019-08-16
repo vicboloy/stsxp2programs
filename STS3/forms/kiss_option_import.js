@@ -348,9 +348,9 @@ function onShow(firstShow, event) {
 	var jobRec;
 	if (J.getSize() > 0){
 		jobRec = J.getRecord(1);
-		scopes.jobs.importJob.customerId = jobRec.customer_id;
-		scopes.jobs.importJob.jobId = jobRec.job_id;
-		scopes.jobs.importJob.bcFormId = jobRec.barcode_form;//#87ticket#87
+		scopes.jobs.importJob.customerId = jobRec.customer_id.toString();
+		scopes.jobs.importJob.jobId = jobRec.job_id.toString();
+		scopes.jobs.importJob.bcFormId = jobRec.barcode_form.toString();//#87ticket#87
 		if (jobRec.keep_minors == 1){
 			scopes.jobs.keepMinors = 1;
 			elements.keep_minors.enabled = false;
@@ -534,7 +534,7 @@ function loadExclSumms() {
 	var formFS = forms.kiss_excludes_lst.foundset;
 	formFS.loadAllRecords();
 	var fsSize = formFS.getSize();
-	var uuidGen = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+	//var uuidGen = 'FFFFFFFF-0000-0000-DDDDDDDDDDDD';
 	var formName = controller.getName();
 	for (var index = 1;index <= fsSize;index++){
 		/** @type JSRecord<> */
@@ -544,7 +544,7 @@ function loadExclSumms() {
 		prefsFS.result.add(prefsFS.columns.preferences2_id);
 		prefsFS.result.add(prefsFS.columns.field_value);
 		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-		prefsFS.where.add(prefsFS.columns.user_uuid.eq(uuidGen));
+		prefsFS.where.add(prefsFS.columns.user_uuid.isNull);
 		prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
 		prefsFS.where.add(prefsFS.columns.field_name.eq('excludeArray'));
 		prefsFS.where.add(prefsFS.columns.value_description.eq(rec.shape));
@@ -572,7 +572,7 @@ function saveExclSumms(){
 	var reply = plugins.dialogs.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),i18n.getI18NMessage('sts.txt.question.save.discard.types'),[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);
 	if (reply == i18n.getI18NMessage('sts.btn.no')){return}
 	//var excludedArray = [];
-	var uuidGen = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+	//var uuidGen = application.getUUID('DDDDDDDD-0000-0000-DDDDDDDDDDDD');
 	var formName = controller.getName();
 	var formFS = forms.kiss_excludes_lst.foundset;
 	for (var index = 1;index <= formFS.getSize();index++){
@@ -582,7 +582,7 @@ function saveExclSumms(){
 		var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
 		prefsFS.result.add(prefsFS.columns.preferences2_id);
 		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-		prefsFS.where.add(prefsFS.columns.user_uuid.eq(uuidGen));
+		prefsFS.where.add(prefsFS.columns.user_uuid.isNull);
 		prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
 		prefsFS.where.add(prefsFS.columns.field_name.eq('excludeArray'));
 		prefsFS.where.add(prefsFS.columns.value_description.eq(rec.shape));
@@ -598,7 +598,7 @@ function saveExclSumms(){
 			/** @type {JSRecord<db:/stsservoy/preferences2>} */
 			var newRec = P.getRecord(newDex);
 			newRec.tenant_uuid = globals.session.tenant_uuid;
-			newRec.user_uuid = uuidGen;
+			newRec.user_uuid = uuidGen.toString();
 			newRec.form_name = formName;
 			newRec.field_name = 'excludeArray';
 			newRec.value_description = rec.shape;

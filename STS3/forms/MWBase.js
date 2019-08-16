@@ -1280,6 +1280,7 @@ function onShow(firstShow, event) {
 	versionForm = globals.getInstanceForm(event);
 	baseForm = event.getFormName().replace(versionForm,'');
 	globals.setUserFormPermissions(event);
+	if (elements.btn_FoxfireReports){elements.btn_FoxfireReports.enabled = !(!scopes.prefs.foxfireexe)}
 	return _super.onShow(firstShow, event)
 }
 
@@ -1290,18 +1291,18 @@ function onShow(firstShow, event) {
  *
  * @properties={typeid:24,uuid:"0209A2A6-4955-4A59-8AF6-E4BEE47B2B7C"}
  * @AllowToRunInFind
- */
+ *
 function syncI18N(event) {
-	/** @type {QBSelect<db:/stsservoy/messages>} */
+	/** @type {QBSelect<db:/stsservoy/messages>} *
 	var q = databaseManager.createSelect('db:/stsservoy/messages');
 	q.result.add(q.columns.message_num);
 	q.result.add(q.columns.message_text);
 	var resultQ = databaseManager.getFoundSet(q);
 	var idx = 1;
-	/** @type {JSRecord<db:/stsservoy/messages>} */
+	/** @type {JSRecord<db:/stsservoy/messages>} *
 	var rec = null;
 	while (rec = resultQ.getRecord(idx++)){
-		/** @type {QBSelect<db:/stsservoy/i18n_table>} */
+		/** @type {QBSelect<db:/stsservoy/i18n_table>} *
 		var fs = databaseManager.createSelect('db:/stsservoy/i18n_table');
 		fs.result.add(fs.columns.i18n_table_id);
 		fs.where.add(fs.columns.message_key.eq(rec.message_num));
@@ -1316,7 +1317,7 @@ function syncI18N(event) {
 			newRec.message_language = "en";
 		}
 	}
-}
+} */
 /**
  * @AllowToRunInFind
  * 
@@ -1360,6 +1361,8 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
+	//scopes.jobs.importInventoryDBF();
+	//if (1==1){return}
 	globals.useFasterQuery = !globals.useFasterQuery;
 	if (globals.useFasterQuery){
 		scopes.globals.DIALOGS.showErrorDialog('Change view Loads Method','Using faster Query');
@@ -1388,7 +1391,7 @@ function onActionClickDeveloper(event) {
 			while (index <= perms.getSize()){
 				rec = perms.getRecord(index);
 				if (!rec.user_uuid){
-					rec.user_uuid = application.getUUID();
+					rec.user_uuid = application.getUUID().toString();
 				}
 				index++;
 			}
@@ -1404,7 +1407,7 @@ function onActionClickDeveloper(event) {
 			while (index <= perms.getSize()){
 				rec = perms.getRecord(index);
 				if (!rec.key_uuid){
-					rec.key_uuid = application.getUUID();
+					rec.key_uuid = application.getUUID().toString();
 				}
 				index++;
 				keys[rec.key_id] = rec.key_uuid;
@@ -1419,7 +1422,7 @@ function onActionClickDeveloper(event) {
 			while (index <= perms.getSize()){
 				rec = perms.getRecord(index);
 				if (!rec.group_uuid){
-					rec.group_uuid = application.getUUID();
+					rec.group_uuid = application.getUUID().toString();
 				}
 				index++;
 				groups[rec.group_id] = rec.group_uuid;
@@ -1434,7 +1437,7 @@ function onActionClickDeveloper(event) {
 			while (index <= perms.getSize()){
 				var rec = perms.getRecord(index);
 				if (!rec.permission_uuid){
-					rec.permission_uuid = application.getUUID();
+					rec.permission_uuid = application.getUUID().toString();
 				}
 				permissions[rec.permission_uuid] = rec.permission_uuid;
 				rec.key_uuid = keys[rec.key_id]
@@ -1451,7 +1454,7 @@ function onActionClickDeveloper(event) {
 			while (index <= perms.getSize()){
 				rec = perms.getRecord(index);
 				if (!rec.group_key_uuid){
-					rec.group_key_uuid = application.getUUID();
+					rec.group_key_uuid = application.getUUID().toString();
 				}
 				groupKeys[rec.group_key_uuid] = rec.group_key_uuid;
 				rec.group_uuid = groups[rec.group_id];
@@ -1468,7 +1471,7 @@ function onActionClickDeveloper(event) {
 			while (index <= perms.getSize()){
 				rec = perms.getRecord(index);
 				if (!rec.user_group_uuid){
-					rec.user_group_uuid = application.getUUID();
+					rec.user_group_uuid = application.getUUID().toString();
 				}
 				rec.group_uuid = groups[rec.group_id];
 				rec.edit_date = updateRec;
@@ -1614,14 +1617,14 @@ function onActionClickInfoSheet(event){
 	q.result.add(q.columns.job_id);
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.association_id.eq(globals.session.associationId));
+	q.where.add(q.columns.association_id.eq(globals.session.associationId.toString()));
 	var Q = databaseManager.getDataSetByQuery(q,-1);
 	var jobs = Q.getColumnAsArray(1);
 	var jobIds = Q.getColumnAsArray(2);
 	
 	var idToJob = []
 	for (idx = 0;idx < jobs.length;idx++){
-		idToJob[jobIds[idx]] = jobs[idx];
+		idToJob[jobIds[idx].toString()] = jobs[idx];
 	}
 	
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
@@ -1683,7 +1686,7 @@ function onActionClickInfoSheet(event){
 		var s = databaseManager.createSelect('db:/stsservoy/sheets');
 		s.where.add(s.columns.delete_flag.isNull);
 		s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-		s.where.add(s.columns.job_id.eq(jobId));
+		s.where.add(s.columns.job_id.eq(jobId.toString()));
 		s.result.add(s.columns.job_id);
 		
 		/** @type {QBJoin<db:/stsservoy/piecemarks>} */

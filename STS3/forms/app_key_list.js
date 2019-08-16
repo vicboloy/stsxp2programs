@@ -46,7 +46,7 @@ function deleteRecord(event, index) {
 	/** @type {QBSelect<db:/stsservoy/group_keys>} */
 	var g = databaseManager.createSelect('db:/stsservoy/group_keys');
 	g.result.add(g.columns.group_key_uuid);
-	g.where.add(g.columns.key_uuid.eq(key_uuid));
+	g.where.add(g.columns.key_uuid.eq(key_uuid.toString()));
 	g.where.add(g.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	/** @type {QBJoin<db:/stsservoy/permissions>} */
 	var h = g.joins.add('db:/stsservoy/permissions');
@@ -102,7 +102,7 @@ function onActionDupe(event) {
 	var s = databaseManager.createSelect('db:/stsservoy/permissions');
 	s.result.add(s.columns.key_uuid);
 	s.where.add(s.columns.tenant_uuid.eq(currentRec.tenant_uuid));
-	s.where.add(s.columns.key_uuid.eq(currentRec.key_uuid));
+	s.where.add(s.columns.key_uuid.eq(currentRec.key_uuid.toString()));
 	var S = databaseManager.getFoundSet(s);
 	var Ssize = S.getSize();
 	for (index = 1;index <= Ssize;index++){
@@ -111,7 +111,7 @@ function onActionDupe(event) {
 		var dupedIdx = S.duplicateRecord(false);
 		var dupedRec = S.getRecord(dupedIdx);
 		dupedRec.edit_date = new Date();
-		dupedRec.key_uuid = dupeRec.key_uuid;
+		dupedRec.key_uuid = dupeRec.key_uuid.toString();
 	}
 	databaseManager.saveData(S);
 }

@@ -333,14 +333,14 @@ function getBTFieldData(labelFldType){
 		11 COMMENTS Character 50 loads.ship_load_comment 100,\
 		12 COWCODE Character 10 piecemarks.pm_cost_of_work_code 10,\
 		13 CTRLNUM Character 30 idfiles.if_control_number 30,\
-		14 CUSCITY Character 25 customers.customer_city 50,\
+		14 CUSCITY Character 25 customers.cust_customer_city 50,\
 		15 CUSFAX Character 10 customer.job_customer_fax 25,\
 		16 CUSFIRST Character 15 customer.job_customer_rep 25,\
 		17 CUSLAST Character 15 customer.job_customer_rep 25,\
 		18 CUSMIDDLE Character 15 customer.job_customer_rep 25,\
 		19 CUSNAME Character 30 customers.job_customer_name 45,\
 		20 CUSPHONE Character 10 customers.job_customer_phone 25,\
-		21 CUSSTATE Character 2 customers.customer_state 2,\
+		21 CUSSTATE Character 2 customers.cust_customer_state 2,\
 		22 CUSSTREET Character 30 customers.cust_addr_line1 100,\
 		23 CUSTNUM Character 10 customers.job_customer_number 15,\
 		24 CUSTPO Character 20 jobs.job_customer_po 30,\
@@ -390,7 +390,7 @@ function getBTFieldData(labelFldType){
 		68 LINE6PRMPT Character 9 UNUSED 0 ,\
 		69 LINE7FLD Character 30 UNUSED 0 ,\
 		70 LINE7PRMPT Character 9 UNUSED 0 ,\
-		71 LINE8FLD Readable 30 piecemark.pm_length_in,\
+		71 LINE8FLD Readable 30 piecemark.pm_item_length_in,\
 		72 LINE8PRMPT Character 9 UNUSED 0 ,\
 		73 LINE9FLD Character 30 UNUSED 0 ,\
 		74 LINE9PRMPT Character 9 UNUSED 0 ,\
@@ -412,7 +412,7 @@ function getBTFieldData(labelFldType){
 		90 PCCOWCODE Character 10 piecemarks.pm_cost_of_work_code 10,\
 		91 PCMARK Character 30 piecemarks.pm_piecemark 40,\
 		92 PCRELEASE Character 3 idfiles.if_piece_release 10,\
-		93 PCUOM Character 4 piecemarks.pm_unit_of_measure 10,\
+		93 PCUOM Character 4 piecemarks.pm_piecemark_unit_of_measure 10,\
 		94 PORELEASE Character 20 jobs.job_po_release 25,\
 		95 PRODTYPE Character 3 piecemarks.pm_product_type 10,\
 		96 PROJYEAR Numeric 4 jobs.job_project_year 4,\
@@ -424,7 +424,7 @@ function getBTFieldData(labelFldType){
 		102 REVLEVEL Character 6 idfiles.if_revision_level 10,\
 		103 ROUTECODE Character 10 piecemarks.rt_route_code 15,\
 		104 SEMAILTIME Character 8 UNUSED 0 ,\
-		105 SEQNUM Character 20 sequences.sq_sequence_number 30,\
+		105 SEQNUM Character 20 sequences2.sq_sequence_number 30,\
 		106 SHEETNUM Character 8 sheets.sh_sheet_number 20,\
 		107 SHIPLOAD Character 10 loads.ship_load_date DATETIME,\
 		108 SHIPTAG Character 16 piecemarks.pm_ship_tag 20,\
@@ -444,7 +444,7 @@ function getBTFieldData(labelFldType){
 		122 REQDSHIP Date 8 idfiles.if_required_ship_date DATETIME,\
 		123 SCHDSHIP Date 8 idfiles.if_scheduled_ship_date DATETIME,\
 		124 SEMAILDATE Date 8 UNUSED 0 ,\
-		125 SHIPDATE Date 8 loads.ship_date DATETIME,\
+		125 SHIPDATE Date 8 loads.lds2_ship_date DATETIME,\
 		126 SITEXDATE Date 8 UNUSED 0 ,\
 		127 DELETEID Logical 1 idfiles.if_deleted_date DATETIME,\
 		128 LOGICFLAG Logical 1 idfiles.if_logic_flag 1,\
@@ -469,7 +469,7 @@ function getBTFieldData(labelFldType){
 		147 QTY2PRINT Numeric 5 UNUSED 0 ,\
 		148 RECVQTY Numeric 5 idfiles.if_receive_quantity 5,\
 		149 RECVWT Numeric 10 loads.recv_load_receiving_wt 10,\
-		150 SEQQTY Numeric 5 sequences.sq_sequence_quantity 5,\
+		150 SEQQTY Numeric 5 sequences2.sq_sequence_quantity 5,\
 		151 SHIPQTY Numeric 5 idfiles.if_shipped_quantity 5,\
 		152 SHIPWT Numeric 10 loads.ship_load_shipped_weight 10,\
 		153 TOTALWT Numeric 10 loads.ship_load_total_weight 10,\
@@ -500,7 +500,7 @@ function getBTFieldData(labelFldType){
 		178 SHEETPO Character 20 sheets.sh_sheet_po 20,\
 		179 PRIORDATE Date 8 sheets.sh_prior_date DATETIME,\
 		180 MINORID Character 10 id_serial_numbers.bc_id_serial_number 10,\
-		181 MINORQTY Numeric 5 barcodes.bc_barcode_item_qty 5,\
+		181 MINORQTY Numeric 5 barcodes.id_on_barcode 5,\
 		182 BOMPARTNUM Character 30 sheet_bom.bom_part_number 40,\
 		183 BOMHEAT Character 15 sheet_bom.bom_heat 36,\
 		184 BOMGUID Character 40 sheet_bom.bom_guid1 40,\
@@ -526,7 +526,7 @@ function getBTFieldData(labelFldType){
 		204 FT_PKGNO Integer 4 idfiles.if_ft_pkgno 4,\
 		205 PCPHASE Character 10 idfiles.if_piece_phase 15,\
 		206 PARENTCOPY Numeric 4 UNUSED 0 ,\
-		207 PARENTID Character 10 piecemarks.bc_parent_id_serial_number 10,\
+		207 PARENTID Character 10 piecemarks.bc_parent_id_serial 30,\
 		208 CAMBER Numeric 7.4 piecemarks.pm_camber 7.4,\
 		209 BOMMATL Character 100 sheet_bom.bom_material 110,\
 		210 BOMSIZE Character 13 sheet_bom.bom_item_size 15,\

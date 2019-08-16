@@ -24,7 +24,7 @@ autoEnterType:1,
 creationOrderIndex:3,
 dataType:93,
 name:"edit_date",
-titleText:"i18n:table.general.table.sequences.edit_date"
+titleText:"i18n:able.sequences.edit_date"
 },
 {
 allowNull:false,
@@ -34,7 +34,7 @@ flags:4,
 foreignType:"jobs",
 length:36,
 name:"job_id",
-titleText:"i18n:table.general.job_id"
+titleText:"i18n:table.sequences.job_id"
 },
 {
 allowNull:true,
@@ -62,5 +62,5 @@ name:"tenant_uuid",
 titleText:"i18n:table.sequences.tenant_uuid"
 }
 ],
-name:"sequences",
+name:"sequences2",
 tableType:0

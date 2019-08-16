@@ -192,11 +192,11 @@ function getInfoFromFiles(){
 	vJobNumber = forms.import_performance_txt._jobNumber;
 	/** @type {JSRecord<db:/stsservoy/jobs>} */
 	var jobRec = scopes.globals.getJobData(null,vJobNumber);
-	jobUUID = jobRec.job_id;
+	jobUUID = jobRec.job_id.toString();
 	//application.output('job uuid is '+jobUUID);
-	assocUUID = jobRec.association_id;
+	assocUUID = jobRec.association_id.toString();
 	assocName = globals.getAssociationName(assocUUID);
-	custId = jobRec.customer_id;
+	custId = jobRec.customer_id.toString();
 	
 	var custNumbers = scopes.globals.getCustomersByJob();
 	insEmpNumber = globals.session.employeeNum;
@@ -204,14 +204,14 @@ function getInfoFromFiles(){
 	custName = (custNumbers[0]) ? custNumbers[0].name : '';
 	controller.focusField('jobSO',true);
 	null;
-	scopes.jobs.importJob.bcFormId = jobRec.barcode_form; //#87ticket#87
+	scopes.jobs.importJob.bcFormId = jobRec.barcode_form.toString(); //#87ticket#87
 	scopes.jobs.importJob.jobId = jobUUID;
 	scopes.jobs.importJob.jobNumber = jobRec.job_number;
 	scopes.jobs.importJob.title = jobRec.job_title;
 	//scopes.jobs.importJob.name = custName;
 	scopes.jobs.importJob.date = new Date();
-	scopes.jobs.importJob.associationId = jobRec.association_id;
-	scopes.jobs.importJob.customerId = jobRec.customer_id;
+	scopes.jobs.importJob.associationId = assocUUID;
+	scopes.jobs.importJob.customerId = custId;
 	scopes.jobs.importJob.metricFlag = jobRec.metric_job;
 
 }

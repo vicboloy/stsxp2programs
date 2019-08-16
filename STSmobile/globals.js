@@ -39,8 +39,8 @@ function onSolutionOpen(){
 	session.appName = "STSmobile";
 	session.login = security.getUserName();
 	session.sessionId = application.getIPAddress()+' '+security.getClientID();
-	session.tenant_uuid = sec_current_user.tenant_uuid;
-	session.loginId = sec_current_user.user_uuid;
+	session.tenant_uuid = sec_current_user.tenant_uuid.toString();
+	session.loginId = sec_current_user.user_uuid.toString();
 	session.loginUserNum = sec_current_user.user_name;
 	session.loginUser = sec_current_user.name_first;
 	session.dualEntry = sec_current_user.use_dual_entry;
@@ -48,6 +48,7 @@ function onSolutionOpen(){
 	if (session.associationId == null){
 		session.associationId = secGetAssocID(secCurrentUserName);
 	}
+	session.associationId = session.associationId.toString();
 	getLoggedEmployee(session.loginId);
 	mobLoggedEmployeeId = session.employeeId; //globals.getLoggedEmployee(secCurrentUserID);
 	globals.getMappings();

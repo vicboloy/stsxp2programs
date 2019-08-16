@@ -39,7 +39,7 @@ function onActionAdd(event,recordKeyID){
 	selectedIndex = controller.getSelectedIndex();
 	onEdit(event,true);
 	newRecord = foundset.newRecord();
-	tenant_uuid = globals.session.tenant_uuid;
+	tenant_uuid = globals.session.tenant_uuid.toString();
 	create_date = new Date();
 	
 	globals.newRecordKey = eval(recordKeyID);
@@ -132,11 +132,11 @@ function onRecordSelection(event,buttonTextSrc) {
 		/** @type {QBSelect<db:/stsservoy/route_detail>} */
 		var q = databaseManager.createSelect('db:/stsservoy/route_detail');
 		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-		q.where.add(q.columns.e_route_code_id.eq(application.getUUID(routeId)));
+		q.where.add(q.columns.e_route_code_id.eq(routeId.toString()));
 		/** @type {QBJoin<db:/stsservoy/status_description>} */
 		var r = q.joins.add('db:/stsservoy/status_description');
 		r.on.add(r.columns.status_description_id.eq(q.columns.status_description_id));
-		r.root.where.add(r.columns.association_id.not.eq(application.getUUID(assocId)));
+		r.root.where.add(r.columns.association_id.not.eq(assocId.toString()));
 		q.result.add(r.columns.association_id);
 		var Q = databaseManager.getDataSetByQuery(q,-1);
 		var extRtErr = (Q.getMaxRowIndex() > 0);

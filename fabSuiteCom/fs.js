@@ -1890,7 +1890,7 @@ function processRawCutBarcodes(event,cutlistData){
 		globals.mob.idfiles = pcmk.available;//required var quantity = length 
 		var seqId = scopes.jobs.getSeqId(pcmk.available.job_uuid,pcmk.pSeq);
 		forms['rf_mobile_view'].vSequenceList[pcmk.available.sequence_id] = pcmk.pSeq;// get sequence mapping
-		globals.mob.idfile.sequence_id = pcmk.available.sequence_id;//var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id]
+		globals.mob.idfile.sequence_id = pcmk.available.sequence_id.toString();//var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id]
 		globals.mob.piecemark.lot = pcmk.pLot;//var lotNumber = 
 		globals.mob.barcode = pcmk.Barcode;//serialNumber = 
 		globals.mob.piecemark.piecemark = pcmk.pMinor;//var pieceMark = exclude this when showing assembly, no minors

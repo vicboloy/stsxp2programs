@@ -75,7 +75,9 @@ function hideLogo(){
  * @properties={typeid:24,uuid:"490EFD00-9D7A-4E77-BA36-1B4DE5C89540"}
  */
 function onDataChangeUser(oldValue, newValue, event) {
-	companyName = companyName.trim().toUpperCase();
+	if (companyName){
+		companyName = companyName.trim().toUpperCase();
+	}
 	elements.password.requestFocus();
 	return true
 }

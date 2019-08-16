@@ -153,7 +153,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	}
 	/** @type {QBSelect<db:/stsservoy/addresses>} */
 	var r = databaseManager.createSelect('db:/stsservoy/addresses');
-	r.where.add(r.columns.address_id.eq(ship_to));
+	r.where.add(r.columns.address_id.eq(ship_to.toString()));
 	vJobID = job_id;
 	vJobWeight = 0;
 	if (metric_job == 1){
@@ -173,6 +173,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	browseTable(event);
 	clearForms(event);
 	forms.piecemark2.elements.tabs.setTabEnabledAt(2,true);//enabled jobs tab
+	forms.piecemark2.elements.tabs.setTabEnabledAt(5,true);//enabled jobs tab
 	elements.btn_Edit.visible = true;
 
 	scopes.jobs.warningsX(event);
@@ -289,6 +290,7 @@ function clearForms(event){
 	forms.piecemark2.elements.tabs.setTabEnabledAt(2,false);
 	forms.piecemark2.elements.tabs.setTabEnabledAt(3,false);
 	forms.piecemark2.elements.tabs.setTabEnabledAt(4,false);
+	forms.piecemark2.elements.tabs.setTabEnabledAt(5,false);
 	forms.piecemark.clearLocalVars(event);
 	elements.btn_Edit.visible = false;
 }

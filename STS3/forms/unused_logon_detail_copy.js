@@ -64,11 +64,11 @@ function refreshUsers(){
 	
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var qq = databaseManager.createSelect('db:/stsservoy/users');
-	qq.where.add(qq.columns.tenant_uuid.eq(globals.sec_current_user.tenant_uuid));
+	qq.where.add(qq.columns.tenant_uuid.eq(globals.sec_current_user.tenant_uuid.toString()));
 	qq.where.add(qq.columns.delete_flag.isNull);
 	if (readOnly){
 		qq.where.add(qq.columns.employee_id.isNull);
-		qq.where.add(qq.columns.association_uuid.eq(assoc));
+		qq.where.add(qq.columns.association_uuid.eq(assoc.toString()));
 	}
 	var resultQQ = databaseManager.getFoundSet(qq);
 	var qqSize = resultQQ.getSize();
@@ -104,7 +104,7 @@ function onShow(firstShow, event) {
 		elements.btn_Disconnect.visible = (!controller.readOnly && forms[formName].formFunc != "CreateLogin" && forms[formName].employee_id != null);
 		/** @type {QBSelect<db:/stsservoy/users>} */
 		var localFS = databaseManager.createSelect('db:/stsservoy/users');
-		localFS.where.add(localFS.columns.employee_id.eq(forms[formName].employee_id));
+		localFS.where.add(localFS.columns.employee_id.eq(forms[formName].employee_id.toString()));
 		var resultLocalFS = databaseManager.getFoundSet(localFS);
 	} //else {
 	//	updateFields(event);
@@ -286,7 +286,7 @@ function onActionDisconnect(event) {
 	if (user_name == "P"){return}//Protect admin account 201608
 	/** @type {QBSelect<db:/stsservoy/employee>} */
 	var u = databaseManager.createSelect('db:/stsservoy/employee');
-	u.where.add(u.columns.user_uuid.eq(userUUID));
+	u.where.add(u.columns.user_uuid.eq(userUUID.toString()));
 	var fs = databaseManager.getFoundSet(u);
 	fs.loadRecords();
 	if (formFunc.search("CreateLogin") == -1){

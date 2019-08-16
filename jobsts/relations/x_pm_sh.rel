@@ -1,6 +1,7 @@
 allowCreationRelatedRecords:true,
 foreignDataSource:"db:/stsservoy/sheets",
 items:[
+{foreignColumnName:"job_id",primaryDataProviderID:"job_uuid",typeid:23,uuid:"2EFF773B-83FC-4BBC-AAF4-6AF8C60BCA2C"},
 {foreignColumnName:"sheet_id",primaryDataProviderID:"sheet_id",typeid:23,uuid:"B1C50D82-2A40-42DB-B017-3131722D9274"}
 ],
 joinType:1,

@@ -84,7 +84,7 @@ function onShow(firstShow, event) {
 	if (!userName){
 		userName = form.user_name;
 		globals.m.userNames[userID] = userName;
-		globals.m.userAssocs[userID] = form.association_uuid;
+		globals.m.userAssocs[userID] = form.association_uuid.toString();
 	}
 	empName = form.employeeNum+': '+form.employeeName;
 	scopes.prefs.getLocalPrinters();
@@ -219,8 +219,8 @@ function onActionDupe(event){
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/label_destinations');
 	q.result.add(q.columns.label_destination_uuid);
-	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
-	q.where.add(q.columns.user_uuid.eq(dupeUser));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.user_uuid.eq(dupeUser.toString()));
 	q.where.add(q.columns.delete_flag.isin(notDeleted));
 	var Q = databaseManager.getFoundSet(q);
 	/** @type {JSFoundSet<db:/stsservoy/label_destinations>} */
@@ -243,8 +243,8 @@ function onActionDupe(event){
 		}
 		var uuid = newRec.label_destination_uuid;
 		databaseManager.copyMatchingFields(rec,newRec);
-		newRec.label_destination_uuid = uuid;
-		newRec.user_uuid = userID;
+		newRec.label_destination_uuid = uuid.toString();
+		newRec.user_uuid = userID.toString();
 		newRec.edit_date = new Date();
 	}
 	//databaseManager.saveData(fs);

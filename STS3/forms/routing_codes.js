@@ -190,16 +190,16 @@ function setRouteCodesLists(){
 	fs.result.add(fs.columns.route_detail_id);
 	fs.sort.add(fs.columns.route_order.asc);
 	fs.where.add(fs.columns.delete_flag.isNull);
-	fs.where.add(fs.columns.e_route_code_id.eq(foundset.routing_id));
+	fs.where.add(fs.columns.e_route_code_id.eq(foundset.routing_id.toString()));
 	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	var FS = databaseManager.getFoundSet(fs);
 	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
 	var rec = null; var index = 1;
 	while (rec = FS.getRecord(index++)){
-		var fabShopId = rec.status_description_id;
+		var fabShopId = rec.status_description_id.toString();
 		var fabShopAndStatus = null;
 		for (fabShopAndStatus in fabShopsList){
-			if (fabShopsList[fabShopAndStatus]+"" == fabShopId+""){break}
+			if (fabShopsList[fabShopAndStatus].toString() == fabShopId.toString()){break}
 		}
 		var fsAndS = fabShopAndStatus.split(',');
 		var routeItem = globals.aMobAssocs[fsAndS[0]]+", "+fsAndS[1];
@@ -422,7 +422,7 @@ function onActionSaveEdit(event) {
 		var fabShopId = globals.aMobAssocs[fabShopIn[0]];
 		var stat = fabShopIn[1];
 		var fabShop = fabShopId+','+stat.trim();
-		aCurrentStationIds.push(application.getUUID(fabShopsList[fabShop]));
+		aCurrentStationIds.push(fabShopsList[fabShop].toString());
 	}
 
 	/**@type {QBSelect<db:/stsservoy/route_detail>} */
@@ -430,7 +430,7 @@ function onActionSaveEdit(event) {
 	rtDtl.result.add(rtDtl.columns.e_route_code_id);
 	rtDtl.where.add(rtDtl.columns.delete_flag.isNull);
 	rtDtl.where.add(rtDtl.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	rtDtl.where.add(rtDtl.columns.e_route_code_id.eq(routing_id));
+	rtDtl.where.add(rtDtl.columns.e_route_code_id.eq(routing_id.toString()));
 	var RTD = databaseManager.getFoundSet(rtDtl);
 	
 	databaseManager.startTransaction();
@@ -438,7 +438,7 @@ function onActionSaveEdit(event) {
 	/**@type {JSRecord<db:/stsservoy/route_detail>} */
 	var rec = null;
 	while (rec = RTD.getRecord(index++)){
-		var currIdx = aCurrentStationIds.indexOf(rec.status_description_id);
+		var currIdx = aCurrentStationIds.indexOf(rec.status_description_id.toString());
 		if (currIdx == -1){//station no longer in route
 			rec.delete_flag = 99;
 			rec.edit_date = new Date();
@@ -449,7 +449,7 @@ function onActionSaveEdit(event) {
 				rec.route_order = routeOrd;
 			}
 		}
-		stationIdsDone.push(rec.status_description_id);
+		stationIdsDone.push(rec.status_description_id.toString());
 	}
 	for (index = 0; index < length; index++) {
 		fabShopIn = selectCodes[index].split(",");
@@ -457,14 +457,14 @@ function onActionSaveEdit(event) {
 		stat = fabShopIn[1];
 		fabShop = fabShopId+','+stat.trim();
 		/** @type {String} */
-		var stationId = fabShopsList[fabShop];
-		if (stationIdsDone.indexOf(application.getUUID(stationId)) != -1){continue}
+		var stationId = fabShopsList[fabShop].toString();
+		if (stationIdsDone.indexOf(stationId) != -1){continue}
 		var idx = RTD.newRecord();
 		/**@type {JSRecord<db:/stsservoy/route_detail>} */
 		var rec2 = RTD.getRecord(idx);
 		rec2.route_code = route_code;
-		rec2.e_route_code_id = routing_id;
-		rec2.status_description_id = fabShopsList[fabShop];
+		rec2.e_route_code_id = routing_id.toString();
+		rec2.status_description_id = fabShopsList[fabShop].toString();
 		rec2.tenant_uuid = globals.session.tenant_uuid;
 		rec2.route_order = (index + 1)*10;
 	}

@@ -240,7 +240,7 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	s.where.add(s.columns.delete_flag.isNull);
 	s.where.add(s.columns.status_code.eq(newValue));
-	s.where.add(s.columns.association_id.eq(association_id));
+	s.where.add(s.columns.association_id.eq(association_id.toString()));
 	var S = databaseManager.getFoundSet(s);
 	
 	if (S.getSize() > 0){
@@ -481,7 +481,7 @@ function onFocusGainedStatusCode(event) {
 	s.result.add(s.columns.status_description_id);
 	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	s.where.add(s.columns.delete_flag.isNull);
-	s.where.add(s.columns.association_id.eq(association_id));
+	s.where.add(s.columns.association_id.eq(association_id.toString()));
 	s.sort.add(s.columns.status_code);
 	var S = databaseManager.getFoundSet(s);
 	
@@ -515,7 +515,7 @@ function getFabShops(event){
 	/** @type {JSRecord<db:/stsservoy/associations>} */
 	var rec = null; var index = 1;
 	while (rec = A.getRecord(index++)){
-		assocID.push(rec.association_uuid);
+		assocID.push(rec.association_uuid.toString());
 		assocName.push(rec.association_name);
 	}
 	application.setValueListItems('stsvl_fab_shops',assocName,assocID);

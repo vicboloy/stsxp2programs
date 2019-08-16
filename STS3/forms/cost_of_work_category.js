@@ -93,7 +93,7 @@ function onDataChangeJob(oldValue, newValue, event) {
 	fs.result.add(fs.columns.job_id);
 	fs.where.add(fs.columns.job_number.eq(vJobNumber));
 	fs.where.add(fs.columns.delete_flag.isNull);
-	fs.where.add(fs.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var FS = databaseManager.getFoundSet(fs);
 	foundset.removeFoundSetFilterParam('job_cowxref');

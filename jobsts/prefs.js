@@ -1122,7 +1122,7 @@ function onElementFocusLost(event) {
  * @properties={typeid:24,uuid:"3218661F-609A-45FA-8A8D-12DF3DBEED6B"}
  */
 function onActionUpdatePrefs(event) {
-	// for globals, user_uuid = 'FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF', tenant_uuid= main tenant, field_name = index, value_type, value_string
+	// for globals, user_uuid = 'FFFFFFFF-0000-0000-DDDDDDDDDDDD', tenant_uuid= main tenant, field_name = index, value_type, value_string
 	var prefs = scopes.prefs;
 	prefType = (event.getFormName().search('printer') != -1) ? 'Printer' : 'Prefs';
 	var description = "Global Preference";
@@ -1136,14 +1136,14 @@ function onActionUpdatePrefs(event) {
 	scopes.jobs.warningsYes(event);
 	application.updateUI();
 	//var fs = databaseManager.getFoundSet('stsservoy','preferences2');
-	var global_user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+	var global_user_uuid = null;
 	var tenant = globals.session.tenant_uuid;
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/preferences2');
 	fs.result.add(fs.columns.preferences2_id);
 	fs.where.add(fs.or
-			.add(fs.columns.user_uuid.eq(global_user_uuid))
-			.add(fs.columns.user_uuid.eq(globals.session.userId))
+			.add(fs.columns.user_uuid.isNull)
+			.add(fs.columns.user_uuid.eq(globals.session.userId.toString()))
 		);
 	fs.where.add(fs.columns.tenant_uuid.eq(tenant));
 	if (tempPrefsChanged){
@@ -1192,7 +1192,7 @@ function onActionUpdatePrefs(event) {
 			var recNum = FS.newRecord(false);
 			rec = FS.getRecord(recNum);
 			if (!global_user_uuid) {
-				rec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+				rec.user_uuid = null;
 			} else {
 				rec.user_uuid = global_user_uuid;
 			}
@@ -1593,7 +1593,7 @@ function onActionPrintLabels(event) {
 			if (rec.inventory_uuid){
 				/** @type {QBSelect<db:/stsservoy/inventory>} */
 				var q = databaseManager.createSelect('db:/stsservoy/inventory');
-				q.where.add(q.columns.inventory_uuid.eq(rec.inventory_uuid));
+				q.where.add(q.columns.inventory_uuid.eq(rec.inventory_uuid.toString()));
 				q.result.add(q.columns.inventory_uuid);
 				var Q = databaseManager.getFoundSet(q);
 				if (Q.getSize() != 0){
@@ -2966,9 +2966,9 @@ function getUsersWithScreenPrintPerms(event){
 	 * 
 	 */
 	var form = forms['mc_label_dests'];
-	var userID = application.getUUID(form.userID);
-	var assocID = application.getUUID(forms['division_user_detail'].association_uuid);
-	var tenantID = application.getUUID(globals.session.tenant_uuid);
+	var userID = form.userID.toString();
+	var assocID = forms['division_user_detail'].association_uuid.toString();
+	var tenantID = globals.session.tenant_uuid;
 	var notDeleted = [null,0];
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
@@ -3029,15 +3029,18 @@ function getMCFSScreenNames(){//FabSuite Screen Names
  * @properties={typeid:24,uuid:"D5D70604-99E7-4830-B3E0-5398DA1D271C"}
  */
 function onDataChangeLocalPathEntry(oldValue, newValue, event) {
-	var fileAndPath = plugins.file.convertToJSFile(newValue);
-	var dirSize = plugins.file.getFileSize(fileAndPath);
-	var form = forms[event.getFormName()];
-	var element = form.elements[event.getElementName()];
-	var dataProv = element.getDataProviderID();
-	if (dirSize == 0){
-		//application.output('error in file size');
-		forms[event.getFormName()][dataProv] = oldValue;
-		return true;
+	if (!(!newValue)){
+			
+		var fileAndPath = plugins.file.convertToJSFile(newValue);
+		var dirSize = plugins.file.getFileSize(fileAndPath);
+		var form = forms[event.getFormName()];
+		var element = form.elements[event.getElementName()];
+		var dataProv = element.getDataProviderID();
+		if (dirSize == 0){
+			//application.output('error in file size');
+			forms[event.getFormName()][dataProv] = oldValue;
+			return true;
+		}
 	}
 	setPrefsDirty(event,'prefs');
 	forms.preferences_printer.prefsChanged.push(dataProv);//20180109 update prefs on button inop from button change
@@ -3132,8 +3135,8 @@ function getUserDestination(){
 	var destination = {labelRaw:null, printerRaw:null, labelMajor:null, printerMajor:null, labelMinor:null, printerMinor:null}
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var dest = databaseManager.createSelect('db:/stsservoy/label_destinations');
-	dest.where.add(dest.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
-	dest.where.add(dest.columns.user_uuid.eq(application.getUUID(userUUID)));
+	dest.where.add(dest.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	dest.where.add(dest.columns.user_uuid.eq(userUUID.toString()));
 	if (screenName == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
 		dest.where.add(dest.columns.rf_screen_name.isin(screens));
 	} else {

@@ -155,7 +155,7 @@ function createPermissTable(event,formName){
 	fs.result.add(fs.columns.permission_uuid);
 	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	fs.where.add(fs.columns.form_name.eq(formName));
-	fs.where.add(fs.columns.key_uuid.eq(key_uuid));
+	fs.where.add(fs.columns.key_uuid.eq(key_uuid.toString()));
 	var PRM = databaseManager.getFoundSet(fs);
 	/** @type {JSRecord<db:/stsservoy/permissions>} */
 	var rec = null;var idx = 1;
@@ -168,7 +168,7 @@ function createPermissTable(event,formName){
 		var elSettingsArray = elSettings[elName];
 		var elSetting = {visible : rec.is_visible, 
 							enabled :rec.is_accessible,
-							keyId :rec.key_uuid};
+							keyId :rec.key_uuid.toString()};
 		elSettingsArray.push(elSetting);
 	}
 	
@@ -292,7 +292,7 @@ function saveEdits(event, record, stopEdit) {
 			fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 			fs.where.add(fs.columns.element_name.eq(formRec.element_name));
 			fs.where.add(fs.columns.form_name.eq(form_name));
-			fs.where.add(fs.columns.key_uuid.eq(currentKey));
+			fs.where.add(fs.columns.key_uuid.eq(currentKey.toString()));
 			var PRM = databaseManager.getFoundSet(fs);
 			if (PRM.getSize() > 0){
 				/** @type {JSRecord<db:/stsservoy/permissions>} */
@@ -322,7 +322,7 @@ function saveEdits(event, record, stopEdit) {
 					var newRec = PRM.getRecord(index2);
 					newRec.edit_date = new Date();
 					if (forms['element_list']){
-						newRec.key_uuid = key_uuid;
+						newRec.key_uuid = key_uuid.toString();
 					} else {
 						newRec.key_uuid = null;
 					}

@@ -37,7 +37,7 @@ function setRecord(event,rec){
 	var pcmkId = rec.if_piecemark_id;
 	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
 	var q = databaseManager.createSelect('db:/stsservoy/piecemarks');
-	q.where.add(q.columns.piecemark_id.eq(pcmkId));
+	q.where.add(q.columns.piecemark_id.eq(pcmkId.toString()));
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() == 0){
 		clearLocalVars(event);

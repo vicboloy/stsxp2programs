@@ -250,7 +250,7 @@ uuid:"50696BA0-3C2F-4DB1-B480-784406189773"
 {
 formIndex:31,
 location:"403,9",
-onActionMethodID:"0209A2A6-4955-4A59-8AF6-E4BEE47B2B7C",
+onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"103,31",

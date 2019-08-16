@@ -37,8 +37,8 @@ function deleteRecord(event, index, stopEdit) {
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/label_destinations');
 	q.result.add(q.columns.label_destination_uuid);
-	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
-	q.where.add(q.columns.user_uuid.eq(application.getUUID(user_uuid)));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.user_uuid.eq(user_uuid.toString()));
 	var Q = databaseManager.getFoundSet(q);
 	var delQ = Q.deleteAllRecords();
 	return _super.deleteRecord(event, index, stopEdit)

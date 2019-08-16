@@ -143,14 +143,16 @@ function onRecordSelection(event) {
 		employeeName = "";
 		employeeNum = '';
 	}
-	/** @type {QBSelect<db:/stsservoy/associations>} */
-	var assoc = databaseManager.createSelect('db:/stsservoy/associations');
-	assoc.where.add(assoc.columns.association_uuid.eq(association_uuid));
-	assoc.result.add(assoc.columns.logic_flag);
-	/** @type {JSRecord<db:/stsservoy/associations>} */
-	var a = databaseManager.getFoundSet(assoc);
+	if (association_uuid){
+		/** @type {QBSelect<db:/stsservoy/associations>} */
+		var assoc = databaseManager.createSelect('db:/stsservoy/associations');
+		assoc.where.add(assoc.columns.association_uuid.eq(association_uuid.toString()));
+		assoc.result.add(assoc.columns.logic_flag);
+		/** @type {JSRecord<db:/stsservoy/associations>} */
+		var a = databaseManager.getFoundSet(assoc);
+	}
 	rec = null;
-	if (a.getSize() != 0){
+	if (association_uuid && a.getSize() != 0){
 		/** @type {JSFoundSet<db:/stsservoy/associations>} */
 		var rec = a.getRecord(1);
 		isAdminAccount = (rec.association_uuid == rec.tenant_group_uuid) ? i18n.getI18NMessage('sts.txt.login.corporate') : '';
@@ -286,8 +288,8 @@ function saveEdits(event, record, stopEdit) {
 	/** @type {JSFoundSet<db:/stsservoy/employee>} */
 	var fs = databaseManager.getFoundSet('stsservoy','employee');
 	if (employeeNumber != ""){
-		var recuuid = application.getUUID(employeeNumber);
-		employee_id = recuuid;
+		var recuuid = employeeNumber.toString();
+		employee_id = recuuid.toString();
 		fs.loadRecords(recuuid);
 		/** @type {JSRecord<db:/stsservoy/employee>} */
 		var rec = fs.getRecord(1);
@@ -460,19 +462,19 @@ function onActionSetLabelDests(event) {
  */
 function onActionCancelEditLabelDests(event){
 	var form = forms['division_user_detail'];
-	var userID = application.getUUID(form.user_uuid);
+	var userID = form.user_uuid.toString();
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
 	u.result.add(u.columns.user_uuid);
-	u.where.add(u.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	u.where.add(u.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	u.where.add(u.columns.user_uuid.eq(userID));
 	var U = databaseManager.getFoundSet(u);
 	if (U.getSize() > 0){return}
 	
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/label_destinations');
-	q.result.add(q.columns.label_destination_uuid);
-	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	q.result.add(q.columns.label_destination_uuid.toString());
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.user_uuid.eq(userID));
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() > 0){

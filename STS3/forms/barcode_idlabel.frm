@@ -170,7 +170,7 @@ uuid:"3DFB1779-173C-442D-BEB4-E12CBB9C4D0A"
 {
 formIndex:31,
 location:"403,9",
-onActionMethodID:"0209A2A6-4955-4A59-8AF6-E4BEE47B2B7C",
+onActionMethodID:"-1",
 onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"103,31",

@@ -136,7 +136,7 @@ function login(){
 
 	application.output('before tenantid');
 	
-	if (companyName){
+	if (!(!companyName)){
 		companyName = companyName.toUpperCase().trim();
 	}
 	userName = userName.trim();
@@ -144,6 +144,7 @@ function login(){
 	//application.output('after tenantid'+tenantID+' ID ');
 	var checkLicense = "";
 	var invalidTenant = '';
+	application.output('username '+userName+' Tenant ID '+tenantID);//REMOVE2
 	if(tenantID){
 		application.output('inside tenantID');
 		userID = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_GET_USER_ID,[userName, tenantID]);
@@ -153,13 +154,16 @@ function login(){
 			var passCheck = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_PASSWORD,[userID, password]);
 			//if (!passCheck && (password == tenantID)){passCheck = true}//TODO REMOVE
 			application.output('before license check');
-			if (application.isInDeveloper()){application.output('passcheck '+passCheck+' '+password+' '+tenantID);}
+			var registration = plugins.UserManager.getRegistration();
+			application.output('Registered UM: '+registration);
+			application.output('passcheck '+passCheck+' '+password+' '+tenantID);//REMOVE2
 			checkLicense = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[application.getSolutionName(),tenantID,userID]);
 			application.output('license use '+checkLicense);
 			if(passCheck && checkLicense.split(':')[1] > 0){
 				if (security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 					globals.secCurrentUserID = userID;
 					globals.secCurrentUserName = userName;
+					globals.secCurrentTenantID = tenantID;
 					globals.licenseResult = checkLicense;
 					if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 						var date = new Date();//<YYYY>-<MM>-<DD>T<HH>-<MM>-<SS> synchronize mobile computer date with server time

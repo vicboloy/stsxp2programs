@@ -5,6 +5,6 @@ items:[
 ],
 joinType:1,
 name:"x_sq_id",
-primaryDataSource:"db:/stsservoy/sequences",
+primaryDataSource:"db:/stsservoy/sequences2",
 typeid:22,
 uuid:"96F10938-2491-4096-9440-3D3273404A4B"

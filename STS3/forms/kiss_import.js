@@ -157,7 +157,7 @@ function fileReceipt(file){
 	jobsFS.result.add(jobsFS.columns.job_id);
 	jobsFS.result.add(jobsFS.columns.customer_id);
 	jobsFS.result.add(jobsFS.columns.job_number);
-	jobsFS.where.add(jobsFS.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	jobsFS.where.add(jobsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	jobsFS.where.add(jobsFS.columns.job_number.eq(jobNumber));
 	var JFS = databaseManager.getFoundSet(jobsFS);
 	var count = JFS.getSize();
@@ -168,8 +168,8 @@ function fileReceipt(file){
 			//application.output('>>> jobs '+count);
 			for (var index2 = 1;index2 <= count;index2++){
 				rec = JFS.getRecord(index2);
-				custIds.push(rec.customer_id);
-				jobIds.push(rec.job_id);
+				custIds.push(rec.customer_id.toString());
+				jobIds.push(rec.job_id.toString());
 				custNums.push(rec.st2_jobs_to_customers.customer_number);
 				jobNums.push(rec.job_number);
 			}
@@ -267,6 +267,7 @@ function getKissFile(event){
 
 	var filters = {Sequence:vSeqNumber,LotNumber:vLotNumber,MainMark:vPartNumber,DrawingNumber:vDrawingNumber}
 	if (application.isInDeveloper()){application.output('kiss on server');}
+	
 	if (useKissFile){
 		//push file to server
 		var homeDir = scopes.prefs.temppath;
@@ -308,6 +309,7 @@ function getKissFile(event){
 		return;
 	}
 	removeJobImportData(vJobNumber);
+	elements.numSeq.requestFocus();
 	scopes.kiss.importFSOnServer(event,request,filters);//IMPORT 1 importFSOnServer
 	
 	/**
@@ -537,7 +539,7 @@ function removeJobImportData(jobNumber){
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var rec = null; var idx = 1;
 	while (rec = Q.getRecord(idx++)){
-		tableIds.push(rec.import_table_id);
+		tableIds.push(rec.import_table_id.toString());
 	}
 	tableIds.sort();
 	/** @type {QBSelect<db:/stsservoy/import_guids>} */

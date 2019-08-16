@@ -1429,6 +1429,10 @@ var textColumns = [];
  */
 var laborScreenActive = false;
 /**
+ * @properties={typeid:35,uuid:"9C2F42A9-E826-4EDF-A505-29F6ECB4F157",variableType:-4}
+ */
+var secCurrentUser = null;
+/**
  * @AllowToRunInFind
  * 
  * @param assocID
@@ -1558,13 +1562,13 @@ function getAssociations(){
 	q.where.add(
 	q.and
 		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/associations>} */
 	var resultQ = databaseManager.getFoundSet(q);
 	for (var index = 1;index <= resultQ.getSize();index++){
 		var record = resultQ.getRecord(index);
-		var assocId = record.association_uuid+"";
+		var assocId = record.association_uuid.toString();
 		var assocName = record.association_name;
 		if (l.assocs.indexOf(assocName) == -1){
 			l.assocs.push(assocName);
@@ -1604,14 +1608,14 @@ function getStatusDescriptions(){
 	q.result.add(q.columns.status_code);
 	q.sort.add(q.columns.status_sequence);
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	
 	var resultQ = databaseManager.getFoundSet(q);
 	for (var index = 1;index <= resultQ.getSize();index++){
 		/** @type {JSFoundSet<db:/stsservoy/status_description>} */
 		var record = resultQ.getRecord(index);
-		var descripId = record.status_description_id+"";
-		var assocId = record.association_id+"";
+		var descripId = record.status_description_id.toString();
+		var assocId = record.association_id.toString();
 		var status = record.status_code;
 		var third = record.thirdpty_station_name;
 		var assocName = m.assocs[assocId];
@@ -1637,7 +1641,7 @@ function getStatusDescriptions(){
 		if (!m.statusCodesDiv[assocId]){ //status codes by division
 			m.statusCodesDiv[assocId] = [];
 		}
-		m.statusCodeToId[record.status_code] = record.status_description_id;
+		m.statusCodeToId[record.status_code] = descripId;
 		/** @type {Array} */
 		var tempArray = m.statusCodesDiv[assocId];
 			tempArray.push(status);
@@ -1647,8 +1651,8 @@ function getStatusDescriptions(){
 		m.stations[stationOrg] = descripId;
 		l.routeDefault.push(descripId);//set default route order STS process
 		if (record.end_for_status != null){
-			m.stationsTimed[record.end_for_status] = record.status_description_id;
-			m.stationsTimedEnds[record.status_description_id] = record.end_for_status;
+			m.stationsTimed[record.end_for_status] = descripId;
+			m.stationsTimedEnds[descripId] = record.end_for_status;
 		}
 		if (record.allow_multi_scan == 1){
 			if (l.stationsMultiScan.indexOf(descripId) == -1){
@@ -2098,7 +2102,7 @@ function getRoutes(){
 	var resultQ = databaseManager.getFoundSet(q);
 	for (var index = 1;index <= resultQ.getSize();index++){
 		var record = resultQ.getRecord(index);
-		var routeId = record.routing_id+"";
+		var routeId = record.routing_id.toString();
 		var routeName = record.route_code;
 		if (!l.routeLegs[routeId]){l.routeLegs[routeId] = []}
 		if (l.routes.indexOf(routeId) == -1){
@@ -2151,7 +2155,7 @@ function getLoggedEmployee(userId){
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
 	u.result.add(u.columns.employee_id);
-	u.where.add(u.columns.user_uuid.eq(userId));
+	u.where.add(u.columns.user_uuid.eq(userId.toString()));
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var resultU = databaseManager.getFoundSet(u);
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
@@ -2163,14 +2167,14 @@ function getLoggedEmployee(userId){
 	e.result.add(e.columns.employee_lastname);
 	e.result.add(e.columns.employee_id);
 	e.result.add(e.columns.employee_number);
-	e.where.add(e.columns.employee_id.eq(userRec.employee_id));
+	e.where.add(e.columns.employee_id.eq(userRec.employee_id.toString()));
 	//e.where.add(e.columns.employee_id.eq(userRec.employee_id));
 	var resultE = databaseManager.getFoundSet(e);
 	if (resultE.getSize() != 0){
 		/** @type {JSRecord<db:/stsservoy/employee>} */
 		var rec = resultE.getRecord(1);
 		session.fullName = rec.employee_firstname+" "+rec.employee_lastname;
-		session.employeeId = rec.employee_id;
+		session.employeeId = rec.employee_id.toString();
 		session.employeeNum = rec.employee_number;
 		if (application.isInDeveloper()){application.output('session '+session)}
 		session.capture = (!rec.employee_rf_logging) ? true : false; // logging enabled for current user
@@ -2287,12 +2291,14 @@ function getWorkers(){
 	for (var index = 1;index <= fsQ.getSize();index++){
 		/** @type {JSFoundSet<db:/stsservoy/employee>} */
 		var rec = fsQ.getRecord(index);
-		m.workerList[rec.employee_number] = rec.employee_id;
+		var employeeId = rec.employee_id.toString();
+		var userId = rec.user_uuid.toString();
+		m.workerList[rec.employee_number] = employeeId;
 		if (rec.user_uuid){
-			if (!m.loginToUser[rec.user_uuid]){
-				m.employeeNames[rec.user_uuid] = rec.employee_firstname+" "+rec.employee_lastname;
-				m.employeeNumbers[rec.user_uuid] = rec.employee_number;
-				m.loginToUser[rec.user_uuid] = rec.employee_id;
+			if (!m.loginToUser[userId]){
+				m.employeeNames[userId] = rec.employee_firstname+" "+rec.employee_lastname;
+				m.employeeNumbers[userId] = rec.employee_number;
+				m.loginToUser[userId] = employeeId;
 			}
 		}
 		if (l.workerList.indexOf(rec.employee_number) == -1){
@@ -2376,9 +2382,9 @@ function checkBarcode(barcode) {
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() == 1){
 		var rec = resultQ.getRecord(1);
-		mob.barcodeId = rec.id_serial_number_id;
-		mobIdSerialId = rec.id_serial_number_id; // setup global relation for barcode uuid
-		return rec.id_serial_number_id;
+		mob.barcodeId = rec.id_serial_number_id.toString();
+		mobIdSerialId = rec.id_serial_number_id.toString(); // setup global relation for barcode uuid
+		return rec.id_serial_number_id.toString();
 	}
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var s = databaseManager.createSelect('db:/stsservoy/idfiles');
@@ -2387,7 +2393,7 @@ function checkBarcode(barcode) {
 	if (S.getSize() > 0){
 		rec = S.getRecord(1);
 		mob.barcodeId = barcode;
-		mobIdSerialId = rec.id_serial_number_id;//11
+		mobIdSerialId = rec.id_serial_number_id.toString();//11
 		return barcode;
 	}
 	return null;
@@ -2409,9 +2415,9 @@ function barcodePlant(){
 	// get route and look for selected station for this scan
 	var serialAssocId = barcode_to_idfile.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.association_id;
 	//var serialAssocId = barcode_to_idfile.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.association_id;
-	if (serialAssocId+"" != globals.session.associationId+""){//"FAA9BDE5-6B66-4930-981C-5AF0004EE1A4" != "BF00BA53-8D07-4A70-B835-24D5BD5DAB91"
+	if (serialAssocId.toString() != session.associationId.toString()){//"FAA9BDE5-6B66-4930-981C-5AF0004EE1A4" != "BF00BA53-8D07-4A70-B835-24D5BD5DAB91"
 	// does route 'FAA9BDE5-6B66-4930-981C-5AF0004EE1A4, <status_code>' exist?
-		var newStationId = m.stations[globals.session.associationId+", "+mob.statusCode];
+		var newStationId = m.stations[session.associationId+", "+mob.statusCode];
 		if (typeof newStationId == undefined){return false}// returns "24949E1E-9467-4835-B292-E1BC6D10EC22"
 		// check the route legs to ensure this is in the route, or error
 		var routeId = mob.piecemark.e_route_code_id;
@@ -2422,7 +2428,7 @@ function barcodePlant(){
 		if (checkLegs == null){return false}
 		var routedStation = (checkLegs.indexOf(newStationId) != -1); 
 		if (!routedStation){//We have a temporary station change enforced by route
-			if (application.isInDeveloper()){application.output('wrong association ' + serialAssocId+' not '+globals.session.associationId)}
+			if (application.isInDeveloper()){application.output('wrong association ' + serialAssocId+' not '+session.associationId)}
 			//application.output(application.getUUID())
 			return false;
 		} else {
@@ -2452,7 +2458,7 @@ function barcodeIsBundle(bundleBC){
 	q.result.add(q.columns.id_location);
 	q.result.add(q.columns.piecemark_id);
 	q.where.add(q.columns.delete_flag.isNull)
-	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(session.tenant_uuid)))
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 	q.where.add(q.columns.bundle_bc.eq(bundleBC))
 
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
@@ -2469,7 +2475,7 @@ function barcodeIsBundle(bundleBC){
 		var bundle = rec.bundle_bc;
 		if (bundles.indexOf(bundle) != -1){continue}
 		bundles.push(bundle);
-		var jobId = rec.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_id;
+		var jobId = rec.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_id.toString();
 		mob.bundlesJobs[jobId] = bundle;
 	}
 	return true;
@@ -2582,7 +2588,7 @@ function rfCheckRouteOrder(){
 	///var repIdfile = mob.idfile;
 	var checkLegs = [];
 	var routeId = mob.piecemark.e_route_code_id+"";
-	var stationId = session.stationId+"";
+	var stationId = session.stationId.toString();
 	var allowMoreCodes = (l.routesAddLegs.indexOf(routeId) != -1);//list of routes that allow more codes
 	var allowMultiScan = (l.stationsMultiScan.indexOf(stationId) != -1);//list of stations that allow multiscan
 	/**if (m.stationsTimedEnds[stationId]){//if it is a timed station, then allow it to be multiscan too
@@ -3018,9 +3024,9 @@ function rfGetBarcodeIdfiles(){
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	if (isBundle){
-		q.where.add(q.columns.bundle_bc.eq(mob.barcodeId));
+		q.where.add(q.columns.bundle_bc.eq(mob.barcodeId.toString()));
 	} else {
-		q.where.add(q.columns.id_serial_number_id.eq(mob.barcodeId));
+		q.where.add(q.columns.id_serial_number_id.eq(mob.barcodeId.toString()));
 	}
 
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
@@ -3108,7 +3114,7 @@ function rfGetLocationStats(sLocation){
 		var rec = resultR.getRecord(index);
 		if (idfile != rec.idfile_id){
 			if (rec.location == sLocation){
-				if (idfileList.indexOf(rec.idfile_id) == -1){idfileList.push(rec.idfile_id)}
+				if (idfileList.indexOf(rec.idfile_id.toString()) == -1){idfileList.push(rec.idfile_id.toString())}
 			}
 			idfile = rec.idfile_id;
 		}
@@ -3410,9 +3416,9 @@ function getMenuList(){
 	var permittedProgs = [];
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.where.add(q.columns.field_name.eq('userRemoteViews'));
-	q.where.add(q.columns.user_uuid.eq(globals.session.loginId));
+	q.where.add(q.columns.user_uuid.eq(session.loginId.toString()));
 	var Q = databaseManager.getFoundSet(q);
 	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
 	var rec = null; var idx = 1;
@@ -3504,7 +3510,7 @@ function rfGetMobPiecemark(){
 	q.result.add(q.columns.e_route_code_id);
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-	q.where.add(q.columns.piecemark_id.eq(mob.idfile.piecemark_id));
+	q.where.add(q.columns.piecemark_id.eq(mob.idfile.piecemark_id.toString()));
 
 	var resultQ = databaseManager.getFoundSet(q);
 	if (resultQ.getSize() > 0){
@@ -3527,7 +3533,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
 	q.result.add(q.columns.original_quantity);
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-	q.where.add(q.columns.piecemark_id.eq(piecemarkId));
+	q.where.add(q.columns.piecemark_id.eq(piecemarkId.toString()));
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var resultQ = databaseManager.getFoundSet(q);
 	//var countPieces = 0;
@@ -3557,7 +3563,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
 	r.where.add(r.columns.idfile_id.isin(idfileList));
 	if (application.isInDeveloper()){application.output('idfileList for transactions '+idfileList);}
 	///r.where.add(r.columns.location.eq(sLocation));
-	r.where.add(r.columns.status_description_id.eq(endStation));
+	r.where.add(r.columns.status_description_id.eq(endStation.toString()));
 	if (timed){
 		var maxPercent = '100';
 		r.where.add(r.columns.labor_percentage.eq(maxPercent));
@@ -3771,8 +3777,8 @@ function onStartLoadPrefs(prefsType){
 	fs.result.add(fs.columns.preferences2_id);
 	fs.where.add(
 		fs.or
-		 .add(fs.columns.user_uuid.eq(application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF')))
-		 .add(fs.columns.user_uuid.eq(globals.session.loginId))
+		 .add(fs.columns.user_uuid.isNull)
+		 .add(fs.columns.user_uuid.eq(session.loginId.toString()))
 		);
 	fs.where.add(fs.columns.form_name.isNull);
 	if (prefsType && prefsType == "Printer"){
@@ -3866,7 +3872,7 @@ function rfGetTransactionList(idfileId){
 	q.sort.add(q.columns.transaction_date.desc);
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-	q.where.add(q.columns.idfile_id.eq(mob.idfile.idfile_id));
+	q.where.add(q.columns.idfile_id.eq(mob.idfile.idfile_id.toString()));
 
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var resultQ = databaseManager.getFoundSet(q);
@@ -3895,8 +3901,8 @@ function rfGetTransactions(){
 	q.result.add(q.columns.transaction_end); */
 	q.sort.add(q.columns.transaction_date.desc);
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.idfile_id.eq(mob.idfile.idfile_id));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.idfile_id.eq(mob.idfile.idfile_id.toString()));
 
 	mob.transactions = databaseManager.getFoundSet(q);
 }
@@ -4317,7 +4323,7 @@ function rfLatestTransaction(singleIdfileId){
 	q.sort.add(q.columns.transaction_start.desc);
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-	q.where.add(q.columns.idfile_id.eq(application.getUUID(singleIdfileId)));
+	q.where.add(q.columns.idfile_id.eq(singleIdfileId.toString()));
 	var resultQ = databaseManager.getFoundSet(q);
 	return resultQ;
 }
@@ -4395,7 +4401,7 @@ function rfLatestTransactionSet(status){
 		q.and
 			.add(q.columns.delete_flag.isNull)
 			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(q.columns.idfile_id.eq(singleIdfileId))
+			.add(q.columns.idfile_id.eq(singleIdfileId.toString()))
 			.add(q.columns.trans_status.eq(status))
 			//.add(q.columns.transaction_start.eq(mob.timedTargetRec.transaction_start))
 	);
@@ -4465,7 +4471,7 @@ function rfSetIdfileTimedStatus(idfileId){
 	q.result.add(q.columns.trans_id);
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-	q.where.add(q.columns.idfile_id.eq(idfileId));
+	q.where.add(q.columns.idfile_id.eq(idfileId.toString()));
 	q.where.add(q.columns.trans_status.eq(mob.timedBegStat));
 	q.where.add(q.columns.transaction_start.eq(mob.timedTargetRec.transaction_start));
 	q.sort.add(q.columns.transaction_start.desc);
@@ -4511,7 +4517,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	r.where.add(r.columns.delete_flag.isNull);
 	r.where.add(r.columns.tenant_uuid.eq(session.tenant_uuid));
 	r.where.add(r.columns.idfile_id.isin(mob.idfiles));
-	r.where.add(r.columns.status_description_id.eq(session.stationId));
+	r.where.add(r.columns.status_description_id.eq(session.stationId.toString()));
 	r.sort.add(r.columns.transaction_start.desc);
 
 	var resultQ = databaseManager.getFoundSet(r);
@@ -4744,11 +4750,12 @@ function showMain(){
  * @properties={typeid:24,uuid:"92EDD6D1-987C-4D8D-BE7A-84ADC79E2947"}
  */
 function textWrap(message, length){
-	var formatted = '<html>';
+	message = message.toString().replace(/ +/g,' ');
+	var formatted = '';
 	/** @type {Array} */
 	var words = message.split(' ');
 	/** @type {String} */
-	var word = '';var msgPart = '';var maxLength = length+5;var longWord = false;var word2 = '';
+	var word = '';var msgPart = '';var maxLength = length+5;var longWord = false;var word2 = '';var breakWord = '';var tmpPart = '';
 	var splitWord = [];//hold long words for splitting non-spaces
 	while (word = words.shift()){
 		longWord = false;
@@ -4765,37 +4772,15 @@ function textWrap(message, length){
 			words.push(word2);
 		}
 		if (longWord){continue}
-		var tmpPart = tmpPart+' '+word;
+		tmpPart = tmpPart+' '+word;tmpPart = tmpPart.trim();
 		if (tmpPart.length > length){
-			formatted += msgPart+' '+'\n'+word;tmpPart = word;
+			breakWord = '<br>';
+			formatted += breakWord+word;tmpPart = word;
 		} else {
 			formatted += ' '+word;
 		}
 	}
-	if (1==1){return formatted}
-	//all below deprecated
-	
-	
-	var messLength = message.length;
-	if (messLength < length){return message}
-	message = message.replace(/\//g,'/ ');
-	var index = (message.length > length) ? length : message.length-1;
-	var tryCount = 10;
-	while (index < message.length && tryCount > 0){
-		tryCount--;
-		if (message.length-1 == index){
-			formatted = formatted + message;
-			break;
-		}
-		//if (index > 33){
-			while (message[index] != " " && message[index] != '-' && message[index] != '.' && index != 0){index--}
-			formatted = formatted + utils.stringLeft(message,index)+'<br>';
-			message = utils.stringRight(message,message.length-index);
-			//index = 0;
-		//}
-		index = (message.length > length) ? length : message.length-1;
-	}
-	return formatted;
+	return '<html>'+formatted;
 }
 /**
  * @AllowToRunInFind
@@ -5051,7 +5036,7 @@ function onActionMainMenu(event) {
 	rfFunctionKeys(prog);
 	rfChangeWindow(event,prog);
 	mobMenuProvider = "";
-	if (application.isInDeveloper()){application.output('EB response '+globals.session.enterpriseBrowser);}
+	if (application.isInDeveloper()){application.output('EB response '+session.enterpriseBrowser);}
 	if (application.isInDeveloper()){application.output('devName '+session.enterpriseBrowser);}
 }
 /**
@@ -5093,32 +5078,28 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
 		return true;
 	}
 	
+	var routeId = rfCheckBarcodeInRoute(oldValue, scannedID, event);
+	mob.routeId = routeId.toString();//20190705 save route id for piecemark
+	var statusCode = forms['rf_mobile_view'].statusCode;
+	if (!statusCode){
+		forms['rf_mobile_view'].currentID = '';
+		globals.errorDialogMobile(event,762,'genericin',null);//status code required
+		return true;
+	}
+	if (!rfCheckStatusInRoute(statusCode,routeId)){
+		forms['rf_mobile_view'].currentID = '';
+		globals.errorDialogMobile(event,763,'genericin',null);//This status code not on this pcmks route
+		return true;
+		
+	}
 	if (globals.laborScreenActive) {//20190712 as per PParks No F8 on Labor Percentage Screens
 		if (application.isInDeveloper()){application.output('only process id as in a route with status')}
-		var routeId = rfCheckBarcodeInRoute(oldValue, scannedID, event);
-		mob.routeId = routeId;//20190705 save route id for piecemark
-		var statusCode = forms['rf_mobile_view'].statusCode;
-		if (!statusCode){
-			forms['rf_mobile_view'].currentID = '';
-			globals.errorDialogMobile(event,762,'genericin',null);//status code required
-			return true;
-		}
 		if (!routeId){
 			forms['rf_mobile_view'].currentID = '';
 			globals.errorDialogMobile(event,761,'genericin',null);//This serial number is not routed
 			return true;
 			
 		}
-		if (!rfCheckStatusInRoute(statusCode,routeId)){
-			forms['rf_mobile_view'].currentID = '';
-			globals.errorDialogMobile(event,763,'genericin',null);//This status code not on this pcmks route
-			return true;
-			
-		}
-		//mob.idfile.idfile_id;
-		// This piecemark is already completed transaction already 100%
-		// This piecemark 
-//		return true;
 	}
 
 	mob.barcodeId = barcodeId;
@@ -5444,7 +5425,7 @@ function rfValidLastMaxStatus(idfileId){
 	q.and
 		.add(q.columns.delete_flag.isNull)
 		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(q.columns.idfile_id.eq(idfileId))
+		.add(q.columns.idfile_id.eq(idfileId.toString()))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var resultQ = databaseManager.getFoundSet(q);
@@ -5584,7 +5565,7 @@ function onDataChangeJob(oldValue, newJob, event) {
 		application.output('formname '+formName);
 		if (forms['rf_mobile_view']){forms['rf_mobile_view'].jobNumber = newJob}
 		session.jobNumber = newJob;
-		if (forms['rf_mobile_view']){session.jobId = scopes.globals.getJobIdInfo(newJob).job_id;}
+		if (forms['rf_mobile_view']){session.jobId = scopes.globals.getJobIdInfo(newJob).job_id.toString();}
 		return true;
 	}
 	var formName = event.getFormName();
@@ -5697,10 +5678,10 @@ function rfJobCheck(jobNumber,associationId){
 	q.result.add(q.columns.association_id);
 	q.result.distinct = true;
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(session.tenant_uuid)));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.where.add(q.columns.job_number.eq(jobNumber));
 	if (associationId){
-		q.where.add(q.columns.association_id.eq(application.getUUID(associationId)));
+		q.where.add(q.columns.association_id.eq(associationId.toString()));
 	}
 	var resultQ = databaseManager.getFoundSet(q);
 	var size = resultQ.getSize();
@@ -5713,10 +5694,10 @@ function rfJobCheck(jobNumber,associationId){
 	session.jobNumber = jobNumber;
 	/** @type {JSRecord<db:/stsservoy/jobs>} */
 	var rec = resultQ.getRecord(1);
-	session.jobId = rec.job_id;
+	session.jobId = rec.job_id.toString();
 	session.jobLoads = null;
 	mob.job.metric = rec.metric_job;
-	mob.job.Id = rec.job_id;
+	mob.job.Id = rec.job_id.toString();
 	mob.job.weight = rec.job_weight;
 	return true;
 }
@@ -5751,7 +5732,7 @@ function onDataChangeBundle(oldValue, bundle, event) {
 		// barcode has items, is it for this job? Create new dialog for new bundle
 		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 		var rec = mob.bundleFS.getRecord(1);
-		var bundleJobId = rec.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_id;
+		var bundleJobId = rec.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_id.toString();
 		if (bundleJobId+'' != session.jobId+''){
 			mob.bundle.Id = "";
 			// 730 This Bundle Number Does Not Belong To This Job.
@@ -6193,7 +6174,7 @@ function bundleGetTransactions(){
 	q.where.add(q.columns.bundle_bc.eq(mob.bundle.Id));
 	q.where.add(q.columns.trans_code.eq('FABMO'));
 	//q.where.add(q.columns.trans_status.eq(statusCode));
-	q.where.add(q.columns.status_description_id.eq(session.stationId));
+	q.where.add(q.columns.status_description_id.eq(session.stationId.toString()));
 	mob.bundle.transFs = databaseManager.getFoundSet(q);
 }
 /**
@@ -6333,7 +6314,7 @@ function rfGetSpecsBundle(){
 			/** @type {QBSelect<db:/stsservoy/piecemarks>} */
 			var q = databaseManager.createSelect('db:/stsservoy/piecemarks');
 			q.result.add(q.columns.piecemark_id);
-			q.where.add(q.columns.piecemark_id.eq(rec.piecemark_id));
+			q.where.add(q.columns.piecemark_id.eq(rec.piecemark_id.toString()));
 			var Q = databaseManager.getFoundSet(q);
 			pmRec = Q.getRecord(1);
 		}
@@ -6366,7 +6347,7 @@ function bundleGetIdfilesByBarcode(){
 	q.where.add(q.columns.delete_flag.isNull)
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 	q.where.add(q.columns.bundle_bc.eq(mob.bundle.Id))
-	q.where.add(q.columns.id_serial_number_id.eq(mob.barcodeId))
+	q.where.add(q.columns.id_serial_number_id.eq(mob.barcodeId.toString()))
 	mob.bundleFS = databaseManager.getFoundSet(q);
 
 }
@@ -6412,7 +6393,7 @@ function setTransShop(){
 	if (globals.transShopText[formName] == undefined){
 		globals.transShopText[formName] = session.program;
 	}
-	forms[formName].viewTitle = session.program+" "+globals.session.association;
+	forms[formName].viewTitle = session.program+" "+session.association;
 	forms[formName].controller.focusField(session.errorElement,true);
 	//forms[formName].controller.focusField('status',true);
 	//elements.status.requestFocus();
@@ -6445,7 +6426,7 @@ function onDataChangeLoad(oldValue, newValue, event) {
 	//}
 	session.jobIdBack = session.jobId;
 	if (forms[formName].vJobRec && forms[formName].vJobRec.job_id){
-		session.jobId = forms[formName].vJobRec.job_id;
+		session.jobId = forms[formName].vJobRec.job_id.toString();
 	}
 	var loadExists = false;
 	loadExists = loadNumberCheck(event,newValue); // resolves ticket #160
@@ -6611,8 +6592,8 @@ function loadGetJobDataset(jobId){
 	q.result.add(q.columns.load_number);
 	q.result.add(q.columns.interim_load);
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(session.tenant_uuid)));
-	q.where.add(q.columns.job_id.eq(jobId));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(jobId.toString()));
 	q.sort.add(q.columns.load_number.desc);
 	var resultQ = databaseManager.getFoundSet(q);
 	return resultQ;
@@ -6629,7 +6610,6 @@ function loadNumberCheck(event,loadNumber){
 	/** @type {JSFoundSet<db:/stsservoy/loads>} */
 	session.jobLoads = loadGetJobDataset(session.jobId);
 	session.loadId = null;
-	//var loadRecs = session.jobLoads; // shorter name for session.jobLoads
 	
 	if (loadNumber){
 		session.loadNextNumber = 0;//set load Number to init state
@@ -6952,14 +6932,14 @@ function loadGetData(){
 		q.and
 			.add(q.columns.delete_flag.isNull)
 			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-			//.add(q.columns.ship_load_id.eq(session.loadId))
+			//.add(q.columns.ship_load_id.eq(session.loadId.toString()))
 		);
 	} else {
 		q.where.add(
 		q.and
 			.add(q.columns.delete_flag.isNull)
 			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(q.columns.ship_load_id.eq(session.loadId))
+			.add(q.columns.ship_load_id.eq(session.loadId.toString()))
 		);
 	}
 	var samp = databaseManager.getFoundSet(q);
@@ -7495,7 +7475,7 @@ function convertLotToId(itemCSV,arraytoStr){
 	/** @type {QBSelect<db:/stsservoy/lots>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/lots');
 	fs.result.add(fs.columns.lot_id);
-	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.tenant_uuid.eq(session.tenant_uuid));
 	fs.where.add(fs.columns.delete_flag.isNull);
 	var L = databaseManager.getFoundSet(fs);
 	var idx = 1;
@@ -7740,14 +7720,14 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 	//application.output('base form '+baseForm);
 	session.jobIdBack = session.jobId;
 	if (baseForm.search('piecemark') != -1){
-		session.jobId = forms[formName].vJobRec.job_id;
+		session.jobId = forms[formName].vJobRec.job_id.toString();
 	}
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q = databaseManager.createSelect('db:/stsservoy/sheets');
 	q.result.add(q.columns.sheet_id);
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-	q.where.add(q.columns.job_id.eq(session.jobId));
+	q.where.add(q.columns.job_id.eq(session.jobId.toString()));
 	/** @type {JSFoundSet<db:/stsservoy/sheets>} */
 	var fs = databaseManager.getFoundSet(q);
 	session.jobId = session.jobIdBack;
@@ -7833,7 +7813,7 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 			/** @type {QBSelect<db:/stsservoy/transactions>} */
 			var trans = databaseManager.createSelect('db:/stsservoy/transactions');
 			trans.result.add(trans.columns.trans_id);
-			trans.where.add(trans.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+			trans.where.add(trans.columns.tenant_uuid.eq(session.tenant_uuid));
 			trans.where.add(trans.columns.delete_flag.isNull);
 			trans.where.add(trans.columns.idfile_id.eq(fs3.idfile_id));
 			var TR = databaseManager.getFoundSet(trans);
@@ -7887,7 +7867,7 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 			//application.output('final pcmk rec '+thisForm.vItemRec.piecemark_id);
 			//application.output(' final pcmk rec '+pcmkRec);
 			//application.output(' final pcmk rec '+pcmkRec.piecemark_id);
-			/** @type {JSFoundSet<db:/stsservoy/sequences>} */
+			/** @type {JSFoundSet<db:/stsservoy/sequences2>} */
 			var seqDs = getSequenceNumbers();
 			if (seqDs.getMaxRowIndex() == 1){
 				seqDs.rowIndex = 1;
@@ -7926,18 +7906,18 @@ function onDataChangeSequence(oldValue, newValue, event) {
 	//if (forms[formName].entryRequired(elementName)){
 	//	if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = elementName}
 	//}
-	/** @type {QBSelect<db:/stsservoy/sequences>} */
-	var s = databaseManager.createSelect('db:/stsservoy/sequences');
+	/** @type {QBSelect<db:/stsservoy/sequences2>} */
+	var s = databaseManager.createSelect('db:/stsservoy/sequences2');
 	s.result.add(s.columns.sequence_number);
 	s.result.add(s.columns.sequence_id);
 	s.where.add(
 		s.and
 			.add(s.columns.delete_flag.isNull)
 			.add(s.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(s.columns.job_id.eq(mob.job.Id))
+			.add(s.columns.job_id.eq(mob.job.Id.toString()))
 			.add(s.columns.sequence_number.eq(newValue))
 	);
-	/** @type {JSFoundSet<db:/stsservoy/sequences>} */
+	/** @type {JSFoundSet<db:/stsservoy/sequences2>} */
 	var fs3 = databaseManager.getFoundSet(s);
 	if (fs3.getSize() == 0){
 		globals.errorDialogMobile(event,'1069','current');//1069 Sequence not on this Job.
@@ -7981,7 +7961,7 @@ function rfShowBundlesNames(currentJob){
 		var bundle = rec.bundle_bc;
 		if (bundles.indexOf(bundle) != -1){continue}
 		bundles.push(bundle);
-		var jobId = rec.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_id;
+		var jobId = rec.sts_idfile_to_pcmks.sts_pcmks_to_sheet.sts_sheet_to_job.job_id.toString();
 		if (!mob.bundlesJobs[jobId]){
 			mob.bundlesJobs[jobId] = new Array();
 		}
@@ -8032,15 +8012,15 @@ function rfGetSpecsLoad(loadType){
 	if (typeLoad == 'ship'){
 		q.where.add(q.columns.delete_flag.isNull);
 		q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-		q.where.add(q.columns.ship_load_id.eq(session.loadId));
+		q.where.add(q.columns.ship_load_id.eq(session.loadId.toString()));
 	} else if (typeLoad == 'receive'){
 		q.where.add(q.columns.delete_flag.isNull);
 		q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-		q.where.add(q.columns.received_load_id.eq(session.loadId));
+		q.where.add(q.columns.received_load_id.eq(session.loadId.toString()));
 	} else {
 		q.where.add(q.columns.delete_flag.isNull);
 		q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-		q.where.add(q.columns.current_load_id.eq(session.loadId));
+		q.where.add(q.columns.current_load_id.eq(session.loadId.toString()));
 	}
 	var loadFS = databaseManager.getFoundSet(q);
 	mob.load.loadFs = loadFS;
@@ -8054,13 +8034,13 @@ function rfGetSpecsLoad(loadType){
 		var rec = loadFS.getRecord(index++);
 		if (piecemarkIds.indexOf(rec.piecemark_id) == -1) {piecemarkIds.push(rec.piecemark_id);}
 		if (typeLoad == 'ship'){//status description id is shipped 20180830
-			if (rec && rec.status_description_id == application.getUUID(session.stationId)){//check here for already shipped items
+			if (rec && rec.status_description_id.toString() == session.stationId.toString()){//check here for already shipped items
 				mob.load.ctShipped++;
 			}
 		}
-		mob.load.shipId = rec.ship_load_id;
-		mob.load.receiveId = rec.received_load_id;
-		mob.load.currentId = rec.current_load_id;
+		mob.load.shipId = rec.ship_load_id.toString();
+		mob.load.receiveId = rec.received_load_id.toString();
+		mob.load.currentId = rec.current_load_id.toString();
 	}
 	
 	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
@@ -8098,7 +8078,7 @@ function rfGetSpecsLoad(loadType){
 	/** @type {QBSelect<db:/stsservoy/loads>} */
 	var l = databaseManager.createSelect('db:/stsservoy/loads');
 	l.result.add(l.columns.load_id);
-	l.where.add(l.columns.load_id.eq(session.loadId));
+	l.where.add(l.columns.load_id.eq(session.loadId.toString()));
 	l.where.add(l.columns.tenant_uuid.eq(session.tenant_uuid));
 	var L = databaseManager.getFoundSet(l);
 	if (L.getSize() > 0){
@@ -8140,7 +8120,7 @@ function rfGetJobIdfileIds(){
 	q.and
 		.add(q.columns.delete_flag.isNull)
 		.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-		.add(q.columns.job_id.eq(session.jobId))
+		.add(q.columns.job_id.eq(session.jobId.toString()))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/sheets>} */
 	var fs = databaseManager.getFoundSet(q);
@@ -8271,7 +8251,7 @@ function getCustomersByJob(){
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.result.add(j.columns.job_id);
-	j.where.add(j.columns.tenant_uuid.eq(application.getUUID(session.tenant_uuid)));
+	j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
 	j.where.add(j.columns.delete_flag.isNull);
 	j.where.add(j.columns.job_number.eq(jobNum));
 	//j.where.add(j.columns.association_id.eq(session.associationId));
@@ -8283,10 +8263,10 @@ function getCustomersByJob(){
 		var rec = null; var index = 1;
 		while (rec = J.getRecord(index++)){
 			custIds.push(rec.customer_id);
-			globals.session.jobId = rec.job_id;
-			mob.job.Id = rec.job_id;//set jobid ticket#281
+			globals.session.jobId = rec.job_id.toString();
+			mob.job.Id = rec.job_id.toString();//set jobid ticket#281
 			mob.job.number = rec.job_number;//set jobnumber ticket#281
-			mob.customer.Id = rec.customer_id;
+			mob.customer.Id = rec.customer_id.toString();
 			application.output('setting mob.customer.id')
 			index++;
 		}
@@ -8294,7 +8274,7 @@ function getCustomersByJob(){
 		var c = databaseManager.createSelect('db:/stsservoy/customers');
 		c.result.add(c.columns.customer_id);
 		c.where.add(c.columns.delete_flag.isNull);
-		c.where.add(c.columns.tenant_uuid.eq(application.getUUID(session.tenant_uuid)));
+		c.where.add(c.columns.tenant_uuid.eq(session.tenant_uuid));
 		c.where.add(c.columns.customer_id.isin(custIds));
 		var C = databaseManager.getFoundSet(c);
 		/** @type {JSRecord<db:/stsservoy/customers>} */
@@ -8325,7 +8305,7 @@ function getJobsByAssoc(){
 	j.result.add(j.columns.job_id);
 	j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
 	j.where.add(j.columns.delete_flag.isNull);
-	j.where.add(j.columns.association_id.eq(session.associationId));
+	j.where.add(j.columns.association_id.eq(session.associationId.toString()));
 	j.sort.add(j.columns.create_date.asc);
 	var J = databaseManager.getFoundSet(j);
 	var count = 1;
@@ -8423,10 +8403,12 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
  * @AllowToRunInFind
  */
 function getJobData(custId,jobNum){
+	custId = (custId) ? custId.toString() : custId;
+	jobNum = jobNum.toString();
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/jobs');
 	fs.result.add(fs.columns.job_id);
-	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.tenant_uuid.eq(session.tenant_uuid));
 	fs.where.add(fs.columns.delete_flag.isNull);
 	if (custId){
 		fs.where.add(fs.columns.customer_id.eq(custId));
@@ -8503,14 +8485,14 @@ function getCustomerIdRec(){
  */
 function getJobIdSheets(){
 	var form = forms[getFormName()];
-	var jobId = form.vJobId;
+	var jobId = form.vJobId.toString();
 	if (application.isInDeveloper()){application.output('job id '+form.vJobId)}
 	var sheets = [];
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/sheets');
 	fs.result.add(fs.columns.sheet_id);
 	fs.where.add(fs.columns.job_id.eq(jobId));
-	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.tenant_uuid.eq(session.tenant_uuid));
 	fs.where.add(fs.columns.delete_flag.isNull);
 	var S = databaseManager.getFoundSet(fs);
 	var idx = 1;
@@ -8799,7 +8781,7 @@ function getSequenceNumbers(){
 	q.where.add(q.columns.delete_flag.isNull)
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 	if (!(!pcmkId)){
-		q.where.add(q.columns.piecemark_id.eq(pcmkId));
+		q.where.add(q.columns.piecemark_id.eq(pcmkId.toString()));
 	}
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var resultQ = databaseManager.getFoundSet(q);
@@ -8811,8 +8793,8 @@ function getSequenceNumbers(){
 		index++;
 	}
 	
-	/** @type {QBSelect<db:/stsservoy/sequences>} */
-	var r = databaseManager.createSelect('db:/stsservoy/sequences');
+	/** @type {QBSelect<db:/stsservoy/sequences2>} */
+	var r = databaseManager.createSelect('db:/stsservoy/sequences2');
 		r.result.add(r.columns.sequence_number);
 		r.result.distinct = true;
 		r.where.add(
@@ -8821,9 +8803,9 @@ function getSequenceNumbers(){
 			.add(r.columns.tenant_uuid.eq(session.tenant_uuid))
 			.add(r.columns.sequence_id.isin(sequenceIds))
 	);
-	/** @type {JSFoundSet<db:/stsservoy/sequences>} */
+	/** @type {JSFoundSet<db:/stsservoy/sequences2>} */
 	var resultR = databaseManager.getFoundSet(r);
-	/** @type {JSFoundSet<db:/stsservoy/sequences>} */
+	/** @type {JSFoundSet<db:/stsservoy/sequences2>} */
 	var ds = databaseManager.convertToDataSet(resultR,['sequence_number']);
 	if (application.isInDeveloper()){application.output('---- sequence count numbers '+resultR.getSize())}
 	if (resultR.getSize() == 1){
@@ -9093,7 +9075,7 @@ function loadPcmkForm(){
 
 	theForm.vJobRec = getJobData(theForm.vCustNumber,theForm.vJobNumber);
 	if (application.isInDeveloper()){application.output('job rec '+theForm.vJobRec);}
-	theForm.vJobId = theForm.vJobRec.job_id;
+	theForm.vJobId = theForm.vJobRec.job_id.toString();
 	theForm.vCustId = theForm.vCustNumber;
 	if (application.isInDeveloper()){application.output('+ + cust id '+theForm.vCustId+' cust num2 '+theForm.vCustNumber+' job id '+theForm.vJobId)}
 	theForm.vCustRec = getCustomerIdRec();
@@ -9161,17 +9143,17 @@ function getResetPcmkCounts(){
  */
 function getJobSequences(){
 	var form = forms[getFormName()];
-	var jobId = form.vJobId;
+	var jobId = form.vJobId.toString();
 	var sequences = [];
-	/** @type {QBSelect<db:/stsservoy/sequences>} */
-	var fs = databaseManager.createSelect('db:/stsservoy/sequences');
+	/** @type {QBSelect<db:/stsservoy/sequences2>} */
+	var fs = databaseManager.createSelect('db:/stsservoy/sequences2');
 	fs.result.add(fs.columns.sequence_id);
 	fs.where.add(fs.columns.tenant_uuid.eq(session.tenant_uuid));
 	fs.where.add(fs.columns.delete_flag.isNull);
 	fs.where.add(fs.columns.job_id.eq(jobId));
 	var S = databaseManager.getFoundSet(fs);
 	var idx = 1;
-	/** @type {JSRecord<db:/stsservoy/sequences>} */
+	/** @type {JSRecord<db:/stsservoy/sequences2>} */
 	var rec = null;
 	while (rec = S.getRecord(idx++)){//just iterate through.  Will not be many sequences.
 		sequences[rec.sequence_id] = rec.sequence_number;
@@ -9195,6 +9177,7 @@ function checkJobEmpty(jobId){
 	fs.result.add(fs.columns.sheet_id);
 	fs.where.add(fs.columns.tenant_uuid.eq(session.tenant_uuid));
 	fs.where.add(fs.columns.delete_flag.isNull);
+	jobId = (jobId) ? jobId.toString() : jobId;
 	fs.where.add(fs.columns.job_id.eq(jobId));
 	var S = databaseManager.getFoundSet(fs);
 	if (S.getSize() == 0){return true}
@@ -9225,7 +9208,7 @@ function getCustomerList(){
 	q.result.distinct = true;
 	q.sort.add(q.columns.name);
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	/** @type {JSFoundSet<db:/stsservoy/customers>} */
 	var resultQ = databaseManager.getFoundSet(q);
 
@@ -9268,7 +9251,7 @@ function checkCustEmpty(custId){
 	fs.result.add(fs.columns.job_id);
 	fs.where.add(fs.columns.tenant_uuid.eq(session.tenant_uuid));
 	fs.where.add(fs.columns.delete_flag.isNull);
-	fs.where.add(fs.columns.customer_id.eq(custId));
+	fs.where.add(fs.columns.customer_id.eq(custId.toString()));
 	
 	var C = databaseManager.getFoundSet(fs);
 	if (C.getSize() > 0){return false}
@@ -9316,15 +9299,15 @@ function getUserNames(){
 	q.where.add(
 		q.and
 			.add(q.columns.delete_flag.isNull)
-			.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
 			.add(q.columns.delete_flag.eq(null))
 		);
 	var resultQ = databaseManager.getFoundSet(q);
 	for (var index = 1;index <= resultQ.getSize();index++){
 		/** @type {JSFoundSet<db:/stsservoy/users>} */
 		var rec = resultQ.getRecord(index);
-		globals.m.userNames[rec.user_uuid] = rec.user_name;
-		globals.m.userAssocs[rec.user_uuid]= rec.association_uuid;
+		globals.m.userNames[rec.user_uuid.toString()] = rec.user_name;
+		globals.m.userAssocs[rec.user_uuid.toString()]= rec.association_uuid.toString();
 	}
 }
 /**
@@ -9432,7 +9415,7 @@ function setUserFormPermissions(event,readOnlyForm){
 		/** @type {QBSelect<db:/stsservoy/permissions>} */
 		var q = databaseManager.createSelect('db:/stsservoy/permissions');
 		q.result.add(q.columns.permission_uuid);
-		q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+		q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid.toString()));
 		q.where.add(q.columns.form_name.eq(baseForm2));
 		q.where.add(q.columns.key_uuid.isNull);
 		var Q = databaseManager.getFoundSet(q);
@@ -9462,7 +9445,7 @@ function setUserFormPermissions(event,readOnlyForm){
 		var r = databaseManager.createSelect('db:/stsservoy/user_groups');
 		r.result.add(r.columns.user_group_uuid);
 		r.where.add(r.columns.tenant_uuid.eq(session.tenant_uuid));
-		r.where.add(r.columns.user_uuid.eq(session.userId));
+		r.where.add(r.columns.user_uuid.eq(session.userId.toString()));
 		/** @type {QBJoin<db:/stsservoy/groups>} */
 		var s = r.joins.add('db:/stsservoy/groups');
 		s.on.add(r.columns.group_uuid.eq(s.columns.group_uuid));
@@ -9535,7 +9518,7 @@ function convertFabShopToStatusDescripId(itemCSV,arrayToStr){
 	fs.where.add(fs.columns.tenant_uuid.eq(session.tenant_uuid));
 	fs.where.add(fs.columns.delete_flag.isNull);
 	fs.where.add(fs.columns.status_code.isin(arrayN));
-	fs.where.add(fs.columns.association_id.eq(session.associationId));
+	fs.where.add(fs.columns.association_id.eq(session.associationId.toString()));
 	var SD = databaseManager.getFoundSet(fs);
 	var idx = 1;
 	/** @type {JSRecord<db:/stsservoy/status_description>} */
@@ -9670,20 +9653,20 @@ function csvToSeqIds(sequenceCSV,jobid){
 	sequenceCSV = sequenceCSV.replace(/ *, */g,",");
 	if (sequenceCSV == ""){return new Array()}
 	var sequences = sequenceCSV.split(',');
-	/** @type {QBSelect<db:/stsservoy/sequences>} */
-	var q = databaseManager.createSelect('db:/stsservoy/sequences');
+	/** @type {QBSelect<db:/stsservoy/sequences2>} */
+	var q = databaseManager.createSelect('db:/stsservoy/sequences2');
 	q.result.add(q.columns.sequence_id);
 	q.where.add(q.columns.delete_flag.isNull)
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-	q.where.add(q.columns.job_id.eq(jobid))
+	q.where.add(q.columns.job_id.eq(jobid.toString()))
 	q.where.add(q.columns.sequence_number.isin(sequences))
 	var S = databaseManager.getFoundSet(q);
 	var idx = 1;
 	var seqIds = new Array();
-	/** @type {JSRecord<db:/stsservoy/sequences>} */
+	/** @type {JSRecord<db:/stsservoy/sequences2>} */
 	var rec = null;
 	while (rec = S.getRecord(idx++)){
-		seqIds.push(rec.sequence_id);
+		seqIds.push(rec.sequence_id.toString());
 	}
 	return seqIds;
 }
@@ -9743,7 +9726,7 @@ function makeFormReadOnly(event,formName,elName){
 function onTabChangeSplit(previousIndex, event) {
 	var formName = event.getFormName();
 	var dividerLocation = forms[formName].elements['split'].dividerLocation;
-	var noUser = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+	var noUser = null;//application.getUUID('FFFFFFFF-0000-0000-DDDDDDDDDDDD');
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var prefs = databaseManager.createSelect('db:/stsservoy/preferences2');
 	prefs.where.add(prefs.columns.form_name.eq(formName));
@@ -9769,7 +9752,7 @@ function onTabChangeSplit(previousIndex, event) {
 		rec.form_name = formName;
 		rec.field_name = 'split';
 		rec.value_description = 'Last set location for form divider.';
-		rec.user_uuid = noUser;
+		rec.user_uuid = null;
 		databaseManager.saveData(rec);
 	}
 }
@@ -9819,7 +9802,7 @@ function onDataChangeAssocType(oldValue, newValue, event) {
 	var a = databaseManager.createSelect('db:/stsservoy/associations');
 	a.result.clear();
 	a.result.add(a.columns.association_uuid);
-	a.where.add(a.columns.association_uuid.eq(forms[formName].association_uuid));
+	a.where.add(a.columns.association_uuid.eq(forms[formName].association_uuid.toString()));
 	a.where.add(a.columns.delete_flag.not.eq(99));
 	a.where.add(a.columns.tenant_uuid.eq(session.tenant_uuid));
 	var A = databaseManager.getFoundSet(a);
@@ -9841,7 +9824,7 @@ function onDataChangeAssocType(oldValue, newValue, event) {
 		var u = databaseManager.createSelect('db:/stsservoy/users');
 		u.result.add(u.columns.user_uuid);
 		u.where.add(u.columns.tenant_uuid.eq(session.tenant_uuid));
-		u.where.add(u.columns.association_uuid.eq(selectedAssoc));
+		u.where.add(u.columns.association_uuid.eq(selectedAssoc.toString()));
 		var U = databaseManager.getFoundSet(u);
 		U.loadRecords();
 		if (U.getSize() == 0){
@@ -9850,7 +9833,7 @@ function onDataChangeAssocType(oldValue, newValue, event) {
 			var j = databaseManager.createSelect('db:/stsservoy/jobs');
 			j.result.add(j.columns.job_id);
 			j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
-			j.where.add(j.columns.association_id.eq(selectedAssoc));
+			j.where.add(j.columns.association_id.eq(selectedAssoc.toString()));
 			var J = databaseManager.getFoundSet(j);
 			J.loadRecords();
 			if (J.getSize() == 0){ // check for status use of association
@@ -9858,7 +9841,7 @@ function onDataChangeAssocType(oldValue, newValue, event) {
 				var s = databaseManager.createSelect('db:/stsservoy/status_description');
 				s.result.add(s.columns.status_description_id);
 				s.where.add(s.columns.tenant_uuid.eq(session.tenant_uuid));
-				s.where.add(s.columns.association_id.eq(selectedAssoc));
+				s.where.add(s.columns.association_id.eq(selectedAssoc.toString()));
 				var S = databaseManager.getFoundSet(s);
 				S.loadRecords();
 				if (S.getSize() == 0){return true}
@@ -9885,8 +9868,8 @@ function isOfficeFunction(event){
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var aa = databaseManager.createSelect('db:/stsservoy/associations');
 	aa.result.add(aa.columns.association_uuid);
-	aa.where.add(aa.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
-	aa.where.add(aa.columns.association_uuid.eq(application.getUUID(globals.session.associationId)));
+	aa.where.add(aa.columns.tenant_uuid.eq(session.tenant_uuid));
+	aa.where.add(aa.columns.association_uuid.eq(session.associationId.toString()));
 	var A = databaseManager.getFoundSet(aa);
 	/** @type {JSRecord<db:/stsservoy/associations>} */
 	var rec = A.getRecord(1);
@@ -9961,7 +9944,7 @@ function getAssociationName(assocID){
 	assocs.result.add(assocs.columns.association_uuid);
 	assocs.where.add(assocs.columns.tenant_uuid.eq(session.tenant_uuid));
 	assocs.where.add(assocs.columns.delete_flag.isNull);
-	assocs.where.add(assocs.columns.association_uuid.eq(theForm.vJobRec.association_id));
+	assocs.where.add(assocs.columns.association_uuid.eq(theForm.vJobRec.association_id.toString()));
 	var A = databaseManager.getFoundSet(assocs);
 	if (A.getSize() > 0){
 		/** @type {JSRecord<db:/stsservoy/associations>} */
@@ -9976,6 +9959,7 @@ function getAssociationName(assocID){
  * @properties={typeid:24,uuid:"0DAECB2C-67CB-464C-9BC7-605FF2AFE12D"}
  */
 function checkAssociationsEmpty(assocId){
+	assocId = assocId.toString();
 	var tablesAffected = '';
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var as = databaseManager.createSelect('db:/stsservoy/associations');
@@ -10007,16 +9991,16 @@ function checkAssociationsEmpty(assocId){
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var jobFS = databaseManager.createSelect('db:/stsservoy/jobs');
 	jobFS.result.add(jobFS.columns.job_id);
-	jobFS.where.add(jobFS.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	jobFS.where.add(jobFS.columns.tenant_uuid.eq(session.tenant_uuid));
 	jobFS.where.add(jobFS.columns.delete_flag.isNull);
-	jobFS.where.add(jobFS.columns.association_id.eq(scopes.globals.session.associationId));
+	jobFS.where.add(jobFS.columns.association_id.eq(assocId));//session.associationId
 	var J = databaseManager.getFoundSet(jobFS);
 	if (J.getSize() != 0){tablesAffected += '[jobs]';}
 	
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
 	u.result.add(u.columns.user_uuid);
-	u.where.add(u.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	u.where.add(u.columns.tenant_uuid.eq(session.tenant_uuid));
 	u.where.add(u.columns.association_uuid.eq(assocId));
 	u.where.add(u.columns.delete_flag.isNull);
 	var U = databaseManager.getFoundSet(u);
@@ -10025,7 +10009,7 @@ function checkAssociationsEmpty(assocId){
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var s = databaseManager.createSelect('db:/stsservoy/status_description');
 	s.result.add(s.columns.status_description_id);
-	s.where.add(s.columns.tenant_uuid.eq(scopes.globals.session.tenant_uuid));
+	s.where.add(s.columns.tenant_uuid.eq(session.tenant_uuid));
 	s.where.add(s.columns.association_id.eq(assocId));
 	s.where.add(s.columns.delete_flag.isNull);
 	var S = databaseManager.getFoundSet(s);
@@ -10036,11 +10020,12 @@ function checkAssociationsEmpty(assocId){
  * @properties={typeid:24,uuid:"A306ECC1-E3DE-4C1D-B1E3-B05FE18E807C"}
  */
 function checkStatusEmpty(statusId){
+	statusId = (statusId) ? statusId.toString() : statusId;
 	var tablesAffected = '';
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var s = databaseManager.createSelect('db:/stsservoy/status_description');
 	s.result.add(s.columns.status_description_id);
-	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	s.where.add(s.columns.tenant_uuid.eq(session.tenant_uuid));
 	s.where.add(s.columns.delete_flag.isNull);
 	s.where.add(s.columns.end_for_status.eq(statusId));
 	var S = databaseManager.getFoundSet(s);
@@ -10049,7 +10034,7 @@ function checkStatusEmpty(statusId){
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var t = databaseManager.createSelect('db:/stsservoy/transactions');
 	t.result.add(t.columns.trans_id);
-	t.where.add(t.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	t.where.add(t.columns.tenant_uuid.eq(session.tenant_uuid));
 	t.where.add(t.columns.delete_flag.isNull);
 	t.where.add(t.columns.status_description_id.eq(statusId));
 	var T = databaseManager.getFoundSet(s);
@@ -10058,7 +10043,7 @@ function checkStatusEmpty(statusId){
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
 	i.result.add(i.columns.idfile_id);
-	i.where.add(i.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	i.where.add(i.columns.tenant_uuid.eq(session.tenant_uuid));
 	i.where.add(i.columns.delete_flag.isNull);
 	i.where.add(i.columns.status_description_id.eq(statusId));
 	var I = databaseManager.getFoundSet(i);
@@ -10067,7 +10052,7 @@ function checkStatusEmpty(statusId){
 	/** @type {QBSelect<db:/stsservoy/route_detail>} */
 	var j = databaseManager.createSelect('db:/stsservoy/route_detail');
 	j.result.add(j.columns.route_detail_id);
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
 	j.where.add(j.columns.delete_flag.isNull);
 	j.where.add(j.columns.status_description_id.eq(statusId));
 	var J = databaseManager.getFoundSet(j);
@@ -10088,8 +10073,8 @@ function checkRoutingCodesEmpty(routeId){
 	var pm = databaseManager.createSelect('db:/stsservoy/piecemarks');
 	pm.result.add(pm.columns.piecemark_id);
 	pm.where.add(pm.columns.delete_flag.isNull);
-	pm.where.add(pm.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	pm.where.add(pm.columns.e_route_code_id.eq(routeId));
+	pm.where.add(pm.columns.tenant_uuid.eq(session.tenant_uuid));
+	pm.where.add(pm.columns.e_route_code_id.eq(routeId.toString()));
 	var PM = databaseManager.getFoundSet(pm);
 	if (PM.getSize() != 0){tablesAffected += '[piecemarks]'}
 	
@@ -10097,8 +10082,8 @@ function checkRoutingCodesEmpty(routeId){
 	var rd = databaseManager.createSelect('db:/stsservoy/route_detail');
 	rd.result.add(rd.columns.route_detail_id);
 	rd.where.add(rd.columns.delete_flag.isNull);
-	rd.where.add(rd.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	rd.where.add(rd.columns.e_route_code_id.eq(routeId));
+	rd.where.add(rd.columns.tenant_uuid.eq(session.tenant_uuid));
+	rd.where.add(rd.columns.e_route_code_id.eq(routeId.toString()));
 	var RD = databaseManager.getFoundSet(rd);
 	if (RD.getSize() != 0){tablesAffected += '[route_detail]'}
 	
@@ -10116,10 +10101,11 @@ function checkEmployeeEmpty(event,record){
 	// see transactions and  users, return true if deletable
 	/** @type {JSFoundSet<db:/stsservoy/employee>} */
 	var employeeId = record.employee_id;
+	employeeId = (employeeId) ? employeeId.toString() : employeeId;
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var ee = databaseManager.createSelect('db:/stsservoy/users');
 	ee.result.add(ee.columns.employee_id);
-	ee.where.add(ee.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	ee.where.add(ee.columns.tenant_uuid.eq(session.tenant_uuid));
 	ee.where.add(ee.columns.delete_flag.isNull);
 	ee.where.add(ee.columns.employee_id.eq(employeeId));
 	var EE = databaseManager.getFoundSet(ee);
@@ -10129,7 +10115,7 @@ function checkEmployeeEmpty(event,record){
 	var tr = databaseManager.createSelect('db:/stsservoy/transactions');
 	tr.result.add(tr.columns.trans_id);
 	tr.where.add(tr.columns.employee_id.eq(employeeId));
-	tr.where.add(tr.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	tr.where.add(tr.columns.tenant_uuid.eq(session.tenant_uuid));
 	tr.where.add(tr.columns.delete_flag.isNull);
 	var TR = databaseManager.getFoundSet(tr);
 	if (TR.getSize() != 0){tablesAffected += '[transactions]'}
@@ -10156,7 +10142,7 @@ function checkCarrierEmpty(carrierNum){
 	/** @type {QBSelect<db:/stsservoy/loads>} */
 	var cr = databaseManager.createSelect('db:/stsservoy/loads');
 	cr.result.add(cr.columns.carrier_number);
-	cr.where.add(cr.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	cr.where.add(cr.columns.tenant_uuid.eq(session.tenant_uuid));
 	cr.where.add(cr.columns.carrier_number.eq(carrierNum));
 	cr.where.add(cr.columns.delete_flag.isNull);
 	var L = databaseManager.getFoundSet(cr);
@@ -10179,13 +10165,13 @@ function checkUserEmpty(userId){
 	us.result.add(us.columns.user_uuid);
 	us.where.add(us.columns.delete_flag.isNull);
 	us.where.add(us.columns.tenant_uuid.eq(session.tenant_uuid));
-	us.where.add(us.columns.user_uuid.eq(userId));
+	us.where.add(us.columns.user_uuid.eq(userId.toString()));
 	var US = databaseManager.getFoundSet(us);
 	
 	if (US.getSize() > 0){
 		/** @type {JSFoundSet<db:/stsservoy/users>} */
 		var rec = US.getRecord(1);
-		var empId = rec.employee_id;
+		var empId = rec.employee_id.toString();
 		/** @type {QBSelect<db:/stsservoy/employee>} */
 		var ep = databaseManager.createSelect('db:/stsservoy/employee');
 		ep.result.add(ep.columns.employee_id);
@@ -10600,7 +10586,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
 		q.where.add(q.columns.id_serial_number.eq(newValue));
 		q.result.add(q.columns.id_serial_number);
-		q.where.add(q.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+		q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 		q.where.add(q.columns.delete_flag.isNull);
 		var Q = databaseManager.getDataSetByQuery(q,1);
 		
@@ -10819,10 +10805,11 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 				errorDialogMobile(event,1229,'genericin','Grade');
 				break;
 			}
-			if (!data && forms['rf_mobile_view'].elements['gradein'] ||
+			if ((!data && forms['rf_mobile_view'].elements['gradein'].visible) &&
 					!processGo){
 					if (!processGo){forms['rf_mobile_view'].grade = ''}
-					break;}
+					break;
+			}
 			if (processGo){
 				rfFinalShip(event);
 			} else {
@@ -11308,14 +11295,14 @@ function getJobIdInfo(jobNum){
 			.add(p.columns.delete_flag.isNull)
 			.add(p.columns.delete_flag.eq(0))
 			)
-		.add(p.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)))
+		.add(p.columns.tenant_uuid.eq(session.tenant_uuid))
 		.add(p.columns.job_number.eq(jobNum))
 	);
 	var fsJ = databaseManager.getFoundSet(p);
 	if (fsJ.getSize() != 0){
 	/** @type JSRecord<db:/stsservoy/jobs> */
 		var rec = fsJ.getRecord(1);
-		var jobId = rec.job_id;
+		var jobId = rec.job_id.toString();
 	} else {
 		jobId = '';
 		jobNum = '';
@@ -11355,7 +11342,7 @@ function getJobDataFromID(event,barId,clearOrphans){
 	q.result.add(q.columns.id_serial_number_id);
 	q.groupBy.add(q.columns.id_serial_number_id);
 	q.result.distinct = true;
-	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	if (!isBundle){//11 select idfiles from bundle
 		q.where.add(q.columns.id_serial_number.eq(barId));
 	}
@@ -11372,7 +11359,7 @@ function getJobDataFromID(event,barId,clearOrphans){
 	} else {
 		r.on.add(q.columns.id_serial_number_id.eq(r.columns.id_serial_number_id));
 	}
-	r.root.where.add(r.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	r.root.where.add(r.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.root.result.add(r.columns.idfile_id);
 	q.root.groupBy.add(r.columns.idfile_id);
 	/** @type {JSDataSource<db:/stsservoy/id_serial_numbers>} */
@@ -11536,7 +11523,7 @@ function getJobDataFromID(event,barId,clearOrphans){
 	if (Q.getMaxRowIndex() > 0){
 		Q.rowIndex = 1;
 		//if (forms['rf_mobile_view'].requiredFields.indexOf('jobnumberin') == -1){//ticket#281, entry for job number limits barcodes to that job
-		mob.job.Id = Q.job_id;//determin jobid ticket#281 for bundle
+		mob.job.Id = Q.job_id.toString();//determin jobid ticket#281 for bundle
 		mob.job.number = Q.job_number;//Q.association_id;//determine jobnumber ticket#281 for bundle changed
 		//}
 		mob.station = Q.association_name;
@@ -11650,14 +11637,14 @@ function getJobsTenant(){
 	q.result.add(q.columns.association_id);
 	q.result.distinct = true;
 	q.where.add(q.columns.delete_flag.isNull)
-	q.where.add(q.columns.tenant_uuid.eq(application.getUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	var resultQ = databaseManager.getDataSetByQuery(q,-1);
 	for (var index = 1;index <= resultQ.getMaxRowIndex();index++){
 		resultQ.rowIndex = index;
 		if (session.tenantJobArray.indexOf(resultQ.job_number) == -1){
 			session.tenantJobArray.push(resultQ.job_number);
 		}
-		if (resultQ.association_id == session.associationId && session.assocJobArray.indexOf(resultQ.job_number) == -1){
+		if (resultQ.association_id.toString() == session.associationId.toString() && session.assocJobArray.indexOf(resultQ.job_number) == -1){
 			session.assocJobArray.push(resultQ.job_number);
 		}
 	}
@@ -11707,10 +11694,12 @@ function createHeat(event,heatNum){
 		rec = FS.getRecord(1);
 	}
 	//if (application.isInDeveloper()){application.output('save status on heat '+status)}
-	forms['rf_mobile_view'].heat = heatNum;
+	if (forms['rf_mobile_view'] && forms['rf_mobile_view'].heat){
+		forms['rf_mobile_view'].heat = heatNum;
+	}
 	mob.heat = heatNum;
-	mob.heatId = rec.heat_id;
-	return rec.heat_id;
+	mob.heatId = rec.heat_id.toString();
+	return rec.heat_id.toString();
 
 }
 /**
@@ -11725,7 +11714,7 @@ function rfCheckRequiredWorkerStatus(status){
 	r.where.add(r.columns.tenant_uuid.eq(session.tenant_uuid));
 	r.where.add(r.columns.status_code.eq(status));
 	r.where.add(r.columns.delete_flag.isNull);
-	r.where.add(r.columns.association_id.eq(session.associationId));
+	r.where.add(r.columns.association_id.eq(session.associationId.toString()));
 	var R = databaseManager.getFoundSet(r);
 	var workerRqd = false;
 	if (R.getSize() > 0){
@@ -11742,7 +11731,7 @@ function rfCheckRequiredWorkerStatus(status){
  * @properties={typeid:24,uuid:"2B3F8512-F7F1-433B-BE4B-480ABD10DFEF"}
  */
 function barcodeJobNumber(event){
-	var jobId = session.jobId;
+	var jobId = session.jobId.toString();
 	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
 	q.result.add(q.columns.id_serial_number);
@@ -12034,7 +12023,7 @@ function rfIdsNotShipped(){
 	var jobId = mob.job.Id;
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q = databaseManager.createSelect('db:/stsservoy/sheets');
-	q.where.add(q.columns.job_id.eq(jobId));
+	q.where.add(q.columns.job_id.eq(jobId.toString()));
 	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
 	var r = q.joins.add('db:/stsservoy/piecemarks');
 	r.on.add(r.columns.sheet_id.eq(q.columns.sheet_id));
@@ -12076,7 +12065,7 @@ function rfPcmksNotShipped(){
 	var jobId = mob.job.Id;
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q = databaseManager.createSelect('db:/stsservoy/sheets');
-	q.where.add(q.columns.job_id.eq(jobId));
+	q.where.add(q.columns.job_id.eq(jobId.toString()));
 	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
 	var r = q.joins.add('db:/stsservoy/piecemarks');
 	r.on.add(r.columns.sheet_id.eq(q.columns.sheet_id));
@@ -12127,7 +12116,7 @@ function rfLoadStats(){
 	var verifyCount = 0;
 	var receiveWeight = 0;
 	var receiveCount = 0;
-	var jobId = mob.job.Id;
+	var jobId = mob.job.Id.toString();
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q = databaseManager.createSelect('db:/stsservoy/sheets');
 	q.where.add(q.columns.job_id.eq(jobId));
@@ -12304,7 +12293,7 @@ function rfF7SaveLoadTrailerInfo(){
 	/** @type {QBSelect<db:/stsservoy/loads>} */
 	var q = databaseManager.createSelect('db:/stsservoy/loads');
 	q.where.add(q.columns.load_number.eq(load*1));
-	q.where.add(q.columns.job_id.eq(mob.job.Id));
+	q.where.add(q.columns.job_id.eq(mob.job.Id.toString()));
 	var Q = databaseManager.getFoundSet(q);
 	//var changed = false;
 	if (Q.getSize() > 0){
@@ -12332,7 +12321,7 @@ function rfF7GetLoadTrailerInfo(){
 	/** @type {QBSelect<db:/stsservoy/loads>} */
 	var q = databaseManager.createSelect('db:/stsservoy/loads');
 	q.where.add(q.columns.load_number.eq(load*1));
-	q.where.add(q.columns.job_id.eq(mob.job.Id));
+	q.where.add(q.columns.job_id.eq(mob.job.Id.toString()));
 	var Q = databaseManager.getFoundSet(q);
 	//var changed = false;
 	if (Q.getSize() > 0){
@@ -12403,9 +12392,9 @@ function setSampleBarsContext(){
 	var q = databaseManager.createSelect('db:/stsservoy/jobs');
 	q.result.add(q.columns.job_number);
 	q.result.add(q.columns.job_id);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.association_id.eq(globals.session.associationId));
+	q.where.add(q.columns.association_id.eq(session.associationId.toString()));
 	var Q = databaseManager.getDataSetByQuery(q,-1);
 	var jobs = Q.getColumnAsArray(1);
 	var jobIds = Q.getColumnAsArray(2);
@@ -12419,7 +12408,7 @@ function setSampleBarsContext(){
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var r = databaseManager.createSelect('db:/stsservoy/status_description');
 	r.result.add(r.columns.status_code);
-	r.where.add(r.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	r.where.add(r.columns.tenant_uuid.eq(session.tenant_uuid));
 	r.where.add(r.columns.delete_flag.isNull);
 	r.sort.add(r.columns.status_sequence.asc);
 	var R = databaseManager.getDataSetByQuery(r,-1);
@@ -12428,7 +12417,7 @@ function setSampleBarsContext(){
 	
 	context.ctJobs = [];
 	seen = [];
-	var workers = globals.session.workerList.sort();
+	var workers = session.workerList.sort();
 	for (var idx = 0;idx < jobs.length;idx++){
 		if (seen.indexOf(jobs[idx]) != -1){continue}
 		seen.push(jobs[idx]);
@@ -12480,7 +12469,7 @@ function setSampleBarsContext(){
 	var ss = s.joins.add('db:/stsservoy/sheets');
 	ss.on.add(s.columns.job_id.eq(s.columns.job_id));
 	ss.root.where.add(ss.columns.delete_flag.isNull);
-	ss.root.where.add(ss.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	ss.root.where.add(ss.columns.tenant_uuid.eq(session.tenant_uuid));
 	ss.root.where.add(ss.columns.job_id.isin(jobIds));
 	ss.root.result.add(ss.columns.job_id);
 	ss.root.groupBy.add(ss.columns.job_id);
@@ -12814,7 +12803,7 @@ function silentPrintToServer(event){
 	var date = scopes.jobs.formatDate(date).split(' ');
 	context.day = date[0];
 	context.time = date[1];
-	var jobId = application.getUUID(globals.session.jobId);
+	var jobId = session.jobId.toString();
 	var bndNum = form.currentBundle;
 	
 	barcodeDef.data = bndNum;
@@ -12881,7 +12870,7 @@ function silentPrintToServer(event){
 	context.poRelease = firstRec.po_release || 'na';
 	context.jobNumber = firstRec.job_number || 'na';
 	context.shopOrder = 'sample'; // from idfiles
-	context.printedEmp = globals.session.employeeNum;
+	context.printedEmp = session.employeeNum;
 	context.address = firstRec.addsh_line1;
 	context.city = firstRec.addsh_city;
 	context.state = firstRec.addsh_state;
@@ -12938,7 +12927,7 @@ function silentPrintToServer(event){
 		t.where.add(t.columns.bundle_bc.eq(bndNum));
 	}
 	if (isLoadReport){
-		t.where.add(t.columns.ship_load_id.eq(session.loadId));
+		t.where.add(t.columns.ship_load_id.eq(session.loadId.toString()));
 	}
 	t.result.distinct = true;
 	t.result.add(t.columns.piecemark_id);
@@ -12983,8 +12972,8 @@ function silentPrintToServer(event){
 	}
 	t.result.add(v.columns.grade,'item_grade');
 	t.groupBy.add(v.columns.grade);
-	/** @type {QBJoin<db:/stsservoy/sequences>} */
-	var x = t.joins.add('db:/stsservoy/sequences');
+	/** @type {QBJoin<db:/stsservoy/sequences2>} */
+	var x = t.joins.add('db:/stsservoy/sequences2');
 	x.on.add(x.columns.sequence_id.eq(t.columns.sequence_id));
 	t.result.add(x.columns.sequence_number,'sequence_number');
 	t.groupBy.add(x.columns.sequence_number);
@@ -13422,9 +13411,9 @@ function rfSaveLoadTransaction(){
 		/** @type {QBSelect<db:/stsservoy/transactions>} */
 		var q = databaseManager.createSelect('db:/stsservoy/transactions');
 		q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-		q.where.add(q.columns.idfile_id.eq(rec.idfile_id));
+		q.where.add(q.columns.idfile_id.eq(rec.idfile_id.toString()));
 		q.result.add(q.columns.trans_id);
-		q.where.add(q.columns.status_description_id.eq(application.getUUID(session.stationId)));
+		q.where.add(q.columns.status_description_id.eq(session.stationId.toString()));
 		/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 		var Q = databaseManager.getFoundSet(q);
 		if (Q.getSize() == 0){
@@ -13462,17 +13451,17 @@ function rfF8FinalShip(){
 function getCustomerAddressNames(){
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
-	j.where.add(j.columns.job_id.eq(mob.job.Id));
+	j.where.add(j.columns.job_id.eq(mob.job.Id.toString()));
 	j.where.add(j.columns.tenant_uuid.eq(session.tenant_uuid));
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var J = databaseManager.getFoundSet(j);
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var rec = J.getRecord(1);
-	mob.customer.Id = J.customer_id;
+	mob.customer.Id = J.customer_id.toString();
 	mob.job.rf = J.rf_interface;
 	/** @type {QBSelect<db:/stsservoy/addresses>} */
 	var q = databaseManager.createSelect('db:/stsservoy/addresses');
-	q.where.add(q.columns.customer_id.eq(application.getUUID(mob.customer.Id)));
+	q.where.add(q.columns.customer_id.eq(mob.customer.Id.toString()));
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.where.add(q.columns.delete_flag.isNull);
 	q.result.add(q.columns.address_type);
@@ -13848,9 +13837,9 @@ function fraction16(decimal){
  * @properties={typeid:24,uuid:"1CE3635C-EFBE-4C90-9CA4-8659A7600A12"}
  */
 function clearCutListData(event){
-	globals.session.cutlistused = [];
-	globals.session.cutlistavail = [];
-	globals.session.cutlistdata = {};
+	session.cutlistused = [];
+	session.cutlistavail = [];
+	session.cutlistdata = {};
 	var form = forms['rf_mobile_view'];
 	form.associatedCutIdCount = 0;
 	form.associatedCutIdTotal = 0;
@@ -13933,7 +13922,7 @@ function inToMM(inches){
 function getInvUUID(event,invBarcode){
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.where.add(q.columns.serial_number.eq(invBarcode));
 	q.result.add(q.columns.inventory_uuid);
 	var Q = databaseManager.getFoundSet(q);
@@ -13955,7 +13944,7 @@ function rfCheckBarcodeInRoute(oldValue, bcId,event){
 	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
 	q.where.add(q.columns.id_serial_number.eq(bcId));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	/** @type {QBJoin<db:/stsservoy/pcmk_instances>} */
 	var r = q.joins.add('db:/stsservoy/pcmk_instances');
 	r.on.add(r.columns.id_serial_uuid.eq(q.columns.id_serial_number_id));
@@ -13977,6 +13966,7 @@ function rfCheckBarcodeInRoute(oldValue, bcId,event){
  */
 function rfCheckStatusInRoute(statusCode, routeCodeOrId){
 	if (routeCodeOrId.toString().length != 36){}//later 
+	var allowAdditionalCodes = (l.routesAddLegs.indexOf(routeCodeOrId) != -1);
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var q = databaseManager.createSelect('db:/stsservoy/status_description');
 	q.where.add(q.columns.status_code.eq(statusCode));
@@ -13986,7 +13976,9 @@ function rfCheckStatusInRoute(statusCode, routeCodeOrId){
 	if (Q.getSize() > 0){
 		/** @type {JSFoundSet<db:/stsservoy/status_description>} */
 		var rec = Q.getRecord(1);
-		if (globals.l.routeLegs[routeCodeOrId] && globals.l.routeLegs[routeCodeOrId].indexOf(rec.status_description_id.toString()) != -1){return true}
+		if (allowAdditionalCodes && !globals.laborScreenActive){return true}//20190715 acceptable status if route allows additional codes, but NOT in labor screens
+		if (globals.l.routeLegs[routeCodeOrId] && 
+				globals.l.routeLegs[routeCodeOrId].indexOf(rec.status_description_id.toString()) != -1){return true}
 	}
 	return false;
 	
@@ -14002,7 +13994,7 @@ function rfCollectStationCompletes(){
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-	q.where.add(q.columns.idfile_id.eq(idfileId));
+	q.where.add(q.columns.idfile_id.eq(idfileId.toString()));
 	q.where.add(q.columns.delete_flag.isNull);
 	q.sort.add(q.columns.edit_date.asc);
 	q.result.add(q.columns.trans_id);
@@ -14068,4 +14060,28 @@ function getPriorRoutedStation(currentStationId){
 	if (rtIndex == 0){return null}
 	return routeList[rtIndex-1];
 }
-
+/**
+ * @param lb
+ *
+ * @properties={typeid:24,uuid:"9B815A6F-7936-4BAF-96CA-0F03FB0BFBB5"}
+ */
+function lbToKg(lb){
+	 return lb / 2.2046226;
+}
+/**
+ * @param date
+ * @param time
+ *
+ * @properties={typeid:24,uuid:"885EE247-1C80-4663-B1F0-22F62CAE9459"}
+ */
+function dateAndTimeToDate(date, time){
+	if (!date){return null}
+	//date = date.toString();
+	
+	var datum = date;
+	if (!time){time = "00:00:00"}
+	time = time.toString();
+	var timum = time.split(':');
+	var date = new Date(date.getFullYear(),date.getMonth()*1,date.getDate(),timum[0]*1,timum[1]*1,timum[2]*1);
+	return date;
+}

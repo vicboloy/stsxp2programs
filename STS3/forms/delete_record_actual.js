@@ -65,7 +65,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"0257FA0B-56ED-464D-BF0F-D9A274E25857"}
  */
 function collectAndBrowse(){
-	var brDS = scopes.jobs.queryAssembly(criteria,null,'browse');
+	var brDS = scopes.jobs.queryAssemblyFaster(criteria,null,'browse');
 	openBrowseTable(collectCriteria());
 }
 /**

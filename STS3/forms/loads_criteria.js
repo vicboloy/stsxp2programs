@@ -287,12 +287,17 @@ function collectAndTab(event,formName){
 	scopes.jobs.removeFormHist(formName+'_table');
 	criteria = collectCriteria();
 	//scopes.jobs.viewBTableSQL2(criteria,formName);
+	var beginDate = new Date().getTime(); var timeDur = 0; var endDate = new Date().getTime();
+	if (application.isInDeveloper()){application.output(timeDur+' Summary -------------- ')}
+
 	var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
 	var summaryForm = 'loads_summary_info'+versionForm;
 	var removeFormName = summaryForm+'_table';
 	forms[summaryForm].elements.tabless.removeAllTabs();
 	scopes.jobs.removeFormHist(removeFormName);
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
+	endDate = new Date().getTime(); timeDur = endDate - beginDate; beginDate = endDate; 
+	if (application.isInDeveloper()){application.output(timeDur+' Route Summary -------------- ')}
 	scopes.jobs.createRouteSummaryForm(summaryQuery,formName.replace('piecemark','summary'));
 
 	forms['loads_piecemark_info'+versionForm].elements.tabless.removeAllTabs();
@@ -300,11 +305,19 @@ function collectAndTab(event,formName){
 	scopes.jobs.removeFormHist(formName+"_table");
 	scopes.jobs.browseJobID = vJobID;
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
-	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	endDate = new Date().getTime(); timeDur = endDate - beginDate; beginDate = endDate; 
+	if (application.isInDeveloper()){application.output(timeDur+' Summary -------------- ')}
+	scopes.jobs.viewBTableToFormQB(criteria,formName);//JOE stop here
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
+	endDate = new Date().getTime(); timeDur = endDate - beginDate; beginDate = endDate; 
+	if (application.isInDeveloper()){application.output(timeDur+' Summary -------------- ')}
 	scopes.jobs.viewBTableToFormQB(criteria,'loads_pcmk_combo'+versionForm);//20180802 move query build for browsing table
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
-	scopes.jobs.viewBTableSQLSummary(criteria,formName);
+	endDate = new Date().getTime(); timeDur = endDate - beginDate; beginDate = endDate; 
+	if (application.isInDeveloper()){application.output(timeDur+' View Specs -------------- ')}
+	scopes.jobs.viewBTableSQLSummary(criteria,formName);//JOE
+	endDate = new Date().getTime(); timeDur = endDate - beginDate; beginDate = endDate; 
+	if (application.isInDeveloper()){application.output(timeDur+' Summary -------------- ')}
 	null;
 }
 /**

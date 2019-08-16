@@ -239,7 +239,7 @@ function onRecordSelection(event) {
 	}
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
-	u.where.add(u.columns.employee_id.eq(employee_id));
+	u.where.add(u.columns.employee_id.eq(employee_id.toString()));
 	var uFs = databaseManager.getFoundSet(u);
 	uFs.loadRecords();
 	if (uFs.getSize() != 0){

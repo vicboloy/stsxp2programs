@@ -127,6 +127,14 @@ titleText:"i18n:table.inventory.heat"
 },
 {
 allowNull:true,
+creationOrderIndex:39,
+dataType:12,
+flags:4,
+length:36,
+name:"heat_uuid"
+},
+{
+allowNull:true,
 creationOrderIndex:22,
 dataType:12,
 length:20,

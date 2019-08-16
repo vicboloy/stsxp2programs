@@ -39,7 +39,7 @@ function onActionUpdatePrefs(event, prefType) {
 	if (prefType == 'Printer'){
 		prefs = scopes.printer;
 	}
-	user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+	user_uuid = null;//application.getUUID('FFFFFFFF-0000-0000-DDDDDDDDDDDD');
 	var tenant = globals.session.tenant_uuid;
 	var variable = "";
 	var variableSetting = "";
@@ -59,7 +59,7 @@ function onActionUpdatePrefs(event, prefType) {
 		variableSetting +="";
 		//saveRec = false;
 		fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-		fs.where.add(fs.columns.user_uuid.eq(application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF')));
+		fs.where.add(fs.columns.user_uuid.isNull);
 		fs.where.add(fs.columns.field_name.eq(variable));
 		/** @type {JSRecord<db:/stsservoy/preferences2>} */
 		var F = databaseManager.getFoundSet(fs);
@@ -78,11 +78,11 @@ function onActionUpdatePrefs(event, prefType) {
 			var recNum = F.newRecord();
 			rec = F.getRecord(recNum);
 			if (!user_uuid) {
-				rec.user_uuid = application.getUUID('FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFF');
+				rec.user_uuid = null;//application.getUUID('FFFFFFFF-0000-0000-DDDDDDDDDDDD');
 			} else {
-				rec.user_uuid = user_uuid;
+				rec.user_uuid = user_uuid.toString();
 			}
-			rec.tenant_uuid = tenant;
+			rec.tenant_uuid = tenant.toString();
 			rec.field_name = variable;
 			rec.field_value = variableSetting;
 			rec.field_type = variableType;

@@ -1,5 +1,5 @@
 allowCreationRelatedRecords:true,
-foreignDataSource:"db:/stsservoy/sequences",
+foreignDataSource:"db:/stsservoy/sequences2",
 items:[
 {foreignColumnName:"sequence_id",primaryDataProviderID:"sequence_id",typeid:23,uuid:"3CF2B408-B23E-4555-8955-FE286E800C6F"}
 ],

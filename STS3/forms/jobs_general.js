@@ -170,7 +170,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	c.result.add(c.columns.customer_id);
 	c.where.add(c.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	c.where.add(c.columns.delete_flag.isNull);
-	c.where.add(c.columns.customer_id.eq(newValue));
+	c.where.add(c.columns.customer_id.eq(newValue.toString()));
 	/** @type {JSFoundSet<db:/stsservoy/customers>} */
 	var C = databaseManager.getFoundSet(c);
 	if (C.getSize() == 0){
@@ -186,8 +186,8 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	j.result.add(j.columns.job_id);
 	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	j.where.add(j.columns.delete_flag.isNull);
-	j.where.add(j.columns.customer_id.eq(newValue));
-	j.where.add(j.columns.job_id.eq(job_id));
+	j.where.add(j.columns.customer_id.eq(newValue.toString()));
+	j.where.add(j.columns.job_id.eq(job_id.toString()));
 	var J = databaseManager.getFoundSet(j);
 	if (J.getSize() > 0 && job_number != null){
 		/**
@@ -372,11 +372,11 @@ function onRecordSelection(event, buttonTextSrc) {
 	//elements.btn_Delete.enabled = (globals.checkJobEmpty(job_id));
 	//vCustomerNumber = (st2_jobs_to_customers) ? sts_job_to_customer.customer_number : "";
 	//application.setValueListItems('stsvlt_customers',[]);
-	vCustomerId = customer_id;
+	vCustomerId = (!(!customer_id)) ? customer_id.toString() : customer_id;
 	vBarCodeForm = barcode_form;
-	vJobPlant = association_id;
-	vShipTo = ship_to;
-	vBillTo = bill_to;
+	vJobPlant = (!(!association_id)) ? association_id.toString() : association_id;
+	vShipTo = (!(!ship_to)) ? ship_to.toString() : ship_to;
+	vBillTo = (!(!bill_to)) ? bill_to.toString() : bill_to;
 	vRFInterface = rf_interface;
 	vJobWeightUnits = (metric_job) ? i18n.getI18NMessage('sts.txt.weight.metric') : i18n.getI18NMessage('sts.txt.weight.imperial');
 	onActionHeats(event);

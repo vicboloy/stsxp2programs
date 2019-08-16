@@ -25,7 +25,7 @@ var errorMessage = "";
 /**
  * @properties={typeid:35,uuid:"887FBC04-030A-4B9B-BD90-289ECCC73996",variableType:-4}
  */
-var mappingTables = ['idfiles','piecemarks','jobs','sheets','lots','sequences','loads'];
+var mappingTables = ['idfiles','piecemarks','jobs','sheets','lots','sequences2','loads'];
 /**
  * @properties={typeid:35,uuid:"339CF4C5-2752-4FBF-98BE-7A1A76FB3F5A",variableType:-4}
  */

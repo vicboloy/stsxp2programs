@@ -190,8 +190,11 @@ function setRouteCodesLists(){
 	fs.result.add(fs.columns.route_detail_id);
 	fs.sort.add(fs.columns.route_order.asc);
 	fs.where.add(fs.columns.delete_flag.isNull);
-	fs.where.add(fs.columns.e_route_code_id.eq(foundset.routing_id.toString()));
+	var routeId = routing_id;
+	if (routeId){routeId = routeId.toString()}
+	fs.where.add(fs.columns.e_route_code_id.eq(routeId));
 	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+
 	var FS = databaseManager.getFoundSet(fs);
 	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
 	var rec = null; var index = 1;

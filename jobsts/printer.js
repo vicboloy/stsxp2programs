@@ -750,6 +750,7 @@ function getBTFieldTabs(){
  */
 function onActionPrintRMLabels(event,invUUIDs) {
 	
+	for (var idx = 0;idx < invUUIDs.length;idx++){invUUIDs[idx] = invUUIDs[idx].toString()}
 	//determine is this metric or imperial labeling?  
 	var metric = false;
 	var form = forms[event.getFormName()];
@@ -763,7 +764,7 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.inventory_uuid.isin(invUUIDs));
+	q.where.add(q.columns.inventory_uuid.isin(invUUIDs));//verified with sql server
 	q.result.add(q.columns.serial_number)
 	q.result.add(q.columns.inventory_uuid);
 	/** @type {QBJoin<db:/stsservoy/jobs>} */

@@ -73,8 +73,8 @@ function onActionRecallSelected(event) {
 		var rec = fs.getRecord(i);
 		if (rec.selection == 1){
 			nothingSelected = false;
-			if (blowCodes.indexOf(rec.if_idfile_id) == -1){
-				blowCodes.push(rec.if_idfile_id);
+			if (blowCodes.indexOf(rec.if_idfile_id.toString()) == -1){
+				blowCodes.push(rec.if_idfile_id.toString());
 			}
 			recoverList.push(i);
 		}

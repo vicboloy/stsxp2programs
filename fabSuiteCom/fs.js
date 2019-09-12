@@ -563,7 +563,7 @@ function checkFSMainMark(mainMarks,event){
 	}
 	var check = '<FabSuiteXMLRequest>\n\
 		<GetAssemblies>\n\
-		<JobNumber>'+importData.jobNumber+'</JobNumber>\n\
+		<JobNumber>'+scopes.jobs.importJob.jobNumber+'</JobNumber>\n\
 		</GetAssemblies>\n\
 	</FabSuiteXMLRequest>';
 

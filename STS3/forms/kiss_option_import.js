@@ -423,7 +423,7 @@ function onShow(firstShow, event) {
 	while (rec2 = R.getRecord(idx++)){
 		//application.output('route '+rec2.route_code);
 		jobRoutes.push(rec2.route_code);
-		jobRouteIds.push(rec2.routing_id);
+		jobRouteIds.push(rec2.routing_id.toString());
 	}
 	//if (application.isInDeveloper()){
 	jobRoutes.unshift(null);
@@ -1866,7 +1866,7 @@ function onDataChange(oldValue, newValue, event) {
 	//scopes.jobs.appendQuantityToIdfile = [];
 	var quantities = scopes.jobs.appendQuantityToIdfile;
 	if (quantities == null){
-		scopes.jobs.readIdfiles();
+		scopes.jobs.readIdfiles(scopes.jobs.importJob.jobId);
 		if (scopes.jobs.dsIdfiles){
 			application.output('true');
 		} else {

@@ -1541,6 +1541,7 @@ function onActionPrintLabels(event) {
 	var itemsSelected = false; globals.barcodePrintedArray = [];var printedIndexes = [];
 	//var btSpec = {num: 0, name:'', size: 0,dbcol:'',dbtype:'',dbsize:0}
 	var printed = false;
+	var printDate = new Date();
 	while (i <= fs.getSize()){
 		/** @type {JSRecord<selection:Number>} */
 		var rec = fs.getRecord(i++);
@@ -1548,8 +1549,8 @@ function onActionPrintLabels(event) {
 		if (rec.selection != 1 && globals.session.program != i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){continue}
 		labCnt++;
 		printedIndexes.push(i);//index of  printed elements for later view marking as printed
-		if (rec.bc_id_serial_number_id){globals.barcodePrintedArray.push(rec.bc_id_serial_number_id)}
-		if (rec.inventory_uuid){globals.barcodePrintedArray.push(rec.inventory_uuid)}
+		if (rec.bc_id_serial_number_id){globals.barcodePrintedArray.push(rec.bc_id_serial_number_id.toString())}
+		if (rec.inventory_uuid){globals.barcodePrintedArray.push(rec.inventory_uuid.toString())}
 		itemsSelected = true;
 		for (var index = 0;index < tabCount;index++){
 			/** @type {JSRecord<num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number>} */
@@ -1600,12 +1601,15 @@ function onActionPrintLabels(event) {
 					/** @type {JSFoundSet<db:/stsservoy/inventory>} */
 					var rec2 = Q.getRecord(1);
 					rec2.lprint = 1;
-					rec2.edit_date = new Date();
+					rec2.edit_date = printDate;
 					databaseManager.saveData(rec2);
 				}
 				
+			} else {
+				markRecPrinted(rec.if_idfile_id,printDate);
 			}
-			rec.bc_printed = 1;
+			rec.bc_printed = 1;// these are for color highlighting only.  No change is made to the real data
+			rec.if_lprint = 1;
 		}
 	}
 	if (formName == 'rf_mobile_view'){
@@ -3231,5 +3235,27 @@ function cleanTempDir(event,tempDir){//20190530 globals.checkedForTempFiles
 		//	application.output('print date is '+rec.bt_print_date)
 		//}
 		
+	}
+}
+/**
+ * @param recUUID
+ * @param printDate
+ *
+ * @properties={typeid:24,uuid:"45D0EB17-27A6-4CA8-BB52-53592D4CB642"}
+ */
+function markRecPrinted(recUUID,printDate){
+	recUUID = recUUID.toString();
+	if (!printDate){printDate = new Date()};
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.where.add(q.columns.idfile_id.eq(recUUID));
+	q.result.add(q.columns.idfile_id);
+	var Q = databaseManager.getFoundSet(q);
+	if (Q.getSize() > 0){
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var rec = Q.getRecord(1);
+		rec.print_date = printDate;
+		rec.lprint = 1;
+		databaseManager.saveData(rec);
 	}
 }

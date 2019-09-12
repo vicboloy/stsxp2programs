@@ -69,12 +69,16 @@ function actionBtn(event){
 	var actionIs = elements[elName].text;
 	globals.rfQueryClose(event,actionIs);
 	if (actionIs == i18n.getI18NMessage('sts.btn.yes')){
-		if (approveValue.search('BND') == 0){globals.mob.bundle.Id = approveValue;}
-		var shortMessageHeat = i18n.getI18NMessage('sts.txt.heat.use.new.number');
-		var index = shortMessageHeat.search(':');
-		shortMessageHeat = shortMessageHeat.substring(0,index);
-		var dialogText2 = dialogText.replace(/(\<html\>)|(\<br\>)/g,'');
-		if (dialogText2.search(shortMessageHeat) == 0){globals.createHeat(event,approveValue)}
+		if (approveValue.search('BND') == 0){
+			globals.mob.bundle.Id = approveValue;
+			forms['rf_mobile_view'].currentBundle = approveValue;
+		} else {
+			var shortMessageHeat = i18n.getI18NMessage('sts.txt.heat.use.new.number');
+			var index = shortMessageHeat.search(':');
+			shortMessageHeat = shortMessageHeat.substring(0,index);
+			var dialogText2 = dialogText.replace(/(\<html\>)|(\<br\>)/g,'');
+			if (dialogText2.search(shortMessageHeat) == 0){globals.createHeat(event,approveValue)}
+		}
 	}
 	return actionIs;
 	

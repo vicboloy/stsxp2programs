@@ -393,12 +393,12 @@ function getStatusList(){
 		if (rec.association_id == association_id){
 			stationArrayId.push(rec.status_description_id);
 			statusArray.push(rec.status_code); // localize selections to current associationId
-			if (currProcessNumber >= rec.status_sequence && rec.status_description_id != currentStation){ // ticket #147
+			if (currProcessNumber >= rec.status_sequence && rec.status_description_id+'' != currentStation+''){ // ticket #147
 				endFors.push(rec.status_code);
-				endForStations.push(rec.status_description_id);
+				endForStations.push(rec.status_description_id.toString());
 			}
 		}
-		var assocId = rec.association_id;
+		var assocId = rec.association_id.toString();
 		var statStatus = rec.status_code;
 		var stationId = assocId+", "+statStatus;
 		localStations.push(stationId);

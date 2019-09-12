@@ -69,7 +69,7 @@ function onActionMarked(event) {
 		if (rec.freeCheck2 == 0){continue}
 		selectMaterial.push(rec.material);
 		selectCowCode.push(rec.freeField);
-		selectSheet.push(rec.sheet_id);
+		selectSheet.push(rec.sheet_id.toString());
 		selectPcmk.push(rec.piecemark);
 	}
 
@@ -167,7 +167,7 @@ function onActionCalcCost(event) {
 		if (localRec.freeCheck2 != 1){continue}
 		controller.setSelectedIndex(index);
 		if (skipCostsExisting && costEach != 0){continue}
-		piecemarkArray.push(localRec.piecemark_id);
+		piecemarkArray.push(localRec.piecemark_id.toString());
 	}
 	
 	var skipEmpty = ['',null];

@@ -158,7 +158,9 @@ function onActionDeleteSelected(event,formName) {
 		var rec = fs.getRecord(recCount);
 		if (rec.selection == 1){
 			nothingSelected = false;
-			scopes.jobs.idfilesToDelete.push(rec.if_idfile_id);
+			if (rec.if_idfile_id){
+				scopes.jobs.idfilesToDelete.push(rec.if_idfile_id.toString());
+			}
 			fs.omitRecord(recCount);
 		}
 		recCount--;

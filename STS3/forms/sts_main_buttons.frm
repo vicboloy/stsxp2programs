@@ -225,7 +225,7 @@ uuid:"E2D446D2-0176-4118-8636-F329471F6DEC"
 name:"sts_main_buttons",
 navigatorID:"-1",
 onLoadMethodID:"35F5B55F-AE50-40D1-BF9F-6EA16BFBDD7D",
-showInMenu:true,
+showInMenu:false,
 size:"927,538",
 styleName:"sts_one",
 titleText:"Main Buttons",

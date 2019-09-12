@@ -158,7 +158,7 @@ function onActionApply(event) {
 		if (!rec.freeField){continue}
 		selectMaterial.push(rec.material);
 		selectCowCode.push(rec.freeField);
-		selectSheet.push(rec.sheet_id);
+		selectSheet.push(rec.sheet_id.toString());
 		selectPcmk.push(rec.piecemark);
 	}
 	var vmaterial = '';

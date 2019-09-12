@@ -43,12 +43,9 @@ function onDataChange(oldValue, newValue, event) {
 			}
 		}
 	}
-	if (!globals.session.corpUser){
-		databaseManager.addTableFilterParam('stsservoy','users','association_uuid','=',globals.session.associationId,'filterAssocEMPLOYEE');//Re-enable user assoc table filters
-	}
 	record = E.getRecord(1);
 	var employeeExists = (E.getSize() != 0);
-	if (employeeExists && !globals.session.corpUser && record.association_uuid != globals.session.associationId){
+	if (employeeExists && !globals.session.corpUser && record.association_uuid.toString() != globals.session.associationId.toString()){
 		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1227'),i18n.getI18NMessage('1227'));//employee is in another division 1227
 		employee_number = oldValue;
 		return false;
@@ -70,6 +67,10 @@ function onDataChange(oldValue, newValue, event) {
 		}
 	}
 	verifyEmployeeInput(event);
+	if (!globals.session.corpUser){
+		if (application.isInDeveloper()){application.output('association for users listing '+globals.session.associationId)}
+		databaseManager.addTableFilterParam('stsservoy','users','association_uuid','=',globals.session.associationId.toString(),'filterAssocEMPLOYEE');//Re-enable user assoc table filters
+	}
 
 	return true;
 }
@@ -103,10 +104,11 @@ function onRecordSelection(event) {
 	userFS.result.add(userFS.columns.user_uuid);
 	userFS.where.add(userFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	userFS.where.add(userFS.columns.delete_flag.isNull);
-	userFS.where.add(userFS.columns.employee_id.eq(employee_id.toString()));
+	var empId = (employee_id) ? employee_id.toString() : employee_id;
+	userFS.where.add(userFS.columns.employee_id.eq(empId));
 	var U = databaseManager.getFoundSet(userFS);
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
-	var rec = null; index = 1;
+	var rec = null; var index = 1;
 	while (rec = U.getRecord(index++)){
 		if (!activeLogin){if (rec.is_account_active){activeLogin = true}}
 		loginArray.push(rec.user_name);

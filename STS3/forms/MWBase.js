@@ -1363,6 +1363,8 @@ function setActiveElement(elementName){
 function onActionClickDeveloper(event) {
 	//scopes.jobs.importInventoryDBF();
 	//if (1==1){return}
+	//scopes.jobs.setUpIndexing();
+	if (1==1){return}
 	globals.useFasterQuery = !globals.useFasterQuery;
 	if (globals.useFasterQuery){
 		scopes.globals.DIALOGS.showErrorDialog('Change view Loads Method','Using faster Query');
@@ -1802,4 +1804,19 @@ function onActionFoxFireReports(event){
  */
 function onActionBarcodeLabelsRaw(event) {
 	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.bar.code.labels.raw'),'barcode_print_raw',50,50,620,670,true);
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"58221DAA-0822-4481-A898-9DD574D92C64"}
+ */
+function onActionClickReindex(event) {
+	scopes.jobs.setUpIndexing();
+	plugins.rawSQL.flushAllClientsCache('stsservoy','idfiles');
+	plugins.rawSQL.flushAllClientsCache('stsservoy','piecemarks');
+	plugins.rawSQL.flushAllClientsCache('stsservoy','sheets');
+	plugins.rawSQL.flushAllClientsCache('stsservoy','jobs');
+	plugins.rawSQL.flushAllClientsCache('stsservoy','id_serial_numbers');
+	
 }

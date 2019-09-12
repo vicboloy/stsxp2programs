@@ -1433,6 +1433,13 @@ var laborScreenActive = false;
  */
 var secCurrentUser = null;
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"D5AF0BCE-5873-4BE7-BF12-AC1A2A0E9400",variableType:4}
+ * global setting for debug messages to console
+ */
+var debugDev = 0;
+/**
  * @AllowToRunInFind
  * 
  * @param assocID
@@ -3038,7 +3045,7 @@ function rfGetBarcodeIdfiles(){
 	var index = 1;
 	while (index <= resultQ.getSize()){
 		var rec = resultQ.getRecord(index);
-		mob.idfiles.push(rec.idfile_id);
+		mob.idfiles.push(rec.idfile_id.toString());//changed for sql server
 		index++;
 	}
 	null;
@@ -3137,7 +3144,7 @@ function rfGetLocationStats(sLocation){
 	index = 1;
 	while(index <= resultW.getSize()){
 		rec = resultW.getRecord(index);
-		if (piecemarkList.indexOf(rec.piecemark_id) == -1){piecemarkList.push(rec.piecemark_id)}
+		if (piecemarkList.indexOf(rec.piecemark_id.toString()) == -1){piecemarkList.push(rec.piecemark_id.toString())}
 		index++;
 	}
 
@@ -3541,7 +3548,7 @@ function rfGetPiecesScanned(piecemarkId, sLocation){
 	while (maxIndex <= resultQ.getSize()){
 		/** @type {JSRecord} */
 		var rec = resultQ.getRecord(maxIndex);
-		if (idfileList.indexOf(rec.idfile_id) == -1){idfileList.push(rec.idfile_id)}
+		if (idfileList.indexOf(rec.idfile_id.toString()) == -1){idfileList.push(rec.idfile_id.toString())}
 		maxIndex++;
 	}
 	mob.idValues.total = resultQ.getSize();
@@ -3880,7 +3887,7 @@ function rfGetTransactionList(idfileId){
 	//application.output('DEBUG idfile transaction count '+resultQ.getSize());
 	var rec = null;var index = 1;
 	while (rec = resultQ.getRecord(index++)){
-		mob.transactionList.push(rec.status_description_id+"");
+		mob.transactionList.push(rec.status_description_id.toString());
 	}
 }
 /**
@@ -5079,7 +5086,7 @@ function onDataChangeBarcode2(oldValue, scannedID, event) {
 	}
 	
 	var routeId = rfCheckBarcodeInRoute(oldValue, scannedID, event);
-	mob.routeId = routeId.toString();//20190705 save route id for piecemark
+	mob.routeId = (routeId) ? routeId.toString() : routeId;//20190705 save route id for piecemark
 	var statusCode = forms['rf_mobile_view'].statusCode;
 	if (!statusCode){
 		forms['rf_mobile_view'].currentID = '';
@@ -5511,7 +5518,7 @@ function rfStatusCheck(newStatus){
 	///var formName = application.getActiveWindow().controller.getName();
 	///var statusCode = forms[formName].statusCode;
 	/** @type {Array} */
-	var statusCodes = m.statusCodesDiv[session.associationId];
+	var statusCodes = m.statusCodesDiv[session.associationId.toString()];
 	if (statusCodes && statusCodes.indexOf(newStatus) == -1){
 		return null;
 	}
@@ -6162,7 +6169,7 @@ function bundleGetTransactions(){
 	var bundIdfiles = []; var rec = null;
 	for (var index = 1;index <= mob.bundleFS.getSize();index++){
 		rec = mob.bundleFS.getRecord(index);
-		bundIdfiles.push(rec.idfile_id);
+		bundIdfiles.push(rec.idfile_id.toString());
 	}
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
@@ -7061,6 +7068,9 @@ function ftDecToString(convertType, decimal, length, returnType){
 				feet = 0; //zero feet
 				inches = 0; // zero inches
 			}
+			feet = Math.floor(inches/12); //zero feet
+			inches = Math.floor(inches-feet*12); // zero inches
+
 			//var minVal = 999;
 			//var minInit = 0;
 			//var minBase = 0;
@@ -7222,6 +7232,7 @@ function ftDecToString(convertType, decimal, length, returnType){
 				//fractionOut = "\"";
 			}
 			break;
+		case 'ALL':
 		default:
 			space = "";
 			if (feet != 0 ){output = feet+"'-";} else {output = "0'-"}
@@ -7452,7 +7463,7 @@ function convertLoadToId(itemCSV,arrayToStr){
 	var rec = null;
 	var loadIds = [];
 	while (rec = L.getRecord(idx++)){
-		loadIds.push(rec.load_id);
+		loadIds.push(rec.load_id.toString());
 	}
 	if (arrayToStr){
 		return arrayToString(loadIds);
@@ -7483,7 +7494,7 @@ function convertLotToId(itemCSV,arraytoStr){
 	var rec = null;
 	var lotIds = [];
 	while (rec = L.getRecord(idx++)){
-		lotIds.push(rec.lot_id);
+		lotIds.push(rec.lot_id.toString());
 	}
 	if (arraytoStr){
 		return arrayToString(lotIds);
@@ -7734,7 +7745,7 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 
 	for (var index = 1;index <= fs.getSize();index++){
 		var rec = fs.getRecord(index);
-		sheetList.push(rec.sheet_id);
+		sheetList.push(rec.sheet_id.toString());
 	}
 	// get piecemark info, jobs = sheets - piecemarks
 	// get locations
@@ -7780,7 +7791,7 @@ function onDataChangePiecemark(oldValue, newValue, event) {
 	var pcmks = [];
 	for (index = 1;index <= fs2.getSize();index++){
 		rec = fs2.getRecord(index);
-		pcmks.push(rec.piecemark_id);
+		pcmks.push(rec.piecemark_id.toString());
 	}
 
 
@@ -8032,7 +8043,7 @@ function rfGetSpecsLoad(loadType){
 		mob.load.ctTotal++;
 		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 		var rec = loadFS.getRecord(index++);
-		if (piecemarkIds.indexOf(rec.piecemark_id) == -1) {piecemarkIds.push(rec.piecemark_id);}
+		if (piecemarkIds.indexOf(rec.piecemark_id.toString()) == -1) {piecemarkIds.push(rec.piecemark_id.toString());}
 		if (typeLoad == 'ship'){//status description id is shipped 20180830
 			if (rec && rec.status_description_id.toString() == session.stationId.toString()){//check here for already shipped items
 				mob.load.ctShipped++;
@@ -8126,7 +8137,7 @@ function rfGetJobIdfileIds(){
 	var fs = databaseManager.getFoundSet(q);
 	for (var index = 1;index <= fs.getSize();index++){
 		var rec = fs.getRecord(index);
-		sheetList.push(rec.sheet_id);
+		sheetList.push(rec.sheet_id.toString());
 	}
 	// get piecemark info, jobs = sheets - piecemarks
 	// get locations
@@ -8146,7 +8157,7 @@ function rfGetJobIdfileIds(){
 	var fs2 = databaseManager.getFoundSet(r);
 	for (index = 1;index <= fs2.getSize();index++){
 		rec = fs2.getRecord(index);
-		pmList.push(rec.piecemark_id);
+		pmList.push(rec.piecemark_id.toString());
 	}
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */	
 	var s = databaseManager.createSelect('db:/stsservoy/idfiles');
@@ -8164,7 +8175,7 @@ function rfGetJobIdfileIds(){
 	for (index = 1;index <= fs3.getSize();index++){
 		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 		rec = fs3.getRecord(index);
-		mob.idfileIds.push(rec.idfile_id);
+		mob.idfileIds.push(rec.idfile_id.toString());
 		null;
 	}
 	///var idfileDS = databaseManager.convertToDataSet(mob.idfileIds);
@@ -8280,7 +8291,7 @@ function getCustomersByJob(){
 		/** @type {JSRecord<db:/stsservoy/customers>} */
 		var rec2 = null;index = 1;
 		while (rec2 = C.getRecord(index++)){
-			custId.push(rec2.customer_id);
+			custId.push(rec2.customer_id.toString());
 			custNum.push(rec2.customer_number);
 			custNam.push(rec2.name);
 			index++;//task08 infinite loop on job number change
@@ -8312,7 +8323,7 @@ function getJobsByAssoc(){
 	while (count <= J.getSize()){
 		/** @type {JSRecord<db:/stsservoy/jobs>} */
 		var rec = J.getRecord(count);
-		jobId.push(rec.job_id);
+		jobId.push(rec.job_id.toString());
 		jobNum.push(rec.job_number);
 		count++;
 	}
@@ -8525,7 +8536,7 @@ function getSheetIdPcmks(){
 	/** @type {JSRecord<db:/stsservoy/piecemarks>} */
 	var rec = null;
 	while (rec = P.getRecord(idx++)){
-		piecemarkIds.push(rec.piecemark_id);
+		piecemarkIds.push(rec.piecemark_id.toString());
 	}
 	if (application.isInDeveloper()){application.output('pcmks '+piecemarkIds)}
 	return piecemarkIds;
@@ -8551,7 +8562,7 @@ function getPcmkIdIdfiles(){
 	/** @type {JSRecord<db:/stsservoy/idfiles>} */
 	var rec = null;
 	while (rec = I.getRecord(idx++)){
-		idfileIds.push(rec.idfile_id);
+		idfileIds.push(rec.idfile_id.toString());
 	}
 	return idfileIds;
 }
@@ -9219,7 +9230,7 @@ function getCustomerList(){
 	while (index <= resultQ.getSize()){
 		/** @type {JSRecord<db:/stsservoy/customers>} */
 		var rec = resultQ.getRecord(index);
-		idArray.push(rec.customer_id);
+		idArray.push(rec.customer_id.toString());
 		nameArray.push(rec.name+' #'+rec.customer_number);
 		index++;
 	}
@@ -9525,10 +9536,10 @@ function convertFabShopToStatusDescripId(itemCSV,arrayToStr){
 	var rec = null;
 	var shopToId = [];
 	while (rec = SD.getRecord(idx++)){
-		shopToId.push(rec.status_description_id);
+		shopToId.push(rec.status_description_id.toString());
 	}
 	if (arrayToStr){
-		return arrayToList(shopToId);
+		return arrayToList(shopToId.toString());
 	}
 	return shopToId;
 }
@@ -9625,7 +9636,7 @@ function csvToFabshopID(fabShopCSV){
 	var rec = null;
 	var idx = 1;
 	while (rec = SD.getRecord(idx++)){
-		statDescArray.push(rec.status_description_id);
+		statDescArray.push(rec.status_description_id.toString());
 	}
 	return statDescArray;
 }
@@ -10782,7 +10793,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 								var tempPrtUUID = getInvUUID(event,form.asnNumber);
 								if (tempPrtUUID){
 									if (!invUUIDs){invUUIDs = new Array()}
-									invUUIDs.push(tempPrtUUID);
+									invUUIDs.push(tempPrtUUID.toString());
 									form['labelPrintType'] = 'material';
 									scopes.printer.onActionPrintRMLabels(event,invUUIDs)
 								}
@@ -12501,6 +12512,7 @@ function setSampleBarsContext(){
 	sd.root.result.distinct = true;
 	s.groupBy.add(jj.columns.job_number);
 	s.groupBy.add(sd.columns.id_serial_number);
+	s.groupBy.add(si.columns.id_serial_number_id);//added for ms
 	s.result.add(jj.columns.job_number);
 	s.result.add(sd.columns.id_serial_number);
 	s.sort.add(jj.columns.job_number.asc);
@@ -13965,7 +13977,8 @@ function rfCheckBarcodeInRoute(oldValue, bcId,event){
  * @properties={typeid:24,uuid:"10B1039B-0E36-4F47-9D2A-DC6E01C2042E"}
  */
 function rfCheckStatusInRoute(statusCode, routeCodeOrId){
-	if (routeCodeOrId.toString().length != 36){}//later 
+	if (routeCodeOrId && routeCodeOrId.toString().length != 36){}//later 
+	if (!routeCodeOrId){return true}
 	var allowAdditionalCodes = (l.routesAddLegs.indexOf(routeCodeOrId) != -1);
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var q = databaseManager.createSelect('db:/stsservoy/status_description');

@@ -65,7 +65,7 @@ function getEmployees(){
 	var resultQ = databaseManager.getFoundSet(q);
 	for (var index = 1;index <= resultQ.getSize();index++){
 		var rec = resultQ.getRecord(index);
-		loginIds.push(rec.user_uuid);
+		loginIds.push(rec.user_uuid.toString());
 		logins.push(rec.user_name);
 	}
 	
@@ -90,7 +90,7 @@ function getEmployees(){
 		rec = resultR.getRecord(index);
 		populatedEmployees.push(rec.employee_number);
 		emps.push(rec.employee_number);
-		empIds.push(rec.employee_id);
+		empIds.push(rec.employee_id.toString());
 	}
 	if (application.isInDeveloper()){	
 		application.output(globals.session.tenant_uuid);
@@ -136,7 +136,7 @@ function onRecordSelection(event) {
 	var fs = st2_users_to_employee;
 	if (fs){
 		employeeNum = fs.employee_number;
-		employeeNumber = fs.employee_id;
+		employeeNumber = fs.employee_id.toString();
 		employeeName = fs.employee_firstname+' '+fs.employee_lastname;
 	} else {
 		employeeNumber = "";
@@ -290,7 +290,7 @@ function saveEdits(event, record, stopEdit) {
 	if (employeeNumber != ""){
 		var recuuid = employeeNumber.toString();
 		employee_id = recuuid.toString();
-		fs.loadRecords(recuuid);
+		fs.loadRecords(application.getUUID(recuuid));
 		/** @type {JSRecord<db:/stsservoy/employee>} */
 		var rec = fs.getRecord(1);
 	}

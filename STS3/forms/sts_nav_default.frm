@@ -4,7 +4,7 @@ extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {
 extendsID:"B8264F35-3B2C-445D-8057-07A22DF67C55",
-height:480,
+height:514,
 typeid:19,
 uuid:"0B627A33-952D-4107-80C4-A75FE9CFA861"
 },
@@ -136,6 +136,17 @@ size:"239,23",
 text:"i18n:sts.default.btn.view.log",
 typeid:7,
 uuid:"74E5BFA8-88B5-490A-8F92-E3515B709DBB"
+},
+{
+location:"10,479",
+name:"btn_Developercc",
+onActionMethodID:"58221DAA-0822-4481-A898-9DD574D92C64",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"239,23",
+text:"i18n:sts.btn.reindex.tables",
+typeid:7,
+uuid:"7798A455-05BF-4055-8D8D-921C76162642"
 },
 {
 location:"10,227",

@@ -2162,7 +2162,7 @@ function createEmptyRecs(){
 	/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
 	var recT = null;index = 1;
 	while (recT = TN.getRecord(index++)){
-		tenantArray.push(recT.tenant_uuid);
+		tenantArray.push(recT.tenant_uuid.toString());
 	}
 	databaseManager.getTableFilterParams('stsservoy');
 	databaseManager.removeTableFilterParam('stsservoy','secTenantFilter');
@@ -2193,7 +2193,7 @@ function createEmptyRecs(){
 	/** @type {JSFoundSet<db:/stsservoy/heats>} */
 	var recHT = null;index = 1;var htTenantFound = [];
 	while (recHT = HT.getRecord(index++)){
-		htTenantFound.push(recHT.tenant_uuid);
+		htTenantFound.push(recHT.tenant_uuid.toString());
 	}
 	for (index = 0;index < tenantArray.length;index++){
 		application.output(tenantArray[index]);

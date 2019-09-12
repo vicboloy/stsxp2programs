@@ -106,7 +106,7 @@ function onActionRemoveSelected(event) {
 		/** @type {JSRecord} */
 		var rec = fs.getRecord(i++);
 		if (rec.selection == 0){continue}
-		scopes.jobs.purgeBarcodeRecords.push(rec.if_id_serial_number_id);
+		scopes.jobs.purgeBarcodeRecords.push(rec.if_id_serial_number_id.toString());
 		//removeList.push(i-1); //selection is array, which is zero-based, records are one-based
 	}
 	scopes.jobs.purgeDeletedIdfiles();

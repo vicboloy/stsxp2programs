@@ -861,7 +861,7 @@ function importFSRequest(event,xmlRequest,filters){
 		scopes.jobs.warningsMessage('Set Import Filters',true);
 		importSetTableFilters(event,filters);//IMPORT 3.2 importSetTableFilters
 		scopes.jobs.warningsMessage('Prep Temp Import Table',true);
-		importPopKISSTable(event);//IMPORT 3.3 importPopKISSTable
+		importPopKISSTable(event,fileAndPath[1]);//IMPORT 3.3 importPopKISSTable
 		return true;
 	} else {
 		plugins.dialogs.showErrorDialog('1170',i18n.getI18NMessage('1170'));
@@ -899,18 +899,53 @@ function importFSFileInfo(file){
 	//var scope = scopes.jobs;
 	//var job = scopes.globals.importJobFS;
 	var job = scopes.jobs.importJob;
-	importFSReadKissTextFile(file);
+	//scopes.jobs.readFile(file);//java text read
+	//importFSReadKissTextFile(file);
+    var _oFR = new Packages.java.io.FileInputStream(file),
+    _oIR = new Packages.java.io.InputStreamReader(_oFR, "UTF8"),
+    _oBR = new Packages.java.io.BufferedReader(_oIR),
+    _sLine = "dummy",
+    _nReadLine = 0;
+
 	const hJobNum = 1, hJobName = 2, hGeneric = 3, hDate = 4, hTime = 5, hMetric = 6; //Header
 
 	//// CHECK scopes.jobs.appendQuantityToIdfile = null; // zero out append values array list
 	//establish error-free or dialog with errors, correct column count, mapping, 
 	var headerLine = [];
-	for (var index=0;index<40;index++){
-		if (importResultsArray[index][0] == "H"){
-			headerLine = importResultsArray[index].split(',');
-			break;
-		}
-	}
+    scopes.jobs.importJob.importLineCount = 0;
+    var headerSet = false;
+    var lineArray = [];
+    try {
+        while (_sLine) {
+            _sLine = _oBR.readLine();
+    
+            if (_sLine) {
+            	lineArray = _sLine.split(',');
+                if (!headerSet && lineArray[0] == "H"){
+            		headerLine = _sLine.split(',');
+                	headerSet = true;
+                }
+                _nReadLine++;// keep counting
+            }
+        }
+        scopes.jobs.importJob.importLineCount = _nReadLine;
+        //
+        //do NOT forget this close! to prevent memory leaks
+        //
+        _oBR.close();
+   
+    } catch (_oErr) {
+        _oBR.close();
+        application.output("ERROR: " + file + " at row " + _nReadLine, LOGGINGLEVEL.ERROR);
+        application.output("ERROR: " + _oErr, LOGGINGLEVEL.ERROR);
+        return; // stop process
+    }
+	//for (var index=0;index<40;index++){
+	//	if (importResultsArray[index][0] == "H"){
+	//		headerLine = importResultsArray[index].split(',');
+	//		break;
+	//	}
+	//}
 	var jobNumber = headerLine[hJobNum].toUpperCase();//global job number setting
 	//job.jobNumber = jobNumber;
 	job.metricFlag = (headerLine[hMetric] == "F") ? 0 : 1;
@@ -943,8 +978,8 @@ function importFSFileInfo(file){
 			//application.output('>>> jobs '+count);
 			for (var index2 = 1;index2 <= count;index2++){
 				rec = JFS.getRecord(index2);
-				custIdsFS.push(rec.customer_id);
-				jobIdsFS.push(rec.job_id);
+				custIdsFS.push(rec.customer_id.toString());
+				jobIdsFS.push(rec.job_id.toString());
 				custNumsFS.push(rec.st2_jobs_to_customers.customer_number);
 				jobNumsFS.push(rec.job_number);
 			}
@@ -954,8 +989,8 @@ function importFSFileInfo(file){
 		//scopes.globals.kissJobRf = jobsFS.getRecord(1).rf_interface;//save rf interface to show/noshow buttons
 		/** @type {JSRecord<db:/stsservoy/jobs>} */
 		rec = JFS.getRecord(1);
-		job.customerId = rec.customer_id;
-		globals.session.jobId = rec.job_id;
+		job.customerId = rec.customer_id.toString();
+		globals.session.jobId = rec.job_id.toString();
 		if (globals.session.appName != 'STS X Embedded'){
 			/** @type {JSRecord<db:/stsservoy/customers>} */
 			var custRec = rec.sts_job_to_customer2;
@@ -983,7 +1018,7 @@ function importFSFileInfo(file){
 			var idx = jobFS.newRecord(false);
 			/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 			var jobRec = jobFS.getRecord(idx);
-			jobRec.association_id = job.associationId;
+			jobRec.association_id = job.associationId.toString();
 			jobRec.tenant_uuid = globals.session.tenant_uuid;
 			jobRec.job_number = job.jobNumber;
 			jobRec.customer_id = globals.session.tenant_uuid;
@@ -995,7 +1030,7 @@ function importFSFileInfo(file){
 			jobRec.barcode_form = globals.session.tenant_uuid;
 			jobRec.metric_job = job.metricFlag;
 			databaseManager.saveData(jobRec);
-			jobPrefsRec.job_id = jobRec.job_id;
+			jobPrefsRec.job_id = jobRec.job_id.toString();
 			jobPrefsRec.job_number = job.jobNumber;
 			jobPrefsRec.job_title = job.title;
 			jobPrefsRec.project_year = jobRec.project_year;
@@ -1010,6 +1045,10 @@ function importFSFileInfo(file){
 		}
 		//show dialog for customers
 	}
+    _oFR = null;
+    _oIR = null;
+    _oBR = null;
+
 }
 
 /**
@@ -1063,17 +1102,7 @@ function parseIntoLinesFS(textString){
  *
  * @properties={typeid:24,uuid:"F8AEDE29-C4D9-48E9-A5C5-4AA7211A4808"}
  */
-function importPopKISSTable(event) {
-	try {
-		var sql = 'CREATE INDEX CONCURRENTLY idx_import_guids ON import_guids (import_guid_uuid)';
-		var sql = 'CREATE INDEX idx_import_guids ON import_guids (import_guid_uuid)';
-		plugins.rawSQL.executeSQL('stsservoy', 'import_guids',sql)
-	} catch (e) {}
-	try {
-		var sql2 = 'CREATE INDEX CONCURRENTLY idx_import_table ON import_table (tenant_uuid,import_table_id)';
-		var sql2 = 'CREATE INDEX idx_import_table ON import_table (tenant_uuid,import_table_id)';
-		plugins.rawSQL.executeSQL('stsservoy', 'import_table',sql2)
-	} catch (e) {}
+function importPopKISSTable(event,fileName) {
 	var recDate = new Date();
 	if (application.isInDeveloper()){
 		var maxRecCount = -1;
@@ -1081,9 +1110,10 @@ function importPopKISSTable(event) {
 
 	warningsYes();
 	scopes.jobs.warningsMessage('Start KISS Populate Table',true);
+	var recDate = new Date();
 	clearKissTables(event,recDate);
-	scopes.jobs.readSheets(scopes.jobs.importJob.jobId.toString());
-	scopes.jobs.readPiecemarks();
+	scopes.jobs.readSheets(scopes.jobs.importJob.jobId);
+	scopes.jobs.readPiecemarks(scopes.jobs.importJob.jobId);
 
 	countGuids = 0; countPcmks = 0;
 	
@@ -1156,7 +1186,7 @@ function importPopKISSTable(event) {
 	pMarkString = "";
 	pMarks = [];
 	var results = importResultsArray;
-	var lengthResults = results.length;
+	var lengthResults = scopes.jobs.importJob.importLineCount;
 	var lineType = "";
 	var lineArray = "";
 	var lineFieldValue = "";
@@ -1175,13 +1205,13 @@ function importPopKISSTable(event) {
 	importMainGuidList = [];
 	importSubGuidList = [];
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
-	var qb = databaseManager.createSelect('db:/stsservoy/import/table');
+	//var qb = databaseManager.createSelect('db:/stsservoy/import/table');
 	/** @type {JSFoundSet<db:/stsservoy/import_guids>} */
 	guidsFS = databaseManager.getFoundSet('stsservoy','import_guids');
-	guidsFS.loadRecords('select import_guid_uuid order by assem_guid');
+	//guidsFS.loadRecords('select import_guid_uuid order by assem_guid');
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
 	tableFS = databaseManager.getFoundSet('stsservoy','import_table');
-	tableFS.loadRecords('select import_table_id order by parent_piecemark, piecemark');
+	//tableFS.loadRecords('select import_table_id order by parent_piecemark, piecemark');
 	var newRecIdx = 0;
 	skippedFirst = false;//DEBUG here to verify KISS import_table setup
 	//var skipMinors = ((newRec.piecemark != newRec.parent_piecemark) && (forms.kiss_import_option.keep_minors == 0));
@@ -1189,172 +1219,196 @@ function importPopKISSTable(event) {
 	var filterInData = true; // This determines whether a record is saved to speed up import
 	var startT = new Date().getTime(); var lastLineType = '';//this serves to ensure that unsequenced items are captured as well
 	databaseManager.startTransaction();
-	for (var index = 0;index < lengthResults;index++){
-		if (index/300 == Math.floor(index/300)){application.output('Import Line: '+index)}
-		var diffT = new Date().getTime() - startT;
-		//if (application.isInDeveloper() && diffT > 2000){application.output('index '+index+' of '+lengthResults)}
-		warningsMessage('Process '+index+'/'+lengthResults,false);
-		//if (lineType[0] == '*'){importSubGUID = []}//322 secs at 300, 307 secs at 200, 361 secs at 400, 285 secs at 100
-		// 405 secs at 700, 274 secs at 50 
-		var recCommitNumber = 200;var starttime = new Date().getTime();
-		if (lineType[0] == '*' && tableFS.getSize()  > recCommitNumber){//prematurely saving datasets.  wait until saving at detail record to reset count XXX
-			//if (lineType[0] == '*' && (tableFS.getSize() + guidsFS.getSize()) > recCommitNumber){//prematurely saving datasets.  wait until saving at detail record to reset count XXX
-			//if (application.isInDeveloper()){application.output('Saving import table records')}
-			var stoptime = new Date().getTime();
-			databaseManager.commitTransaction();
-			var committime = Math.floor(stoptime - starttime);starttime = stoptime;var commitRecCount = tableFS.getSize();// + guidsFS.getSize();
-			application.output('Record Commit ('+recCommitNumber+') at '+commitRecCount+' records ');
-			databaseManager.startTransaction();
-			//var ok = databaseManager.saveData(tableFS);
-			tableFS.clear();	
-			//tableFS.loadRecords('select import_table_id order by parent_piecemark, piecemark');
-			databaseManager.saveData(guidsFS);
-			guidsFS.clear();
-		}
-		lineArray = results[index].split(',');
-		//if (application.isInDeveloper()){application.output(lineArray)}
-		lastLineType = lineType;
-		lineType = lineArray[0];
-		if (!skippedHeader){
-			if (!newKRecord(lineArray)){
-				continue;
-			} else {
-				skippedHeader = true;
-			}  //skip header information
-		}
-		/**
-		 * create record if "S" record is identified, collect series record information for all "D" records, yes
-		 * create record if "D" record executed to next "D" record
-		 * if newKRecord, close out old record and clear settings
-		 */
-		if  (lineType == "*" && skippedFirst){
-			exitSequences = true ;
-			subAssemWtAdded = [];//20180328 clear check array for sub assembly weight adds
-			totAssemWt = 0;
-			continue;
-		}
-		if (lineType == "D"){
-			lineArray[dMainMark];
-			/**if (application.getSolutionName() == "STS X Embedded"){
-				/** @type {Array} * /
-				var draws = forms.import_x.draws;
-				filterInData = (draws.length == 0) && (draws.indexOf(lineArray[dDrawingNum]) != -1);
-				/** @type {Array} * /
-				var marks = forms.import_x.marks;
-				filterInData = filterInData || (marks.length == 0) ||
-					((marks.length > 0) &&
-						(marks.indexOf(lineArray[dMainMark]) != -1) || (marks.indexOf(lineArray[dPieceMark]) != -1));
-			} else {*/
-				//filterInData = true;
-			filterInData = (filterDraws.indexOf(lineArray[dDrawingNum]) != -1);
-			filterInData = filterInData || ((filterMarks.length > 0) &&
-				(filterMarks.indexOf(lineArray[dMainMark]) != -1) || (filterMarks.indexOf(lineArray[dPieceMark]) != -1));
-			filterInData = filterInData || (filterMarks.length == 0 && filterDraws.length == 0);
-			//application.output(filterDraws+' _seeking '+filterInData+' '+lineArray[dDrawingNum])//REMOVE
-			//}
-			if (filterInData) { // save detail indicating new line before processing detail
-				if (skippedFirst){
-					importPopSaveDetailRow(event,recDate);
-				} else {
-				skippedFirst = true;
-				}
-			}
-		}
-		if (!filterInData){continue}//Filter out input if there are filters
-		//if (application.isInDeveloper()){application.output(lineArray)}
-		var skip = (lineType == "S"); //Sequence line handled out-of-order
-			/** unique piecemarks use piecemark, material, sequence_number, grade.  aggregate these
-			* changed 6/14/2014 
-			* unique piecemarks use parent, piecemark,grade, finish, sheet
-			*/
-		switch (lineType){
-			case 'H':
-				newRec.job_number = lineArray[hJobNum];
-				break;
-			case 'D':
-			//scopes.globals.showProgressUpdate(null,lineArray[dPieceMark]=' Parsing Import File');
+    var _oFR = new Packages.java.io.FileInputStream(fileName),
+    _oIR = new Packages.java.io.InputStreamReader(_oFR, "UTF8"),
+    _oBR = new Packages.java.io.BufferedReader(_oIR),
+    _sLine = "dummy",
+    index = 0;
+    
+	try {
+	    while (_sLine) {
+	        _sLine = _oBR.readLine();
+	        index++;
+	
+	        if (_sLine) {
 
-				//if (lineType == "D"){
-				if (application.isInDeveloper()){
-					maxRecCount--;
+	//for (var index = 0;index < lengthResults;index++){
+				//if (index/300 == Math.floor(index/300)){application.output('Import Line: '+index)}
+				var diffT = new Date().getTime() - startT;
+				//if (application.isInDeveloper() && diffT > 2000){application.output('index '+index+' of '+lengthResults)}
+				warningsMessage('Process '+index+'/'+lengthResults,false);
+				//if (lineType[0] == '*'){importSubGUID = []}//322 secs at 300, 307 secs at 200, 361 secs at 400, 285 secs at 100
+				// 405 secs at 700, 274 secs at 50 
+				var recCommitNumber = 200;var starttime = new Date().getTime();
+				if (lineType[0] == '*' && tableFS.getSize()  > recCommitNumber){//prematurely saving datasets.  wait until saving at detail record to reset count XXX
+					//if (lineType[0] == '*' && (tableFS.getSize() + guidsFS.getSize()) > recCommitNumber){//prematurely saving datasets.  wait until saving at detail record to reset count XXX
+					//if (application.isInDeveloper()){application.output('Saving import table records')}
+					var stoptime = new Date().getTime();
+					databaseManager.commitTransaction();
+					var committime = Math.floor(stoptime - starttime);starttime = stoptime;var commitRecCount = tableFS.getSize();// + guidsFS.getSize();
+					application.output('Record Commit ('+recCommitNumber+') at '+commitRecCount+' records ');
+					databaseManager.startTransaction();
+					//var ok = databaseManager.saveData(tableFS);
+					tableFS.clear();	
+					//tableFS.loadRecords('select import_table_id order by parent_piecemark, piecemark');
+					databaseManager.saveData(guidsFS);
+					guidsFS.clear();
 				}
-				newRecIdx = tableFS.newRecord(false);
-				countPcmks++;
-				newRec = tableFS.getSelectedRecord();
-				newRec.modification_date = recDate;
-				newRec.parent_piecemark = lineArray[dMainMark];
-				newRec.piecemark = lineArray[dPieceMark];
-				if (!lineArray[dPieceMark]){
-					newRec.piecemark = 'miscsts';
+				lineArray = _sLine.split(',');
+				//if (application.isInDeveloper()){application.output(lineArray)}
+				lastLineType = lineType;
+				lineType = lineArray[0];
+				if (!skippedHeader){
+					if (!newKRecord(lineArray)){
+						continue;
+					} else {
+						skippedHeader = true;
+					}  //skip header information
 				}
-				newRec.grade = lineArray[dGrade];
-				newRec.sheet_number = lineArray[dDrawingNum];
-				newRec.finish = lineArray[dFinish];
-				newRec.pcmk_qty = Math.floor(lineArray[dQty]).toFixed(0);
-				newRec.item_length = lineArray[dLength];
-				newRec.material = lineArray[dShape]+' '+lineArray[dDims];
-				newRec.tenant_uuid = globals.session.tenant_uuid;
-				newRec.revision_level = lineArray[dRevision];
-				newRec.edit_date = new Date();		
-				newRec.item_qty = Math.floor(lineArray[dQty]).toFixed(0);
-				newRec.lprint = hasBeenPrinted(newRec);
-				newRec.import_status = i18n.getI18NMessage('import.create');
-				newRec.job_number = scopes.jobs.importJob.jobNumber;
-				newRec.job_id = scopes.jobs.importJob.jobId;
-				//newRec.sts_qty = getCurrentPcmkIdfileCount(event,newRec);//collect idfiles for piecemark
-				pMark.cParent = newRec.parent_piecemark;
-				pMark.cMark = newRec.piecemark;
-				pMark.cSheetNum = newRec.sheet_number;
-				pMark.cFinish = newRec.finish;
-				pMark.cGrade = newRec.grade;
-				
-				pMarkString = lineArray[dDrawingNum]+"_"+lineArray[dMainMark]+"_"+lineArray[dPieceMark]+"_"+
-					lineArray[dFinish]+"_"+lineArray[dGrade];
-				//if (application.isInDeveloper()){application.output(' >'+pMarkString+' Qty:'+newRec.pcmk_qty)}
-				break;
-				//}
-			case 'E':
-				//if (lineType == "E"){
-				newRec.route_code = lineArray[eRoute];
-				newRec.remarks = lineArray[eRemark];
-				break;
-			case 'W':
-				newRec.item_weight = lineArray[wWeight];
-				continue;
-			case 'S':
-				//filterInData = (application.getSolutionName() != 'STS X Embedded' 
-				//	|| (forms.import_x && forms.import_x.seqs.length == 0) 
-				//	|| (forms.import_x && forms.import_x.seqs.indexOf(lineArray[sSeq]) != -1)
-				//	|| (filterSeqs.indexOf(lineArray[sSeq]) != -1));
-			
-				//if (filterInData){
-				sequenceArr.push({seq:lineArray[sSeq],cnt:Math.floor(lineArray[sQty]),lot:lineArray[sLotNum]});
-				sequence.cnt = 0;sequence.seq = "";sequence.lot="";
-				if (application.isInDeveloper()){application.output('RM >> Seq '+lineArray[sSeq]+':'+lineArray[sQty]+':'+lineArray[sLotNum])}
-				//}
-				break;
-			case 'Z':
-				if (lastLineType != 'S' && lastLineType != 'Z' && newRec.parent_piecemark.toUpperCase() == newRec.piecemark.toUpperCase()){
-					sequenceArr.push({seq:'',cnt:newRec.item_qty});//now need to make sure that cnt is set to remaining after all sequences captured
-					// the following record is 'Y' line, calc unsequenced items there
+				/**
+				 * create record if "S" record is identified, collect series record information for all "D" records, yes
+				 * create record if "D" record executed to next "D" record
+				 * if newKRecord, close out old record and clear settings
+				 */
+				if  (lineType == "*" && skippedFirst){
+					exitSequences = true ;
+					subAssemWtAdded = [];//20180328 clear check array for sub assembly weight adds
+					totAssemWt = 0;
+					continue;
 				}
-				//importMainGUID.push(lineArray[zAssemGuid]);
-				break;
-			case 'Y':
-				if (sequenceArr[0] && sequenceArr[0].cnt == 0){
-					if (sequenceArr.length == 1){sequenceArr[0].cnt = newRec.pcmk_qty;break;}//handle unsequenced pcmk
+				if (lineType == "D"){
+					lineArray[dMainMark];
+					/**if (application.getSolutionName() == "STS X Embedded"){
+						/** @type {Array} * /
+						var draws = forms.import_x.draws;
+						filterInData = (draws.length == 0) && (draws.indexOf(lineArray[dDrawingNum]) != -1);
+						/** @type {Array} * /
+						var marks = forms.import_x.marks;
+						filterInData = filterInData || (marks.length == 0) ||
+							((marks.length > 0) &&
+								(marks.indexOf(lineArray[dMainMark]) != -1) || (marks.indexOf(lineArray[dPieceMark]) != -1));
+					} else {*/
+						//filterInData = true;
+					filterInData = (filterDraws.indexOf(lineArray[dDrawingNum]) != -1);
+					filterInData = filterInData || ((filterMarks.length > 0) &&
+						(filterMarks.indexOf(lineArray[dMainMark]) != -1) || (filterMarks.indexOf(lineArray[dPieceMark]) != -1));
+					filterInData = filterInData || (filterMarks.length == 0 && filterDraws.length == 0);
+					//application.output(filterDraws+' _seeking '+filterInData+' '+lineArray[dDrawingNum])//REMOVE
+					//}
+					if (filterInData) { // save detail indicating new line before processing detail
+						if (skippedFirst){
+							importPopSaveDetailRow(event,recDate);
+						} else {
+						skippedFirst = true;
+						}
+					}
 				}
-				//if (!skipMinors){
-					var mainAssem = lineArray[yAssemGuid];
-					var subAssem = lineArray[yPartGuid];
-					importSubGUID.push(mainAssem);
-					importSubGUID.push(subAssem);
-				//}
-				break;
-			default:
-		}
-		if (maxRecCount == 0){break}
-	}
+				if (!filterInData){continue}//Filter out input if there are filters
+				//if (application.isInDeveloper()){application.output(lineArray)}
+				var skip = (lineType == "S"); //Sequence line handled out-of-order
+					/** unique piecemarks use piecemark, material, sequence_number, grade.  aggregate these
+					* changed 6/14/2014 
+					* unique piecemarks use parent, piecemark,grade, finish, sheet
+					*/
+				switch (lineType){
+					case 'H':
+						newRec.job_number = lineArray[hJobNum];
+						break;
+					case 'D':
+					//scopes.globals.showProgressUpdate(null,lineArray[dPieceMark]=' Parsing Import File');
+		
+						//if (lineType == "D"){
+						if (application.isInDeveloper()){
+							maxRecCount--;
+						}
+						newRecIdx = tableFS.newRecord(false);
+						countPcmks++;
+						newRec = tableFS.getRecord(newRecIdx);//tableFS.getSelectedRecord();
+						newRec.modification_date = recDate;
+						newRec.parent_piecemark = lineArray[dMainMark];
+						newRec.piecemark = lineArray[dPieceMark];
+						if (!lineArray[dPieceMark]){
+							newRec.piecemark = 'miscsts';
+						}
+						newRec.grade = lineArray[dGrade];
+						newRec.sheet_number = lineArray[dDrawingNum];
+						newRec.finish = lineArray[dFinish];
+						newRec.pcmk_qty = Math.floor(lineArray[dQty]).toFixed(0);
+						newRec.item_length = lineArray[dLength];
+						newRec.material = lineArray[dShape]+' '+lineArray[dDims];
+						newRec.tenant_uuid = globals.session.tenant_uuid;
+						newRec.revision_level = lineArray[dRevision];
+						newRec.edit_date = new Date();		
+						newRec.item_qty = Math.floor(lineArray[dQty]).toFixed(0);
+						newRec.lprint = hasBeenPrinted(newRec);
+						newRec.import_status = i18n.getI18NMessage('import.create');
+						newRec.job_number = scopes.jobs.importJob.jobNumber;
+						newRec.job_id = scopes.jobs.importJob.jobId;
+						//newRec.sts_qty = getCurrentPcmkIdfileCount(event,newRec);//collect idfiles for piecemark
+						pMark.cParent = newRec.parent_piecemark;
+						pMark.cMark = newRec.piecemark;
+						pMark.cSheetNum = newRec.sheet_number;
+						pMark.cFinish = newRec.finish;
+						pMark.cGrade = newRec.grade;
+						
+						pMarkString = lineArray[dDrawingNum]+"_"+lineArray[dMainMark]+"_"+lineArray[dPieceMark]+"_"+
+							lineArray[dFinish]+"_"+lineArray[dGrade];
+						//if (application.isInDeveloper()){application.output(' >'+pMarkString+' Qty:'+newRec.pcmk_qty)}
+						break;
+						//}
+					case 'E':
+						//if (lineType == "E"){
+						newRec.route_code = lineArray[eRoute];
+						newRec.remarks = lineArray[eRemark];
+						break;
+					case 'W':
+						newRec.item_weight = lineArray[wWeight];
+						continue;
+					case 'S':
+						//filterInData = (application.getSolutionName() != 'STS X Embedded' 
+						//	|| (forms.import_x && forms.import_x.seqs.length == 0) 
+						//	|| (forms.import_x && forms.import_x.seqs.indexOf(lineArray[sSeq]) != -1)
+						//	|| (filterSeqs.indexOf(lineArray[sSeq]) != -1));
+					
+						//if (filterInData){
+						sequenceArr.push({seq:lineArray[sSeq],cnt:Math.floor(lineArray[sQty]),lot:lineArray[sLotNum]});
+						sequence.cnt = 0;sequence.seq = "";sequence.lot="";
+						if (application.isInDeveloper()){application.output('RM >> Seq '+lineArray[sSeq]+':'+lineArray[sQty]+':'+lineArray[sLotNum])}
+						//}
+						break;
+					case 'Z':
+						if (lastLineType != 'S' && lastLineType != 'Z' && newRec.parent_piecemark.toUpperCase() == newRec.piecemark.toUpperCase()){
+							sequenceArr.push({seq:'',cnt:newRec.item_qty});//now need to make sure that cnt is set to remaining after all sequences captured
+							// the following record is 'Y' line, calc unsequenced items there
+						}
+						//importMainGUID.push(lineArray[zAssemGuid]);
+						break;
+					case 'Y':
+						if (sequenceArr[0] && sequenceArr[0].cnt == 0){
+							if (sequenceArr.length == 1){sequenceArr[0].cnt = newRec.pcmk_qty;break;}//handle unsequenced pcmk
+						}
+						//if (!skipMinors){
+							var mainAssem = lineArray[yAssemGuid];
+							var subAssem = lineArray[yPartGuid];
+							importSubGUID.push(mainAssem);
+							importSubGUID.push(subAssem);
+						//}
+						break;
+					default:
+				}
+				if (application.isInDeveloper() && maxRecCount && maxRecCount == 0){break}
+	        }
+        }
+    } catch (_oErr) {
+        _oBR.close();
+        application.output("ERROR: " + fileName + " at row " + index, LOGGINGLEVEL.ERROR);
+        application.output("ERROR: " + _oErr, LOGGINGLEVEL.ERROR);
+        return; // stop process
+    }
+    _oFR = null;
+    _oIR = null;
+    _oBR = null;
+
 	//if (filterInData) { // save detail indicating new line before processing detail
 	importPopSaveDetailRow(event,recDate);
 	//}
@@ -1529,36 +1583,51 @@ function importPopSaveDetailRow(event,recDate){
 		if (popQty > 200){
 			scopes.jobs.warningsMessage('Processing '+popQty+' GUIDs',true);
 		}
+		var sqlArgs = [];
 		for (var cnt = 1;cnt <= popQty;cnt++){
-			if (cnt/200 == Math.floor(cnt/200)){
-				scopes.jobs.warningsMessage('Processing '+cnt+' / '+popQty+' GUIDs',true);
-				databaseManager.saveData(guidsFS);
-				guidsFS.clear();
+			if (cnt/500 == Math.floor(cnt/500)){
+				var cntDate = new Date();
+				scopes.jobs.warningsMessage('Processing '+cnt+' / '+popQty+' GUIDs'+cntDate,true);
+				//var status2 = databaseManager.saveData(guidsFS);
+				//guidsFS.clear();
 			}
+			/**
 			var i = guidsFS.newRecord(true);
-			var r = guidsFS.getRecord(i);
+			var r = guidsFS.getRecord(i); */
 			countGuids++;
 			assemGuid = importSubGUID.shift();
 			var partGuid = importSubGUID.shift();
-			//var sql = "INSERT INTO import_guids (assem_guid,part_guid,import_table_id,edit_date,modification_date) VALUES (?,?,?,?,?)";
-			//sql = "INSERT INTO import_guids (assem_guid,part_guid,edit_date,modification_date) VALUES ("+assemGuid+","+partGuid+","+newRec.import_table_id.toString()+","+editDate.getTime()+","+new Date(recDate).getTime()+");";
-			//VALUES ?,?,?,?,?';
-			//var importTableId = "VARCHAR('"+newRec.import_table_id+"')";
-			//var sqlArgs = ["'"+assemGuid+"'","'"+partGuid+"'",importTableId,editDate.getTime(),new Date(recDate).getTime()];
-			//var result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql,sqlArgs);
-			//var result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql);
-			//if (!result){
-			///	var sqlMsg =  plugins.rawSQL.getException().getMessage();
-			//	application.output('Raw SQL message '+sqlMsg);
-			//	application.output('sql query args '+sqlArgs+'\n'+sql);
-			//}
+			if (!assemGuid){continue}
+			var sql = "INSERT INTO import_guids (import_guid_uuid,assem_guid,part_guid,import_table_id,edit_date,modification_date,tenant_uuid,job_id,guid_order) VALUES (?,?,?,?,?,?,?,?,?)";
 			
-			r.assem_guid = assemGuid;
+			//var importTableId = newRec.import_table_id.toString();
+			sqlArgs = [];
+			sqlArgs.push(application.getUUID().toString());
+			sqlArgs.push(assemGuid);
+			sqlArgs.push(partGuid);
+			sqlArgs.push(newRec.import_table_id.toString());
+			sqlArgs.push(editDate);
+			sqlArgs.push(recDate);
+			sqlArgs.push(globals.session.tenant_uuid);
+			sqlArgs.push(scopes.jobs.importJob.jobId.toString());
+			sqlArgs.push(scopes.jobs.importJob.guidOrder++);
+			//application.output(newRec.parent_piecemark+' '+newRec.piecemark+' assemGuid: '+assemGuid+ ' PartGuid: '+partGuid)
+			var result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql,sqlArgs);
+			//application.output('result insert: '+result);
+			if (!result){
+				var sqlMsg =  plugins.rawSQL.getException().getMessage();
+				application.output('Raw SQL message '+sqlMsg);
+				application.output('sql query args '+sqlArgs+'\n'+sql);
+			}
+			
+			/** r.assem_guid = assemGuid;
 			r.part_guid = partGuid;
 			r.import_table_id = newRec.import_table_id;
 			r.edit_date = editDate;
 			r.modification_date = recDate;
 			r.tenant_uuid = globals.session.tenant_uuid;
+			r.job_id = scopes.jobs.importJob.jobId;
+			//r.job_number = scopes.jobs.importJob.jobNumber; */
 		}
 	}
 	if (exitSequences){
@@ -1589,8 +1658,11 @@ function clearKissTables(event,recDate){
 	var formName = event.getFormName();
 	//var q = databaseManager.getDataSetByQuery('stsservoy','DELETE FROM import_table;',[],1);
 	
-	var expired = new Date(recDate);
-	expired.setDate(expired.getDate() - 1);
+	var todaysDate = new Date(recDate).getTime() - 1000*60*60*24;
+
+	var delDate = new Date(todaysDate);
+	delDate = utils.dateFormat(delDate, 'yyyy-MM-dd')
+	application.output('delete before day '+delDate);
 	//application.output('RM date rec date '+new Date(recDate)+' expires before '+new Date(expired));
 	
 	var tenantId = globals.session.tenant_uuid;
@@ -1598,43 +1670,25 @@ function clearKissTables(event,recDate){
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var xt = databaseManager.createSelect('db:/stsservoy/import_table');
 	xt.result.add(xt.columns.import_table_id);
-	xt.where.add(xt.columns.modification_date.lt(expired));
+	xt.where.add(xt.or
+		.add(xt.columns.modification_date.lt(delDate))
+		.add(xt.columns.job_id.eq(jobId.toString()))
+	);
+	xt.where.add(xt.columns.tenant_uuid.eq(tenantId));
 	var XT = databaseManager.getFoundSet(xt);
 	if (XT.getSize() > 0){XT.deleteAllRecords()}
 
 	/** @type {QBSelect<db:/stsservoy/import_guids>} */
 	var xg = databaseManager.createSelect('db:/stsservoy/import_guids');
 	xg.result.add(xg.columns.import_guid_uuid);
-	xg.where.add(xg.columns.modification_date.lt(expired));
+	xg.where.add(xg.or
+		.add(xg.columns.modification_date.lt(delDate))
+		.add(xg.columns.job_id.eq(jobId.toString()))
+	);
+	xg.where.add(xg.columns.tenant_uuid.eq(tenantId))
 	var XG = databaseManager.getFoundSet(xg);
 	if (XG.getSize() > 0){XG.deleteAllRecords()}
 
-	/** @type {QBSelect<db:/stsservoy/import_table>} */
-	var t = databaseManager.createSelect('db:/stsservoy/import_table');
-	t.result.add(t.columns.import_table_id);
-	t.where.add(t.columns.tenant_uuid.eq(tenantId));
-	t.where.add(t.columns.job_id.eq(jobId));
-	var T = databaseManager.getFoundSet(t);
-	/** @type {QBJoin<db:/stsservoy/import_guids>} */
-	var s = t.joins.add('db:/stsservoy/import_guids');
-	s.on.add(s.columns.import_table_id.eq(t.columns.import_table_id));
-	t.result.add(s.columns.import_guid_uuid);
-	var S = databaseManager.getDataSetByQuery(t,-1);
-	var delArray = S.getColumnAsArray(2);
-	delArray.sort();
-	
-	if (!delArray){
-		/** @type {QBSelect<db:/stsservoy/import_guids>} */
-		var u = databaseManager.createSelect('db:/stsservoy/import_guids');
-		u.result.add(u.columns.import_guid_uuid);
-		u.where.add(u.columns.import_guid_uuid.isin(delArray));
-		var U = databaseManager.getFoundSet(u);
-		
-		null;
-		U.deleteAllRecords();
-	}
-	
-	T.deleteAllRecords();
 }
 /**
  * dsLotArray["_"+lotNum+"|"+"_"+seqNum] = lot_id
@@ -1656,7 +1710,7 @@ function readLotsK(){
 	for (var sequence in dsSequenceArray){
 		application.output('sequence '+sequence+' '+dsSequenceArray[sequence]);
 		//if (dsSequenceArray[sequence].length != 36){continue}
-		tempSeqIdList.push(dsSequenceArray[sequence]);
+		tempSeqIdList.push(dsSequenceArray[sequence].toString());
 	}
 	/** @type {QBSelect<db:/stsservoy/lots>} */
 	var q = databaseManager.createSelect('db:/stsservoy/lots');
@@ -1699,7 +1753,7 @@ function readBarcodesK(jobID){
 	if (!dsIdfiles){return}
 	var rec = null; var index = 1;
 	while (rec = dsIdfiles.getRecord(index++)){
-		var serialID = dsIdfiles.id_serial_number_id;
+		var serialID = dsIdfiles.id_serial_number_id.toString();
 		if (!bcListArray[serialID]){bcListArray.push(serialID)}
 	}
 
@@ -1715,7 +1769,7 @@ function readBarcodesK(jobID){
 	dsBarcodeArray = [];
 	rec = null; index = 1;
 	while (rec = dsBarcodes.getRecord(index++)){
-		serialID = rec.id_serial_number_id;
+		serialID = rec.id_serial_number_id.toString();
 		dsBarcodeArray[serialID] = index;
 	}
 	bcListArray = [];//temporary array, clear memory
@@ -1940,7 +1994,7 @@ function readPiecemarksK(){
 	var pmId = "";
 	for (var index = 1;index <= rows;index++){
 		dsPiecemarks.rowIndex = index;
-		pmId = dsPiecemarks.piecemark_id;
+		pmId = dsPiecemarks.piecemark_id.toString();
 		dsPiecemarkIds.push(pmId);
 		dsPiecemarkList[pmId] = index;
 		// unique to piecemark, grade, sequence, lot - see function uniquePiecemark
@@ -2246,6 +2300,8 @@ function saveImportSettings(event){
 		rec.part_numbers = form.vPartNumber;
 		rec.lot_numbers = form.vLotNumber;
 		rec.import_file = form.randFile;
+		scopes.jobs.importJob.jobId = jobId.toString();
+		scopes.jobs.importJob.jobNumber = jobNumber;
 	}
 	jobPrefsRec = rec;
 	databaseManager.saveData(rec);
@@ -2838,7 +2894,7 @@ function deleteIdfilesK(){
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var id2 = 1;
 	for (id2 = 1;id2 <= resultII.getSize();id2++){
-		subIdfiles.push(resultII.getRecord(id2).id_serial_number_id);
+		subIdfiles.push(resultII.getRecord(id2).id_serial_number_id.toString());
 	}
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var j = databaseManager.createSelect('db:/stsservoy/idfiles');
@@ -2907,8 +2963,8 @@ function deleteIdfilesK(){
 		}
 		while (piecemarksCheck.length > 0){
 			var piecemark = piecemarksCheck.pop();
-			if (piecemarksKeep.indexOf(piecemark) == -1){
-				piecemarksDelete.push(piecemark);
+			if (piecemarksKeep.indexOf(piecemark.toString()) == -1){
+				piecemarksDelete.push(piecemark.toString());
 			}
 		}
 		if (piecemarksDelete.length > 0){
@@ -2999,9 +3055,9 @@ function createPiecemarkK(fsRec,unique){
 			rec.description = fsRec.remarks;
 		}
 	}
-	dsPiecemarkArray[unique] = rec.piecemark_id;
-	insertedPiecemarks.push(rec.piecemark_id);
-	dsIdfileListByPm[rec.piecemark_id] = [];
+	dsPiecemarkArray[unique] = rec.piecemark_id.toString();
+	insertedPiecemarks.push(rec.piecemark_id.toString());
+	dsIdfileListByPm[rec.piecemark_id.toString()] = [];
 	createdRecords++;
 }
 /**
@@ -3043,15 +3099,15 @@ function importRecordCheckIdfileCount(record,correct){
 		for (index = 0; index < tDbIdFiles.length;index++){ // get idfiles that are for this sequence and lot
 			dsIdfiles.rowIndex = dsIdfileList[tDbIdFiles[index]];
 			if (dsIdfiles.lprint == 1){
-				dbIdfilePrinted.push(dsIdfiles.idfile_id);//cannot modify printed barcodes without override, reset if overridden
+				dbIdfilePrinted.push(dsIdfiles.idfile_id.toString());//cannot modify printed barcodes without override, reset if overridden
 			}
 			var recSeq = record.sequence_number;
 			var recLot = record.lot;
 			if (!recLot){recLot = ""}
 			var recSeqId = dsSequenceArray["_"+recSeq];
 			var recLotId = dsLotArray["_"+recLot+"|_"+recSeq];
-			if (dsIdfiles.sequence_id+"" == recSeqId && dsIdfiles.lot_id == recLotId){
-				dbIdfiles.push(tDbIdFiles[index]);
+			if (dsIdfiles.sequence_id+"" == recSeqId && dsIdfiles.lot_id+'' == recLotId){
+				dbIdfiles.push(tDbIdFiles[index].toString());
 			}
 		}
 	}
@@ -3083,7 +3139,7 @@ function importRecordCheckIdfileCount(record,correct){
 	var bCIdSeen = []; // visited array indicating already got count from this barcode ID
 	for (var index = 0;index < dbIdfiles.length;index++){
 		dsIdfiles.rowIndex = dsIdfileList[dbIdfiles[index]];
-		var tBcId = dsIdfiles.id_serial_number_id; // current barcode ID which reps for 1 or more idfiles, giving a count for that barcode
+		var tBcId = dsIdfiles.id_serial_number_id.toString(); // current barcode ID which reps for 1 or more idfiles, giving a count for that barcode
 		if (bCIdSeen.indexOf(tBcId) == -1){
 			if (summaryRec){
 				//------------  summary record
@@ -3233,11 +3289,11 @@ function importRecordCheckIdfileCount(record,correct){
 				var guid = getValidGuidMajMin(record.guid_hideindex);
 				newIdfileRec.guid_major = guid.major;
 				newIdfileRec.guid_minor = guid.minor;
-				newIdfileRecs[newIdfileRec.idfile_id] = newIdfileRec;
-				newIdfileIds.push(newIdfileRec.idfile_id);
+				newIdfileRecs[newIdfileRec.idfile_id.toString()] = newIdfileRec;
+				newIdfileIds.push(newIdfileRec.idfile_id.toString());
 				//nums.bcIdfiles[barCode].push(newIdfileId);
-				nums.dbIdfiles.push(newIdfileRec.idfile_id);
-				orphanIdfileList.push(newIdfileRec.idfile_id);
+				nums.dbIdfiles.push(newIdfileRec.idfile_id.toString());
+				orphanIdfileList.push(newIdfileRec.idfile_id.toString());
 				idfilePool.push(newIdfileRec);
 				createNumberIdfiles2 -= 1;//was createQuant, but that is only copied to the idfile, not creating idfiles, BUT summarized items are set otherwise
 			}
@@ -3248,11 +3304,11 @@ function importRecordCheckIdfileCount(record,correct){
 			var deleteNumberIdfiles = (orphanIdfileList.length >= nums.idfileDel) ? 0 : nums.idfileDel - orphanIdfileList.length;
 			var index7;
 			for (index7 = nums.bcCodes.length-1;index7 >= 0;index7--){//start at end of allocated barcodes
-				var barId7 = nums.bcCodes[index7].id_serial_number_id;
+				var barId7 = nums.bcCodes[index7].id_serial_number_id.toString();
 				/** @type {Array} */
 				var barId7list = nums.bcIdfiles[barId7];
 				while (barId7list.length > nums.inLabelQntEa && deleteNumberIdfiles != 0){ // remove orphans from each barcode to barcode max quant
-					orphanIdfileList.push(barId7list.pop());
+					orphanIdfileList.push(barId7list.pop().toString());
 					deleteNumberIdfiles--;
 				}
 				if (deleteNumberIdfiles == 0){break}
@@ -3261,7 +3317,7 @@ function importRecordCheckIdfileCount(record,correct){
 				barId7 = nums.bcCodes[index7];
 				barId7list = nums.bcIdfiles[barId7];
 				while (deleteNumberIdfiles != 0){ 
-					orphanIdfileList.push(barId7list.pop());
+					orphanIdfileList.push(barId7list.pop().toString());
 					deleteNumberIdfiles--;
 				}
 				if (deleteNumberIdfiles == 0){break}
@@ -3361,9 +3417,9 @@ function importRecordCheckIdfileCount(record,correct){
 			for (var indexId = 0;indexId < idfilePool.length;indexId++){
 				/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 				var recIdfile = idfilePool[indexId];
-				if (nums.bcCodes.indexOf(recIdfile.id_serial_number_id) == -1){ //not already in bc
-					var recId = recIdfile.idfile_id;
-					barId = idfileBarcodes[recId];
+				if (nums.bcCodes.indexOf(recIdfile.id_serial_number_id.toString()) == -1){ //not already in bc
+					var recId = recIdfile.idfile_id.toString();
+					barId = idfileBarcodes[recId].toString();
 					recIdfile.id_serial_number_id = barId; // add idfile to barcode #task 12
 					recIdfile.summed_quantity =  (summaryRec) ? finalBcCounts[nums.bcCodes.indexOf(barId)] : 1;
 					barList.push(recIdfile.idfile_id+""); // update barList
@@ -3474,7 +3530,7 @@ function dbRecCountsK(record){
 			var lotId = dsLotArray["_"+lotNum+"|_"+seqNum];
 			var seqId = dsSequenceArray["_"+seqNum];
 			if (dsIdfiles.lprint == 1 && !preserveHistory(record)){continue} // skip printed or dirty records
-			if (dsIdfiles.sequence_id == seqId && dsIdfiles.lot_id == lotId){
+			if (dsIdfiles.sequence_id.toString() == seqId && dsIdfiles.lot_id.toString() == lotId){
 				c.dbIdfiles.push(tDbIdFiles[index]);
 			}
 		}
@@ -3580,19 +3636,19 @@ function deletePiecemarksK(){
 	var length = resultI.getSize();
 	for (index = 1;index <= length;index++){
 		var idfileRec = resultI.getRecord(index);
-		if (idfileRec.lot_id) {lots.push(idfileRec.lot_id)}
-		if (idfileRec.id_serial_number_id) {barcodes.push(idfileRec.id_serial_number_id)}
-		if (idfileRec.sequence_id){sequences.push(idfileRec.sequence_id)}
+		if (idfileRec.lot_id) {lots.push(idfileRec.lot_id.toString())}
+		if (idfileRec.id_serial_number_id) {barcodes.push(idfileRec.id_serial_number_id.toString())}
+		if (idfileRec.sequence_id){sequences.push(idfileRec.sequence_id.toString())}
 		var pmId2 = idfileRec.piecemark_id.toString();
 		if (piecemarks.indexOf(pmId2) == -1){piecemarks.push(pmId2)}
-		if (idfileRec.idfile_id){idfiles.push(idfileRec.idfile_id)}
+		if (idfileRec.idfile_id){idfiles.push(idfileRec.idfile_id.toString())}
 	} // interim list of possible deletes in each array.  Verify they are not referenced by other piecemarks/idfiles before deletion
 	///var pmActive = [];
 	var pmDelete = [];
 	while(piecemarksToDelete.length != 0){
 		var pmId = piecemarksToDelete.pop();  // pm delete candidate
 		if (piecemarks.indexOf(pmId) == -1){  // pm is not in active idfiles
-			pmDelete.push(pmId);  // delete piecemark list
+			pmDelete.push(pmId.toString());  // delete piecemark list
 			//application.output('PM delete '+dsPiecemarkArray[pmId]);
 		}
 	}
@@ -3668,8 +3724,8 @@ function dbRecBCListK(record){
 	var length = c.dbIdfiles.length;
 	for (var index = 0;index < length;index++){
 		dsIdfiles.rowIndex = dsIdfileList[c.dbIdfiles[index]];
-		var bcId = dsIdfiles.id_serial_number_id; // current barcode ID which reps for 1 or more idfiles, giving a count for that barcode
-		var idfileId = dsIdfiles.idfile_id;
+		var bcId = dsIdfiles.id_serial_number_id.toString(); // current barcode ID which reps for 1 or more idfiles, giving a count for that barcode
+		var idfileId = dsIdfiles.idfile_id.toString();
 		if (!c.bcIdfiles[bcId]){
 			c.bcIdfiles[bcId] = [];
 		}
@@ -3749,7 +3805,7 @@ function createIdfileRecordK(pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity
 function createBarcodesK(){
 	while (idCreationCount > 0){
 		var barcodeRec = createValidBarcode();
-		idBarcodePool.push(barcodeRec.id_serial_number_id);
+		idBarcodePool.push(barcodeRec.id_serial_number_id.toString());
 		importRecordCache.push(barcodeRec);
 		idCreationCount--;
 	}
@@ -3764,7 +3820,7 @@ function createNumberBarcodesK(orphanIdfileList){
 	var createNumBarcodes = nums.bcAdd;
 	while (createNumBarcodes > 0){  // add barcodes
 		var newBcRec = createValidBarcode();
-		var newBcId = newBcRec.id_serial_number_id;
+		var newBcId = newBcRec.id_serial_number_id.toString();
 		nums.bcCodes.push(newBcId);
 		dsBarcodeList[newBcId] = []; // update listing of idfles 
 		nums.bcIdfiles[newBcId] = [];//comment out
@@ -3790,7 +3846,7 @@ function deleteNumberBarcodesK(orphanIdfileList){
 		var barIdlist5 = nums.bcIdfiles[bcCode];
 		var length5 = barIdlist5.length;
 		for (var index5 = 0;index5 < length5;index5++){
-			orphanIdfileList.push(barIdlist5[index5]);//no break since orphanIdfiles will be reallocated to another barcode
+			orphanIdfileList.push(barIdlist5[index5].toString());//no break since orphanIdfiles will be reallocated to another barcode
 		}
 		deleteNumBarcodes--;
 		nums.bcIdfiles[bcCode] = null; // barcode no longer in use
@@ -4375,21 +4431,25 @@ function importExistingRecStatus(record){
 	}//application.output('no record')}
 	//var pcmkId = dsPiecemarkArray[uniqPcmk];
 	var seqId = scopes.jobs.dsSequenceArray['_'+record.sequence_number];
-	var lotId = scopes.jobs.dsLotArray['_'+record.lot_number+'|_'+record.sequence_number];
+	var lotId = scopes.jobs.dsLotArray['_'+record.lot_number];
 	//if (!lotId)
 	//application.output('sequenceID '+dsSequences[seqId]);dsIdfileArray;
 	var barSeen = [];
 	var barcodeCnt = [];//dsIdfileArray[uniqPcmkId+','+seqId+','+lotId];dsIdfileListByPm
-	var idListPM = scopes.jobs.dsIdfileListByPm[uniqPcmkId];
-	if (idListPM){
+//	var idListPM = scopes.jobs.dsIdfileListByPm[uniqPcmkId];
+	var idListUniq = scopes.jobs.getPiecemarkIdfiles2(uniqPcmkId,record.sequence_number,record.lot_number);
+	if (idListUniq){
 		var lesser = 0;//JOEJOEJOEBAR
-		for (var j = 0;j < idListPM.length;j++){
-			var bcId = scopes.jobs.dsBarcodeList[idListPM[j]];
+		var idRec = null; var idx3 = 1;
+		while (idRec = idListUniq.getRecord(idx3++)){
+		//for (var j = 0;j < idListPM.length;j++){
+			var bcId = idRec.id_serial_number_id;
 			if (!bcId){continue}
+				bcId = bcId.toString();
 				if (barSeen.indexOf(bcId) != -1){continue}
 				barSeen.push(bcId);
 				//if (idListPM.length == 0 || scopes.jobs.dsBarcodeList.length == 0){continue}
-				var count = scopes.jobs.dsBarcodeList[scopes.jobs.dsBarcodeList[idListPM[j]]].length;
+				var count = scopes.jobs.dsBarcodeList[bcId].length;
 				if (lesser == 0 || lesser < count){
 					barcodeCnt.unshift(count.toFixed());
 				} else {
@@ -4587,6 +4647,7 @@ function getCurrentPcmkIdfileCount(event,record){
 	x.on.add(x.columns.piecemark_id.eq(w.columns.piecemark_id));
 	x.root.where.add(x.columns.delete_flag.isNull);
 	var seqId = scopes.jobs.dsSequenceArray['_'+record.sequence_number]
+	if (!seqId){return 0}
 	x.root.where.add(x.columns.sequence_id.eq(seqId.toString()))
 	//q.groupBy.add(x.columns.idfile_id);
 	q.result.add(x.columns.idfile_id.count,'count');

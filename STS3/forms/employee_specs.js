@@ -237,9 +237,11 @@ function onRecordSelection(event) {
 	if (forms['employees_rec'+instance].elements.btn_New.enabled){ //#task01
 		elements.btn_Delete.visible =  (employee_number != "P2") // protect admin account
 	}
+	var empId = employee_id;
+	if (empId){empId = empId.toString()}
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
-	u.where.add(u.columns.employee_id.eq(employee_id.toString()));
+	u.where.add(u.columns.employee_id.eq(empId));
 	var uFs = databaseManager.getFoundSet(u);
 	uFs.loadRecords();
 	if (uFs.getSize() != 0){

@@ -237,10 +237,10 @@ function onShow(firstShow, event) {
 	idx = 1;
 	while (rec2 = R.getRecord(idx++)){
 		jobRoutes.push(rec2.route_code);
-		jobRouteIds.push(rec2.routing_id);
+		jobRouteIds.push(rec2.routing_id.toString());
 	}
 	jobName = scopes.jobs.importJob.name;
-	jobUUID = scopes.jobs.importJob.jobId;
+	jobUUID = scopes.jobs.importJob.jobId.toString();
 	application.setValueListItems('stsvl_route_code_id',jobRoutes,jobRouteIds);	
 	getInfoFromFiles();
 	var table = databaseManager.getTable('stsservoy','piecemarks');

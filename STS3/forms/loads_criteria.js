@@ -242,6 +242,7 @@ function onActionClear(event) {
 			}
 		}
 	}
+	if (form.elements.chkMinors){form.elements.chkMinors.enabled = true}
 	form.elements['frmJobNum'].requestFocus();
 	jobFound = false;
 	browseInfoEnable(event);

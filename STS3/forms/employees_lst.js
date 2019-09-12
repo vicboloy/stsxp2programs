@@ -45,6 +45,8 @@ function onRecordSelection(event) {
 	if (!rec){return}
 	var empId = rec.employee_id;//forms.employees.foundset.loadRecords()
 	databaseManager.revertEditedRecords(forms['employees'+instance].foundset);//20180720 error showing changed foundset, this cleared error
-	forms['employees'+instance].foundset.loadRecords(empId.toString());//application.getUUID
+	if (empId){
+		forms['employees'+instance].foundset.loadRecords(application.getUUID(empId));//
+	}
 	null;
 }

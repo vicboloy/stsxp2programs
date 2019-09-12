@@ -68,7 +68,7 @@ function createEmpList(event){
 	/** @type {Array} */
 	var divNames = []; var divRealNames = []; var divActives = [];
 	while (rec = DV.getRecord(idx++)){
-		divIds.push(rec.association_uuid);
+		divIds.push(rec.association_uuid.toString());
 		divNames.push(rec.association_name.replace(/ /g,'').toLowerCase());
 		divRealNames.push(rec.association_name);
 	}

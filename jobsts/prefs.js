@@ -1481,7 +1481,7 @@ function onActionPrintLabels(event) {
 	}
 	var fields = [];
 	for (var idx = 0;idx < specs.length;idx++){
-		fields.push(specs.field_name);
+		fields.push(specs[idx].field_name);
 	}
 	var outputFields = [];
 	var outputSpecs = [];
@@ -1666,7 +1666,7 @@ function bartenderPrint(event,txtString){
 			printer = userDestination.printerRaw;
 			label = userDestination.labelRaw;
 		}
-		forms[formName]['labelPrintType'] = '';
+		//forms[formName]['labelPrintType'] = '';
 	}
 	var useServer = false;
 	if (formName.search('barcode_idlabel'+versionForm) == 0) {useServer = (forms['barcode_idlabel'+versionForm].useServerPrinters == 1)}
@@ -1728,12 +1728,17 @@ function bartenderPrint(event,txtString){
 		var idx3 = labelFS.newRecord();
 		/** @type {JSFoundSet<db:/stsservoy/bt_labels>} */
 		var rec = labelFS.getRecord(idx3);
-		if (!printMinorLabel){
-			rec.bt_printer = printer;
-			rec.bt_btwtemplate = btwFile;
+		if (!useRawSettings){
+			if (!printMinorLabel){
+				rec.bt_printer = printer;
+				rec.bt_btwtemplate = btwFile;
+			} else {
+				rec.bt_printer = printerMinor;
+				rec.bt_btwtemplate = btwFileMinor;
+			}
 		} else {
-			rec.bt_printer = printerMinor;
-			rec.bt_btwtemplate = btwFileMinor;
+			rec.bt_printer = printer;
+			rec.bt_btwtemplate = btwFile;			
 		}
 		rec.bt_copies = "1";//Math.floor(1);
 		rec.bt_print_date = new Date();
@@ -1811,14 +1816,16 @@ function bartenderPrint(event,txtString){
 			if (scopes.printer.barTender_2016){
 				var db = DBs.getChildJSCOM("GetDatabase","",[1]);
 				if (!db){
-					application.output('RM COM: No 2016 DB found');
+					//application.output('RM COM: No 2016 DB found');
 					//db = DBs.getChildJSCOM("GetDatabase","",["\"Text File 1\""]);
 				}
 				if (!db){
 					//application.output('RM COM: No DB \"Text File 1\" found');
 					db = DBs.get('Configuration')+"";
 					var regexp = new RegExp(/SelectCommand.*\[(.*)\].*SelectCommand/);
+					var regexpAlt = new RegExp(/RecordSet Name="(.*)" Connection/);
 					var database = db.match(regexp);
+					var databaseAlt = db.match(regexpAlt);
 					application.output('RM COM: bartender database '+database+' DB ');
 					if (!database){
 						plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError(),i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
@@ -1830,8 +1837,13 @@ function bartenderPrint(event,txtString){
 					var database2 = database[1];
 					application.output('Database used '+database2);
 					database2 = database2.trim();
+					var databaseAlt2 = databaseAlt[1];
 					if (database2){
 						db = DBs.getChildJSCOM('GetDatabase',[database2]);
+						if (!db){
+							db = DBs.getChildJSCOM('GetDatabase',[databaseAlt2]);
+							application.output('now using alternate database... '+databaseAlt2);
+						}
 					} else {
 						application.output('RM COM: No DB '+database2+' found');					
 					}
@@ -3130,10 +3142,38 @@ function createBtTableLabelFields(){
 function getUserDestination(){
 	var userUUID = globals.session.loginId;
 	var screenName = globals.session.program;
-	if (screenName == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
-		var screens = [i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'),
-		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.id'),
-		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minorid')]
+	var screens = [];
+	switch (screenName.replace(/\'/g,"")) { //this section adds fields that are to be printed but are NOT screens, revised to remove single quotes from mobile screen name in i18n
+		case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'):
+			screens = [i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'),
+				i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.id'),
+				i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minorid'),
+				i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minor.print'),
+				i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.id.print')
+				];
+			break;
+		case i18n.getI18NMessage('sts.mobile.inspections'):
+			screens = [i18n.getI18NMessage('sts.mobile.inspections'),
+				i18n.getI18NMessage('sts.mobile.inspections.minor.print')];
+			break;
+		case i18n.getI18NMessage('sts.mobile.inspections.w.revs'):
+			screens = [i18n.getI18NMessage('sts.mobile.inspections.w.revs'),
+				i18n.getI18NMessage('sts.mobile.inspections.w.revs.minor.print')];
+			break;
+		case i18n.getI18NMessage('sts.mobile.status'):
+			screens = [i18n.getI18NMessage('sts.mobile.status'),
+				i18n.getI18NMessage('sts.mobile.status.minor.print')];
+			break;
+		case i18n.getI18NMessage('sts.mobile.transactions'):
+			screens = [i18n.getI18NMessage('sts.mobile.transactions'),
+				i18n.getI18NMessage('sts.mobile.transactions.minor.print')];
+			break;
+		case i18n.getI18NMessage('sts.mobile.transactions.w.revs'):
+			screens = [i18n.getI18NMessage('sts.mobile.transactions.w.revs.minor.print'),
+				i18n.getI18NMessage('sts.mobile.transactions.w.revs.minor.print')];
+			break;
+		default:
+			screens = [];
 	}
 	//application.output('RM Get User Destination user  id: '+userUUID+' Screen: '+screenName);
 	var destination = {labelRaw:null, printerRaw:null, labelMajor:null, printerMajor:null, labelMinor:null, printerMinor:null}
@@ -3141,7 +3181,7 @@ function getUserDestination(){
 	var dest = databaseManager.createSelect('db:/stsservoy/label_destinations');
 	dest.where.add(dest.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	dest.where.add(dest.columns.user_uuid.eq(userUUID.toString()));
-	if (screenName == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+	if (screens.length != 0){
 		dest.where.add(dest.columns.rf_screen_name.isin(screens));
 	} else {
 		dest.where.add(dest.columns.rf_screen_name.eq(screenName));
@@ -3151,20 +3191,29 @@ function getUserDestination(){
 	/** @type {JSFoundSet<db:/stsservoy/label_destinations>} */
 	var rec = null;var idx = 1;
 	if (D.getSize() > 0){
-		while (rec = D.getRecord(idx++)){
+		while (rec = D.getRecord(idx++)){//these print selection are entirely from i18n table. this function returns all destinations for a given screen. bartender print determines which destination is selected
 			switch (rec.rf_screen_name) {
-				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.id'):
-					destination.labelMajor = rec.label_template_name;
-					destination.printerMajor = rec.printer_name;
+				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'):
+				case i18n.getI18NMessage('sts.mobile.asn.receiving'):
+				case i18n.getI18NMessage('sts.mobile.checklist.receive'):
+				case i18n.getI18NMessage('sts.mobile.checklist.receive.w.rem'):
+				case i18n.getI18NMessage('sts.mobile.checklist.status'):
+				case i18n.getI18NMessage('sts.mobile.inventory.audit'):
+				case i18n.getI18NMessage('sts.mobile.inventory.move'):
+					destination.printerRaw = rec.printer_name;
+					destination.labelRaw = rec.label_template_name;
 					break;
 				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minorid'):
+				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minor.print'):
+				case i18n.getI18NMessage('sts.mobile.inspections.minor.print'):
+				case i18n.getI18NMessage('sts.mobile.inspections.w.revs.minor.print'):
+				case i18n.getI18NMessage('sts.mobile.status.minor.print'):
 					destination.labelMinor = rec.label_template_name;
 					destination.printerMinor = rec.printer_name;
 					break;
-				case i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'):
 				default:
-					destination.printerRaw = rec.printer_name;
-					destination.labelRaw = rec.label_template_name;
+					destination.labelMajor = rec.label_template_name;
+					destination.printerMajor = rec.printer_name;
 			}
 		}
 	}

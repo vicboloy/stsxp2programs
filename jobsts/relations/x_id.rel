@@ -4,7 +4,6 @@ items:[
 {foreignColumnName:"job_uuid",primaryDataProviderID:"job_uuid",typeid:23,uuid:"8D164F93-4222-4FE6-8AB0-D9151C6F46E5"},
 {foreignColumnName:"idfile_id",primaryDataProviderID:"idfile_uuid",typeid:23,uuid:"A400F852-6BC5-4182-83B0-C9801435A8D8"}
 ],
-joinType:1,
 name:"x_id",
 primaryDataSource:"db:/stsservoy/pcmk_instances",
 typeid:22,

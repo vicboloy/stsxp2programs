@@ -206,6 +206,10 @@ var dsDiffIdfiles = [];
  */
 var dsIdfileList = [];
 /**
+ * @properties={typeid:35,uuid:"308F1DFA-0240-4D9B-BF1B-0F188D29A385",variableType:-4}
+ */
+var uniqueIdfiles = [];
+/**
  * @type {Array}
  * Holds barcode count, indexed by id_serial_number_id.
  * Holds the barcode count array per idfiles of a piecemark, indexed by unique piecemark for that piecemark.
@@ -302,6 +306,11 @@ var dsSheetBomList = [];
  */
 var dsSheetBoms = null;
 /**
+ * Piecemark Join table dsPcmkJoinTable[piecemar_id+sheet_id+lot_id+id_serial_number_id] = pcmk_instance_id
+ * @properties={typeid:35,uuid:"5CC23248-45C4-41C6-8E2E-8BE0F2ECF31B",variableType:-4}
+ */
+var dsPcmkJoinTable = [];
+/**
  * @properties={typeid:35,uuid:"7445E671-3137-437B-9240-AFE9CCE38848",variableType:-4}
  */
 var countsBCandID = null;
@@ -340,6 +349,13 @@ var appendQuantityToIdfile = null;
  * @properties={typeid:35,uuid:"58092B91-9902-41CF-872F-639478065339",variableType:-4}
  */
 var importJob = {
+	deleteByGuid : [],//delete guids that do not appear in sheet and total import,no other
+	sheetImportOnly :  false,//flag to indicate a way to delete guids
+	guidsFabSuite : [],//fabsuite guids
+	currentGuidsPcmk : [],
+	currentGuidsPcmkDB : [],
+	currentGuidsPcmkParent : [],
+	sequenceBarcodes : [],
 	bcFormId : null,//#87ticket#87
 	jobId : "",
 	jobNumber : "",
@@ -359,7 +375,63 @@ var importJob = {
 	useImportRouting : 0,
 	jobMetric : 0,
 	guidOrder : 1,
-	importLineCount : 0
+	importLineCount : 0, // hold file line count for info during import
+	pcmksExist : [], //
+	pcmksCreate : [],
+	barcodesExist : [],
+	barcodesCreate : [],
+	idfilesExist: [],
+	idfilesCreate : [],
+	partSerialIndex : '',
+	pcmkCols : ['piecemark_id',
+		'sheet_id',
+		'parent_piecemark_id',
+		'parent_template_id',
+		'e_route_code_id',
+		'job_uuid',
+		'tenant_uuid',
+		'create_date', 
+		'parent_piecemark',
+		'piecemark',
+		'finish',
+		'grade',
+		'part_serial',
+		'material',
+		'item_length',
+		'item_quantity',
+		'pcmk_qty',
+		'item_weight',
+		'item_weight_lbs',
+		'item_length_in',
+		'item_length_char',
+		//'item_width',
+		//'item_width_in',
+		'remarks',
+		'description'
+	],
+	idfileCols : [
+		'idfile_id',
+		'piecemark_id',
+		'sequence_id',
+		'lot_id',
+		'id_serial_number_id',
+		'parent_piecemark_id',
+		'parent_idfile_id',
+		'original_employee_uuid',
+		'tenant_uuid',
+		'job_uuid',
+		'create_date',
+		'guid_major',
+		'guid_minor',
+		'original_quantity',
+		'summed_quantity',
+		'control_number',
+		'erection_drawing',
+		'shop_order',
+		'id_location'
+		],
+	pcmkTemplate : {},
+	idfileTemplate : {}
 }
 /**
  * @type {String}
@@ -839,17 +911,13 @@ var currentPcmkParentId = '';
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"07F3CFA8-E7FE-4757-8199-E6CE4FE7A3EC",variableType:-4}
+ * @properties={typeid:35,uuid:"07F3CFA8-E7FE-4757-8199-E6CE4FE7A3EC"}
  */
-var currentIdflParentId = [];
+var currentIdflParentId = '';
 /**
- * @properties={typeid:35,uuid:"5FB45FF1-659C-4B3D-8771-89EA7901126C",variableType:-4}
+ * @properties={typeid:35,uuid:"92BDAA6D-BE16-4CA2-A0F9-6BF648DE8094",variableType:-4}
  */
-var currentGuidsPcmk = [];
-/**
- * @properties={typeid:35,uuid:"58D3C77D-1F8E-4319-BA79-D66671BCB960",variableType:-4}
- */
-var currentGuidsPcmkParent = [];
+var processGuidsImport = [];
 /**
  * @properties={typeid:35,uuid:"0A642226-093C-4FCF-8B4A-710C6A02C67A",variableType:-4}
  */
@@ -889,6 +957,10 @@ var destinationBtns = [];
  * @properties={typeid:35,uuid:"F3F6F742-B291-441F-8542-F27C84B6A212"}
  */
 var labelPrintStatus = '';
+/**
+ * @properties={typeid:35,uuid:"4320B3E7-F14C-4629-81DD-A041E95EACF5",variableType:-4}
+ */
+var dsPiecemarkTransient = [];
 /**
  * @properties={typeid:35,uuid:"7F3841B5-E667-4FFB-9B9F-C3BA1F2D9E18",variableType:-4}
  */
@@ -2287,7 +2359,7 @@ function viewBTableSQL(criteria,formName){
 	 */
 	null; //stop here 20160219 random() in posgresql rand() in sql server
 	//var query = "select rand()*1000000 AS browsing_id,0 AS \"selection\",FLD from piecemarks "+
-	var query = "select rand()*1000000 AS browsing_id,0 AS \"selection\",FLD from piecemarks "+
+	var query = "select random()*1000000 AS browsing_id,0 AS \"selection\",FLD from piecemarks "+
 		' left join routings on routings.routing_id = piecemarks.e_route_code_id '+
 		' inner join sheets on piecemarks.sheet_id = sheets.sheet_id SHT '+
 		' and sheets.job_id = JOBID AND sheets.delete_flag IS null '+
@@ -2745,28 +2817,71 @@ function existsJobNumber(jobNumber){
  * @param origQuant
  * @param summQuantity
  * @param bcCount
+ * @param fsMajor
+ * @param fsMinor
  * 
  * @AllowToRunInFind
  * @SuppressWarnings(wrongparameters)
  *
  * @properties={typeid:24,uuid:"AF45BA80-61E9-4B6E-9BD7-B71CD1157287"}
  */
-function createIdfileRecord(idfilesFSet,pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity,origQuant,summQuantity,remarks,bcCount){
-	//if (dsIdfileArray){return dsIdfileArray
-	//** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-	//var fs = databaseManager.getFoundSet('stsservoy','idfiles');
-	///var fs = dsIdfiles;
+function createIdfileRecord(idfilesFSet,pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity,origQuant,summQuantity,remarks,bcCount,fsMajor,fsMinor){
+	//if (application.isInDeveloper()){application.output('INSIDE Create IDfilerecord')}
+	var iCols = scopes.jobs.importJob.idfileCols;//see here if a column needs to be populated
+	var tIdfile = new Array(iCols.length);
+	var importDateStr = importDate.toString().replace(/GMT-0500 /,'');
 
-	var seqId = dsSequenceArray["_"+sequence];
-	if (!seqId){seqId = createSequenceNumber(sequence)}
-	var lotId = dsLotArray["_"+lot];//+"|_"+sequence];
-	if (!lotId){lotId = createLotNumber(lot)}//,sequence)}
+	var seqId = (!dsSequenceArray["_"+sequence]) ? createSequenceNumber(sequence) : dsSequenceArray["_"+sequence];
+	var lotId = (!dsLotArray["_"+lot]) ? createLotNumber(lot) : dsLotArray["_"+lot];
 	var sheet_uuid = dsSheetArray[pmkUniq.split(',')[2]];
 	if (!sheet_uuid){sheet_uuid = null}
 
-	if (application.isInDeveloper()){
-		application.output('lot for pmkUniq '+pmkUniq+' lot '+lotId);
+	var idfileId = application.getUUID().toString();
+	tIdfile[iCols.indexOf('idfile_id')] = idfileId;
+	tIdfile[iCols.indexOf('original_employee_uuid')] = globals.session.employeeId.toString();
+	tIdfile[iCols.indexOf('piecemark_id')] = piecemarkId.toString();
+	tIdfile[iCols.indexOf('lot_id')] = lotId.toString();
+	tIdfile[iCols.indexOf('id_serial_number_id')] = barcodeId.toString();
+	tIdfile[iCols.indexOf('sequence_id')] = seqId.toString();
+	tIdfile[iCols.indexOf('tenant_uuid')] = globals.session.tenant_uuid;
+	tIdfile[iCols.indexOf('job_uuid')] = scopes.jobs.importJob.jobId.toString();
+	tIdfile[iCols.indexOf('original_quantity')] = origQuant;
+	tIdfile[iCols.indexOf('summed_quantity')] = summQuantity;
+	tIdfile[iCols.indexOf('shop_order')] = forms['kiss_option_import'].jobShopOrder;
+	tIdfile[iCols.indexOf('id_location')] = forms['kiss_option_import'].importArea;
+	tIdfile[iCols.indexOf('guid_major')] = fsMajor;
+	if (!fsMajor){
+		null;//STOP
 	}
+	tIdfile[iCols.indexOf('guid_minor')] = fsMinor;
+	if (remarks){
+		if (forms.kiss_option_import.saveNotesInto.search('Control #') != -1){
+			tIdfile[iCols.indexOf('control_number')] = remarks;
+		}
+		if (forms.kiss_option_import.saveNotesInto.search('Erection Dwg') != -1){
+			tIdfile[iCols.indexOf('erection_drawing')] = remarks;
+		}
+		//if (forms.kiss_option_import.notesContainCamber){
+		//	tIdfile[iCols.indexOf('camber')] = remarks;
+		//}
+	}	
+	tIdfile[iCols.indexOf('create_date')] = importDateStr;
+	if (forms.import_performance_setting && forms.import_performance_setting.insJobSO){
+		tIdfile[iCols.indexOf('shop_order')] = forms.import_performance_setting.insJobSO;
+	}
+	if (!scopes.jobs.importJob.idfilesCreate){scopes.jobs.importJob.idfilesCreate = []}
+	var emptyArray = [];
+	scopes.jobs.importJob.idfilesCreate.push(emptyArray.concat(tIdfile));//insert into an array for later bulk creation with rawSQL
+	/** tIdfile[iCols.indexOf('piecemark_id')] = piecemarkId;
+	tIdfile[iCols.indexOf('piecemark_id')] = piecemarkId;
+	tIdfile[iCols.indexOf('piecemark_id')] = piecemarkId;
+	tIdfile[iCols.indexOf('piecemark_id')] = piecemarkId; */
+	
+	if (1==1){return idfileId}
+	
+	
+
+	if (application.isInDeveloper()){application.output('lot for pmkUniq '+pmkUniq+' lot '+lotId);}
 	
 	if (!barcodeId){
 		barcodeId = createValidBarcode();
@@ -2785,7 +2900,6 @@ function createIdfileRecord(idfilesFSet,pmkUniq,piecemarkId,sequence,lot,barcode
 	var idBarcode = orphanInternalBCList.pop();
 	if (false && application.isInDeveloper()){application.output('id barcode is '+idBarcode)}
 	if (false && application.isInDeveloper()){application.output(recIndex+' created idfile '+rec);}
-	rec.piecemark_id = piecemarkId;
 	rec.sequence_id = seqId;
 	rec.lot_id = lotId;
 	rec.id_serial_number_id = barcodeId;
@@ -2793,7 +2907,7 @@ function createIdfileRecord(idfilesFSet,pmkUniq,piecemarkId,sequence,lot,barcode
 	rec.job_uuid = scopes.jobs.importJob.jobId;//20190108 add job uuid
 	rec.original_quantity = origQuant;
 	rec.summed_quantity = summQuantity;
-	rec.id_guid = idBarcode;
+	//rec.id_guid = idBarcode;
 
 	/**
 	var sql = "INSERT INTO import_guids (import_guid_uuid,assem_guid,part_guid,import_table_id,edit_date,modification_date,tenant_uuid,job_id,guid_order) VALUES (?,?,?,?,?,?,?,?,?)";
@@ -2814,27 +2928,23 @@ function createIdfileRecord(idfilesFSet,pmkUniq,piecemarkId,sequence,lot,barcode
 */
 	getUniqPcmkEntry(rec.job_uuid,rec.idfile_id,rec.piecemark_id,sheet_uuid,rec.lot_id,rec.id_serial_number_id,rec.sequence_id,quantity,rec.tenant_uuid,origQuant,bcCount);
 	warningsMessage('Pm '+pmkUniq+' : '+utils.stringRight(piecemarkId, 8)+', '+quantity+' items',false);
-	if (globals.session.appName != 'STS X Embedded'){
-		rec.shop_order = forms.kiss_option_import.jobShopOrder;
-		rec.id_location = forms.kiss_option_import.importArea;
-		if (remarks){
-			if (forms.kiss_option_import.saveNotesInto.search('Control #') != -1){
-				rec.control_number = remarks;
-			}
-			if (forms.kiss_option_import.saveNotesInto.search('Erection Dwg') != -1){
-				rec.erection_drawing = remarks;
-			}
-			if (forms.kiss_option_import.notesContainCamber){
-					rec.camber = camberInfo(remarks);//resolves ticket#5
-			}
+	rec.shop_order = forms.kiss_option_import.jobShopOrder;
+	rec.id_location = forms.kiss_option_import.importArea;
+	if (remarks){
+		if (forms.kiss_option_import.saveNotesInto.search('Control #') != -1){
+			rec.control_number = remarks;
 		}
-	}
+		if (forms.kiss_option_import.saveNotesInto.search('Erection Dwg') != -1){
+			rec.erection_drawing = remarks;
+		}
+		if (forms.kiss_option_import.notesContainCamber){
+				rec.camber = camberInfo(remarks);//resolves ticket#5
+		}
+	}	
 	rec.id_creation_date = importDate;
 	if (forms.import_performance_setting && forms.import_performance_setting.insJobSO){
 		rec.shop_order = forms.import_performance_setting.insJobSO;
-	}
-	//createdRecords++;
-	
+	}	
 	return rec;
 }
 /**
@@ -2847,6 +2957,41 @@ function createIdfileRecord(idfilesFSet,pmkUniq,piecemarkId,sequence,lot,barcode
  * @properties={typeid:24,uuid:"6B7CC441-0D80-437B-A251-4809C83CB448"}
  */
 function createPiecemark(fsRec,unique){
+	var importDateStr = importDate.toString().replace(/GMT-0500 /,'');
+	var pCols = scopes.jobs.importJob.pcmkCols;
+	var tPcmk = new Array(pCols.length);
+	var pcmkId = application.getUUID().toString();
+	tPcmk[pCols.indexOf('piecemark_id')] = pcmkId;
+	tPcmk[pCols.indexOf('create_date')] = importDateStr;
+	tPcmk[pCols.indexOf('tenant_uuid')] = globals.session.tenant_uuid;
+	tPcmk[pCols.indexOf('job_uuid')] = scopes.jobs.importJob.jobId.toString();
+	tPcmk[pCols.indexOf('part_serial')] = createPartSerial();
+	tPcmk[pCols.indexOf('parent_template_id')] = currentPcmkParentId;
+	tPcmk[pCols.indexOf('material')] = fsRec.material;
+	tPcmk[pCols.indexOf('finish')] = fsRec.finish;
+	tPcmk[pCols.indexOf('grade')] = fsRec.grade;
+	tPcmk[pCols.indexOf('item_length')] = (fsRec.item_length) ? fsRec.item_length*1 : 0;
+	tPcmk[pCols.indexOf('item_quantity')] = fsRec.item_qty;
+	tPcmk[pCols.indexOf('pcmk_qty')] = fsRec.pcmk_qty;
+	tPcmk[pCols.indexOf('item_weight')] = fsRec.item_weight;
+	tPcmk[pCols.indexOf('item_weight_lbs')] = scopes.globals.kgToLb(fsRec.item_weight);
+	tPcmk[pCols.indexOf('item_length_in')] = scopes.globals.mmToIn(fsRec.item_length);
+	//tPcmk[pCols.indexOf('item_width')] = fsRec.item_width;
+	//tPcmk[pCols.indexOf('item_width_in')] = scopes.globals.mmToIn(fsRec.item_width);
+	tPcmk[pCols.indexOf('item_length_char')] = scopes.globals.ftDecToString('INCHES',scopes.globals.mmToIn(fsRec.item_length),13,'ALL');
+	tPcmk[pCols.indexOf('parent_piecemark')] = fsRec.parent_piecemark;
+	tPcmk[pCols.indexOf('piecemark')] = fsRec.piecemark;
+	tPcmk[pCols.indexOf('sheet_id')] = dsSheetArray["_"+fsRec.sheet_number];
+	tPcmk[pCols.indexOf('e_route_code_id')] = (importJob.useKissRtCodes) ? globals.m.routes[fsRec.route_code] : importJob.routingId;
+	tPcmk[pCols.indexOf('description')] = (fsRec.remarks && (forms.kiss_option_import.saveNotesInto.search('Description') != -1)) ? fsRec.remarks : '';
+	//tPcmk[pCols.indexOf('piecemark_id')] = pcmkId;
+
+	if (!scopes.jobs.importJob.pcmksCreate){scopes.jobs.importJob.pcmksCreate = []}
+	var emptyArray = [];
+	scopes.jobs.importJob.pcmksCreate.push(emptyArray.concat(tPcmk));//insert into an array for later bulk creation with rawSQL
+
+	dsPiecemarkArray[unique] = pcmkId.toString();
+	if (1==1){return}
 	/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
 	var fs = databaseManager.getFoundSet('stsservoy','piecemarks');
 	commitTransactions();
@@ -2856,7 +3001,6 @@ function createPiecemark(fsRec,unique){
 		currentPcmkParentId = rec.piecemark_id;
 	}
 	rec.create_date = importDate;
-	//rec.job_id = scopes.jobs.importJob.jobId;//20190108 add job uuid
 	rec.job_uuid = scopes.jobs.importJob.jobId;//20190108 add job uuid
 	rec.tenant_uuid = globals.session.tenant_uuid;
 	rec.part_serial = createPartSerial();
@@ -2875,16 +3019,11 @@ function createPiecemark(fsRec,unique){
 	rec.parent_piecemark = fsRec.parent_piecemark
 	rec.piecemark = fsRec.piecemark;
 	rec.sheet_id = dsSheetArray["_"+fsRec.sheet_number];
-	///var routeCode = fsRec.e_route_code;
-	if (globals.session.appName != 'STS X Embedded'){
-		//if (globals.m.routes.indexOf(fsRec.e_route_code_id) == -1){
-		if (importJob.useKissRtCodes){
-			rec.e_route_code_id = globals.m.routes[fsRec.route_code];//fsRec.route_code;
-		} else {
-			rec.e_route_code_id = importJob.routingId;//globals.m.routes[fsRec.e_route_code_id];
-		}
+	if (importJob.useKissRtCodes){
+		rec.e_route_code_id = globals.m.routes[fsRec.route_code];//fsRec.route_code;
+	} else {
+		rec.e_route_code_id = importJob.routingId;//globals.m.routes[fsRec.e_route_code_id];
 	}
-	//application.output('route code id '+rec.e_route_code_id);
 	if (fsRec.remarks && (globals.session.appName != 'STS X Embedded')){
 		if (forms.kiss_option_import.saveNotesInto.search('Description') != -1){
 			rec.description = fsRec.remarks;
@@ -3029,7 +3168,7 @@ function createSequenceNumber(sequenceNumber){
  * @properties={typeid:24,uuid:"F7557498-BEE0-49F6-90D6-5E1D7796E89F"}
  */
 function createLotNumber(lotNumber){
-	scopes.jobs.warningsMessage('Creating Lot'+lotNumber,true);
+	//scopes.jobs.warningsMessage('Creating Lot'+lotNumber,true);
 
 	var unique = '_'+lotNumber;
 	if (dsLotArray[unique]){
@@ -4783,7 +4922,7 @@ function purgeDeletedIdfiles(){
 		var marks = databaseManager.createSelect('db:/stsservoy/pcmk_instances');
 		marks.result.add(marks.columns.pcmk_instance_id);
 		marks.result.distinct = true;
-		marks.where.add(marks.columns.id_serial_uuid.isin(tempPurgeIdfiles));
+		marks.where.add(marks.columns.id_serial_uuid.isin(purgeBarcodeRecords));
 		/** @type {JSFoundSet<db:/stsservoy/pcmk_instances>} */
 		var marksResult = databaseManager.getFoundSet(marks);
 		marksResult.deleteAllRecords();
@@ -5002,8 +5141,11 @@ function importRecordPiecemarkExist(record){
 			
 			//if (false && application.isInDeveloper()){application.output('create piecemark '+unique)}
 			createPiecemark(record,unique);
+			dsPiecemarkTransient.push(unique);//This is a piecemark on this import so mark as NOT yet in DB
 		} else {
-			updatePiecemark(record,unique);
+			if (dsPiecemarkTransient.indexOf(unique) == -1){
+				updatePiecemark(record,unique);
+			}
 		}
 		return true;
 	}
@@ -5820,27 +5962,27 @@ function importRecords_sheet(event){
 	//warningsMessage('Create Sheets',true);
 	createSheets();//make sure sheets exist before import
 	warningsMessage('Saving Sheets',true);
-	//warningsMessage('Create Sequences',true);
 	createSequenceNumbers();
 	warningsMessage('Saving Sequences',true);
-	//warningsMessage('Create Lots',true);
 	createLotNumbers();
 	warningsMessage('Saving Lots',true);
 	
 	getImportSettings(jobId);
+	dsPiecemarkTransient = [];
+	if (importJob.sheetImportOnly){
+		deleteNonImportGuids();
+	}
 
 	if (databaseManager.saveData()){databaseManager.commitTransaction()}
-	databaseManager.startTransaction();
+	//databaseManager.startTransaction();
 
+	importJob.guidsFabSuite = [];
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
 	q.result.add(q.columns.import_table_id);
 	q.where.add(q.columns.job_id.eq(jobId.toString()));
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.sort.add(q.columns.edit_date.asc);
-	if (application.getSolutionName() == "STS X Embedded"){
-		q.where.add(q.columns.selected.not.eq(0));
-	}
 	var Q = databaseManager.getFoundSet(q);
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
 	var record = null; var idx = 1;
@@ -5850,18 +5992,20 @@ function importRecords_sheet(event){
 	//var rows = retainFS.getMaxRowIndex();
 	//for (var index = 0;index < rows;index++){
 	var routeList = [];
+	scopes.jobs.importJob.pcmksCreate = [];
+	scopes.jobs.importJob.idfilesCreate = [];
 	for (var route in globals.m.routes){if (route.length > 30){routeList.push(route)}}
 	idx = 1;Q.sort('sequence_number asc,piecemark asc,parent_piecemark asc');
+	var lastMinor = '';
 	while (record = Q.getRecord(idx++)){
-		application.output(record.piecemark+' '+record.parent_piecemark+' '+record.sequence_number);
-		//retainFS.rowIndex = index+1;
-		//if (!record.action || record.action == ""||record.select_hidebool == 1){continue}
-		if (globals.session.appName != "STS X Embedded"){
-			if (!record.import_status || record.import_status == ""){continue}
-			if (record.import_status == i18n.getI18NMessage('import.ignore')){continue}//RECENT import_status settings
-		}
-		//warningsMessage('Processing piecemarks line '+index);
-		warningsMessage('Check '+idx+'/'+maxSize+' pcmk '+record.parent_piecemark+' '+record.piecemark,false);
+		idfilePool = [];
+		if (!record.import_status || record.import_status == ""){continue}
+		if (record.import_status == i18n.getI18NMessage('import.ignore')){continue}//RECENT import_status settings
+		var seqId = (dsSheetArray['_'+record.sequence_number]) ? dsSheetArray['_'+record.sequence_number] : createSequenceNumber(record.sequence_number);
+		var lotId = (dsLotArray['_'+record.lot_number]) ? dsLotArray['_'+record.lot_number] : createLotNumber(record.lot_number);
+		var sheetId = (dsSheetArray['_'+record.sheet_number]) ? dsSheetArray['_'+record.sheet_number] : createSheet(record.sheet_number);
+		//application.output(record.piecemark+' '+record.parent_piecemark+' '+record.sequence_number);
+		warningsMessage('Check '+idx+'/'+maxSize+' pcmk '+record.parent_piecemark+' '+record.piecemark+' '+record.sequence_number,false);
 
 		if (importJob.useKissRtCodes && record.route_code){
 			if (routeList.indexOf(record.route_code) == -1){
@@ -5879,6 +6023,7 @@ function importRecords_sheet(event){
 			currentPcmkInfo = {
 				totalMarks : 0,
 				totalBCs : 0,
+				bcIds : [], // all barcode numbers in use
 				removeID : [], // IDs that are obviously removeable
 				removeIDBC :[], // BCs that can be removed
 				lockedBC : [], // BCs that are locked, good for count
@@ -5886,7 +6031,10 @@ function importRecords_sheet(event){
 				printed : [],//indexed printed idfile ID and BC ID array
 				dirty : [], // indexed ID and BC ID dirty array
 				guids : [], // guids seen in import files
-				distribution : [] //assoc array of barcodes holding arrays of idfiles
+				distribution : [], //assoc array of barcodes holding arrays of idfiles
+				guidDistrib : [], // assoc array of guids holding arrays of idfiles
+				guidParent: [],
+				elsewhereID: []
 			}
 		}
 		var exists = importRecordPiecemarkExist(record);
@@ -5894,11 +6042,18 @@ function importRecords_sheet(event){
 			var uniquePm = uniquePiecemark(record);
 			/** @type {String} */
 			var pcmkId = dsPiecemarkArray[uniquePm];
-			getImportTableGuids(record.import_table_id);
+			getImportTableGuids(record.import_table_id,pcmkId,record);
             /** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-        	var idfilesFSet = getPiecemarkIdfiles2(pcmkId,record.sequence_number,record.lot_number);//list of db idfiles for this pcmk
+        	var idfilesFSet = getPiecemarkIdfiles2(pcmkId,record, 'checkGuids');//list of db idfiles for this pcmk
+        	dsIdfileList = [];var maxIdfileCnt = idfilesFSet.getSize();
+        	var rec = null; var idx2 = 1;
+        	while (rec = idfilesFSet.getRecord(idx2)){
+        		dsIdfileList[rec.idfile_id.toString()] = idx2;
+        		uniqueIdfiles[rec.idfile_id.toString()] = idx2;
+        		idx2++;
+        	}
 
-        	if (idfilesFSet.getSize() > 0){databaseManager.saveData(idfilesFSet);}//keep job number, blank load, pcmks, barcodes, any bom data checkbox}
+        	if (idfilesFSet.getSize() > 0){if (databaseManager.hasRecordChanges(idfilesFSet)){databaseManager.saveData(idfilesFSet);}}//keep job number, blank load, pcmks, barcodes, any bom data checkbox}
 
 			var bc = getIdfileBcIDs(idfilesFSet,record);
 			if (application.isInDeveloper()){
@@ -5907,49 +6062,62 @@ function importRecords_sheet(event){
 					application.output('\t'+item+': '+bc[item]);
 				}
 			}
-
+			idfilePool = bc.pool.concat(new Array());
+			//importJob.currentPcmkJoins = getCurrentPcmkJoins();
+			//if (!importJob.updatePcmkInstances){importJob.updatePcmkInstances = }
 			importRecordCheckIdfileCount2(idfilesFSet,record,bc);
+			if (lastMinor != record.piecemark && importJob.pcmksCreate.length + importJob.idfilesCreate.length > 200){
+				if (!(!importJob.pcmksCreate) && importJob.pcmksCreate.length > 0){
+					var columns = sqlArrayToColumnNames(importJob.pcmkCols);
+					var values = sqlArgsToSqlData(importJob.pcmksCreate);
+					rawSQL = "INSERT INTO piecemarks "+columns+" VALUES "+values+";";
+					var success = plugins.rawSQL.executeSQL('stsservoy','piecemarks',rawSQL);
+					if (!success){application.output('ERROR Inserting piecemarks: '+rawSQL+"\ncols:"+importJob.pcmkCols.length+'\nvals:'+importJob.pcmksCreate[0].length)}
+				}
+				if (!(!importJob.idfilesCreate) && importJob.pcmksCreate.length > 0){
+					columns = sqlArrayToColumnNames(importJob.idfileCols);
+					values = sqlArgsToSqlData(importJob.idfilesCreate);
+					rawSQL = "INSERT INTO idfiles "+columns+" VALUES "+values+";";
+					success = plugins.rawSQL.executeSQL('stsservoy','idfiles',rawSQL);
+					if (!success){application.output('ERROR Inserting idfiles: '+rawSQL+"\ncols:"+importJob.idfileCols.length+'\nvals:'+importJob.idfilesCreate[0].length)}
+				}
+				scopes.jobs.importJob.pcmksCreate = [];
+				scopes.jobs.importJob.idfilesCreate = [];
+				savePartSerial();
+			}
 		}
-		commitTransactions(true);
+		lastMinor = record.piecemark;
 	}
+	if (application.isInDeveloper()){application.output('Final new record raw commit ')}
+	if (!(!importJob.pcmksCreate && importJob.pcmksCreate.length > 0) && importJob.pcmksCreate.length > 0){
+		columns = sqlArrayToColumnNames(scopes.jobs.importJob.pcmkCols);
+		values = sqlArgsToSqlData(scopes.jobs.importJob.pcmksCreate);
+		rawSQL = "INSERT INTO piecemarks "+columns+" VALUES "+values+";";
+		success = plugins.rawSQL.executeSQL('stsservoy','piecemarks',rawSQL);
+		application.output('piecemarks '+importJob.pcmksCreate)
+		if (!success){application.output('ERROR Inserting piecemarks: '+rawSQL+"\ncols:"+importJob.pcmkCols.length+'\nvals:'+importJob.pcmksCreate[0].length)}
+	}
+	if (!(!importJob.idfilesCreate) && importJob.idfilesCreate.length > 0){
+		columns = sqlArrayToColumnNames(scopes.jobs.importJob.idfileCols);
+		values = sqlArgsToSqlData(scopes.jobs.importJob.idfilesCreate);
+		rawSQL = "INSERT INTO idfiles "+columns+" VALUES "+values+";";
+		success = plugins.rawSQL.executeSQL('stsservoy','idfiles',rawSQL);
+		if (!success){application.output('ERROR Inserting idfiles: '+rawSQL+"\ncols:"+importJob.idfileCols.length+'\nvals:'+importJob.idfilesCreate[0].length)}
+	}
+	commitTransactions(true);
+
+	plugins.rawSQL.flushAllClientsCache('stsservoy','piecemarks');
+	plugins.rawSQL.flushAllClientsCache('stsservoy','idfiles');
 	timeIn = 0;	//warningsMessage('Saving Piecemark markers ');
 	if (databaseManager.hasTransaction()){commitTransactions(true)}
-	
-	//readPiecemarks();
+	savePartSerial();	
+
 	var recStart = new Date().getTime();
 	if (!databaseManager.hasTransaction()){databaseManager.commitTransaction();databaseManager.saveData();databaseManager.startTransaction()}
 	createdIdfileCount = 0;
-	/**for (index = 0;index < rows;index++){
-	idx = 1;
-	while (record = Q.getRecord(idx++)){
-
-		var recCnt = rows-index;
-		var recCurrT = new Date().getTime();
-		var dur = recCurrT-recStart;
-		var recSec = Math.floor(10*index/(dur/1000))/10;
-		if (application.isInDeveloper()){application.output('rec sec '+recSec)}
-		forms.kiss_option_import.importRecordCount = recCnt;
-		forms.kiss_option_import.importSpeed = '('+recSec+'/s)';
-		forms.kiss_option_import.errorMessage = Math.floor(rows/recSec/6)/10+' min '+createdIdfileCount+' pieces';
-		remainingTime = Math.floor((rows-index)/recSec/6)/10+' min ';
-		retainFS.rowIndex = index+1;
-		if (!retainFS.action || retainFS.action == ""){continue}
-		warningsMessage('Processing idfiles line '+index);
-		//retainFS.import_status = "";
-		record = retainFS;
-		var exists = importRecordPiecemarkExist(record,true);
-		if (exists) {
-			importRecordCheckIdfileCount(record,true);
-		}
-		commitTransactions();
-	}
-	databaseManager.commitTransaction();databaseManager.startTransaction();
-	warningsMessage('Committing non-aggregate piecemarks.');
-	*/
-	//createSummedMarks(forms.kiss_option_import.transitionFSsumm);
 	commitTransactions(true);
 	if (databaseManager.hasTransaction()){databaseManager.commitTransaction()}
-	//warningsMessage('Summed piecemarks saving.',true);
+
 	deleteIdfiles(); // delete marked Idfiles, along with transaction and barcodes
 	deletePiecemarks();
 	deleteImportBatch();
@@ -6066,6 +6234,21 @@ function importRecordsAlt(event){
 	} else {
 		forms['kiss_option_import'].deleteKiss = false;
 		//deleteKiss = false;
+	}
+	rec = null; var idx = 1;var wrongLabelCount = false;
+	while (rec = fs.getRecord(idx++)){
+		if (rec.import_status == i18n.getI18NMessage('import.ignore')){continue}
+		// total_labor_qty, 
+		wrongLabelCount = (rec.last_bc_qty*1+rec.barcode_qty*1 != rec.sequence_quantity);
+		wrongLabelCount = (rec.last_bc_qty*1 < 0);
+		if (wrongLabelCount){break}
+	}
+	if (wrongLabelCount){
+		forms['kiss_option_import'].enabled = true;
+		forms['import_table'].controller.enabled = true;
+		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.import.btn.kiss.import'),i18n.getI18NMessage('1279'));
+		forms['import_table'].foundset.setSelectedIndex(idx-1);
+		return;
 	}
 	reply = globals.DIALOGS.showQuestionDialog(i18n.getI18NMessage('sts.txt.question'),
 		i18n.getI18NMessage('sts.txt.question.continue.with.import'),
@@ -6449,6 +6632,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 		if (forms[formName].elements.btn_GetKiss){
 			forms[formName].elements.btn_GetKiss.enabled = true;
 		}
+		if (formName.search("kiss_import") != -1){scopes.jobs.importJob.jobId = rec.job_id.toString()}
 		if (formName.search("barcode_idlabel") == -1 || formName.search(/(recall|remove)/) != -1){
 			browseInfoEnable(event);
 			//scopes.jobs.onGetInformation(event,false);
@@ -10347,7 +10531,6 @@ i18n:import.update
 i18n:import.delete
 	 */
 	var isParent = (record.piecemark == record.parent_piecemark);
-	var parentIdfileId = null;
 	var weightLimit = scopes.prefs.wtPrompt;// multiple label ask if less than a specific weight
 	var quantLimit = scopes.prefs.qtyPrompt;// multiple id if quant greater than some number
 	var isSubAssembly = (record.parent_piecemark != record.piecemark);//is this a sub assembly mark (STSe)
@@ -10377,7 +10560,7 @@ i18n:import.delete
 	var seqNum = record.sequence_number;
 	var removeIdCount = info.totalMarks - itemQty;
 	var createIdCount = (removeIdCount < 0) ? removeIdCount * -1 : 0; 
-	databaseManager.saveData(idfilesFSet);//keep job number, blank load, pcmks, barcodes, any bom data checkbox
+	if (databaseManager.hasRecordChanges(idfilesFSet)){databaseManager.saveData(idfilesFSet);}//keep job number, blank load, pcmks, barcodes, any bom data checkbox
 	var overwrite = {
 		piecemark_id : pcmkId,
 		sequence_id : idfilesFSet.sequence_id,
@@ -10393,63 +10576,50 @@ i18n:import.delete
 		id_location : idfilesFSet.id_location
 	}
 	
-	
+    importJob.updatePcmkInstances = getCurrentPcmkJoins(record,pcmkId);
+
 	//-------------------------
-	var guids = currentGuidsPcmk;
-	var guidsParent = currentGuidsPcmkParent;
+	//var guids = importJob.guidsFabSuite[record.piecemark];
+	var guids = importJob.currentGuidsPcmk;
+	var guidsParent = importJob.currentGuidsPcmkParent;
     var guidsExist = (guids.length > 0);
     var saveFSet = false;
     var idfilesCreateCount = createIdCount*1;
     var barcodeArray = [];
-	if (guidsExist){// && info.removeID.length > 0) {//check record with guid not in import
+	if (guidsExist){// && info.removeID.length > 0) {//check record with guid not in import and remove if not in FS GUID list
 		var idx = 1; var rec = null;
 		while (rec = idfilesFSet.getRecord(idx++)){
+			var pInstance = rec.id_serial_number_id;
+			if (importJob.updatePcmkInstances.indexOf(pInstance) == -1){importJob.updatePcmkInstances.push(pInstance)}//track instances for updating table pcmk_instances
 			var guidIdx = guids.indexOf(rec.guid_minor);
-			if (guidIdx == -1){//GUID is NOT in FS, so delete already
-				saveFSet = true;
-				rec.guid_major = null;
-				rec.guid_minor = null;
+			if (guidIdx != -1){//GUID in FS, delete will occur at the beginning of import
+				/** saveFSet = true;
+				null;;//STOP
+				null;;//STOP
+				null;;//STOP
+				null;;//STOP
+				null;;//STOP
+				null;;//STOP
+				
+				//rec.guid_major = null;
+				//rec.guid_minor = null;
 				rec.id_serial_number_id = null;
 				rec.edit_date = importDate;
 				rec.delete_flag = 99;
 				// delete transactions for this idfile_id
 				//idPool.push(rec.idfile_id.toString());//may need this idfile again, so reuse
 				idfilesCreateCount++;
-			} else {
-				delete guids[guidIdx];
-				delete guidsParent[guidIdx];				
+			} else { */
+				if (rec.guid_major != guidsParent[guidIdx]){
+					rec.guid_major = guidsParent[guidIdx];
+					saveFSet = true;
+				}
+				guids[guidIdx] = '';
+				guidsParent[guidIdx] = '';				
 			}
 		}
 		if (saveFSet){databaseManager.saveData(idfilesFSet)}
-	}
-	var idPoolGuids = [];
-	while (idfilesCreateCount-- != 0){
-		var idfile = createIdfileRecord(idfilesFSet,uniquePm,pcmkId,record.sequence_number,record.lot_number,bcId,labelCapacity,record.item_qty,summQuantity,record.remarks);
-		//ptr.push(idfile.idfile_id);
-		idfileId = idfile.idfile_id.toString();
-		//uniqueIdfiles[idfileId] = idfilesFSet.getSize();
-		idfile.create_date = importDate;
-		if (!newIdfiles){newIdfiles = []}
-		newIdfiles.push(idfile);
-		idPool.push(idfileId);
-		idPoolGuids.push(idfileId);
-	}
-	null;var uniqueIdfiles = [];var tmpRec = null;var idx4 = 1;
-	while (rec = idfilesFSet.getRecord(idx4)){
-		uniqueIdfiles[rec.idfile_id.toString()] = idx4++;
-	}
-	if (guids.length > 0){
-		for (guidIdx = 0;guidIdx < guids.length;guidIdx++){
-			if (!guids[guidIdx]){continue}
-			idfileId = idPoolGuids.pop();
-			//idfilesFSet.loadRecords(application.getUUID(idfileId));
-			//rec = tempNewIdfiles.pop()
-			var rec2 = idfilesFSet.getRecord(uniqueIdfiles[idfileId]);
-			rec2.guid_major = guidsParent[guidIdx];
-			rec2.guid_minor = guids[guidIdx];
-			application.output('record '+rec2.guid_major+' '+rec2.guid_minor+' '+uniqueIdfiles[idfileId]+' '+rec2)
-		}
-	}
+	}//now have a base from which to work
 	/**
 	 * 
 		totalMarks : 0,
@@ -10479,17 +10649,19 @@ i18n:import.delete
 	 * bar code over capacity, remove idfile++  
 	 */
 	bcCount = bcQuant - dbBcCount;
-	while (bcCount > 0){//add BCs
+	while (bcCount > 0){//add BCs and save overflow idfiles to idPool
 		var bcId = createValidBarcode(); info.distribution[bcId] = []; info.totalBCs++; bcCount--; bcPool.push(bcId);
-		for (barId in info.distribution){
-			while (info.distribution[barId].length > bcCapacity){
-				var remId = info.distribution[barId].pop().toString();
-				if (info.lockedID.indexOf(remId) != -1){info.distribution[barId].unshift(remId);break}
-				idPool.push(remId);
-			}			
-		}
+		//importJob.updatePcmkInstances.push(bcId);
+		if (importJob.updatePcmkInstances.indexOf(bcId) == -1){importJob.updatePcmkInstances.push(bcId)}//track instances for updating table pcmk_instances
 	}
-	if (bcCount < 0) {//remove as many bar codes as necessary
+	for (barId in info.distribution){
+		while (info.distribution[barId].length > bcCapacity){
+			var remId = info.distribution[barId].pop().toString();
+			if (info.lockedID.indexOf(remId) != -1){info.distribution[barId].unshift(remId);break}
+			idPool.push(remId);
+		}			
+	}
+	if (bcCount < 0) {//remove as many bar codes as necessary save idfiles to idPool
 		for (var barId in info.distribution){
 			if (bcCount == 0){break}
 			barId = barId.toString();
@@ -10497,7 +10669,7 @@ i18n:import.delete
 			while (info.distribution[barId].length > 0){
 				remId = info.distribution[barId].pop();
 				remId = remId.toString();
-				rec = idfilesFSet.getRecord(uniqueIdfiles[remId]);
+				rec = idfilesFSet.getRecord(dsIdfileList[remId]);
 				if (rec.delete_flag == 99){continue}
 				if (info.lockedID.indexOf(remId) != -1){info.distribution[barId].unshift(remId);break}
 				idPool.push(remId);
@@ -10509,7 +10681,7 @@ i18n:import.delete
 	}
 
 
-	while (removeIdCount > 0){
+	while (removeIdCount > 0){//this should mirror what comes across from fabsuite with FS GUIDs
 		for (barId in info.distribution){
 			barId = barId.toString();
 			if (info.lockedBC.indexOf(barId) != -1){continue}
@@ -10524,125 +10696,229 @@ i18n:import.delete
 		}
 		break;//this is for those times where the id cannot be removed due to history or printed complete functions TODO
 	}
-	var newIdfiles = [];
-	//distribute idfiles among bar codes, create additional if necessary
-	var idx1 = 0;
+	
+	var idPoolGuids = [];
 	var totalLabelCount = bcQuant;
-	for (bcId in info.distribution){//check and create barcodes layout: weightLimit, quantLimit, summaryRec?, bcCapacity
-		bcId = bcId.toString();
-		barcodeArray.push(bcId);
-		if (info.lockedBC.indexOf(bcId) != -1){continue}
-		var ptr = info.distribution[bcId];
+	/** @type {JSRecord<db:/stsservoy/idfiles>} */
+	var idfile = null;
+	var idfileId = ''; var idfileCapped = [];
+	var bulkUpdate = [];var tempArray = []; var tempGlobArray = [];
+	var idCols = ['idfile_id','edit_date','original_quantity','summed_quantity','id_serial_number_id',
+	'lot_id','sequence_id','shop_order','id_location','control_number','erection_drawing'];
+	var colEquivs = '';
+	for (var idx3 = 0;idx3 < idCols.length;idx3++){
+		//application.output(idCols[idx3])
+		colEquivs += idCols[idx3] +' = i2.'+idCols[idx3];
+		if (idx3 != idCols.length-1){colEquivs += ','}
+		colEquivs += '\n';
+	}
+	//application.output('colEquivs '+colEquivs);
+	var lastBarcode = '';
+	for (barId in info.distribution){
+		if (!lastBarcode){lastBarcode = barId}
+		ptr = info.distribution[barId];
+		if (ptr.length < info.distribution[lastBarcode].length){lastBarcode = barId}
+	}
+	for (barId in info.distribution){
+		var ptr = info.distribution[barId];
 		var labelCapacity = bcCapacity;
-		if (--totalLabelCount == 0 && bcCapacityLast != 0){labelCapacity = bcCapacityLast}
+		//if (--totalLabelCount == 0 && bcCapacityLast != 0){labelCapacity = bcCapacityLast}
+		if (barId == lastBarcode && bcCapacityLast != 0){labelCapacity = bcCapacityLast}//last barcode not always last barcode...
+		//update currently allocated idfiles on this barcodeid
+		bulkUpdate = bulkUpdate.concat(ptr);
 
-		//var list = info.idArray; 
-		//while (ptr.length*1 < (bcCapacity+1)*1){
-		while (idPool.length > 0 && ptr && ptr.length*1 < labelCapacity*1){// && (scopes.prefs.maxwt*1 > (ptr.length+1)*record.item_weight)){
-			/** @type {String} */
-			var idfileId = idPool.pop();
-			idfileId = idfileId.toString();
-			//idfilesFSet.loadRecords(application.getUUID(idfileId));
-			/** @type {JSRecord<db:/stsservoy/idfiles>} */
-			idfile = idfilesFSet.getRecord(uniqueIdfiles[idfileId]);
-			if (!idfile){
-				null;//no idfile, checking 
+		var newIds = [];var fsMajor = '';var fsMinor = '';
+		while (ptr && ptr.length*1 < labelCapacity*1){
+			idfileId = idPool.pop();
+			if (!idfileId){
+				//var fsMajor = guidsParent.pop();
+				while (!fsMajor && guidsParent.length > 0){fsMajor = guidsParent.pop()}
+				while (!fsMinor && guids.length > 0){fsMinor = guids.pop()}
+
+				idfileId = createIdfileRecord(idfilesFSet,uniquePm,pcmkId,record.sequence_number,record.lot_number,barId,labelCapacity,seqQty,summQuantity,record.remarks,bcCount,fsMajor,fsMinor);
+				if (idfileCapped.indexOf(idfileId.toString()) == -1){idfileCapped.push(idfileId.toString())} else {continue}
+				scopes.jobs.warningsMessage('Creating PM '+uniquePm,false);
+				newIds.push(idfileId);
 			} else {
-				idfile.edit_date = importDate;
+				if (idfileCapped.indexOf(idfileId.toString()) == -1){idfileCapped.push(idfileId.toString())} else {continue}
+				scopes.jobs.warningsMessage('Updating PM '+uniquePm,false);
+				tempArray = new Array(idCols.length);
+				tempArray[idCols.indexOf('idfile_id')] = idfileId.toString();
+				tempArray[idCols.indexOf('edit_date')] = "CAST(''"+importDate+"'' AS DATE)";//.toString().replace(/GMT-0500 /,'');
+				tempArray[idCols.indexOf('original_quantity')] = labelCapacity;
+				tempArray[idCols.indexOf('summed_quantity')] = summQuantity;
+				tempArray[idCols.indexOf('id_serial_number_id')] = barId.toString();
+				tempArray[idCols.indexOf('lot_id')] = dsLotArray["_"+record.lot_number].toString();
+				tempArray[idCols.indexOf('sequence_id')] = dsSequenceArray["_"+record.sequence_number].toString();
+				//if (record.reprint){tempArray[idCols.indexOf(searchElement)] = null}
+				//tempArray[idCols.indexOf('original_quantity')] = seqQty;
+				tempArray[idCols.indexOf('shop_order')] = forms['kiss_option_import'].jobShopOrder;
+				tempArray[idCols.indexOf('id_location')] = forms['kiss_option_import'].importArea;
+				if (record.remarks){
+					if (forms['kiss_option_import'].saveNotesInto.search('Control #') != -1){
+						tempArray[idCols.indexOf('control_number')] = record.remarks;
+					}
+					if (forms['kiss_option_import'].saveNotesInto.search('Erection Dwg') != -1){
+						tempArray[idCols.indexOf('erection_drawing')] = record.remarks;
+					}
+					//if (forms['kiss_option_import'].notesContainCamber){//this is a piecemarks column, not idfiles
+					//	tempArray[idCols.indexOf('camber')] = record.remarks;//resolves ticket#5
+					//}
+				}
+				bulkUpdate.push(idfileId.toString());
+				tempGlobArray.push(tempArray);
+				//bulkUpdate.push(tempArray);
 			}
-			ptr.push(idfile.idfile_id.toString());
+			ptr.push(idfileId.toString());
 
 			if (record.piecemark.toUpperCase() == record.parent_piecemark.toUpperCase()){
-				currentIdflParentId = idfile.idfile_id.toString();//.push(idfile.idfile_id);//20180922 set corrected parent idfile id, need this for id_serial for parent 
+				currentIdflParentId = idfileId.toString();//.push(idfile.idfile_id);//20180922 set corrected parent idfile id, need this for id_serial for parent 
 				currentPcmkParentId = pcmkId.toString();// this is the parent pcmk id for the current piecemark, need this for pcmk info
 			}
-			
-			idfile.parent_piecemark_id = currentPcmkParentId;//currentIdflParentId[idx1];
-			idfile.parent_idfile_id = currentIdflParentId;//20180921 import_file parent_idfile_id to keep track of minor parent
-			idfile.id_serial_number_id = bcId;
-			idfile.lot_id = dsLotArray["_"+record.lot_number].toString();//+"|"+"_"+record.sequence_number];
-			if (record.reprint){idfile.lprint = null} //if reprint reset null
-			//idfile.guid_major = guidsParent.pop();
-			//idfile.guid_minor = guids.pop();
-			idfile.summed_quantity = summQuantity;
-			idfile.edit_date = importDate;
-			if (!idfile.original_employee_uuid){
-				idfile.original_employee_uuid = globals.session.employeeId.toString();
-			}
-			idfile.shop_order = forms['kiss_option_import'].jobShopOrder;
-			idfile.id_location = forms['kiss_option_import'].importArea;
+		}
+		var idx4 = 0;
+		while (ptr && idx4 < ptr.length){
+			if (newIds.indexOf(ptr[idx4]) != -1){idx4++;continue}//skip new idfileIds since they have been newly created.
+			idfileId = ptr[idx4];
+			if (idfileCapped.indexOf(idfileId.toString()) == -1){idfileCapped.push(idfileId.toString())} else {idx4++;continue}
+			scopes.jobs.warningsMessage('Updating PM '+uniquePm,false);
+			tempArray = new Array(idCols.length);
+			tempArray[idCols.indexOf('idfile_id')] = idfileId.toString();
+			tempArray[idCols.indexOf('edit_date')] = "CAST(''"+importDate+"'' AS DATE)";//.toString().replace(/GMT-0500 /,'');
+			tempArray[idCols.indexOf('original_quantity')] = labelCapacity;
+			tempArray[idCols.indexOf('summed_quantity')] = summQuantity;
+			tempArray[idCols.indexOf('id_serial_number_id')] = barId.toString();
+			tempArray[idCols.indexOf('lot_id')] = dsLotArray["_"+record.lot_number].toString();
+			tempArray[idCols.indexOf('sequence_id')] = dsSequenceArray["_"+record.sequence_number].toString();
+			//if (record.reprint){tempArray[idCols.indexOf(searchElement)] = null}
+			//tempArray[idCols.indexOf('original_quantity')] = seqQty;
+			tempArray[idCols.indexOf('shop_order')] = forms['kiss_option_import'].jobShopOrder;
+			tempArray[idCols.indexOf('id_location')] = forms['kiss_option_import'].importArea;
 			if (record.remarks){
 				if (forms['kiss_option_import'].saveNotesInto.search('Control #') != -1){
-					idfile.control_number = record.remarks;
+					tempArray[idCols.indexOf('control_number')] = record.remarks;
 				}
 				if (forms['kiss_option_import'].saveNotesInto.search('Erection Dwg') != -1){
-					idfile.erection_drawing = record.remarks;
-				}
-				if (forms['kiss_option_import'].notesContainCamber){
-					idfile.camber = camberInfo(record.remarks);//resolves ticket#5
+					tempArray[idCols.indexOf('erection_drawing')] = record.remarks;
 				}
 			}
+			bulkUpdate.push(idfileId.toString());
+			tempGlobArray.push(tempArray);
+			idx4++;
 		}
-		idx1++;
+		application.output('bulkUpdate length '+bulkUpdate.length+ ' barId '+barId)
+		/** if (0 && bulkUpdate.length > 0){
+			/** @type {QBSelect<db:/stsservoy/idfiles>} * /
+			var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+			q.where.add(q.columns.idfile_id.isin(bulkUpdate));
+			q.result.add(q.columns.idfile_id);
+			var Q = databaseManager.getFoundSet(q);
+			//application.output('idfiles count '+Q.getSize()+' first rec id '+Q.getRecord(1).id_serial_number_id)
+			if (Q.getSize() == 0){
+				if (application.isInDeveloper()){application.output('Missing idfile for Barcode Distribution!')}
+			}
+			var B = databaseManager.getFoundSetUpdater(Q);
+			//B.setColumn('original_quantity',seqQty);
+			B.setColumn('edit_date',importDate);
+			B.setColumn('original_quantity',labelCapacity);
+			B.setColumn('summed_quantity',summQuantity);
+			B.setColumn('id_serial_number_id',barId.toString());
+			B.setColumn('lot_id',dsLotArray["_"+record.lot_number].toString());
+			B.setColumn('sequence_id',dsSequenceArray["_"+record.sequence_number].toString());
+			if (record.reprint){B.setColumn('lprint',0)} //if reprint reset null
+			B.setColumn('shop_order',forms['kiss_option_import'].jobShopOrder);
+			B.setColumn('id_location',forms['kiss_option_import'].importArea);
+			if (record.remarks){
+				if (forms['kiss_option_import'].saveNotesInto.search('Control #') != -1){
+					B.setColumn('control_number',record.remarks);
+				}
+				if (forms['kiss_option_import'].saveNotesInto.search('Erection Dwg') != -1){
+					B.setColumn('erection_drawing',record.remarks);
+				}
+				//if (forms['kiss_option_import'].notesContainCamber){
+				//	B.setColumn('camber',camberInfo(record.remarks));//resolves ticket#5
+				//}
+			}
+			B.performUpdate();
+			bulkUpdate = [];
+		} */
+
 	}
-	databaseManager.saveData(idfilesFSet);
-	var rec = null; var idx = 1;
-	while (rec = newIdfiles.pop()){
-		barId = rec.id_serial_number_id.toString();
-		rec.original_quantity = info.distribution[barId].length;
-		//databaseManager.saveData(rec);
+	//databaseManager.saveData(idfilesFSet);
+	if (tempGlobArray.length > 0){
+		var idColsSql = sqlArrayToColumnNames(idCols);
+		var idArgsSql = sqlArgsToSqlData(tempGlobArray);
+		application.output('Raw Cols: '+idColsSql);
+		application.output('Raw Args: '+idArgsSql);
+		var sqlUpdate = 'UPDATE idfiles AS i SET \n'+colEquivs+
+			'FROM (VALUES\n'+idArgsSql+
+			'\n) AS i2'+idColsSql+
+			'\nWHERE i2.idfile_id = i.idfile_id';
+		application.output(sqlUpdate);
+		tempGlobArray = [];tempArray = [];
+		var sqlResponse = plugins.rawSQL.executeSQL('stsservoy','idfiles',sqlUpdate);
+		application.output(sqlResponse);
+		plugins.rawSQL.flushAllClientsCache('stsservoy','idfiles');
 	}
-	idx = 1;
-	while (rec = idfilesFSet.getRecord(idx++)){
-		if (!rec.id_serial_number_id){continue}
-		barId = rec.id_serial_number_id.toString();
-		if (rec.delete_flag == 99 || !info.distribution[barId]){continue}
-		rec.original_quantity = info.distribution[barId].length;
+	
+	for (barId in info.distribution){//check here, seems that we have three barIds not two.  Ensure it goes back to the barcode which it is not, distribution is failing
+		barcodeArray.push(barId);
 	}
-	databaseManager.saveData(idfilesFSet); 
 	barcodeArray.sort();
 	var lotId = dsLotArray['_'+record.lot_number];
 	var seqId = dsSequenceArray['_'+record.sequence_number];
 	var tenantId = globals.session.tenant_uuid;
 	var sheetId = dsSheetArray['_'+record.sheet_number];
-	getUniqPcmkClear(record.job_id.toString(),pcmkId,sheetId,lotId,barcodeArray,seqId,tenantId);
+	var cleanIds = [];
 	for (barId in info.distribution){
 		info.distribution[barId].sort();
 		idfileId = info.distribution[barId][0];
 		bcCount = info.distribution[barId].length;
-		getUniqPcmkEntry(record.job_id.toString(),idfileId,pcmkId,sheetId,lotId,barId,seqId,seqQty,tenantId,pcmkQty,bcCount);
+		var barInstance = getUniqPcmkEntry(record.job_id.toString(),idfileId,pcmkId,sheetId,lotId,barId,seqId,importQty,tenantId,pcmkQty,bcCount);
+		cleanIds.push(barInstance);
 	}
-	/** TODO save to updated pcmk_instances table here
-	 * read pcmk_instances piecemark_uuid, lot_uuid, sequence_uuid, pcmk_count, pcmk_total, pcmk_bc_count
-	 * update old pcmk instance or add it
-	 * 
-	 * remove ALL not using the current barcodes for this piecemark, lot, sequence
-	 * update pcmk_instances with current barcodes and add pcmk_total, pcmk_count, pcmk_bc_count
-	 * 
-	 */
+	getUniqPcmkClear(record,cleanIds);
 	
 	scopes.jobs.idfilesToDelete = idDeletes.concat(idPool);
 	scopes.jobs.barcodesToDelete = bcDeletes.concat(bcPool);
 }
 /**
  * @param {String} pcmkID
- * @param {String} seq
- * @param {String} lot
+ * @param {JSFoundSet<db:/stsservoy/import_table>} importRec
  * 
  * @properties={typeid:24,uuid:"911E9884-0ECA-49FE-97F4-07CF2A1EC61A"}
  */
-function getPiecemarkIdfiles2(pcmkID,seq,lot){//NOPE, need sequence to identify further the idfiles for this SEQ. remove sequence ID since it is looking at unique piecemark id
-	var seqId = scopes.jobs.dsSequenceArray["_"+seq].toString();
-	var lotId = scopes.jobs.dsLotArray['_'+lot].toString();
+function getPiecemarkIdfiles2(pcmkID,importRec,checkGuids){//NOPE, need sequence to identify further the idfiles for this SEQ. remove sequence ID since it is looking at unique piecemark id
+	//if (application.isInDeveloper()){application.output('pcmkID idfiles lookup: '+pcmkID+' seq: '+seq+' ID '+scopes.jobs.dsSequenceArray["_"+seq]+' lot: '+lot+' ID '+scopes.jobs.dsLotArray['_'+lot])}
+	//if (scopes.jobs.dsSequenceArray["_"+seq]){return null}
+	//if (scopes.jobs.dsLotArray['_'+lot]){return null}
+	if (checkGuids && importJob.guidsFabSuite){//list of guids for this seq and lot
+		/** @type {QBSelect<db:/stsservoy/import_guids>} */
+		var r = databaseManager.createSelect('db:/stsservoy/import_guids');
+		r.where.add(r.columns.import_table_id.eq(importRec.import_table_id));
+		r.result.add(r.columns.part_guid);
+		r.sort.add(r.columns.part_guid.asc);
+		var R = databaseManager.getDataSetByQuery(r,-1);
+		var rArray = R.getColumnAsArray(1);
+		
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var s = databaseManager.createSelect('db:/stsservoy/idfiles');
+		s.where.add(s.columns.guid_minor.isin(rArray));
+		s.result.add(s.columns.idfile_id);
+		var S = databaseManager.getFoundSet(s);
+		var recS = null; var idx1 = 1;
+		var size = S.getSize();
+		return S;
+	}
+	var seqId = scopes.jobs.dsSequenceArray["_"+importRec.sequence_number].toString();
+	var lotId = scopes.jobs.dsLotArray['_'+importRec.lot_number].toString();
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
 	q.result.add(q.columns.idfile_id);
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.piecemark_id.eq(pcmkID.toString()));
 	q.where.add(q.columns.sequence_id.eq(seqId));
-	if (lotId){
-		q.where.add(q.columns.lot_id.eq(lotId));		
-	}
+	q.where.add(q.columns.lot_id.eq(lotId));		
 	var fsIdfiles = databaseManager.getFoundSet(q);//keep a foundset of the idfiles for this piecemark
 	
 	return fsIdfiles;
@@ -10658,6 +10934,7 @@ function getIdfileBcIDs(fsIdfiles, inRec){
 	var bc = {
 		totalMarks : 0,
 		totalBCs :0,
+		bcIds : [], // all barcode numbers in use
 		removeID : [], // IDs that are obviously removeable
 		removeIDBC :[], // BCs that can be removed
 		lockedBC : [], // BCs that are locked, good for count
@@ -10667,13 +10944,20 @@ function getIdfileBcIDs(fsIdfiles, inRec){
 		guids : [], // guids seen in import files
 		distribution : [], //assoc array of barcodes holding arrays of idfiles
 		guidDistrib : [], // assoc array of guids holding arrays of idfiles
-		guidParent: []
+		guidParent: [],
+		elsewhereID: [],
+		pool : []
 	}		// idArray : [],//indexed idfile array 
-	var guids = currentGuidsPcmk;
-	//var parentGuids = currentGuidsPcmkParent;
+	var guids = importJob.currentGuidsPcmk;
+	var guidsDb = importJob.currentGuidsPcmkDB;
 	var rec = null;var idx = 1;
+	var seqId = (!dsSequenceArray[inRec.sequence_number]) ?  createSequenceNumber(inRec.sequence_number) : dsSequenceArray[inRec.sequence_number];
+	var lotId = (!dsLotArray[inRec.lot_number]) ? createLotNumber(inRec.lot_number) : dsLotArray[inRec.lot_number];
 	while (rec = fsIdfiles.getRecord(idx++)){
 		var bcId = rec.id_serial_number_id.toString();//BC ID
+		var idElsewhere = getIdNumUsedElsewhere(bcId,seqId,lotId);
+		bc.elsewhereID = idElsewhere.concat(new Array());
+		if (idElsewhere.indexOf(bcId) == -1 && bc.bcIds.indexOf(bcId) == -1){bc.bcIds.push(bcId)}
 		var idFileId = rec.idfile_id.toString();
 		var dirty = (rec.status_description_id != null);
 		var printed = (rec.lprint == 1);
@@ -10684,11 +10968,11 @@ function getIdfileBcIDs(fsIdfiles, inRec){
 		if (printed){if (bc.printed.indexOf(bcId) == -1){bc.printed.push(bcId)};bc.printed.push(idFileId)}
 		if (dirty){if (bc.dirty.indexOf(bcId) == -1){bc.dirty.push(bcId)};bc.dirty.push(idFileId)}
 		
-
-		if (!bc.distribution[bcId]){bc.distribution[bcId] = [];bc.totalBCs++}//get BC count
+		if (idElsewhere.indexOf(bcId) != -1){bc.pool.push(idFileId);continue}
+		if (!bc.distribution[bcId] && idElsewhere.indexOf(bcId) == -1){bc.distribution[bcId] = [];bc.totalBCs++}//get BC count
 		bc.distribution[bcId].push(idFileId); // idfiles by BC
 		bc.guids.push(rec.guid_minor);
-		if (rec.guid_minor && guids.indexOf(rec.guid_minor) == -1){bc.removeID.push(idFileId);bc.removeIDBC[idFileId] = bcId;continue}//FS shows no guid, so must have been removed
+		if (rec.guid_minor && guidsDb.indexOf(rec.guid_minor) == -1){bc.removeID.push(idFileId);bc.removeIDBC[idFileId] = bcId;continue}//FS shows no guid, so must have been removed
 		if ((dirty && noHistory) || (printed && reprint)  || !dirty || !printed){bc.removeID.push(idFileId)}
 	}
 	bc.totalMarks = fsIdfiles.getSize();//last since have to go to end of foundset
@@ -10749,6 +11033,11 @@ function updatePiecemark(fsRec,unique){
 	rec.item_weight_lbs = scopes.globals.kgToLb(fsRec.item_weight);
 	rec.item_length_in = scopes.globals.mmToIn(fsRec.item_length);
 	rec.item_length_char = scopes.globals.ftDecToString('INCHES',rec.item_length_in,13,'ALL');//add readable imperial length
+	if (forms['kiss_option_import'].notesContainCamber){
+		rec.camber = fsRec.remarks;//was in idfile update area, incorrect table
+		//B.setColumn('camber',camberInfo(record.remarks));//resolves ticket#5
+	}
+
 	/**	if (globals.m.routes.indexOf(fsRec.e_route_code_id) == -1){
 	if (globals.session.appName != 'STS X Embedded'){ 
 			rec.e_route_code_id = forms.kiss_option_import.importRouting;
@@ -10961,6 +11250,13 @@ function deleteEntireJob(jobId){
 	sn.where.add(sn.columns.id_serial_number_id.isin(id2.columns.id_serial_number_id));
 	//var Dserials = databaseManager.getDataSetByQuery(sn,-1);
 	
+	/** @type {QBSelect<db:/stsservoy/pcmk_instances>} */
+	var upm = databaseManager.createSelect('db:/stsservoy/pcmk_instances')
+	upm.result.add(upm.columns.pcmk_instance_id);
+	upm.where.add(upm.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	upm.where.add(upm.columns.job_uuid.eq(jobId));
+	
+	
 	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['SERIALS']),true);
 	var serials = databaseManager.getFoundSet(sn);
 	if (serials.getSize() > 0){
@@ -11017,33 +11313,42 @@ function deleteEntireJob(jobId){
 		if (application.isInDeveloper()){application.output('sheets '+sheets.getSize());}
 		sheets.deleteAllRecords();
 	}	
+	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['INSTANCES']),true);
+	var uniquePcmks = databaseManager.getFoundSet(upm);
+	if (uniquePcmks.getSize() > 0){
+		uniquePcmks.deleteAllRecords();
+	}
+	
 }
 /**
  * @properties={typeid:24,uuid:"2130E5D0-977B-4815-999E-4E41BE722DA5"}
  */
 function createPartSerial(){
-	/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
-	var q = databaseManager.createSelect('db:/stsservoy/last_id_serial');
-	q.result.add(q.columns.serial);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.prefix.eq('TENANT'));
-	var Q = databaseManager.getFoundSet(q);
-	var idx = 1;
-	if (Q.getSize() == 0){
-		idx = Q.newRecord();
-		/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} */		
-		var rec = Q.getRecord(idx);
-		rec.tenant_uuid = globals.session.tenant_uuid;
-		rec.edit_date = new Date();
-		rec.prefix = 'TENANT';
-		rec.serial = '0000000000';
-	} else {
-		rec = Q.getRecord(idx);
+	if (importJob.partSerialIndex == ''){
+		/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
+		var q = databaseManager.createSelect('db:/stsservoy/last_id_serial');
+		q.result.add(q.columns.serial);
+		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.prefix.eq('TENANT'));
+		var Q = databaseManager.getFoundSet(q);
+		var idx = 1;
+		if (Q.getSize() == 0){
+			idx = Q.newRecord();
+			/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} */		
+			var rec = Q.getRecord(idx);
+			rec.tenant_uuid = globals.session.tenant_uuid;
+			rec.edit_date = new Date();
+			rec.prefix = 'TENANT';
+			rec.serial = '0000000000';
+		} else {
+			rec = Q.getRecord(idx);
+		}
+		databaseManager.saveData(rec);
+		importJob.partSerialIndex = rec.serial;
 	}
-	databaseManager.saveData(rec);
 
-	rec.serial = countUpNumbersNonOdo(rec.serial,'part');
-	return rec.serial;
+	importJob.partSerialIndex = countUpNumbersNonOdo(importJob.partSerialIndex,'part');
+	return importJob.partSerialIndex;
 }
 /**
  * Return Route Code Record, not detail route legs
@@ -11293,12 +11598,77 @@ function queryAssembly2(criteria,formName,subquery){
 }
 /**
  * @param {String} importTableId
+ * @param {String} pcmkId
+ * @param {JSFoundSet<db:/stsservoy/import_table>} importRecord
  *
  * @properties={typeid:24,uuid:"F1CD5A13-992A-4F3C-9BD4-6E78FFC3F797"}
  */
-function getImportTableGuids(importTableId){
-	currentGuidsPcmk = [];
-	currentGuidsPcmkParent = [];
+function getImportTableGuids(importTableId,pcmkId,importRecord){
+	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
+	importJob.currentGuidsPcmk = [];
+	importJob.currentGuidsPcmkParent = [];
+	importJob.currentGuidsPcmkDB = [];
+	//var pcmkMajor = importRecord.parent_piecemark;
+	var pcmkMinor = importRecord.piecemark;
+	var jobId = importRecord.job_id;
+	var importRecGuids = [];
+	/** @type {String} */
+	var seqId = scopes.jobs.dsSequenceArray['_'+importRecord.sequence_number];
+	/** @type {String} */
+	var lotId = scopes.jobs.dsLotArray['_'+importRecord.lot_number];
+
+	//var guidsFS = importJob.guidsFabSuite;
+	
+	///if (true || !importJob.guidsFabSuite[pcmkMinor]){
+		/// /** @type {QBSelect<db:/stsservoy/import_table>} */
+		/// var h = databaseManager.createSelect('db:/stsservoy/import_table');
+		/// h.where.add(h.columns.job_id.eq(jobId.toString()));
+		/// h.where.add(h.columns.piecemark.eq(pcmkMinor));
+		//h.where.add(h.columns.parent_piecemark.eq(pcmkMajor));
+		////** @type {QBJoin<db:/stsservoy/import_guids>} */
+		/** @type {QBSelect<db:/stsservoy/import_guids>} */
+	var h1 = databaseManager.createSelect('db:/stsservoy/import_guids');
+	h1.where.add(h1.columns.import_table_id.eq(importTableId));
+	h1.sort.add(h1.columns.part_guid.asc);
+	h1.result.add(h1.columns.part_guid);
+	h1.result.add(h1.columns.assem_guid);
+	var H = databaseManager.getDataSetByQuery(h1,-1);
+	if (H.getMaxRowIndex() > 0){
+		importJob.guidsFabSuite[pcmkMinor] = H.getColumnAsArray(1);
+		//importJob.currentGuidsPcmkParent[pcmkMinor] = H.getColumnAsArray(2);
+		importRecGuids = H.getColumnAsArray(1);
+	}
+	// Set all idfiles with unique FS GUIDs to incoming Sequence and Lot numbers
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var s = databaseManager.createSelect('db:/stsservoy/idfiles');
+	s.where.add(s.columns.job_uuid.eq(jobId));
+	s.where.add(s.columns.guid_minor.isin(importRecGuids));
+	s.where.add(s.or
+		.add(s.columns.sequence_id.not.eq(seqId.toString()))
+		.add(s.columns.lot_id.not.eq(lotId.toString()))
+		)
+	var S = databaseManager.getFoundSet(s);
+	if (S.getSize() > 0){
+		var S1 = databaseManager.getFoundSetUpdater(S);
+		S1.setColumn('sequence_id',seqId.toString());
+		S1.setColumn('lot_id',lotId.toString());
+		S1.setColumn('edit_date',importDate);
+		S1.performUpdate();
+	}
+	//var tempIndex = [];
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var g = databaseManager.createSelect('db:/stsservoy/idfiles');
+	g.where.add(g.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	g.where.add(g.columns.piecemark_id.eq(pcmkId.toString()));
+	var G = databaseManager.getFoundSet(g);
+	if (G.getSize() > 0){
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var rec2 = null; var index2 = 1;
+		while (rec2 = G.getRecord(index2++)){
+			importJob.currentGuidsPcmkDB.push(rec2.guid_minor);
+			//tempIndex[rec2.guid_minor] = index2-1;
+		}
+	}
 	/** @type {QBSelect<db:/stsservoy/import_guids>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_guids');
 	q.result.add(q.columns.part_guid);
@@ -11312,8 +11682,8 @@ function getImportTableGuids(importTableId){
 
 	if (Q.getSize() > 0){
 		while (rec = Q.getRecord(index++)){
-			currentGuidsPcmkParent.push(rec.assem_guid);
-			currentGuidsPcmk.push(rec.part_guid);
+			importJob.currentGuidsPcmkParent.push(rec.assem_guid);
+			importJob.currentGuidsPcmk.push(rec.part_guid);
 		}
 	}
 
@@ -11828,14 +12198,15 @@ function onViewResize(event){
 	var lowerPanelHeight = form.lowerPanelHeight*1;
 	
 	var elHeight = form.elements['split'].getHeight();
+	var percent = lowerPanelHeight/elHeight;
 	var minHeight = Math.floor(elHeight*.20);
 	if (lowerPanelHeight == 0){return}
 
-	var newHeight = lowerPanelHeight+0;
-	if (lowerPanelHeight > elHeight - minHeight){newHeight = elHeight - minHeight;}
+	var newHeight = Math.floor(elHeight*percent);// lowerPanelHeight+0;
+	//if (lowerPanelHeight > elHeight - minHeight){newHeight = elHeight - minHeight;}
 	form.elements['split'].dividerLocation = elHeight - newHeight;
 	
-	form.lowerPanelHeight = lowerPanelHeight;//20190104 needed this somehow due to firing of onDataChange for split
+	form.lowerPanelHeight = newHeight;//lowerPanelHeight;//20190104 needed this somehow due to firing of onDataChange for split
 }
 /**
  * @param columnName
@@ -11864,6 +12235,11 @@ function determineI18n(columnName,typei18n){
 						case 'employee' : tableCol = emp.getColumn(cols[index]);shortTable = 'orig_';break;
 
 	 */
+	if (columnName.search('jnt_') == 0){
+		tmp = columnName.replace('jnt_','');
+		column = i18n.getI18NMessage('table.pcmk_instances.'+tmp);
+		table = ' (pcmk_instances)';
+	}
 	if (columnName.search('pm_') == 0){
 		tmp = columnName.replace('pm_','');
 		column = i18n.getI18NMessage('table.piecemarks.'+tmp);
@@ -14290,7 +14666,7 @@ function createViewTable(dataSet){
  * @param formName
  * @param {String} subquery
  * subquery can be summarized, piecemark, idnumbers, stations, browse (general)
-14 * @properties={typeid:24,uuid:"5F07D30A-C385-4811-A4A2-51821D0A910E"}
+ * @properties={typeid:24,uuid:"5F07D30A-C385-4811-A4A2-51821D0A910E"}
  * @AllowToRunInFind
  */
 function queryAssemblyFaster(criteria,formName,subquery){
@@ -14318,6 +14694,7 @@ function queryAssemblyFaster(criteria,formName,subquery){
 	}
 
 	var getDeleted = (formName.search(/(recall)|(remove)/) != -1);
+	globals.showDeleted = getDeleted;
 
 	//collect idfile to serial number count uniqueness
 	/** @type {QBSelect<db:/stsservoy/pcmk_instances>} * /
@@ -14356,6 +14733,7 @@ function queryAssemblyFaster(criteria,formName,subquery){
 	var id = q.joins.x_id;//idfiles
 	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
 	var pm = q.joins.x_pm;//piecemarks
+	q.where.add(q.columns.pcmk_bc_count.not.isNull);
 	var bc = q.joins.x_bc;//serial numbers
 	//var barCount = q.joins.x
 	if (!getDeleted){
@@ -14378,10 +14756,37 @@ function queryAssemblyFaster(criteria,formName,subquery){
 		//if (sheetArray && sheetArray.length > 0){
 		q.where.add(pm.joins.x_pm_sh.columns.sheet_number.isin(criteria.sheetnuma));
 	}
+
+	var tempPcmks = [];
+	if (criteria.piecemarka){criteria.piecemarka.concat(new Array())}
+	if (criteria.piecemarka){tempPcmks = criteria.piecemarka.concat(new Array());}
+
 	if (criteria.piecemarka && criteria.piecemarka.length > 0){
-		//if (pcmkArray && pcmkArray.length > 0){
 		q.where.add(q.joins.x_pm.columns.parent_piecemark.isin(criteria.piecemarka));
 	}
+	if (criteria.piecemarka && criteria.piecemarka.length == 1){
+		q.where.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"));
+	} else if (criteria.piecemarka && criteria.piecemarka.length > 1){
+		q.where.add(q.or
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+			.add(pm.columns.parent_piecemark.like("%"+tempPcmks.pop()+"%"))
+		)
+	} // overkill, but satisfies n-1 approach for search criteria
 	if (criteria.areaa && criteria.areaa.length > 0){
 		//if (locationArray && locationArray.length > 0){
 		q.where.add(id.columns.id_location.isin(criteria.areaa));
@@ -14425,11 +14830,32 @@ function queryAssemblyFaster(criteria,formName,subquery){
 
 
 	// 20190626 shelved since only at barcode level paul says 09:36 call
-	/** @type {QBJoin<db:/stsservoy/pcmk_instances>} */
-	var cntSeq = q.joins.add('db:/stsservoy/pcmk_instances');
-	cntSeq.on.add(q.columns.piecemark_uuid.eq(cntSeq.columns.piecemark_uuid));
-	cntSeq.on.add(q.columns.sequence_uuid.eq(cntSeq.columns.sequence_uuid));
-	q.result.add(q.columns.pcmk_count.sum,'sq_sequence_quantity');
+	/** @type {QBSelect<db:/stsservoy/idfiles>} * /
+	var cntSeq = q.joins.add('db:/stsservoy/idfiles');
+	cntSeq.on.add(q.columns.piecemark_uuid.eq(cntSeq.columns.piecemark_id));
+	cntSeq.on.add(q.columns.sequence_uuid.eq(cntSeq.columns.sequence_id));
+	cntSeq.root.groupBy.add(cntSeq.columns.piecemark_id);
+	cntSeq.root.groupBy.add(cntSeq.columns.sequence_id);
+	cntSeq.root.result.distinct = true;
+	q.result.add(cntSeq.columns.summed_quantity.sum,'sq_sequence_quantity'); */
+	
+	/** @type {QBSelect<db:/stsservoy/pcmk_instances>} * /
+	var q1 = databaseManager.createSelect('db:/stsservoy/pcmk_instances');
+	q1.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q1.where.add(q.columns.job_uuid.eq(jobId));
+	/** @type {QBJoin<db:/stsservoy/idfiles>} * /
+	var cnt1 = q1.joins.add('db:/stsservoy/idfiles');
+	cnt1.on.add(q1.columns.piecemark_uuid.eq(cnt1.columns.piecemark_id));
+	cnt1.on.add(q1.columns.sequence_uuid.eq(cnt1.columns.sequence_id));
+	cnt1.root.groupBy.add(cnt1.columns.piecemark_id);
+	cnt1.root.groupBy.add(cnt1.columns.sequence_id);
+	cnt1.root.result.distinct = true;
+	q1.result.add(cnt1.columns.piecemark_id);
+	q1.result.add(cnt1.columns.sequence_id);
+	q1.result.add(cnt1.columns.summed_quantity.sum);
+	
+	q.result.add(q1.columns.s) */
+	
 	
 
 	var ht = id.joins.x_id_ht;//idfiles heats
@@ -14908,7 +15334,7 @@ function getUniqPcmkEntry(job_uuid, idfile_uuid, piecemark_uuid, sheet_uuid,lot_
 	q.result.add(q.columns.pcmk_instance_id);
 	var Q = databaseManager.getFoundSet(q);
 	Q.loadRecords();
-	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+	/** @type {QBSelect<db:/stsservoy/piecemarks>} * /
 	var r = databaseManager.createSelect('db:/stsservoy/piecemarks');
 	r.where.add(r.columns.piecemark_id.eq(piecemark_uuid.toString()));
 	r.where.add(r.columns.tenant_uuid.eq(globals.session.tenant_uuid));
@@ -14916,25 +15342,25 @@ function getUniqPcmkEntry(job_uuid, idfile_uuid, piecemark_uuid, sheet_uuid,lot_
 	var R = databaseManager.getDataSetByQuery(r,1);
 	R.index = 1;
 	var pcmk_total_new = (R.getMaxRowIndex() == 0) ? 0 : R.count_pcmks;
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	/** @type {QBSelect<db:/stsservoy/idfiles>} * /
 	var s = databaseManager.createSelect('db:/stsservoy/idfiles');
 	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	s.where.add(s.columns.job_uuid.eq(piecemark_uuid.toString()));
+	s.where.add(s.columns.piecemark_id.eq(piecemark_uuid.toString()));
 	s.where.add(s.columns.lot_id.eq(lot_uuid.toString()));
 	s.where.add(s.columns.sequence_id.eq(sequence_uuid.toString()));
 	s.result.add(s.columns.id_serial_number_id.count,'count_barcodes');
 	s.groupBy.add(s.columns.id_serial_number_id);
 	var S = databaseManager.getDataSetByQuery(s,1);
 	var pcmk_barcodes_new = S.count_barcodes;
-	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	/** @type {QBSelect<db:/stsservoy/idfiles>} * /
 	var t = databaseManager.createSelect('db:/stsservoy/idfiles');
 	t.where.add(t.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	t.where.add(t.columns.job_uuid.eq(piecemark_uuid.toString()));
+	t.where.add(t.columns.piecemark_id.eq(piecemark_uuid.toString()));
 	t.where.add(t.columns.lot_id.eq(lot_uuid.toString()));
 	t.where.add(t.columns.sequence_id.eq(sequence_uuid.toString()));
 	t.result.add(t.columns.id_serial_number_id.count,'count_serials');
 	var T = databaseManager.getDataSetByQuery(t,1);
-	var pcmk_seq_lot_new = T.count_serials;
+	var pcmk_seq_lot_new = T.count_serials; */
 	
 	
 	if (Q.getSize() == 0){
@@ -14942,32 +15368,25 @@ function getUniqPcmkEntry(job_uuid, idfile_uuid, piecemark_uuid, sheet_uuid,lot_
 		/** @type {JSFoundSet<db:/stsservoy/pcmk_instances>} */		
 		var rec = Q.getRecord(idx);
 		rec.job_uuid = job_uuid.toString();
-		rec.idfile_uuid = idfile_uuid.toString();
 		rec.piecemark_uuid = piecemark_uuid.toString();
-		rec.sheet_uuid = sheet_uuid.toString();
-		rec.lot_uuid = lot_uuid.toString();
 		rec.id_serial_uuid = id_serial_uuid.toString();
-		rec.pcmk_count = pcmkCount;
-		rec.pcmk_total = pcmkTotal;
-		rec.pcmk_bc_count = bcCount;
-		rec.sequence_uuid = sequence_uuid.toString();
 		rec.tenant_uuid = globals.session.tenant_uuid;
-		//for (var idx2 = 0;idx2 < globals.textColumns['idfiles'].length;idx2++){
-		//	if (rec[globals.textColumns[idx2]] == null){rec[globals.textColumns[idx2]] = ''}
-		//}
 	} else {
 		rec = Q.getRecord(1);
-		rec.pcmk_count = pcmk_seq_lot_new;
-		rec.pcmk_total = pcmk_total_new;
-		rec.pcmk_bc_count = pcmk_barcodes_new;
 		rec.edit_date = new Date();
 	}
+	rec.sequence_uuid = sequence_uuid.toString();
+	rec.sheet_uuid = sheet_uuid.toString();
+	rec.lot_uuid = lot_uuid.toString();
 	rec.pcmk_total = pcmkTotal;
 	rec.pcmk_bc_count = bcCount;
 	rec.pcmk_count = pcmkCount;
-	rec.idfile_uuid = idfile_uuid;
+	rec.idfile_uuid = idfile_uuid.toString();
 	databaseManager.saveData(rec);
-	return rec;
+	if (!importJob.updatePcmkInstances){importJob.updatePcmkInstances = []}
+	idx = importJob.updatePcmkInstances.indexOf(rec.id_serial_uuid);
+	if (idx != -1){importJob.updatePcmkInstances[idx] = ''}//this pcmk_instance updated, delete remaining that are empty
+	return rec.pcmk_instance_id;
 }
 /**
  * TODO generated, please specify type and doc for the params
@@ -15092,31 +15511,86 @@ function importInventoryDBF(){
 	}
 }
 /**
- * @param {String} job_uuid
- * @param {String} piecemark_uuid
- * @param {String} sheet_uuid
- * @param {String} lot_uuid
- * @param {Array} id_serial_array
- * @param {String} sequence_uuid
- * @param {String} tenant_uuid
+ * 
+ * @param {JSRecord<db:/stsservoy/import_table>} importRec
+ * @param {Array} cleanIds
  *
  * @properties={typeid:24,uuid:"051DBB17-A325-4E74-B82A-B083174950A4"}
  */
-function getUniqPcmkClear(job_uuid, piecemark_uuid, sheet_uuid, lot_uuid, id_serial_array, sequence_uuid, tenant_uuid){
+function getUniqPcmkClear(importRec, cleanIds){
+	if (!importJob.updatePcmkInstances){return}
+	//foreach barcode
+	//Get all instances with barcode
+	//if no idfiles, kill barcode and kill any instance
+	
+	//if (1==1){return}
+	var deleteInstances = [];
+	var deleteSerials = [];
+	var editDate = new Date();
+	cleanIds.sort();
+	importJob.updatePcmkInstances.sort();
+	while (importJob.updatePcmkInstances.length != 0 && importJob.updatePcmkInstances[0] == ''){
+		importJob.updatePcmkInstances.shift();
+	}
+	var barId = '';
+	/*
+	 * get idfiles for the updatePcmkInstances
+	 * for each pcmkinstance update the quantities and minimum idfileId
+	 * 	need pcmk count
+	 *  pcmk count for the seq lot
+	 *  idfile count 
+	 */
 	/** @type {QBSelect<db:/stsservoy/pcmk_instances>} */
 	var q = databaseManager.createSelect('db:/stsservoy/pcmk_instances');
-	q.where.add(q.columns.job_uuid.eq(job_uuid.toString()));
+	q.where.add(q.columns.job_uuid.eq(importRec.job_id));
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.sheet_uuid.eq(sheet_uuid.toString()));
-	q.where.add(q.columns.lot_uuid.eq(lot_uuid.toString()));
-	q.where.add(q.columns.sequence_uuid.eq(sequence_uuid.toString()));
-	q.where.add(q.columns.id_serial_uuid.not.isin(id_serial_array));
+	q.where.add(q.columns.id_serial_uuid.isin(importJob.updatePcmkInstances));
+	q.where.add(q.columns.pcmk_instance_id.not.isin(cleanIds));//disregard currently created pcmkInstances
 	q.result.add(q.columns.pcmk_instance_id);
 	var Q = databaseManager.getFoundSet(q);
-	Q.deleteAllRecords();
-	//var qUpdate = databaseManager.getFoundSetUpdater(Q);
-	//qUpdate.setColumn('delete_flag',99);
-	//qUpdate.performUpdate();
+	/** @type {JSFoundSet<db:/stsservoy/pcmk_instances>} */
+	var rec = null;var qIdx = 1;var seenIdfiles = [];
+	while (rec = Q.getRecord(qIdx++)){
+		warningsMessage('Setting Join Table',false);
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var r = databaseManager.createSelect('db:/stsservoy/idfiles');
+		r.where.add(r.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		r.where.add(r.columns.job_uuid.eq(rec.job_uuid));
+		r.where.add(r.columns.id_serial_number_id.eq(rec.id_serial_uuid));
+		r.result.add(r.columns.idfile_id);
+		r.sort.add(r.columns.idfile_id.asc);
+		var R = databaseManager.getFoundSet(r);
+		var RSize = R.getSize();
+		if (RSize == 0){
+			deleteInstances.push(rec.pcmk_instance_id);
+			deleteSerials.push(rec.id_serial_uuid);
+			continue;
+		} /** else {//the idfiles are in another instance
+			var m = databaseManager.create
+			/** @type {JSFoundSet<db:/stsservoy/idfiles>} * /
+			var recId = R.getRecord(1);
+			rec.pcmk_bc_count = RSize;
+			rec.pcmk_count = '';
+			rec.pcmk_total = importRec.pcmk_qty;
+			rec.edit_date = editDate;
+		} */
+	}
+
+
+	if (deleteInstances.length > 0){
+		deleteInstances.sort();
+		/** @type {QBSelect<db:/stsservoy/pcmk_instances>} */
+		var s = databaseManager.createSelect('db:/stsservoy/pcmk_instances');
+		s.where.add(s.columns.pcmk_instance_id.isin(deleteInstances));
+		s.result.add(s.columns.pcmk_instance_id);
+		var S = databaseManager.getFoundSet(s);
+		S.deleteAllRecords();
+	}
+	if (deleteSerials.length > 0){
+		
+	}
+	
+	null;
 }
 /**
  * @properties={typeid:24,uuid:"8EEA1956-25C9-490E-B579-84EE8F17AB44"}
@@ -15569,4 +16043,289 @@ function readFile(_oFile) {
     _oIR = null;
     _oBR = null;
     application.output('total Lines '+_nReadLine);
+}
+/**
+ * @properties={typeid:24,uuid:"D9356671-B943-4718-B96F-64D6B312738E"}
+ */
+function savePartSerial(){
+	if (importJob.partSerialIndex != ''){
+		/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
+		var q = databaseManager.createSelect('db:/stsservoy/last_id_serial');
+		q.result.add(q.columns.serial);
+		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.prefix.eq('TENANT'));
+		var Q = databaseManager.getFoundSet(q);
+		if (Q.getSize() > 0){
+			/** @type {JSFoundSet<db:/stsservoy/last_id_serial>} */
+			var rec = Q.getRecord(1);
+			rec.serial = importJob.partSerialIndex;
+			rec.edit_date = importDate;
+			databaseManager.saveData(rec);
+			importJob.partSerialIndex = '';
+		}
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param sqlColNamesArr
+ *
+ * @properties={typeid:24,uuid:"0E0A2C94-FA27-488F-8E3F-FEA3B0FFCFF1"}
+ */
+function sqlArrayToColumnNames(sqlColNamesArr){
+	var tableCols = sqlColNamesArr+"";
+	return tableCols.replace(/\[/,"(").replace(/\]/,")");
+
+}
+/**
+ * @param sqlArgsArr
+ *
+ * @properties={typeid:24,uuid:"1E900ECF-4EA3-4C3E-B5BB-463EF83FDC78"}
+ */
+function sqlArgsToSqlData(sqlArgsArr){
+	var sqlArgs = ""+sqlArgsArr;
+	sqlArgs = sqlArgs.replace(/\'/g,"''").replace(/\[/g,"(").replace(/\]/g,")").replace(/,/g,"','").replace(/\(/g,"('").replace(/\)/g,"')").replace(/\('\('/,"('").replace(/'\)\'\)/,"')");
+			sqlArgs = sqlArgs.replace(/\('CDT'\)/g,"(CDT)").replace(/\)','\(/g,"),(").replace(/,\('/g,",\n('");
+			sqlArgs = sqlArgs.replace(/ [A-Z][A-Z][A-Z]-\d\d\d\d/g,'').replace(/'(CAST\()'+/g,"$1'").replace(/''''/g,"'").replace(/DATE'\)'/g,"DATE)").replace(/'(\d+)',/g,"$1,");
+		
+	return sqlArgs;
+
+}
+/**
+ * / ** @type {JSFoundSet<db:/stsservoy/import_table>} * /
+ * @param {JSFoundSet<db:/stsservoy/import_table>} record
+ * 
+ * For an import, the guids from FS tell which sequences have changed.
+ * Get a list of those idfiles that need changed, as well as id_serial_numbers they are a part of.
+ * If they do not exist, fall through?
+ * 
+ * handle piecemark parent change
+ * handle piecemark sequence and lot change
+ * handle pcmk_instance updates
+ * handle idfile count changes
+ *
+ * @properties={typeid:24,uuid:"7CFF4359-0ECF-4167-B57C-0298038B21C5"}
+ */
+function resequenceIdfilesImport(record){
+	var minor = record.piecemark;
+	var major = record.parent_piecemark;
+	var seqNum = record.sequence_number;
+	var lotNum = record.lot_number;
+	var jobId = record.job_id;
+	var parts = [];
+	var assemblyGuids = [];
+	var idfileUpdates = [];
+	// collect parts and assembly[part]
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var q = databaseManager.createSelect('db:/stsservoy/import_table');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(jobId.toString()));
+	q.where.add(q.columns.piecemark.eq(minor));
+	q.where.add(q.columns.parent_piecemark.eq(major));
+	q.where.add(q.columns.sequence_number.eq(seqNum));
+	q.where.add(q.columns.lot_number.eq(lotNum));
+	/** @type {QBJoin<db:/stsservoy/import_guids>} */
+	var r = q.joins.add('db:/stsservoy/import_guids');
+	r.on.add(q.columns.import_table_id.eq(r.columns.import_table_id));
+	q.result.add(r.columns.assem_guid);
+	q.result.add(r.columns.part_guid);
+	var Q = databaseManager.getDataSetByQuery(q,-1);//all FS guids pertaining to major/minor combo
+	parts = Q.getRowAsArray(2);
+	if (Q.getMaxRowIndex() == 0){return}
+	Q.rowIndex = 1;
+	for (var idx = 1;idx <= Q.getMaxRowIndex();idx++){
+		assemblyGuids[Q.assem_guid] = Q.part_guid;
+	}
+	
+	var pcmkList = [];
+	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+	var p = databaseManager.createSelect('db:/stsservoy/piecemarks');
+	p.where.add(p.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	p.where.add(p.columns.job_uuid.eq(record.job_id.toString()));
+	p.where.add(p.columns.piecemark.eq(record.piecemark));
+	p.where.add(p.columns.parent_piecemark.eq(record.parent_piecemark));
+	p.result.add(p.columns.piecemark_id);
+	var P = databaseManager.getDataSetByQuery(p,-1);
+	if (P.getMaxRowIndex() > 0){
+		var lotId = (!dsLotArray['_'+lotNum]) ? createLotNumber(lotNum) : dsLotArray['_'+lotNum];
+		var seqId = (!dsSequenceArray['_'+seqNum]) ? createSequenceNumber(seqNum) : dsSequenceArray['_'+seqNum];
+		var pcmkId = getPcmkSimple(jobId,record.parent_piecemark,record.piecemark,record.sequence_number,record.lot_number);
+		if (!pcmkId){return}
+		pcmkList = P.getColumnAsArray(1);
+		pcmkList.sort();
+	
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var m = databaseManager.createSelect('db:/stsservoy/idfiles');
+		m.where.add(m.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		m.where.add(m.columns.job_uuid.eq(jobId.toString()));
+		m.where.add(m.columns.piecemark_id.isin(pcmkList));
+		m.result.add(m.columns.idfile_id);
+		//m.result.add(m.columns.guid_major);
+		//m.result.add(m.columns.guid_minor);
+		var M = databaseManager.getFoundSet(m);
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var rec = null;idx = 0;//check idfile has changes to incoming piecemarks
+		// what if major GUID changes?  
+		var saveFS = false;
+		while (rec = M.getRecord(idx++)){
+			if (!assemblyGuids[rec.guid_major] || assemblyGuids[rec.guid_major] != rec.guid_minor){continue}
+			if (rec.sequence_id != seqId){rec.sequence_id = seqId}
+			if (rec.lot_id != lotId){rec.lot_id = lotId}
+			saveFS = true;
+		}
+		if (saveFS){databaseManager.saveData(M)}
+		M = null;
+	}
+}
+/**
+ * @param jobId
+ * @param parentPiecemark
+ * @param piecemark
+ * @param sequence
+ * @param lot
+ *
+ * @properties={typeid:24,uuid:"3116103F-D0B8-4D6A-8011-643D7BF8F40C"}
+ */
+function getPcmkSimple(jobId,parentPiecemark,piecemark,sequence,lot){
+	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+	var p = databaseManager.createSelect('db:/stsservoy/piecemarks');
+	p.where.add(p.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	p.where.add(p.columns.job_uuid.eq(jobId.toString()));
+	p.where.add(p.columns.piecemark.eq(piecemark));
+	p.where.add(p.columns.parent_piecemark.eq(parentPiecemark));
+	p.result.add(p.columns.piecemark_id);
+	var P = databaseManager.getDataSetByQuery(p,1);
+	return P.piecemark_id;
+}
+/**
+ * @param {JSFoundSet<db:/stsservoy/import_table>} record
+ * @param {String} piecemarkId
+ *
+ * @properties={typeid:24,uuid:"B613732A-E546-48FD-AE66-ECA71DE34834"}
+ */
+function getCurrentPcmkJoins(record,piecemarkId){
+	/** @type {QBSelect<db:/stsservoy/pcmk_instances>} */
+	var q = databaseManager.createSelect('db:/stsservoy/pcmk_instances');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.job_uuid.eq(importJob.jobId.toString()));
+	q.where.add(q.columns.piecemark_uuid.eq(piecemarkId.toString()));
+	q.where.add(q.columns.sequence_uuid.eq(dsSequenceArray['_'+record.sequence_number].toString()));
+	q.where.add(q.columns.lot_uuid.eq(dsLotArray['_'+record.lot_number].toString()));
+	q.result.add(q.columns.id_serial_uuid);
+	q.sort.add(q.columns.id_serial_uuid.asc);
+	/** @type {JSFoundSet<db:/stsservoy/pcmk_instances>} */
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	return Q.getColumnAsArray(1);
+}
+/**
+ * @param {JSFoundSet<db:/stsservoy/pcmk_instances>} guidsFSList
+ *
+ * @properties={typeid:24,uuid:"A5020C47-50AC-4949-80BD-8EF733C0234A"}
+ */
+function get2BPcmkJoins(guidsFSList){
+	/** @type {JSFoundSet<db:/stsservoy/pcmk_instances>} */
+	var rec = null;var idx = 1;var gArray = [];
+	while (rec = guidsFSlist.getRecord(idx++)){
+		gArray.push(rec.id_serial_uuid);
+	}
+	gArray.sort();
+	return gArray;
+}
+/**
+ * @param bcId
+ * @param seqId
+ * @param lotId
+ *
+ * @properties={typeid:24,uuid:"26215344-F919-47C3-AB5B-CFC2484876EA"}
+ */
+function getIdNumUsedElsewhere(bcId, seqId, lotId){
+	var mGuids = importJob.currentGuidsPcmk.sort();
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.where.add(q.columns.id_serial_number_id.cast(QUERY_COLUMN_TYPES.TYPE_STRING).eq(bcId));
+	q.where.add(q.or
+		.add(q.columns.sequence_id.cast(QUERY_COLUMN_TYPES.TYPE_STRING).not.eq(seqId.toString()))
+		.add(q.columns.lot_id.cast(QUERY_COLUMN_TYPES.TYPE_STRING).not.eq(lotId.toString()))
+		)
+	q.where.add(q.columns.guid_minor.not.isin(mGuids));
+	q.result.add(q.columns.id_serial_number_id);
+	q.groupBy.add(q.columns.id_serial_number_id);
+	q.result.distinct = true;
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	var qArray = Q.getColumnAsArray(1);
+	qArray.sort();
+	return qArray;
+}
+/**
+ * @properties={typeid:24,uuid:"EC76E8BF-C429-45A8-B049-C04A3BEFD0E6"}
+ * Flag set during import that indicates this is a Full Sheet import for guids
+ * job > sheet > piecemarks > idfiles > guid_minor
+ * job > import_table > import_guids > part_number
+ * DeleteBySheet
+ */
+function deleteNonImportGuids(){
+	if (!importJob.sheetImportOnly){return}
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var q = databaseManager.createSelect('db:/stsservoy/import_table');
+	q.where.add(q.columns.job_id.eq(importJob.jobId.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.result.distinct=true;
+	q.groupBy.add(q.columns.sheet_number);
+	q.result.add(q.columns.sheet_number);
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	var sheetnumArray = Q.getColumnAsArray(1);
+
+	/** @type {QBSelect<db:/stsservoy/sheets>} */
+	var r = databaseManager.createSelect('db:/stsservoy/sheets');
+	r.where.add(r.columns.job_id.eq(importJob.jobId.toString()));
+	r.where.add(r.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	r.where.add(r.columns.sheet_number.isin(sheetnumArray));
+	r.sort.add(r.columns.sheet_id.asc);
+	r.result.add(r.columns.sheet_id);
+	var R = databaseManager.getDataSetByQuery(r,-1);
+	
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var s = r.joins.add('db:/stsservoy/piecemarks');
+	s.on.add(r.columns.sheet_id.eq(s.columns.sheet_id));
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var t = s.joins.add('db:/stsservoy/idfiles');
+	t.on.add(t.columns.piecemark_id.eq(s.columns.piecemark_id));
+	
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var u = databaseManager.createSelect('db:/stsservoy/import_table');
+	u.where.add(u.columns.job_id.eq(importJob.jobId.toString()));
+	u.where.add(u.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	/** @type {QBJoin<db:/stsservoy/import_guids>} */
+	var v = u.joins.add('db:/stsservoy/import_guids');
+	v.on.add(u.columns.import_table_id.eq(v.columns.import_table_id));
+	u.result.add(v.columns.part_guid);
+	u.sort.add(v.columns.part_guid.asc);
+	//var V = databaseManager.getDataSetByQuery(v,-1);
+	
+	r.where.add(r.exists(u.where.add(t.columns.guid_minor.not.isin(v.columns.part_guid)).root))//subquery example???
+	r.result.add(t.columns.guid_major);
+	r.result.add(t.columns.guid_minor);
+	r.result.add(t.columns.idfile_id);
+	r.sort.add(t.columns.idfile_id.asc);
+	var deleteIds = databaseManager.getDataSetByQuery(r,-1);
+	var deleteIdArray = deleteIds.getColumnAsArray(4);
+		
+	if (application.isInDeveloper()){application.output('Delete '+deleteIds.getMaxRowIndex()+ ' records that have been removed.')}
+
+	for (var idx = 1;idx <= deleteIds.getMaxRowIndex();idx++){
+		deleteIds.rowIndex = idx;
+		//application.output('DELETE '+deleteIds.idfile_id+' '+deleteIds.guid_minor+' '+deleteIds.guid_major);
+	}
+	
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var x = databaseManager.createSelect('db:/stsservoy/idfiles');
+	x.where.add(x.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	x.where.add(x.columns.job_uuid.eq(importJob.jobId.toString()));
+	x.where.add(x.columns.idfile_id.isin(deleteIdArray));
+	x.result.add(x.columns.idfile_id);
+	var X = databaseManager.getFoundSet(x);
+	X.deleteAllRecords();
+
+	/** @type {JSFoundSet<db:/stsservoy/import_guids>} * /
+	/** @type {JSFoundSet<db:/stsservoy/idfiles>} * / */
+	//q.where.add(q.columns.sh)
 }

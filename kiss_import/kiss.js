@@ -1491,6 +1491,16 @@ function importPopSaveDetailRow(event,recDate){
 		newRec.sequence_quantity = seqInfo.cnt; //these are fixed
 		newRec.lot_number = seqInfo.lot;//lot number is a new division of the sequence but count remains the same
 		newRec.sts_qty = getCurrentPcmkIdfileCount(event,newRec);//collect idfiles for piecemark
+		if (newRec.sts_qty == newRec.item_qty){
+			newRec.import_status = i18n.getI18NMessage('import.update');
+		} else if (newRec.sts_qty > 0){
+			newRec.import_status = i18n.getI18NMessage('import.update');
+		} else if (newRec.sts_qty < 0){
+			newRec.sts_qty = newRec.sts_qty*-1;
+			newRec.import_status = i18n.getI18NMessage('import.dirty');
+		} else {
+			newRec.import_status = i18n.getI18NMessage('import.create')
+		}
 
 		if (newRec.piecemark.toLowerCase() == newRec.parent_piecemark.toLowerCase()){
 			currentPcmkParentPcmk[seqInfo.seq] = newRec;
@@ -1583,10 +1593,16 @@ function importPopSaveDetailRow(event,recDate){
 		if (popQty > 200){
 			scopes.jobs.warningsMessage('Processing '+popQty+' GUIDs',true);
 		}
-		var sqlArgs = [];
+		var sqlArgs = [];var guidsArr = [];var newGuidTemp = [];
+		var guidsCols = ['import_guid_uuid','assem_guid','part_guid','import_table_id','edit_date','guid_order','tenant_uuid','job_id'];
 		for (var cnt = 1;cnt <= popQty;cnt++){
-			if (cnt/500 == Math.floor(cnt/500)){
+			if (cnt/1000 == Math.floor(cnt/1000)){
 				var cntDate = new Date();
+				var sql = 'INSERT INTO import_guids '+scopes.jobs.sqlArrayToColumnNames(guidsCols)+' VALUES '+scopes.jobs.sqlArgsToSqlData(guidsArr)+';';
+				//application.output(sql);
+				var result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql);
+				guidsArr = [];
+
 				scopes.jobs.warningsMessage('Processing '+cnt+' / '+popQty+' GUIDs'+cntDate,true);
 				//var status2 = databaseManager.saveData(guidsFS);
 				//guidsFS.clear();
@@ -1598,7 +1614,18 @@ function importPopSaveDetailRow(event,recDate){
 			assemGuid = importSubGUID.shift();
 			var partGuid = importSubGUID.shift();
 			if (!assemGuid){continue}
-			var sql = "INSERT INTO import_guids (import_guid_uuid,assem_guid,part_guid,import_table_id,edit_date,modification_date,tenant_uuid,job_id,guid_order) VALUES (?,?,?,?,?,?,?,?,?)";
+			var tArr = [].concat(newGuidTemp);
+			tArr[guidsCols.indexOf('import_guid_uuid')] = application.getUUID().toString();
+			tArr[guidsCols.indexOf('assem_guid')] = assemGuid;
+			tArr[guidsCols.indexOf('part_guid')] = partGuid;
+			tArr[guidsCols.indexOf('import_table_id')] = newRec.import_table_id.toString();
+			tArr[guidsCols.indexOf('edit_date')] = editDate;
+			tArr[guidsCols.indexOf('tenant_uuid')] = globals.session.tenant_uuid;
+			tArr[guidsCols.indexOf('job_id')] = scopes.jobs.importJob.jobId.toString();
+			tArr[guidsCols.indexOf('guid_order')] = scopes.jobs.importJob.guidOrder++;
+			guidsArr.push(tArr);
+				
+			/** var sql = "INSERT INTO import_guids (import_guid_uuid,assem_guid,part_guid,import_table_id,edit_date,modification_date,tenant_uuid,job_id,guid_order) VALUES (?,?,?,?,?,?,?,?,?)";
 			
 			//var importTableId = newRec.import_table_id.toString();
 			sqlArgs = [];
@@ -1610,15 +1637,15 @@ function importPopSaveDetailRow(event,recDate){
 			sqlArgs.push(recDate);
 			sqlArgs.push(globals.session.tenant_uuid);
 			sqlArgs.push(scopes.jobs.importJob.jobId.toString());
-			sqlArgs.push(scopes.jobs.importJob.guidOrder++);
+			sqlArgs.push(scopes.jobs.importJob.guidOrder++); */
 			//application.output(newRec.parent_piecemark+' '+newRec.piecemark+' assemGuid: '+assemGuid+ ' PartGuid: '+partGuid)
-			var result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql,sqlArgs);
+			//var result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql,sqlArgs);
 			//application.output('result insert: '+result);
-			if (!result){
-				var sqlMsg =  plugins.rawSQL.getException().getMessage();
-				application.output('Raw SQL message '+sqlMsg);
-				application.output('sql query args '+sqlArgs+'\n'+sql);
-			}
+			//if (!result){
+			//	var sqlMsg =  plugins.rawSQL.getException().getMessage();
+			//	application.output('Raw SQL message '+sqlMsg);
+			//	application.output('sql query args '+sqlArgs+'\n'+sql);
+			//}
 			
 			/** r.assem_guid = assemGuid;
 			r.part_guid = partGuid;
@@ -1628,6 +1655,12 @@ function importPopSaveDetailRow(event,recDate){
 			r.tenant_uuid = globals.session.tenant_uuid;
 			r.job_id = scopes.jobs.importJob.jobId;
 			//r.job_number = scopes.jobs.importJob.jobNumber; */
+		}
+		if (guidsArr.length > 0){
+			sql = 'INSERT INTO import_guids '+scopes.jobs.sqlArrayToColumnNames(guidsCols)+' VALUES '+scopes.jobs.sqlArgsToSqlData(guidsArr)+';';
+			//application.output(sql);
+			var result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql);
+			guidsArr = [];
 		}
 	}
 	if (exitSequences){
@@ -1655,10 +1688,11 @@ function newKRecord(lineArray){
  */
 function clearKissTables(event,recDate){
 	null;
+	scopes.jobs.warningsMessage('Clearing Import Table',true);
 	var formName = event.getFormName();
 	//var q = databaseManager.getDataSetByQuery('stsservoy','DELETE FROM import_table;',[],1);
 	
-	var todaysDate = new Date(recDate).getTime() - 1000*60*60*24;
+	var todaysDate = new Date(recDate).getTime() - 1000*60*60*3;
 
 	var delDate = new Date(todaysDate);
 	delDate = utils.dateFormat(delDate, 'yyyy-MM-dd')
@@ -1676,6 +1710,7 @@ function clearKissTables(event,recDate){
 	);
 	xt.where.add(xt.columns.tenant_uuid.eq(tenantId));
 	var XT = databaseManager.getFoundSet(xt);
+	scopes.jobs.warningsMessage('Clearing Import Table records.',true);
 	if (XT.getSize() > 0){XT.deleteAllRecords()}
 
 	/** @type {QBSelect<db:/stsservoy/import_guids>} */
@@ -1687,6 +1722,7 @@ function clearKissTables(event,recDate){
 	);
 	xg.where.add(xg.columns.tenant_uuid.eq(tenantId))
 	var XG = databaseManager.getFoundSet(xg);
+	scopes.jobs.warningsMessage('Clearing Import FS GUIDs Table records.',true);
 	if (XG.getSize() > 0){XG.deleteAllRecords()}
 
 }
@@ -2317,7 +2353,7 @@ function importSetTableFilters(event, filters){
 	for (var index = 0;index < filterNames.length;index++){
 		databaseManager.removeTableFilterParam('stsservoy',filterNames[index]);
 	}
-	scopes.kiss.clearKissTables(event);
+	//scopes.kiss.clearKissTables(event);
 	var columnName = '';
 	for (var filter in filters){
 		var filterArray = [];
@@ -4415,7 +4451,7 @@ function hasBeenPrinted(rec){
  * @properties={typeid:24,uuid:"C23A1FF7-B4DA-4AC5-BFE9-84F707A55B93"}
  */
 function importExistingRecStatus(record){
-	var uniqPcmk = uniquePiecemark(record);
+	var uniqPcmk = uniquePiecemark(record);//RM stop here to check property 'length' error
 	var uniqPcmkId = scopes.jobs.dsPiecemarkArray[uniqPcmk];
 	if (!uniqPcmkId){
 		var freshPcmk = [];
@@ -4430,21 +4466,27 @@ function importExistingRecStatus(record){
 		return freshPcmk.toString();
 	}//application.output('no record')}
 	//var pcmkId = dsPiecemarkArray[uniqPcmk];
+	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number]){
+		scopes.jobs.createSequenceNumber(record.sequence_number);
+	}
 	var seqId = scopes.jobs.dsSequenceArray['_'+record.sequence_number];
+	if (!scopes.jobs.dsLotArray['_'+record.lot_number]){
+		scopes.jobs.createLotNumber(record.lot_number);
+	}
 	var lotId = scopes.jobs.dsLotArray['_'+record.lot_number];
 	//if (!lotId)
 	//application.output('sequenceID '+dsSequences[seqId]);dsIdfileArray;
 	var barSeen = [];
 	var barcodeCnt = [];//dsIdfileArray[uniqPcmkId+','+seqId+','+lotId];dsIdfileListByPm
 //	var idListPM = scopes.jobs.dsIdfileListByPm[uniqPcmkId];
-	var idListUniq = scopes.jobs.getPiecemarkIdfiles2(uniqPcmkId,record.sequence_number,record.lot_number);
-	if (idListUniq){
+	var idListUniq = scopes.jobs.getPiecemarkIdfiles2(uniqPcmkId,record);
+	if (!(!idListUniq) && idListUniq.getSize() > 0){
 		var lesser = 0;//JOEJOEJOEBAR
 		var idRec = null; var idx3 = 1;
 		while (idRec = idListUniq.getRecord(idx3++)){
 		//for (var j = 0;j < idListPM.length;j++){
 			var bcId = idRec.id_serial_number_id;
-			if (!bcId){continue}
+			if (!bcId || !scopes.jobs.dsBarcodeList[bcId]){continue}
 				bcId = bcId.toString();
 				if (barSeen.indexOf(bcId) != -1){continue}
 				barSeen.push(bcId);
@@ -4602,10 +4644,14 @@ function getBarcodeCount(record){
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.piecemark_id.eq(pmId.toString()));
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.sequence_id.eq(scopes.jobs.dsSequenceArray['_'+record.sequence_number].toString()));
-	if (scopes.jobs.dsLotArray && scopes.jobs.dsLotArray['_'+record.lot_number]){
-		q.where.add(q.columns.lot_id.eq(scopes.jobs.dsLotArray['_'+record.lot_number].toString()));
+	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number]){
+		scopes.jobs.createSequenceNumber(record.sequence_number);
 	}
+	q.where.add(q.columns.sequence_id.eq(scopes.jobs.dsSequenceArray['_'+record.sequence_number].toString()));
+	if (!scopes.jobs.dsLotArray['_'+record.lot_number]){
+		scopes.jobs.createLotNumber(record.lot_number);
+	}
+	q.where.add(q.columns.lot_id.eq(scopes.jobs.dsLotArray['_'+record.lot_number].toString()));
 	q.groupBy.add(q.columns.id_serial_number_id);
 	q.result.distinct = true;
 	q.result.add(q.columns.id_serial_number_id);
@@ -4646,14 +4692,22 @@ function getCurrentPcmkIdfileCount(event,record){
 	var x = w.joins.add('db:/stsservoy/idfiles');
 	x.on.add(x.columns.piecemark_id.eq(w.columns.piecemark_id));
 	x.root.where.add(x.columns.delete_flag.isNull);
-	var seqId = scopes.jobs.dsSequenceArray['_'+record.sequence_number]
-	if (!seqId){return 0}
-	x.root.where.add(x.columns.sequence_id.eq(seqId.toString()))
+	var seqId = (scopes.jobs.dsSequenceArray['_'+record.sequence_number]) ? scopes.jobs.dsSequenceArray['_'+record.sequence_number] : scopes.jobs.createSequenceNumber(record.sequence_number);
+	//if (!seqId){return 0}
+	var lotId = (scopes.jobs.dsLotArray['_'+record.lot_number]) ? scopes.jobs.dsLotArray['_'+record.lot_number] : scopes.jobs.createLotNumber(record.lot_number);
+	x.root.where.add(x.columns.sequence_id.eq(seqId.toString()));
+	x.root.where.add(x.columns.lot_id.eq(lotId.toString()));
 	//q.groupBy.add(x.columns.idfile_id);
 	q.result.add(x.columns.idfile_id.count,'count');
 	var Q = databaseManager.getDataSetByQuery(q,-1);
 	Q.rowIndex = 1;
-	return Q.count;
+	var countIs = Q.count*1;
+	x.root.where.add(x.columns.status_description_id.isNull);
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	Q.rowIndex = 1;
+	var countClean = Q.count*1;
+	if (countClean*1 < countIs*1){countIs = countIs*-1}
+	return countIs;
 }
 /**
  * TODO generated, please specify type and doc for the params

@@ -4,7 +4,6 @@ items:[
 {foreignColumnName:"piecemark_id",primaryDataProviderID:"piecemark_uuid",typeid:23,uuid:"119E901D-AE3A-4C84-AA34-AA0619BB8767"},
 {foreignColumnName:"job_uuid",primaryDataProviderID:"job_uuid",typeid:23,uuid:"B99802B9-71DA-4B7B-91C1-297801BACF37"}
 ],
-joinType:1,
 name:"x_pm",
 primaryDataSource:"db:/stsservoy/pcmk_instances",
 typeid:22,

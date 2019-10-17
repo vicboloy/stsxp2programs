@@ -162,8 +162,16 @@ function onRenderStatus(event) {
 				rend.bgcolor = '#99ffff';
 			} else if (rec.import_status == i18n.getI18NMessage('import.ignore')) {
 				rend.bgcolor = '#d6d6c2';
+			} else if (rec.import_status == i18n.getI18NMessage('import.dirty')){
+				rend.bgcolor = 'yellow';
 			} else {
-				rend.bgcolor = '#ffff99';
+				if (rec.sts_qty == rec.item_qty){
+					rend.bgcolor = 'green';
+				} else if (rec.sts_qty != 0) {
+					rend.bgcolor = '#99ffff';
+				} else {
+					rend.bgcolor = '#ffff99';
+				}
 			}
 		}
 	}

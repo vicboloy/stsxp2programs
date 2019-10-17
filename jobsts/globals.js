@@ -434,6 +434,21 @@ var processCodes = {	all : [
 		i18n.getI18NMessage('sts.status.fab.4thinspect'),//'Fab 4thInspect',
 		i18n.getI18NMessage('sts.status.fab.inspected'),//'Fab Inspected',
 		i18n.getI18NMessage('sts.status.jobsite.inspected')//'Jobsite Inspected',
+	],
+	rawprint :[//don't know by name what requires raw material vs STSX data 20191011
+		i18n.getI18NMessage('sts.mobile.asn.receiving'),
+		i18n.getI18NMessage('sts.mobile.checklist.receive'),
+		i18n.getI18NMessage('sts.mobile.checklist.receive.w.rem'),
+		i18n.getI18NMessage('sts.mobile.checklist.receive2'),
+		i18n.getI18NMessage('sts.mobile.checklist.status'),
+		i18n.getI18NMessage('sts.mobile.receiving'),
+		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'),
+		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.id'),
+		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.id.print'),
+		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minorid'),
+		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw.sts.minor.print'),
+		i18n.getI18NMessage('sts.mobile.inventory.audit'),
+		i18n.getI18NMessage('sts.mobile.inventory.move')
 	]
 }
 /**
@@ -1439,6 +1454,10 @@ var secCurrentUser = null;
  * global setting for debug messages to console
  */
 var debugDev = 0;
+/**
+ * @properties={typeid:35,uuid:"2D6C6D2F-326E-4166-A15D-A6EB74FC3829",variableType:-4}
+ */
+var showDeleted = false;
 /**
  * @AllowToRunInFind
  * 
@@ -2549,21 +2568,25 @@ function noOperationEvent(event){
  * @properties={typeid:24,uuid:"B5F3140A-92DF-4C0D-A4A0-985F31F6573E"}
  */
 function onActionScreenToggle(event) {
+	var window = application.getActiveWindow();
 	if (!scopes.prefs.screenFull){
 		scopes.prefs.screenFull = false;
-		scopes.prefs.screenOrigX = 0;
+		/** scopes.prefs.screenOrigX = 0;
 		scopes.prefs.screenOrigY = 0;
 		scopes.prefs.screenWidth = 0;
-		scopes.prefs.screenHeight = 0;
-	}
-	var window = application.getActiveWindow();
-	if (scopes.prefs.screenFull == false){
+		scopes.prefs.screenHeight = 0; */
 		scopes.prefs.screenHeight = window.getHeight();
 		scopes.prefs.screenWidth = window.getWidth();
 		scopes.prefs.screenOrigX = window.getX();
 		scopes.prefs.screenOrigY = window.getY();
+	}
+	if (scopes.prefs.screenFull == false){
+		/** scopes.prefs.screenHeight = window.getHeight();
+		scopes.prefs.screenWidth = window.getWidth();
+		scopes.prefs.screenOrigX = window.getX();
+		scopes.prefs.screenOrigY = window.getY(); */
 		window.setLocation(0, 0);
-		window.setSize(application.getScreenWidth(),scopes.prefs.screenHeight);
+		window.setSize(application.getScreenWidth(),Math.floor(application.getScreenHeight()*0.95));//scopes.prefs.screenHeight);
 		scopes.prefs.screenFull = true;
 	} else {
 		window.setLocation(scopes.prefs.screenOrigX, scopes.prefs.screenOrigY);
@@ -4545,7 +4568,8 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	/** @type {JSFoundSet<db:/stsservoy/status_description>} */
 	var qqRec = QQ.getRecord(1);
 	var statusShipType = qqRec.status_type;
-	if (!application.isInDeveloper() && mob.laborCompleted && !rfSaveThirdParties('Save')){return false}//CHECFS
+	var commitAction = (session.program != i18n.getI18NMessage('sts.mobile.shipping')) ? "Save" : "Ship";
+	if (mob.laborCompleted && !rfSaveThirdParties(commitAction)){return false}//CHECFS
 	databaseManager.startTransaction();
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var newRec = null;var totalIdfileCnt = mob.idfiles.length;
@@ -5265,7 +5289,8 @@ function rfProcessBarcode(event){
 					
 					if (flagF8){
 						rfF8ReversalPrep();
-						if (!rfSaveThirdParties('Delete')){return false}// Remove third party status
+						var commitAction = (session.program != i18n.getI18NMessage('sts.mobile.shipping')) ? "Delete" : "Un-Ship";
+						if (!rfSaveThirdParties(commitAction)){return false}// Remove third party status
 
 						rfF8ReversalTransaction();
 						mob.reverseWorker = null;
@@ -8049,9 +8074,9 @@ function rfGetSpecsLoad(loadType){
 				mob.load.ctShipped++;
 			}
 		}
-		mob.load.shipId = rec.ship_load_id.toString();
-		mob.load.receiveId = rec.received_load_id.toString();
-		mob.load.currentId = rec.current_load_id.toString();
+		mob.load.shipId = (!rec.ship_load_id) ? rec.ship_load_id : rec.ship_load_id.toString();
+		mob.load.receiveId = (!rec.received_load_id) ? rec.received_load_id : rec.received_load_id.toString();
+		mob.load.currentId = (!rec.current_load_id) ? rec.current_load_id : rec.current_load_id.toString();
 	}
 	
 	/** @type {QBSelect<db:/stsservoy/piecemarks>} */
@@ -11047,6 +11072,9 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					application.output(invLine)
 					form.poNumber = invLine.ponumber;
 					form.asnNumber = scopes.jobs.getChecklistInventory(event,newValue);
+					if (invLine.qtyremaining == 0){
+						errorDialogMobile(event,1075,'genericin','');
+					}
 				} else if (newValue.search('RM') == 0 && newValue.match(/(RM[0-9]+)/) &&
 							session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
 					// check RMxxx serial

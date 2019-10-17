@@ -708,7 +708,7 @@ function onShowForm(firstShow,event) {
 	globals.getStatusDescriptions();
 	globals.getRoutes();
 	globals.getRouteLegs();
-
+	labelPrintType = (globals.processCodes.rawprint.indexOf(globals.session.program) != -1) ? 'material' : 'piecemark';
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.

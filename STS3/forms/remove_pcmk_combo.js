@@ -90,6 +90,10 @@ function onActionRemoveSelected(event) {
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.purging',['JOB']),true);
 		scopes.jobs.deleteEntireJob(jobId);
 		scopes.jobs.warningsX();
+		scopes.jobs.idfilesToDelete = new Array();
+		var win = application.getActiveWindow();
+		win.hide();
+
 		return;
 	}
 	/** @type {String} */
@@ -106,12 +110,15 @@ function onActionRemoveSelected(event) {
 		/** @type {JSRecord} */
 		var rec = fs.getRecord(i++);
 		if (rec.selection == 0){continue}
-		scopes.jobs.purgeBarcodeRecords.push(rec.if_id_serial_number_id.toString());
+		if (rec.if_id_serial_number_id){
+			scopes.jobs.purgeBarcodeRecords.push(rec.if_id_serial_number_id.toString());
+		}
 		//removeList.push(i-1); //selection is array, which is zero-based, records are one-based
 	}
 	scopes.jobs.purgeDeletedIdfiles();
 	scopes.jobs.warningsX();
 	
+	scopes.jobs.idfilesToDelete = new Array();
 	var win = application.getActiveWindow();
 	win.hide();
 }

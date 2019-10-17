@@ -1125,7 +1125,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	//var commitType = 'Save';//Save/Delete/required use F8 to indicate removal
 	var jobNumber = globals.mob.job.number;
 	var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];
-	var lotNumber = globals.mob.piecemark.lot;
+	var lotNumber = (!globals.mob.piecemark.lot) ? '' : globals.mob.piecemark.lot;
 	var instanceNumbers = globals.mob.idfile.pcmk_instance;//accepts only numeric values, as well as hyphen
 	//instanceNumbers = '';
 	var serialNumber = 'FS-5319D7A3-D71F-11E5-8AFE-A292F4137E41';
@@ -1156,17 +1156,17 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	var _batchId = '<BatchID>'+batchId+'</BatchID>\n';
 	var _asUser = '<AsUser>'+equipEmployee+'</AsUser>\n';
 
-	var saveDataXML = '<FabSuiteXMLRequest>\
-	<ShopFloorSave>\
-	TYPE JOBNUMBER MAJOR MINOR SEQUENCENUM LOTNUMBER STATION QUANTITY INSTANCES SERIALNUM ASUSER EMPLOYEE DATE HOURS BATCH \
-	</ShopFloorSave>\
+	var saveDataXML = '<FabSuiteXMLRequest>\n\
+	<ShopFloorSave>\n\
+	TYPE \nJOBNUMBER \nMAJOR \nMINOR \nSEQUENCENUM \nLOTNUMBER \nSTATION \nQUANTITY \nINSTANCES \nSERIALNUM \nASUSER \nEMPLOYEE \nDATE \nHOURS \nBATCH \n\
+	</ShopFloorSave>\n\
 	</FabSuiteXMLRequest>';
 	saveDataXML = saveDataXML.replace('TYPE',_commitType);
 	saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
 	saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
 	saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
 	saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence);
-	saveDataXML = (!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
+	saveDataXML = saveDataXML.replace('LOTNUMBER',_lotNumber);//(!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
 	saveDataXML = saveDataXML.replace('STATION',_station);
 	saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
 	saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
@@ -1177,6 +1177,29 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId);
 	saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
 	application.output(saveDataXML);
+	
+	var saveDataXML2 = '<FabSuiteXMLRequest>\n\
+	<Ship>\n\
+	COMMITTYPE\n JOBNUMBER \nTRUCKNUMBER \nDATE\n\
+	</Ship>\n\
+	</FabSuiteXMLRequest>';
+	
+	/**
+	 * find out about F8 status for ship vs un-ship before call
+	 * first unship and then remove from load
+	 * 
+	 */
+	var _loadNumber = globals.session.loadNumber;
+	saveDataXML2 = saveDataXML2.replace('COMMITTYPE',_commitType);//'Ship'/'Un-Ship' determined on call
+	saveDataXML2 = (!jobNumber) ? saveDataXML2.replace('JOBNUMBER','') : saveDataXML2.replace('JOBNUMBER',_jobNumber);
+	saveDataXML2 = saveDataXML2.replace('TRUCKNUMBER',_loadNumber);
+	saveDataXML2 = saveDataXML2.replace('DATE',_execDate);
+	var _updateLoadWeight = globals.rfGetSpecsLoad(globals.session.program);
+	
+	if (globals.session.program == i18n.getI18NMessage('sts.mobile.shipping')) {
+		saveDataXML = saveDataXML2;
+	}
+
 	var fsResp = globals.fsCom.call('FabSuiteXML',saveDataXML);
 	application.output('RESPONSE: '+fsResp);
 	var fsErr = fabSuiteError(fsResp);

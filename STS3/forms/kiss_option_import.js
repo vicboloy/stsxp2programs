@@ -1826,12 +1826,21 @@ function applyImportPreferences(event,skipDialog){
 		var igText = i18n.getI18NMessage('i18n:import.ignore');
 		var smText = i18n.getI18NMessage('i18n:import.summarize');
 		if (rec.import_status == smText || rec.import_status == igText){
-			rec.import_status = i18n.getI18NMessage('i18n:import.update');
+			//rec.import_status = i18n.getI18NMessage('i18n:import.update');
 		}
 		if (scopes.jobs.applyDiscardTypes && (excList.search(shape) != -1) || minorRecord) { // || (sumList.search(shape) != -1)
 			rec.import_status = igText;totRec--;
 		} else if ((sumList.search(shape) != -1)) {
 			rec.import_status = smText;
+		}
+		if (majorPm.toLowerCase() != minorPm.toLowerCase()){
+				
+			if (keepMinors == 1){
+				if (rec.sts_qty != 0){rec.import_status = i18n.getI18NMessage('import.update')}
+				if (rec.sts_qty == 0){rec.import_status = i18n.getI18NMessage('import.create')}
+			} else {
+				rec.import_status = i18n.getI18NMessage('import.ignore');
+			}
 		}
 
 		//var special = majorPm+' '+minorPm+' '+material+" "+sourceDb.grade+" "+sourceDb.finish+sourceDb.item_weight;

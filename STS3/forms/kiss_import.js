@@ -257,6 +257,7 @@ function getKissFile(event){
 			<IncludeLotNumbers>1</IncludeLotNumbers>\n\
 			</ExportJob>\n\
 			</FabSuiteXMLRequest>';
+		//application.output(request);
 		if (vSeqNumber && vSeqNumber.search(',') == -1){
 			request = request.replace('SEQ','<Sequence>'+vSeqNumber+'</Sequence>');
 		} else {
@@ -319,6 +320,7 @@ function getKissFile(event){
 		application.output(file+' file write to '+servoyDir+ ' server success: '+success);
 		return;
 	}
+	scopes.jobs.importJob.sheetImportOnly = (!vSeqNumber && !vLotNumber && !vPartNumber);//can only delete items when sheet or full import only, use during import to STS db
 	removeJobImportData(vJobNumber);
 	elements.numSeq.requestFocus();
 	scopes.kiss.importFSOnServer(event,request,filters);//IMPORT 1 importFSOnServer
@@ -554,10 +556,11 @@ function removeJobImportData(jobNumber){
 	if (Q.getSize() > 0){
 		var rec = Q.getRecord(1);
 		jobId = rec.job_uuid;
+		Q.deleteAllRecords();
 	}
 	if (application.isInDeveloper()){application.output('size of import table records '+Q.getSize())}
 	//application.output('size of import table records '+Q.getSize())
-	Q.deleteAllRecords();
+
 	/** var tableIds = [];
 	/** @type {QBSelect<db:/stsservoy/import_table>} * /
 	var rec = null; var idx = 1;
@@ -576,12 +579,17 @@ function removeJobImportData(jobNumber){
 	var S = databaseManager.getFoundSet(s);
 	if (application.isInDeveloper()){application.output('size of import guid records '+S.getSize())}
 	//application.output('size of import guid records '+S.getSize())
-	success = S.deleteAllRecords();
+	if (S.getSize() > 0){
+		databaseManager.saveData(S);
+		success = S.deleteAllRecords();
+	}
 	if (application.isInDeveloper()){application.output('Delete job GUIDs: '+success)}
-	var success = Q.deleteAllRecords();
+	if (Q.getSize() > 0){
+		var success = Q.deleteAllRecords();
+	}
 	if (application.isInDeveloper()){application.output('Delete job import Records: '+success)}
 	null;
-	
+
 }
 /**
  * Handle hide window.

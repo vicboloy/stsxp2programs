@@ -53,9 +53,11 @@ function onActionHideNoFront(event) {
 	var formName = event.getFormName();
 	if (application.isInDeveloper()){application.output('Closing found formName is '+formName)}
 	var win = forms[formName].controller.getWindow();
+	if (win){
 	//application.getActiveWindow();
-	var winName = win.title;
-	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.opened',new Array(winName)));
-	win.hide();
-	application.output('closing browse');
+		var winName = win.title;
+		scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.opened',new Array(winName)));
+		win.hide();
+		application.output('closing browse');
+	}
 }

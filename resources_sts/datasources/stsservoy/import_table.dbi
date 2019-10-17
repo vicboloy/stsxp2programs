@@ -108,6 +108,13 @@ name:"item_weight"
 },
 {
 allowNull:true,
+compatibleColumnTypes:"[[8,17,17]]",
+creationOrderIndex:41,
+dataType:8,
+name:"item_width"
+},
+{
+allowNull:true,
 creationOrderIndex:30,
 dataType:12,
 flags:4,

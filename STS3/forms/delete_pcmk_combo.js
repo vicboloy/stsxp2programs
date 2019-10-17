@@ -150,7 +150,7 @@ function onActionDeleteSelected(event,formName) {
 		recCount++;
 	}
 	recCount = fs.getSize();
-	if (application.isInDeveloper()){application.output('record count for deletioin is '+recCount)}
+	if (application.isInDeveloper()){application.output('record count for deletion is '+recCount)}
 	var nothingSelected = true;
 	while (recCount > 0){ // collect selected record idfile id's
 		scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',false);
@@ -161,7 +161,7 @@ function onActionDeleteSelected(event,formName) {
 			if (rec.if_idfile_id){
 				scopes.jobs.idfilesToDelete.push(rec.if_idfile_id.toString());
 			}
-			fs.omitRecord(recCount);
+			//fs.omitRecord(recCount);
 		}
 		recCount--;
 	}

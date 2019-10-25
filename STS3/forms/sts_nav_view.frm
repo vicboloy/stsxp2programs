@@ -34,6 +34,7 @@ typeid:7,
 uuid:"553DF2A4-3861-4891-840E-D3C8BE76A306"
 },
 {
+enabled:false,
 formIndex:10,
 location:"27,65",
 name:"btn_ViewPiecemark",
@@ -56,6 +57,7 @@ typeid:7,
 uuid:"64D759E8-F3EE-4F6C-9982-B90414DF2530"
 },
 {
+enabled:false,
 formIndex:10,
 location:"69,275",
 name:"btn_ViewStatusCodes",
@@ -80,6 +82,7 @@ typeid:7,
 uuid:"67948879-5476-4214-BDC4-0A6217135463"
 },
 {
+enabled:false,
 formIndex:10,
 location:"27,335",
 name:"btn_ViewHistoryLoadInformation",
@@ -92,6 +95,7 @@ typeid:7,
 uuid:"6A8FC34D-81C5-4485-A60E-BE5BD357B7D5"
 },
 {
+enabled:false,
 formIndex:10,
 location:"27,95",
 name:"btn_FindPiecemark",
@@ -104,6 +108,7 @@ typeid:7,
 uuid:"707A7563-49D4-4AC2-B10A-9C6CC9F2DEB5"
 },
 {
+enabled:false,
 formIndex:10,
 location:"27,365",
 name:"btn_ViewArchivedLoadInformation",
@@ -128,6 +133,7 @@ typeid:7,
 uuid:"92CE009E-38A8-4095-B616-35814DB977C6"
 },
 {
+enabled:false,
 formIndex:10,
 location:"69,245",
 name:"btn_ViewEmployeeClassInformation",

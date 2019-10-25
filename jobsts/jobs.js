@@ -4417,7 +4417,11 @@ function onRecordSelectIdfile(event){
 	//application.output('idfileid '+scopes.jobs.transactionIdfileId);
 	//application.output('form name '+prefix+'_pcmk_transaction'+versionForm);
 	//forms.gen_browse_trans.controller.loadRecords();
-	forms[prefix+'_pcmk_transaction'+versionForm].controller.loadRecords();
+	//forms[prefix+'_pcmk_transaction'+versionForm].controller.loadRecords();
+	//var sortOrder = forms[prefix+'_pcmk_transaction'+versionForm].foundset.getCurrentSort()
+	//application.output('Sort order is '+sortOrder+' form sortOrder '+forms[prefix+'_pcmk_transaction'+versionForm].sortOrd);
+	var saveTransSortForm = formName.replace('_table','').replace('transaction','combo');//set last selected sort for the transaction table
+	forms[prefix+'_pcmk_transaction'+versionForm].foundset.sort(forms[saveTransSortForm].transSort);
 	//findEmptyColumns(event,1);//REMOVE empty  columns leave because presents better UI experience
 	//application.output('barcode id '+id_serial_number_id);
 	//return _super.onRecordSelection(event);

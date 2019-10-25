@@ -1217,6 +1217,8 @@ function importPopKISSTable(event,fileName) {
 	//var skipMinors = ((newRec.piecemark != newRec.parent_piecemark) && (forms.kiss_import_option.keep_minors == 0));
 	//databaseManager.startTransaction();
 	var filterInData = true; // This determines whether a record is saved to speed up import
+	var totalMajorMarks = 0;
+	totAssemWt = 0;
 	var startT = new Date().getTime(); var lastLineType = '';//this serves to ensure that unsequenced items are captured as well
 	databaseManager.startTransaction();
     var _oFR = new Packages.java.io.FileInputStream(fileName),
@@ -1273,7 +1275,6 @@ function importPopKISSTable(event,fileName) {
 				if  (lineType == "*" && skippedFirst){
 					exitSequences = true ;
 					subAssemWtAdded = [];//20180328 clear check array for sub assembly weight adds
-					totAssemWt = 0;
 					continue;
 				}
 				if (lineType == "D"){
@@ -1363,6 +1364,12 @@ function importPopKISSTable(event,fileName) {
 						break;
 					case 'W':
 						newRec.item_weight = lineArray[wWeight];
+						if (totAssemWt == 0){
+							totAssemWt = lineArray[wWeight];
+						} else {
+							totAssemWt = totAssemWt*1 + lineArray[wWeight]*(Math.floor(lineArray[dQty]/totalMajorMarks));
+						}
+						
 						continue;
 					case 'S':
 						//filterInData = (application.getSolutionName() != 'STS X Embedded' 
@@ -1449,7 +1456,7 @@ function importPopSaveDetailRow(event,recDate){
 	if (length == 0) {
 		null;
 	}
-	
+	var newAssembly = false;
 	if (newRec.parent_piecemark.toUpperCase() == newRec.piecemark.toUpperCase()){
 		if (sequenceArr) {application.output('RM sequence begin |'+sequenceArr[0].seq+'|:'+sequenceArr[0].cnt+'|:'+sequenceArr[0].lot);}
 		if (sequenceArr[0].seq == ''){//only if there are unsequenced marks, adjust the number
@@ -1458,6 +1465,7 @@ function importPopSaveDetailRow(event,recDate){
 				if (application.isInDeveloper()){application.output('RM adjust sequence |'+sequenceArr[idx].seq+'|:'+sequenceArr[idx].cnt+'|:'+sequenceArr[idx].lot);}
 			}
 		}
+		newAssembly = true;
 	}
 	var firstPass = true;//Control duplicate records to create Sequences
 	
@@ -1503,7 +1511,7 @@ function importPopSaveDetailRow(event,recDate){
 		}
 
 		if (newRec.piecemark.toLowerCase() == newRec.parent_piecemark.toLowerCase()){
-			currentPcmkParentPcmk[seqInfo.seq] = newRec;
+			currentPcmkParentPcmk[seqInfo.seq+seqInfo.lot] = newRec;
 			parentIdfileId[seqInfo.seq] = newRec.idfile_id;//20180921 missing parent idfile id
 			//globals.parentRec = newRec;
 			scopes.jobs.tmpParentRecId = newRec.import_table_id;
@@ -1516,7 +1524,7 @@ function importPopSaveDetailRow(event,recDate){
 			//add weight to parent mark with sequence
 			//var idx = tableFS.getRecordIndex(currentPcmkParentPcmk[seqInfo.seq]);
 			//if (application.isInDeveloper()){application.output(' get record index of parent pcmk '+idx)}
-			parentRec = currentPcmkParentPcmk[seqInfo.seq]
+			parentRec = currentPcmkParentPcmk[seqInfo.seq+seqInfo.lot]
 			if (!parentRec){
 				/** @type {QBSelect<db:/stsservoy/import_table>} */
 				var qq = databaseManager.createSelect('db:/stsservoy/import_table');

@@ -1,7 +1,8 @@
 addEmptyValue:1,
-customValues:"i18n:sts.txt.rfsettings.pack.list.both.reports\r\
-i18n:sts.txt.rfsettings.pack.list.detail.report\r\
+customValues:"i18n:sts.txt.rfsettings.pack.list.all.reports\r\
 i18n:sts.txt.rfsettings.pack.list.prompt.for.type\r\
+i18n:sts.txt.rfsettings.pack.list.detail.report\r\
+i18n:sts.txt.rfsettings.pack.list.detail.report.w.barcodes\r\
 i18n:sts.txt.rfsettings.pack.list.summary.report",
 name:"stsvl_rf_packing_list",
 typeid:34,

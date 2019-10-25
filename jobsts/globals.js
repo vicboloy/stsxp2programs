@@ -1814,7 +1814,7 @@ function rfF8Reversal(){
 		//f8ReversalColor = forms[formName].elements.transShop.background;
 		forms[formName].elements.transShop.bgcolor = 'Yellow';
 		f8ReversalText = forms[formName].viewTitle;
-		forms[formName].viewTitle = "Status Reversal "+session.association;
+		forms[formName].viewTitle = f8ReversalText+' '+i18n.getI18NMessage('sts.text.reversal.notice');//+' '+session.association;
 		forms[formName].controller.focusField(globals.session.errorElement,false);
 		//9 forms['rf_mobile_view'].genericInput = '';
 	} else {
@@ -1930,13 +1930,15 @@ function rfF8ReversalTransaction(){
 	if (application.isInDeveloper()){application.output(worker+' id '+workerId+' tranrevdate '+tranRevDate+' '+removeStatus+' location ')}
 	var fsUpdater = databaseManager.getFoundSetUpdater(transactionsFS);
 	///var fTimed = (fTransStart || fTransEnd);
-	if (fTransEnd){ // error message with end timed labor percentage = 100
+	if (fTransEnd || (!fTransStart && !fTransEnd)){ // error message with end timed labor percentage = 100 // 20191023 and no trans end or begin
 		var fResetTimed = (rec.labor_percentage >= 100);
 		if (fResetTimed){
 			fsUpdater.setColumn('labor_percentage',0);
 			fsUpdater.setColumn('labor_quantity',0);
 			fsUpdater.performUpdate(); //411 100% complete Removed From the STOP Status Code.
-			errorDialogMobile('rf_mobile_view.currentidin',411,'currentidin','');
+			if (!(!fTransStart && !fTransEnd)){// no error message on removing from a non-labor tracked transaction
+				errorDialogMobile('rf_mobile_view.currentidin',411,'currentidin','');
+			}
 			//return null;
 		}
 	}
@@ -1969,7 +1971,7 @@ function rfF8ReversalTransaction(){
 		}
 		if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')]){
 			fsUpdaterIds.setColumn('current_load_id',null);
-			fsUpdaterIds.setColumn('ship_load_id',null);
+			//fsUpdaterIds.setColumn('ship_load_id',null);
 		}
 		fsUpdaterIds.performUpdate();
 		fsUpdaterIds = null;
@@ -2534,11 +2536,13 @@ function barcodeShip(){
 		checkLegs = l.routeLegs[routeId];
 	}
 	var stationsDone = mob.transactionList;
-	for (var index = 0;index < checkLegs.length;index++){
-		var routeLeg = checkLegs[index];
-		//routeComplete = (stationsDone.indexOf(routeLeg) != -1);
-		routeComplete = (session.stationsComplete[routeLeg] == 100);
-		if (!routeComplete){break}
+	if (checkLegs){
+		for (var index = 0;index < checkLegs.length;index++){
+			var routeLeg = checkLegs[index];
+			//routeComplete = (stationsDone.indexOf(routeLeg) != -1);
+			routeComplete = (session.stationsComplete[routeLeg] == 100);
+			if (!routeComplete){break}
+		}
 	}
 	return routeComplete;
 }
@@ -2659,22 +2663,19 @@ function rfCheckRouteOrder(){
 		 * skip if route is not in legs and allowmorecodes
 		 */
 		var stationsDone = mob.transactionList;
-		//if (checkLegs){
-		var targetIndex = checkLegs.indexOf(session.stationId);
-		//} else {
-		//	targetIndex = -1;//20180827 no legs in route
-		//}
-		var index = 0;
-		//while (routingOk && index < targetIndex){
-
-		while (index < targetIndex){
-			var routeLeg = checkLegs[index];
-			routingOk = (routingOk && stationsDone.indexOf(routeLeg) != -1);
-			if (stationsDone.indexOf(routeLeg) == -1){
-				/** @type {String} */ var tempString = m.stations[routeLeg];
-				missing = missing + tempString.split(",")[1];
+		if (checkLegs){
+			var targetIndex = checkLegs.indexOf(session.stationId);
+			var index = 0;
+	
+			while (index < targetIndex){
+				var routeLeg = checkLegs[index];
+				routingOk = (routingOk && stationsDone.indexOf(routeLeg) != -1);
+				if (stationsDone.indexOf(routeLeg) == -1){
+					/** @type {String} */ var tempString = m.stations[routeLeg];
+					missing = missing + tempString.split(",")[1];
+				}
+				index++;
 			}
-			index++;
 		}
 	}
 	//return writeTransRecord && routingOk;
@@ -2868,7 +2869,7 @@ function rfFunctionKeys(screen){
 	if (application.isInDeveloper()){application.output('screen function keys '+screen)}
 	if (application.isInDeveloper()){application.output('no F8:'+scopes.prefs.globalF8Off+' ship F8 Off:'+scopes.prefs.shipF8Off)}
 	var noF8 = (scopes.prefs.globalF8Off == 1);
-	var noF8Ship = (scopes.prefs.shipF8Off == 1);
+	var noF8Ship = (scopes.prefs.shipF8Off == 0);
 	if (application.isInDeveloper()){application.output('no F8:'+noF8+' ship F8 Off:'+noF8Ship)}
 	switch( screen.replace(/\'/g,"") )//i18n screen issue with embedded i18n quotes
 	{
@@ -2979,7 +2980,7 @@ function rfFunctionKeys(screen){
 			functionKeyProcedure[dex] = 'globals.rfF9InspectionDoc';
 			if (enableFuctionKeys){plugins.window.createShortcut('F9',functionKeyProcedure[dex]);}
 			break;
-		case mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')]://'Shipping2':
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.final.ship')]://'Shipping2':
 			dex = 2;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
 			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
@@ -3115,6 +3116,13 @@ function rfGetLocationStats(sLocation){
 	mob.locationValues.weight = 0;
 	mob.locationValues.piecemarks = 0;
 	if (!sLocation || sLocation == "") {return}
+	if (application.isInDeveloper()){application.output('skipping location statistics scopes.prefs.lAddLocationWtPcs '+scopes.prefs.lAddLocationWtPcs)}
+	if (!(scopes.prefs.lAddLocationWtPcs*1)){
+		mobLocationWeight = mob.locationValues.weight;
+		mobLocationPieces = mob.locationValues.pieces;
+		mobLocationPiecemarks = mob.locationValues.piecemarks;
+		return;
+	}//do not update statistics for location on large DBs
 	//get all transactions idfiles with location
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var q = databaseManager.createSelect('db:/stsservoy/transactions');
@@ -3123,7 +3131,7 @@ function rfGetLocationStats(sLocation){
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.where.add(q.columns.location.eq(sLocation));
-	
+
 	//get last transaction idfiles for location
 	/** @type {QBSelect<db:/stsservoy/transactions>} */
 	var r = databaseManager.createSelect('db:/stsservoy/transactions');
@@ -3151,7 +3159,7 @@ function rfGetLocationStats(sLocation){
 		index++;
 	}
 	mob.locationValues.pieces = idfileList.length;
-	
+	//}
 	// get piecemarks for location, above was only a count by idfiles with that transaction location
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var w = databaseManager.createSelect('db:/stsservoy/idfiles');
@@ -3216,6 +3224,13 @@ function rfGetLocationStats2(sLocation){
 	if (!sLocation || sLocation == "") {return}
 	// get piecemarks for location, above was only a count by idfiles with that transaction location
 	// ticket #95 changed from 7.1 to 7.4. key list condition set
+	if (application.isInDeveloper()){application.output('skipping location statistics scopes.prefs.lAddLocationWtPcs '+scopes.prefs.lAddLocationWtPcs)}
+	if (!(scopes.prefs.lAddLocationWtPcs*1)){
+		mobLocationWeight = mob.locationValues.weight;
+		mobLocationPieces = mob.locationValues.pieces;
+		mobLocationPiecemarks = mob.locationValues.piecemarks;
+		return
+	}//do not update statistics for location on large DBs
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var w = databaseManager.createSelect('db:/stsservoy/idfiles');
 	w.result.add(w.columns.idfile_id);
@@ -3230,7 +3245,7 @@ function rfGetLocationStats2(sLocation){
 	mob.locationValues.piecemarks = resultW.getSize();
 
 	// get total piece count
-	
+
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
 	i.result.add(i.columns.summed_quantity.sum,'total_pieces');
@@ -3243,7 +3258,7 @@ function rfGetLocationStats2(sLocation){
 	i.where.add(i.columns.id_location.eq(sLocation));
 	var resultQuan = databaseManager.getDataSetByQuery(i,-1).getValue(1,1);
 	mob.locationValues.pieces = resultQuan;
-	
+	//}
 
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var i2 = databaseManager.createSelect('db:/stsservoy/idfiles');
@@ -3850,7 +3865,8 @@ function saveScanTransaction(){
 	mobLocationPieces = mob.locationValues.pieces;
 	mobLocationWeight = mob.locationValues.weight;
 	mobItemPieces = globals.mob.idValues.complete+" / "+scopes.globals.mob.idValues.total;
-	loadGetData();//rfGetSpecsLoad(loadType);
+	//loadGetDatax();//
+	rfGetSpecsLoad(session.loadId);
 	null;
 }
 /**
@@ -4568,8 +4584,23 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	/** @type {JSFoundSet<db:/stsservoy/status_description>} */
 	var qqRec = QQ.getRecord(1);
 	var statusShipType = qqRec.status_type;
-	var commitAction = (session.program != i18n.getI18NMessage('sts.mobile.shipping')) ? "Save" : "Ship";
-	if (mob.laborCompleted && !rfSaveThirdParties(commitAction)){return false}//CHECFS
+	var pushStation = false;
+	if (processCodes.shipping.indexOf(statusShipType) != -1){
+		pushStation = (qqRec.push_a_station == 1);
+	}
+	if (mob.laborCompleted && pushStation &&
+			!rfSaveThirdParties('Save')){//handles only pushing 3rd party stations
+		return false;
+	}
+	var commitAction = 'Save';//handles updating a regular station OR Load/Ship actions
+	if (session.program == i18n.getI18NMessage('sts.mobile.final.ship')){commitAction = "Ship"}
+	if (session.program == i18n.getI18NMessage('sts.mobile.shipping')){commitAction = 'Load'}
+	if (mob.laborCompleted &&
+			!rfSaveThirdParties(commitAction)){
+		//var unCommit = (commitAction == 'Ship') ? 'Unship' : 'Unload';
+		//rfSaveThirdParties('unCommit');
+		return false
+	}
 	databaseManager.startTransaction();
 	/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 	var newRec = null;var totalIdfileCnt = mob.idfiles.length;
@@ -4670,7 +4701,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			var batchQ = databaseManager.getFoundSetUpdater(resultQ);
 			if (processCodes.shipping.indexOf(statusShipType) != -1){
 				if (session.loadId != null && session.loadId != ''){
-					batchQ.setColumn('ship_load_id',session.loadId);
+					//batchQ.setColumn('ship_load_id',session.loadId);
 					batchQ.setColumn('current_load_id',session.loadId);
 				}
 			}
@@ -5155,6 +5186,10 @@ function rfProcessBarcode(event){
 	mob.locationArea = forms[formName].statusLocation;
 	mob.workers = forms[formName].statusWorker;
 	mob.date = new Date();
+	var jobInfo = getJobIdInfo(mob.job.number);
+	if (jobInfo){
+		mob.job.rf = jobInfo.job_rec.rf_interface;
+	}
 	forms[formName].lastID = mob.barcode;
 	rfGetBarcodeIdfiles()
 	var barcodeErrorField = 'currentidin';
@@ -5202,10 +5237,19 @@ function rfProcessBarcode(event){
 	var currentPercent = session.stationsComplete[m.statusCodeToId[mob.statusCode]];
 	if (!currentPercent){currentPercent = 0}
 	if (currentPercent == 100 && !flagF8){
-		errorDialogMobile(null,1130,'genericin','');
+		if (session.program != i18n.getI18NMessage('sts.mobile.shipping')){	
+				errorDialogMobile(null,1130,'genericin','');
+		} else {
+			if (session.loadId.toString() != mob.idfile.current_load_id.toString()){
+				var loadNum = rfGetLoadNumber(mob.idfile.current_load_id.toString());
+				errorDialogMobile(null,951,'genericin',loadNum);
+			} else {
+				errorDialogMobile(null,1280,'genericin','');
+			}
+		}
 		return true;
 	}
-	if (!globals.laborScreenActive && currentPercent > 0){
+	if (!globals.laborScreenActive && !flagF8 && currentPercent > 0){//skip error check to enter F8 reversal code
 		errorDialogMobile(null,767,'genericin','');
 		return true;	
 	}
@@ -5280,6 +5324,7 @@ function rfProcessBarcode(event){
 				case i18n.getI18NMessage('sts.mobile.inspections'):
 				case i18n.getI18NMessage('sts.mobile.labor.inspections'):
 				case i18n.getI18NMessage('sts.mobile.inspections.w.revs').replace("'","")://Inspections w/Rev's
+				case i18n.getI18NMessage('sts.mobile.final.ship')://Final Ship
 				case i18n.getI18NMessage('sts.mobile.shipping')://Shipping
 				case i18n.getI18NMessage('sts.mobile.sample')://Sample
 				case i18n.getI18NMessage('sts.mobile.saw')://Saw
@@ -5289,11 +5334,39 @@ function rfProcessBarcode(event){
 					
 					if (flagF8){
 						rfF8ReversalPrep();
-						var commitAction = (session.program != i18n.getI18NMessage('sts.mobile.shipping')) ? "Delete" : "Un-Ship";
-						if (!rfSaveThirdParties(commitAction)){return false}// Remove third party status
+						/** @type {QBSelect<db:/stsservoy/status_description>} */
+						var qq = databaseManager.createSelect('db:/stsservoy/status_description');
+						qq.where.add(qq.columns.status_code.eq(mob.statusCode));
+						qq.where.add(qq.columns.tenant_uuid.eq(session.tenant_uuid));
+						var QQ = databaseManager.getFoundSet(qq);
+						/** @type {JSFoundSet<db:/stsservoy/status_description>} */
+						var qqRec = QQ.getRecord(1);
+						var statusShipType = qqRec.status_type;
+						var pushStation = false;
+						if (processCodes.shipping.indexOf(statusShipType) != -1){
+							pushStation = (qqRec.push_a_station == 1);
+						}
+						var unCommitAction = 'Delete';
+						//var commitStation = ''; //(Save)|(Delete)|(Ship)|(Un-Ship)|(Load)|(Unload)
+						var shipAction = false;
+						if ((mob.laborCompleted || (pushStation && shipAction)) &&
+								!rfSaveThirdParties(unCommitAction)){
+							return false;
+						}
+						if (session.program == i18n.getI18NMessage('sts.mobile.final.ship')){unCommitAction = "Un-Ship";shipAction = true;}
+						if (session.program == i18n.getI18NMessage('sts.mobile.shipping')){unCommitAction = 'Unload';shipAction = true;}
+						if (unCommitAction.search(/(Un-Ship)|(Unload)/) == 0 && !rfSaveThirdParties(unCommitAction)){
+							return false;
+						}
+
+						//var commitAction = (session.program != i18n.getI18NMessage('sts.mobile.shipping')) ? "Delete" : "Un-Ship";
+						//if (!rfSaveThirdParties(commitAction)){return false}// Remove third party status
 
 						rfF8ReversalTransaction();
 						mob.reverseWorker = null;
+						if (session.program == i18n.getI18NMessage('sts.mobile.shipping')){
+							rfGetLoadStats(session.loadId);//loadGetData();
+						}
 						return true;
 					}
 					rfWindowLastInfoDisplay(event);
@@ -5327,7 +5400,14 @@ function rfProcessBarcode(event){
 					rfGetLocationStats2(forms[formName].id_location);
 					rfGetPiecesScanned(mob.piecemark.piecemark_id, mob.locationArea);
 					rfWindowLastInfoDisplay(event);
+					if (session.program == i18n.getI18NMessage('sts.mobile.final.ship')){
+						rfGetLoadStats(session.loadId);//loadGetData();//rfGetSpecsLoad
+					}
 					rfCollectStationCompletes();//20190708 percent completion by station
+					if (session.program == i18n.getI18NMessage('sts.mobile.shipping')){
+						if (application.isInDeveloper()){application.output('calc load data')}
+						rfGetLoadStats(session.loadId);//loadGetData();
+					}
 					forms['rf_mobile_view'].laborPercentComplete = session.stationsComplete[m.statusCodeToId[mob.statusCode]];
 
 					//loadGetData();//20181003 need to do twice. 
@@ -5412,7 +5492,13 @@ function rfWindowLastInfoDisplay(event){
 			mobPiecesStatus = mob.idValues.complete+" / "+mob.idValues.total;
 			mobItemPieces = mob.idValues.complete+" / "+mob.idValues.total;
 	}
-
+	if (session.program == i18n.getI18NMessage('sts.mobile.shipping')){
+		if (mobLoadWeight*1 > scopes.prefs.maxwt*1){
+			errorDialogMobile(event,'sts.txt.truck.overweight','genericin',' '+ Math.floor(mobLoadWeight)+ ' > '+Math.floor(scopes.prefs.maxwt));
+		}
+		rfGetLoadStats(session.loadId);//loadGetData();
+		//rfGetLoadStats(mob.load.currentId);
+	}
 }
 /**
  * @properties={typeid:24,uuid:"CBFF0C6A-6F0A-49FD-94CB-2C1FE0787E7F"}
@@ -5610,6 +5696,12 @@ function onDataChangeJob(oldValue, newJob, event) {
 	if (formName.search('rf_mobile_view') != -1){
 		elementName = 'jobnumberin';
 		var jobInfo = getJobIdInfo(newJob);
+		if (!jobInfo.job_id){
+			errorDialogMobile(event,101,elementName,null);
+			if (forms['rf_mobile_view']){forms['rf_mobile_view'].jobNumber = ''}			
+			return true;
+		}
+		session.jobIsFabSuite = (jobInfo.job_rec.rf_interface == i18n.getI18NMessage('sts.interface.fabsuite'));
 		if (!jobInfo.job_id){
 			errorDialogMobile(event,101,elementName,null);
 			if (forms['rf_mobile_view']){forms['rf_mobile_view'].jobNumber = ''}			
@@ -6448,7 +6540,9 @@ function onDataChangeLoad(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	var elementName = event.getElementName();
 
-	if (!newValue){newValue = getNextLoadNumber()}
+	if (!newValue){
+		newValue = getNextLoadNumber()
+	}
 		//var status = scopes.fs.checkFSLoad(newValue,true);
 		//var dataProv = forms[formName].elements[event.getElementName()].getDataProviderID();
 		//if (status != null){
@@ -6462,20 +6556,19 @@ function onDataChangeLoad(oldValue, newValue, event) {
 	}
 	var loadExists = false;
 	loadExists = loadNumberCheck(event,newValue); // resolves ticket #160
-	if (newValue == "ALL" || loadExists){// need to use existing load number of receiving, etc
+	if (loadExists){// need to use existing load number of receiving, etc
 		session.userEntry = newValue;
 		session.loadNumber = newValue;
 		mobLoadNumber = newValue;
 		loadNumber = newValue;
-		if (application.isInDeveloper() && newValue == "ALL"){
-		}
 	} else {
 		//onFocusClear(event);
 		return true; // resolves ticket #160, check action within STS3
 	}
 	mobLoadWeight = 0;
 	if (newValue && newValue != ""){
-		rfGetSpecsLoad(session.program);
+		//rfGetSpecsLoad(session.program);
+		rfGetLoadStats(session.loadId);//loadGetData();
 	}
 	//session.loadId = session.loadIdBack;
 	session.jobId = session.jobIdBack;
@@ -6590,6 +6683,10 @@ function xmlSuccess(xml){
  */
 function loadCreateValid(makeInterimLoad){
 	if (makeInterimLoad){mob.load.interim = true}
+	//var fsNextTruck = scopes.fs.checkFSNextLoad();
+	//if (fsNextTruck && session.loadNextNumber < fsNextTruck){
+	//	session.loadNextNumber = fsNextTruck;
+	//}
 	var idx = session.jobLoads.newRecord();
 	/** @type {JSFoundSet<db:/stsservoy/loads>} */
 	var rec = session.jobLoads.getRecord(idx);
@@ -6625,7 +6722,9 @@ function loadGetJobDataset(jobId){
 	q.result.add(q.columns.interim_load);
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
-	q.where.add(q.columns.job_id.eq(jobId.toString()));
+	if (scopes.prefs.loadCreate != i18n.getI18NMessage('sts.label.hardware.load.calculation.auto.system.wide.specific')){
+		q.where.add(q.columns.job_id.eq(jobId.toString()));
+	}
 	q.sort.add(q.columns.load_number.desc);
 	var resultQ = databaseManager.getFoundSet(q);
 	return resultQ;
@@ -6638,26 +6737,40 @@ function loadGetJobDataset(jobId){
  * @AllowToRunInFind
  */
 function loadNumberCheck(event,loadNumber){
+	/**
+	 * i18n:sts.label.hardware.load.calculation.auto.job.specific
+	 * i18n:sts.label.hardware.load.calculation.auto.system.wide.specific
+	 * i18n:sts.label.hardware.load.calculation.auto.none
+	 */
 	//getNextLoadNumber();
 	/** @type {JSFoundSet<db:/stsservoy/loads>} */
 	session.jobLoads = loadGetJobDataset(session.jobId);
 	session.loadId = null;
-	
+	/**
+	 * loadnumber check FS and STS
+	 * newLoadNumber check FS and STS
+	 * 
+	 */
+
+	var thirdPartyLoad = true;
 	if (loadNumber){
-		session.loadNextNumber = 0;//set load Number to init state
+		if (scopes.prefs.lFabsuiteInstalled && session.jobIsFabSuite){
+			thirdPartyLoad = (!scopes.fs.checkFSLoad(loadNumber,'',false));
+		}
 		/** @type {JSFoundSet<db:/stsservoy/loads>} */
 		var rec = null; var index = 1;var noNextNum = (loadNumber.toString().search(/[^0-9]/) != -1);
+		/** @type {JSFoundSet<db:/stsservoy/loads>} */
 		var foundRec = null;
 		if (typeof loadNumber == 'string'){loadNumber = loadNumber.trim()}
 		while (rec = session.jobLoads.getRecord(index++)){
 			if (rec.load_number.toString() == loadNumber.toString()){
 				session.loadId = rec.load_id;
 				foundRec = rec;
-				if (false && rec.ship_date && session.program == i18n.getI18NMessage('sts.mobile.final.ship')){//check what constitutes shipped in load table
-					rfErrorShow(i18n.getI18NMessage('1268'));
-					forms['rf_mobile_view'].loadNumber = '';
-					return false;
-				}
+				//if (rec.ship_date || (flagF8 && session.program == i18n.getI18NMessage('sts.mobile.final.ship'))){//check what constitutes shipped in load table
+				//	rfErrorShow(i18n.getI18NMessage('1268'));
+				//	forms['rf_mobile_view'].loadNumber = '';
+				//	return false;
+				//}
 				//session.loadNextNumber = rec.load_number;
 				//break;
 			}
@@ -6666,90 +6779,125 @@ function loadNumberCheck(event,loadNumber){
 				continue;//noNextNum = true;
 			}
 			//if (noNextNum){continue}
-			session.loadNextNumber = (session.loadNextNumber*1 < rec.load_number*1) ? rec.load_number : session.loadNextNumber;
-			session.loadNextNumber = Math.floor(session.loadNextNumber);
+			//session.loadNextNumber = (session.loadNextNumber*1 < rec.load_number*1) ? rec.load_number : session.loadNextNumber;
+			//session.loadNextNumber = Math.floor(session.loadNextNumber);
 		}
 	}
-	if (!session.loadId){ // receiving cannot create new load numbers
-		switch (session.program){
-		case mobileWindows[i18n.getI18NMessage('sts.mobile.receiving')]:
-		case mobileWindows[i18n.getI18NMessage('sts.mobile.final.ship')]:
-			// error message that must use existing load number, number does not exist
-			globals.errorDialogMobile(null,301,'loadnumberin',null);//301 This Load was not found.
-			globals.logger(true,i18n.getI18NMessage('sts.txt.load.does.not.exist'));
+	//session.loadNextNumber = session.loadNextNumber++;
+	/**if (scopes.prefs.lFabsuiteInstalled && session.jobIsFabSuite){
+		var fsNextLoad = scopes.fs.checkFSNextLoad();
+		if (fsNextLoad.toString().search(i18n.getI18NMessage('sts.interface.fabsuite')) != -1){
+			session.loadId = null;
+			session.loadNextNumber = 0;
+			errorDialogMobile(event,1024,'genericin',fsNextLoad);
 			return false;
-			break;
-		default:
-			var form = forms[event.getFormName()];
-			var dataProv = form.elements['loadnumberin'].getDataProviderID();
-			session.loadNextNumber++;
-			if (noNextNum || loadNumber != ''){session.loadNextNumber = loadNumber}
-			var message = i18n.getI18NMessage('sts.txt.load.use.new.number')+session.loadNextNumber;
-			var response = globals.DIALOGS.showQuestionDialog(
-				i18n.getI18NMessage('sts.txt.load.new.number'),
-				message,
-				i18n.getI18NMessage('sts.btn.no'),
-				i18n.getI18NMessage('sts.btn.yes'));
-				//'New Load Number?', message, 'NO', 'yes');
-			if (response == i18n.getI18NMessage('sts.btn.no')){
-				session.loadId = null;
-				session.loadNextNumber = 0;
-				form[dataProv] = '';
-				//onFocusClear(event);
+		}
+		if (session.loadNextNumber < fsNextLoad){
+			session.loadNextNumber = fsNextLoad;
+		}
+	} */
+	if (!session.loadId){ // receiving and final ship cannot create new load numbers
+		switch (session.program){
+			case mobileWindows[i18n.getI18NMessage('sts.mobile.receiving')]:
+			case mobileWindows[i18n.getI18NMessage('sts.mobile.final.ship')]:
+				// error message that must use existing load number, number does not exist
+				globals.errorDialogMobile(null,301,'loadnumberin',null);//301 This Load was not found.
+				globals.logger(true,i18n.getI18NMessage('sts.txt.load.does.not.exist'));
 				return false;
-			} else {
-				mob.load.interimDest = '';//reset interim load to nope
-				mob.load.interim = false;
-				response = globals.DIALOGS.showQuestionDialog(
-				i18n.getI18NMessage('sts.txt.load.use.interim.load'),
-				i18n.getI18NMessage('sts.txt.load.use.interim.load'),
-				i18n.getI18NMessage('sts.btn.no'),
-				i18n.getI18NMessage('sts.btn.yes'));
-				var interimLoad = (response == i18n.getI18NMessage('sts.btn.yes'));
-				if (interimLoad){
-					//query FS and other about interim load here
-					var dests = getDestinationList();
-					var destStr = i18n.getI18NMessage('sts.txt.interim.destination.set');
-					for (var idx = 0;idx < dests.length;idx++){
-						var nextDestNum = idx + 1;
-						destStr += '\n    '+nextDestNum+' - '+dests[idx];
-					}
-					for (idx = 18;idx < 6;idx++){
-						destStr += '\n    '+idx+' - '+'TEST';
-					}
-					globals.DIALOGS.setStylesheet('sts_mc');
-					var interimDest = -1;
-					while (interimDest < 1 || interimDest > destStr.length){
-						interimDest = globals.DIALOGS.showInputDialog(i18n.getI18NMessage('sts.txt.interim.destination.select'),destStr,'1');
-						if (!interimDest){break}
-					}
-					var destination = '';
-					if ((!interimDest) || interimDest == 1){//chose Cancel or <NONE>
-						destination = null;
-					} else {
-						destination = dests[interimDest-1];
-					}
-					if (!destination){
-						errorDialogMobile(event,302,'genericin',session.loadNextNumber);
-						form[dataProv] = '';
-						session.loadId = null;
-						session.loadNextNumber = 0;
-						return false;
-					}
+				break;
+			default:
+				if (scopes.prefs.loadCreate == i18n.getI18NMessage('sts.label.hardware.load.calculation.auto.none')){
+					globals.errorDialogMobile(null,301,'loadnumberin',null);//301 This Load was not found.
+					globals.logger(true,i18n.getI18NMessage('sts.txt.load.does.not.exist'));
+					return false;
 				}
-				if (session.loadNextNumber){
-					var fsLoadNum = scopes.fs.checkFSLoad(session.loadNextNumber,destination,true);
-					if (fsLoadNum != null){
-						form[dataProv] = '';
-
-						errorDialogMobile(event,1024,'genericin',session.loadNextNumber);
-						return false;
+				var form = forms[event.getFormName()];
+				var dataProv = form.elements['loadnumberin'].getDataProviderID();
+				//if (noNextNum || loadNumber != ''){session.loadNextNumber = loadNumber}
+				var message = i18n.getI18NMessage('301')+' '+i18n.getI18NMessage('sts.txt.load.use.new.number')+session.loadNextNumber;
+				var response = globals.DIALOGS.showQuestionDialog(
+					i18n.getI18NMessage('sts.txt.load.new.number'),
+					message,
+					i18n.getI18NMessage('sts.btn.no'),
+					i18n.getI18NMessage('sts.btn.yes'));
+					//'New Load Number?', message, 'NO', 'yes');
+				if (response == i18n.getI18NMessage('sts.btn.no')){
+					session.loadId = null;
+					session.loadNextNumber = 0;
+					form[dataProv] = '';
+					//onFocusClear(event);
+					return false;
+				} else {
+					mob.load.interimDest = '';//reset interim load to nope
+					mob.load.interim = false;
+					response = i18n.getI18NMessage('sts.btn.no');//prefs to permit interim shipments or not
+					if (scopes.prefs.lAllowInterimShipments){
+						response = globals.DIALOGS.showQuestionDialog(
+						i18n.getI18NMessage('sts.txt.load.use.interim.load'),
+						i18n.getI18NMessage('sts.txt.load.use.interim.load'),
+						i18n.getI18NMessage('sts.btn.no'),
+						i18n.getI18NMessage('sts.btn.yes'));
 					}
+					var interimLoad = (response == i18n.getI18NMessage('sts.btn.yes'));
+					if (interimLoad){
+						//query FS and other about interim load here
+						var dests = getDestinationList();
+						var destStr = i18n.getI18NMessage('sts.txt.interim.destination.set');
+						for (var idx = 0;idx < dests.length;idx++){
+							var nextDestNum = idx + 1;
+							destStr += '\n    '+nextDestNum+' - '+dests[idx];
+						}
+						for (idx = 18;idx < 6;idx++){
+							destStr += '\n    '+idx+' - '+'TEST';
+						}
+						globals.DIALOGS.setStylesheet('sts_mc');
+						var interimDest = -1;
+						while (interimDest < 1 || interimDest > destStr.length){
+							interimDest = globals.DIALOGS.showInputDialog(i18n.getI18NMessage('sts.txt.interim.destination.select'),destStr,'1');
+							if (!interimDest){break}
+						}
+						var destination = '';
+						if ((!interimDest) || interimDest == 1){//chose Cancel or <NONE>
+							destination = null;
+						} else {
+							destination = dests[interimDest-1];
+						}
+						if (!destination){
+							errorDialogMobile(event,302,'genericin',session.loadNextNumber);
+							form[dataProv] = '';
+							session.loadId = null;
+							session.loadNextNumber = 0;
+							return false;
+						}
+					}
+					if (session.loadNextNumber){
+						if (scopes.prefs.lFabsuiteInstalled && session.jobIsFabSuite){
+							/** var fsNextLoad = scopes.fs.checkFSNextLoad();
+							if (fsNextLoad.search(i18n.getI18NMessage('sts.interface.fabsuite')) != -1){
+								session.loadId = null;
+								session.loadNextNumber = 0;
+								errorDialogMobile(event,1024,'genericin',fsNextLoad);
+								return false;
+							}
+							if (session.loadNextNumber < fsNextLoad){
+								session.loadNextNumber = fsNextLoad;
+							} */
+							if (interimLoad){
+								var fsLoadNum = scopes.fs.checkFSLoad(session.loadNextNumber,destination,true);
+							} else {
+								fsLoadNum = scopes.fs.checkFSLoad(session.loadNextNumber,'',true);
+							}
+							if (fsLoadNum != null){
+								form[dataProv] = '';
+								errorDialogMobile(event,1024,'genericin',session.loadNextNumber);
+								return false;
+							}
+						}
+					}
+					rec = loadCreateValid(interimLoad);
+					foundRec = rec;
+					session.loadId = rec.load_id;//20181003
 				}
-				rec = loadCreateValid(interimLoad);
-				foundRec = rec;
-				session.loadId = rec.load_id;//20181003
-			}
 		}
 	}
 	mob.load.currentId = session.loadId;
@@ -6971,26 +7119,33 @@ function loadGetData(){
 		q.and
 			.add(q.columns.delete_flag.isNull)
 			.add(q.columns.tenant_uuid.eq(session.tenant_uuid))
-			.add(q.columns.ship_load_id.eq(session.loadId.toString()))
+			.add(q.columns.current_load_id.eq(session.loadId.toString()))
 		);
 	}
 	var samp = databaseManager.getFoundSet(q);
 	if (application.isInDeveloper()){application.output('load size '+samp.getSize()+' load '+session.loadId+' session '+session.tenant_uuid)}
 	var weight = 0;
 	var count = 0;
-	for (var index = 1;index <= samp.getSize();index++){
-		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-		var rec = samp.getRecord(index);
+	var metric = (mob.job.metric == 1);
+	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+	var rec = null; var index = 1;
+	//for (var index = 1;index <= samp.getSize();index++){
+	while (rec = samp.getRecord(index++)){
 		count = count+rec.summed_quantity;
-		weight = weight+rec.summed_quantity*rec.sts_idfile_to_pcmks.item_weight;
+		if (metric){
+			weight = weight+rec.summed_quantity*rec.sts_idfile_to_pcmks.item_weight;
+		} else {
+			weight = weight+rec.summed_quantity*rec.sts_idfile_to_pcmks.item_weight_lbs;
+		}
 		
 	}
+	weight = Math.floor(weight*1+0.5);
 	mob.load.pieces = count;
 	mob.load.weight = weight;
 	mobLoadWeight = mob.load.weight;
 	mobLoadPieces = mob.load.pieces;
-	mobWeightUnits = (mob.job.metric == 1) ? 'kgs' : "lbs";
-	mobLengthUnits = (mob.job.metric == 1) ? "mm" : "ins";
+	mobWeightUnits = (metric) ? 'kgs' : "lbs";
+	mobLengthUnits = (metric) ? "mm" : "ins";
 }
 /**
  * @properties={typeid:24,uuid:"E4E8F337-8479-4FED-99BD-33061E69290D"}
@@ -8026,7 +8181,7 @@ function rfGetSpecsLoad(loadType){
 	if (loadType == mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')] ||
 		loadType == mobileWindows[i18n.getI18NMessage('sts.mobile.final.ship')] ||
 		loadType == mobileWindows[i18n.getI18NMessage('sts.mobile.ship.by.sequence')]){
-			typeLoad = 'ship';
+			typeLoad = 'current';
 	} else if (loadType == mobileWindows[i18n.getI18NMessage('sts.mobile.receiving')]){
 			typeLoad = 'receive';
 	} else {
@@ -8068,9 +8223,9 @@ function rfGetSpecsLoad(loadType){
 		mob.load.ctTotal++;
 		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 		var rec = loadFS.getRecord(index++);
-		if (piecemarkIds.indexOf(rec.piecemark_id.toString()) == -1) {piecemarkIds.push(rec.piecemark_id.toString());}
+		if (rec && piecemarkIds.indexOf(rec.piecemark_id.toString()) == -1) {piecemarkIds.push(rec.piecemark_id.toString());}
 		if (typeLoad == 'ship'){//status description id is shipped 20180830
-			if (rec && rec.status_description_id.toString() == session.stationId.toString()){//check here for already shipped items
+			if (rec && session.stationId && rec.status_description_id.toString() == session.stationId.toString()){//check here for already shipped items
 				mob.load.ctShipped++;
 			}
 		}
@@ -10403,7 +10558,7 @@ function rfQueryClose(event,btnText){
 	//data = data.slice(0,1);
 	if (elName == 'btn_respond_rt'){
 		if (forms['rf_mobile_view'] && forms['rf_mobile_view'].lastAction == 'B'){dataProv = 'currentBundle'}
-		forms.rf_mobile_view[dataProv] = forms.mobile_query.approveValue;
+		forms.rf_mobile_view[dataProv] = '';//forms.mobile_query.approveValue;
 		forms.rf_mobile_view.fieldErroredName = '';
 		forms.rf_mobile_view.elements['genericin'].requestFocus();
 	}
@@ -10598,7 +10753,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		}
 	} */
 	//if (application.isInDeveloper()){application.output('field '+anticipEntry+' prefix '+action)}
-	if (newValue.length >= 10 && rfOkToProcessId(event) && action != 'Piecemark Scan'){//task #214 accept bar code without prefix I(D) Number
+	if (newValue.length >= 10 && !rfOkToProcessId(event) && action != 'Piecemark Scan'){//task #214 accept bar code without prefix I(D) Number
 		/**
 		 * action doesn't apply to other fields
 		 */
@@ -10613,7 +10768,8 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			if (formMV[fldProv] == '' && flagFunction == null){//skip trailer fields
 				var placeText = i18n.getI18NMessage(formMV.elements[fld].placeholderText);
 				var msg = placeText+ ' '+i18n.getI18NMessage('sts.txt.missing.entry');
-				rfErrorShow(msg);
+				errorDialogMobile(event,msg,'genericin','');
+				//rfErrorShow(msg);
 				clearMobileEntries(event,'');
 				return true;
 			}
@@ -11363,7 +11519,7 @@ function getJobIdInfo(jobNum){
 		area_names : areaNames, batch_names :batchNames, customer_sos :shopOrderNumbers,
 		pcmk_releases :pcmkReleases, active_stations :activeStations, package_nums: packageNumbers}
 	 */
-	return {topForm : parent, job_id : jobId, job_num : jobNum};
+	return {topForm : parent, job_id : jobId, job_num : jobNum, job_rec : rec};
 }
 /**
  * @param {JSEvent} event
@@ -12045,7 +12201,30 @@ function rfF7TrailerInfo(){
  */
 function rfF8RemoveFromLoad(){
 	application.output('remove from load');
-	
+	if (application.isInDeveloper()){application.output('flagF8: '+flagF8)}
+	var formName = application.getActiveWindow().controller.getName();
+	if (forms[formName].currentStatus == "" || forms[formName].currentJob == ""){return}
+	var thisFunction = thisFuncName(arguments.callee.toString());
+	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	forms['rf_mobile_view'].genericInput = '';
+	var inProgress = (thisFunction == flagFunction); // toggle function
+	flagFunction = (inProgress) ? null : thisFunction;
+	flagF8 = (flagFunction != null);
+	if (flagF8){
+		f8ReversalText = forms[formName].elements.transShop.text;
+		forms[formName].elements.transShop.text = i18n.getI18NMessage('sts.mobile.shipping.remove.load')+" "+session.association;
+		f8ReversalColor = forms[formName].elements.transShop.bgcolor;
+		forms[formName].elements.transShop.bgcolor = 'Yellow';
+		forms[formName].controller.focusField('current',false);
+	} else {
+		forms[formName].controller.focusField('status',false);
+		forms[formName].elements.transShop.bgcolor = f8ReversalColor;
+		if (formName == 'rf_mobile_view'){
+			forms[formName].viewTitle = f8ReversalText;
+		} else {
+			forms[formName].elements.transShop.text = f8ReversalText;
+		}
+	}
 }
 /**
  * @properties={typeid:24,uuid:"F09E41F8-3210-4480-9243-CFA7A491D55F"}
@@ -13558,18 +13737,24 @@ function rfSaveThirdParties(commitType){
  * @properties={typeid:24,uuid:"555AF215-E5C0-4C34-91BB-6555D4775499"}
  */
 function getNextLoadNumber(){
+	//scopes.prefs.loadCreate;
+	/**
+	 * i18n:sts.label.hardware.load.calculation.auto.job.specific
+	 * i18n:sts.label.hardware.load.calculation.auto.system.wide.specific
+	 * i18n:sts.label.hardware.load.calculation.auto.none
+	 */
+	session.loadNextNumber = scopes.prefs.startLoadNum;
 	session.jobLoads = loadGetJobDataset(session.jobId);
-	if (scopes.prefs.lFabsuiteInstalled == 1){
-		session.loadNextNumber = scopes.fs.checkFSNextLoad();
-		if (session.loadNextNumber){
-			return session.loadNextNumber;
-		}
+	var fsNextLoad = 0;
+	if (scopes.prefs.lFabsuiteInstalled == 1 && session.jobIsFabSuite){
+		fsNextLoad = scopes.fs.checkFSNextLoad()*1-1;
+		//if (session.loadNextNumber){
+		//	return session.loadNextNumber;
+		//}
 	}
-	session.jobLoads = loadGetJobDataset(session.jobId);
-	if (session.jobLoads.getSize() == 0){
-		session.nextLoadNumber = 1
-	} else {
-		session.loadNextNumber = 0;//set load Number to init state
+	if (fsNextLoad > session.loadNextNumber){session.loadNextNumber = fsNextLoad}
+	//session.jobLoads = loadGetJobDataset(session.jobId);
+	if (session.jobLoads.getSize() > 0){
 		/** @type {JSFoundSet<db:/stsservoy/loads>} */
 		var rec = null; var index = 1;//var noNextNum = (loadNumber.search(/[^0-9]/) != -1);
 		var highest = 0;var highestNon = '';
@@ -13582,11 +13767,9 @@ function getNextLoadNumber(){
 			}
 		}
 	}
-	//if (highestNon != ''){
-	//	session.loadNextNumber = "1";
-	//} else {
-		session.loadNextNumber = highest*1 + 1;
-		session.loadNextNumber = session.loadNextNumber.toString().replace('.0','');
+	if (highest > session.loadNextNumber){session.loadNextNumber = highest}
+	session.loadNextNumber = session.loadNextNumber*1 + 1;
+	session.loadNextNumber = session.loadNextNumber.toString().replace('.0','');
 	//}
 	return session.loadNextNumber;
 }
@@ -14125,4 +14308,68 @@ function dateAndTimeToDate(date, time){
 	var timum = time.split(':');
 	var date = new Date(date.getFullYear(),date.getMonth()*1,date.getDate(),timum[0]*1,timum[1]*1,timum[2]*1);
 	return date;
+}
+/**
+ * @param loadId
+ *
+ * @properties={typeid:24,uuid:"C2AAAAB2-5131-4C20-B677-6C7DBD3833FF"}
+ */
+function rfGetLoadStats(loadId){
+	//if (1==1){return}
+	if (application.isInDeveloper()){application.output('inside rfGetLoadStats '+loadId)}
+	if (!loadId){
+		return
+	}
+	var count = 0;
+	var weight = 0;
+	var metric = (mob.job.metric == 1);
+	/** @type {QBSelect<db:/stsservoy/idfiles>} */
+	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
+	q.where.add(q.columns.current_load_id.eq(loadId));
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.result.add(q.columns.idfile_id.count,'count');
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	if (Q.getMaxRowIndex() > 0){
+		Q.rowIndex = 1;
+		count = Q.count;
+	}
+	q.result.clear();
+	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
+	var r = q.joins.add('db:/stsservoy/piecemarks');
+	r.on.add(q.columns.piecemark_id.eq(r.columns.piecemark_id));
+	if (metric){
+		q.result.add(r.columns.item_weight.sum,'weight')
+	} else {
+		q.result.add(r.columns.item_weight_lbs.sum,'weight');
+	}
+	var R = databaseManager.getDataSetByQuery(q,-1);
+	if (R.getMaxRowIndex() > 0){
+		R.rowIndex = 1;
+		weight = Math.floor(R.weight*1+0.5);
+	}
+	mob.load.weight = weight;
+	mob.load.ctTotal = count;
+	mobLoadWeight = mob.load.weight;
+	mobLoadPieces = mob.load.pieces;
+	mobWeightUnits = (metric) ? 'kgs' : "lbs";
+	mobLengthUnits = (metric) ? "mm" : "ins";
+	if (application.isInDeveloper()){application.output('load '+loadId+' count:'+count+' weight: '+weight)}
+}
+/**
+ * @param loadId
+ *
+ * @properties={typeid:24,uuid:"7B0CE3AA-C51F-4338-A501-52F300769248"}
+ */
+function rfGetLoadNumber(loadId){
+	/** @type {QBSelect<db:/stsservoy/loads>} */
+	var q = databaseManager.createSelect('db:/stsservoy/loads');
+	q.where.add(q.columns.load_id.eq(loadId));
+	q.result.add(q.columns.load_number);
+	var loadNum = '';
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+	if (Q.getMaxRowIndex() > 0){
+		Q.rowIndex = 1;
+		loadNum = 'Load# '+Q.load_number;
+	}
+		return loadNum;
 }

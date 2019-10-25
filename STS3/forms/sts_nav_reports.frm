@@ -2,6 +2,7 @@ encapsulation:60,
 extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {
+enabled:false,
 formIndex:9,
 location:"54,209",
 name:"btn_LoadShipmentReceived",
@@ -14,6 +15,7 @@ typeid:7,
 uuid:"0AD2AFBA-6B57-42B5-AF59-42DC21102C14"
 },
 {
+enabled:false,
 formIndex:9,
 location:"54,176",
 name:"btn_LoadShipmentOriginal",
@@ -26,6 +28,7 @@ typeid:7,
 uuid:"195E11CD-EA8C-450D-8C8F-7BE93DFB989F"
 },
 {
+enabled:false,
 formIndex:9,
 location:"15,242",
 name:"btn_EditReportForms",
@@ -48,6 +51,7 @@ typeid:7,
 uuid:"2AC2F52D-F6F8-4E89-BEFE-4C0E101D77E6"
 },
 {
+enabled:false,
 formIndex:9,
 location:"15,308",
 name:"btn_StatusReport",
@@ -70,6 +74,7 @@ typeid:7,
 uuid:"5352305C-6032-4BEF-8E72-B8883DEE679B"
 },
 {
+enabled:false,
 formIndex:9,
 location:"15,341",
 name:"btn_PercentComplete",
@@ -82,6 +87,7 @@ typeid:7,
 uuid:"61048F47-604D-4234-AFB2-06BAACDFDD93"
 },
 {
+enabled:false,
 formIndex:9,
 location:"54,143",
 name:"btn_LoadReceivedOriginal",
@@ -94,6 +100,7 @@ typeid:7,
 uuid:"6C81F1E4-5391-4B02-923B-476253895291"
 },
 {
+enabled:false,
 formIndex:9,
 location:"15,74",
 name:"btn_ReceivingReport",
@@ -124,6 +131,7 @@ typeid:7,
 uuid:"9E275002-1718-4612-809B-AF65621DF2DF"
 },
 {
+enabled:false,
 formIndex:9,
 location:"15,407",
 name:"btn_AssemblyReport",
@@ -136,6 +144,7 @@ typeid:7,
 uuid:"9E30D67A-8A08-4458-8D67-419EA42EA7C4"
 },
 {
+enabled:false,
 formIndex:9,
 location:"15,374",
 name:"btn_ReaderSheets",
@@ -148,6 +157,7 @@ typeid:7,
 uuid:"A3482EA8-A8DE-45BE-AC39-C55A676DCD0C"
 },
 {
+enabled:false,
 formIndex:9,
 location:"14,440",
 name:"btn_ProductivityReport",
@@ -172,6 +182,7 @@ typeid:7,
 uuid:"D1B93FE8-76FC-4A2C-877C-64E1D829EE72"
 },
 {
+enabled:false,
 formIndex:9,
 location:"15,41",
 name:"btn_PackingListReport",
@@ -184,6 +195,7 @@ typeid:7,
 uuid:"EE849839-4162-45FF-8E82-244DE6F79ED8"
 },
 {
+enabled:false,
 formIndex:9,
 location:"15,275",
 name:"btn_FoxfireReports",

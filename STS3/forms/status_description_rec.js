@@ -144,6 +144,8 @@ function onEdit(event,editStatus){
 	} else {
 		elements.req_xfer_status.enabled = false;
 	}
+	elements.push_transaction.enabled = (globals.processCodes.shipping.indexOf(status_type) != -1);
+	//application.output(elements.push_transaction.enabled+ ' '+status_type+' '+globals.processCodes.shipping.indexOf(status_type))
 }
 
 /**
@@ -542,7 +544,11 @@ function onFocusGainedEndFor(event) {
 function onRecordSelection(event) {
 	currProcessNumber = status_sequence;
 	getStatusList();	
-	thirdPartyActive(event);
+	elements.push_transaction.enabled = true;//(globals.processCodes.shipping.indexOf(status_type) != -1);
+	if (application.isInDeveloper()){
+		application.output(status_type+' index:'+globals.processCodes.shipping.indexOf(status_type)+' push transaction enabled '+elements.push_transaction.enabled);
+		application.output('process types:\n'+globals.processCodes.shipping)}
+	//thirdPartyActive(event);
 }
 /**
  * @param {JSEvent} event

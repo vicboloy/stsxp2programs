@@ -37,6 +37,7 @@ uuid:"0A8EDB56-EEEF-4518-86C6-DC32B6BF4B80"
 {
 dataProviderID:"scopes.prefs.reqdShipStatusCode",
 displayType:4,
+enabled:false,
 location:"176,345",
 name:"reqdShipStatusCode",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -218,6 +219,8 @@ uuid:"4D8ECF29-7AD4-4BD1-9B04-0D3675538A51"
 {
 dataProviderID:"scopes.prefs.autoCreateLoad",
 displayType:4,
+enabled:false,
+foreground:"#c0c0c0",
 formIndex:3,
 location:"331,165",
 name:"autoCreateLoad",
@@ -241,6 +244,7 @@ typeid:4,
 uuid:"514BA2CC-D79D-48EA-9AA0-671951B40DD1"
 },
 {
+enabled:false,
 formIndex:5,
 location:"327,240",
 size:"232,20",
@@ -250,6 +254,7 @@ typeid:7,
 uuid:"55C1C855-CE0C-47B6-8182-CCAD75295BA5"
 },
 {
+enabled:false,
 horizontalAlignment:4,
 labelFor:"reqdShipStatusCode",
 location:"10,333",
@@ -310,6 +315,7 @@ typeid:4,
 uuid:"7241F0D8-992D-40A4-9578-F554BF5E1179"
 },
 {
+enabled:false,
 labelFor:"rfLoadWt",
 location:"327,5",
 name:"rfLoadWt_label",
@@ -333,6 +339,8 @@ uuid:"870A718A-801A-4B50-8FF7-A5131D5467C7"
 {
 dataProviderID:"scopes.prefs.lNewRecvId",
 displayType:4,
+enabled:false,
+foreground:"#c0c0c0",
 formIndex:2,
 location:"331,145",
 name:"lNewRecvId",
@@ -425,9 +433,12 @@ typeid:4,
 uuid:"9937456B-07BD-49C8-BD1B-998B4D950B8C"
 },
 {
-borderType:"RoundedBorder,1.0,1.0,1.0,1.0,#000000,#000000,#000000,#000000,3.0;3.0;3.0;3.0;3.0;3.0;3.0;3.0,dotted;dotted;dotted;dotted",
+borderType:"RoundedBorder,1.0,1.0,1.0,1.0,#c0c0c0,#c0c0c0,#c0c0c0,#c0c0c0,3.0;3.0;3.0;3.0;3.0;3.0;3.0;3.0,dotted;dotted;dotted;dotted",
 dataProviderID:"scopes.prefs.rfLoadWt",
 displayType:3,
+editable:false,
+enabled:false,
+foreground:"#c0c0c0",
 formIndex:1,
 location:"327,25",
 name:"rfLoadWt",
@@ -477,6 +488,7 @@ uuid:"9FFB73F6-F687-426A-9B02-EB7FFAAA5AC7"
 },
 {
 enabled:false,
+foreground:"#c0c0c0",
 formIndex:6,
 horizontalAlignment:0,
 location:"340,258",

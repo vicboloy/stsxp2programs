@@ -1,3 +1,13 @@
+customProperties:"methods:{\
+onRecordSelectionMethodID:{\
+arguments:null,\
+parameters:null\
+},\
+onSortCmdMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/transactions",
 extendsID:"-1",
 initialSort:"edit_date desc",
@@ -884,6 +894,7 @@ name:"loads_pcmk_transaction",
 namedFoundSet:"separate",
 navigatorID:"-1",
 onShowMethodID:"-1",
+onSortCmdMethodID:"FE0EE6A5-D1BD-4660-AAEE-628B53C2D966",
 size:"2578,52",
 styleName:"sts_one",
 typeid:3,

@@ -1,4 +1,10 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"59F23667-D99C-490F-B128-24E4109A7095"}
+ */
+var transSort = 'transaction_date desc';
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"7161EF80-C76A-48B5-BEB6-C57C7651D8DF",variableType:4}

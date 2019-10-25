@@ -236,7 +236,7 @@ var rfPromptDuration = 0.000000;
  *
  * @properties={typeid:35,uuid:"F9CFA10C-1AD6-4BD9-9A16-B02E513156C3"}
  */
-var rfLoadWt = "";
+var rfLoadWt = i18n.getI18NMessage('sts.txt.rfsettings.recalculate.w.each.scan');
 /**
  *
  * @properties={typeid:35,uuid:"12A758D1-73C8-417A-A767-60B523737C6B",variableType:-4}

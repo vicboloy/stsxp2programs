@@ -44,6 +44,7 @@ uuid:"0C1593EB-F592-4FAD-88DD-E0C9D216EC37",
 visible:false
 },
 {
+enabled:false,
 formIndex:12,
 location:"224,263",
 name:"btn_TimberlinePFSExcel",
@@ -66,6 +67,7 @@ typeid:7,
 uuid:"12917DC4-38B8-4B9D-A249-602C1A142021"
 },
 {
+enabled:false,
 formIndex:13,
 location:"447,319",
 name:"btn_EJEDelimited",
@@ -134,6 +136,7 @@ uuid:"21012688-DD96-4996-BC44-E95210721B24",
 visible:false
 },
 {
+enabled:false,
 formIndex:10,
 location:"33,35",
 name:"btn_ImportReceiverFormat",
@@ -146,6 +149,7 @@ typeid:7,
 uuid:"2DCF2FAA-503A-4BFB-AE92-DD02C5620685"
 },
 {
+enabled:false,
 formIndex:10,
 location:"33,63",
 name:"btn_ImportStandardFormat",
@@ -213,6 +217,7 @@ uuid:"56D749BA-0E2B-490C-81F7-8A00C0A64100",
 visible:false
 },
 {
+enabled:false,
 formIndex:13,
 location:"224,319",
 name:"btn_KMBOMText",
@@ -225,6 +230,7 @@ typeid:7,
 uuid:"58121A9E-1D13-4EB2-BC15-9B4BEBC1DFFB"
 },
 {
+enabled:false,
 formIndex:13,
 location:"447,291",
 name:"btn_Sds2wWeldNumbers",
@@ -285,6 +291,7 @@ uuid:"63218E3D-CD07-472E-98AB-71D297B629EA",
 visible:false
 },
 {
+enabled:false,
 formIndex:10,
 location:"46,119",
 name:"btn_TextFileWIDNumbers",
@@ -324,6 +331,7 @@ uuid:"6AC339EC-A594-4EF0-9353-DFD445C9A21E",
 visible:false
 },
 {
+enabled:false,
 formIndex:10,
 location:"281,89",
 name:"btn_GenericTextFileExport",
@@ -336,6 +344,7 @@ typeid:7,
 uuid:"74554709-2CAA-42B0-A925-52CBE8ABAB0F"
 },
 {
+enabled:false,
 formIndex:13,
 location:"447,263",
 name:"btn_DesignDataXSR",
@@ -362,6 +371,7 @@ uuid:"79C4801A-94C9-495C-9511-87ABE79927DD",
 visible:false
 },
 {
+enabled:false,
 formIndex:12,
 location:"224,235",
 name:"btn_PerformanceContractors",
@@ -374,6 +384,7 @@ typeid:7,
 uuid:"8CEE7A2D-3379-475F-BA82-10F5249E6A21"
 },
 {
+enabled:false,
 formIndex:10,
 location:"302,173",
 name:"btn_RMDBFileExport",
@@ -386,6 +397,7 @@ typeid:7,
 uuid:"8D61AAD5-6AD6-4886-9306-CA2729F8967A"
 },
 {
+enabled:false,
 formIndex:11,
 location:"281,33",
 name:"btn_ReceiverFormatExport",
@@ -454,6 +466,7 @@ uuid:"AF221D7B-574E-4D25-A535-93C678757B03",
 visible:false
 },
 {
+enabled:false,
 formIndex:15,
 location:"302,201",
 name:"btn_Sds2_xml_export",
@@ -520,6 +533,7 @@ typeid:7,
 uuid:"D0E5C028-E3CC-42D0-B95E-1B75EBE04423"
 },
 {
+enabled:false,
 formIndex:12,
 location:"224,291",
 name:"btn_TeklaXSR",
@@ -532,6 +546,7 @@ typeid:7,
 uuid:"D4810C0F-9394-4743-8CF3-8DBE26F7833E"
 },
 {
+enabled:false,
 formIndex:10,
 location:"302,145",
 name:"btn_TeklaFileExport",
@@ -614,6 +629,7 @@ uuid:"DB838196-709D-4C7B-A9A4-DDD52A972C27",
 visible:false
 },
 {
+enabled:false,
 formIndex:10,
 location:"281,61",
 name:"btn_StandardFormatExport",
@@ -626,6 +642,7 @@ typeid:7,
 uuid:"E329E976-FED8-4D2D-AB12-7AA592F16CBF"
 },
 {
+enabled:false,
 formIndex:13,
 location:"447,235",
 name:"btn_LECWeldExcel",
@@ -650,6 +667,7 @@ uuid:"E9CD20A1-A7F9-4905-B664-9B6CDFAEE0DF",
 visible:false
 },
 {
+enabled:false,
 formIndex:10,
 location:"46,147",
 name:"btn_TextFileWoIDNumbers",

@@ -2,6 +2,7 @@ encapsulation:60,
 extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {
+enabled:false,
 formIndex:15,
 location:"488,408",
 name:"btn_ChangeSequenceNumber",
@@ -26,6 +27,7 @@ typeid:7,
 uuid:"18A7B569-C824-40A4-A430-7573A154F097"
 },
 {
+enabled:false,
 formIndex:15,
 location:"488,377",
 name:"btn_LANSequenceNumber",
@@ -67,6 +69,7 @@ typeid:19,
 uuid:"35F2CAFE-7E5E-4790-B355-B36C64F51824"
 },
 {
+enabled:false,
 formIndex:13,
 location:"25,222",
 name:"btn_BackflushInventory",
@@ -79,6 +82,7 @@ typeid:7,
 uuid:"377036C7-FCEC-4372-9169-1DFB80E0A1F9"
 },
 {
+enabled:false,
 formIndex:13,
 location:"25,160",
 name:"btn_ShipIDNumbers",
@@ -103,6 +107,7 @@ typeid:7,
 uuid:"46B9D8F8-B185-4F35-B8B7-ABD4A83A7D54"
 },
 {
+enabled:false,
 formIndex:13,
 location:"25,284",
 name:"btn_PartInspection",
@@ -115,6 +120,7 @@ typeid:7,
 uuid:"4DF87977-6C26-431D-AEA0-235935269C78"
 },
 {
+enabled:false,
 formIndex:13,
 location:"25,67",
 name:"btn_EditPiecemark",
@@ -127,6 +133,7 @@ typeid:7,
 uuid:"4EDE5EB2-CA85-48CF-8311-72B161F6E257"
 },
 {
+enabled:false,
 formIndex:14,
 location:"250,284",
 name:"btn_MaterialTypeInformation",
@@ -152,6 +159,7 @@ typeid:7,
 uuid:"55E71BF5-0DE7-4347-BED7-242FDD174E20"
 },
 {
+enabled:false,
 formIndex:14,
 location:"250,346",
 name:"btn_EditWeldNumbers",
@@ -164,6 +172,7 @@ typeid:7,
 uuid:"5B267843-3448-496E-9791-58028FBC0483"
 },
 {
+enabled:false,
 formIndex:14,
 location:"484,67",
 name:"btn_MoveDataToHistory",
@@ -201,6 +210,7 @@ typeid:7,
 uuid:"771F1DC0-32BB-47FF-92E9-9590902E6914"
 },
 {
+enabled:false,
 formIndex:13,
 location:"25,129",
 name:"btn_ReceiveIDNumbers",
@@ -298,6 +308,7 @@ typeid:7,
 uuid:"B69DA3C7-7F93-4B79-9A7F-1CA4D666208E"
 },
 {
+enabled:false,
 formIndex:15,
 location:"488,315",
 name:"btn_EditReaderSheets",
@@ -322,6 +333,7 @@ typeid:7,
 uuid:"C6A3C7F3-8BFA-4264-B3DE-13187EF90776"
 },
 {
+enabled:false,
 formIndex:14,
 location:"250,377",
 name:"btn_EnterReaderSheets",
@@ -334,6 +346,7 @@ typeid:7,
 uuid:"C7CCB71B-DD48-404E-AECD-B497184FBC43"
 },
 {
+enabled:false,
 formIndex:14,
 location:"250,408",
 name:"btn_EnterActualWeldHours",
@@ -356,6 +369,7 @@ typeid:7,
 uuid:"D12B04AC-0D4E-422B-8065-71BEB49ED1FC"
 },
 {
+enabled:false,
 formIndex:15,
 location:"488,253",
 name:"btn_CalculateCostEach",
@@ -388,6 +402,7 @@ typeid:7,
 uuid:"DB68B48F-1411-47E6-A9FF-01B9CF35DA7C"
 },
 {
+enabled:false,
 formIndex:13,
 location:"25,253",
 name:"btn_PlaceRemoveQCHolds",
@@ -400,6 +415,7 @@ typeid:7,
 uuid:"DF97EF26-7A92-43B6-8065-FC7C90E4A19F"
 },
 {
+enabled:false,
 formIndex:15,
 location:"488,284",
 name:"btn_EditJobsIdfileLoadPcmark",
@@ -412,6 +428,7 @@ typeid:7,
 uuid:"F0FDF084-D8C5-4CF5-B362-A90B52745DF7"
 },
 {
+enabled:false,
 formIndex:14,
 location:"484,98",
 name:"btn_MoveDataToArchive",
@@ -424,6 +441,7 @@ typeid:7,
 uuid:"F6F50CA0-CA67-4F33-90A5-44456576911F"
 },
 {
+enabled:false,
 formIndex:13,
 location:"25,191",
 name:"btn_MoveIDNumbers",
@@ -446,6 +464,7 @@ typeid:7,
 uuid:"FA738F22-212A-4FB6-B927-31EE7BC03185"
 },
 {
+enabled:false,
 formIndex:14,
 location:"484,129",
 name:"btn_TransferSequenceInformation",

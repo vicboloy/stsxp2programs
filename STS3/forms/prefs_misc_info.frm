@@ -72,6 +72,7 @@ typeid:7,
 uuid:"1E8010EC-383D-4F00-B709-B2A0BA748252"
 },
 {
+enabled:false,
 location:"259,235",
 size:"35,20",
 text:"i18n:sts.label.hardware.yes.no",
@@ -133,6 +134,7 @@ typeid:4,
 uuid:"33692066-6912-44D6-846E-228A936F5F76"
 },
 {
+enabled:false,
 horizontalAlignment:4,
 labelFor:"lFabShip",
 location:"50,235",
@@ -321,6 +323,7 @@ uuid:"9C9BD659-7FC6-4262-85BD-6BC9C441A3DD"
 {
 dataProviderID:"scopes.prefs.lFabShip",
 displayType:4,
+enabled:false,
 location:"225,235",
 name:"lFabShip",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -382,6 +385,7 @@ uuid:"A85DAB47-987E-4C85-9A28-7FF9ABB1E2A3"
 {
 dataProviderID:"scopes.prefs.validStatusCodes",
 displayType:4,
+enabled:false,
 location:"224,385",
 name:"validStatusCodes",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -425,6 +429,7 @@ uuid:"B9BC21FA-6DD0-4368-A8BF-9AC49A60DA8C",
 valuelistID:"10729A06-E2F2-4D0C-922D-5AF9E71F3590"
 },
 {
+enabled:false,
 horizontalAlignment:4,
 labelFor:"validStatusCodes",
 location:"37,385",

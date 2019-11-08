@@ -1,5 +1,11 @@
-customProperties:"design:{
-readOnly:\"true\"
+customProperties:"design:{\
+readOnly:\"true\"\
+},\
+methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
 }",
 dataSource:"db:/stsservoy/carrier",
 extendsID:"-1",
@@ -32,6 +38,7 @@ uuid:"B6A727E6-0D9E-4577-AEC5-4359B84EEAAA"
 ],
 name:"carriers_view",
 navigatorID:"-1",
+onHideMethodID:"791BFA8F-EA10-4F0E-B019-932114FE0927",
 onShowMethodID:"3DE56A4C-895E-49F7-9708-4DE97E2C70E8",
 size:"489,462",
 styleName:"sts_one",

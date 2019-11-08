@@ -635,6 +635,7 @@ visible:false
 {
 extendsID:"BAF027A9-12D4-4400-BCB7-F4B8ADBD9B99",
 formIndex:159,
+transparent:true,
 typeid:7,
 uuid:"2FDEF4AD-9CAA-4F24-A536-E6B78F90E935"
 },

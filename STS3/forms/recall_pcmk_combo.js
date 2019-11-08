@@ -96,6 +96,7 @@ function onActionRecallSelected(event) {
 		i++;
 	}*/
 	scopes.globals.purgeBarcodeRecords = new Array();
-	var win = application.getActiveWindow();
+	var win = forms[formName].controller.getWindow();
+	forms['recall_criteria'].controller.getWindow().toFront();
 	win.hide();
 }

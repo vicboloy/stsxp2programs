@@ -11,6 +11,7 @@ var labelSource = '';
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"FDD2EE60-7C8B-4736-9694-E4D9E8EAF75B"}
+ * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
 	if (firstShow){
@@ -23,6 +24,46 @@ function onShow(firstShow, event) {
 	//var formPrefix = formName.split("_")[0];
 	//var formCriteria = formPrefix+"idlabel";
 	var formNameTable = formName+'_table';
+	if (globals.session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+		fs = globals.session.tempFS;
+	} else {
+		if (!forms[formNameTable]){return}
+		/** @type JSFoundSet */
+		var fs = forms[formNameTable].foundset;
+	}
+	//application.output(fs.getRecord(1));
+	databaseManager.saveData(fs);//20190531 keep sort on close for printing labels
+	if (formName.search("barcode_") != -1) {
+		var ordered = scopes.jobs.tmp_LabelSort;
+		switch (ordered){
+			case i18n.getI18NMessage('sts.print.order.piecemark'):
+				fs.sort('piecemarks.piecemark asc');
+				break;
+			case i18n.getI18NMessage('sts.print.order.id.number'):
+				if (formName.search('raw') == -1){
+					fs.sort('serial_number asc');
+				} else {
+					fs.sort('serial_number asc');
+				}
+				break;
+			case i18n.getI18NMessage('sts.print.order.drawing.number'):
+				fs.sort('piecemarks.drawing_number asc');
+				break;
+			case i18n.getI18NMessage('sts.print.order.material'):
+				fs.sort('material asc');
+				break;
+			case i18n.getI18NMessage('sts.print.order.part.number'):
+				fs.sort('model_part asc');
+				break;
+			default:
+				if (formName.search('raw') == -1){
+					fs.sort('piecemarks.piecemark asc');
+				} else {
+					fs.sort('id_serial_number asc');
+				}
+		}
+	}
+
 	scopes.jobs.removeFormHist(formNameTable);
 	forms[formName].elements.tabless.addTab(formNameTable);
 	//scopes.jobs.tablePrefsLoad(null);// table is built in barcode_idlabel, barcode_piecemark_info, onGetInformation
@@ -40,7 +81,7 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onHide(event) {
-	versionForm = globals.getInstanceForm(event);
+	var versionForm = globals.getInstanceForm(event);
 	var formName = event.getFormName();
 	if (formName.search('raw') != -1){
 		var parentForm = 'barcode_id_raw';
@@ -51,6 +92,10 @@ function onHide(event) {
 	if (forms[newFormName]){
 		forms[newFormName].elements.btn_PrintSelected.enabled = true;
 		forms[newFormName].elements.btn_Clear.enabled = true;
+		forms[newFormName].controller.enabled = true;
+
+		var win = forms[newFormName].controller.getWindow();
+		win.toFront();
 	}
 	return _super.onHide(event)
 }

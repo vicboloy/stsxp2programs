@@ -11,7 +11,7 @@ items:[
 anchors:6,
 extendsID:"A3D4B7DF-E17B-4B1E-AB13-34DE0FD6E96E",
 horizontalAlignment:0,
-location:"592,427",
+location:"740,427",
 size:"105,26",
 text:"i18n:sts.btn.cancel.print",
 typeid:7,
@@ -20,7 +20,7 @@ uuid:"4BD64E9B-2A4D-41B0-847F-E9A205D8A9E7"
 {
 anchors:6,
 horizontalAlignment:0,
-location:"268,427",
+location:"309,428",
 name:"btn_SelectAll",
 onActionMethodID:"FC6CA147-EA1C-422F-BF69-6D2C546C222E",
 onDoubleClickMethodID:"-1",
@@ -33,7 +33,7 @@ uuid:"9BAA987D-1558-440F-96F0-3F6C9ED6B4AE"
 {
 anchors:6,
 horizontalAlignment:0,
-location:"361,427",
+location:"402,428",
 name:"btn_SelectUnprinted",
 onActionMethodID:"4570807D-BD90-4553-A1F2-0E3222656AB7",
 onDoubleClickMethodID:"-1",
@@ -46,7 +46,7 @@ uuid:"A7A9B757-61C8-4CDF-92AB-33669BE3AC5E"
 {
 anchors:6,
 horizontalAlignment:0,
-location:"502,427",
+location:"543,428",
 name:"btn_Clear",
 onActionMethodID:"01EEEFF1-ECEB-427E-A911-AABF52889598",
 onDoubleClickMethodID:"-1",
@@ -59,7 +59,20 @@ uuid:"D0D45911-D6E1-41B1-AA3E-C59CDEA6B379"
 {
 anchors:6,
 horizontalAlignment:0,
-location:"195,427",
+location:"190,428",
+onActionMethodID:"52B2EC5B-82F3-4659-A18B-19B2F97E3C05",
+onDoubleClickMethodID:"-1",
+onRightClickMethodID:"-1",
+size:"114,26",
+text:"i18n:sts.btn.highlighted",
+typeid:7,
+uuid:"DA2D6E07-4464-4E52-82E3-765CF59B8E60",
+verticalAlignment:0
+},
+{
+anchors:6,
+horizontalAlignment:0,
+location:"667,427",
 name:"btn_Print",
 onActionMethodID:"D533C90F-42D6-426E-83DA-2ADE3C394DBC",
 onDoubleClickMethodID:"-1",
@@ -71,7 +84,7 @@ uuid:"DF8AA9B6-4360-4AA4-AA5E-8E1B718BB3D3"
 },
 {
 extendsID:"2FBC559C-7671-4B42-92A2-4BDD40EE6F4C",
-size:"692,417",
+size:"840,417",
 typeid:16,
 uuid:"FBE60680-8B1A-4996-9159-D49DF4BAF2D6"
 }
@@ -80,7 +93,7 @@ name:"barcode_piecemark_info",
 onHideMethodID:"B057EF49-C6A1-4AC8-8355-BDBD2BE5B4D2",
 onRenderMethodID:"C3FC10D9-7AF2-4983-88DF-E79441E9220F",
 onShowMethodID:"FDD2EE60-7C8B-4736-9694-E4D9E8EAF75B",
-size:"702,452",
+size:"850,452",
 styleName:"sts_one",
 typeid:3,
 uuid:"08B04F2B-A835-4382-8A38-FAEAA52F06B0"

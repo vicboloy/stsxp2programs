@@ -154,12 +154,13 @@ function getFSLoadNums(jobNumber){
 /**
  * @AllowToRunInFind
  * 
- * @param loadNumber
+ * @param {String} loadNumber
+ * @param {String} destination
  * @param makeNewLoad
  *
  * @properties={typeid:24,uuid:"A3D4FB72-755D-4ABD-B03F-984ABB3F80FF"}
  */
-function checkFSLoad(loadNumber,destination,makeNewLoad){
+function checkFSLoad(loadNumber,destination,toBeReturned,makeNewLoad){
 	//if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
 	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
 	if (!globals.session.jobIsFabSuite){return null}
@@ -173,6 +174,7 @@ function checkFSLoad(loadNumber,destination,makeNewLoad){
 		Nothing\
 		</ActionIfNotExist>\
 		DEST\
+		RETURNED\
 		</ValTruck>\
 		</FabSuiteXMLRequest>';
 //		<ActionIfNotExist>0</ActionIfNotExist>\
@@ -181,15 +183,28 @@ function checkFSLoad(loadNumber,destination,makeNewLoad){
 	}
 	if (!destination){
 		loadcheck = loadcheck.replace('DEST','');
+		loadcheck = loadcheck.replace('RETURNED','');
 	} else {
-		loadcheck = loadcheck.replace('DEST','<Destination>'+destination+'</Destination>');		
+		var toBeReturnedStr = toBeReturned.toString();
+		loadcheck = loadcheck.replace('DEST','<Destination>'+destination+'</Destination>');
+		loadcheck = loadcheck.replace('RETURNED','<ToBeReturned>'+toBeReturnedStr+'</ToBeReturned>');
 	}
+	if (application.isInDeveloper()){}
+	application.output('RM FS Load Check:\n'+loadcheck);
 	/** @type {String} */
 	var fsResp = globals.fsCom.call('FabSuiteXML',loadcheck).toString();
-	if (fsResp.search('<Successful>0') != -1){
+	application.output('RM FS load Check Response:\n'+fsResp);
+	if (fsResp.search('<Successful>0') != -1 && fsResp.search('already exists') == -1){
 		return getFabSuiteError(fsResp);
 	}
-	return null;
+	var regexp = new RegExp(/another destination \((.*)\)/);
+	var match = fsResp.match(regexp);
+	if (!(!match)){
+		//application.output(match[1])
+		return match[1];
+	} else {
+		return null;
+	}
 
 }
 /**
@@ -1161,6 +1176,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	var _loadNumber = '<TruckNumber>'+loadNumber+'</TruckNumber>';
 	
 
+	//application.output('FS CommitType:'+commitType);
 	switch (commitType){
 		case 'Delete':
 		case 'Save':
@@ -1976,9 +1992,9 @@ function processRawCutBarcodes(event,cutlistData){
 		var pcmk = cutlistData.cutarray[idx];
 		globals.mob.job.number = pcmk.pJob;//var jobNumber = 
 		globals.mob.idfiles = pcmk.available;//required var quantity = length 
-		var seqId = scopes.jobs.getSeqId(pcmk.available.job_uuid,pcmk.pSeq);
+		var seqId = scopes.jobs.getSeqId(globals.mob.job.number,pcmk.pSeq);
 		forms['rf_mobile_view'].vSequenceList[pcmk.available.sequence_id] = pcmk.pSeq;// get sequence mapping
-		globals.mob.idfile.sequence_id = pcmk.available.sequence_id.toString();//var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id]
+		globals.mob.idfile.sequence_id = pcmk.available.sequence_id;//.toString();//var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id]
 		globals.mob.piecemark.lot = pcmk.pLot;//var lotNumber = 
 		globals.mob.barcode = pcmk.Barcode;//serialNumber = 
 		globals.mob.piecemark.piecemark = pcmk.pMinor;//var pieceMark = exclude this when showing assembly, no minors

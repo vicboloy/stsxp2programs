@@ -1467,7 +1467,7 @@ function onActionPrintLabels(event) {
 	var versionForm = scopes.globals.getInstanceForm(event);
 	if (application.isInDeveloper()){application.output('RM formName onActionPrintLabels:'+formName)}
 	/**
-	 * collect label fields and then push into tabbed fields with data
+	 * collect label fields and then push into tabbed fields with data HERE HERE HERE 
 	 */
 	if (formName.search('rf_mobile_view') != 0 && formName.search('raw') == -1){
 		var specs = scopes.printer.getBTFieldData('P');		
@@ -1506,7 +1506,7 @@ function onActionPrintLabels(event) {
 	}
 	//application.output(fs.getRecord(1));
 	databaseManager.saveData(fs);//20190531 keep sort on close for printing labels
-	if (formName.search("barcode_") != -1) {
+	/** if (formName.search("barcode_") != -1) {
 		var ordered = scopes.jobs.tmp_LabelSort;
 		switch (ordered){
 			case i18n.getI18NMessage('sts.print.order.piecemark'):
@@ -1535,16 +1535,16 @@ function onActionPrintLabels(event) {
 					fs.sort('id_serial_number asc');
 				}
 		}
-	}
+	} */
 	var i = 1;
 	var fileLine = "";
 	var itemsSelected = false; globals.barcodePrintedArray = [];var printedIndexes = [];
 	//var btSpec = {num: 0, name:'', size: 0,dbcol:'',dbtype:'',dbsize:0}
 	var printed = false;
 	var printDate = new Date();
-	while (i <= fs.getSize()){
-		/** @type {JSRecord<selection:Number>} */
-		var rec = fs.getRecord(i++);
+	/** @type {JSRecord<selection:Number>} */
+	var rec = null; i = 1;
+	while (rec = fs.getRecord(i++)){
 		var tabContents = "";
 		if (rec.selection != 1 && globals.session.program != i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){continue}
 		labCnt++;
@@ -1625,7 +1625,8 @@ function onActionPrintLabels(event) {
  * @properties={typeid:24,uuid:"5D168323-EA10-466B-AEED-B5B6E31D38F3"}
  * @AllowToRunInFind
  */
-function bartenderPrint(event,txtString){
+function bartenderPrint(event,txtString,labelCount){
+	var copies = (!(!labelCount)) ? labelCount : 1;
 	null;
 	var debug = 1;
 	var versionForm = globals.getInstanceForm(event);
@@ -1740,7 +1741,8 @@ function bartenderPrint(event,txtString){
 			rec.bt_printer = printer;
 			rec.bt_btwtemplate = btwFile;			
 		}
-		rec.bt_copies = "1";//Math.floor(1);
+		rec.bt_copies = Math.floor(copies).toString();//"1";//Math.floor(1);
+		globals.printedLabels(rec.bt_copies);//set number of labels sent to printer
 		rec.bt_print_date = new Date();
 		rec.prime_key = rec.bt_label_id;
 		for (var idx4 = 0;idx4 < labelData.length;idx4++){
@@ -1894,7 +1896,7 @@ function bartenderPrint(event,txtString){
 				}
 				com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
 				com.release();//release bartender every time since the program closes each time
-				var status = plugins.file.deleteFile(randFileName);
+				var status = false;// plugins.file.deleteFile(randFileName); delete bartender temp file
 				application.output('Deleted print barcode label Name '+status);
 				/**	if (!status){//1223
 						plugins.dialogs.showErrorDialog('1223',i18n.getI18NMessage('1223'));
@@ -1905,13 +1907,14 @@ function bartenderPrint(event,txtString){
 			}
 		}
 	}
-	if (event.getFormName() == 'rf_mobile_view'){return}
+	if (event.getFormName() == 'rf_mobile_view'){return}//there are no serial numbers to save in id_serial_numbers
 	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
 	q.where.add(q.columns.id_serial_number_id.isin(globals.barcodePrintedArray));
 	q.result.add(q.columns.id_serial_number_id);
 	var Q = databaseManager.getFoundSet(q);
 	Q.loadRecords();
+	//globals.printedLabels(Q.getSize());
 	var Qupdate = databaseManager.getFoundSetUpdater(Q);
 	Qupdate.setColumn('printed',1);
 	Qupdate.performUpdate();

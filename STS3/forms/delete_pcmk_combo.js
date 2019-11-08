@@ -170,7 +170,9 @@ function onActionDeleteSelected(event,formName) {
 
 	scopes.jobs.idfilesToDelete = new Array();
 	scopes.jobs.warningsX();
-	var win = application.getActiveWindow();
+	//var win = application.getActiveWindow(); //was closing all active windows, ensure it only closes the delete window
+	var win = forms[formName].controller.getWindow();
+	forms['delete_criteria'].controller.getWindow().toFront();
 	win.hide();
 }
 

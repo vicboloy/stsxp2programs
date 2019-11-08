@@ -327,7 +327,8 @@ var mob = {
 	userAgent : '', // reported web agent
 	laborPercent : 0, //20190705 labor percent entered in Labor transactions/inspections screen
 	routeId : null, //20190705 route id for piecemark
-	endItem : null
+	endItem : null,
+	printedLabels : 0   
 }
 /**
  * @properties={typeid:35,uuid:"156699CD-41A6-4A0A-80BB-F1DC66692C4B",variableType:-4}
@@ -1971,7 +1972,9 @@ function rfF8ReversalTransaction(){
 		}
 		if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')]){
 			fsUpdaterIds.setColumn('current_load_id',null);
-			//fsUpdaterIds.setColumn('ship_load_id',null);
+			if (scopes.prefs.lShipLoad){
+				fsUpdaterIds.setColumn('ship_load_id',null);
+			}
 		}
 		fsUpdaterIds.performUpdate();
 		fsUpdaterIds = null;
@@ -3318,11 +3321,12 @@ function rfErrorShow(message){
 	errorMessageMobile = textWrap(message,25);
 	forms[formName].elements.errorWindow.enabled = true;
 	forms[formName].elements.errorWindow.visible = true;
-	forms[formName].elements.errorWindow.transparent = false;
+	forms[formName].elements.errorWindow.transparent = true;
 	//forms[formName].elements.errorWindow.putClientProperty('text',message);
 	if (!dualEntry){
 		forms[formName].elements.errorWindow.requestFocus();
 		forms[formName].controller.focusField('errorWindow',false);
+		forms[formName].elements.genericin.requestFocus();
 	}
 }
 /**
@@ -4588,6 +4592,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	if (processCodes.shipping.indexOf(statusShipType) != -1){
 		pushStation = (qqRec.push_a_station == 1);
 	}
+	application.output('RM FS Action Save');
 	if (mob.laborCompleted && pushStation &&
 			!rfSaveThirdParties('Save')){//handles only pushing 3rd party stations
 		return false;
@@ -4595,6 +4600,7 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 	var commitAction = 'Save';//handles updating a regular station OR Load/Ship actions
 	if (session.program == i18n.getI18NMessage('sts.mobile.final.ship')){commitAction = "Ship"}
 	if (session.program == i18n.getI18NMessage('sts.mobile.shipping')){commitAction = 'Load'}
+	application.output('FS Action '+commitAction);
 	if (mob.laborCompleted &&
 			!rfSaveThirdParties(commitAction)){
 		//var unCommit = (commitAction == 'Ship') ? 'Unship' : 'Unload';
@@ -4701,7 +4707,9 @@ function rfSaveScanTransaction(routeOK, statusId, sLocation){
 			var batchQ = databaseManager.getFoundSetUpdater(resultQ);
 			if (processCodes.shipping.indexOf(statusShipType) != -1){
 				if (session.loadId != null && session.loadId != ''){
-					//batchQ.setColumn('ship_load_id',session.loadId);
+					if (scopes.prefs.lShipLoad){//prefs set as same ship loadid as loadid
+						batchQ.setColumn('ship_load_id',session.loadId);
+					}
 					batchQ.setColumn('current_load_id',session.loadId);
 				}
 			}
@@ -4967,7 +4975,9 @@ function logger(capture,message){
 	fs.job_number = session.jobNumber;
 	fs.rf_program = session.program;
 	fs.signon_employee = session.login;
-	fs.status_code = mob.statusCode;
+	if (mob){
+		fs.status_code = mob.statusCode;
+	}
 	fs.status_location = session.statusLocation;
 	fs.worker = session.worker;
 	fs.division = session.association;
@@ -5079,6 +5089,7 @@ function onActionMainMenu(event) {
 	//}//moved to login form with callback
 	if (!mobMenuProvider){return} // 20150402 executing twice for some reason unknown
 	//application.output('RM '+new Date());
+	globals.onStartLoadPrefs();//reload prefs on each screen
 	scopes.fs.checkComFabsuite();
 	//application.output('RM '+new Date());
 
@@ -5383,7 +5394,7 @@ function rfProcessBarcode(event){
 					if (shipped){
 						if (application.isInDeveloper()){application.output('Barcode already shipped.');}
 						errorDialogMobile(event,'708',barcodeErrorField);//405 
-						return true;
+						//return true;
 					}
 					if (barcodeInAnotherLoad()){
 						if (application.isInDeveloper()){application.output('Barcode already on another load.');}
@@ -6677,19 +6688,46 @@ function xmlSuccess(xml){
 	return xmlTraverse(xml,"Successful",true);
 }
 /**
+ * @param {String} loadNumber
  * @param {Boolean} makeInterimLoad
  * 
  * @properties={typeid:24,uuid:"B9F40AA1-D225-4798-B459-69464D66EC48"}
  */
-function loadCreateValid(makeInterimLoad){
+function loadCreateValid(loadNumber,makeInterimLoad){
+	/** @type {JSRecord<db:/stsservoy/loads>} */
+	var latestRec = null;
+	if (scopes.prefs.lLoadCopy){
+		latestRec = session.jobLoads.getRecord(1);
+	}
 	if (makeInterimLoad){mob.load.interim = true}
 	//var fsNextTruck = scopes.fs.checkFSNextLoad();
 	//if (fsNextTruck && session.loadNextNumber < fsNextTruck){
 	//	session.loadNextNumber = fsNextTruck;
 	//}
 	var idx = session.jobLoads.newRecord();
-	/** @type {JSFoundSet<db:/stsservoy/loads>} */
+	/** @type {JSRecord<db:/stsservoy/loads>} */
 	var rec = session.jobLoads.getRecord(idx);
+	if (latestRec){
+		databaseManager.copyMatchingFields(latestRec,rec);
+		rec.ship_date = null;
+		rec.edit_date = null;
+		rec.email_receive = null
+		rec.email_sent = null;
+		rec.ft_loadid = null;
+		rec.interim_load = null;
+		rec.load_comment = null;
+		rec.load_release = null;
+		rec.logic_flag = null;
+		rec.receipt_date = null;
+		rec.receiving_weight = null;
+		rec.sent_engineer = null;
+		rec.sent_fabrication = null;
+		rec.sent_fireproofer = null;
+		rec.sent_galvinizer = null;
+		rec.sent_other = null;
+		rec.sent_painter = null;
+		rec.sent_site = null;
+	}
 	rec.job_id = session.jobId;
 	rec.tenant_uuid = session.tenant_uuid;
 	rec.edit_date = new Date();
@@ -6697,7 +6735,8 @@ function loadCreateValid(makeInterimLoad){
 	rec.interim_load = makeInterimLoad;
 	rec.total_weight = 0;
 	rec.shipped_weight = 0;
-	if (session.jobLoads.getSize() == 0){
+	rec.load_number = loadNumber;
+	/** if (session.jobLoads.getSize() == 0){
 		rec.load_number = "";
 	} else {
 		if (typeof session.loadNextNumber == 'number'){
@@ -6705,7 +6744,7 @@ function loadCreateValid(makeInterimLoad){
 		} else {
 			rec.load_number = session.loadNextNumber;
 		}
-	}
+	} */
 	session.loadId = rec.load_id;
 	databaseManager.saveData(rec);
 	return rec;
@@ -6725,7 +6764,7 @@ function loadGetJobDataset(jobId){
 	if (scopes.prefs.loadCreate != i18n.getI18NMessage('sts.label.hardware.load.calculation.auto.system.wide.specific')){
 		q.where.add(q.columns.job_id.eq(jobId.toString()));
 	}
-	q.sort.add(q.columns.load_number.desc);
+	q.sort.add(q.columns.create_date.desc);
 	var resultQ = databaseManager.getFoundSet(q);
 	return resultQ;
 }
@@ -6741,6 +6780,10 @@ function loadNumberCheck(event,loadNumber){
 	 * i18n:sts.label.hardware.load.calculation.auto.job.specific
 	 * i18n:sts.label.hardware.load.calculation.auto.system.wide.specific
 	 * i18n:sts.label.hardware.load.calculation.auto.none
+	 * if L entered along, auto load number is calculated
+	 * if Lxxx, then if it exists, allow it
+	 * if it does not, ask for creation and interim selection
+	 * 
 	 */
 	//getNextLoadNumber();
 	/** @type {JSFoundSet<db:/stsservoy/loads>} */
@@ -6752,10 +6795,14 @@ function loadNumberCheck(event,loadNumber){
 	 * 
 	 */
 
-	var thirdPartyLoad = true;
+	var thirdPartyLoad = '';
+	var thirdPartyCheck = true;
 	if (loadNumber){
 		if (scopes.prefs.lFabsuiteInstalled && session.jobIsFabSuite){
-			thirdPartyLoad = (!scopes.fs.checkFSLoad(loadNumber,'',false));
+			//var thirdPartyLoadExists = scopes.fs.checkFSLoad(loadNumber,'','',false);
+			thirdPartyLoad = scopes.fs.checkFSLoad(loadNumber,'','',false);
+			 thirdPartyCheck = ((thirdPartyLoad && thirdPartyLoad.search(/does not exist/) == -1) || !thirdPartyLoad);
+			application.output('returned error '+thirdPartyLoad)
 		}
 		/** @type {JSFoundSet<db:/stsservoy/loads>} */
 		var rec = null; var index = 1;var noNextNum = (loadNumber.toString().search(/[^0-9]/) != -1);
@@ -6797,6 +6844,7 @@ function loadNumberCheck(event,loadNumber){
 		}
 	} */
 	if (!session.loadId){ // receiving and final ship cannot create new load numbers
+		getNextLoadNumber();
 		switch (session.program){
 			case mobileWindows[i18n.getI18NMessage('sts.mobile.receiving')]:
 			case mobileWindows[i18n.getI18NMessage('sts.mobile.final.ship')]:
@@ -6814,7 +6862,8 @@ function loadNumberCheck(event,loadNumber){
 				var form = forms[event.getFormName()];
 				var dataProv = form.elements['loadnumberin'].getDataProviderID();
 				//if (noNextNum || loadNumber != ''){session.loadNextNumber = loadNumber}
-				var message = i18n.getI18NMessage('301')+' '+i18n.getI18NMessage('sts.txt.load.use.new.number')+session.loadNextNumber;
+				if (!loadNumber || thirdPartyCheck){loadNumber = session.loadNextNumber}//no STS load number returned and 3rd party load exists, skip 3rd party number
+				var message = i18n.getI18NMessage('301')+' '+i18n.getI18NMessage('sts.txt.load.use.new.number')+loadNumber;
 				var response = globals.DIALOGS.showQuestionDialog(
 					i18n.getI18NMessage('sts.txt.load.new.number'),
 					message,
@@ -6857,20 +6906,27 @@ function loadNumberCheck(event,loadNumber){
 							if (!interimDest){break}
 						}
 						var destination = '';
+						var toBeReturned = false;
 						if ((!interimDest) || interimDest == 1){//chose Cancel or <NONE>
 							destination = null;
 						} else {
 							destination = dests[interimDest-1];
+							response = globals.DIALOGS.showQuestionDialog(
+							i18n.getI18NMessage('sts.txt.load.to.be.returned'),
+							i18n.getI18NMessage('sts.txt.load.to.be.returned'),
+							i18n.getI18NMessage('sts.btn.no'),
+							i18n.getI18NMessage('sts.btn.yes'));
+							toBeReturned = (response == i18n.getI18NMessage('sts.btn.yes'));
 						}
 						if (!destination){
-							errorDialogMobile(event,302,'genericin',session.loadNextNumber);
+							errorDialogMobile(event,302,'genericin',loadNumber);
 							form[dataProv] = '';
 							session.loadId = null;
 							session.loadNextNumber = 0;
 							return false;
 						}
 					}
-					if (session.loadNextNumber){
+					if (loadNumber){
 						if (scopes.prefs.lFabsuiteInstalled && session.jobIsFabSuite){
 							/** var fsNextLoad = scopes.fs.checkFSNextLoad();
 							if (fsNextLoad.search(i18n.getI18NMessage('sts.interface.fabsuite')) != -1){
@@ -6883,18 +6939,18 @@ function loadNumberCheck(event,loadNumber){
 								session.loadNextNumber = fsNextLoad;
 							} */
 							if (interimLoad){
-								var fsLoadNum = scopes.fs.checkFSLoad(session.loadNextNumber,destination,true);
+								var fsLoadNum = scopes.fs.checkFSLoad(loadNumber,destination,toBeReturned,true);
 							} else {
-								fsLoadNum = scopes.fs.checkFSLoad(session.loadNextNumber,'',true);
+								fsLoadNum = scopes.fs.checkFSLoad(loadNumber,'','',true);
 							}
 							if (fsLoadNum != null){
 								form[dataProv] = '';
-								errorDialogMobile(event,1024,'genericin',session.loadNextNumber);
+								errorDialogMobile(event,1024,'genericin',loadNumber);
 								return false;
 							}
 						}
 					}
-					rec = loadCreateValid(interimLoad);
+					rec = loadCreateValid(loadNumber,interimLoad);
 					foundRec = rec;
 					session.loadId = rec.load_id;//20181003
 				}
@@ -6903,8 +6959,8 @@ function loadNumberCheck(event,loadNumber){
 	mob.load.currentId = session.loadId;
 	session.interim = (foundRec.interim_load == 1); 
 	if (!foundRec){
-		forms['rf_mobile_view'].loadNumber = session.loadNextNumber;
-		forms['rf_mobile_view'].loadNumber = forms['rf_mobile_view'].loadNumber.split('.')[0];
+		//forms['rf_mobile_view'].loadNumber = session.loadNextNumber;
+		//forms['rf_mobile_view'].loadNumber = forms['rf_mobile_view'].loadNumber.split('.')[0];
 	} else {
 		forms['rf_mobile_view'].loadNumber = loadNumber;
 	}
@@ -7692,10 +7748,11 @@ function onActionSelectAll(event) {
 	/** @type {JSFoundset} */
 	var fs = forms[formTable].foundset;
 	var i = 1;
-	while (i <= fs.getSize()){
-		var rec = fs.getRecord(i++);
+	var rec = null;
+	while (rec = fs.getRecord(i++)){
 		rec.selection = 1;
 	}
+	databaseManager.saveData(fs);
 }
 /**
  * @param event
@@ -7707,11 +7764,11 @@ function onActionClearAll(event) {
 	var formTable = formName+"_table";
 	/** @type {JSFoundset} */
 	var fs = forms[formTable].foundset;
-	var i = 1;
-	while (i <= fs.getSize()){
-		var rec = fs.getRecord(i++);
+	var i = 1; var rec = null;
+	while (rec = fs.getRecord(i++)){
 		rec.selection = 0;
 	}
+	databaseManager.saveData(fs);
 }
 /**
  * @param event
@@ -7724,10 +7781,11 @@ function onActionSelectUnprinted(event) {
 	/** @type {JSFoundset} */
 	var fs = forms[formTable].foundset;
 	var i = 1;
-	while (i <= fs.getSize()){
-		var rec = fs.getRecord(i++);
-		rec.selection = (rec.lprint != 1) ? 1 : 0;
+	var rec = null;
+	while (rec = fs.getRecord(i++)){
+		rec.selection = (rec.if_lprint*1 != 1) ? 1 : 0;
 	}
+	databaseManager.saveData(fs);
 }
 /**
  * 
@@ -10981,7 +11039,9 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 							}
 						}
 						if (TFSresponse.rtsmessage != 'No Drop'){//Scrap Restock
-							errorDialogMobile(event,1220,'genericin',TFSresponse.rtsmessage);
+							errorDialogMobile(event,1220,'genericin',TFSresponse.rtsmessage+' Labels: '+invUUIDs.length);
+						} else {
+							errorDialogMobile(event,1220,'genericin',' Labels: '+invUUIDs.length);
 						}
 					}
 					globals.rfClearDependentEntries(event,'locationin');
@@ -11437,6 +11497,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 	//if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 	//	plugins.WebClientUtils.executeClientSideJS('playSoundX("init");');
 	//}
+	globals.printedLabelsShowError(event);
 	return true;
 }
 /**
@@ -13767,10 +13828,13 @@ function getNextLoadNumber(){
 			}
 		}
 	}
-	if (highest > session.loadNextNumber){session.loadNextNumber = highest}
+	//application.output('load number fs:'+fsNextLoad+' highest STSX:'+highest+' prefs:'+scopes.prefs.startLoadNum);
+	if (highest*1 > session.loadNextNumber*1){session.loadNextNumber = highest}
 	session.loadNextNumber = session.loadNextNumber*1 + 1;
+	if (scopes.prefs.startLoadNum*1 > session.loadNextNumber*1){session.loadNextNumber = scopes.prefs.startLoadNum*1}
 	session.loadNextNumber = session.loadNextNumber.toString().replace('.0','');
 	//}
+	if (session.loadNextNumber == 0){session.loadNextNumber = 1}
 	return session.loadNextNumber;
 }
 /**
@@ -14316,7 +14380,8 @@ function dateAndTimeToDate(date, time){
  */
 function rfGetLoadStats(loadId){
 	//if (1==1){return}
-	if (application.isInDeveloper()){application.output('inside rfGetLoadStats '+loadId)}
+	if (application.isInDeveloper()){}
+	application.output('RM inside rfGetLoadStats '+loadId);
 	if (!loadId){
 		return
 	}
@@ -14345,15 +14410,29 @@ function rfGetLoadStats(loadId){
 	var R = databaseManager.getDataSetByQuery(q,-1);
 	if (R.getMaxRowIndex() > 0){
 		R.rowIndex = 1;
-		weight = Math.floor(R.weight*1+0.5);
+		weight = R.weight;
 	}
-	mob.load.weight = weight;
+	mob.load.weight = Math.floor(R.weight*1+0.5);
 	mob.load.ctTotal = count;
 	mobLoadWeight = mob.load.weight;
 	mobLoadPieces = mob.load.pieces;
 	mobWeightUnits = (metric) ? 'kgs' : "lbs";
 	mobLengthUnits = (metric) ? "mm" : "ins";
-	if (application.isInDeveloper()){application.output('load '+loadId+' count:'+count+' weight: '+weight)}
+	if (application.isInDeveloper()){}
+	application.output('RM load '+loadId+' count:'+count+' weight: '+weight);
+	/** @type {QBSelect<db:/stsservoy/loads>} */
+	var m = databaseManager.createSelect('db:/stsservoy/loads');
+	m.where.add(m.columns.tenant_uuid.eq(session.tenant_uuid));
+	m.where.add(m.columns.load_id.eq(loadId.toString));
+	m.result.add(m.columns.load_id);
+	var M = databaseManager.getFoundSet(m);
+	if (M.getSize() > 0){
+		/** @type {JSRecord<db:/stsservoy/loads>} */
+		var rec = M.getRecord(1);
+		rec.total_weight = weight;
+		databaseManager.saveData(rec);
+	}
+	application.output('leave rfGetLoadStats');
 }
 /**
  * @param loadId
@@ -14372,4 +14451,39 @@ function rfGetLoadNumber(loadId){
 		loadNum = 'Load# '+Q.load_number;
 	}
 		return loadNum;
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"52B2EC5B-82F3-4659-A18B-19B2F97E3C05"}
+ */
+function onActionSelectHighlighted(event){
+	var formName = event.getFormName();
+	var formTable = formName+"_table";
+	/** @type {JSFoundset} */
+	var fs = forms[formTable].foundset;
+	var highlighted = fs.getSelectedIndexes();
+	highlighted.sort();
+	for (var idx = 0;idx < highlighted.length;idx++){
+		var rec = fs.getRecord(highlighted[idx]);
+		rec.selection = 1;
+	}
+	databaseManager.saveData(fs);
+}
+/**
+ * @param {Number} labelCount
+ *
+ * @properties={typeid:24,uuid:"BF346974-2317-4123-AC6C-04AA328BFC8F"}
+ */
+function printedLabels(labelCount){
+	mob.printedLabels = mob.printedLabels*1 + labelCount*1;
+}
+/**
+ * @properties={typeid:24,uuid:"26E8D270-7548-4D2E-B5E4-6E01A8598AE3"}
+ */
+function printedLabelsShowError(event){
+	if (mob.printedLabels ==  0){return}
+	globals.errorDialogMobile(event,'sts.txt.labels.sent.to.printer','genericin',mob.printedLabels);
+	if (application.isInDeveloper()){application.output('printed labels '+mob.printedLabels)}
+	mob.printedLabels = 0;
 }

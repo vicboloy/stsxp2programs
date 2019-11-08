@@ -183,12 +183,26 @@ function onActionPrint(event) {
  * @properties={typeid:24,uuid:"3989EEE5-5DE2-492A-8456-D9EB616B8A63"}
  */
 function collectCriteria(formName){
-	if (vLoadAll){
-		var loadAll = null;
-	} else {
-		loadAll = scopes.globals.arrayToString(vLoadNum);
-	}
+	var loadAll = (vLoadAll == 1);
 	
+	var loadIds = [];
+	if (vLoadNum != '' || loadAll){
+		/** @type {QBSelect<db:/stsservoy/loads>} */
+		var q = databaseManager.createSelect('db:/stsservoy/loads');
+		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		if (vJobID){
+			q.where.add(q.columns.job_id.eq(vJobID))
+		}
+		if (!loadAll && vLoadNum != ''){
+			q.where.add(q.columns.load_number.isin(scopes.globals.csvToArray(vLoadNum)));
+		}
+		q.result.add(q.columns.load_id);
+		var Q = databaseManager.getDataSetByQuery(q,-1);
+		if (Q.getMaxRowIndex() > 0){
+			loadIds = Q.getColumnAsArray(1);
+		}
+	}
+
 	criteria = {
 		area: scopes.globals.arrayToString(vArea),
 		areaa: scopes.globals.csvToArray(vArea),
@@ -200,6 +214,7 @@ function collectCriteria(formName){
 		fabshopa: scopes.globals.csvToFabshopID(vFabShop),
 		jobid : vJobID,
 		loadall : loadAll,
+		loadalla : loadIds,
 		loadnum : vLoadNum,
 		loadnuma : scopes.globals.csvToArray(vLoadNum),
 		loadrel : scopes.globals.convertLoadToId(vLoadRel,false),
@@ -380,5 +395,23 @@ function onActionLabeLasePrinter(event) {
 function onDataChangeChgPrinters(oldValue, newValue, event) {
 	var printers = (newValue) ? scopes.prefs.useServerPrinters(true) : scopes.prefs.useServerPrinters(false);
 	application.setValueListItems('stsvl_get_printer_list',printers);
+	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"3A195EA9-4858-4C2A-A19C-3602275CBBB4"}
+ */
+function onDataChangeLoad(oldValue, newValue, event) {
+	if (newValue == 1){
+		vLoadNum = '';
+	}
 	return true
 }

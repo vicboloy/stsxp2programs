@@ -119,7 +119,8 @@ function onActionRemoveSelected(event) {
 	scopes.jobs.warningsX();
 	
 	scopes.jobs.idfilesToDelete = new Array();
-	var win = application.getActiveWindow();
+	var win = forms[formName].controller.getWindow();
+	forms['remove_criteria'].controller.getWindow().toFront();
 	win.hide();
 }
 

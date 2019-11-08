@@ -14,3 +14,17 @@ function onShow(firstShow, event) {
 	controller.loadRecords(newFS);
 	globals.makeFormReadOnly(event,event.getFormName(),'');
 }
+
+/**
+ * Handle hide window.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"791BFA8F-EA10-4F0E-B019-932114FE0927"}
+ */
+function onHide(event) {
+	globals.stopWindowTrackEvent(event);
+	return true
+}

@@ -120,8 +120,6 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onActionPrint(event) {
-	elements.btn_PrintSelected.enabled = false;
-	elements.btn_Clear.enabled = false;
 	elements.frmServerPrinters.requestFocus();
 	scopes.jobs.labelPrintStatus = event.getFormName();
 	var printers = application.getValueListArray('stsvl_get_printer_list');
@@ -196,6 +194,9 @@ function onActionPrint(event) {
 	var win = application.createWindow(winTitle, JSWindow.DIALOG);
 	win.setInitialBounds(xOrigin+10, yOrigin+10, formWidth, height);
 	win.title = winTitle;
+
+	elements.btn_PrintSelected.enabled = false;
+	elements.btn_Clear.enabled = false;
 
 	win.show(forms[newFormName]);
 	scopes.jobs.removeFormHist(newFormName+'_table');

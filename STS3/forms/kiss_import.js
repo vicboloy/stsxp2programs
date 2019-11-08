@@ -323,6 +323,7 @@ function getKissFile(event){
 	scopes.jobs.importJob.sheetImportOnly = (!vSeqNumber && !vLotNumber && !vPartNumber);//can only delete items when sheet or full import only, use during import to STS db
 	removeJobImportData(vJobNumber);
 	elements.numSeq.requestFocus();
+	//var x = databaseManager.hasTransaction();
 	scopes.kiss.importFSOnServer(event,request,filters);//IMPORT 1 importFSOnServer
 	
 	/**

@@ -917,8 +917,8 @@ function focusWindow(){
 	var windowName = elements.windows.getSelectedElements()[0];
 	//var winNameSearch = windowName.trim();
 	//var winIndex = windowArray.indexOf(windowName.trim());
-	if (windowName == null){return}
-	if (windowName == " "){return}
+	if (windowName == null || windowName == " "){return}
+	//if (){return}
 	if (windowName.search('STS - Main') == 0){return}//cannot bring main to front, so ignore
 	var windowx = application.getWindow(windowName.trim());
 	//if (windowName[windowName.length-1] == " "){
@@ -943,9 +943,14 @@ function focusWindow(){
  * @properties={typeid:24,uuid:"F136BFBF-4BE1-48EC-87FE-5C11DFC2727D"}
  * @AllowToRunInFind
  */
-function removeWindowTrack(){
-	var win = application.getActiveWindow();
-	var formName = win.title;
+function removeWindowTrack(entryName){
+	if (!(!entryName) && entryName.data){
+		formName = entryName;
+	} else {
+		var win = application.getActiveWindow();
+		var formName = win.title;
+	}
+	if (!formName){formName = ''}
 	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.closed',new Array(formName)));
 	//var formName = controller.getName();
 	var tempArray = new Array;
@@ -955,7 +960,7 @@ function removeWindowTrack(){
 	for (var index = 0; index < tempLength; index++){
 		windowName = globals.aTrackWindows[index];
 		if (!windowName){continue}
-		if (formName.search(windowName) != 0){
+		if (formName.toString().search(windowName) != 0){
 			tempArray.push(windowName);
 		}
 	}
@@ -1125,6 +1130,11 @@ function onActionElementPicks(event) {
 		case "LoadNum":
 			scopes.jobs.jobLoadsAndReleases(topForm);
 			arrayInUse = arrayInUse.concat(jobInfo.load_nums);
+			if (arrayInUse.length != 0){
+				if (forms[formName].vLoadAll){
+					forms[formName].vLoadAll = 0;
+				}
+			}
 			break;
 		case 'Heat':
 			scopes.jobs.invHeat(topForm);

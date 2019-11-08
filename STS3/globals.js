@@ -1780,11 +1780,21 @@ function windowRev(){
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"3D1D7CE4-2BA6-4116-99D0-3B33BF587D1F"}
+ * @AllowToRunInFind
  */
 function onActionCloseModal(event) {
 	var formName = event.getFormName();
 	var win = forms[formName].controller.getWindow();
+	var winName = win.getName();
 	win.hide();
+	if (winName.search('Browse') != -1){
+		var parentName = winName.replace('Browse','View');
+		//application.output('parent view '+parentName);
+		var pWin = application.getWindow(parentName);
+		if (pWin){
+			pWin.toFront();
+		}
+	}
 	scopes.jobs.removeFormHist(event.getFormName()+' table');
 	//stopWindowTrack();
 }
@@ -2093,7 +2103,7 @@ function stopWindowTrackEvent(event){
  * @properties={typeid:24,uuid:"918332A9-B084-4E50-8CEE-69EB6BA56344"}
  */
 function setWindowClosedByName(windowName){
-	var windowNameAlt = windowName.replace(/_/g,' ');
+	var windowNameAlt = windowName.replace(/_/g,' ').replace(/ ([0-9])/,'_$1');
 	if (windowName.search('STS - Main') == 0){return}
 	var tempArray2 = new Array;
 	//tempArray2 = globals.aTrackWindows;

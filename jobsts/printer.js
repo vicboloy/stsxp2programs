@@ -874,12 +874,15 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	var formName = event.getFormName();
 	var versionForm = globals.getInstanceForm(event);
 	if (formName.search('barcode_idlabel'+versionForm) == 0) {useServer = (forms['barcode_idlabel'+versionForm].useServerPrinters == 1)}
+	if (formName.search('rf_mobile_view') == 0){useServer = true}
 
 	var barcodePrintedArray = [];
 	// ** @type {num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number} */
 	var specObj = {num:0,name:'',dbtype:'',size:0,dbcol:'',dbsize:0};
 	var tabContents = '';var fileLine = '';var qIndex = 1;
-	if (application.isInDeveloper()){application.output('There are '+Q.getMaxRowIndex()+' labels to print.')}
+	if (application.isInDeveloper()){application.output('There are '+Q.getMaxRowIndex()+' labels to print. Qty bundled:'+labelQtyRequested)}
+	var bundleCount = (labelQtyRequested*1 == Q.getMaxRowIndex()) ? 1 : labelQtyRequested*1;
+	var numberToPrinter = bundleCount;
 	for (qIndex = 1;qIndex <= Q.getMaxRowIndex();qIndex++){
 		Q.rowIndex = qIndex;
 		var rec = Q;
@@ -908,13 +911,14 @@ function onActionPrintRMLabels(event,invUUIDs) {
 		if (!useServer){//use multipleLines
 			fileLine += "\n";
 		} else {
-			scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER
+			scopes.prefs.bartenderPrint(event,fileLine,bundleCount); //BARTENDER
 			fileLine = '';
 		}
 	}
 	if (!useServer){
 		scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER		
 	}
+	
 	//close show printing warning
 	//scopes.globals.rfErrorHide(event);
 	

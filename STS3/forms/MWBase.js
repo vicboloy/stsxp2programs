@@ -804,6 +804,7 @@ function createFormClone(formName, extension) {
 	if (!clonedForm.getVariable('jobIdData')){clonedForm.newVariable('jobIdData',JSVariable.TEXT,"");}
 	// adjust multiWindow valuelists with version
 	for (var el in forms[formName].elements){
+		//if (application.isInDeveloper()){application.output('element '+el+' '+forms[formName].elements[el].getElementType())}
 		if (forms[formName].elements[el].getElementType().search('LIST') == -1){continue}
 		var oldVlName = forms[formName].elements[el].getValueListName();
 		if (oldVlName){
@@ -826,6 +827,13 @@ function createFormClone(formName, extension) {
 		var aTabs = aTabPanels[i].getTabs()
 		for (var j in aTabs) {
 			var tabForm = aTabs[j].containsForm
+			/** var relName = aTabs[j].relationName;
+			var relNameNew = relName+'_ci'+extension;
+			var rel = solutionModel.getRelation(relName);
+			var relAttr = rel.getRelationItems();
+			var newRel = solutionModel.newRelation(relNameNew,rel.primaryDataSource,rel.foreignDataSource,rel.joinType)
+			newRel.initialSort  = rel.initialSort;
+			rel.newRelationItem(relAttr..dataprovider,operator,foreinColumnName) */
 			var clonedTabForm = createFormClone(tabForm.name, extension);
 			globals.session.forms[cloneName].push(tabForm.name+'_'+extension);//keep list of forms for permissions
   			aTabs[j].containsForm = clonedTabForm;
@@ -1293,41 +1301,6 @@ function onShow(firstShow, event) {
 	if (elements.btn_FoxfireReports){elements.btn_FoxfireReports.enabled = !(!scopes.prefs.foxfireexe)}
 	return _super.onShow(firstShow, event)
 }
-
-/**
- * Perform the element default action.
- *
- * @param {JSEvent} event the event that triggered the action
- *
- * @properties={typeid:24,uuid:"0209A2A6-4955-4A59-8AF6-E4BEE47B2B7C"}
- * @AllowToRunInFind
- *
-function syncI18N(event) {
-	/** @type {QBSelect<db:/stsservoy/messages>} *
-	var q = databaseManager.createSelect('db:/stsservoy/messages');
-	q.result.add(q.columns.message_num);
-	q.result.add(q.columns.message_text);
-	var resultQ = databaseManager.getFoundSet(q);
-	var idx = 1;
-	/** @type {JSRecord<db:/stsservoy/messages>} *
-	var rec = null;
-	while (rec = resultQ.getRecord(idx++)){
-		/** @type {QBSelect<db:/stsservoy/i18n_table>} *
-		var fs = databaseManager.createSelect('db:/stsservoy/i18n_table');
-		fs.result.add(fs.columns.i18n_table_id);
-		fs.where.add(fs.columns.message_key.eq(rec.message_num));
-		fs.where.add(fs.columns.message_language.isNull);
-		var I18 = databaseManager.getFoundSet(fs);
-		if (false && I18.getSize() > 0){
-			if (application.isInDeveloper()){application.output('message '+rec.message_num+' '+rec.message_text)}
-			var newIdx = I18.newRecord();
-			var newRec = I18.getRecord(newIdx);
-			newRec.message_key = rec.message_num;
-			newRec.message_value = rec.message_text;
-			newRec.message_language = "en";
-		}
-	}
-} */
 /**
  * @AllowToRunInFind
  * 
@@ -1374,6 +1347,21 @@ function onActionClickDeveloper(event) {
 	//scopes.jobs.importInventoryDBF();
 	//if (1==1){return}
 	//scopes.jobs.setUpIndexing();
+
+	
+	var sql = 'ALTER TABLE status_description ALTER COLUMN push_a_station TYPE INT USING push_a_station::integer;';
+	var success = plugins.rawSQL.executeSQL('stsservoy','status_description',sql)
+	var sql = 'ALTER TABLE status_description ALTER COLUMN warn_not_pass TYPE INT USING warn_not_pass::integer;';
+	var success = plugins.rawSQL.executeSQL('stsservoy','status_description',sql)
+	var sql = 'ALTER TABLE status_description ALTER COLUMN prompt_complete TYPE INT USING prompt_complete::integer;';
+	var success = plugins.rawSQL.executeSQL('stsservoy','status_description',sql)
+	var sql = 'ALTER TABLE status_description ALTER COLUMN overwrite_flag TYPE INT USING overwrite_flag::integer;';
+	var success = plugins.rawSQL.executeSQL('stsservoy','status_description',sql)
+	var sql = 'ALTER TABLE status_description ALTER COLUMN emp_number_required TYPE INT USING emp_number_required::integer;';
+	var success = plugins.rawSQL.executeSQL('stsservoy','status_description',sql)
+	var sql = 'ALTER TABLE status_description ALTER COLUMN mtr_pdf_required TYPE INT USING mtr_pdf_required::integer;';
+	var success = plugins.rawSQL.executeSQL('stsservoy','status_description',sql)
+	application.output('push station column change success: '+success)
 	if (1==1){return}
 	globals.useFasterQuery = !globals.useFasterQuery;
 	if (globals.useFasterQuery){
@@ -1499,7 +1487,7 @@ function onActionClickDeveloper(event) {
 			'transactions','uom_types'
 			]
 			// 'mapping', 'users', 'groups','applications','associations','barcode_test','group_keys','i18n_table',
-			// 'ref_types','messages','tenant_list','user_groups','zipcodes','valuelists'
+			// 'ref_types','tenant_list','user_groups','zipcodes','valuelists'
 			for (index = 0;index < tablesToClear.length;index++){
 				var fs = databaseManager.getFoundSet('stsservoy',tablesToClear[index]);
 				if (application.isInDeveloper() && fs.getSize() > 0){application.output('Deleting table '+tablesToClear[index])}

@@ -461,9 +461,33 @@ var laborPercentComplete = 0;
  */
 var laborPercentToday = null;
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"367186EE-3E13-43CF-9D1B-58AFA2A87B87"}
+ */
+var widthChar = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"5F72F8F6-B15F-4EA6-A2D2-06F9DC209226"}
+ */
+var association = '';
+/**
  * @properties={typeid:35,uuid:"71D92708-6DB3-4071-AE85-07AE3DB1D201",variableType:-4}
  */
 var inputFields = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"80BD4CFB-9B2F-48E7-9B9A-2670AE299CC3"}
+ */
+var reportType = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"029EA719-2708-4290-8AE8-DD2A7A5B4F6B",variableType:4}
+ */
+var useServerPrinters = 1;//always use server printers
 /**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
@@ -709,6 +733,7 @@ function onShowForm(firstShow,event) {
 	globals.getRoutes();
 	globals.getRouteLegs();
 	labelPrintType = (globals.processCodes.rawprint.indexOf(globals.session.program) != -1) ? 'material' : 'piecemark';
+	elements.genericinnone.setLocation(elements.genericin.getLocationX(),elements.genericin.getLocationY());
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.

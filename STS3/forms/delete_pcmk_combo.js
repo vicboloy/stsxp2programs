@@ -70,16 +70,10 @@ function onActionClearAll(event) {
 	var formName = event.getFormName();
 	var fs = forms[formName+'_table'].foundset;
 	scopes.jobs.warningsYes(event);
-	scopes.jobs.warningsMessage('Clearing Selected Messages, please wait...',true);
+	scopes.jobs.warningsMessage('Clearing Selected, please wait...',true);
 	var updater = databaseManager.getFoundSetUpdater(fs);
 	updater.setColumn('selection',0);
 	updater.performUpdate();
-	//var i = 1;
-	//while (i <= fs.getSize()){
-	//	scopes.jobs.warningsMessage('Clearing Selected Messages, please wait...',false);
-	//	var rec = fs.getRecord(i++);
-	//	rec.selection = 0;
-	//}
 	scopes.jobs.warningsMessage('',true);
 	scopes.jobs.warningsX();
 }
@@ -132,7 +126,7 @@ function onActionDeleteSelected(event,formName) {
 	var fs = forms[formTable].foundset;
 	var omitList = [];
 	scopes.jobs.warningsYes(event);
-	scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',true);
+	scopes.jobs.warningsMessage('Deleted Selected, please wait...',true);
 
 	//if (false && deleteJob){//JOE 20180112 20180301 moved to purge for delete entire job
 	//	scopes.jobs.warningsMessage('',true);
@@ -153,7 +147,7 @@ function onActionDeleteSelected(event,formName) {
 	if (application.isInDeveloper()){application.output('record count for deletion is '+recCount)}
 	var nothingSelected = true;
 	while (recCount > 0){ // collect selected record idfile id's
-		scopes.jobs.warningsMessage('Deleted Selected Messages, please wait...',false);
+		scopes.jobs.warningsMessage('Deleted Selected, please wait...',false);
 
 		var rec = fs.getRecord(recCount);
 		if (rec.selection == 1){

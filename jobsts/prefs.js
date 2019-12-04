@@ -1475,6 +1475,12 @@ function onActionPrintLabels(event) {
 	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')) {
 		specs = scopes.printer.getBTFieldData('P');	
 		srcForm = 'rf_mobile_view';
+	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.inventory.move')) {
+		specs = scopes.printer.getBTFieldData('R');	
+		srcForm = 'rf_mobile_view';
+	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.build.bundles')){
+		specs = scopes.printer.getBTFieldData('P');	
+		srcForm = 'rf_mobile_view';		
 	}	else {
 		specs = scopes.printer.getBTFieldData('R');//raw material
 		srcForm = 'barcode_id_raw'+versionForm
@@ -1495,47 +1501,22 @@ function onActionPrintLabels(event) {
 	var labCnt = 0;
 	//if (true || true) {return;}
 	var tabCount = specs.length;
-	var formName = event.getFormName();
+	formName = event.getFormName();
 	var formTable = formName+"_table";
 	
-	if (globals.session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+	var updateIdfile = true;
+	if (globals.session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw') ||
+		globals.session.program == i18n.getI18NMessage('sts.mobile.inventory.move')){
 		fs = globals.session.tempFS;
+	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.build.bundles')){
+		fs = globals.session.tempFS;
+		updateIdfile = false;
 	} else {
 		/** @type JSFoundSet */
 		var fs = forms[formTable].foundset;
 	}
 	//application.output(fs.getRecord(1));
 	databaseManager.saveData(fs);//20190531 keep sort on close for printing labels
-	/** if (formName.search("barcode_") != -1) {
-		var ordered = scopes.jobs.tmp_LabelSort;
-		switch (ordered){
-			case i18n.getI18NMessage('sts.print.order.piecemark'):
-				fs.sort('piecemarks.piecemark asc');
-				break;
-			case i18n.getI18NMessage('sts.print.order.id.number'):
-				if (formName.search('raw') == -1){
-					fs.sort('serial_number asc');
-				} else {
-					fs.sort('serial_number asc');
-				}
-				break;
-			case i18n.getI18NMessage('sts.print.order.drawing.number'):
-				fs.sort('piecemarks.drawing_number asc');
-				break;
-			case i18n.getI18NMessage('sts.print.order.material'):
-				fs.sort('material asc');
-				break;
-			case i18n.getI18NMessage('sts.print.order.part.number'):
-				fs.sort('model_part asc');
-				break;
-			default:
-				if (formName.search('raw') == -1){
-					fs.sort('piecemarks.piecemark asc');
-				} else {
-					fs.sort('id_serial_number asc');
-				}
-		}
-	} */
 	var i = 1;
 	var fileLine = "";
 	var itemsSelected = false; globals.barcodePrintedArray = [];var printedIndexes = [];
@@ -1546,12 +1527,17 @@ function onActionPrintLabels(event) {
 	var rec = null; i = 1;
 	while (rec = fs.getRecord(i++)){
 		var tabContents = "";
-		if (rec.selection != 1 && globals.session.program != i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){continue}
+		if (updateIdfile && rec.selection != 1 && globals.session.program != i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+			if (globals.session.program != i18n.getI18NMessage('sts.mobile.inventory.move')){//reprint in progress for inventory move
+				continue;
+			}
+		}
 		labCnt++;
 		printedIndexes.push(i);//index of  printed elements for later view marking as printed
 		if (rec.bc_id_serial_number_id){globals.barcodePrintedArray.push(rec.bc_id_serial_number_id.toString())}
 		if (rec.inventory_uuid){globals.barcodePrintedArray.push(rec.inventory_uuid.toString())}
 		itemsSelected = true;
+		//var altSystem = ['PARTWT','LGTNUM','WT','WIDNUM'];
 		for (var index = 0;index < tabCount;index++){
 			/** @type {JSRecord<num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number>} */
 			var specObj = specs[index];
@@ -1559,7 +1545,7 @@ function onActionPrintLabels(event) {
 			var dbCol = specObj.db_field.split('.');
 			var dbField = dbCol[dbCol.length-1];//get unique record field
 			tabContents = rec[dbField];
-			if (typeof tabContents === 'undefined'){
+			if (typeof tabContents === 'undefined'){// || altSystem.indexOf(specObj.field_name) != -1){
 				if (application.isInDeveloper()){application.output('undefined or unknown - '+dbField+' '+specObj.field_name);}
 				var fieldTagName = specObj.field_name;
 				tabContents = getNonRecordValues(rec,fieldTagName);
@@ -1588,7 +1574,7 @@ function onActionPrintLabels(event) {
 		scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER	
 		printed = true;	
 	}
-	if (printed){
+	if (updateIdfile && printed){
 		for (var i2 = 0; i2 < printedIndexes.length;i2++){
 			rec = fs.getRecord(printedIndexes[i2]-1);
 			if (rec.inventory_uuid){
@@ -1694,7 +1680,7 @@ function bartenderPrint(event,txtString,labelCount){
 	//	return;
 	//}
 
-	var randFileName = tempDir+"\\" + application.getUUID().toString().split("-")[4] +".txt";
+	var randFileName = tempDir+"\\" + globals.getRandomG() +".txt";
 	if (debug){application.output('randfilename bartender print '+randFileName)}//REMOVE
 	randFileName = randFileName.replace(/\/+/g,'\\');
 
@@ -2110,6 +2096,7 @@ function getNonRecordValues(currentRecord,barTenderField){
 			newVal = currentRecord.ship_fabricator_invoice;
 			break;
 		case 'FABSHOP':// fld 32
+		case 'PLANT':
 			newVal = currentRecord.pcmk_fab_shop;
 			break;
 		case 'FABXTIME':// fld 33
@@ -2419,7 +2406,7 @@ function getNonRecordValues(currentRecord,barTenderField){
 			null;
 			break;
 		case 'LGTNUM':
-			null;
+			newVal = currentRecord.item_length_in;
 			break;
 		case 'PCUOMDOLL':
 			null;
@@ -2441,6 +2428,13 @@ function getNonRecordValues(currentRecord,barTenderField){
 			break;
 		case 'TOTALWT':// fld 153
 			newVal = currentRecord.ship_load_total_weight;
+			break;
+		case 'WT':
+		case 'PARTWT':
+			newVal = currentRecord.item_weight_lbs;
+			break;
+		case 'WIDNUM':
+			newVal = currentRecord.item_width_in;
 			break;
 		case 'RTBW':
 			null;
@@ -2627,6 +2621,9 @@ function getNonRecordValues(currentRecord,barTenderField){
 			break;
 		case 'PARENTID':// fld 207
 			newVal = currentRecord.bc_parent_id_serial;
+			break;
+		case 'LABELFMT':
+			newVal = currentRecord.LABELFMT;
 			break;
 		default:
 

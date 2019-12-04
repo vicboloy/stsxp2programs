@@ -1113,7 +1113,7 @@ function getTenantCount(){
 		]
 		//, 'groups','group_keys','user_groups','permissions','applications','keys'
 		// 'mapping', 'users','applications','associations','barcode_test','i18n_table',
-		// 'ref_types','messages','tenant_list','zipcodes','valuelists'
+		// 'ref_types','tenant_list','zipcodes','valuelists'
 		if (newInstall){//20190103 ready for additional tenants, this is for initial tenant
 			for (var index = 0;index < tablesToClear.length;index++){
 				var fs = databaseManager.getFoundSet('stsservoy',tablesToClear[index]);

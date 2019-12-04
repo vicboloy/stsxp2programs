@@ -463,7 +463,7 @@ function getBTFieldData(labelFldType){
 		141 JOBWT Numeric 11 jobs.job_weight 11,\
 		142 LABELBC Numeric 5 UNUSED 0 ,\
 		143 LABELQTY Numeric 5 UNUSED 0 ,\
-		144 LGTNUM Numeric 11.4 piecemarks.pm_item_length 11.4,\
+		144 LGTNUM Numeric 11.4 piecemarks.pm_item_length_in 11.4,\
 		145 ORIGQTY Numeric 5 idfiles.if_original_quantity 5,\
 		146 PCUOMDOLL Numeric 11.4 piecemarks.pm_piecemark_uom_dollars 11.4,\
 		147 QTY2PRINT Numeric 5 UNUSED 0 ,\
@@ -562,8 +562,12 @@ function getBTFieldData(labelFldType){
 		240 SERVTYPE Character 25 sheets.sh_servtype 35,\
 		241 ASMECODE Character 10 sheets.sh_asmecode 15,\
 		242 OPERATEMP Character 10 sheets.sh_operatemp 10,\
-		243 OPERAPRES Character 10 sheets.sh_operapres 10";
+		243 OPERAPRES Character 10 sheets.sh_operapres 10,\
+		244 CUTLISTBC Character 20 idfiles.cut_list_bc 20,\
+		245 PCMKCOUNT Character 10 pcmk_instances.pcmk_count 10,\
+		246 LGTNUMMM Number 11.4 piecemarks.item_length 11.4";
 	
+	// check missing bt label print columns, check PDF for column, check this table column index and column name, then go to jobs.query_assembly_raw to set column name and data source
 	var barTenderRawSpecs = '\
 		1 LABELQTY Numeric 4 view.label_count 4 inventory.quantity 4 how many to print being driven by scanners,\
 		2 QTY Numeric 14.4 inventory.quantity 4 quantity of inventory item see 1,\
@@ -575,7 +579,7 @@ function getBTFieldData(labelFldType){
 		8 IDSLINE2 Character 23 UNUSED 0  ,\
 		9 LOCATION Character 10 inventory.location 15,\
 		10 WTUOM Character 5 UNUSED 0  - comes from M or I part master table from warehouse package,\
-		11 PARTWT Numeric 9.2 inventory.item_weight 9.2 part master table 10 x 40 comes from part master table,\
+		11 PARTWT Numeric 9.2 inventory.item_weight_lbs 9.2 part master table 10 x 40 comes from part master table,\
 		12 PARTDESCR Character 60 UNUSED 0  part master table,\
 		13 LABELSTYL Character 20 UNUSED 0  ,\
 		14 LABELFMT Character 60 view.btw_file_path 60 just file name 60,\
@@ -604,7 +608,7 @@ function getBTFieldData(labelFldType){
 		37 SHIPDATE Date 8 inventory.ship_date DATETIME,\
 		38 SHIPTIME Date 8 inventory.ship_date DATETIME,\
 		39 SQFT Numeric 6.2 inventory.item_square_feet 6.2,\
-		40 WT Numeric 9.2 inventory.item_weight 9.2,\
+		40 WT Numeric 9.2 inventory.item_weight_lbs 9.2,\
 		41 SERLPRNTD Logical 1 inventory.lprint 1,\
 		42 CUSNAME Character 40 customers.job_customer_name 45,\
 		43 RUNDATE Date 8 UNUSED 0  ,\
@@ -632,7 +636,9 @@ function getBTFieldData(labelFldType){
 		65 EMPLNUM Character 5 employees.employee_number 15,\
 		66 FABSHOP Character 5 associations.association_name 50,\
 		67 WIDNUM Numeric 10.4 inventory.item_width 10.4,\
-		68 QCAPPVD Logical 1 inventory.qc_approved_flag 1\
+		68 QCAPPVD Logical 1 inventory.qc_approved_flag 1,\
+		69 WTKG Numeric 9.2 inventory.item_weight 9.2,\
+		70 LGTNUMMM Numeric 14.4 inventory.item_length 14.4,\
 	';
 	
 	//if (btType == 'P'){
@@ -752,7 +758,6 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	
 	for (var idx = 0;idx < invUUIDs.length;idx++){invUUIDs[idx] = invUUIDs[idx].toString()}
 	//determine is this metric or imperial labeling?  
-	var metric = false;
 	var form = forms[event.getFormName()];
 	if (form.printEnabled == i18n.getI18NMessage('sts.txt.off')){application.output('no printing');return}
 	var labelQtyRequested = form.quantity;
@@ -760,80 +765,84 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	//var countStr = labelQtyRequested;
 	//scopes.globals.errorDialogMobile(event,1220,'sts.txt.printing.inventory.number',countStr);
 	var defaultPrinter = rawMaterialPrinter;
-	var employeeNumber = globals.session.employeeNum;
+	//var employeeNumber = globals.session.employeeNum;
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.inventory_uuid.isin(invUUIDs));//verified with sql server
-	q.result.add(q.columns.serial_number)
-	q.result.add(q.columns.inventory_uuid);
+	//q.result.add(q.columns.serial_number)
+	//q.result.add(q.columns.inventory_uuid);
 	/** @type {QBJoin<db:/stsservoy/jobs>} */
 	var r = q.joins.add('db:/stsservoy/jobs');
 	r.on.add(q.columns.job_uuid.eq(r.columns.job_id));
-	q.result.add(r.columns.job_number_group)
+	//q.result.add(r.columns.job_number_group)
 	/** @type {QBJoin<db:/stsservoy/customers>} */
 	var s = r.joins.add('db:/stsservoy/customers');
 	s.on.add(r.columns.customer_id.eq(s.columns.customer_id));
-	q.result.add(s.columns.customer_number)
+	//q.result.add(s.columns.customer_number)
 	/** @type {QBJoin<db:/stsservoy/associations>} */
 	var t = r.joins.add('db:/stsservoy/associations');
 	t.on.add(t.columns.association_uuid.eq(q.columns.association_uuid));
-	q.result.add(t.columns.association_name);
+	//q.result.add(t.columns.association_name);
 	
+	var table = databaseManager.getTable('db:/stsservoy/inventory');
+	var invCols = table.getColumnNames();
+	for (var i = 0;i < invCols.length;i++){
+		q.result.add(q.columns[invCols[i]]);
+	}
+
 	q.result.addValue(form.quantity,'labelqty');
-	q.result.add(q.columns.quantity,'qty');
 	q.result.add(s.columns.customer_number,'CUSTNUM');
+	q.result.addValue(rawMaterialLabelFormat,'LABELFMT');
+	q.result.add(r.columns.job_number,'POJOBNUM');
+	q.result.add(t.columns.association_name,'PLANT');
+	q.result.add(s.columns.name,'CUSNAME');
+	q.result.addValue(defaultPrinter,'LBLPRNTNAM');
+	q.result.add(r.columns.job_number,'JOBNUM');
+	q.result.addValue(globals.session.employeeNum,'EMPLNUM');
+	q.result.add(t.columns.association_name,'FABSHOP');
+	
+	q.result.add(q.columns.quantity,'qty');
 	q.result.add(q.columns.control,'CONTROL');
 	q.result.add(q.columns.model_part,'MODELPART');
 	q.result.add(q.columns.serial_number,'SERIAL');
-	q.result.addValue('X-UNUSED','IDFLINE2');
-	q.result.addValue('X-UNUSED','IDSLINE2');
 	q.result.add(q.columns.location,'LOCATION');
-	q.result.addValue('X-UNUSED','WTUOM');
-	if (metric){
-		q.result.add(q.columns.item_weight,'PARTWT');
-	} else {
-		q.result.add(q.columns.item_weight_lbs,'PARTWT');
-	}
-	q.result.addValue('X-UNUSED','PARTDESCR');
-	q.result.addValue('X-UNUSED','LABELSTYL');
-	q.result.addValue(rawMaterialLabelFormat,'LABELFMT');
 	q.result.add(q.columns.heat,'HEAT');
-	if (metric){
-		q.result.add(q.columns.item_length,'LGTNUM');
-	} else {
-		q.result.add(q.columns.item_length_in,'LGTNUM');
-	}
 	q.result.add(q.columns.item_length_char,'CHARLGTH');
-	q.result.addValue('X-UNUSED','LBLCONTROL');
-	q.result.addValue('X-UNUSED','LBLMODEL');
-	q.result.addValue('X-UNUSED','LBLSERIAL');
 	q.result.add(q.columns.po_number,'PONUM');
 	q.result.add(q.columns.po_line_number,'POLINE');
 	q.result.add(q.columns.logic_flag,'LOGICFLAG');
-	q.result.add(r.columns.job_number,'POJOBNUM');
-	q.result.addValue('X-UNUSED','LABELNAME');
 	q.result.add(q.columns.bill_of_lading_in,'BILLIN');
 	q.result.add(q.columns.bill_of_lading_out,'BILLOUT');
 	q.result.add(q.columns.cert_date,'CERTDATE');
 	q.result.add(q.columns.due_back_date,'DUEBACK');
 	q.result.add(q.columns.fill_date,'FILLDATE');
 	q.result.add(q.columns.inventory_ref_number,'INVREFER');
-	q.result.add(t.columns.association_name,'PLANT');
-	q.result.addValue('X-UNUSED','PROCESS');
 	q.result.add(q.columns.receive_date,'RECVDATE');
 	q.result.add(q.columns.receive_date,'RECVTIME');
 	q.result.add(q.columns.remarks,'REMARKS');
 	q.result.add(q.columns.ship_date,'SHIPDATE');
 	q.result.add(q.columns.ship_date,'SHIPTIME');
 	q.result.add(q.columns.item_square_feet,'SQFT');
-	if (metric){
-		q.result.add(q.columns.item_weight,'WT');
-	} else {
-		q.result.add(q.columns.item_weight_lbs,'WT');
-	}
 	q.result.add(q.columns.lprint,'SERLPRNTD');
-	q.result.add(s.columns.name,'CUSNAME');
+	q.result.add(q.columns.grade,'GRADE');
+	q.result.add(q.columns.qc_approved_flag,'QCAPPVD'); 
+	q.result.add(q.columns.item_weight_lbs,'PARTWT');
+	q.result.add(q.columns.item_length,'LGTNUMMM');
+	q.result.add(q.columns.item_length_in,'LGTNUM');
+	q.result.add(q.columns.item_weight,'WTKG');
+	q.result.add(q.columns.item_weight_lbs,'WT');
+	q.result.add(q.columns.item_width_in,'WIDNUM');
+	q.result.addValue('X-UNUSED','IDFLINE2');
+	q.result.addValue('X-UNUSED','IDSLINE2');
+	q.result.addValue('X-UNUSED','WTUOM');
+	q.result.addValue('X-UNUSED','PARTDESCR');
+	q.result.addValue('X-UNUSED','LABELSTYL');
+	q.result.addValue('X-UNUSED','LBLCONTROL');
+	q.result.addValue('X-UNUSED','LBLMODEL');
+	q.result.addValue('X-UNUSED','LBLSERIAL');
+	q.result.addValue('X-UNUSED','LABELNAME');
+	q.result.addValue('X-UNUSED','PROCESS');
 	q.result.addValue('X-UNUSED','RUNDATE');
 	q.result.addValue('X-UNUSED','RUNSHIFT');
 	q.result.addValue('X-UNUSED','RUNLINENBR');
@@ -850,20 +859,9 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	q.result.addValue('X-UNUSED','SILO');
 	q.result.addValue('X-UNUSED','BOXNUM');
 	q.result.addValue('X-UNUSED','SLDPARTNUM');
-	q.result.addValue(defaultPrinter,'LBLPRNTNAM');
 	q.result.addValue('X-UNUSED','LABELDESCR');
 	q.result.addValue('X-UNUSED','PARTGRP');
 	q.result.addValue('X-UNUSED','OEJOBNUM');
-	q.result.add(r.columns.job_number,'JOBNUM');
-	q.result.add(q.columns.grade,'GRADE');
-	q.result.addValue(globals.session.employeeNum,'EMPLNUM');
-	q.result.add(t.columns.association_name,'FABSHOP');
-	if (metric){
-		q.result.add(q.columns.item_width,'WIDNUM');
-	} else {
-		q.result.add(q.columns.item_width_in,'WIDNUM');
-	}
-	q.result.add(q.columns.qc_approved_flag,'QCAPPVD');
 	var Q = databaseManager.getDataSetByQuery(q,-1);
 	if (Q.getMaxRowIndex() == 0){return}
 	null;
@@ -926,4 +924,14 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	//collect each item's attributes from inventory
 	//set tabbed file format for raw material 
 	//set all as printed in inventory table
+}
+/**
+ * @properties={typeid:24,uuid:"F26D6542-5AFC-41A1-B72B-2D4326BF156B"}
+ */
+function getDefaultPrinterName(){
+	var $printService = new Packages.javax.print.PrintServiceLookup.lookupDefaultPrintService();
+ 	var $printerName = $printService.getName();
+ 	if (!$printerName){printerName = ''}
+ 	return $printerName.trim();
+	//application.output($printerName)
 }

@@ -6516,7 +6516,7 @@ function sampleBCPrint(event){
 	var record = null; var line = "";
 	var baseDir = scopes.prefs.reportpath;
 	var fileName = baseDir+"\\barcodelabel.txt"; var data = "";
-	var randFileName = baseDir+"\\" + application.getUUID().toString().split("-")[4] +".txt";
+	var randFileName = baseDir+"\\" + globals.getRandomG() +".txt";
 	application.output(randFileName);
 	//var file = plugins.file.createFile(fileName);
 	//var status = file.createNewFile();
@@ -10410,7 +10410,7 @@ function bartenderPrintEmbed(){
 	if (!fileX.createNewFile()){
 		application.output('file cannot be created');
 	}
-	var randFileName = serverPath + application.getUUID().toString().split("-")[4] +".txt";
+	var randFileName = serverPath + globals.getRandomG() +".txt";
 	//application.output(randFileName);
 	var status = plugins.file.writeTXTFile(fileName,data);
 	if (!status){
@@ -12650,8 +12650,18 @@ function onRightClickColumn(event){
 function createValidBarcodeRM(){
 	var year = new Date().getFullYear().toString().substr(2,2);
 	barcodePrefix = 'RM'+year;
-	var serial = createBarCodeSerial();
-	var rmBarCode = barcodePrefix+serial;
+	var found = true;
+	while (found){
+		var serial = createBarCodeSerial();
+		var rmBarCode = barcodePrefix+serial;
+		/** @type {QBSelect<db:/stsservoy/inventory>} */
+		var f = databaseManager.createSelect('db:/stsservoy/inventory');
+		f.where.add(f.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		f.where.add(f.columns.serial_number.eq(rmBarCode));
+		f.result.add(f.columns.serial_number);
+		var F = databaseManager.getFoundSet(f);
+		found = (F.getSize() > 0);
+	}
 	//if (application.isInDeveloper()){application.output('raw material bar code: '+rmBarCode)}
 	return rmBarCode;
 }
@@ -12847,12 +12857,15 @@ function invModel(formName){
  *
  * @properties={typeid:24,uuid:"84D2C9E9-FE70-49A6-9E0D-8232412B2826"}
  */
-function queryAssemblyRaw(criteria,formName,subquery){
+function queryAssemblyRaw(criteria,formName,subquery){//matches scopes.printer.onActionPrintRMLabels
 	scopes.jobs.labelPrintStatus = '';
 	//criteria.locations,heats,controls,modelnums,serials
 	
+	var metric = false;
 	var version = globals.getInstanceForm(formName);
 	var infoForm = forms['barcode_id_raw'+version];
+	//var defaultPrinter = rawMaterialPrinter;
+	var employeeNumber = globals.session.employeeNum;
 	var jobId = infoForm['vJobId'];
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
@@ -12877,6 +12890,62 @@ function queryAssemblyRaw(criteria,formName,subquery){
 		q.where.add(q.columns.control.isin(criteria.controls));
 	}
 	q.result.addValue(0,"selection");
+	/** @type {QBJoin<db:/stsservoy/jobs>} */
+	var r = q.joins.add('db:/stsservoy/jobs');
+	r.on.add(q.columns.job_uuid.eq(r.columns.job_id));
+	q.result.add(r.columns.job_number_group)
+	/** @type {QBJoin<db:/stsservoy/customers>} */
+	var s = r.joins.add('db:/stsservoy/customers');
+	s.on.add(r.columns.customer_id.eq(s.columns.customer_id));
+	q.result.add(s.columns.customer_number)
+	/** @type {QBJoin<db:/stsservoy/associations>} */
+	var t = r.joins.add('db:/stsservoy/associations');
+	t.on.add(t.columns.association_uuid.eq(q.columns.association_uuid));
+
+	q.result.add(q.columns.item_length,'LGTNUMMM');
+	q.result.add(q.columns.item_weight,'WTKG');
+	q.result.add(t.columns.association_name,'SHOP');
+	q.result.addValue(infoForm.quantity,'labelqty');
+	q.result.addValue(infoForm.labelName,'LABELFMT');
+	q.result.addValue(infoForm.labelName,'btw_file_path');
+	q.result.addValue(infoForm.printerName,'barcode_printer_name');
+	q.result.addValue(globals.session.employeeNum,'employee_number');
+	q.result.add(s.columns.customer_number,'CUSTNUM');
+	q.result.add(t.columns.association_name,'PLANT');
+	q.result.add(s.columns.name,'job_customer_name');
+	q.result.add(r.columns.job_number,'job_number');
+	q.result.add(t.columns.association_name,'FABSHOP');
+	q.result.add(t.columns.association_name);
+	
+	q.result.addValue('X-UNUSED','IDFLINE2');
+	q.result.addValue('X-UNUSED','IDSLINE2');
+	q.result.addValue('X-UNUSED','WTUOM');
+	q.result.addValue('X-UNUSED','PARTDESCR');
+	q.result.addValue('X-UNUSED','LABELSTYL');
+	q.result.addValue('X-UNUSED','LBLCONTROL');
+	q.result.addValue('X-UNUSED','LBLMODEL');
+	q.result.addValue('X-UNUSED','LBLSERIAL');
+	q.result.addValue('X-UNUSED','LABELNAME');
+	q.result.addValue('X-UNUSED','PROCESS');
+	q.result.addValue('X-UNUSED','RUNDATE');
+	q.result.addValue('X-UNUSED','RUNSHIFT');
+	q.result.addValue('X-UNUSED','RUNLINENBR');
+	q.result.addValue('X-UNUSED','RUNCAR');
+	q.result.addValue('X-UNUSED','RUNFORMNBR');
+	q.result.addValue('X-UNUSED','CUSOTHER1');
+	q.result.addValue('X-UNUSED','CUSOTHER2');
+	q.result.addValue('X-UNUSED','CUSOTHER3');
+	q.result.addValue('X-UNUSED','POUOM');
+	q.result.addValue('X-UNUSED','INVOICEUOM');
+	q.result.addValue('X-UNUSED','STOCKUOM');
+	q.result.addValue('X-UNUSED','INVPRNTUOM');
+	q.result.addValue('X-UNUSED','OEQTY');
+	q.result.addValue('X-UNUSED','SILO');
+	q.result.addValue('X-UNUSED','BOXNUM');
+	q.result.addValue('X-UNUSED','SLDPARTNUM');
+	q.result.addValue('X-UNUSED','LABELDESCR');
+	q.result.addValue('X-UNUSED','PARTGRP');
+	q.result.addValue('X-UNUSED','OEJOBNUM');
 
 	var table = databaseManager.getTable('db:/stsservoy/inventory');
 	var invCols = table.getColumnNames();
@@ -14696,13 +14765,17 @@ function createViewTable(dataSet){
  * @AllowToRunInFind
  */
 function queryAssemblyFaster(criteria,formName,subquery){
-	if (globals.debugDev == 3){application.output('start faster query')}
+	//if (globals.debugDev == 3){application.output('start faster query')}
 	var doSingleLabel = false;
 	if (subquery == 'singleLabel'){
 		var pcmkID = criteria.piecemarkid.toString();
 		var idfilID = criteria.idfileid.toString();
 		subquery = 'browse';
 		doSingleLabel = true;
+		var doBundle = (formName == 'rf_mobile_view' && globals.session.program == i18n.getI18NMessage('sts.mobile.build.bundles'));
+		if (doBundle){
+			var bundleBarcode = forms[formName].currentBundle;
+		}
 		null;
 	}
 	var jobId = criteria.jobid.toString(); //forms.loads_criteria.vJobID
@@ -15002,10 +15075,17 @@ function queryAssemblyFaster(criteria,formName,subquery){
 	q.groupBy.add(loads.columns.ship_date);
 	q.result.add(loads.columns.trailer_information,'load_load_trailer_info');//111 TRAILINFO printer.js
 	q.groupBy.add(loads.columns.trailer_information);
-	q.result.add(loads.columns.shipped_weight,'sload_load_shipped_weight');//152 SHIPWT printer.js
-	q.groupBy.add(loads.columns.shipped_weight);
-	q.result.add(loads.columns.total_weight,'load_load_total_weight');//153 TOTALWT printer.js
-	q.groupBy.add(loads.columns.total_weight);
+	if (doBundle){
+		//application.output('load load shipped weight '+globals.mobBundleWeight)
+		q.result.addValue(globals.mobBundleWeight,'ship_load_shipped_weight');
+		q.result.addValue(globals.mobBundleWeight,'ship_load_total_weight');
+		q.result.addValue(globals.mobBundlePieces,'if_shipped_quantity');
+	} else {
+		q.result.add(loads.columns.shipped_weight,'ship_load_shipped_weight');//152 SHIPWT printer.js
+		q.groupBy.add(loads.columns.shipped_weight);
+		q.result.add(loads.columns.total_weight,'ship_load_total_weight');//153 TOTALWT printer.js
+		q.groupBy.add(loads.columns.total_weight);
+	}
 	q.result.add(loadSTo.columns.customer_number,'load_customer_number');//83 LODSHIPTO
 	q.groupBy.add(loadSTo.columns.customer_number);
 	q.result.add(loadr.columns.load_number,'recv_load_number');//99 RECVLOAD printer.js
@@ -15055,7 +15135,7 @@ function queryAssemblyFaster(criteria,formName,subquery){
 				case 'id_serial_numbers' : tableCol = bc.getColumn(tableColName);shortTable = 'bc_';break;
 				case 'piecemarks' : tableCol = pm.getColumn(tableColName);shortTable = 'pm_';break;
 				case 'status_description' : tableCol = st.getColumn(tableColName);shortTable = 'st_';break;
-				case 'idfiles' : tableCol = id.getColumn(tableColName);shortTable = 'if_';break;
+				case 'idfiles' : if (doBundle && tableColName == 'shipped_quantity'){continue};tableCol = id.getColumn(tableColName);shortTable = 'if_';break;
 				case 'sheets' : tableCol = sh.getColumn(tableColName);shortTable = 'sh_';break;
 				case 'sequences2' : tableCol = sq.getColumn(tableColName);shortTable = 'sq_';break;
 				case 'lots' : tableCol = lt.getColumn(tableColName);shortTable = 'lt_';break;
@@ -16367,4 +16447,31 @@ function deleteNonImportGuids(){
 	/** @type {JSFoundSet<db:/stsservoy/import_guids>} * /
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} * / */
 	//q.where.add(q.columns.sh)
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} serialNumber
+ * @param quantity
+ * @param {String} location1
+ * @param {String} location2
+ *
+ * @properties={typeid:24,uuid:"43EEF735-75D8-4794-AA92-ACABC074BC84"}
+ */
+function invMoveUpdate(event,serialNumber,quantity,location1){
+	/** @type {QBSelect<db:/stsservoy/inventory>} */
+	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.where.add(q.columns.serial_number.eq(serialNumber));
+	q.where.add(q.columns.location.not.eq(location1));
+	//q.where.add(q.columns.location.not.eq(location2));	
+	q.result.add(q.columns.inventory_uuid);
+	var Q = databaseManager.getFoundSet(q);
+	if (Q.getSize() == 0){
+		return {error:'already moved', saved:false}
+	}
+	/** @type {JSFoundSet<db:/stsservoy/inventory>} */
+	var rec = Q.getRecord(1);
+	rec.location = location1;
+	rec.edit_date = new Date();
+	databaseManager.saveData(rec);
+	return {saved:true}
 }

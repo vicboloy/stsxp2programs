@@ -1107,10 +1107,14 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	//	employee = 'admin';
 	//}
 
+	//get list of entire contents of load and commit to station if of type save and final ship is viewed
+	null;
 	if (!scopes.prefs.lFabsuiteInstalled){return true}//20190202 no fs update possible
 	if (commitType.search(/(Save)|(Delete)|(Ship)|(Un-Ship)|(Load)|(Unload)/) != 0){return false}
 	if (checkComFabsuite(null) != ''){return null}
 	var date = globals.mob.date;//new Date();//flow down from data update
+	var processAsLoad = (globals.session.program == i18n.getI18NMessage('sts.mobile.final.ship'));
+	
 
 	var equipEmployee = (globals.m.employee3rdParty[globals.session.employeeNum]);
 	var firstEmp = forms.rf_mobile_view.statusWorker.split('.')[0];
@@ -1133,14 +1137,16 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	var mainMark = globals.mob.piecemark.parent_piecemark;
 	//var employee = 'admin';//required employee that completed the work
 	//employee = 'admin';
+	var loadNumber = forms.rf_mobile_view.loadNumber;
 	if (!pieceMark || !station || !quantity || !mainMark || !employee){
-		globals.rfErrorShow(i18n.getI18NMessage('1017'));
-		return false;
+		if (!loadNumber){
+			globals.rfErrorShow(i18n.getI18NMessage('1017'));
+			return false;
+		}
 	}
 	
 	//var commitType = 'Save';//Save/Delete/required use F8 to indicate removal
 	var jobNumber = globals.mob.job.number;
-	var loadNumber = forms.rf_mobile_view.loadNumber;
 	var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];
 	var lotNumber = (!globals.mob.piecemark.lot) ? '' : globals.mob.piecemark.lot;
 	var instanceNumbers = globals.mob.idfile.pcmk_instance;//accepts only numeric values, as well as hyphen
@@ -1160,132 +1166,173 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	var batchId = '';
 	var _commitType = '<CommitType>'+commitType+'</CommitType>\n';
 	var _jobNumber = '<JobNumber>'+jobNumber+'</JobNumber>\n';
-	var _mainMark = '<MainMark>'+mainMark+'</MainMark>\n';
-	var _pieceMark = '<PieceMark>'+pieceMark+'</PieceMark>\n';
-	var _sequence = '<Sequence>'+sequence+'</Sequence>\n';
-	var _lotNumber = '<LotNumber>'+lotNumber+'</LotNumber>\n';
 	var _station = '<Station>'+station+'</Station>\n';
-	var _quantity = '<Quantity>'+quantity+'</Quantity>\n';
 	var _instanceNumbers = '<InstanceNumbers>'+instanceNumbers+'</InstanceNumbers>\n';
-	var _serialNumber = '<BarcodeSerialNumber>'+serialNumber+'</BarcodeSerialNumber>\n';
 	var _employee = '<Employee>'+employee+'</Employee>\n';
 	var _execDate = '<Date>'+execDate+'</Date>\n';
 	var _hours = '<Hours>'+hours+'</Hours>\n';
 	var _batchId = '<BatchID>'+batchId+'</BatchID>\n';
 	var _asUser = '<AsUser>'+equipEmployee+'</AsUser>\n';
 	var _loadNumber = '<TruckNumber>'+loadNumber+'</TruckNumber>';
-	
+	//var tmpObj = {major:'',minor:'',seq:'',lot:'',serial:'',qty:''};	globals.mob.load.loadFs.getSize()
 
-	//application.output('FS CommitType:'+commitType);
-	switch (commitType){
-		case 'Delete':
-		case 'Save':
-			var saveDataXML = '<FabSuiteXMLRequest>\n\
-			<ShopFloorSave>\n\
-			TYPE \nJOBNUMBER \nMAJOR \nMINOR \nSEQUENCENUM \nLOTNUMBER \nSTATION \nQUANTITY \nINSTANCES \nSERIALNUM \nASUSER \nEMPLOYEE \nDATE \nHOURS \nBATCH \n\
-			</ShopFloorSave>\n\
-			</FabSuiteXMLRequest>';
-			saveDataXML = saveDataXML.replace('TYPE',_commitType);
-			saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
-			saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
-			saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
-			saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence);
-			saveDataXML = saveDataXML.replace('LOTNUMBER',_lotNumber);//(!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
-			saveDataXML = saveDataXML.replace('STATION',_station);
-			saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
-			saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
-			saveDataXML = (!serialNumber /**|| quantity*1 > 2*/) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber);
-			saveDataXML = saveDataXML.replace('EMPLOYEE',_employee);
-			saveDataXML = saveDataXML.replace('DATE',_execDate);
-			saveDataXML = (!hours) ? saveDataXML.replace('HOURS','') : saveDataXML.replace('HOURS',_hours);
-			saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId);
-			saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
-			
-		break;
-		case 'Ship':
-		case 'Un-Ship':
-			loadCommitType = (commitType == 'Ship') ? 'Ship' : 'Un-Ship';
-			/**
-			 * find out about F8 status for ship vs un-ship before call
-			 * first unship and then remove from load
-			 * 
-			 */
-			var _commitValue = '<CommitType>'+loadCommitType+'</CommitType>';
-			saveDataXML = '<FabSuiteXMLRequest>\n\
-				<Ship>\n\
-				COMMITTYPE\n JOBNUMBER \nTRUCKNUMBER \nDATE\n\
-				</Ship>\n\
-				</FabSuiteXMLRequest>';
-			var _loadNumber = globals.session.loadNumber;
-			saveDataXML = saveDataXML.replace('COMMITTYPE',_commitValue);// 'Ship'/'Un-Ship' determined on call
-			saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
-			saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber);
-			saveDataXML = saveDataXML.replace('DATE',_execDate);
-		break;
-		case 'Load':
-		case 'Unload':
-			loadCommitType = (commitType == 'Load') ? 'Save' : 'Delete';
-			_commitValue = '<CommitType>'+loadCommitType+'</CommitType>';
-			saveDataXML = '<FabSuiteXMLRequest>\n\
-				<Load>\n\
-				TYPE \nJOBNUMBER \nMAJOR \nMINOR \nSEQUENCENUM \nLOTNUMBER \nQUANTITY \nINSTANCES \n\
-				TRUCKNUMBER \nSERIALNUM \nASUSER \nEMPLOYEE \nDATE \n\
-				</Load>\n\
-				</FabSuiteXMLRequest>';
-			saveDataXML = saveDataXML.replace('TYPE',_commitValue);
-			saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
-			saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
-			saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
-			saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence);
-			saveDataXML = saveDataXML.replace('LOTNUMBER',_lotNumber);//(!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
-			saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
-			saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
-			saveDataXML = (!serialNumber) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber);
-			saveDataXML = saveDataXML.replace('EMPLOYEE',_employee);
-			saveDataXML = saveDataXML.replace('DATE',_execDate);
-			saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
-			saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber);
-
-		break;
-	default:
+	if (processAsLoad){
+		/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+		var rec = '';var idx = 1;var countSerial = [];
+		while (rec = globals.mob.load.loadFs.getRecord(idx++)){
+			serialNumber = rec.sts_idfile_to_serial.id_serial_number;
+			application.output('serial: '+serialNumber);
+			if (!countSerial[serialNumber]){
+				countSerial[serialNumber] = 1;
+			} else {
+				countSerial[serialNumber] += 1;
+			}
+		}
 	}
-	saveDataXML = saveDataXML.replace(/\n+/g,'\n');
-	application.output(saveDataXML);
-	var _updateLoadWeight = globals.rfGetSpecsLoad(globals.session.program);
+		
+	//exit condition is within the loop, an idx of zero will terminate or a null load record
+	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
+	var rec = '';var idx = 1;
+	while (true){
+		if (processAsLoad){
+			rec = globals.mob.load.loadFs.getRecord(idx++);
+			if (!rec){break}//end process load here
+			serialNumber = rec.sts_idfile_to_serial.id_serial_number;
+			if (countSerial[serialNumber] == 0){continue}//skip if serial number already processed
+			pieceMark = rec.sts_idfile_to_pcmks.piecemark;
+			sequence = rec.sts_idfile_to_seq.sequence_number;
+			lotNumber = rec.sts_idfile_to_lot.lot_number;
+			mainMark = rec.sts_idfile_to_pcmks.parent_piecemark;
+			quantity = countSerial[serialNumber] * rec.summed_quantity;
+			countSerial[serialNumber] = 0;//one way to prevent multiple inserts into fs
+			
+			application.output(serialNumber+' '+mainMark+ ' '+pieceMark+' Seq:'+sequence+' Lot:'+lotNumber+' Qty:'+quantity); 
+		} else {
+			idx = 0;// process to end of while then exit
+		}
+		
+		var _serialNumber = '<BarcodeSerialNumber>'+serialNumber+'</BarcodeSerialNumber>\n';
+		var _mainMark = '<MainMark>'+mainMark+'</MainMark>\n';
+		var _pieceMark = '<PieceMark>'+pieceMark+'</PieceMark>\n';
+		var _sequence = '<Sequence>'+sequence+'</Sequence>\n';
+		var _lotNumber = '<LotNumber>'+lotNumber+'</LotNumber>\n';
+		var _quantity = '<Quantity>'+quantity+'</Quantity>\n';
 	
-	//if (globals.session.program == i18n.getI18NMessage('sts.mobile.shipping')) {
-	//	saveDataXML = saveDataXML2;
-	//}
+	
 
-	var fsResp = globals.fsCom.call('FabSuiteXML',saveDataXML);
-	application.output('RESPONSE: '+fsResp);
-	var fsErr = fabSuiteError(fsResp);
-	if (fsErr != ''){
-		var addMessage = '';
+		//application.output('FS CommitType:'+commitType);
 		switch (commitType){
 			case 'Delete':
-				addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.removed.from.station');
-				break;
 			case 'Save':
-				addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.added.to.station');
-				break;
+				var saveDataXML = '<FabSuiteXMLRequest>\n\
+				<ShopFloorSave>\n\
+				TYPE \nJOBNUMBER \nMAJOR \nMINOR \nSEQUENCENUM \nLOTNUMBER \nSTATION \nQUANTITY \nINSTANCES \nSERIALNUM \nASUSER \nEMPLOYEE \nDATE \nHOURS \nBATCH \n\
+				</ShopFloorSave>\n\
+				</FabSuiteXMLRequest>';
+				saveDataXML = saveDataXML.replace('TYPE',_commitType);
+				saveDataXML = (!loadNumber) ? saveDataXML.replace('TRUCK','') : saveDataXML.replace('TRUCK',_loadNumber);
+				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
+				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
+				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
+				saveDataXML = saveDataXML.replace('SEQUENCENUM',_sequence);//!sequence) ? saveDataXML.replace('SEQUENCENUM','') : 
+				saveDataXML = saveDataXML.replace('LOTNUMBER',_lotNumber);////(!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);//
+				saveDataXML = saveDataXML.replace('STATION',_station);
+				saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
+				saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
+				saveDataXML = (!serialNumber /**|| quantity*1 > 2*/) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber);
+				saveDataXML = saveDataXML.replace('EMPLOYEE',_employee);
+				saveDataXML = saveDataXML.replace('DATE',_execDate);
+				saveDataXML = (!hours) ? saveDataXML.replace('HOURS','') : saveDataXML.replace('HOURS',_hours);
+				saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId);
+				saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
+				
+			break;
 			case 'Ship':
-				addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.shipped');
-				break;
-			case 'Un-Ship': 
-				addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.unshipped');
-				break;
+			case 'Un-Ship':
+				loadCommitType = (commitType == 'Ship') ? 'Ship' : 'Un-Ship';
+				/**
+				 * find out about F8 status for ship vs un-ship before call
+				 * first unship and then remove from load
+				 * 
+				 */
+				var _commitValue = '<CommitType>'+loadCommitType+'</CommitType>';
+				saveDataXML = '<FabSuiteXMLRequest>\n\
+					<Ship>\n\
+					COMMITTYPE\n JOBNUMBER \nTRUCKNUMBER \nDATE\n\
+					</Ship>\n\
+					</FabSuiteXMLRequest>';
+				var _loadNumber = globals.session.loadNumber;
+				saveDataXML = saveDataXML.replace('COMMITTYPE',_commitValue);// 'Ship'/'Un-Ship' determined on call
+				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
+				saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber);
+				saveDataXML = saveDataXML.replace('DATE',_execDate);
+			break;
 			case 'Load':
-				addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.added.to.load');
-				break;
 			case 'Unload':
-				addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.removed.from.load');
-				break;
-			default:
+				loadCommitType = (commitType == 'Load') ? 'Save' : 'Delete';
+				_commitValue = '<CommitType>'+loadCommitType+'</CommitType>';
+				saveDataXML = '<FabSuiteXMLRequest>\n\
+					<Load>\n\
+					TYPE \nJOBNUMBER \nMAJOR \nMINOR \nSEQUENCENUM \nLOTNUMBER \nQUANTITY \nINSTANCES \n\
+					TRUCKNUMBER \nSERIALNUM \nASUSER \nEMPLOYEE \nDATE \n\
+					</Load>\n\
+					</FabSuiteXMLRequest>';
+				saveDataXML = saveDataXML.replace('TYPE',_commitValue);
+				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
+				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
+				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
+				saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence);
+				saveDataXML = saveDataXML.replace('LOTNUMBER',_lotNumber);//(!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
+				saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
+				saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
+				saveDataXML = (!serialNumber) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber);
+				saveDataXML = saveDataXML.replace('EMPLOYEE',_employee);
+				saveDataXML = saveDataXML.replace('DATE',_execDate);
+				saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
+				saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber);
+	
+			break;
+		default:
 		}
-		if (!(!addMessage)){addMessage = ' '+addMessage}
-		globals.rfErrorShow('FabSuite: '+fsErr);
-		return false;
+		saveDataXML = saveDataXML.replace(/\n+/g,'\n');
+		application.output(saveDataXML);
+		var _updateLoadWeight = globals.rfGetSpecsLoad(globals.session.program);
+		
+		//if (globals.session.program == i18n.getI18NMessage('sts.mobile.shipping')) {
+		//	saveDataXML = saveDataXML2;
+		//}
+	
+		var fsResp = globals.fsCom.call('FabSuiteXML',saveDataXML);
+		application.output('RESPONSE: '+fsResp);
+		var fsErr = fabSuiteError(fsResp);
+		if (fsErr != ''){
+			var addMessage = '';
+			switch (commitType){
+				case 'Delete':
+					addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.removed.from.station');
+					break;
+				case 'Save':
+					addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.added.to.station');
+					break;
+				case 'Ship':
+					addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.shipped');
+					break;
+				case 'Un-Ship': 
+					addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.unshipped');
+					break;
+				case 'Load':
+					addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.added.to.load');
+					break;
+				case 'Unload':
+					addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.removed.from.load');
+					break;
+				default:
+			}
+			if (!(!addMessage)){addMessage = ' '+addMessage}
+			globals.rfErrorShow('FabSuite: '+fsErr);
+			return false;
+		}
+		if (idx == 0){break}//exit normal 1:1 processing
 	}
 	return true;
 	// RESPONSE: <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
@@ -1362,6 +1409,7 @@ function getFSInterimLoadDests(jobNumber){
 		</FabSuiteXMLRequest>';
 	/** @type {String} */
 	var dests = globals.fsCom.call('FabSuiteXML',interimDests).toString();
+	if (application.isInDeveloper()){application.output('destinations: \n'+dests)}
 	var lines = dests.split('\n');
 	var regX = new RegExp(/<CompanyCode>(.*)<\/CompanyCode>/);
 	for (var idx = 0;idx < lines.length;idx++){
@@ -1903,8 +1951,10 @@ function getInventorySerial(event,serialNumber){
 			validWidth = globals.inToMM(validWidthIn);
 		}
 		var validLengthChar = globals.ftDecToString('FEET',validLengthIn,13,'ALL');
+		var validWidthChar = globals.ftDecToString('FEET',validWidthIn,13,'ALL');
 
 		var rawMatFields = {
+			is_metric : isMetric,
 			model_part : validShape+' '+validDims,
 			grade : validGrade,
 		    heat : validHeat,
@@ -1912,6 +1962,7 @@ function getInventorySerial(event,serialNumber){
 		    item_width : validWidth,
 		    item_width_in : validWidthIn,
 			item_weight : validWeight,
+			item_width_char : validWidthChar,
 			item_weight_lbs : validWeightLbs,
 			item_length : validLength,
 			item_length_char : validLengthChar,
@@ -1921,6 +1972,7 @@ function getInventorySerial(event,serialNumber){
 			bill_of_lading_in : validBoL,
 			po_number : validPoNumber,
 			job_number : validReserve,
+			coo : validCoO,
 			error : ''
 		}
 	} else {
@@ -2001,4 +2053,68 @@ function processRawCutBarcodes(event,cutlistData){
 		globals.mob.piecemark.parent_piecemark = pcmk.pMajor;//var mainMark = 
 		fabSuiteSaved('Save');
 	}
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} serial
+ * @param {String} location1
+ * @param {String} location2
+ *
+ * @properties={typeid:24,uuid:"A64D6C61-B1E7-4A81-957E-98A32B5E648A"}
+ * @AllowToRunInFind
+ */
+function fabSuiteInventoryMove(event,serial,location1,location2){
+	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
+	if (checkComFabsuite(null) != ''){return null}
+	var xmlMove = '<FabSuiteXMLRequest>\
+		<InventoryMove>\
+		<SerialNumber>'+serial+'</SerialNumber>\
+		<NewLocation>'+location1+'</NewLocation>\
+		<NewSecondaryLocation>'+location2+'</NewSecondaryLocation>\
+		</InventoryMove>\
+		</FabSuiteXMLRequest>';
+	application.output('location: '+location1+' 2ndLocation: '+location2+'\n'+xmlMove);
+	var fsResp = globals.fsCom.call('FabSuiteXML',xmlMove).toString();
+	application.output(fsResp);
+	if (fsResp.search('<Successful>0') != -1){
+		return {error:getFabSuiteError(fsResp)};
+	}
+	var serialInfo = getInventorySerial(event,serial);
+	return serialInfo;
+
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param event
+ * @param serial
+ * @param location1
+ * @param location2
+ *
+ * @properties={typeid:24,uuid:"94FC1031-5896-44DC-9F34-D333FC88B936"}
+ */
+function fabSuiteShip(event,jobNumber,loadNumber,commitType){
+	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
+	if (checkComFabsuite(null) != ''){return null}
+	var date = new Date();
+	var fsDate = getFsDateFormat(date);
+	/*
+	 * commitType = Ship/Un-Ship
+	 * 
+	 */
+	var xmlShip = '<FabSuiteXMLRequest>\n\
+		<Ship>\n\
+		<CommitType>'+commitType+'</CommitType>\n\
+		<JobNumber>'+jobNumber+'</JobNumber>\n\
+		<TruckNumber>'+loadNumber+'</TruckNumber>\n\
+		<Date>'+fsDate+'</Date>\n\
+		</Ship>\n\
+		</FabSuiteXMLRequest>';
+	//application.output('location: '+location1+' 2ndLocation: '+location2+'\n'+xmlMove);
+	var fsResp = globals.fsCom.call('FabSuiteXML',xmlShip).toString();
+	application.output('RM '+fsResp);
+	if (fsResp.search('<Successful>0') != -1){
+		return {error:getFabSuiteError(fsResp)};
+	}
+	return {error:null};
 }

@@ -56,9 +56,10 @@ function onShowStatusDescr(firstShow, event) {
 	forms.status_description_rec.elements.fab_shop.enabled = promptFS;
 	forms.status_description_rec.elements.fab_shop.transparent = !scopes.prefs.promptFabShop;
 	forms.status_description_rec.elements.push_transaction.enabled = promptFS;
-	forms.status_description_rec.elements.percent_complete.enabled = promptFS;
+	forms.status_description_rec.elements.percent_complete.enabled = (end_for_status != null) && promptFS;
 	forms.status_description_rec.elements.fabtrol_labor_code.enabled = promptFS;
 	forms.status_description_rec.elements.fabtrol_labor_code.transparent = !promptFS;
+	//elements.percent_complete.enabled = (end_for_status != i18n.getI18NMessage('sts.btn.default.empty.entry'))
 	forms.status_description_rec.controller.readOnly = true;
 	if (forms.status_description_table.controller.getMaxRecordIndex() == 0){
 		forms.status_description_rec.controller.newRecord();
@@ -145,6 +146,7 @@ function onEdit(event,editStatus){
 		elements.req_xfer_status.enabled = false;
 	}
 	elements.push_transaction.enabled = (globals.processCodes.shipping.indexOf(status_type) != -1);
+	elements.percent_complete.enabled = (end_for_status != null);
 	//application.output(elements.push_transaction.enabled+ ' '+status_type+' '+globals.processCodes.shipping.indexOf(status_type))
 }
 
@@ -405,7 +407,7 @@ function getStatusList(){
 		var stationId = assocId+", "+statStatus;
 		localStations.push(stationId);
 	}
-	endFors.unshift('none');endForStations.unshift(null);
+	endFors.unshift(i18n.getI18NMessage('sts.btn.default.empty.entry'));endForStations.unshift(null);
 	application.setValueListItems('stsvl_status_code',statusArray);
 	application.setValueListItems('stsvl_station_codes',endFors,endForStations);
 	//application.setValueListItems('stsvl_station_codes',statusArray,stationArrayId);
@@ -545,6 +547,7 @@ function onRecordSelection(event) {
 	currProcessNumber = status_sequence;
 	getStatusList();	
 	elements.push_transaction.enabled = true;//(globals.processCodes.shipping.indexOf(status_type) != -1);
+	elements.percent_complete.enabled = (end_for_status != i18n.getI18NMessage('sts.btn.default.empty.entry'));
 	if (application.isInDeveloper()){
 		application.output(status_type+' index:'+globals.processCodes.shipping.indexOf(status_type)+' push transaction enabled '+elements.push_transaction.enabled);
 		application.output('process types:\n'+globals.processCodes.shipping)}
@@ -672,6 +675,25 @@ function onDataChangePercentScan(oldValue, newValue, event) {
 function onDataChangePriorIncomplete(oldValue, newValue, event) {
 	if (newValue == 1 && labor_percentage_scan == 0){
 		allow_start_prior_not = 0;
+	}
+	return true
+}
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"606B1B2B-A0FB-40A0-A8D5-DC59ADE9004B"}
+ */
+function onDataChangeEndFor(oldValue, newValue, event) {
+	application.output('new value '+newValue);
+	elements.percent_complete.enabled = (newValue != null);
+	if (newValue == null){
+		prompt_complete = 0;
 	}
 	return true
 }

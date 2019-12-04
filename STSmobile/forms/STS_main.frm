@@ -58,8 +58,10 @@ typeid:4,
 uuid:"83549217-B6E7-4528-803C-1CF8CBFAC287"
 },
 {
+anchors:6,
 extendsID:"5C78A937-DF8C-4362-834C-C79AA2AE8F40",
 formIndex:0,
+transparent:false,
 typeid:4,
 uuid:"8E89D3E6-54C2-4546-97DC-DC74B56DD980",
 visible:true

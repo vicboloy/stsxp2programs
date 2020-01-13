@@ -92,6 +92,7 @@ function onEdit(event,editStatus){
 		elements.btn_Edit.visible = !editStatus;
 		elements.btn_Delete.visible = !editStatus;
 	}
+	globals.permissionsCacheHit(event,null);
 }
 
 

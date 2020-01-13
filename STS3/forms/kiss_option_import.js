@@ -307,6 +307,7 @@ function onShow(firstShow, event) {
 
 	emptyPiecemarkValues = scopes.jobs.checkMissingPMs(event);
 	controller.enabled = true;
+	globals.permissionsCacheHit(event,null);
 	elements.btn_Hide.text = i18n.getI18NMessage('sts.btn.import.hide.ignore.items');
 	addWindowList(controller.getWindow().title);
 	var keepMinorsPref = (scopes.prefs.lKeepMinorPcMarks) ? 1 : 0;

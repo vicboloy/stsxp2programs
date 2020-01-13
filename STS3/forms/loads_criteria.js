@@ -180,7 +180,9 @@ function onActionShowWindow(){
 		winExist.show(formName);//20180802 added
 	}//20180802 show browse loads if exists or create
 	//application.output('RM formname '+formName);
-	forms[formName].foundset.setSelectedIndex(1);
+	if (forms[formName].foundset.getSize() > 0){
+		forms[formName].foundset.setSelectedIndex(1);
+	}
 	//scopes.jobs.removeFormHist(formName+'_table');
 }
 /**
@@ -258,7 +260,7 @@ function openBrowseTable(criteria,event){
 	versionForm = event.getFormName().match(regexp)[1];
 
 	var formName = 'loads_pcmk_combo'+versionForm;
-	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	scopes.jobs.viewBTableToFormQB(event,criteria,formName);
 	scopes.jobs.warningsX();
 	onActionShowWindow();
 }
@@ -291,7 +293,7 @@ function collectAndTab(event,formName){
 	var beginDate = new Date().getTime(); var timeDur = 0; var endDate = new Date().getTime();
 	if (application.isInDeveloper()){application.output(timeDur+' Summary -------------- ')}
 
-	var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
+	var summaryQuery = scopes.jobs.queryAssemblyFaster(criteria,formName,'stations');
 	var summaryForm = 'loads_summary_info'+versionForm;
 	var removeFormName = summaryForm+'_table';
 	forms[summaryForm].elements.tabless.removeAllTabs();
@@ -308,11 +310,11 @@ function collectAndTab(event,formName){
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	endDate = new Date().getTime(); timeDur = endDate - beginDate; beginDate = endDate; 
 	if (application.isInDeveloper()){application.output(timeDur+' Summary -------------- ')}
-	scopes.jobs.viewBTableToFormQB(criteria,formName);//JOE stop here
+	scopes.jobs.viewBTableToFormQB(event,criteria,formName);//JOE stop here
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	endDate = new Date().getTime(); timeDur = endDate - beginDate; beginDate = endDate; 
 	if (application.isInDeveloper()){application.output(timeDur+' Summary -------------- ')}
-	scopes.jobs.viewBTableToFormQB(criteria,'loads_pcmk_combo'+versionForm);//20180802 move query build for browsing table
+	scopes.jobs.viewBTableToFormQB(event,criteria,'loads_pcmk_combo'+versionForm);//20180802 move query build for browsing table
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
 	endDate = new Date().getTime(); timeDur = endDate - beginDate; beginDate = endDate; 
 	if (application.isInDeveloper()){application.output(timeDur+' View Specs -------------- ')}

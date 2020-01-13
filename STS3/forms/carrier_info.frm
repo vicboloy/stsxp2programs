@@ -9,6 +9,7 @@ parameters:null\
 }\
 }",
 dataSource:"db:/stsservoy/carrier",
+encapsulation:0,
 extendsID:"AA270F42-5225-4103-9803-10B4A05DB5CF",
 items:[
 {

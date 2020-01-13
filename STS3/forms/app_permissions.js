@@ -79,7 +79,13 @@ function onEdit(event,editing){
 	if (!application.isInDeveloper()){
 		forms.app_user_group_detail.elements.groupKeys.enabled = (name.search('\\.') != 0) && doneEnabled ;//20180103 disable edit default group contents
 	}
-
+	globals.permissionsCacheHit(event,'app_key_list');
+	globals.permissionsCacheHit(event,'app_key_details');
+	globals.permissionsCacheHit(event,'app_key_permiss_list');
+	globals.permissionsCacheHit(event,'app_permiss_general');
+	globals.permissionsCacheHit(event,'app_user_group_list');
+	globals.permissionsCacheHit(event,'app_user_group_detail');
+	globals.permissionsCacheHit(event,null);
 	
 }
 /**

@@ -116,6 +116,7 @@ function onShow(firstShow, event) {
 	updateFields(event);
 	scopes.jobs.onMobileViewLoadValueList();
 	onRecordSelection(event);
+	globals.permissionsCacheHit(event,null);
 	//return _super.onShow(firstShow, event)
 }
 
@@ -243,6 +244,7 @@ function onEdit(event,editing){
 	var win = forms['mc_label_dests'].controller.getWindow();
 	if (win){win.hide()}
 	updateFields(event);
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * Perform the element default action.
@@ -473,7 +475,7 @@ function onActionCancelEditLabelDests(event){
 	
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/label_destinations');
-	q.result.add(q.columns.label_destination_uuid.toString());
+	q.result.add(q.columns.label_destination_uuid);
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.user_uuid.eq(userID));
 	var Q = databaseManager.getFoundSet(q);

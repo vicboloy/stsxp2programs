@@ -20,7 +20,6 @@ items:[
 {
 containsFormID:"9845C430-617D-477E-9200-E9240187ED4D",
 extendsID:"4A5D02D8-4B4D-479D-9EF3-2CC6217BA41F",
-relationName:"sts_addresses_listE",
 text:"address_lstE",
 typeid:15,
 uuid:"A228DBD1-F847-4851-9774-592BFE56FBAB"

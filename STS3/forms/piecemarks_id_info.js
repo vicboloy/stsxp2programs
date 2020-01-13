@@ -61,7 +61,7 @@ var vSequenceNumber = '';
 function onEdit(event,editing){
 	//elements.btn_Cancel.visible = editing;
 	controller.enabled = editing;
-
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * Callback method for when form is shown.

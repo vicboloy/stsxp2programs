@@ -58,6 +58,10 @@ function onActionEdit(event,editStatus){
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Edit.visible = !editStatus;
 	forms['customers_rec'+instance].controller.enabled = !editStatus;
+	if (!editStatus){
+		globals.permissionsCacheHit(event,'customers_rec'+instance);
+	}
+	globals.permissionsCacheHit(event,null);
 	editCustomerFlag = editStatus;
 	
 	databaseManager.setAutoSave(false);
@@ -78,6 +82,7 @@ function onActionCancelEdit(event) {
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
 		if (forms[tabFormName].onActionCancelEdit){forms[tabFormName].onActionCancelEdit(event)}
 	}
+	globals.permissionsCacheHit(event,null);
 }
 /**
  *

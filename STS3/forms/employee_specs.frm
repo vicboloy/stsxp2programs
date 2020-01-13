@@ -100,7 +100,7 @@ uuid:"69535606-5912-477D-80B1-F5EAA83FEBFE"
 {
 containsFormID:"B26BD786-5340-4AEB-AFD5-84C95ADA4321",
 location:"105,100",
-name:"Account",
+name:"employee_personal",
 relationName:"sts_employee_container",
 text:"i18n:sts.tab.employee.personal",
 typeid:15,

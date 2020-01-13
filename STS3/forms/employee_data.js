@@ -84,6 +84,7 @@ function onDataChange(oldValue, newValue, event) {
 function onActionEdit(event,editing){
 	controller.readOnly = !editing;
 	elements.editMessage.visible = editing;
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * Handle record selected.

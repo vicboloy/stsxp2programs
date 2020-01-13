@@ -44,6 +44,7 @@ function onShowStatusDescr(firstShow, event) {
 		getFabShops(event);
 	}
 	globals.setUserFormPermissions(event);
+	
 	//controller.loadRecords(sts_status_code_container);
 	globals.initLaborCodes();
 	//globals.initStatusCodes();
@@ -147,6 +148,7 @@ function onEdit(event,editStatus){
 	}
 	elements.push_transaction.enabled = (globals.processCodes.shipping.indexOf(status_type) != -1);
 	elements.percent_complete.enabled = (end_for_status != null);
+	globals.permissionsCacheHit(event,null);
 	//application.output(elements.push_transaction.enabled+ ' '+status_type+' '+globals.processCodes.shipping.indexOf(status_type))
 }
 

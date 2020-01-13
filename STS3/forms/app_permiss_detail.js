@@ -117,7 +117,9 @@ function onDataChangeFormName(oldValue, newValue, event) {
  */
 function onHide(event) {
 	if (dummy){
+		try {
 		foundset.deleteRecord(dummy);
+		} catch (e) {}
 	}
 	elements.tabless.removeAllTabs();
 	

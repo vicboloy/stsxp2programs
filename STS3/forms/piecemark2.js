@@ -204,6 +204,7 @@ function onEdit(event,editing){
 	elements.btn_Add.visible = editing;
 	elements.btn_Delete.visible = editing;
 	elements.btn_Edit.visible = (!editing && vJobNumber != '');
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * @param event
@@ -224,7 +225,7 @@ function onActionEditCancel(event){
 function browseTableCreate(event){
 	var criteria = {};
 	criteria.jobid = vJobID;
-	scopes.jobs.viewBTableToFormQB(criteria,'loads_pcmk_0');//20180802 move query build for browsing table
+	scopes.jobs.viewBTableToFormQB(event,criteria,'loads_pcmk_0');//20180802 move query build for browsing table
 }
 /**
  * @param event

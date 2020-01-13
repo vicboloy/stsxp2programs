@@ -24,3 +24,15 @@ function onActionAdd(event){
 		forms.status_description_rec.elements.status_code.requestFocus();
 	}
 }
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"5B1DEAF0-97FB-4934-978E-B4418389DF96"}
+ */
+function onShow(firstShow, event) {
+	var readOnly = false;
+	globals.setUserFormPermissions(event,readOnly);
+}

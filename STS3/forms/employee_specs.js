@@ -47,7 +47,12 @@ function onEdit(event,editStatus){
 	forms["employee_logins"+formRev].elements.btn_Deactivate.enabled = editStatus;
 	forms["employee_logins"+formRev].elements.btn_DisableAll.enabled = editStatus;
 	forms["addressesEmployee"+formRev].elements.btn_New.enabled = editStatus;
-	
+	globals.permissionsCacheHit(event,"employees"+formRev);
+	globals.permissionsCacheHit(event,"employees_lst"+formRev);
+	globals.permissionsCacheHit(event,"employees_rec"+formRev);
+	globals.permissionsCacheHit(event,"employee_specs"+formRev);
+	globals.permissionsCacheHit(event,"employee_logins"+formRev);
+	globals.permissionsCacheHit(event,"addressesEmployee"+formRev);
 }
 
 /**
@@ -87,6 +92,9 @@ function onActionEdit(event, editStatus) {
 	//forms['employees_rec'+formRev].currentRecord = foundset.getSelectedRecord();//20190219 editing employee not synced with list
 	forms['employee_login_lst'+formRev].onRecordSelection(event);
 	databaseManager.setAutoSave(false);
+	globals.permissionsCacheHit(event,"employees_rec"+formRev);
+	globals.permissionsCacheHit(event,'employees_lstB'+formRev);
+
 }
 
 /**

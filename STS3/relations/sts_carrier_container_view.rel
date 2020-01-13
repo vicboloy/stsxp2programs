@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/carrier",
+items:[
+{foreignColumnName:"delete_flag",operator:261,primaryDataProviderID:"scopes.globals.flagDELETED",typeid:23,uuid:"0607DBAB-1368-4FE9-9AA1-09CE4D160272"}
+],
+joinType:1,
+name:"sts_carrier_container_view",
+primaryDataSource:"db:/stsservoy/carrier",
+typeid:22,
+uuid:"BC214CA4-8165-4281-85D7-B748B2C4E9A0"

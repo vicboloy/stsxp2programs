@@ -47,6 +47,7 @@ function onShow(firstShow, event) {
 	if (firstShow){
 		globals.setUserFormPermissions(event,false);
 	}
+	if (application.isInDeveloper()){application.output(event.getFormName()+' parent is '+globals.formParent(event))}
 	/** var carriersDivider = globals.carriersDividerLocation;
 	if (carriersDivider == 0.0){
 		forms.carriers.elements.split.dividerLocation = 317.0;

@@ -65,6 +65,7 @@ onDoubleClickMethodID:"-1",
 onRightClickMethodID:"-1",
 size:"114,26",
 text:"i18n:sts.btn.highlighted",
+toolTipText:"i18n:sts.txt.mark.all.highlighted",
 typeid:7,
 uuid:"DA2D6E07-4464-4E52-82E3-765CF59B8E60",
 verticalAlignment:0

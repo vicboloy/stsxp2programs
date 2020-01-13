@@ -29,8 +29,9 @@ function delCustomerRecord(event) {
  * @properties={typeid:24,uuid:"52897698-F5FB-49DC-B819-3527F96F7045"}
  */
 function onShow(firstShow, event) {
-	if (firstShow){
-		globals.setUserFormPermissions(event,false);
+	//if (firstShow){
+	globals.setUserFormPermissions(event,false);
 
-	}
+	//}
 }
+

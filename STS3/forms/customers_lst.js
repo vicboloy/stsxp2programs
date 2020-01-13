@@ -20,15 +20,28 @@ function addCustomerRecord(event) {
  */
 function onRecordSelection(event) {
 	var instance = globals.getInstanceForm(event);
+	var rec = foundset.getSelectedRecord();
+	if (!rec){return}
 	globals.selectedCustomerIndex = controller.getSelectedIndex(); 
 	globals.selectedCustomerID = customer_id; 
+	var custId = rec.customer_id;//forms.employees.foundset.loadRecords()
+	databaseManager.revertEditedRecords(forms['customers'+instance].foundset);//20180720 error showing changed foundset, this cleared error
+	if (custId){
+		//forms['customers'+instance].foundset.loadRecords(application.getUUID(custId));//
+	}
 	var windowName = application.getActiveWindow().getName();
-	application.output('windowname is '+windowName);
+	//application.output('windowname is '+windowName);
 	if (forms['customers_rec'+instance].elements.btn_New.enabled){ //#task01
-		forms['customer_specs'+instance].elements.btn_Delete.enabled =  (globals.checkCustEmpty(customer_id)) && (forms.customers_rec.elements.btn_New.visible);
+		forms['customer_specs'+instance].elements.btn_Delete.enabled = (globals.checkCustEmpty(customer_id)) && (forms.customers_rec.elements.btn_New.visible);
 		forms['customer_specs'+instance].elements.btn_Edit.enabled = true;
 		forms['customer_contact'+instance].verifyCustomerInput(event);
 	}
 	forms['customer_barcode'+instance].calcBarcode();
 	forms['addressesCustomer'+instance].onActionEdit(event,false);
+	globals.permissionsCacheHit(event,'customers_rec'+instance);
+	globals.permissionsCacheHit(event,'customer_specs'+instance);
+	globals.permissionsCacheHit(event,'customer_contact'+instance);
+	globals.permissionsCacheHit(event,'customer_barcode'+instance);
+	globals.permissionsCacheHit(event,'addressesCustomer'+instance);
+
 }

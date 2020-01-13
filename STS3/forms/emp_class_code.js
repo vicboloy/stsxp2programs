@@ -96,6 +96,7 @@ function onEdit(event,editStatus){
 	//elements.btn_Delete.visible = !editStatus;
 	elements.tablessX.enabled = !editStatus;
 	elements.btn_Delete.visible = (foundset.getSize() > 0) && !editStatus;
+	globals.permissionsCacheHit(event,null);
 }
 
 /**

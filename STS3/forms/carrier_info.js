@@ -67,6 +67,7 @@ function onEditCarrier(event,editStatus){
 function onActionEditCarrier(event) {
 		onEditCarrier(event,true);
 		//databaseManager.setAutoSave(false); //#task02
+		globals.permissionsCacheHit(event,null);
 	}
 
 	/**

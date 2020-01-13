@@ -93,6 +93,7 @@ function onHide(event) {
 		forms[newFormName].elements.btn_PrintSelected.enabled = true;
 		forms[newFormName].elements.btn_Clear.enabled = true;
 		forms[newFormName].controller.enabled = true;
+		globals.permissionsCacheHit(event,'newFormName');
 
 		var win = forms[newFormName].controller.getWindow();
 		win.toFront();

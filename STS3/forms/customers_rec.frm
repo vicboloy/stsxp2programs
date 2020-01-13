@@ -22,7 +22,7 @@ items:[
 {
 containsFormID:"FBCAAC07-199B-4669-A402-96C99CE97065",
 location:"20,65",
-relationName:"sts_customer_container",
+relationName:"sts_customer_container_rec",
 text:"customers_lst",
 typeid:15,
 uuid:"0FF21EA8-C5CB-4ED9-94BC-5407289A1EE2"

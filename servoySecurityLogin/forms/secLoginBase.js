@@ -156,7 +156,7 @@ function login(){
 			application.output('before license check');
 			var registration = plugins.UserManager.getRegistration();
 			application.output('Registered UM: '+registration);
-			application.output('passcheck '+passCheck+' '+password+' '+tenantID);//REMOVE2
+			application.output('passcheck: '+passCheck+' TenID: '+tenantID+' UID: '+userID);//REMOVE2
 			checkLicense = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[application.getSolutionName(),tenantID,userID]);
 			application.output('license use '+checkLicense);
 			if(passCheck && checkLicense.split(':')[1] > 0){

@@ -52,5 +52,5 @@ function onShow(firstShow, event) {
 		//foundset.newRecord();
 		//foundset.getRecord(1);
 	//}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 }

@@ -1,0 +1,12 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/status_description",
+initialSort:"status_sequence asc, sts_status_description_to_associations.association_name asc",
+items:[
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"scopes.globals.secCurrentTenantID",typeid:23,uuid:"794933DC-7AD4-42F6-9F19-729D5ED8A9D1"},
+{foreignColumnName:"delete_flag",operator:261,primaryDataProviderID:"scopes.globals.flagDELETED",typeid:23,uuid:"A128A3D2-FE11-42EF-8D20-B98B8B02D5FD"}
+],
+joinType:1,
+name:"sts_status_code_container_view",
+primaryDataSource:"db:/stsservoy/status_description",
+typeid:22,
+uuid:"C70EB605-F466-4F5E-ACE0-666305EB46BE"

@@ -521,11 +521,19 @@ var vNumLabels = 1;
  */
 function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
 	if (globals.deBounce(event)){return}//20190114 debounce buttons for 60 seconds
-	//application.output(windowTitle);
+	if(application.isInDeveloper()){application.output(windowTitle);}
+	//globals.openWindowRO = (formName.search(/sts_/) == -1 && formName.search(/_view$/) != -1);
+	//if (!globals.session.formList){globals.session.formList = []}
+	//if (!globals.session.formList[formName]){
+	//	getFormList(event,formName);
+	//}
 	var formNameNew = formName;
 	var baseWinName = windowTitle.replace(' View','');// added 201608 for 'view' forms of 'edit' forms
 	var extension = "_";
 	var winNumber = 1;
+	//if (globals.openWindowRO){
+	//	extension = '_v_';
+	//}
 	if (multiWindow){
 		while (application.getWindow(baseWinName+extension+winNumber) != null ||
 			application.getWindow(baseWinName+' View'+extension+winNumber) != null){
@@ -539,7 +547,27 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
 		/**for (var els in newForm.elements){
 			null;
 		}*/
-	}
+	} /** else {
+		var winExist = application.getWindow(windowTitle);
+		if (winExist && winExist.isVisible()){
+			globals.openWindowRO = false;
+			winExist.toFront();
+			return;
+		}
+		if (false && !solutionModel.getForm(formName+extension+winNumber)){
+			if (formName.search(/_view$/) != -1){
+				newForm = createFormClone(formName,winNumber);
+				formNameNew = formName+'_view_'+winNumber;
+			} else if (!globals.openWindowRO && solutionModel.getForm(formName+'_view') || solutionModel.getForm(formName.replace('_pre','_view'))){
+				if (application.isInDeveloper()){application.output('creating normal clone, too')}
+				newForm = createFormClone(formName,'e');
+				formNameNew = formName+'_e';
+			}
+		}
+	} */
+	//if (!multiWindow && formName.search('_view') != -1){
+	//	newForm = createFormClone(formName,'view');
+	//}
 	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.opened',new Array(windowTitle)));
 	globals.setWindowOpened(windowTitle);
 	var win = application.createWindow(windowTitle, JSWindow.WINDOW);
@@ -558,6 +586,9 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
 	databaseManager.nullColumnValidatorEnabled = false;databaseManager.setAutoSave(false);
 	win.show(formNameNew);
 	addWindowList(windowTitle);	
+	//while (!application.getWindow(windowTitle));
+	//application.sleep(1000);
+	globals.openWindowRO = false;
 }
 
 // This code is from Servoy magazine for the cloning of forms.
@@ -569,7 +600,8 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
  * @properties={typeid:24,uuid:"027567CC-C0C7-43F6-8F87-7A8878ED6B55"}
  */
 function onActionClickCustomer(event) {
-	onActionClickMainButton(event,'Customers','customers',10,10,890,556,true);
+	onActionClickMainButton(event,'Customers','customers',10,10,890,556,false);//20191227 on call with paul. deactivated due to reuse and no use case for mw customer
+	// see employees to reenable by using that method for multi window capability
 }
 
 /**
@@ -587,7 +619,7 @@ function onActionClickEmployee(event) {
  * @properties={typeid:24,uuid:"AE5DFB87-E846-4DFB-9C25-E57140EC29C3"}
  */
 function onActionClickCarrier(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.carriers'),'carriers',50, 50, 620, 500,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.carriers'),'carriers_pre',50, 50, 620, 500,true);
 }
 
 /**
@@ -640,7 +672,7 @@ function onActionClickEP(event) {
  * @properties={typeid:24,uuid:"B5B3AFA8-95D7-49CD-AB3E-256306625504"}
  */
 function onActionClickSC(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.status.codes'),'status_descriptions',50,50,915,530,false);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.status.codes'),'status_descriptions_pre',50,50,915,530,false);
 }
 /**
  * @param event
@@ -791,18 +823,25 @@ function createFormClone(formName, extension) {
 	while (globals.formsToRemove.length != 0){
 		removeFormClone(globals.formsToRemove.pop());
 	}
-	var cloneName = formName+"_"+extension;
+	//if (!globals.openWindowRO){
+		var cloneName = formName+"_"+extension;
+	//} else {
+	//	cloneName = formName+'_view_'+extension;
+	//}
 	if (!forms[formName])
 		throw new Error('Can\'t create a clone of form ' + formName + ' because that form does not exist.')
 	
-	if (forms[cloneName])
-		throw new Error('Can\'t create a cloned form called ' + cloneName + ' because a form by that name already exists in the runtime model.')
-	
+	if (forms[cloneName]){
+		scopes.jobs.removeFormHist(cloneName);
+	}
+	//throw new Error('Can\'t create a cloned form called ' + cloneName + ' because a form by that name already exists in the runtime model.')
+
 	var clonedForm = solutionModel.cloneForm(cloneName, solutionModel.getForm(formName));
 	if (!clonedForm.getVariable('baseForm')){clonedForm.newVariable('baseForm',JSVariable.TEXT,"");}
 	if (!clonedForm.getVariable('versionForm')){clonedForm.newVariable('versionForm',JSVariable.TEXT,"");}
 	if (!clonedForm.getVariable('jobIdData')){clonedForm.newVariable('jobIdData',JSVariable.TEXT,"");}
 	// adjust multiWindow valuelists with version
+	//var formList = [].concat(globals.session.formList[formName]);
 	for (var el in forms[formName].elements){
 		//if (application.isInDeveloper()){application.output('element '+el+' '+forms[formName].elements[el].getElementType())}
 		if (forms[formName].elements[el].getElementType().search('LIST') == -1){continue}
@@ -827,19 +866,33 @@ function createFormClone(formName, extension) {
 		var aTabs = aTabPanels[i].getTabs()
 		for (var j in aTabs) {
 			var tabForm = aTabs[j].containsForm
-			/** var relName = aTabs[j].relationName;
-			var relNameNew = relName+'_ci'+extension;
-			var rel = solutionModel.getRelation(relName);
-			var relAttr = rel.getRelationItems();
-			var newRel = solutionModel.newRelation(relNameNew,rel.primaryDataSource,rel.foreignDataSource,rel.joinType)
-			newRel.initialSort  = rel.initialSort;
-			rel.newRelationItem(relAttr..dataprovider,operator,foreinColumnName) */
+			var relName = aTabs[j].relationName;
+			if (application.isInDeveloper()){application.output('formname: '+formName+extension+' relation: '+relName+extension)}
+			if (solutionModel.getRelation(relName) && !solutionModel.getRelation(relName+extension)){
+				var relNameNew = relName+extension;
+				var rel = solutionModel.getRelation(relName);
+				var relAttr = rel.getRelationItems();
+				var newRel = solutionModel.newRelation(relNameNew,rel.primaryDataSource,rel.foreignDataSource,rel.joinType);
+				newRel.allowCreationRelatedRecords = rel.allowCreationRelatedRecords;
+				for (var idxx = 0;idxx < relAttr.length;idxx++){
+					newRel.newRelationItem(relAttr[idxx].primaryDataProviderID,relAttr[idxx].operator,relAttr[idxx].foreignColumnName);
+				}
+				newRel.initialSort  = rel.initialSort;
+			}
+			if (solutionModel.getRelation(relNameNew)){
+				aTabs[j].relationName = relNameNew;
+			} else {
+				aTabs[j].relationName = relName;
+			}
+			//rel.newRelationItem(relAttr..dataprovider,operator,foreinColumnName);
 			var clonedTabForm = createFormClone(tabForm.name, extension);
 			globals.session.forms[cloneName].push(tabForm.name+'_'+extension);//keep list of forms for permissions
-  			aTabs[j].containsForm = clonedTabForm;
+			aTabs[j].containsForm = clonedTabForm;
 		}
+
 	}
 	// Now the cloning process is complete and we return the cloned form
+	if (application.isInDeveloper()){application.output('cloned '+formName+ ' to: '+cloneName)}
 	return clonedForm;
 }
 
@@ -1297,8 +1350,8 @@ function onActionNull(event){
 function onShow(firstShow, event) {
 	versionForm = globals.getInstanceForm(event);
 	baseForm = event.getFormName().replace(versionForm,'');
-	globals.setUserFormPermissions(event);
 	if (elements.btn_FoxfireReports){elements.btn_FoxfireReports.enabled = !(!scopes.prefs.foxfireexe)}
+	globals.setUserFormPermissions(event);
 	return _super.onShow(firstShow, event)
 }
 /**
@@ -1520,7 +1573,7 @@ function onActionClickCarrierView(event) {
  * @properties={typeid:24,uuid:"852B4329-115A-4894-81E9-A3D426380A8F"}
  */
 function onActionClickCustomerView(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.customers.view'),'customers_view',10,10,890,556,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.customers.view'),'customers_view',10,10,890,556,false);
 }
 /**
  * @param event
@@ -1817,4 +1870,62 @@ function onActionClickReindex(event) {
 	plugins.rawSQL.flushAllClientsCache('stsservoy','jobs');
 	plugins.rawSQL.flushAllClientsCache('stsservoy','id_serial_numbers');
 	
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"D3FDB250-0294-4297-9169-733F4C7AFE86"}
+ */
+function onActionClickSCView(event) {
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.status.codes.view'),'status_descriptions_view',50,50,915,530,false);
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"BB32B2D8-4CB9-4CB7-86DD-3332AC7C557F"}
+ */
+function onActionClickLabelFields(event){
+	scopes.globals.createPdfOfLabelFieldNames(event);
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} formName
+ *
+ * @properties={typeid:24,uuid:"434C432D-E845-4B9B-8E0E-D40E453EB0CE"}
+ */
+function getFormList(event,formName){
+	//if (1){return}
+	var form = solutionModel.getForm(formName);
+	if (!globals.session.formList[formName]){
+		globals.session.formList[formName] = [];
+	}
+	var aTabPanels = form.getTabPanels(true);
+
+	var panel = null;
+	while (panel = aTabPanels.pop()) {
+		if (typeof panel.getTabs == 'function'){
+			var aTabs = panel.getTabs();
+		}
+		if (panel.elements && panel.elements.split){
+			var leftF = panel.elements.split.getLeftForm();
+			var rightF = panel.elements.split.getRightForm();
+			if (leftF){aTabs.push(leftF)}
+			if (rightF){aTabs.push(rightF)}
+		}
+		var tab = null;
+		while (tab = aTabs.pop()) {
+			var tabFormName = '';
+			var tabForm = tab.containsForm;
+			if (!tabForm){
+				tabFormName = tab.controller.getName();
+				tabForm = forms[tabFormName];
+			} else {
+				tabFormName = tab.containsForm.name;
+				tabForm = forms[tabFormName];
+			}
+			globals.session.formList[formName].push(tabFormName);//keep list of forms for permissions
+			aTabPanels.push(tabForm);
+		}
+	}
+
 }

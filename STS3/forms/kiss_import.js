@@ -231,6 +231,7 @@ function getKissFile(event){
 			i18n.getI18NMessage('sts.btn.yes'));
 			if (response == i18n.getI18NMessage('sts.btn.no')){
 				controller.enabled = true;
+				globals.permissionsCacheHit(event,null);
 				scopes.jobs.warningsX();
 				return;
 			}
@@ -454,6 +455,7 @@ function onShow(firstShow, event) {
 	elements.jobEntry.requestFocus(false);
 	currentAssocName = globals.session.association;
 	application.setValueListItems('stsvl_jobs_association',scopes.jobs.getJobsList());
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * @param event

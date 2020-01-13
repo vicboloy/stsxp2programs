@@ -183,14 +183,23 @@ var rawLabeLaseTemplate = '';
  * @param {JSRenderEvent} event
  *
  * @properties={typeid:24,uuid:"C3FC10D9-7AF2-4983-88DF-E79441E9220F"}
+ * @AllowToRunInFind
  */
 function onRenderPrint(event){
 	var rec=event.getRecord();
 	var rend=event.getRenderable();
+
+	var andColor = '';
+	if (rec && rec.foundset){
+		if (scopes.jobs.selectedTableIndexes.indexOf(event.getRecordIndex()) != -1){// && selectedIndexes.indexOf(event.getRecord()) != -1){
+			andColor = 'gray';
+		}
+	}
 	var color = rend.bgcolor;//rec.bc_printed == 1 ||  removed since table column change names 20190530
-	if (rec && (rec.lprint != 1 || rec.if_lprint != 1) && rec.selection == 1){rend.bgcolor = "green"}
-	if (rec && (rec.lprint == 1 || rec.if_lprint == 1) && rec.selection == 0){rend.bgcolor = "yellow"}
-	if (rec && (rec.lprint == 1 || rec.if_lprint == 1) && rec.selection == 1){rend.bgcolor = "red"}
+	if (rec && (rec.lprint != 1 || rec.if_lprint != 1) && rec.selection == 1){rend.bgcolor = (andColor != '') ? andColor : "green"}
+	if (rec && (rec.lprint == 1 || rec.if_lprint == 1) && rec.selection == 0){rend.bgcolor = (andColor != '') ? andColor : "yellow"}
+	if (rec && (rec.lprint == 1 || rec.if_lprint == 1) && rec.selection == 1){rend.bgcolor = (andColor != '') ? andColor : "red"}
+
 
 }
 
@@ -464,7 +473,7 @@ function getBTFieldData(labelFldType){
 		142 LABELBC Numeric 5 UNUSED 0 ,\
 		143 LABELQTY Numeric 5 UNUSED 0 ,\
 		144 LGTNUM Numeric 11.4 piecemarks.pm_item_length_in 11.4,\
-		145 ORIGQTY Numeric 5 idfiles.if_original_quantity 5,\
+		145 ORIGQTY Numeric 5 idfiles.if_summed_quantity 5,\
 		146 PCUOMDOLL Numeric 11.4 piecemarks.pm_piecemark_uom_dollars 11.4,\
 		147 QTY2PRINT Numeric 5 UNUSED 0 ,\
 		148 RECVQTY Numeric 5 idfiles.if_receive_quantity 5,\
@@ -565,7 +574,7 @@ function getBTFieldData(labelFldType){
 		243 OPERAPRES Character 10 sheets.sh_operapres 10,\
 		244 CUTLISTBC Character 20 idfiles.cut_list_bc 20,\
 		245 PCMKCOUNT Character 10 pcmk_instances.pcmk_count 10,\
-		246 LGTNUMMM Number 11.4 piecemarks.item_length 11.4";
+		246 LGTNUMMM Numeric 11.4 piecemarks.item_length 11.4";
 	
 	// check missing bt label print columns, check PDF for column, check this table column index and column name, then go to jobs.query_assembly_raw to set column name and data source
 	var barTenderRawSpecs = '\

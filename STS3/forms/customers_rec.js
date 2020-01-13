@@ -34,7 +34,9 @@ function onShow(firstShow, event) {
 	if (customersDivider == 0.0){
 		forms['customers'+instance].elements.tabs.dividerLocation = 317.0;
 	}
-	//globals.setUserFormPermissions(event);
+	onEdit(event,false);
+	globals.setUserFormPermissions(event,null);
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * @param event
@@ -46,4 +48,6 @@ function onEdit(event,editing){
 	controller.enabled = !editing;
 	controller.readOnly = !editing;	
 	elements.btn_New.visible = !editing;
+	var instance = globals.getInstanceForm(event);
+	globals.permissionsCacheHit(event,null);
 }

@@ -9,6 +9,7 @@ var currentSort = null;
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"9838C26E-2FEB-4953-9D21-1B8DBAEAD65F"}
+ * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
 	if (firstShow){
@@ -17,6 +18,7 @@ function onShow(firstShow, event) {
 		forms.status_description_rec.getFabShops(event);
 		forms.status_description_rec.getStatusList();
 	}
+	globals.setUserFormPermissions(event,'');
 }
 
 /**
@@ -30,6 +32,8 @@ function onShow(firstShow, event) {
  */
 function onHide(event) {
 	forms.status_description_rec.onActionCancelEdit(event);
+	application.output('name '+event.getFormName());
+	scopes.jobs.removeFormHist(event.getFormName());
 	return true
 }
 

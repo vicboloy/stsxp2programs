@@ -47,6 +47,8 @@ function onActionStartingPosition(oldValue,newValue,event) {
 function onActionEdit(event,editing){
 	controller.readOnly = !editing;
 	elements.editMessage.visible = editing;
+	globals.permissionsCacheHit(event,null);
+
 }
 /**
  * @properties={typeid:24,uuid:"F0D03ACB-F634-4279-891C-65F0CEB043F0"}

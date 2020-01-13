@@ -208,8 +208,8 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"54DC4A60-42B4-4132-9020-4439EDCC336E"}
  */
 function onActionDeleteWindow(event) {
-	scopes.jobs.warningsYes(event);
-	scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
+	//scopes.jobs.warningsYes(event);
+	//scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.collecting.info'),true);
 	var height = controller.getWindow().getHeight();
 	var width = controller.getWindow().getWidth();
 	var xOrigin = controller.getWindow().getX();
@@ -221,6 +221,7 @@ function onActionDeleteWindow(event) {
 	scopes.jobs.warningsX();
 	win.show(forms.recall_record_actual);
 	scopes.jobs.removeFormHist('recall_pcmk_combo_table');
+	scopes.jobs.removeFormHist('recall_piecemark_info_table');
 }
 /**
  * @param event
@@ -241,9 +242,12 @@ function collectAndTab(event,formName){
 
 	forms['recall_piecemark_info'+versionForm].elements.tabless.removeAllTabs();
 	if (forms[formName+"_table"] && forms[formName+"_table"].hide){forms[formName+"_table"].hide();}
-	scopes.jobs.removeFormHist(formName+"_table");
+	if (forms[formName+"_table"] && forms["recall_pcmk_combo_table"].hide){forms["recall_pcmk_combo_table"].hide();}
+	scopes.jobs.removeFormHist(formName+"recall_pcmk_combo_table");
+	scopes.jobs.removeFormHist("_table");
 	scopes.jobs.browseJobID = vJobID;
-	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	scopes.jobs.viewBTableToFormQB(event,criteria,formName);
+	scopes.jobs.viewBTableToFormQB(event,criteria,'recall_pcmk_combo');
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	null;
 }
@@ -259,6 +263,7 @@ function onShow(firstShow, event) {
 	databaseManager.removeTableFilterParam('stsservoy','deletedRecords');//#task07
 	var filters = databaseManager.getTableFilterParams('stsservoy');
 	if (application.isInDeveloper()){application.output(filters)}
+
 	return _super.onShow(firstShow, event)
 }
 

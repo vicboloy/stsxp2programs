@@ -671,6 +671,7 @@ visible:false
 {
 dataProviderID:"transStat",
 displayType:1,
+fontType:"Courier New,0,12",
 formIndex:53,
 location:"0,21",
 size:"240,344",

@@ -111,7 +111,7 @@ function onGetInformation(event) {
 	}
 	var summaryForm = 'loads_summary_info'+versionForm;
 	var removeFormName = summaryForm+'_table';
-	var summaryQuery = scopes.jobs.queryAssembly(subCriteria,summaryForm,'stations');
+	var summaryQuery = scopes.jobs.queryAssemblyFaster(subCriteria,summaryForm,'stations');
 	forms[summaryForm].elements.tabless.removeAllTabs();
 	scopes.jobs.removeFormHist(removeFormName);
 	scopes.jobs.createRouteSummaryForm(summaryQuery,summaryForm);

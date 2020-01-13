@@ -712,6 +712,30 @@ var mtrpath ="";
  * @properties={typeid:35,uuid:"C606823B-FA08-4ECE-8139-789B7F4001FD"}
  */
 var wh32datapath = "";
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"69CC9EC9-D452-4C07-98B8-D6044D74D553"}
+ */
+var progDbBinaryPath = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"21ABF9E3-3972-49C5-A75F-CF496AA6769A"}
+ */
+var progDbAdmin = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"F04F6B0D-ABB8-4960-9963-5CBCD13AF5AB"}
+ */
+var progDbPassword = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"B5A928D1-F343-4D30-A6EA-4A2EDEE7EA9B"}
+ */
+var progDbPort = '';
 
 //Material Type Settings preferences -----------------------------------------------------------------
 
@@ -765,6 +789,12 @@ var eachWtUom = "";
  * @properties={typeid:35,uuid:"A19B8F2E-678B-4A8B-8DE0-F6CE18A41A3B",variableType:8}
  */
 var maxDropLength = 0.000000;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"8AE7711F-84E6-4B6C-BDA3-5988C1BD3E06",variableType:4}
+ */
+var barcodeRawLength = 9;
 /**
  */
 
@@ -1124,15 +1154,15 @@ function onElementFocusLost(event) {
 function onActionUpdatePrefs(event) {
 	// for globals, user_uuid = 'FFFFFFFF-0000-0000-DDDDDDDDDDDD', tenant_uuid= main tenant, field_name = index, value_type, value_string
 	var prefs = scopes.prefs;
-	prefType = (event.getFormName().search('printer') != -1) ? 'Printer' : 'Prefs';
+	var prefType = (event.getFormName().search('printer') != -1) ? 'Printer' : 'Prefs';
 	var description = "Global Preference";
-		if (prefType == "Printer"){
-			prefs = scopes.printer;
-			description = "Global Printer";
-			forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
+	if (prefType == "Printer"){
+		prefs = scopes.printer;
+		description = "Global Printer";
+		forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
 		var form = forms[event.getFormName()];
 		var tempPrefsChanged = form.prefsChanged;
-		}
+	}
 	scopes.jobs.warningsYes(event);
 	application.updateUI();
 	//var fs = databaseManager.getFoundSet('stsservoy','preferences2');
@@ -1140,10 +1170,11 @@ function onActionUpdatePrefs(event) {
 	var tenant = globals.session.tenant_uuid;
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/preferences2');
+	var userID = (globals.session.loginId) ? globals.session.loginId.toString() : globals.session.loginId;
 	fs.result.add(fs.columns.preferences2_id);
 	fs.where.add(fs.or
 			.add(fs.columns.user_uuid.isNull)
-			.add(fs.columns.user_uuid.eq(globals.session.userId.toString()))
+			.add(fs.columns.user_uuid.eq(userID))
 		);
 	fs.where.add(fs.columns.tenant_uuid.eq(tenant));
 	if (tempPrefsChanged){

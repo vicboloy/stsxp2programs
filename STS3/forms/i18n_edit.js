@@ -459,6 +459,7 @@ function isEditing(event,editFlag){
 	if (editFlag){
 		elements.message_locale.requestFocus();
 	}
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * Perform the element default action.

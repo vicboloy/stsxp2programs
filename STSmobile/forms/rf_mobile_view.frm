@@ -1945,7 +1945,7 @@ anchors:6,
 location:"232,436",
 name:"genericinnone",
 onFocusGainedMethodID:"-1",
-size:"8,8",
+size:"0,0",
 tabSeq:3,
 typeid:4,
 uuid:"AEE400E5-E591-496A-86F1-EFCB6D4A5A9D"

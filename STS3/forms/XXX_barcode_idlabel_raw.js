@@ -325,7 +325,7 @@ function collectAndTab(event,formName){
 	scopes.jobs.removeFormHist(formName+"_table");
 	scopes.jobs.browseJobID = vJobID;
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',false);//-----------------------------------//
-	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	scopes.jobs.viewBTableToFormQB(event,criteria,formName);
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	null;
 }

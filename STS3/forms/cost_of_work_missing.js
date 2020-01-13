@@ -201,6 +201,7 @@ function onActionApply(event) {
 	scopes.jobs.warningsX(event);
 	onActionRefresh(event);
 	controller.enabled = true;
+	globals.permissionsCacheHit(event,null);
 }
 
 /**

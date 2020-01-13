@@ -373,6 +373,7 @@ function onEditAddress(event,editStatus){
 	}
 	elements.btn_New.visible = !editStatus;
 	controller.readOnly = !editStatus;
+	globals.permissionsCacheHit(event,null);
 	//var addTypeValue = elements.address_type.getDataProviderID();
 	//if (editStatus && !foundset[addTypeValue]){
 	//	elements.address_type.requestFocus();

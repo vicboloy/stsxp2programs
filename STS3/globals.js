@@ -1695,6 +1695,7 @@ function onActionEdit(event) {
 	if (forms[event.getFormName()].onEdit){forms[event.getFormName()].onEdit(event,true)}
 	databaseManager.setAutoSave(false);	
 	formModeEdit(event);
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * @param event
@@ -2082,7 +2083,11 @@ function stopWindowTrackEvent(event){
 	if (!win){return}
 	var winName = win.getName();
 	setWindowClosedByName(winName);
-	win.hide();
+	if (win && win.isVisible()){
+		try {
+		win.hide();
+		} catch(e){};
+	}
 	
 	
 	scopes.globals.logger(true,i18n.getI18NMessage('sts.txt.window.closed',new Array(winName)));

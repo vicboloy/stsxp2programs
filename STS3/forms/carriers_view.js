@@ -8,7 +8,7 @@
  * @properties={typeid:24,uuid:"3DE56A4C-895E-49F7-9708-4DE97E2C70E8"}
  */
 function onShow(firstShow, event) {
-	foundset.sts_carrier_container;
+	foundset.sts_carrier_container_view;
 	foundset.loadAllRecords();
 	var newFS = foundset.duplicateFoundSet();
 	controller.loadRecords(newFS);

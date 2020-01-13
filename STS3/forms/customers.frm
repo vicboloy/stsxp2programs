@@ -16,6 +16,7 @@ items:[
 {
 containsFormID:"EE9D7F11-257C-4193-ADC9-803B65C4698D",
 location:"113,51",
+name:"cust_specx",
 relationName:"sts_customer_container",
 text:"customer_specs",
 typeid:15,
@@ -24,6 +25,7 @@ uuid:"798B868D-A5C6-4CFA-8028-0C23AC6FB5CC"
 {
 containsFormID:"F9A4B92A-924C-43E2-8A32-2AA6CF3ABCC2",
 location:"31,14",
+name:"cust_recx",
 relationName:"sts_customer_container",
 text:"customers_rec",
 typeid:15,

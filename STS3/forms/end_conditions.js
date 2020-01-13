@@ -95,6 +95,7 @@ function onEdit(event,editStatus){
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Cancel.visible = editStatus;
 	elements.tablessX.enabled = !editStatus;
+	globals.permissionsCacheHit(event,null);
 }
 
 /**

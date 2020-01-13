@@ -19,4 +19,5 @@ function onActionCoverSheet(event) {
 function onActionEdit(event,editing){
 	controller.readOnly = !editing;	
 	elements.editMessage.visible = editing;
+	globals.permissionsCacheHit(event,null);
 }

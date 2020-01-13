@@ -8,10 +8,10 @@
  * @properties={typeid:24,uuid:"AC5CB582-E4B0-4AF4-8D5B-7EB8890F19EA"}
  */
 function onShow(firstShow, event) {
-	if (firstShow){
-		globals.setUserFormPermissions(event);
-	}
 	elements.btn_FoxfireReports.enabled = !(!scopes.prefs.foxfireexe);
+	//if (firstShow){
+	globals.setUserFormPermissions(event);
+	//}
 
 	return _super.onShow(firstShow, event)
 }

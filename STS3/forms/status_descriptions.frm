@@ -19,7 +19,7 @@ initialSort:"sts_status_description_to_associations.association_name asc, status
 items:[
 {
 extendsID:"309DAEC2-F9E3-4DBF-8718-0884B5FE1FBF",
-height:523,
+height:480,
 typeid:19,
 uuid:"577F95BB-7640-4E65-80CF-B468FD21F3E3"
 },
@@ -29,6 +29,7 @@ items:[
 {
 containsFormID:"ABF68FE2-255C-49CD-9E2F-C773FDB6C76C",
 location:"0,30",
+name:"status_rec_list",
 relationName:"sts_status_code_container",
 text:"status_description_table",
 typeid:15,
@@ -37,6 +38,7 @@ uuid:"6BB90C6B-8796-4506-A8FE-22CFDFDCE5A7"
 {
 containsFormID:"F34AD8CD-2E77-49EC-95D0-F44A222AA1B5",
 location:"80,30",
+name:"status_rec_link",
 relationName:"sts_status_code_container",
 text:"status_description_rec",
 typeid:15,

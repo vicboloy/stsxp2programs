@@ -121,6 +121,7 @@ function onEdit(event,editing){
 	//elements.btn_Edit.visible = (editing) ? false : true;
 	//elements.btn_Save.visible = (editing) ? true : false;
 	elements.btn_Delete.visible = (forms['mc_label_dests_table'].foundset.getSelectedIndex() > 0) ? true : false;
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * @param event

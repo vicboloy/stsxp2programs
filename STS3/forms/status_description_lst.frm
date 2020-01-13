@@ -98,7 +98,7 @@ uuid:"BCA1855A-49BE-46C0-AA83-24D8004DF59B"
 name:"status_description_lst",
 navigatorID:"-1",
 onNewRecordCmdMethodID:"0",
-onRecordSelectionMethodID:"-1",
+onRecordSelectionMethodID:"F4FE1C11-ACB3-45A0-AFAD-5265E95D99BD",
 onSortCmdMethodID:"0",
 scrollbars:32,
 showInMenu:false,

@@ -1048,7 +1048,7 @@ function fabSuiteSaved(commitType){
 	// send to fs for update
 	application.output('update fabsuite')
 	saved = saved && fabSuiteUpdate(commitType);
-	application.output('update fabsuite'+saved);
+	application.output('update fabsuite:'+saved);
 	// return error message
 	return saved;
 }
@@ -1109,9 +1109,10 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 
 	//get list of entire contents of load and commit to station if of type save and final ship is viewed
 	null;
+	application.output('update fabSuiteUpdate action '+commitType);
 	if (!scopes.prefs.lFabsuiteInstalled){return true}//20190202 no fs update possible
 	if (commitType.search(/(Save)|(Delete)|(Ship)|(Un-Ship)|(Load)|(Unload)/) != 0){return false}
-	if (checkComFabsuite(null) != ''){return null}
+	if (checkComFabsuite(null) != ''){application.output('returning  null from fabSuiteUpdate');return null}
 	var date = globals.mob.date;//new Date();//flow down from data update
 	var processAsLoad = (globals.session.program == i18n.getI18NMessage('sts.mobile.final.ship'));
 	
@@ -1130,6 +1131,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 		employee = globals.m.employee3rdParty[firstEmp];
 	}
 	var pieceMark = globals.mob.piecemark.piecemark;//exclude this when showing assembly, no minors
+	globals.mob.statusCode3rdParty = globals.m.stationsThird[forms['rf_mobile_view'].statusCode];
 	var station = globals.mob.statusCode3rdParty;//required
 	if (!station){return true}
 	var quantity = globals.mob.idfiles.length;//required
@@ -1139,7 +1141,11 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	//employee = 'admin';
 	var loadNumber = forms.rf_mobile_view.loadNumber;
 	if (!pieceMark || !station || !quantity || !mainMark || !employee){
-		if (!loadNumber){
+		if (!employee){
+			globals.rfErrorShow(i18n.getI18NMessage('1282'));
+			return false;
+		} else if (!loadNumber){
+			application.output('RM: load number empty');
 			globals.rfErrorShow(i18n.getI18NMessage('1017'));
 			return false;
 		}
@@ -1281,7 +1287,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
 				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
 				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
-				saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence);
+				saveDataXML = saveDataXML.replace('SEQUENCENUM',_sequence);//!sequence) ? saveDataXML.replace('SEQUENCENUM','') : 
 				saveDataXML = saveDataXML.replace('LOTNUMBER',_lotNumber);//(!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
 				saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
 				saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
@@ -1295,7 +1301,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 		default:
 		}
 		saveDataXML = saveDataXML.replace(/\n+/g,'\n');
-		application.output(saveDataXML);
+		application.output('RM: \n'+saveDataXML);
 		var _updateLoadWeight = globals.rfGetSpecsLoad(globals.session.program);
 		
 		//if (globals.session.program == i18n.getI18NMessage('sts.mobile.shipping')) {

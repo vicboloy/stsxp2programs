@@ -30,6 +30,8 @@ function onEditControllerState(editing){
 	var rtForm =elements.split.getRightForm();
 	ltForm.controller.enabled = !editing;
 	rtForm.controller.enabled = !editing;
+	globals.permissionsCacheHit(null,ltForm.controller.getName());
+	globals.permissionsCacheHit(null,rtForm.controller.getName());
 }
 /**
  * Callback method for when form is shown.

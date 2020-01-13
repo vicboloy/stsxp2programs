@@ -63,9 +63,9 @@ function onLoadEmployees(event) {
 function onShow(firstShow, event) {
 	//if (firstShow){foundset.loadAllRecords();}
 	//onLoadCreateRecord(event);
-	if (firstShow){
+	//if (firstShow){
 		scopes.jobs.formPermissions(event,false);
-	}
+	//}
 	
 }
 /**

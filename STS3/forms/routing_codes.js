@@ -555,7 +555,9 @@ function onEdit(event, editing){
 	elements.route_description.enabled = editing;
 	codesAvail = null;
 	codesSelect = null;
-	
+	globals.permissionsCacheHit(event,'routing_codes_lst');
+	globals.permissionsCacheHit(event,null);
+
 }
 /**
  * Perform the element default action.

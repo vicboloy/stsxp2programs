@@ -193,6 +193,7 @@ function onActionDeleteWindow(event,winTitle) {
 	//return;
 	//var formName = event.getFormName();
 	var formName = 'delete_pcmk_combo';
+	var formPiecemark = 'delete_piecemark_info';
 	if (application.isInDeveloper()){application.output('formname '+formName)}
 	var height = controller.getWindow().getHeight();
 	var width = controller.getWindow().getWidth();
@@ -205,6 +206,7 @@ function onActionDeleteWindow(event,winTitle) {
 	scopes.jobs.warningsX();
 	win.show(forms.delete_record_actual);
 	scopes.jobs.removeFormHist(formName+'_table');
+	scopes.jobs.removeFormHist(formPiecemark+'_table');
 	//return true;
 	//collectCriteria('delete_piecemark_combo');
 	//forms.delete_pcmk_combo.elements.split.
@@ -219,8 +221,9 @@ function onActionDeleteWindow(event,winTitle) {
  */
 function collectAndTab(event,formName){
 	criteria = collectCriteria();
+	var prefix = event.getFormName().split('_')[0];
 	//scopes.jobs.viewBTableSQL2(criteria,formName);
-	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
+	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//Job Weight, Size, Pcmks, Count summary
 	scopes.jobs.viewBTableSQLSummary(criteria,formName);
 	//var summaryQuery = scopes.jobs.queryAssembly(criteria,formName,'stations');
 	//var summaryForm = 'loads_summary_info'+versionForm;
@@ -234,8 +237,58 @@ function collectAndTab(event,formName){
 	scopes.jobs.removeFormHist(formName+"_table");
 	scopes.jobs.browseJobID = vJobID;
 	scopes.jobs.warningsMessage('sts.txt.collecting.info',true);//-----------------------------------//
-	scopes.jobs.viewBTableToFormQB(criteria,formName);
+	scopes.jobs.viewBTableToFormQB(event,criteria,formName);
+	scopes.jobs.viewBTableToFormQB(event,criteria,prefix+'_pcmk_combo');
 	//forms['loads_criteria'+versionForm].vLabNumPcmks = forms[formName+'_table'].foundset.getSize();
 	scopes.jobs.warningsX();
 	null;
+
+	elements.btn_Browse.enabled = true;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"75B27213-0A68-4EAB-BEC9-B542FEC499C5"}
+ */
+function collectAndBrowse(event){
+	onActionShowWindow();
+}
+/**
+ * @properties={typeid:24,uuid:"9FD5DD88-B93A-4D11-8576-8746A6F29AF5"}
+ */
+function onActionShowWindow(){
+	//scopes.jobs.xxxviewBTableThrowSplit(event,winTitle);
+	//return;
+	//var formName = event.getFormName();
+	//versionForm = globals.getInstanceForm(null);
+	//application.output('form version '+versionForm);
+	var winTitle = 'Delete Loads';
+	var formName = 'delete_piecemark_info';
+	//application.output('RM formname '+formName+' version '+versionForm);
+	var height = controller.getWindow().getHeight();
+	var width = controller.getWindow().getWidth();
+	var xOrigin = controller.getWindow().getX();
+	var yOrigin = controller.getWindow().getY();
+	var winExist = application.getWindow(winTitle);
+	//application.output('window is existing'+winExist);
+	scopes.jobs.tableOrderingData = scopes.jobs.tablePrefsPreLoad(formName+'_table');
+
+	if (!winExist){//20180802 show browse loads if exists or create
+		var win = application.createWindow(winTitle, JSWindow.MODAL_DIALOG);
+		win.setInitialBounds(xOrigin+10, yOrigin+10, width, height);
+		win.title = winTitle;
+	
+		forms[formName];// pre-load form for speed
+		scopes.jobs.viewBTableCreateForm2(formName,scopes.jobs.browseFS2[formName]);
+		win.show(forms[formName]);
+	} else {
+		scopes.jobs.viewBTableCreateForm2(formName,scopes.jobs.browseFS2[formName]);
+		//application.output('RM formname '+formName);
+		winExist.show(formName);//20180802 added
+	}//20180802 show browse loads if exists or create
+	//application.output('RM formname '+formName);
+	if (forms[formName].foundset.getSize() > 0){
+		forms[formName].foundset.setSelectedIndex(1);
+	}
+	//scopes.jobs.removeFormHist(formName+'_table');
 }

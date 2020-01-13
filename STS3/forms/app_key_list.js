@@ -48,6 +48,7 @@ function deleteRecord(event, index) {
 	g.result.add(g.columns.group_key_uuid);
 	g.where.add(g.columns.key_uuid.eq(key_uuid.toString()));
 	g.where.add(g.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	g.where.add(g.columns.group_uuid.not.isNull);
 	/** @type {QBJoin<db:/stsservoy/permissions>} */
 	var h = g.joins.add('db:/stsservoy/permissions');
 	h.on.add(h.columns.key_uuid.eq(g.columns.key_uuid));

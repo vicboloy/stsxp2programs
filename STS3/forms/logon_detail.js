@@ -311,6 +311,7 @@ function onActionEdit(event,editing){
 	controller.readOnly = !editing;
 	elements.editMessage.visible = editing;
 	onEdit(editing);
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * Handle changed data.
@@ -349,6 +350,7 @@ function onEdit(editing){
 		employeeID = employee_id;
 	}
 	elements.btn_Disconnect.enabled = (editing);
+	globals.permissionsCacheHit(event,'logon_detail');
 }
 /**
  * TODO generated, please specify type and doc for the params

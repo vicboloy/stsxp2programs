@@ -424,7 +424,7 @@ uuid:"F3042CC8-2851-4A04-9065-17663FAEBE65"
 {
 anchors:6,
 horizontalAlignment:0,
-location:"5,487",
+location:"151,488",
 name:"btn_Save",
 onActionMethodID:"4B659364-1FB2-43AC-9102-A6F96603873D",
 onDoubleClickMethodID:"-1",

@@ -98,6 +98,7 @@ function onEdit(event,editing){
 	//elements.btn_Delete.visible = editing;
 	//elements.btn_Add.visible = editing;
 	controller.enabled = editing;
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * @param event

@@ -1,4 +1,8 @@
 customProperties:"methods:{\
+onRecordSelectionMethodID:{\
+arguments:null,\
+parameters:null\
+},\
 onShowMethodID:{\
 arguments:null,\
 parameters:null\

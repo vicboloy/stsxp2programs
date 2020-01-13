@@ -43,6 +43,7 @@ verticalAlignment:0
 ],
 name:"status_description_table",
 navigatorID:"-1",
+onShowMethodID:"5B1DEAF0-97FB-4934-978E-B4418389DF96",
 scrollbars:32,
 size:"165,516",
 styleName:"sts_one",

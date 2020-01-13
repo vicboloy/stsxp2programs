@@ -726,14 +726,21 @@ function onShowForm(firstShow,event) {
 	controller.focusField('genericin',false);
 	elements.genericinnone.visible=true;
 	elements.genericinnone.enabled=true;
-	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//reset error window location for web client
 		plugins.WebClientUtils.executeClientSideJS('playSoundX(null);');
+		//adjust error window to hover over the window title to the very edge of the input area
+		var width1 = application.getScreenWidth();
+		var height1 = elements.genericin.getLocationX();
+		elements.errorWindow.setLocation(0,0);
+		elements.errorWindow.setSize(300,30);
+		//application.output('errWindow height:'+height1+ ' overall: '+application.getScreenHeight())
 	}
 	globals.getStatusDescriptions();
 	globals.getRoutes();
 	globals.getRouteLegs();
 	labelPrintType = (globals.processCodes.rawprint.indexOf(globals.session.program) != -1) ? 'material' : 'piecemark';
-	elements.genericinnone.setLocation(elements.genericin.getLocationX(),elements.genericin.getLocationY());
+	elements.genericinnone.setLocation(0,0);//elements.genericin.getLocationX(),elements.genericin.getLocationY());
+	association = globals.session.association;
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.

@@ -172,6 +172,7 @@ function onActionEdit(event) {
 		forms[formName].verifyJobInput(event);
 	}
 	additionalEditFunctions(); //stubbed out on this for extending for other forms
+	globals.permissionsCacheHit(event,null);
 }
 /**
  * @properties={typeid:24,uuid:"764FA991-DE70-4B85-B363-C0ED316CCCD6"}

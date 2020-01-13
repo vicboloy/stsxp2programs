@@ -97,6 +97,8 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 function onActionEdit(event,editing){
 	controller.readOnly = !editing;
 	elements.editMessage.visible = editing;
+	globals.permissionsCacheHit(event,null);
+
 }
 /**
  * Callback method for when form is shown.

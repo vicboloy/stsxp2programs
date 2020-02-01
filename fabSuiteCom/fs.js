@@ -1979,6 +1979,7 @@ function getInventorySerial(event,serialNumber){
 			po_number : validPoNumber,
 			job_number : validReserve,
 			coo : validCoO,
+			serial_number : serialNumber,
 			error : ''
 		}
 	} else {
@@ -2100,7 +2101,7 @@ function fabSuiteInventoryMove(event,serial,location1,location2){
  * @properties={typeid:24,uuid:"94FC1031-5896-44DC-9F34-D333FC88B936"}
  */
 function fabSuiteShip(event,jobNumber,loadNumber,commitType){
-	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
+	if (scopes.prefs.lFabsuiteIntalled == 0){return {error:null}}//20181113
 	if (checkComFabsuite(null) != ''){return null}
 	var date = new Date();
 	var fsDate = getFsDateFormat(date);

@@ -146,6 +146,12 @@ function onActionLogout(event) {
  */
 function onShow(firstShow, event) {
 	if (firstShow){
+		if (application.isInDeveloper()){
+			application.output('solution Release: '+application.getSolutionRelease());
+			application.output('App Version: '+application.getVersion());
+			
+		}
+		
 		//var width = solutionModel.getForm('sts_main_buttons').width;
 		var win = application.getActiveWindow();
 		win.setSize(1000,800);

@@ -6878,6 +6878,7 @@ function createdEmbededJob(jobNum){
  * @properties={typeid:24,uuid:"75A6935E-4648-4FA7-B190-16F9BBE0647B"}
  */
 function getJobIdInfo(jobNum){
+	if (!jobNum){return null}
 	//databaseManager.getTableFilterParams('stsservoy');
 	//databaseManager.removeTableFilterParam('stsservoy','secTenantFilter');
 	//databaseManager.removeTableFilterParam('stsservoy','embedded');
@@ -6890,11 +6891,16 @@ function getJobIdInfo(jobNum){
 	var p = databaseManager.createSelect('db:/stsservoy/jobs');
 	p.result.add(p.columns.job_id);
 	p.where.add(p.columns.delete_flag.isNull);
-	p.where.add(p.columns.job_number.eq(jobNum));
+	if (jobNum.length == 36){
+		p.where.add(p.columns.job_id.eq(jobNum.toString()));
+	} else {
+		p.where.add(p.columns.job_number.eq(jobNum));
+	}
 	p.where.add(p.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	
 	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
 	var fsJ = databaseManager.getFoundSet(p);
+	if (fsJ.getSize() == 0){return null}
 	/** @type JSRecord<db:/stsservoy/jobs> */
 	var rec = fsJ.getRecord(1);
 	if (!rec && application.getSolutionName() == "STSx"){
@@ -15642,7 +15648,7 @@ function importInventoryDBF(){
 		/** @type {JSFoundSet<db:/stsservoy/inventory>} */
 		var recIdx = fs.newRecord();
 		var newRec = fs.getRecord(recIdx);
-		newRec.disposition = 'imported';
+		newRec.disposition = i18n.getI18NMessage('sts.interface.disposition');
 		newRec.association_uuid = jobNumToAssoc[jobNum].toString();
 		newRec.tenant_uuid = globals.session.tenant_uuid;
 		newRec.employee_uuid = globals.session.userId.toString();
@@ -16533,3 +16539,4 @@ function invMoveUpdate(event,serialNumber,quantity,location1){
 	databaseManager.saveData(rec);
 	return {saved:true}
 }
+getJobIdInfo(jobNum)

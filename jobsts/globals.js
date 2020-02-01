@@ -1220,7 +1220,24 @@ var rfViews = {
 		invlocation : 'V',
 		ponumber : 'V',
 		remains : 'V',
+		jobnumberx : 'V',
 		association : 'V'	
+	},
+	'Inventory Status' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		asnin : 'R',
+		invmaterial : 'V',
+		quantityx : 'V',
+		itemweight : 'V',
+		itemlength : 'V',
+		invgrade : 'V',
+		heat : 'V',
+		ponumber : 'V',
+		location1 : 'V',
+		location2 : 'V',
+		jobnumberx : 'V',
+		itemwidth : 'V'
 	}
 }
 /**
@@ -1604,6 +1621,7 @@ function getMappings(){
 	 'sts.mobile.cut.sts.inventory',
 	 'sts.mobile.tfs.inventory',
 	 'sts.mobile.inventory.move',
+	 'sts.mobile.inventory.status',
 	 'sts.mobile.inventory.audit'];
 	mobileFSViews = [
 	 'sts.mobile.asn.receiving',
@@ -2827,6 +2845,10 @@ function rfChangeWindow(event,winName){
 		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit')];
 		currWin.show('rf_mobile_view');
 		break;
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.status')]:
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.status')];
+		currWin.show('rf_mobile_view');
+		break;
 	case mobileWindows[i18n.getI18NMessage('sts.mobile.exit')]://'Exit': 
 		//globals.rfExitMobileClient();
 		showExecLogout();
@@ -3037,6 +3059,7 @@ function rfFunctionKeys(screen){
 			if (enableFuctionKeys){plugins.window.createShortcut('F9',functionKeyProcedure[dex]);}
 			break;
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.move')]:
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.status')]:
 			dex = 2;
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
 			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
@@ -3534,6 +3557,7 @@ function getMenuList(){
 	pushWindow('sts.mobile.labor.transactions');//set windows elements and data sources
 	pushWindow('sts.mobile.inventory.move');
 	pushWindow('sts.mobile.inventory.audit');
+	pushWindow('sts.mobile.inventory.status');
 	
 	session.rfViewsOffice = [];
 	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.status'));//Status
@@ -4012,7 +4036,10 @@ function rfGetTransactionList(idfileId){
 	q.result.add(q.columns.status_description_id);
 	q.result.add(q.columns.transaction_date);
 	q.sort.add(q.columns.transaction_date.desc);
-	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.or
+		.add(q.columns.delete_flag.isNull)
+		.add(q.columns.delete_flag.eq(10))
+		);//add F8 transactions with delete_flag of 10 which is an F8 action code
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.where.add(q.columns.idfile_id.eq(mob.idfile.idfile_id.toString()));
 
@@ -11426,6 +11453,12 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 				rfInventoryMove(event);
 				break;
 			}
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.status')]){
+				form['asnNumber'] = newValue;
+				rfInventoryStatus(event,newValue);
+				break;
+			}
+
 			if (session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')] &&
 					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.status')] &&
 					session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')] &&
@@ -14817,6 +14850,7 @@ function rfInventoryMove(event){
 	var prevResponse = scopes.fs.getInventorySerial(event,rmSerial);
 	if (prevResponse && prevResponse.error){
 		errorDialogMobile(event,1220,'genericin',prevResponse.error);
+		forms['rf_mobile_view'].asnNumber = '';
 		return;
 	}
 	var prevLoc = prevResponse.location2;
@@ -14832,6 +14866,7 @@ function rfInventoryMove(event){
 	var response = scopes.fs.fabSuiteInventoryMove(event,rmSerial,location1,location2)
 	if (response.error){
 		errorDialogMobile(event,1220,'genericin',response.error);
+		
 		return;
 	}
 	var response2 = scopes.jobs.invMoveUpdate(event,rmSerial,1,forms['rf_mobile_view'].statusLocation);
@@ -14872,7 +14907,7 @@ function rfF6ReprintInvLabel(event){
 	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
 	var form = forms['rf_mobile_view'];
 	form.functionKeyEntered = true;
-	if (!form.asnNumber || !form.statusLocation){return}
+	if (!form.asnNumber || (!form.statusLocation && session.program != i18n.getI18NMessage('sts.mobile.inventory.status'))){return}
 	var inProgress = (thisFunction == flagFunction); // toggle function
 	//flagFunction = (inProgress) ? null : thisFunction;//no need to prevent using this function key again
 
@@ -14894,6 +14929,7 @@ function rfF6ReprintInvLabel(event){
 	//application.output('printing raw uuid '+rawUUID)
 	scopes.printer.onActionPrintRMLabels(event,recUuids);
 	globals.printedLabelsShowError(event);
+	rfErrorHideAuto(event);
 }
 /**
  * @properties={typeid:24,uuid:"C5D8AC29-7F3B-45FE-A537-DB23EFEB08CF"}
@@ -15096,4 +15132,129 @@ function createPdfOfLabelFieldNames(event){
 		}
 	}
 
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} serialNumber
+ *
+ * @properties={typeid:24,uuid:"ED878730-78E5-4C39-A090-6B05C6DFF6AB"}
+ * 			is_metric : isMetric,
+			model_part : validShape+' '+validDims,
+			grade : validGrade,
+		    heat : validHeat,
+		    quantity : validQuant,
+		    item_width : validWidth,
+		    item_width_in : validWidthIn,
+			item_weight : validWeight,
+			item_width_char : validWidthChar,
+			item_weight_lbs : validWeightLbs,
+			item_length : validLength,
+			item_length_char : validLengthChar,
+			item_length_in : validLengthIn,
+			location : validLoc,
+			location2 :validLoc2,
+			bill_of_lading_in : validBoL,
+			po_number : validPoNumber,
+			job_number : validReserve,
+			coo : validCoO,
+			error : ''
+ */
+function rfInventoryStatus(event,serialNumber){//STILL NEED NON-FS LOOKUP
+	var inv = scopes.fs.getInventorySerial(event,serialNumber);
+	var form = forms['rf_mobile_view'];
+	if (!inv.error){
+		form.jobNumber = inv.job_number;
+		form.location1 = inv.location;
+		form.location2 = inv.location2;
+		inv = rfInventoryFromFS(event,inv);
+		var metric = false;
+		if (inv && inv.isMetric){
+			metric = (inv.isMetric);
+		} else if (inv && inv.job_uuid){
+			jobInfo = scopes.jobs.getJobIdInfo(inv.job_uuid);
+			metric = (jobInfo && jobInfo.job_metric);
+		}
+		var rmSerial = forms['rf_mobile_view'].asnNumber;
+		form.invMaterial = inv.model_part;
+		form.lastQty = inv.quantity;
+		if (metric){
+			scopes.globals.mobWeightUnits = i18n.getI18NMessage('sts.txt.weight.metric');
+			scopes.globals.mobItemWeight = inv.item_weight;
+			form.itemWidth = inv.item_width;
+			scopes.globals.mobItemLength = inv.item_length;
+			///form.itemWeight = inv.item_weight;
+		} else {
+			scopes.globals.mobLengthUnits = i18n.getI18NMessage('sts.txt.weight.imperial');
+			scopes.globals.mobItemWeight = inv.item_weight_lbs;
+			form.itemWidth = inv.item_width_char;			
+			scopes.globals.mobItemLength = inv.item_length_char;
+			//form.itemWeight = inv.item_weight_lbs;
+		}
+		form.invGrade = inv.grade;//invgrade;
+		form.heat = inv.heat;
+		form.poNumber = inv.po_number;
+	} else {
+		errorDialogMobile(event,1220,'genericin',inv.error);
+		form.asnNumber = '';
+	}
+	null;
+}
+/**
+ * @param event
+ * @param fsRec
+ *
+ * @properties={typeid:24,uuid:"B4AD3A99-D769-49A6-9C53-F69EBBFEF857"}
+ */
+function rfInventoryFromFS(event,fsRec){
+	/** @type {QBSelect<db:/stsservoy/inventory>} */
+	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.result.add(q.columns.inventory_uuid);
+	q.where.add(q.columns.serial_number.eq(fsRec.serial_number));
+	q.where.add(q.columns.model_part.eq(fsRec.model_part));
+	var Q = databaseManager.getFoundSet(q);
+	if (!fsRec.serial_number){
+		if (Q.getSize() > 0){
+			return Q.getRecord(1);
+		} else {
+			errorDialogMobile(event,1015,null,null);
+			return {error : ''}
+		}
+	}
+	var jobInfo = (fsRec.job_number) ? scopes.jobs.getJobIdInfo(fsRec.job_number) : null;
+	if (Q.getSize() > 0){
+		var rec = Q.getRecord(1);
+	} else {
+		var idx = Q.newRecord();
+		rec = Q.getRecord(idx);
+		rec.serial_number = fsRec.serial_number;
+		rec.model_part = fsRec.model_part;
+		rec.tenant_uuid = globals.session.tenant_uuid;
+		rec.employee_uuid = session.employeeId.toString();
+		rec.association_uuid = session.associationId.toString();
+		rec.edit_date = new Date();
+		rec.disposition = i18n.getI18NMessage('sts.interface.fabsuite');
+		rec.logic_flag = 0;
+		
+	}
+	rec.quantity = fsRec.quantity;
+	rec.location = fsRec.location;
+	rec.location2 = fsRec.location2;
+	//if (!rec.location){rec.location = fsRec.location}
+	rec.heat = fsRec.heat;
+	rec.grade = fsRec.grade;
+	rec.item_length = fsRec.item_length;
+	rec.item_length_in = fsRec.item_length_in;
+	rec.item_length_char = fsRec.item_length_char;
+	rec.item_weight = fsRec.item_weight;
+	rec.item_weight_lbs = fsRec.item_weight_lbs;
+	rec.item_width = fsRec.item_width;
+	rec.item_width_in = fsRec.item_width_in;
+	rec.item_width_char = fsRec.item_width_char;
+	rec.job_number = fsRec.job_number;
+	rec.po_number = fsRec.po_number;
+	if (jobInfo && jobInfo.job_id){
+		rec.job_uuid = jobInfo.job_id;
+	}
+	databaseManager.saveData(rec);
+	return rec;
 }

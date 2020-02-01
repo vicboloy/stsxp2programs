@@ -489,6 +489,18 @@ var reportType = '';
  */
 var useServerPrinters = 1;//always use server printers
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"12D3ED4C-6402-4664-A569-10A3BCB4AD75"}
+ */
+var location1 = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"9D852686-0898-491E-94DC-D7E3985AA55E"}
+ */
+var location2 = '';
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){

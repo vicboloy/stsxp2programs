@@ -58,3 +58,15 @@ function onActionDisableAllLogins(event) {
 	elements.btn_Deactivate.enabled = false;
 	elements.btn_Activate.enabled = true;
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"CA7BF0A6-96FE-4C75-A16B-A372B1B06415"}
+ */
+function onShow(firstShow, event) {
+	globals.setUserFormPermissions(event,false);
+}

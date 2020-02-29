@@ -32,3 +32,41 @@ function onActionIgnore(event) {
 function onActionKeyed(event) {
 	// TODO Auto-generated method stub
 }
+
+/**
+ * Handle changed data.
+ *
+ * @param oldValue old value
+ * @param newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"C3F75C3E-DA5F-4741-8024-24027B694CAF"}
+ */
+function onDataChangeVisible(oldValue, newValue, event) {
+	if (newValue == 1){
+		is_enabled = 1;
+	} else {
+		is_enabled = 0;		
+	}
+	return true;
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param oldValue old value
+ * @param newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"78D854FA-9CD2-4225-9750-A8B1F6F9C98A"}
+ */
+function onDataChangeEnabled(oldValue, newValue, event) {
+	if (!is_visible){
+		is_enabled = 0;
+	}
+	return true
+}

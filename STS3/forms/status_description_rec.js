@@ -43,7 +43,7 @@ function onShowStatusDescr(firstShow, event) {
 	if (firstShow){
 		getFabShops(event);
 	}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	
 	//controller.loadRecords(sts_status_code_container);
 	globals.initLaborCodes();

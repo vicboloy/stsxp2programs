@@ -49,4 +49,5 @@ function onActionEnable(event) {
  */
 function onShow(firstShow, event) {
 	onActionEnable("");
+	scopes.jobs.formPermissions(event,false);
 }

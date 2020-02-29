@@ -47,4 +47,5 @@ function onShow(firstShow, event) {
 	scopes.prefs.getLocalPrinters();
 	scopes.prefs.getBTLabelFormats();
 	scopes.prefs.getLabeLaseLabelFormats();
+	scopes.jobs.formPermissions(event,true);
 }

@@ -51,6 +51,6 @@ function newRecord(event, location, changeSelection) {
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	return _super.onShow(firstShow, event)
 }

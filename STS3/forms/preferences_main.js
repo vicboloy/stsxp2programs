@@ -17,7 +17,7 @@ var errorMessage = "";
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	//for (var index=0;index < globals.aStatusTypes.length;index++){
 	//	application.output("index Status Types "+index+" "+globals.aStatusTypes[index]);
 	//}

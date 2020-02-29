@@ -40,9 +40,10 @@ var userMobileViewList = '';
 var employeeName = '';
 /**
  * @properties={typeid:24,uuid:"ABA5AEB5-9EA0-4D10-BAE9-AB3561481EEA"}
+ * @param {JSEvent} event
  * @SuppressWarnings(wrongparameters)
  */
-function getEmployees(){
+function getEmployees(event){
 	/**
 	 * employee_number ... employee_id
 	 * remove deployed users
@@ -52,6 +53,10 @@ function getEmployees(){
 	populatedEmployees = [];
 	var logins = [];
 	var loginIds = [];
+	scopes.jobs.tableFilterAssoc(event,'employee',false);
+	scopes.jobs.tableFilterAssoc(event,'users',false);
+	scopes.jobs.tableFilterAssoc(event,'associations',false);
+
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var q = databaseManager.createSelect('db:/stsservoy/users');
 	q.result.add(q.columns.user_uuid);
@@ -73,8 +78,10 @@ function getEmployees(){
 	var empIds = [];
 	emps.push("");
 	empIds.push(null);
+
 	/** @type {QBSelect<db:/stsservoy/employee>} */
 	var r = databaseManager.createSelect('db:/stsservoy/employee');
+	r.sort.add(r.columns.employee_number);
 	r.result.add(r.columns.employee_id);
 	r.result.add(r.columns.employee_number);
 	r.where.add(
@@ -89,7 +96,9 @@ function getEmployees(){
 	for (index = 1;index <= resultR.getSize();index++){
 		rec = resultR.getRecord(index);
 		populatedEmployees.push(rec.employee_number);
-		emps.push(rec.employee_number);
+		var comma = ', ';
+		if (!rec.employee_lastname || !rec.employee_firstname){comma = ''}
+		emps.push(rec.employee_number+' - '+rec.employee_lastname+comma+rec.employee_firstname);
 		empIds.push(rec.employee_id.toString());
 	}
 	if (application.isInDeveloper()){	
@@ -100,6 +109,10 @@ function getEmployees(){
 		application.output(empIds);
 	}
 	application.setValueListItems('stsvlg_userNames',emps,empIds);
+	scopes.jobs.tableFilterAssoc(event,'employee',true);
+	scopes.jobs.tableFilterAssoc(event,'users',true);
+	scopes.jobs.tableFilterAssoc(event,'associations',true);
+
 }
 /**
  * Callback method for when form is shown.
@@ -112,7 +125,7 @@ function getEmployees(){
 function onShow(firstShow, event) {
 	onEdit(event,false);
 	association = "";
-	getEmployees();
+	getEmployees(event);
 	updateFields(event);
 	scopes.jobs.onMobileViewLoadValueList();
 	onRecordSelection(event);
@@ -134,11 +147,15 @@ function onRecordSelection(event) {
 	}
 	elements.userPass.placeholderText = message;
 	elements.userPassConf.placeholderText = message; */
+	scopes.jobs.tableFilterAssoc(event,'employee',false);
 	var fs = st2_users_to_employee;
+	scopes.jobs.tableFilterAssoc(event,'employee',true);
 	if (fs){
 		employeeNum = fs.employee_number;
+		scopes.jobs.tableFilterAssoc(event,'employee',false);
 		employeeNumber = fs.employee_id.toString();
 		employeeName = fs.employee_firstname+' '+fs.employee_lastname;
+		elements.btn_Edit.visible = true;
 	} else {
 		employeeNumber = "";
 		employeeName = "";
@@ -174,6 +191,8 @@ function onRecordSelection(event) {
 	application.updateUI();
 	scopes.jobs.onLoadRemoteViews(event);
 	updateFields(event);
+	//var allDivUserNames = application.getValueListArray('stsvlg_userNames');
+	//elements.btn_Edit.visible = (typeof allDivUserNames[employeeNum] != 'undefined');
 	//return _super.onRecordSelection(event)
 }
 

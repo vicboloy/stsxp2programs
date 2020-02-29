@@ -394,3 +394,24 @@ function onRecordSelection2(event) {
 		}
 	}
 }
+/**
+ * Handle changed data.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"108ECB6C-EDE0-4E5E-BFA3-F4A4A7C37CE5"}
+ */
+function onDataChangeVisible(oldValue, newValue, event) {
+	if (newValue == 1){
+		elements.is_accessible.enabled = true;
+		is_accessible = 1;
+	} else {
+		elements.is_accessible.enabled = false;
+		is_accessible = 0;		
+	}
+	return true
+}

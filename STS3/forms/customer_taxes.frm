@@ -220,6 +220,7 @@ uuid:"FEB98EE0-9F36-44F3-853C-44922D3B9BDC"
 ],
 name:"customer_taxes",
 navigatorID:"-1",
+onShowMethodID:"C7C0CFAD-DEC1-41EF-B6C5-B14E7D334205",
 showInMenu:true,
 size:"415,374",
 styleName:"sts_one",

@@ -45,10 +45,10 @@ function checkFSJobNumber(importData){
 	//getProductionControlJobs
 	//plugins.headlessclient
 	var jobs = '	<FabSuiteXMLRequest>\
-		<ValJob>\
+		<ValJob>\n\
 		<JobNumber>'+ importData + 
-		'</JobNumber>\
-		</ValJob>\
+		'</JobNumber>\n\
+		</ValJob>\n\
 		</FabSuiteXMLRequest>';
 	
 	/** @type {String} */
@@ -81,9 +81,9 @@ function checkFSStatus(status){
 	var formName = application.getWindow(winName).controller.getName();
 	if (scopes.prefs.lFabsuiteInstalled == 0){return null}//20181003
 	var station = '<FabSuiteXMLRequest>\
-		<ValStation>\
-		<Station>'+ status + '</Station>\
-		</ValStation>\
+		<ValStation>\n\
+		<Station>'+ status + '</Station>\n\
+		</ValStation>\n\
 		</FabSuiteXMLRequest>';
 	
 	if (formName.search('status_description') == 0 || !globals.m.stationsThird[status]){
@@ -107,9 +107,9 @@ function checkFSStatus(status){
 function getFSStations(jobNumber){
 	if (checkComFabsuite(null) != ''){return null}
 	var listStations = '<FabSuiteXMLRequest>\
-		<GetStations>\
-		<JobNumber>FabSuite2</JobNumber>\
-		</GetStations>\
+		<GetStations>\n\
+		<JobNumber>FabSuite2</JobNumber>\n\
+		</GetStations>\n\
 		</FabSuiteXMLRequest>';
 	/** @type {String} */
 	var stations = globals.fsCom.call('FabSuiteXML',listStations).toString();
@@ -133,13 +133,14 @@ function getFSLoadNums(jobNumber){
 	//include unshipped loads
 	if (checkComFabsuite(null) != ''){return null}
 	var loadNums =  '<FabSuiteXMLRequest>\
-		<GetLoads>\
-		<JobNumber>'+jobNumber+
-		'</JobNumber>\
-		</GetLoads>\
+		<GetLoads>\n\
+		<JobNumber>'+jobNumber+'</JobNumber>\n\
+		</GetLoads>\n\
 		</FabSuiteXMLRequest>';
+	application.output(loadNums);
 	/** @type {String} */
 	var loads = scopes.globals.fsCom.call('FabSuiteXML',loadNums).toString();
+	application.output(loads);
 	var lines = loads.split('\n');
 	var regX = new RegExp(/<StationName>(.*)<\/StationName>/);
 	for (var idx = 0;idx < lines.length;idx++){
@@ -167,15 +168,15 @@ function checkFSLoad(loadNumber,destination,toBeReturned,makeNewLoad){
 	if (application.isInDeveloper()){application.output(globals.session.jobNumber)}//20181003
 	if (checkComFabsuite(null) != ''){return null}
 	var loadcheck = '<FabSuiteXMLRequest>\
-		<ValTruck>\
-		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
-		<TruckNumber>'+ loadNumber + '</TruckNumber>\
-		<ActionIfNotExist>\
-		Nothing\
-		</ActionIfNotExist>\
+		<ValTruck>\n\
+		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\n\
+		<TruckNumber>'+ loadNumber + '</TruckNumber>\n\
+		<ActionIfNotExist>\n\
+		Nothing\n\
+		</ActionIfNotExist>\n\
 		DEST\
 		RETURNED\
-		</ValTruck>\
+		</ValTruck>\n\
 		</FabSuiteXMLRequest>';
 //		<ActionIfNotExist>0</ActionIfNotExist>\
 	if (makeNewLoad){
@@ -186,8 +187,8 @@ function checkFSLoad(loadNumber,destination,toBeReturned,makeNewLoad){
 		loadcheck = loadcheck.replace('RETURNED','');
 	} else {
 		var toBeReturnedStr = toBeReturned.toString();
-		loadcheck = loadcheck.replace('DEST','<Destination>'+destination+'</Destination>');
-		loadcheck = loadcheck.replace('RETURNED','<ToBeReturned>'+toBeReturnedStr+'</ToBeReturned>');
+		loadcheck = loadcheck.replace('DEST','<Destination>'+destination+'</Destination>\n');
+		loadcheck = loadcheck.replace('RETURNED','<ToBeReturned>'+toBeReturnedStr+'</ToBeReturned>\n');
 	}
 	if (application.isInDeveloper()){}
 	application.output('RM FS Load Check:\n'+loadcheck);
@@ -236,9 +237,9 @@ function checkFSSequences(sequences, event){
 		return (exceptions.length == 0);
 	}
 	var check = '<FabSuiteXMLRequest>\
-					<GetSequences>\
-					<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
-					</GetSequences>\
+					<GetSequences>\n\
+					<JobNumber>'+globals.session.jobNumber+'</JobNumber>\n\
+					</GetSequences>\n\
 				</FabSuiteXMLRequest>';
 	/** @type {String} */
 	var fsResp = globals.fsCom.call('FabSuiteXML',check).toString();
@@ -329,10 +330,10 @@ function checkFSJob(event) {
 		jobNumber = forms.kiss_import.vJobNumber;
 		importData.jobNumber = jobNumber;
 	}
-	var check = '<FabSuiteXMLRequest>\
-					<GetProductionControlJobInformation>\
-					<JobNumber>'+jobNumber+'</JobNumber>\
-					</GetProductionControlJobInformation>\
+	var check = '<FabSuiteXMLRequest>\n\
+					<GetProductionControlJobInformation>\n\
+					<JobNumber>'+jobNumber+'</JobNumber>\n\
+					</GetProductionControlJobInformation>\n\
 				</FabSuiteXMLRequest>';
 	scopes.jobs.warningsMessage(i18n.getI18NMessage('1202'),true);
 	/** @type {String} */
@@ -715,13 +716,13 @@ function serverFSCallRequest(xml){
 	if (!globals.fsCom){
 		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 	}
-	var xmlConnect = '<FabSuiteXMLRequest>\
-		<Connect>\
-			<IPAddress>localhost</IPAddress>\
-			<PortNumber>3306</PortNumber>\
-			<Username>admin</Username>\
-			<Password>fab</Password>\
-		</Connect>\
+	var xmlConnect = '<FabSuiteXMLRequest>\n\
+		<Connect>\n\
+		<IPAddress>localhost</IPAddress>\n\
+		<PortNumber>3306</PortNumber>\n\
+		<Username>admin</Username>\n\
+		<Password>fab</Password>\n\
+		</Connect>\n\
 	</FabSuiteXMLRequest>';
 	var response = 'NO COM';
 	var sample = globals.fsCom.toString();
@@ -856,15 +857,15 @@ function checkComFabsuite(event){
 		asUser = globals.m.employee3rdParty[globals.session.employeeNum]
 	}
 	while (server = serverList.pop()){
-		var xmlConnect = '<FabSuiteXMLRequest>\
-								<Connect>\
-									<IPAddress>'+server+'</IPAddress>\
-									<PortNumber>'+fsPort+'</PortNumber>\
-									<Username>'+fsUser+'</Username>\
-									<Password>'+fsPass+'</Password>\
-									<AsUser>'+asUser+'</AsUser>\
-								</Connect>\
-							</FabSuiteXMLRequest>';
+		var xmlConnect = '<FabSuiteXMLRequest>\n\
+						<Connect>\n\
+						<IPAddress>'+server+'</IPAddress>\n\
+						<PortNumber>'+fsPort+'</PortNumber>\n\
+						<Username>'+fsUser+'</Username>\n\
+						<Password>'+fsPass+'</Password>\n\
+						<AsUser>'+asUser+'</AsUser>\n\
+						</Connect>\n\
+						</FabSuiteXMLRequest>';
 		/** @type {String} */
 		var response = 'NO COM';
 		/** @type {String} */
@@ -897,8 +898,8 @@ function checkComFabsuite(event){
 	}
 	//application.output('fsCom response: |'+response+'|');
 	if (application.getSolutionName() == 'STS X Embedded'){
-		var xmlVersion = '	<FabSuiteXMLRequest>\
-			<Version/>\
+		var xmlVersion = '	<FabSuiteXMLRequest>\n\
+			<Version/>\n\
 			</FabSuiteXMLRequest>';
 		var fsResp = globals.fsCom.call('FabSuiteXML',xmlVersion);
 		//application.output(fsResp);
@@ -1002,15 +1003,13 @@ function onDataChangeFSUN(oldValue, newValue, event) {
 	var fsPass = scopes.globals.fabsuitepassword;
 	var fsPort = scopes.globals.fabsuiteDatabase;
 	var fsUser = scopes.globals.fabsuiteUserid;
-	var verifyUserName = '<FabSuiteXMLRequest>\
-		<StsSetParmExecuteAs>\
-			<IPAddress>'+server+'</IPAddress>\
-			<PortNumber>'+fsPort+'</PortNumber>\
-			<Username>'+fsUser+'</Username>\
-			<Password>'+fsPass+'</Password>\
-			<ExecuteAs>'+newValue+'</ExecuteAs>\
-		</StsSetParmExecuteAs >\
-	</FabSuiteXMLRequest>';
+	var verifyUserName = '<FabSuiteXMLRequest>\n\
+			<IPAddress>'+server+'</IPAddress>\n\
+			<PortNumber>'+fsPort+'</PortNumber>\n\
+			<Username>'+fsUser+'</Username>\n\
+			<Password>'+fsPass+'</Password>\n\
+			<AsUser>'+newValue+'</AsUser>\n\
+			</FabSuiteXMLRequest>';
 	var fsResp = globals.fsCom.call('FabSuiteXML',verifyUserName).toString();
 	if (application.isInDeveloper()){application.output(fsResp);}
 	scopes.jobs.warningsX(event);
@@ -1035,8 +1034,8 @@ function fabSuiteSaved(commitType){
 	application.output('fabsuite pinged for access '+saved);
 	if (!saved){return false}
 	// is this an fs job - check job entry
-	application.output('fabsuite rf job '+globals.mob.job.rf);
-	saved = saved && (globals.mob.job.rf.toUpperCase() == i18n.getI18NMessage('sts.interface.fabsuite').toUpperCase());
+	application.output('fabsuite rf interface job '+globals.mob.job.rf);
+	saved = saved && (globals.mob.job.rf.toUpperCase() == i18n.getI18NMessage('sts.interface.fabsuite').toUpperCase());//is this job really a FS interactive job?
 	if (!saved){return true}
 	application.output('fabsuite rf job '+globals.mob.job.rf+' '+saved);
 	// is this an fs approved process, so far all are approved except bundle
@@ -1058,9 +1057,9 @@ function fabSuiteSaved(commitType){
  * @properties={typeid:24,uuid:"467A321D-A423-46A7-98F3-B6A1E478AE55"}
  */
 function fabSuitePing(event){
-	var fsPing = '<FabSuiteXMLRequest>\
-		<Ping>\
-		</Ping>\
+	var fsPing = '<FabSuiteXMLRequest>\n\
+		<Ping>\n\
+		</Ping>\n\
 		</FabSuiteXMLRequest>';
 	if (globals.fsCom){
 		var fsResp = globals.fsCom.call('FabSuiteXML',fsPing);
@@ -1132,6 +1131,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	}
 	var pieceMark = globals.mob.piecemark.piecemark;//exclude this when showing assembly, no minors
 	globals.mob.statusCode3rdParty = globals.m.stationsThird[forms['rf_mobile_view'].statusCode];
+	application.output('third party Stations '+globals.mob.statusCode3rdParty);
 	var station = globals.mob.statusCode3rdParty;//required
 	if (!station){return true}
 	var quantity = globals.mob.idfiles.length;//required
@@ -1217,12 +1217,12 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 			idx = 0;// process to end of while then exit
 		}
 		
-		var _serialNumber = '<BarcodeSerialNumber>'+serialNumber+'</BarcodeSerialNumber>\n';
-		var _mainMark = '<MainMark>'+mainMark+'</MainMark>\n';
-		var _pieceMark = '<PieceMark>'+pieceMark+'</PieceMark>\n';
-		var _sequence = '<Sequence>'+sequence+'</Sequence>\n';
-		var _lotNumber = '<LotNumber>'+lotNumber+'</LotNumber>\n';
-		var _quantity = '<Quantity>'+quantity+'</Quantity>\n';
+		var _serialNumber = '<BarcodeSerialNumber>'+serialNumber+'</BarcodeSerialNumber>';
+		var _mainMark = '<MainMark>'+mainMark+'</MainMark>';
+		var _pieceMark = '<PieceMark>'+pieceMark+'</PieceMark>';
+		var _sequence = '<Sequence>'+sequence+'</Sequence>';
+		var _lotNumber = '<LotNumber>'+lotNumber+'</LotNumber>';
+		var _quantity = '<Quantity>'+quantity+'</Quantity>';
 	
 	
 
@@ -1232,25 +1232,27 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 			case 'Save':
 				var saveDataXML = '<FabSuiteXMLRequest>\n\
 				<ShopFloorSave>\n\
-				TYPE \nJOBNUMBER \nMAJOR \nMINOR \nSEQUENCENUM \nLOTNUMBER \nSTATION \nQUANTITY \nINSTANCES \nSERIALNUM \nASUSER \nEMPLOYEE \nDATE \nHOURS \nBATCH \n\
+				TYPE JOBNUMBER MAJOR MINOR SEQUENCENUM LOTNUMBER STATION QUANTITY \
+				INSTANCES SERIALNUM ASUSER EMPLOYEE DATE HOURS BATCH \
 				</ShopFloorSave>\n\
 				</FabSuiteXMLRequest>';
-				saveDataXML = saveDataXML.replace('TYPE',_commitType);
-				saveDataXML = (!loadNumber) ? saveDataXML.replace('TRUCK','') : saveDataXML.replace('TRUCK',_loadNumber);
-				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
-				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
+				saveDataXML = saveDataXML.replace('TYPE',_commitType+'\n');
+				saveDataXML = (!loadNumber) ? saveDataXML.replace('TRUCK','') : saveDataXML.replace('TRUCK',_loadNumber+'\n');
+				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber+'\n');
+				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark+'\n');
 				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
-				saveDataXML = saveDataXML.replace('SEQUENCENUM',_sequence);//!sequence) ? saveDataXML.replace('SEQUENCENUM','') : 
-				saveDataXML = saveDataXML.replace('LOTNUMBER',_lotNumber);////(!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);//
-				saveDataXML = saveDataXML.replace('STATION',_station);
-				saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
-				saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
-				saveDataXML = (!serialNumber /**|| quantity*1 > 2*/) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber);
-				saveDataXML = saveDataXML.replace('EMPLOYEE',_employee);
-				saveDataXML = saveDataXML.replace('DATE',_execDate);
-				saveDataXML = (!hours) ? saveDataXML.replace('HOURS','') : saveDataXML.replace('HOURS',_hours);
-				saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId);
-				saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
+				saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence+'\n');
+				saveDataXML = (!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
+				//saveDataXML.replace('LOTNUMBER',_lotNumber+'\n');////
+				saveDataXML = saveDataXML.replace('STATION',_station+'\n');
+				saveDataXML = saveDataXML.replace('QUANTITY',_quantity+'\n');
+				saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers+'\n');
+				saveDataXML = (!serialNumber /**|| quantity*1 > 2*/) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber+'\n');
+				saveDataXML = saveDataXML.replace('EMPLOYEE',_employee+'\n');
+				saveDataXML = saveDataXML.replace('DATE',_execDate+'\n');
+				saveDataXML = (!hours) ? saveDataXML.replace('HOURS','') : saveDataXML.replace('HOURS',_hours+'\n');
+				saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId+'\n');
+				saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser+'\n');//save employee who is running the mobile computer
 				
 			break;
 			case 'Ship':
@@ -1264,14 +1266,14 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 				var _commitValue = '<CommitType>'+loadCommitType+'</CommitType>';
 				saveDataXML = '<FabSuiteXMLRequest>\n\
 					<Ship>\n\
-					COMMITTYPE\n JOBNUMBER \nTRUCKNUMBER \nDATE\n\
+					COMMITTYPE JOBNUMBER TRUCKNUMBER DATE\
 					</Ship>\n\
 					</FabSuiteXMLRequest>';
 				var _loadNumber = globals.session.loadNumber;
-				saveDataXML = saveDataXML.replace('COMMITTYPE',_commitValue);// 'Ship'/'Un-Ship' determined on call
-				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
-				saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber);
-				saveDataXML = saveDataXML.replace('DATE',_execDate);
+				saveDataXML = saveDataXML.replace('COMMITTYPE',_commitValue+'\n');// 'Ship'/'Un-Ship' determined on call
+				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber+'\n');
+				saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber+'\n');
+				saveDataXML = saveDataXML.replace('DATE',_execDate+'\n');
 			break;
 			case 'Load':
 			case 'Unload':
@@ -1279,23 +1281,25 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 				_commitValue = '<CommitType>'+loadCommitType+'</CommitType>';
 				saveDataXML = '<FabSuiteXMLRequest>\n\
 					<Load>\n\
-					TYPE \nJOBNUMBER \nMAJOR \nMINOR \nSEQUENCENUM \nLOTNUMBER \nQUANTITY \nINSTANCES \n\
-					TRUCKNUMBER \nSERIALNUM \nASUSER \nEMPLOYEE \nDATE \n\
+					TYPE JOBNUMBER MAJOR MINOR SEQUENCENUM LOTNUMBER QUANTITY INSTANCES \
+					TRUCKNUMBER SERIALNUM ASUSER EMPLOYEE DATE \
 					</Load>\n\
 					</FabSuiteXMLRequest>';
-				saveDataXML = saveDataXML.replace('TYPE',_commitValue);
-				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber);
-				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark);
-				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
-				saveDataXML = saveDataXML.replace('SEQUENCENUM',_sequence);//!sequence) ? saveDataXML.replace('SEQUENCENUM','') : 
-				saveDataXML = saveDataXML.replace('LOTNUMBER',_lotNumber);//(!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
-				saveDataXML = saveDataXML.replace('QUANTITY',_quantity);
-				saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers);
-				saveDataXML = (!serialNumber) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber);
-				saveDataXML = saveDataXML.replace('EMPLOYEE',_employee);
-				saveDataXML = saveDataXML.replace('DATE',_execDate);
-				saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser);//save employee who is running the mobile computer
-				saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber);
+				saveDataXML = saveDataXML.replace('TYPE',_commitValue+'\n');
+				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber+'\n');
+				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark+'\n');
+				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark+'\n');
+				saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence+'\n'); 
+				saveDataXML = (!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
+				//saveDataXML.replace('LOTNUMBER',_lotNumber+'\n');
+				saveDataXML = saveDataXML.replace('QUANTITY',_quantity+'\n');
+				saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers+'\n');
+				saveDataXML = (!serialNumber) ? saveDataXML.replace('SERIALNUM','') : saveDataXML.replace('SERIALNUM',_serialNumber+'\n');
+				saveDataXML = saveDataXML.replace('EMPLOYEE',_employee+'\n');
+				saveDataXML = saveDataXML.replace('DATE',_execDate+'\n');
+				saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser+'\n');//save employee who is running the mobile computer
+				saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber+'\n');
+				saveDataXML = saveDataXML.replace('ASUSER',_asUser+'\n');
 	
 			break;
 		default:
@@ -1357,16 +1361,16 @@ function checkFSNextLoad(){
 
 	// quick check assemblies
 	if (false){
-		var check = '<FabSuiteXMLRequest>\
-			<GetAssemblies>\
-			<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
-			<Filters>\
-				<Filter>\
-					<FilterType>MainMark</FilterType>\
-					<FilterValue>8B2</FilterValue>\
-				</Filter>\
-			</Filters>\
-			</GetAssemblies>\
+		var check = '<FabSuiteXMLRequest>\n\
+			<GetAssemblies>\n\
+			<JobNumber>'+globals.session.jobNumber+'</JobNumber>\n\
+			<Filters>\n\
+			<Filter>\n\
+			<FilterType>MainMark</FilterType>\n\
+			<FilterValue>8B2</FilterValue>\n\
+			</Filter>\n\
+			</Filters>\n\
+			</GetAssemblies>\n\
 			</FabSuiteXMLRequest>';
 		var two = globals.fsCom.call('FabSuiteXML',check);
 		plugins.XmlReader.readXmlDocumentFromString(two);
@@ -1376,10 +1380,10 @@ function checkFSNextLoad(){
 	//if (globals.mob.job.rf != i18n.getI18NMessage('sts.interface.fabsuite')){return null}//20181003
 	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
 	if (application.isInDeveloper()){application.output('Call FS with job number for max truck '+globals.session.jobNumber)}//20181003
-	var loadcheck = '<FabSuiteXMLRequest>\
-		<MaxTruck>\
-		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\
-		</MaxTruck>\
+	var loadcheck = '<FabSuiteXMLRequest>\n\
+		<MaxTruck>\n\
+		<JobNumber>'+globals.session.jobNumber+'</JobNumber>\n\
+		</MaxTruck>\n\
 		</FabSuiteXMLRequest>';
 	
 	/** @type {String} */
@@ -1408,13 +1412,15 @@ function getFSInterimLoadDests(jobNumber){
 	// return an array
 	if (checkComFabsuite(null) != ''){return new Array()}
 	var destArray = new Array();
-	var interimDests =  '<FabSuiteXMLRequest>\
-		<IntermediateCompanyCodes>\
-		<JobNumber>'+jobNumber+'</JobNumber>\
-		</IntermediateCompanyCodes>\
+	var interimDests =  '<FabSuiteXMLRequest>\n\
+		<IntermediateCompanyCodes>\n\
+		<JobNumber>'+jobNumber+'</JobNumber>\n\
+		</IntermediateCompanyCodes>\n\
 		</FabSuiteXMLRequest>';
+	application.output(interimDests);
 	/** @type {String} */
 	var dests = globals.fsCom.call('FabSuiteXML',interimDests).toString();
+	application.output(dests);
 	if (application.isInDeveloper()){application.output('destinations: \n'+dests)}
 	var lines = dests.split('\n');
 	var regX = new RegExp(/<CompanyCode>(.*)<\/CompanyCode>/);
@@ -1437,10 +1443,10 @@ function getFSInterimLoadDests(jobNumber){
 function getReceivedBarcode(event,barcode){
 	//application.output(' barcode: '+barcode)
 	if (checkComFabsuite(event) != ''){return ''}
-	var xmlReadReceive = '<FabSuiteXMLRequest>\
-		<ReceiveChecklistScan>\
-		<ChecklistSerialNumber>'+barcode+'</ChecklistSerialNumber>\
-		</ReceiveChecklistScan>\
+	var xmlReadReceive = '<FabSuiteXMLRequest>\n\
+		<ReceiveChecklistScan>\n\
+		<ChecklistSerialNumber>'+barcode+'</ChecklistSerialNumber>\n\
+		</ReceiveChecklistScan>\n\
 		</FabSuiteXMLRequest>';
 	var rawMat = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
 	if (application.isInDeveloper()){application.output(rawMat)}
@@ -1473,10 +1479,10 @@ function getReceivedBarcode(event,barcode){
  */
 function fabsuiteGetReceivedBarcodeInv(event,barcode){
 	if (checkComFabsuite(event) != ''){return null}
-	var xmlReadReceiveBC = '<FabSuiteXMLRequest>\
-		<ValInventory>\
-		<SerialNumber>'+barcode+'</SerialNumber>\
-		</ValInventory>\
+	var xmlReadReceiveBC = '<FabSuiteXMLRequest>\n\
+		<ValInventory>\n\
+		<SerialNumber>'+barcode+'</SerialNumber>\n\
+		</ValInventory>\n\
 		</FabSuiteXMLRequest>';
 	var rawMat = globals.fsCom.call('FabSuiteXML',xmlReadReceiveBC).toString();
 	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
@@ -1502,16 +1508,24 @@ function fabsuiteGetReceivedBarcodeInv(event,barcode){
  */
 function fabsuiteSetReceivedBarcode(event,clBarcode,stsBarcode,qty,bcData){
 	if (checkComFabsuite(event) != ''){return null}
-	var xmlReadReceiveBC = '<FabSuiteXMLRequest>\
-		<Receive>\
-		<ChecklistSerialNumber>'+clBarcode+'</ChecklistSerialNumber>\
+	var xmlReadReceiveBC = '<FabSuiteXMLRequest>\n\
+		<Receive>\n\
+		<ChecklistSerialNumber>'+clBarcode+'</ChecklistSerialNumber>\n\
 		<SerialNumber>'+stsBarcode+'</SerialNumber>\
-		<Quantity>'+qty+'</Quantity>\
+		<Quantity>'+qty+'</Quantity>\n\
 		_PO_DD_CO_HT_LO_LO2_RM_BL\
-		</Receive>\
+		</Receive>\n\
 		</FabSuiteXMLRequest>';
 
 	application.output('remarks '+bcData.receivingremarks)
+	if (scopes.prefs.lFsFlipPrimSecWhenShop == 1){
+		var loc = bcData.location;
+		bcData.location = bcData.location2;
+		bcData.location2 = loc;
+		if (scopes.prefs.lFsNoPushSecLoc == 1){
+			bcData.location2 = '';
+		}
+	}
 	xmlReadReceiveBC = (bcData.ponumber) ? xmlReadReceiveBC.replace('_PO','<PONumber>'+bcData.ponumber+'</PONumber>\\\n') : xmlReadReceiveBC.replace('_PO','');
 	xmlReadReceiveBC = (bcData.deliverydate) ? xmlReadReceiveBC.replace('_DD','<DeliveryDate>'+getFsDateFormat(bcData.deliverydate)+'</DeliveryDate>\\\n') : xmlReadReceiveBC.replace('_DD','');
 	xmlReadReceiveBC = (bcData.countryoforigin) ? xmlReadReceiveBC.replace('_CO','<CountryOfOrigin>'+bcData.countryoforigin+'</CountryOfOrigin>\\\n') : xmlReadReceiveBC.replace('_CO','');
@@ -1571,10 +1585,10 @@ function fabSuiteClose(){
  */
 function getFSCutList(event,clBarcode){
 	scopes.fs.checkComFabsuite(event);
-	var xmlReadReceiveCL = '<FabSuiteXMLRequest>\
-		<ValCutListItem>\
-		<CutListSerialNumber>'+clBarcode+'</CutListSerialNumber>\
-		</ValCutListItem>\
+	var xmlReadReceiveCL = '<FabSuiteXMLRequest>\n\
+		<ValCutListItem>\n\
+		<CutListSerialNumber>'+clBarcode+'</CutListSerialNumber>\n\
+		</ValCutListItem>\n\
 		</FabSuiteXMLRequest>';
 	/** @type {String} */
 	var cutlistData = globals.fsCom.call('FabSuiteXML',xmlReadReceiveCL);
@@ -1678,7 +1692,14 @@ function getFSCutList(event,clBarcode){
 			cutarray : cutPartArray,
 			error : ''
 		}
-		if (cutlistFields.dropType.search('sq') == -1)
+		//if (cutlistFields.dropType.search('sq') != -1){
+			//    <ExpectedDrop UOM="sqin">422.8477</ExpectedDrop>
+			var dropXY = convertDropAreaToLW(event,cutlistFields.drop,cutlistFields.dropType);
+			cutlistFields.dropType = dropXY.dropType;
+			cutlistFields.drop = dropXY.drop;
+			cutlistFields.widthType = dropXY.dropWType;
+			cutlistFields.width = dropXY.dropW;
+		//}
 		if (application.isInDeveloper()){application.output(cutlistFields)}
 	} else {
 		cutlistFields = {
@@ -1696,11 +1717,11 @@ function getFSCutList(event,clBarcode){
  */
 function matchCLtoRMBarcodes(event,clBarcode,rmBarcode){
 	if (checkComFabsuite(event) != ''){return ''}
-	var xmlReadReceive = '<FabSuiteXMLRequest>\
-		<ValCutListItem>\
-		<CutListSerialNumber>'+clBarcode+'</CutListSerialNumber>\
-		<InventorySerialNumber>'+rmBarcode+'</InventorySerialNumber>\
-		</ValCutListItem>\
+	var xmlReadReceive = '<FabSuiteXMLRequest>\n\
+		<ValCutListItem>\n\
+		<CutListSerialNumber>'+clBarcode+'</CutListSerialNumber>\n\
+		<InventorySerialNumber>'+rmBarcode+'</InventorySerialNumber>\n\
+		</ValCutListItem>\n\
 		</FabSuiteXMLRequest>';
 	application.output(xmlReadReceive);
 	var valid = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
@@ -1743,10 +1764,15 @@ function matchCLtoRMBarcodes(event,clBarcode,rmBarcode){
  * @AllowToRunInFind
  */
 function matchCLtoRMBarcodesProcess(event,jobNumber,clBarcode,rmBarcode,quantity,cutAll,dWidth,dLength,dLocation,dLocation2){
+	var equipEmployee = (globals.m.employee3rdParty[globals.session.employeeNum]);
+	
+	var currentCL = scopes
+	var _asUser = '<AsUser>'+equipEmployee+'</AsUser>\n<PieceTrackingUsername>'+equipEmployee+'</PieceTrackingUsername>';
+
 	if (application.isInDeveloper()){application.output('inside matchCLtoRMBarcodesProcess');}
 	if (checkComFabsuite(event) != ''){return ''}
 	if (application.isInDeveloper()){application.output('inside matchCLtoRMBarcodesProcess past checkComFS');}
-	var RMdata = scopes.jobs.getRMBarcodeSpecs(event,rmBarcode);
+	//var RMdata = scopes.jobs.getRMBarcodeSpecs(event,rmBarcode);
 	var uomMetric = (dLength.search(/(['"])/) == -1);
 	var uom = (uomMetric) ? 'MM' : 'IN';
 	var cutListAll = (cutAll) ? 'true' : 'false';
@@ -1754,33 +1780,57 @@ function matchCLtoRMBarcodesProcess(event,jobNumber,clBarcode,rmBarcode,quantity
 	var dropWidth = (uomMetric) ? dWidth : globals.strToDec('INCHES',dWidth.replace(/[^0-9]/g,' '));//decimal with uom 11.111 in/mm
 	// Start barcode section
 	var rawCuts = globals.session.cutlistdata.cutarray;var nothingHere = true;
+	var replacementSerials = [];
+	var pieceMarks = [];
 	var addBarcodes = '<PartSerialNumbers>\n';
 	for (var idx = 0;idx < rawCuts.length;idx++){
 		var part = rawCuts[idx];
 		if (!part.pStrikeThru){continue}
 		if (!part.Barcode){continue}//20190603 what do we do if no barcode?
-		var addBarcode = '<PartSerialNumber>\n'+
-		'<JobNumber>'+part.pJob+'</JobNumber>\n'+
-		'<MainMark>'+part.pMajor+'</MainMark>\n'+
-		'<PieceMark>'+part.pMinor+'</PieceMark>\n'+
-		'<Sequence>'+part.pSeq+'</Sequence>\n'+
-		'<LotNumber>'+part.pLot+'</LotNumber>\n'+
-		'<SerialNumber>'+part.Barcode+'</SerialNumber>\n'+
-		'</PartSerialNumber>\n';
-		addBarcodes = addBarcodes+addBarcode;
+		var quick = part.pJob+part.pMajor+part.pMinor+part.pSeq+part.pLot;
+		if (pieceMarks.indexOf(quick) == -1){//collect each piecemark with a tag, use this index to set the serials for that pcmk
+			var serials = 'SERIAL'+pieceMarks.length;
+			var addBarcode = '<PartSerialNumber>\n'+
+			'<JobNumber>'+part.pJob+'</JobNumber>\n'+
+			'<MainMark>'+part.pMajor+'</MainMark>\n'+
+			'<PieceMark>'+part.pMinor+'</PieceMark>\n'+
+			'<Sequence>'+part.pSeq+'</Sequence>\n'+
+			'<LotNumber>'+part.pLot+'</LotNumber>\n'+serials+
+			'</PartSerialNumber>\n';
+			addBarcodes = addBarcodes+addBarcode;
+			pieceMarks.push(quick);
+		}
+		var pointer = pieceMarks.indexOf(quick);
+		if (!replacementSerials[pointer]){
+			replacementSerials[pointer] = '<SerialNumber>'+part.Barcode+'</SerialNumber>\n';
+		} else {
+			replacementSerials[pointer] = replacementSerials[pointer]+'<SerialNumber>'+part.Barcode+'</SerialNumber>\n';			
+		}
+		
 		nothingHere = false;
 		
 	}
 	addBarcodes = addBarcodes+'</PartSerialNumbers>\n';
+	for (idx = 0;idx < pieceMarks.length;idx++){
+		addBarcodes = addBarcodes.replace('SERIAL'+idx,replacementSerials[idx])
+	}
 	if (nothingHere){addBarcodes = '';}
 	// Finish barcode section
+	if (scopes.prefs.lFsFlipPrimSecWhenShop == 1){
+		var loc = dLocation;
+		dLocation = dLocation2;
+		dLocation2 = loc;
+		if (scopes.prefs.lFsNoPushSecLoc == 1){
+			dLocation2 = '';
+		}
+	}
 	var xmlReadReceive = '<FabSuiteXMLRequest>\n\
 		<TFSCut>\n\
 		<CutListSerialNumber>'+clBarcode.trim()+'</CutListSerialNumber>\n\
 		<InventorySerialNumber>'+rmBarcode.trim()+'</InventorySerialNumber>\n\
 		<Quantity>'+Math.floor(quantity*1)+'</Quantity>\n\
 		<CutAll>'+cutListAll+'</CutAll>\n\
-		<AsUser>P2</AsUser>\
+		AS_USER\
 		<DropWidth UOM="'+uom+'">'+dropWidth+'</DropWidth>\n\
 		<DropLength UOM="'+uom+'">'+dropLength+'</DropLength>\n\
 		<DropLocation>'+dLocation+'</DropLocation>\n\
@@ -1789,49 +1839,17 @@ function matchCLtoRMBarcodesProcess(event,jobNumber,clBarcode,rmBarcode,quantity
 		<SecondaryLocation>'+dLocation2+'</SecondaryLocation>\n'+
 		addBarcodes+'</TFSCut>\n\
 		</FabSuiteXMLRequest>';
+		xmlReadReceive = xmlReadReceive.replace('AS_USER',_asUser);
 	//<PieceTrackingUsername>'+username+'</PieceTrackingUsername>\
 	//<AdditionalDrop>'+addlDrop+'</AdditionalDrop>\
 	//<PartSerialNumbers>'+serialNumbers+'</PartSerialNumbers>\
-	if (application.isInDeveloper()){application.output(xmlReadReceive);}
+	application.output(xmlReadReceive);
 	/** @type {String} */
 	var valid = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
-	if (application.isInDeveloper()){application.output(valid)}
+	application.output(valid);
 	var errorMatch = valid.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
 	if (!errorMatch){
-		var validRTS = valid.match(/<RTSType>(.*)<\/RTSType>/);
-		if (validRTS){validRTS = validRTS[1]}
-		var validPO = valid.match(/<ActualPONumber>(.*)<\/ActualPONumber>/);
-		if (validPO){validPO = validPO[1]}
-		var validBOL = valid.match(/<ActualBillOfLadingNumber>(.*)<\/ActualBillOfLadingNumber>/);
-		if (validBOL){validBOL = validBOL[1]}
-		var validCOO =  valid.match(/<ActualCountryOfOrigin>(.*)<\/ActualCountryOfOrigin>/);
-		if (validCOO){validCOO =  validCOO[1]}
-		var validDropL = valid.match(/<ActualDropLength UOM=".*">(.*)<\/ActualDropLength>/);
-		if (validDropL){validDropL = validDropL[1]}
-		var validDropW = valid.match(/<ActualDropWidth UOM=".*">(.*)<\/ActualDropWidth>/);
-		if (validDropW){validDropW = validDropW[1]}
-		var validDropLoc = valid.match(/<ActualDropLocation>(.*)<\/ActualDropLocation>/)
-		if (validDropLoc){validDropLoc = validDropLoc[1]}
-		var validDropLoc2 = valid.match(/<ActualDropSecondaryLocation>(.*)<\/ActualDropSecondaryLocation>/);
-		if(validDropLoc2){validDropLoc2 = validDropLoc2[1]}
-		var validRestock = valid.match(/<RTSType>(.*)<\/RTSType>/);
-		if (validRestock){validRestock = validRestock[1]}
-		var validHeat = valid.match(/<ActualHeatNumber>(.*)<\/ActualHeatNumber>/);
-		if (validHeat){validHeat = validHeat[1]}
-		var rawMatFields = {
-			restockstatus : validRestock,
-			heatnumber : validHeat,
-		    ponumber : validPO,
-		    bolnumber : validBOL,
-		    countryoforigin : validCOO,
-		    actualdroplength : validDropL,
-			actualdropwidth : validDropW,
-		    actualdroplocation : validDropLoc,
-			actiondroplocation2 : validDropLoc2,
-			metricuom : (uom == "MM"),
-			rtsmessage : validRTS,
-			error : ''
-		}
+		var rawMatFields = returnXMLDataObj(valid);
 	} else {
 		rawMatFields = {
 			error : errorMatch[1]
@@ -1889,14 +1907,15 @@ function matchCLtoRMBarcodesProcess(event,jobNumber,clBarcode,rmBarcode,quantity
  * @properties={typeid:24,uuid:"A8AEE402-A847-4FA7-82B9-7C931DBB3FA3"}
  */
 function getInventorySerial(event,serialNumber){
-	var xmlReadReceive = '<FabSuiteXMLRequest>\
-		<ValInventory>\
-		<SerialNumber>'+serialNumber+'</SerialNumber>\
-		</ValInventory>\
+	var xmlReadReceive = '<FabSuiteXMLRequest>\n\
+		<ValInventory>\n\
+		<SerialNumber>'+serialNumber+'</SerialNumber>\n\
+		</ValInventory>\n\
 		</FabSuiteXMLRequest>';
-	if (application.isInDeveloper()){application.output(xmlReadReceive);}
+	application.output(xmlReadReceive);
 	/** @type {String} */
 	var valid = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
+	application.output(valid);
 	if (application.isInDeveloper()){application.output(valid)}
 	var errorMatch = valid.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
 	if (!errorMatch){
@@ -1959,6 +1978,9 @@ function getInventorySerial(event,serialNumber){
 		var validLengthChar = globals.ftDecToString('FEET',validLengthIn,13,'ALL');
 		var validWidthChar = globals.ftDecToString('FEET',validWidthIn,13,'ALL');
 
+		var locs = locationNormalize(event,validLoc,validLoc2);
+		validLoc = locs.location1;
+		validLoc2 = locs.location2;
 		var rawMatFields = {
 			is_metric : isMetric,
 			model_part : validShape+' '+validDims,
@@ -2058,6 +2080,8 @@ function processRawCutBarcodes(event,cutlistData){
 		globals.mob.barcode = pcmk.Barcode;//serialNumber = 
 		globals.mob.piecemark.piecemark = pcmk.pMinor;//var pieceMark = exclude this when showing assembly, no minors
 		globals.mob.piecemark.parent_piecemark = pcmk.pMajor;//var mainMark = 
+		var jobInfo = globals.getJobIdInfo(pcmk.pJob);//is job a FS job?
+		globals.mob.job.rf = jobInfo.job_rec.rf_interface;
 		fabSuiteSaved('Save');
 	}
 }
@@ -2073,14 +2097,29 @@ function processRawCutBarcodes(event,cutlistData){
 function fabSuiteInventoryMove(event,serial,location1,location2){
 	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
 	if (checkComFabsuite(null) != ''){return null}
-	var xmlMove = '<FabSuiteXMLRequest>\
-		<InventoryMove>\
-		<SerialNumber>'+serial+'</SerialNumber>\
-		<NewLocation>'+location1+'</NewLocation>\
-		<NewSecondaryLocation>'+location2+'</NewSecondaryLocation>\
-		</InventoryMove>\
+	if (scopes.prefs.lFsFlipPrimSecWhenShop == 1){
+		var loc = location2;
+		location1 = location2;
+		location2 = loc;
+	}
+	var loc2 = "<NewSecondaryLocation>"+location2+"</NewSecondaryLocation>\n";
+	var xmlMove = '<FabSuiteXMLRequest>\n\
+		<InventoryMove>\n\
+		_AS_USER\
+		<SerialNumber>'+serial+'</SerialNumber>\n\
+		<NewLocation>'+location1+'</NewLocation>\nLOC2\
+		</InventoryMove>\n\
 		</FabSuiteXMLRequest>';
-	application.output('location: '+location1+' 2ndLocation: '+location2+'\n'+xmlMove);
+	//application.output('location: '+location1+' 2ndLocation: '+location2+'\n'+xmlMove);
+	var equipEmployee = (globals.m.employee3rdParty[globals.session.employeeNum]);
+	var _asUser = '<AsUser>'+equipEmployee+'</AsUser>\n';
+	xmlMove = xmlMove.replace('_AS_USER',_asUser);
+	if (scopes.prefs.lFsNoPushSecLoc == 1){
+		xmlMove = xmlMove.replace('LOC2','');
+	} else {
+		xmlMove = xmlMove.replace('LOC2',loc2);
+	}
+	application.output(xmlMove);
 	var fsResp = globals.fsCom.call('FabSuiteXML',xmlMove).toString();
 	application.output(fsResp);
 	if (fsResp.search('<Successful>0') != -1){
@@ -2124,4 +2163,303 @@ function fabSuiteShip(event,jobNumber,loadNumber,commitType){
 		return {error:getFabSuiteError(fsResp)};
 	}
 	return {error:null};
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param event
+ * @param invSerial
+ * @param iaSerial
+ * @param location1
+ * @param location2
+ *
+ * @properties={typeid:24,uuid:"DFEC37F5-29A9-4FA4-A5DC-6DD96816CE35"}
+ */
+function fabSuiteInventoryAuditSave(event,invSerial,iaSerial,quantity,location1,location2){
+	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
+	if (checkComFabsuite(null) != ''){return null}
+	var xmlAction = '<FabSuiteXMLRequest>\n\
+		<InventoryAuditSave>\n\
+		<AuditSerialNumber>'+iaSerial+'</AuditSerialNumber>\n\
+		<SerialNumber>'+invSerial+'</SerialNumber>\nQNT LOC1 LOC2\
+		</InventoryAuditSave>\n\
+		</FabSuiteXMLRequest>';
+	
+	if (scopes.prefs.lFsFlipPrimSecWhenShop == 1){
+		var loc = location2;
+		location1 = location2;
+		location2 = loc;
+	}
+	if (scopes.prefs.lFsNoPushSecLoc == 0){
+		xmlAction = xmlMove.replace('LOC2','');
+	}
+	xmlAction = (!location1) ? '' : xmlAction.replace('LOC1','<NewLocation>'+location1+'</NewLocation>\n');
+	xmlAction = (!location2) ? '' : xmlAction.replace('LOC2','<NewSecondaryLocation>'+location2+'</NewSecondaryLocation>\n');
+	xmlAction = xmlAction.replace(QNT,'<Quantity>'+quantity+'</Quantity>\n')
+	//application.output('location: '+location1+' 2ndLocation: '+location2+'\n'+xmlMove);
+	var fsResp = globals.fsCom.call('FabSuiteXML',xmlAction).toString();
+	application.output(fsResp);
+	if (fsResp.search('<Successful>0') != -1){
+		return {error:getFabSuiteError(fsResp)};
+	}
+	var serialInfo = getInventorySerial(event,serial);
+	return serialInfo;
+
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param xmlData
+ *
+ * @properties={typeid:24,uuid:"DD997083-C7E1-42ED-8DEC-860810FDCF3B"}
+ */
+function returnXMLDataObj(xmlData){
+	var form = forms['rf_mobile_view'];
+	var uom = '';
+	var data = {
+		tenant_uuid : globals.session.tenant_uuid,
+		employee_uuid : globals.session.employeeId,
+		association_uuid : globals.session.associationId,
+		serial_number : form.asnNumber,
+		model_part : form.invMaterial,
+		grade : form.invGrade
+		};
+	var test = null;
+	test = xmlData.match(/<Quantity>(.*)<\/Quantity>/);
+	if (test){data.quantity = test[1]}
+	test = xmlData.match(/<Shape>(.*)<\/Shape>/);
+	if (test){data.shape = test[1]}
+	test = xmlData.match(/<Grade>(.*)<\/Grade>/);
+	if (test){data.grade = test[1]}
+	test = xmlData.match(/<AuditSerialNumberQuantity>(.*)<\/AuditSerialNumberQuantity>/);
+	if (test){
+		data.audit_quantity = test[1];
+	}
+	test = xmlData.match(/<AuditSerialNumberQuantityRemaining>(.*)<\/AuditSerialNumberQuantityRemaining>/);
+	if (test){
+		data.audit_quantity_remaining = test[1];
+	}
+	test = xmlData.match(/<Dimensions>(.*)<\/Dimensions>/);
+	if (test){
+		data.dims = test[1];
+	}
+	test = xmlData.match(/<Dimensions Metric="(.*)">(.*)<\/Dimensions>/);
+	//<Dimensions Metric="0">24 x 68</Dimensions>
+	if (test){
+		data.dimMetric = (test[1] == 1);
+		data.dims = test[2];
+	}
+	test = xmlData.match(/<Width>(.*)<\/Width>/);
+	if (test){
+		data.width = test[1];
+	}
+	test = xmlData.match(/<Width UOM="(.*)">(.*)<\/Width>/);
+	if (test){
+		uom = test[1];
+		data.item_width = test[2];
+		if (uom.toString().search("in") == 0){
+			data.item_width_in = test[2];
+			data.item_width = globals.inToMM(data.item_width_in);
+		} else {
+			data.item_width = test[2];
+			data.item_width_in = globals.mmToFeet(data.item_width);
+		}
+	}
+	test = xmlData.match(/<Length>(.*)<\/Length>/);
+	if (test){
+		data.length = test[1];
+	}
+    //<Length UOM="in">480</Length>
+	test = xmlData.match(/<Length UOM="(.*)">(.*)<\/Length>/);
+	if (test){
+		uom = test[1];
+		if (uom.search("in") == 0){
+			data.item_length_in = test[2];
+			data.item_length = globals.inToMM(data.item_length_in);
+		} else {
+			data.item_length = test[2];
+			globals.mmToFeet(data.item_length);
+		}
+	}
+	if (data.luom){data.is_metric = (data.luom != "in")}
+	test = xmlData.match(/<PONumber>(.*)<\/PONumber>/);
+	if (test){data.po_number = test[1]}
+	test = xmlData.match(/<BillOfLadingNumber>(.*)<\/BillOfLadingNumber>/);
+	if (test){data.bill_of_lading = test[1]}
+	test = xmlData.match(/<CountryOfOrigin>(.*)<\/CountryOfOrigin>/);
+	if (test){data.coo = test[1]}
+	test = xmlData.match(/<HeatNumber>(.*)<\/HeatNumber>/);
+	if (test){data.heat = test[1]}
+	test = xmlData.match(/<Location>(.*)<\/Location>/);
+	if (test){data.location1 = test[1]}
+	test = xmlData.match(/<SecondaryLocation>(.*)<\/SecondaryLocation>/);
+	if (test){data.location2 = test[1]}
+	test = xmlData.match(/<JobReserve>(.*)<\/JobReserve>/);
+	if (test){data.job_number = test[1];}
+	test = xmlData.match(/<JobNumber>(.*)<\/JobNumber>/)
+	if (test){data.job_number = test[1];}
+
+	if (data.job_number){
+		var jobInfo = scopes.jobs.getJobIdInfo(data.job_number);
+		data.job_uuid = jobInfo.job_id;
+	}
+	test = xmlData.match(/<WeightEach>(.*)<\/WeightEach>/);
+	if (test){data.item_weight = test[1]}
+	if (data.item_weight){data.item_weight_lbs = globals.kgToLb(data.item_weight)}
+	
+	
+	test = xmlData.match(/<ActualPONumber>(.*)<\/ActualPONumber>/);
+	if (test){data.ponumber = test[1];data.po_number = data.ponumber;}
+	test = xmlData.match(/<ActualBillOfLadingNumber>(.*)<\/ActualBillOfLadingNumber>/);
+	if (test){data.bolnumber = test[1];data.bill_of_lading_in = test[1];}
+	test = xmlData.match(/<ActualCountryOfOrigin>(.*)<\/ActualCountryOfOrigin>/);
+	if (test){data.countryoforigin = test[1];data.coo = test[1];data.country_of_origin = test[1]}
+	test = xmlData.match(/<ActualDropLength UOM="(.*)">(.*)<\/ActualDropLength>/);
+	if (test){
+		uom = test[1];
+		if (uom.toString().search("in") == 0){
+			data.actualdroplength = test[2];
+			data.item_length_in = test[2];
+			data.item_length = globals.inToMM(data.item_length_in);
+		} else {
+			data.item_length = test[2];
+			data.item_length_in = globals.mmToFeet(data.item_length);
+		}
+	}
+	test = xmlData.match(/<ActualDropWidth UOM="(.*)">(.*)<\/ActualDropWidth>/);
+	if (test){
+		uom = test[1];
+		if (uom.toString().search("in") == 0){
+			data.actualdropwidth = test[2]
+			data.item_width_in = test[2];
+			data.item_width = globals.inToMM(data.item_width_in);
+		} else {
+			data.item_width = test[2];
+			data.item_width_in = globals.mmToFeet(data.item_width);
+		}
+	}
+	test = xmlData.match(/<ActualDropLocation>(.*)<\/ActualDropLocation>/)
+	if (test){data.actualdroplocation = test[1];data.location = test[1];}
+	test = xmlData.match(/<ActualDropSecondaryLocation>(.*)<\/ActualDropSecondaryLocation>/);
+	if(test){data.actiondroplocation2 = test[1];data.location2 = test[1];}
+	test = xmlData.match(/<RTSType>(.*)<\/RTSType>/);
+	if (test){data.restockstatus = test[1];data.rtsmessage = data.restockstatus;data.disposition = test[1];}
+	test = xmlData.match(/<ActualHeatNumber>(.*)<\/ActualHeatNumber>/);
+	if (test){data.heatnumber = test[1];data.heat = data.heatnumber}
+
+	if (data.item_length_in){data.item_length_char = globals.ftDecToString('FEET',data.item_length_in,13,'ALL')}
+	if (data.item_width_in){data.item_width_char = globals.ftDecToString('FEET',data.item_width_in,13,'ALL')}
+	if (data.shape && data.dims){data.model_part = data.shape+' '+data.dims} 
+	
+	data.edit_date = new Date();
+	data.logic_flag = 0;
+	data.error = '';
+	if(application.isInDeveloper()){application.output(data)}
+	return data;
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param event
+ * @param iaSerial
+ *
+ * @properties={typeid:24,uuid:"8EEDD812-7B3C-433C-8A68-5BB1063ACD39"}
+ */
+function fabSuiteInventoryAuditScan(event,iaSerial){
+	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
+	if (checkComFabsuite(null) != ''){return null}
+	var xmlAction = '<FabSuiteXMLRequest>\n\
+		<InventoryAuditScan>\n\
+		<AuditSerialNumber>'+iaSerial+'</AuditSerialNumber>\n\
+		</InventoryAuditScan>\n\
+		</FabSuiteXMLRequest>';
+	//application.output('location: '+location1+' 2ndLocation: '+location2+'\n'+xmlMove);
+	var fsResp = globals.fsCom.call('FabSuiteXML',xmlAction).toString();
+	application.output(fsResp);
+	if (fsResp.search('<Successful>0') != -1){
+		return {error:getFabSuiteError(fsResp)};
+	}
+	var serialInfo = returnXMLDataObj(fsResp);
+	if (application.isInDeveloper()){application.output('serialInfo');for (var i in serialInfo){application.output(i+':'+serialInfo[i])}}
+	//var serialInfo = getInventorySerial(event,iaSerial);
+	return serialInfo;
+
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * @param {JSEvent} event
+ * @param drop
+ * @param dropType
+ *
+ * @properties={typeid:24,uuid:"99FC967F-D82E-4F3B-BEA9-65C573220862"}
+ */
+function convertDropAreaToLW(event,drop,dropType){
+	var dropDims = {};
+	var isImperial = (dropType.search(/(in)|(ft)/) != -1);
+	if (dropType.search('sq') != -1){
+		if (isImperial){
+			dropDims.dropW = '48"';
+			dropDims.dropWType = 'in';
+			dropDims.dropType = 'ft';
+			var dropLength = drop/48;//convert area/48 to feet
+			dropDims.drop = globals.ftDecToString('FEET',dropLength,13,'ALL');
+		} else {
+			dropDims.dropW = globals.inToMM(48.0);
+			dropDims.dropWType = 'mm';
+			dropDims.dropType = 'mm';
+			dropDims.drop = drop/dropDims.dropW;//convert to mm
+		}
+	} else {
+		dropDims.dropW = "0";
+		if (isImperial){
+			dropDims.dropWType = "in";
+			dropDims.drop = globals.ftDecToString('FEET',drop,13,'ALL');
+		} else {
+			dropDims.dropWType = "mm";
+			dropDims.drop = drop;
+		}
+	}
+	if (application.isInDeveloper()){application.output('drop '+drop+' '+dropType+' '+dropDims.dropW+'x'+dropDims.drop)}
+	return dropDims;
+}
+/**
+ * @param event
+ * @param jobNumber
+ *
+ * @properties={typeid:24,uuid:"B30381D5-AD44-458C-ACE5-F525C603B59F"}
+ */
+function getJobAddressBook(event,jobNumber){
+	if (scopes.prefs.lFabsuiteIntalled == 0){return null}//20181113
+	if (checkComFabsuite(null) != ''){return null}
+	var xmlAction = '<FabSuiteXMLRequest>\n\
+		<GetProductionControlJobInformation>\n\
+		</GetProductionControlJobInformation>\n\
+		</FabSuiteXMLRequest>';
+	//application.output('location: '+location1+' 2ndLocation: '+location2+'\n'+xmlMove);
+	var fsResp = globals.fsCom.call('FabSuiteXML',xmlAction).toString();
+
+	application.output(xmlAction+'\n'+fsResp);
+
+}
+/**
+ * @param event
+ * @param location1
+ * @param location2
+ *
+ * @properties={typeid:24,uuid:"CA217BB0-5319-449F-85EF-9A0CC3EA21B3"}
+ */
+function locationNormalize(event,location1,location2){
+	var id1 = globals.m.assocs[location1];
+	var id2 = globals.m.assocs[location2];
+	if (id1){
+		var location = location1;
+		location1 = location2;
+		location2 = location;
+	}
+	if (!location2){
+		location2 = globals.session.association;
+	}
+	var locs = {location1 : location1, location2 : location2}
+	return locs;
 }

@@ -96,6 +96,8 @@ function calcBarcode(){
  */
 function onShow(firstShow, event) {
 	if (foundset.getSize() != 0){calcBarcode();}
+	globals.setUserFormPermissions(event,false);
+
 }
 
 

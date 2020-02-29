@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/addresses",
 extendsID:"E6818EAD-F587-4B8F-AA52-012EE881207A",
 items:[
@@ -32,6 +38,7 @@ valuelistID:"F620E06E-885F-45E8-8FFE-F3DA001E558F"
 ],
 name:"addressesCustomer",
 onRecordSelectionMethodID:"-1",
+onShowMethodID:"2632DFF0-86D4-4C8D-AE75-B637766A798B",
 styleName:"sts_one",
 typeid:3,
 uuid:"34C436F3-F50C-4094-B2E6-E79C008D7264"

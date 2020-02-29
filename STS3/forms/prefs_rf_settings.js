@@ -54,3 +54,16 @@ function onActionPromptFabShop(event) {
 		}
 	}
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"9FAD2582-D618-4559-B135-A1FA1E547AA2"}
+ */
+function onShow(firstShow, event) {
+	scopes.prefs.getLocalPrinters();
+	scopes.jobs.formPermissions(event,false);
+}

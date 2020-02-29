@@ -13,6 +13,7 @@ function onShow(firstShow, event) {
 	if (elements.btn_RemoveSelected){elements.btn_RemoveSelected.enabled = true;}
 
 	elements.split.dividerLocation = 0.75;
+	scopes.jobs.formPermissions(event,false);
 	return _super.onShow(firstShow, event)
 }
 

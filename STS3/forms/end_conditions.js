@@ -16,7 +16,7 @@ var selectedIndex = 0;
  * @properties={typeid:24,uuid:"16DA5ADC-AD41-4B59-93B4-EBB53F37C097"}
  */
 function onShow(firstShow, event) {
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	controller.readOnly = true;
 	loadFoundset();
 	if (foundset.getSize() < 0){

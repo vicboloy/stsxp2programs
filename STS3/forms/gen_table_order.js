@@ -177,7 +177,7 @@ function onShow(firstShow, event) {
 	}
 	i18nMapping = [];
 	elementInfo = i18n.getI18NMessage('sts.txt.table.info.here');
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	var currentForm = event.getFormName();//20181003
 	var formName = scopes.jobs.generalTableOrderTableName;
 	selAvailable = '';

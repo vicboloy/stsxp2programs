@@ -177,7 +177,7 @@ function onShow(firstShow, event) {
 		baseForm = event.getFormName().replace(versionForm,'');
 	}
 	databaseManager.removeTableFilterParam('stsservoy','deletedRecords');//#task07
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	scopes.jobs.getJobsList();
 	scopes.jobs.getCustomersList();
 	application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);

@@ -501,6 +501,12 @@ var location1 = '';
  */
 var location2 = '';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"552E9588-FF27-417D-9745-EB4314793092"}
+ */
+var auditBarcode = '';
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -753,6 +759,12 @@ function onShowForm(firstShow,event) {
 	labelPrintType = (globals.processCodes.rawprint.indexOf(globals.session.program) != -1) ? 'material' : 'piecemark';
 	elements.genericinnone.setLocation(0,0);//elements.genericin.getLocationX(),elements.genericin.getLocationY());
 	association = globals.session.association;
+	var win = application.getActiveWindow();
+	application.getSolutionRelease()
+	var title = win.title;
+	var solName = application.getSolutionName();
+	win.title = solName+' '+globals.verSTSmobile+'('+application.getSolutionRelease()+')';
+
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.

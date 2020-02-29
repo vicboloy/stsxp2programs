@@ -10,7 +10,7 @@
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	null;
 	null;
 }

@@ -33,3 +33,15 @@ function onDataChangeRawIdLength(oldValue, newValue, event) {
 	scopes.prefs.onDataChangePrefsGeneral(oldValue,newValue,event,'prefs');
 	return true
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"00D44A69-18CD-4A7A-8179-17A833C935A7"}
+ */
+function onShow(firstShow, event) {
+	scopes.jobs.formPermissions(event,false);
+}

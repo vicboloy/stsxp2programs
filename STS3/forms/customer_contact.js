@@ -113,6 +113,8 @@ function onShow(firstShow, event) {
 		elements.customer_number.requestFocus();
 	}
 	verifyCustomerInput(event);
+	globals.setUserFormPermissions(event,false);
+
 }
 
 /**

@@ -148,6 +148,7 @@ uuid:"CD6ACA61-F9E2-4A9E-9462-25DE4F37F617"
 name:"address_lst",
 navigatorID:"-1",
 onRecordSelectionMethodID:"-1",
+onShowMethodID:"0A444C58-DEF1-4966-BCCE-588F80A8B96A",
 scrollbars:32,
 showInMenu:true,
 size:"381,60",

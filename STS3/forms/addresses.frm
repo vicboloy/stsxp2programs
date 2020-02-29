@@ -156,6 +156,7 @@ items:[
 {
 containsFormID:"B3138870-FB31-48D2-9E68-D09390C883BF",
 location:"5,205",
+name:"address_lst",
 relationName:"sts_addresses_list",
 text:"address_lst",
 typeid:15,
@@ -207,6 +208,7 @@ uuid:"C19F111B-7BFB-4425-B8D0-500AE9B2696B"
 dataProviderID:"country",
 format:"|U[50]",
 location:"95,150",
+name:"country",
 selectOnEnter:true,
 typeid:4,
 uuid:"CA7815AF-9CD8-4613-A456-4D9D0F8849C6"

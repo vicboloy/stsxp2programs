@@ -53,3 +53,15 @@ function onDataChangeIdleTime(oldValue, newValue, event) {
 	scopes.prefs.onDataChangePrefsGeneral(oldValue,newValue,event,'generalPrefs');
 	return true;
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"A7BDDF96-9B3F-457C-AAE3-91D8999B1178"}
+ */
+function onShow(firstShow, event) {
+	scopes.jobs.formPermissions(event,false);
+}

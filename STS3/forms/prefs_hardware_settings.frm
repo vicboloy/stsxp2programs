@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 extendsID:"-1",
 items:[
 {
@@ -328,6 +334,7 @@ uuid:"FFC26102-D4D0-43E3-B260-F39B80D105A9"
 ],
 name:"prefs_hardware_settings",
 navigatorID:"-1",
+onShowMethodID:"321CF562-478E-4D57-8754-19540487C6E3",
 styleName:"sts_one",
 typeid:3,
 uuid:"147F8275-D530-4B97-9762-FB775C02B534"

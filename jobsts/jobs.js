@@ -9621,6 +9621,7 @@ function createEmpAssocList(event){
 			employeeUserAssocList[empAsscId]= [];
 		}
 		employeeUserAssocList[empAsscId].push(divNames[divIdx]);
+		employeeUserAssocList[empId].push(divNames[divIdx]);
 	}
 
 	for (idx = 1;idx <= EE.getMaxRowIndex();idx++){
@@ -13333,6 +13334,7 @@ function printCutListLabels(event){
 		if (application.isInDeveloper()){application.output('skipping record print')}
 		globals.errorDialogMobile(event,'sts.label.already.printed','genericin',labelSkip);
 		application.updateUI();
+		application.sleep(1500);
 	}
 	var form = forms[event.getFormName()];
 	var printStrikeThrus = (form['strikeThru'].toString().toUpperCase() == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
@@ -13348,9 +13350,7 @@ function printCutListLabels(event){
 	for (var idx = 0;idx < data.cutarray.length;idx++){
 		var item = data.cutarray[idx];
 		var labelData = (idx*1+1)+' / '+data.cutarray.length;
-		if (!(scopes.prefs.lFsPrintIDFromCutList) || (printStrikeThrus == false &&  item.pStrikeThru == 0)){skip(labelData);continue}
-		globals.errorDialogMobile(event,'sts.label.printing.label','genericin',labelData);
-		application.updateUI();
+		if ((scopes.prefs.lFsPrintIDFromCutList == 0) || (printStrikeThrus == false &&  item.pStrikeThru)){skip(labelData);continue}
 		//for (var idx2 = 0;idx2 < item.available.length;idx2++){
 		if (item.available){
 			form.associatedCutIdCount++;
@@ -13370,6 +13370,8 @@ function printCutListLabels(event){
 			globals.session.cutlistused.push(idfileId);			
 			if (!item2.lprint){
 				printSingleLabel(event,item.pJob,item.pcmkId,item.idfileId)
+				globals.errorDialogMobile(event,'sts.label.printing.label','genericin',labelData);
+				application.updateUI();
 				item2.cut_list_bc = cutlist;//even if set to a previous bc, just overwrite since it is not yet cut
 				item2.lprint = 1;
 				item2.print_date = new Date();
@@ -13378,6 +13380,8 @@ function printCutListLabels(event){
 			application.output(item.available.length+' '+item.pMajor+' '+item.pMinor+' '+item.pStrikeThru)
 		}
 	}
+	scopes.globals.onActionClearAll(event);
+
 	globals.rfErrorHide(event);
 	
 	null;
@@ -13430,74 +13434,23 @@ function cutlistInventoryProcess(event,invLine,cutResponse){
 	var dropDisposition = cutResponse.restockstatus;
 	var dropLength = cutResponse.actualdroplength;
 	var dropWidth = cutResponse.actualdropwwidth;
-	/** @type {QBSelect<db:/stsservoy/inventory>} */
-	var q = databaseManager.createSelect('db:/stsservoy/inventory');
-	q.result.add(q.columns.inventory_uuid);
-	q.where.add(q.columns.serial_number.eq(form.asnNumber));
-	var Q = databaseManager.getFoundSet(q);
-	Q.loadRecords();
-	if (Q.getSize() == 0){
-		Q.newRecord();
-	}
+
 	var heatNum = '';
-	/** @type {JSFoundSet<db:/stsservoy/inventory>} */
-	var rec = Q.getRecord(1);
-	//rec.edit_date = new Date();
-	var origLength = rec.item_length;
-	var origSqFeet = rec.item_square_feet;
-	var origWeight = rec.item_weight;
-	var invQuantity = rec.quantity;
-	if (invQuantity > 1){
-		var newIdx = Q.newRecord();
-		/** @type {JSFoundSet<db:/stsservoy/inventory>} */
-		var newRec = Q.getRecord(newIdx);
-		var pkId = newRec.inventory_uuid;
-		databaseManager.copyMatchingFields(rec,newRec);
-		rec.quantity = "1";
-		newRec.quantity = rec.quantity - 1;
-		newRec.edit_date = new Date();
-		databaseManager.saveData(newRec);
-	}
-	rec.disposition = cutResponse.restockstatus;
-	rec.edit_date = new Date();
-	if (cutResponse.metricuom){
-		rec.item_length = dropLength;
-		rec.item_length_in = scopes.jobs.mm_to_ft(dropLength)*12;
-		rec.item_width = dropWidth;
-		rec.item_width_in = scopes.jobs.mm_to_ft(dropWidth)*12;
-	} else {
-		rec.item_length_in = dropLength;
-		rec.item_length = scopes.jobs.ft_to_mm(dropLength/12);
-		rec.item_width_in = dropWidth;
-		rec.item_width = scopes.jobs.ft_to_mm(dropWidth/12);
-	}
-	rec.item_length_char = scopes.globals.ftDecToString('FEET',rec.item_length_in,15,'')
-	if (rec.item_square_feet){
-		rec.item_square_feet = (rec.item_length_in * rec.item_width_in) / 144.0;
-	}
-	if (!rec.item_square_feet){
-		var scale = (dropLength/origLength);
-	} else {
-		scale = (dropWidth*dropLength/origSqFeet);
-	}
-	if (application.isInDeveloper()){application.output('weight  '+rec.item_weight+' '+scale)}
-	rec.item_weight = rec.item_weight * scale;
-	rec.item_weight_lbs = rec.item_weight_lbs * scale;
+	var disposition = cutResponse.restockstatus;
+
+	var invBarcode = scopes.jobs.updateSTSInventory(event,form.asnNumber,cutResponse,true,form.quantity)
 	var formPrintDrop = (form['printEnabled'] == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
 	if (cutResponse.restockstatus != 'Restock'){//Restock,Scrap,No Drop
 		var printDrop = (scopes.prefs.lFsDoNotPrintScrapLabels != 1) && (cutResponse.restockstatus == "Scrap");
-		rec.deleted_date = new Date();
-	} else {
-		//rec.serial_number = createValidBarcodeRM();
 	}
 	if (printDrop && formPrintDrop){
-
 		scopes.printer.onActionPrintRMLabels(event,[rec.inventory_uuid]);
 		//print new label		
 	}
-	databaseManager.saveData(rec);
+	//databaseManager.saveData(rec);
 	form['location'] = form['statusLocation'];
 	form['allLength'] = form['dropLength'];
+	return invBarcode;
 }
 /**
  * @param event
@@ -13618,9 +13571,11 @@ function setProperCLBarcode(event,CLBarcode){
 function getRMBarcodeSpecs(event,RMBarcode){
 	//if (1==1){return RMBarcode;}
 	var updateInfo = scopes.fs.getInventorySerial(event,RMBarcode);
-	RMBarcode = updateSTSInventory(event,RMBarcode,updateInfo);
+	RMBarcode = updateSTSInventory(event,RMBarcode,updateInfo,false,forms['rf_mobile_view'].quantity);
+	application.output('serial '+RMBarcode);
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.serial_number.eq(RMBarcode));
 	q.result.add(q.columns.inventory_uuid);
 	var Q = databaseManager.getFoundSet(q);
@@ -13652,10 +13607,14 @@ function setProperRCBarcode(event,RCBarcode){
  * @param event
  * @param invBarcode
  * @param updateInfo
+ * @param {Boolean} isUpdateQuantity
  *
  * @properties={typeid:24,uuid:"C28457F6-258E-4003-B78F-ACE6B9BDDB9C"}
  */
-function updateSTSInventory(event,invBarcode,updateInfo){
+function updateSTSInventory(event,invBarcode,updateInfo,isUpdateQuantity,quantCut){
+	/**
+	 * Assign new RM number to inventory number and create a new RM number for any drops if the RM is bundled
+	 */
 	var jobUUID = null;
 	if (updateInfo && updateInfo.job_number){
 		jobUUID = globals.getJobIdInfo(updateInfo.job_number).job_id;
@@ -13669,69 +13628,79 @@ function updateSTSInventory(event,invBarcode,updateInfo){
 	var Q = databaseManager.getFoundSet(q);
 	/** @type {JSRecord<db:/stsservoy/inventory>} */
 	var rec = null;
+	/** @type {JSRecord<db:/stsservoy/inventory>} */
+	var newRec = null;
+	
+	var saveRecCount = 0;
+	var addExistingFSinv = false;
 	if (Q.getSize() == 0){
 		if (updateInfo == null){return}//no update, no need to add rec to inventory
 		var idx = Q.newRecord();
-		rec = Q.getRecord(idx);
-		rec.edit_date = new Date();
-		rec.job_uuid= jobUUID;
-		rec.employee_uuid = empUUID;
-		rec.tenant_uuid = globals.session.tenant_uuid;
-		rec.association_uuid = globals.session.associationId;
-		rec.serial_number = invBarcode;
-		var rmPrefix = invBarcode.substring(0,4);
-		var shortYear = new Date();
-		shortYear = shortYear.getFullYear().toString().substr(-2);
-		var stsPrefix = 'RM'+shortYear;
-		if (rmPrefix == stsPrefix){//update last RMserial
-			/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
-			var m = databaseManager.createSelect('db:/stsservoy/last_id_serial');
-			m.where.add(m.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-			m.where.add(m.columns.prefix.eq(stsPrefix));
-			var M = databaseManager.getFoundSet(m);
-			if (M.getSize() > 0){
-				/** @type {JSRecord<db:/stsservoy/last_id_serial>} */
-				var recM = M.getRecord(1);
-				var fsSerial = invBarcode.substring(4);
-				if (recM.serial*1 < fsSerial*1){
-					recM.serial = fsSerial;
-					recM.edit_date = new Date();
-					databaseManager.saveData(recM);
-				}
-			}
-		}
-		databaseManager.copyMatchingFields(updateInfo,rec);
-		databaseManager.saveData(rec);
-		return rec.serial_number;
+		rec = Q.getRecord(idx);//add rec to inventory
+		addExistingFSinv = true;
 	} else {
 		rec = Q.getRecord(1);
 		if (!updateInfo){
-			Q.deleteRecord(rec);
+			Q.deleteRecord(rec);//remove rec from inventory, since update is empty
 			return null;
 		} else {
-			if (rec.quantity == 1){
-				databaseManager.copyMatchingFields(updateInfo,rec);
-				databaseManager.saveData(rec);
-				return rec.serial_number;
+			if (rec.quantity == quantCut*1){// modify ONLY the inventory entry
+				databaseManager.copyMatchingFields(updateInfo,rec,true);
 			} else {
-				idx = Q.newRecord();
+				idx = Q.newRecord();//add a new record to only reduce the quantity in the old record and create a new record
 				/** @type {JSRecord<db:/stsservoy/inventory>} */				
-				var newRec = Q.getRecord(idx);
-				databaseManager.copyMatchingFields(updateInfo,newRec);
-				newRec.edit_date = new Date();
-				newRec.job_uuid= jobUUID;
-				newRec.employee_uuid = empUUID;
-				rec.tenant_uuid = globals.session.tenant_uuid;
-				rec.association_uuid = globals.session.associationId;
-				newRec.quantity = 1;
-				newRec.serial_number = '';//createValidBarcodeRM(); no way to tell FS about the new serial 20190506
-				rec.quantity = rec.quantity - 1;
-				databaseManager.saveData(rec);
-				databaseManager.saveData(newRec);
-				return newRec.serial_number;
+				newRec = Q.getRecord(idx);
 			}
 		}
 	}
+	saveRecCount = rec.quantity;
+	rec.edit_date = new Date();
+	rec.job_uuid= jobUUID;
+	rec.employee_uuid = empUUID;
+	rec.tenant_uuid = globals.session.tenant_uuid;
+	rec.association_uuid = globals.session.associationId;
+	rec.serial_number = invBarcode;
+	if (addExistingFSinv){//update last RMserial
+		var shortYear = new Date();
+		shortYear = shortYear.getFullYear().toString().substr(-2);
+		var stsPrefix = 'RM'+shortYear;
+		/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
+		var m = databaseManager.createSelect('db:/stsservoy/last_id_serial');
+		m.where.add(m.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		m.where.add(m.columns.prefix.eq(stsPrefix));
+		var M = databaseManager.getFoundSet(m);
+		if (M.getSize() > 0){
+			/** @type {JSRecord<db:/stsservoy/last_id_serial>} */
+			var recM = M.getRecord(1);
+			var fsSerial = invBarcode.substring(4);
+			if (recM.serial*1 < fsSerial*1){
+				recM.serial = fsSerial;
+				recM.edit_date = new Date();
+				databaseManager.saveData(recM);
+			}
+		}
+		rec.serial_number = stsPrefix + fsSerial;
+	}
+	//if (!newRec.serial_number) {newRec.serial_number = '';}//createValidBarcodeRM(); no way to tell FS about the new serial 20190506
+	invBarcode = rec.serial_number;
+	if (newRec){
+		databaseManager.copyMatchingFields(updateInfo,newRec,true);
+		newRec.inventory_ref_number = rec.inventory_ref_number;
+		if (isUpdateQuantity){
+			rec.quantity = rec.quantity - quantCut;
+		}
+		newRec.serial_number = createValidBarcodeRM();
+		invBarcode = newRec.serial_number;
+		if (!newRec.heat){newRec.heat = rec.heat;}
+		newRec.quantity = quantCut;
+		//var success = databaseManager.saveData(Q);
+		//databaseManager.saveData(newRec);
+	} else {
+		databaseManager.copyMatchingFields(updateInfo,rec,true);
+	}
+	rec.quantity = saveRecCount;
+	databaseManager.saveData(Q);
+	return invBarcode;
 }
 /**
  * @param event
@@ -16525,12 +16494,44 @@ function invMoveUpdate(event,serialNumber,quantity,location1){
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
 	q.where.add(q.columns.serial_number.eq(serialNumber));
-	q.where.add(q.columns.location.not.eq(location1));
+	//q.where.add(q.columns.location.not.eq(location1));
 	//q.where.add(q.columns.location.not.eq(location2));	
 	q.result.add(q.columns.inventory_uuid);
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() == 0){
-		return {error:'already moved', saved:false}
+		var fsInv = scopes.fs.getInventorySerial(event,serialNumber);
+		var jobInfo = (fsInv.job_number) ? getJobIdInfo(fsInv.job_number) : null;
+		var recDisposition = i18n.getI18NMessage('sts.txt.disposition.inventory.fs')
+		var jobUUID = (jobInfo) ? jobInfo.job_id : '';
+		var heatUUID = (fsInv.heat) ? globals.createHeat(event,fsInv.heat) : '';
+		var locationX = (!globals.m.assocs[fsInv.location]) ? fsInv.location : (!locationX) ? (globals.m.assocs[fsInv.location2]) : '';
+		var updateInfo = {bill_of_lading_in:fsInv.bill_of_lading_in,
+			country_of_origin:fsInv.coo,
+			error : fsInv.error,
+			grade : fsInv.grade,
+			heat : fsInv.heat,
+			heat_uuid : heatUUID,
+			is_metric : fsInv.is_metric,
+			item_length : fsInv.item_length,
+			item_length_char : fsInv.item_length_char,
+			item_length_in : fsInv.item_length_in,
+			item_weight : fsInv.item_weight,
+			item_weight_lbs : fsInv.item_weight_lbs,
+			item_width : fsInv.item_width,
+			item_width_char : fsInv.item_width_char,
+			item_width_in : fsInv.item_width_in,
+			job_uuid : jobUUID,
+			location : locationX,
+			model_part : fsInv.model_part,
+			po_number : fsInv.po_number,
+			quantity : fsInv.quantity,
+			disposition : recDisposition,
+			serial_number : fsInv.serial_number};
+		
+		//if (1==1){return {error:i18n.getI18NMessage('sts.txt.inventory.created'), saved:false}}
+		updateSTSInventory(event,serialNumber,updateInfo,false,updateInfo.quantity);
+		return {error:'', saved:true}
+		//return {error:i18n.getI18NMessage('sts.txt.inventory.created'), saved:true}
 	}
 	/** @type {JSFoundSet<db:/stsservoy/inventory>} */
 	var rec = Q.getRecord(1);
@@ -16539,4 +16540,96 @@ function invMoveUpdate(event,serialNumber,quantity,location1){
 	databaseManager.saveData(rec);
 	return {saved:true}
 }
-getJobIdInfo(jobNum)
+/**
+ * @param invSerial
+ *
+ * @properties={typeid:24,uuid:"68334739-A161-4086-B974-8E51D5E6DB11"}
+ */
+function inventoryCheck(invSerial){
+	/** @type {QBSelect<db:/stsservoy/inventory>} */
+	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.result.add(q.columns.inventory_uuid);
+	q.where.add(q.columns.serial_number.eq(invSerial));
+	var Q = databaseManager.getFoundSet(q);
+	if (Q.getSize() > 0){
+		return Q.getRecord(1);
+	}
+	return  null;
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} table
+ * @param {Boolean} removeFilter
+ *
+ * @properties={typeid:24,uuid:"313F7A7E-E9BA-4273-929F-A41960506A01"}
+ */
+function tableFilterAssoc(event,table,enableFilter){
+	/** var filters = databaseManager.getTableFilterParams('stsservoy');
+	for (var index = 0;index < filters.length;index++){
+		application.output(filters[index]);
+	} */
+	if (globals.session.corpUser){return}
+	var filterName = 'filterAssoc'+table.toUpperCase();
+	//application.output('filtered: '+filterName);
+	if (enableFilter){
+		databaseManager.addTableFilterParam('stsservoy',table,'association_uuid','=',globals.session.associationId,filterName);
+	} else {
+		databaseManager.removeTableFilterParam('stsservoy',filterName);
+	}
+}
+/**
+ * @param event
+ * @param iaResult
+ * @param rmBarcode
+ * @param quantity
+ *
+ * @properties={typeid:24,uuid:"F028E8CF-3B7F-4166-B63E-C31972FA4C9A"}
+ */
+function rfProcessInventoryAudit(event,iaResult,rmBarcode,quantity){
+	/**
+	 * process according to iaResult with and without ASN Number
+	 */
+	if (iaResult && iaResult.audit_quantity < quantity){
+		errorDialogMobile(event,'1062','genericin','');
+		return;
+	}
+	if (!globals.checkRequiredComplete(event,'quantityin')){
+		return;
+	}
+	
+
+}
+/**
+ * @param event
+ * @param rmBarcode
+ *
+ * @properties={typeid:24,uuid:"BE4C6A57-5930-45F1-8271-EDCC8E224C49"}
+ */
+function findRMNumber(event,rmBarcode){
+	/**
+	 * look in FS and STSX inventory for this rmBarcode
+	 * return error if found and set quantity in form
+	 */
+	 /** @type {QBSelect<db:/stsservoy/inventory>} * /
+	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.serial_number.eq(rmBarcode));
+	var Q = databaseManager.getFoundSet(q);
+	/** @type {JSFoundSet<db:/stsservoy/inventory>} * /
+	var rec = null;
+	if (Q.getSize() > 0){
+		return rec.serial_number;
+	}
+	
+	var fsSerial = scopes.fs.getInventorySerial(event,rmBarcode);
+	*/
+	
+	//ensure that it isn't one of the job's barcodes
+	if (globals.checkValidSerialID(rmBarcode)){
+		//1288
+		globals.errorDialogMobile(event,1288,'genericin',rmBarcode);
+		return true;
+
+	}
+	return false;
+}

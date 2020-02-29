@@ -4,6 +4,7 @@ items:[
 {
 horizontalAlignment:4,
 location:"26,5",
+name:"full_user_name_label",
 size:"174,20",
 text:"i18n:sts.label.employee",
 transparent:true,
@@ -19,6 +20,7 @@ uuid:"531CDAF6-F680-46A9-82E0-8C8476167D71"
 {
 dataProviderID:"fullUserName",
 location:"210,5",
+name:"full_user_name",
 size:"292,20",
 transparent:true,
 typeid:7,
@@ -89,7 +91,7 @@ uuid:"ED720A47-F20C-467A-8044-FA2CB374496F"
 name:"employee_logins",
 navigatorID:"-1",
 onRecordSelectionMethodID:"-1",
-onShowMethodID:"-1",
+onShowMethodID:"CA7BF0A6-96FE-4C75-A16B-A372B1B06415",
 showInMenu:true,
 size:"524,422",
 styleName:"sts_two",

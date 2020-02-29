@@ -20,6 +20,7 @@ function addCustomerRecord(event) {
  * @properties={typeid:24,uuid:"45E6DEE1-E4D1-45B7-A3F8-1BC20E53ED2E"}
  */
 function onShow(firstShow, event) {
+	scopes.jobs.formPermissions(event,false);
 }
 
 /**

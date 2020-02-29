@@ -1012,13 +1012,21 @@ var lFsLocnBatch = false;
  */
 var lFsPrintIDFromCutList = true;
 /**
- * @properties={typeid:35,uuid:"4C0B44D9-5B2E-47B5-91D0-B3B407CE2607",variableType:-4}
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"4C0B44D9-5B2E-47B5-91D0-B3B407CE2607",variableType:4}
  */
-var lFsFlipPrimSecWhenShop = false;
+var lFsFlipPrimSecWhenShop = 0;
 /**
  * @properties={typeid:35,uuid:"A546F3D4-282B-44DC-90E9-D11AEE714DB7",variableType:-4}
  */
 var lFsDoNotPrintScrapLabels = true;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"4A7EFE23-DBDB-4477-9C8E-F852CAB4539B",variableType:8}
+ */
+var lFsNoPushSecLoc = 0;
 /**
  */
 
@@ -1177,8 +1185,8 @@ function onActionUpdatePrefs(event) {
 			.add(fs.columns.user_uuid.eq(userID))
 		);
 	fs.where.add(fs.columns.tenant_uuid.eq(tenant));
-	if (tempPrefsChanged){
-		var thesePrefs = tempPrefsChanged.sort();
+	if (globals.tempPrefsChanged){
+		var thesePrefs = globals.tempPrefsChanged.sort();
 		fs.where.add(fs.columns.field_name.isin(thesePrefs)); //20180108 save only changed prefs
 	}
 	var FS = databaseManager.getFoundSet(fs);
@@ -1198,17 +1206,17 @@ function onActionUpdatePrefs(event) {
 	var variableSetting = "";
 	databaseManager.startTransaction();
 	for (variableX in prefs){
-		if (tempPrefsChanged){
-			if (tempPrefsChanged.indexOf(variableX) == -1){continue}//20180108
+		if (globals.tempPrefsChanged){
+			if (globals.tempPrefsChanged.indexOf(variableX) == -1){continue}//20180108
 		}
 		scopes.jobs.warningsMessage(i18n.getI18NMessage('sts.txt.saving.preferences'),false);
 		//variableX = index;
 		variableSetting = prefs[variableX];
 		var variableType = typeof(variableSetting);
 		if (variableType === 'function'){continue}
-		if (tempPrefsChanged){
-			if (tempPrefsChanged.indexOf(variableX) == -1){continue}//20180108
-		}
+		//if (globals.tempPrefsChanged){
+		//	if (globals.tempPrefsChanged.indexOf(variableX) == -1){continue}//20180108
+		//}
 		//var fieldType = typeof(prefs[index]);
 		variableSetting +="";
 		if (fldName[variableX]){
@@ -1245,9 +1253,9 @@ function onActionUpdatePrefs(event) {
 		committed = databaseManager.commitTransaction();
 	}
 	if (application.isInDeveloper()){application.output('comitted '+committed)}
-	tempPrefsChanged = [];
-		setPrefsClean(event,prefType);
-		globals.onActionCancelButton(event);
+	globals.tempPrefsChanged = [];
+	setPrefsClean(event,prefType);
+	globals.onActionCancelButton(event);
 	application.updateUI();
 	scopes.jobs.warningsX(event);
 }
@@ -1634,6 +1642,11 @@ function onActionPrintLabels(event) {
 	}
 	//if (itemsSelected){bartenderPrint(event,fileLine);} //BARTENDER
 	if (application.isInDeveloper()){application.output('Number of labels to printed '+labCnt)}
+	//clear selections 
+	if (event.getFormName() != 'rf_mobile_view'){
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('sts.txt.labels.sent.to.printer'),i18n.getI18NMessage('sts.txt.labels.sent.to.printer')+' '+labCnt);
+	}
+
 }
 /**
  * @param {JSEvent} event

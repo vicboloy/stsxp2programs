@@ -41,3 +41,15 @@ function onRenderLoginList(event) {
 		fld.bgcolor = "yellow";
 	}
 }
+
+/**
+ * Callback method for when form is shown.
+ *
+ * @param {Boolean} firstShow form is shown first time after load
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"7931D336-09E9-42D7-9A7D-16E9C95143BD"}
+ */
+function onShow(firstShow, event) {
+	globals.setUserFormPermissions(event,false);
+}

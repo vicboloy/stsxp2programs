@@ -57,7 +57,7 @@ function onShow(firstShow, event) {
 		}
 		controller.setTabSequence(fieldOrder);
 	}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	foundset.clear();
 	return _super.onShow(firstShow, event)
 }

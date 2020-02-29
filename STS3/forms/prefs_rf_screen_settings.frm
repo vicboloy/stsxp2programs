@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 extendsID:"-1",
 items:[
 {
@@ -51,6 +57,7 @@ uuid:"F2F755F4-15FF-4612-9939-02E90BB2787A"
 ],
 name:"prefs_rf_screen_settings",
 navigatorID:"-1",
+onShowMethodID:"058BCBC0-CBF7-4535-BAEB-E7F72AFD29C3",
 size:"469,351",
 styleName:"sts_one",
 typeid:3,

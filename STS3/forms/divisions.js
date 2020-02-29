@@ -80,7 +80,7 @@ function newRecord(event, location, changeSelection) {
  * @properties={typeid:24,uuid:"AC37FB18-D1DB-4306-A285-BC004019CEB7"}
  */
 function onShow(firstShow, event) {
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	showLicensing();
 	editInactive(event);
 	foundset.sort('logic_flag desc, association_name asc');

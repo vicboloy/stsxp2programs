@@ -520,6 +520,13 @@ var vNumLabels = 1;
  * @SuppressWarnings(unused)
  */
 function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWidth,yHeight,multiWindow){
+	var screenWidth = application.getScreenWidth();
+	var screenHeight = application.getScreenHeight();
+	if (screenWidth*1 < xWidth*1){xWidth = screenWidth}
+	if (screenHeight*1 < yHeight*1){yHeight = screenHeight}
+	if (screenWidth*1 < (xOrigin*1+xWidth*1)){xOrigin = screenWidth-xWidth}
+	if (screenHeight*1 < (yOrigin*1+yHeight*1)){yOrigin = 0}//screenHeight-yHeight}
+	
 	if (globals.deBounce(event)){return}//20190114 debounce buttons for 60 seconds
 	if(application.isInDeveloper()){application.output(windowTitle);}
 	//globals.openWindowRO = (formName.search(/sts_/) == -1 && formName.search(/_view$/) != -1);
@@ -1351,7 +1358,7 @@ function onShow(firstShow, event) {
 	versionForm = globals.getInstanceForm(event);
 	baseForm = event.getFormName().replace(versionForm,'');
 	if (elements.btn_FoxfireReports){elements.btn_FoxfireReports.enabled = !(!scopes.prefs.foxfireexe)}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	return _super.onShow(firstShow, event)
 }
 /**

@@ -17,7 +17,7 @@ function onShow(firstShow, event) {
 	//onActionEdit(event,false);//#task01
 	//controller.readOnly = true;
 	onActionEdit(event,false);
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 }
 
 /**

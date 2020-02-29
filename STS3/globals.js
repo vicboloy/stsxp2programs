@@ -1076,6 +1076,21 @@ function onSolutionOpen() {
 	scopes.jobs.createMissingPermissionGroups();
 	//createPostGreSqlIndexes();//20180925 Tue set up indexing for better speed
 	scopes.prefs.loadArrays();
+	
+	var screenWidth = application.getScreenWidth();
+	var screenHeight = application.getScreenHeight();
+	var win = application.getWindow();
+	var xWidth = win.getWidth();
+	var yHeight = win.getHeight();
+	var xOrigin = win.getX();
+	var yOrigin = win.getY();
+	if (screenWidth*1 < (xWidth-xOrigin)){xWidth = screenWidth}
+	if (screenHeight*1 < (yHeight-yOrigin)){yHeight = screenHeight}
+	if (screenWidth*1 < (xOrigin*1+xWidth*1)){xOrigin = screenWidth-xWidth}
+	if (screenHeight*1 < (yOrigin*1+yHeight*1)){yOrigin = screenHeight-yHeight}
+	win.setSize(xWidth,yHeight);
+	win.setLocation(xOrigin,yOrigin);
+
 }
 
 /**

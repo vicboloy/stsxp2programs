@@ -8,9 +8,9 @@
  * @properties={typeid:24,uuid:"10E18E11-E1F6-4D5D-8FEC-F6AF8ADAC194"}
  */
 function onShow(firstShow, event) {
-	if (firstShow){
-		globals.setUserFormPermissions(event);
-	}
+	//if (firstShow){
+	globals.setUserFormPermissions(event,false);
+	//}
 	elements.btn_Developer.visible = (application.isInDeveloper());
 	return _super.onShow(firstShow, event)
 }

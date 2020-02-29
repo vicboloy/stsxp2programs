@@ -19,6 +19,7 @@ function onShow(firstShow, event) {
 	if (firstShow){
 		baseDir = i18n.getI18NMessage('sts.server.default.dir')+': '+defaultLoc;
 	}
+	scopes.jobs.formPermissions(event,false);
 }
 
 /**

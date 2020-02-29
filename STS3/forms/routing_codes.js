@@ -109,7 +109,7 @@ function onShow(firstShow, event) {
 		//}
 	}
 	foundset.loadAllRecords();
-	globals.setUserFormPermissions(event,null);
+	globals.setUserFormPermissions(event,false);
 	setRouteCodesLists();
 }
 /**

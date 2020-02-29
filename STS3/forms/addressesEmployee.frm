@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/addresses",
 encapsulation:0,
 extendsID:"E6818EAD-F587-4B8F-AA52-012EE881207A",
@@ -30,6 +36,7 @@ uuid:"16476B2B-81B7-40AD-BCBF-2AF9EA538E13"
 }
 ],
 name:"addressesEmployee",
+onShowMethodID:"F6589130-F3D7-4212-B71A-1A595C2F6D09",
 styleName:"sts_one",
 typeid:3,
 uuid:"4B0A4F42-885F-493A-AF55-DD6A25926088"

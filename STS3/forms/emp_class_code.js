@@ -18,7 +18,7 @@ var editFlag = false;
  * @properties={typeid:24,uuid:"E47D7FF2-8473-4AD4-AD69-AC99BA008846"}
  */
 function onShow(firstShow, event) {
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	controller.getFormContext().getValue(1,2);
 
 	controller.readOnly = true;

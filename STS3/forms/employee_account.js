@@ -19,5 +19,5 @@ function onActionEdit(event,editing){
  * @properties={typeid:24,uuid:"D86B3C83-27D8-4526-B919-123D7EEEC6BA"}
  */
 function onShow(firstShow, event) {
-	
+	globals.setUserFormPermissions(event,false);
 }

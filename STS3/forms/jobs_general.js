@@ -267,7 +267,7 @@ function loadResetForm(){
 	vMetricJob = 0; //false
 	vPORelease = "";
 	vProjectYear = null;
-	vRFInterface = '<None>';
+	vRFInterface = i18n.getI18NMessage('sts.interface.none');
 	vFTProjectID = null;
 }
 /**
@@ -311,7 +311,7 @@ function onShow(firstShow, event) {
 		elements.ft_projectid.enabled = (scopes.prefs.lFabtrolInstalled == 1);
 		//elements.third_party_job_num.enabled = (scopes.prefs.lFabsuiteInstalled==1||scopes.prefs.lFabtrolInstalled==1||scopes.prefs.lRomacInstalled==1);
 		elements.job_number.requestFocus();
-		globals.setUserFormPermissions(event);
+		globals.setUserFormPermissions(event,false);
 		scopes.jobs.formPermissions(event,true);
 	}
 	vJobWeightUnits = (metric_job==1) ? 'kgs' : 'lbs';

@@ -3,9 +3,9 @@ items:[
 {
 dataProviderID:"scopes.prefs.lFsFlipPrimSecWhenShop",
 displayType:4,
-location:"155,278",
-name:"lFsFlipLocShop",
-onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
+location:"156,237",
+name:"lFsFlipPrimSecWhenShop",
+onDataChangeMethodID:"904CEC10-60CB-4EBB-8922-289F384DF5C0",
 size:"435,20",
 text:"i18n:sts.txt.applications.fs.flip.primary.secondary.locations",
 typeid:4,
@@ -14,7 +14,7 @@ uuid:"12E79DAA-663E-4440-A3F0-A3FA1D671DCE"
 {
 dataProviderID:"scopes.prefs.lFsLocnBatch",
 displayType:4,
-location:"155,203",
+location:"155,162",
 name:"lFsLocnBatch",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -40,7 +40,7 @@ parameters:[\
 }\
 }",
 horizontalAlignment:0,
-location:"557,58",
+location:"557,30",
 name:"getFabsuiteRootPath",
 onActionMethodID:"BF49A765-9ECE-4164-AAF0-208CA327A66C",
 onDoubleClickMethodID:"-1",
@@ -54,7 +54,7 @@ uuid:"329A71E7-BED2-497D-AE4B-1E560D79A0E9"
 {
 dataProviderID:"scopes.prefs.lFsPrintIDFromCutList",
 displayType:4,
-location:"155,253",
+location:"156,212",
 name:"lFsPrintCutList",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"435,20",
@@ -65,7 +65,7 @@ uuid:"36801164-7A58-4650-AF95-A1D56E401744"
 {
 dataProviderID:"scopes.prefs.lFabsuiteInstalled",
 displayType:4,
-location:"156,28",
+location:"156,5",
 name:"lFabsuiteInstalled",
 onActionMethodID:"FC48C4DA-1691-4F14-9A7D-1AE283AA5FFE",
 size:"179,20",
@@ -77,7 +77,7 @@ uuid:"407BAFE3-1051-4F8C-87A8-9DEBE7819A49"
 {
 horizontalAlignment:4,
 labelFor:"fabsuitepassword",
-location:"302,168",
+location:"302,132",
 name:"fabsuitepassword_label",
 size:"104,20",
 text:"i18n:sts.label.applications.fs.password",
@@ -88,7 +88,8 @@ uuid:"53DD5EFF-7091-4EFB-8DFB-DDD903963480"
 {
 dataProviderID:"scopes.prefs.lFsDoNotPrintScrapLabels",
 displayType:4,
-location:"155,303",
+location:"160,287",
+name:"lFsDoNotPrintScrapLabels",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"435,20",
 text:"i18n:sts.txt.applications.fs.do.not.print.scrap.label",
@@ -98,7 +99,7 @@ uuid:"560FDC8F-7383-4D3F-9179-32EABC8AE8CF"
 {
 horizontalAlignment:4,
 labelFor:"fabsuiteServerName",
-location:"5,148",
+location:"5,112",
 name:"fabsuiteServerName_label",
 size:"150,20",
 text:"i18n:sts.label.applications.fs.server.ip",
@@ -109,7 +110,7 @@ uuid:"6F69FFEE-1384-4DC3-9041-CE5CB5071D30"
 {
 dataProviderID:"scopes.prefs.lFabsuitePassWorker",
 displayType:4,
-location:"155,88",
+location:"155,55",
 name:"lFabsuitePassWorker",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -122,7 +123,7 @@ uuid:"712B0C35-BE36-46FD-B23F-5E7AE4DF8053"
 },
 {
 dataProviderID:"scopes.prefs.fabsuiteDatabase",
-location:"156,168",
+location:"156,132",
 name:"fabsuiteDatabase",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -133,9 +134,21 @@ typeid:4,
 uuid:"8A8127BB-6123-4C78-985B-05CF2C093F92"
 },
 {
+dataProviderID:"scopes.prefs.lFsNoPushSecLoc",
+displayType:4,
+location:"179,262",
+name:"lFsNoPushSecLoc",
+onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
+size:"411,20",
+text:"i18n:sts.chk.do.not.push.location2",
+transparent:true,
+typeid:4,
+uuid:"92810D59-B160-4A39-B40D-73680E89409E"
+},
+{
 dataProviderID:"scopes.prefs.lFabsuiteSqlVersion",
 displayType:4,
-location:"156,123",
+location:"155,80",
 name:"lFabsuiteSqlVersion",
 onActionMethodID:"3FB93242-8CDD-4EA6-976B-02AB7F207559",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -149,7 +162,7 @@ uuid:"951B8E2A-88B8-447D-921E-83FF6FF865D9"
 {
 horizontalAlignment:4,
 labelFor:"fabsuiteRootPath",
-location:"5,58",
+location:"5,30",
 name:"fabsuiteRootPath_label",
 size:"150,20",
 text:"i18n:sts.label.applications.fs.root.path",
@@ -166,7 +179,7 @@ uuid:"B0B041EF-CCF0-4546-A4FA-3AB5DFDAE997"
 {
 dataProviderID:"scopes.prefs.fabsuitepassword",
 displayType:6,
-location:"407,168",
+location:"407,132",
 name:"fabsuitepassword",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -179,7 +192,7 @@ uuid:"B9447A72-B86D-4C50-8E56-790EBB990A31"
 {
 horizontalAlignment:4,
 labelFor:"fabsuiteUserid",
-location:"302,146",
+location:"302,110",
 name:"fabsuiteUserid_label",
 size:"104,20",
 text:"i18n:sts.label.applications.fs.user.id",
@@ -190,7 +203,7 @@ uuid:"C1390AD9-DD31-48D1-A596-0635D8DB1046"
 {
 dataProviderID:"scopes.prefs.lFsAllowNonSerial",
 displayType:4,
-location:"155,228",
+location:"156,187",
 name:"lFsAllowNonSerial",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -203,7 +216,7 @@ uuid:"D0E4226F-4955-4E74-B2F8-42A88F5A86D7"
 {
 dataProviderID:"scopes.prefs.fabsuiteUserid",
 displayType:6,
-location:"407,146",
+location:"407,110",
 name:"fabsuiteUserid",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -215,7 +228,7 @@ uuid:"D356BE64-897F-4D2C-AE82-83E873A23707"
 },
 {
 dataProviderID:"scopes.prefs.fabsuiteServerName",
-location:"156,148",
+location:"156,112",
 name:"fabsuiteServerName",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -228,7 +241,7 @@ uuid:"D8DEAC1F-675D-4623-BBE1-C2E9F59406E6"
 {
 dataProviderID:"scopes.prefs.lFabsuiteImportOnly",
 displayType:4,
-location:"340,28",
+location:"340,5",
 name:"lFabsuiteImportOnly",
 onActionMethodID:"-1",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
@@ -242,7 +255,7 @@ uuid:"E49C9E2F-F0C2-429B-9DED-D1867842607D"
 {
 dataProviderID:"scopes.prefs.userFabsuiteRootPath",
 editable:false,
-location:"156,58",
+location:"156,30",
 name:"fabsuiteRootPath",
 size:"396,20",
 tabSeq:3,
@@ -253,7 +266,7 @@ uuid:"EE726093-9823-4A7B-8647-7445B8A04334"
 {
 horizontalAlignment:4,
 labelFor:"fabsuiteDatabase",
-location:"64,168",
+location:"64,132",
 name:"fabsuiteDatabase_label",
 size:"91,20",
 text:"i18n:sts.label.applications.fs.port.number",

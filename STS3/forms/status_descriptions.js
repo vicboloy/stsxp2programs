@@ -18,7 +18,7 @@ function onShow(firstShow, event) {
 		forms.status_description_rec.getFabShops(event);
 		forms.status_description_rec.getStatusList();
 	}
-	globals.setUserFormPermissions(event,'');
+	globals.setUserFormPermissions(event,false);
 }
 
 /**

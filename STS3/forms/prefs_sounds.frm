@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 extendsID:"-1",
 items:[
 {
@@ -289,6 +295,7 @@ uuid:"FDB92536-35FA-4033-A387-E34D8671453A"
 ],
 name:"prefs_sounds",
 navigatorID:"-1",
+onShowMethodID:"20108D2A-2985-4EA1-B3AC-D78C67C6F425",
 styleName:"sts_one",
 typeid:3,
 uuid:"3AD632B7-04AD-4EE8-897E-5116F1BE7B53"

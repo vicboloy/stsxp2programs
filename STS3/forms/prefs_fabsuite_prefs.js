@@ -20,7 +20,7 @@ function onActionEnable(event) {
 	elements.lFsAllowNonSerial.enabled = fabsuiteEnabled;
 	elements.getFabsuiteRootPath.enabled = fabsuiteEnabled;
 	elements.lFsPrintCutList.enabled = fabsuiteEnabled;
-	elements.lFsFlipLocShop.enabled = (fabsuiteEnabled && scopes.prefs.promptFabShop == 1);
+	elements.lFsFlipPrimSecWhenShop.enabled = (fabsuiteEnabled && scopes.prefs.promptFabShop == 1);
 	
 	if (!event){return}
 	scopes.prefs.onDataChangePrefsGeneral(null,null,event,'Prefs');
@@ -36,6 +36,7 @@ function onActionEnable(event) {
  */
 function onShow(firstShow, event) {
 	onActionEnable(null);
+	scopes.jobs.formPermissions(event,false);
 }
 
 /**
@@ -47,4 +48,24 @@ function onShow(firstShow, event) {
  */
 function onAction(event) {
 	onActionEnable(null);
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param oldValue old value
+ * @param newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"904CEC10-60CB-4EBB-8922-289F384DF5C0"}
+ */
+function onDataChangeFlipLocs(oldValue, newValue, event) {
+	elements.lFsNoPushSecLoc.enabled = (newValue == 1);
+	scopes.prefs.onDataChangePrefsGeneral(oldValue,newValue,event,null);
+	if (newValue == 0){
+		scopes.prefs.lFsNoPushSecLoc = 0;
+	}
+	return true
 }

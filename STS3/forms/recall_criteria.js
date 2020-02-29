@@ -263,7 +263,7 @@ function onShow(firstShow, event) {
 	databaseManager.removeTableFilterParam('stsservoy','deletedRecords');//#task07
 	var filters = databaseManager.getTableFilterParams('stsservoy');
 	if (application.isInDeveloper()){application.output(filters)}
-
+	scopes.jobs.formPermissions(event,false);
 	return _super.onShow(firstShow, event)
 }
 

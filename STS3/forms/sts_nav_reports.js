@@ -10,7 +10,7 @@
 function onShow(firstShow, event) {
 	elements.btn_FoxfireReports.enabled = !(!scopes.prefs.foxfireexe);
 	//if (firstShow){
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	//}
 
 	return _super.onShow(firstShow, event)

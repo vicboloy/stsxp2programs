@@ -163,7 +163,7 @@ function onShow(firstShow, event) {
 		if (y+1000 > screenHeight){y = screenHeight-800}
 		win.setLocation(x,y);
 		//plugins.UserManager.updateClientInfo();
-		globals.setUserFormPermissions(event);
+		globals.setUserFormPermissions(event,false);
 	}
 	if (false && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		// more web storage alert stuff
@@ -177,7 +177,7 @@ function onShow(firstShow, event) {
 	var title = win.title;
 	var appName = i18n.getI18NMessage('sts.txt.name.app.desktop');
 	if (scopes.prefs.winTitle){appName = scopes.prefs.winTitle}
-	title = appName + ' (' + globals.session.login + ' - ' + globals.session.fullName + ', ' + i18n.getI18NMessage('sts.label.division')+ ' ' + globals.session.association +')';
+	title = appName +' '+globals.verSTS+ ' (' + globals.session.login + ' - ' + globals.session.fullName + ', ' + i18n.getI18NMessage('sts.label.division')+ ' ' + globals.session.association +')';
 	win.title = title;
 	elements.split.rightFormMinSize = 40;
 	elements.split.dividerLocation = 0.80;

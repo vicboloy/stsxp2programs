@@ -17,7 +17,7 @@ function onShow(firstShow, event) {
 		forms[event.getFormName()].baseForm = event.getFormName().replace(forms[event.getFormName()].versionForm,'');
 		elements.btn_Browse.enabled  = false;
 	}
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	//forms.loads_pcmk_combo;
 }
 /**

@@ -35,7 +35,7 @@ function onShow(firstShow, event) {
 		forms['customers'+instance].elements.tabs.dividerLocation = 317.0;
 	}
 	onEdit(event,false);
-	globals.setUserFormPermissions(event,null);
+	globals.setUserFormPermissions(event,false);
 	globals.permissionsCacheHit(event,null);
 }
 /**

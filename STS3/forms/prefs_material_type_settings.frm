@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 extendsID:"-1",
 items:[
 {
@@ -185,6 +191,7 @@ uuid:"FB22CFAB-E316-49AE-9B6F-C14E7D376356"
 ],
 name:"prefs_material_type_settings",
 navigatorID:"-1",
+onShowMethodID:"00D44A69-18CD-4A7A-8179-17A833C935A7",
 styleName:"sts_one",
 typeid:3,
 uuid:"D70BB16B-D1C8-40B2-8FF9-B0F0CED4B12E"

@@ -10,7 +10,7 @@ function onShow(firstShow, event) {
 	if (firstShow){
 	}
 	onActionClear(event,event.getFormName());
-	globals.setUserFormPermissions(event);
+	globals.setUserFormPermissions(event,false);
 	scopes.jobs.getJobsList();
 	scopes.jobs.getCustomersList();
 	application.setValueListItems('stsvl_jobs_by_cust',scopes.jobs.jobsArray);

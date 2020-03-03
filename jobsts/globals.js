@@ -10959,7 +10959,8 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 	if (!newValue){return}
 
 	var randBCode = false;
-	if (session.program == i18n.getI18NMessage('sts.mobile.inventory.audit')){//is there a raw material barcode entered? 20200225 as per paul movie of this date
+	if (scopes.prefs.lFsAllowNonSerial && //this should be boolean in prefs
+			session.program == i18n.getI18NMessage('sts.mobile.inventory.audit')){//is there a raw material barcode entered? 20200225 as per paul movie of this date
 		if (newValue.search(/(BY)|(BN)/) != 0){//bundle yes/no entered
 			if (newValue.length != 12 && !newValue.match(/IA[0-9]+/)){//assumes Internal Audit barcodes are 12 characters in FS
 				if (!newValue.match(/Q[0-9]+/)){//check for Quantity input

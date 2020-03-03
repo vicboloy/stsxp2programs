@@ -2191,18 +2191,20 @@ function fabSuiteInventoryAuditSave(event,invSerial,iaSerial,quantity,location1,
 		location2 = loc;
 	}
 	if (scopes.prefs.lFsNoPushSecLoc == 0){
-		xmlAction = xmlMove.replace('LOC2','');
+		xmlAction = xmlAction.replace('LOC2','');
 	}
 	xmlAction = (!location1) ? '' : xmlAction.replace('LOC1','<NewLocation>'+location1+'</NewLocation>\n');
 	xmlAction = (!location2) ? '' : xmlAction.replace('LOC2','<NewSecondaryLocation>'+location2+'</NewSecondaryLocation>\n');
-	xmlAction = xmlAction.replace(QNT,'<Quantity>'+quantity+'</Quantity>\n')
+	xmlAction = xmlAction.replace('QNT','<Quantity>'+quantity+'</Quantity>\n')
 	//application.output('location: '+location1+' 2ndLocation: '+location2+'\n'+xmlMove);
+	application.output(xmlAction);
 	var fsResp = globals.fsCom.call('FabSuiteXML',xmlAction).toString();
 	application.output(fsResp);
 	if (fsResp.search('<Successful>0') != -1){
+		globals.errorDialogMobile(event,'1220','genericin',getFabSuiteError(fsResp));
 		return {error:getFabSuiteError(fsResp)};
 	}
-	var serialInfo = getInventorySerial(event,serial);
+	var serialInfo = getInventorySerial(event,invSerial);
 	return serialInfo;
 
 }
@@ -2350,6 +2352,12 @@ function returnXMLDataObj(xmlData){
 	if (data.item_length_in){data.item_length_char = globals.ftDecToString('FEET',data.item_length_in,13,'ALL')}
 	if (data.item_width_in){data.item_width_char = globals.ftDecToString('FEET',data.item_width_in,13,'ALL')}
 	if (data.shape && data.dims){data.model_part = data.shape+' '+data.dims} 
+	var locs = locationNormalize(null,data.location,data.location2);
+	data.location = locs.location1;
+	data.location2 = locs.location2;
+	locs = locationNormalize(null,data.actualdroplocation,data.actiondroplocation2);
+	data.actualdroplocation = locs.location1;
+	data.actiondroplocation2 = locs.location2;
 	
 	data.edit_date = new Date();
 	data.logic_flag = 0;
@@ -2450,8 +2458,12 @@ function getJobAddressBook(event,jobNumber){
  * @properties={typeid:24,uuid:"CA217BB0-5319-449F-85EF-9A0CC3EA21B3"}
  */
 function locationNormalize(event,location1,location2){
-	var id1 = globals.m.assocs[location1];
-	var id2 = globals.m.assocs[location2];
+	if (location1){
+		var id1 = globals.m.assocs[location1];
+	}
+	if (location2){
+		var id2 = globals.m.assocs[location2];
+	}
 	if (id1){
 		var location = location1;
 		location1 = location2;

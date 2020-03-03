@@ -13645,7 +13645,7 @@ function updateSTSInventory(event,invBarcode,updateInfo,isUpdateQuantity,quantCu
 			return null;
 		} else {
 			if (rec.quantity == quantCut*1){// modify ONLY the inventory entry
-				databaseManager.copyMatchingFields(updateInfo,rec,true);
+				databaseManager.copyMatchingFields(updateInfo,rec);
 			} else {
 				idx = Q.newRecord();//add a new record to only reduce the quantity in the old record and create a new record
 				/** @type {JSRecord<db:/stsservoy/inventory>} */				
@@ -13684,7 +13684,7 @@ function updateSTSInventory(event,invBarcode,updateInfo,isUpdateQuantity,quantCu
 	//if (!newRec.serial_number) {newRec.serial_number = '';}//createValidBarcodeRM(); no way to tell FS about the new serial 20190506
 	invBarcode = rec.serial_number;
 	if (newRec){
-		databaseManager.copyMatchingFields(updateInfo,newRec,true);
+		databaseManager.copyMatchingFields(updateInfo,newRec);
 		newRec.inventory_ref_number = rec.inventory_ref_number;
 		if (isUpdateQuantity){
 			rec.quantity = rec.quantity - quantCut;
@@ -13696,9 +13696,9 @@ function updateSTSInventory(event,invBarcode,updateInfo,isUpdateQuantity,quantCu
 		//var success = databaseManager.saveData(Q);
 		//databaseManager.saveData(newRec);
 	} else {
-		databaseManager.copyMatchingFields(updateInfo,rec,true);
+		databaseManager.copyMatchingFields(updateInfo,rec);
 	}
-	rec.quantity = saveRecCount;
+	rec.quantity = (!saveRecCount) ? updateInfo.quantity : saveRecCount;
 	databaseManager.saveData(Q);
 	return invBarcode;
 }
@@ -16584,20 +16584,111 @@ function tableFilterAssoc(event,table,enableFilter){
  * @param quantity
  *
  * @properties={typeid:24,uuid:"F028E8CF-3B7F-4166-B63E-C31972FA4C9A"}
+ * @AllowToRunInFind
  */
 function rfProcessInventoryAudit(event,iaResult,rmBarcode,quantity){
 	/**
 	 * process according to iaResult with and without ASN Number
 	 */
-	if (iaResult && iaResult.audit_quantity < quantity){
-		errorDialogMobile(event,'1062','genericin','');
+	var form = forms['rf_mobile_view'];
+	if (iaResult && iaResult.audit_quantity*1 < quantity*1){
+		globals.errorDialogMobile(event,'1062','genericin','');
 		return;
 	}
 	if (!globals.checkRequiredComplete(event,'quantityin')){
 		return;
 	}
+	/**
+	 	rmBarcode is in STSX
+ 		FS: If the SerialNumber does not yet exist in FabSuite's inventory then it will be associated with an inventory record
+			that has information matching the AuditSerialNumber.
+		FS: If the SerialNumber is already in FabSuite's inventory then it will be moved to the location and secondary location
+			defined by the AuditSerialNumber as long as it matches the rest of the details.
+		Process the STSX to FS 
+		2020-02-26 09.22 Servoy Meeting InventoryAuditScreen.mp4 source
+		Allow Audit Scans of Serial Numbers Not In STSX or FS, prefs setting scopes.prefs.lFsAllowNonSerial accepts any input otherwise, it is an RM barcode
+		Flip Primary And Secondary Locations in FS, prefs setting scopes.prefs.lFsFlipPrimSecWhenShop done in fsmodule
+		Do not pass Secondary location to FS, prefs setting scopes.prefs.lFsNoPushSecLoc done in fs module
+		Filling in Quantity executes match for RM and IA barcodes
+		Bundled makes one serial unless no, creates 1 for quantity or creates quantity for quantity 1:1
+		if no RM number, then just process with new barcode/barcode
+		if ASN number is filled in then bundled y/n q > 1 with ASN number auto yes
+		if print on  then print, otherwise don't
+		our RM 9-15
+		Nucor up to 40 
+		location 1 comes from FS IA number
+		location 2 is division
+		if serial number exists, then no action if it exists in FS and only if it is allowed
+		check against inventory, but if it matches a production barcode, then push FS anyway
+		match shapes / material as matching, not grade, 
+	 */
+	null;
+	//getRMBarcodeSpecs(event,RMBarcode) which takes an RMBarcode in FS and puts it into STSX inventory
+	//getInventorySerial(event,serialNumber) get a FS serial number
+	//updateSTSInventory(event,invBarcode,updateInfo,isUpdateQuantity,quantCut) update STSX inventory entry
+	//inventoryCheck(invSerial) return null or STSX inventory item
+	var bundled = (form.bundled.search('Y') != -1);//Y or N
+	var location1 = iaResult.location1;
+	var location2 = iaResult.location2;
+	var rawSerial = form.asnNumber;
+	var iaSerial = form.auditBarcode;
+	if (rawSerial){bundled = true;}
+	var nonRMSerialsAllowed = (scopes.prefs.lFsAllowNonSerial);//boolean
+	var trueRawMatBarcode = !(!rawSerial.match(/RM[0-9]+/));
+	if (rawSerial && !nonRMSerialsAllowed && !trueRawMatBarcode){//Raw Material ID is not a Raw Material Barcode
+		globals.errorDialogMobile(event,'1289','genericin',rawSerial);
+		return;
+	}
+	var barcodesAvail = [];
+	if (rawSerial && trueRawMatBarcode){
+		var rawInfoSTSX = inventoryCheck(rawSerial);
+		if (!rawInfoSTSX){
+			barcodesAvail.push(rawSerial);
+		} else {//raw material barcode match to requested IA information
+			var invMaterial = rawInfoSTSX.model_part;
+			var fsMaterial = iaResult.shape+' '+iaResult.dims;
+			if (invMaterial.replace(/ +/g,'') != fsMaterial.replace(/ +/g,'')){
+				globals.errorDialogMobile(event,'1290','genericin',invMaterial+' ! '+fsMaterial);
+				return;
+			} else {
+				barcodesAvail.push(rawSerial);
+			}
+		}
+	}
+	var barcodesNeeded = (bundled) ? 1 : quantity;
+	while (barcodesAvail.length != barcodesNeeded){
+		var newRawSerial = scopes.jobs.createValidBarcodeRM();
+		var fsSerial = scopes.fs.getInventorySerial(event,newRawSerial);//if serial exists then add to STSX and continue get a new serial
+		if (!fsSerial.error){
+			getRMBarcodeSpecs(event,newRawSerial);
+			continue;
+		}
+		barcodesAvail.push(newRawSerial);
+	}
+	quantity = (bundled) ? quantity : 1;
+	while (rawSerial = barcodesAvail.pop()){
+		var success = scopes.fs.fabSuiteInventoryAuditSave(event,rawSerial,iaSerial,quantity,location1,location2);
+		if (!success.error){
+			getRMBarcodeSpecs(event,rawSerial);//update STSX inventory
+			if (form['printEnabled'] == 'ON'){
+				application.output('Printing Inventory '+rawSerial);
+				var tempPrtUUID = globals.getInvUUID(event,rawSerial);
+				if (tempPrtUUID){
+					if (!globals.invUUIDs){globals.invUUIDs = new Array()}
+					globals.invUUIDs.push(tempPrtUUID.toString());
+					form['labelPrintType'] = 'material';
+					scopes.printer.onActionPrintRMLabels(event,globals.invUUIDs)
+				}
+			}
+		}
+		//form['genericin'] == iaSerial;
+		//globals.onDataChangeGeneric(null, iaSerial, event);
+	}
 	
-
+	form.bundled = '';
+	form.quantity = '';
+	form.asnNumber = '';
+	globals.invUUIDs = [];
 }
 /**
  * @param event

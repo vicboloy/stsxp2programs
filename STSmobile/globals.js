@@ -43,7 +43,7 @@ function onSolutionOpen(){
 	session.loginId = sec_current_user.user_uuid.toString();
 	session.loginUserNum = sec_current_user.user_name;
 	session.loginUser = sec_current_user.name_first;
-	session.dualEntry = sec_current_user.use_dual_entry;
+	session.dualEntry = (sec_current_user.use_dual_entry && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT);
 	session.associationId = globals.secGetAssocID(session.login);//check for use of secGetAssociationID
 	if (session.associationId == null){
 		session.associationId = secGetAssocID(secCurrentUserName);
@@ -64,6 +64,10 @@ function onSolutionOpen(){
 	globals.onStartLoadPrefs();
 	if (scopes.prefs.lFabsuiteInstalled == 1 || scopes.prefs.lFabsuiteInstalled == true){
 		scopes.fs.checkComFabsuite(null);//Log into FabSuite
+		if (globals.loginError){//logout
+			application.sleep(4000);
+			rfLogout();
+		}
 	}
 	globals.getMenuList();
 	globals.rfFunctionKeys('STS_main');
@@ -82,7 +86,7 @@ function onSolutionOpen(){
 
 	if (application.isInDeveloper()){application.output("-----------------------");application.output('width = '+application.getScreenWidth())}
 	scopes.prefs.sts = 'STSmobile';
-
+	null;
 	//rfGetLocalStorage('deviceName');
 	//rfGetLocalStorage('deviceName');
 	//rfGetLocalStorage('deviceName');

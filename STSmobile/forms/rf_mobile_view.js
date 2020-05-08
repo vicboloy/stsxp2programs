@@ -507,6 +507,96 @@ var location2 = '';
  */
 var auditBarcode = '';
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"16017FA7-8C3E-4901-BF1A-31E5D5D8F398"}
+ */
+var printIdLabel = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"AE925789-098B-4C62-88B3-358209DE8735"}
+ */
+var sweepBarcode = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"AC94AAFD-D680-4600-AEAB-6CD197FE11F5",variableType:4}
+ */
+var qSweepRemain = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"CB97BBBE-3CDC-444D-8FBD-09261AB96C7F"}
+ */
+var qSweepQuanRemain = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"15FB3255-57DC-42FE-8CE2-D721081D5390",variableType:4}
+ */
+var qSweepFound = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"B6EFEDDB-1134-4C5A-A376-F1D6B6DCE64E",variableType:4}
+ */
+var qSweepMovedIn = 0;
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"96AA8948-3A74-451E-A9D3-81E4FD7D4C2E",variableType:4}
+ */
+var qSweepMovedOut = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"A89F42CA-F218-4D2B-8B6A-6E56748889BE"}
+ */
+var qSweepMovedInOut = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"24C8DC56-9DC3-4F8B-9E54-0D5AC9D9FC37",variableType:4}
+ */
+var qSweepMovedComplete = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"7C22542D-AA64-4DCB-9644-BBFA5F6A38C5"}
+ */
+var qSweepComplete = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"40029FDB-290C-4509-B4B2-6947250B79D8"}
+ */
+var tfsJob = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"D654C931-A92D-491D-8809-D871D620ABAA"}
+ */
+var tfsSequence = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"10CA615D-2A32-4BEE-97D4-65E39DED3EAE"}
+ */
+var tfsLot = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3E4CA5EE-B91F-44F6-8F83-5AF69DDA86C0"}
+ */
+var dropJob = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"0E8E9410-3F8B-4E84-AD8F-1AA061F7F562"}
+ */
+var dropLocation = '';
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -630,6 +720,9 @@ function onShowForm(firstShow,event) {
 			//newScale = 1.0;
 		}
 		//newScale = 1.0;
+		if (globals.clientUserAgent.search(/Windows CE/) != -1){
+			elements.elHelp.setSize(Math.floor(globals.clientWidth),Math.floor(globals.clientHeight-60));
+		}
 	}
 	//newScale = 1.0;
 	var trueHeight = 21;
@@ -687,9 +780,12 @@ function onShowForm(firstShow,event) {
 		element.setSize(elWidth,elHeight);
 		//element.setLocation(Math.floor(element.getLocationX()*newScale),newY);
 		element.setLocation(Math.floor(solEl.x*newScale),Math.floor(newY * newScale));
+		var fieldValue = element.getDataProviderID();
+		//var fieldType = typeof fieldValue;
+		//application.output('fieldtype '+fieldType)
 		if (globals.rfViews[showElementsOf][item].search("O|R") != -1){
 			//if (focusFirst == ""){focusFirst = item;tabSequence.push(element)}
-			var fieldValue = element.getDataProviderID();
+			
 			forms['rf_mobile_view'][fieldValue] = "";
 			//tabFieldOrder.push(item);
 			//tabSequence.push(element);
@@ -700,6 +796,7 @@ function onShowForm(firstShow,event) {
 				element.fgcolor = 'black';
 			}
 		} else {
+			if (fieldValue && !fieldValue.match(/globals/)){forms['rf_mobile_view'][fieldValue] = "";} else {eval (fieldValue = '')}
 			//padding = -2;
 			//if (isAndroid){
 			//	padding = 1;
@@ -765,6 +862,10 @@ function onShowForm(firstShow,event) {
 	var solName = application.getSolutionName();
 	win.title = solName+' '+globals.verSTSmobile+'('+application.getSolutionRelease()+')';
 
+	if (requiredFields.indexOf('strikethruin') != -1){strikeThru = i18n.getI18NMessage('sts.btn.yes')}//default to StrikeThru YES #
+	if (requiredFields.indexOf('printidin') != -1){
+		printIdLabel = (!scopes.prefs.lFsPrintIDFromCutList || scopes.prefs.lFsPrintIDFromCutList == 0) ?  i18n.getI18NMessage('sts.btn.no').toUpperCase() : i18n.getI18NMessage('sts.btn.yes').toUpperCase();
+	}
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.
@@ -1145,4 +1246,3 @@ function onDataChangeIOS(oldValue, newValue, event) {
 	}
 	return true
 }
-

@@ -289,3 +289,29 @@ function onTabChangeSplit(previousIndex, event) {
 		forms[event.getFormName()].formResizing = false;
 	}
 }
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"1FE37A6D-5C48-4215-B58D-FB247DFA72B8"}
+ */
+function onActionFindData(event) {
+	var formName = event.getFormName();
+	var topForm = forms[formName].elements.split.getLeftForm();
+	var lastSort = topForm.foundset.getCurrentSort();
+	var columnName = lastSort.split(' ')[0];
+	var rec = null;var index = 1;
+	/* @type {JSFoundSet} */
+	var fs = topForm.foundset;
+	while (rec = fs.getRecord(index)){
+		if (!(!rec[columnName])){
+			fs.setSelectedIndex(index);
+			topForm.elements[columnName].requestFocus();
+			break;
+		}
+		index++;
+	}
+	application.output('currentSort '+lastSort);
+}

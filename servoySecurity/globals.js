@@ -286,6 +286,18 @@ var clientUserAgent = '';
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"531AC68F-5AEB-4156-8047-82B7FDE717B7"}
+ */
+var clientHeight = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"6E0ED7E1-09EA-4273-A465-EA3EB07A0702"}
+ */
+var clientWidth = '';
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"A29DEFF9-7FD1-4B31-94B8-F133FA5E0BB6"}
  */
 var fabsuiteResponse = '';
@@ -586,7 +598,7 @@ function secCreateUser(userName, password, tenantID, assocID){
 		return null;
 	}		
 	tenantID = (tenantID) ? tenantID : secCurrentTenantID;	
-	tenantID = (tenantID) ? tenantID.toString : tenantID;
+	tenantID = (tenantID) ? tenantID.toString() : tenantID;
 				//	default is current tenant when null;
 
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
@@ -602,8 +614,8 @@ function secCreateUser(userName, password, tenantID, assocID){
 			if(users.newRecord()){										//	create the new user
 				users.user_name = userName;								//	set user name
 				users.user_password = password;							//	set password
-				users.tenant_uuid = tenantID;								//	set the tenant ID
-				users.association_uuid = assocID;
+				users.tenant_uuid = application.getUUID(tenantID);								//	set the tenant ID
+				users.association_uuid = application.getUUID(assocID);
 				users.is_account_active = 1;							// set active account
 				if (userName == 'P2'){
 					users.first_name = "P2 Programs";
@@ -718,7 +730,7 @@ function secLogin(userID){
 	if (application.isInDeveloper()){application.output('before logical login');}
 	if(users.loadRecords(userID) && users.is_account_active){ 			//	load user record, check if active account
 		users.last_login = new Date();									//	reset last login date & login user
-		secLogger(i18n.getI18NMessage('sts.txt.user.login',new Array(userID)));
+		secLogger('Login: '+users.user_name);
 		return security.login(users.user_name,users.user_uuid,[SEC_ADMINISTRATORS]);
 	}
 	if (application.isInDeveloper()){application.output('after logical login');}
@@ -1108,8 +1120,8 @@ function getTenantCount(){
 		databaseManager.saveData();
 		var tablesToClear = ['addresses','carrier','cow_xref','cowcodes','customers','employee_class','end_conditions',
 		'heats','id_serial_numbers','idfiles','jobs','labor_codes','labor_department','last_id_serial','loads','lots',
-		'piecemarks','preferences2','rf_transactions','route_detail','routings','sequences2','sheets','status_description',
-		'transactions','uom_types'
+		'piecemarks','rf_transactions','route_detail','routings','sequences2','sheets','status_description',
+		'transactions','uom_types','employee'
 		]
 		//, 'groups','group_keys','user_groups','permissions','applications','keys'
 		// 'mapping', 'users','applications','associations','barcode_test','i18n_table',
@@ -1141,7 +1153,7 @@ function getTenantCount(){
 		adminAssocRec.tenant_group_uuid = adminAssocId;
 		assocRec.tenant_group_uuid = adminAssocId;
 		databaseManager.saveData();
-		var adminUser = secCreateUser('P','p',tenantRec.tenant_uuid);
+		var adminUser = secCreateUser('P','p',tenantRec.tenant_uuid.toString(),adminAssocId.toString());
 		adminUser.association_uuid = adminAssocId;
 		adminUser.name_first = 'P2PROGRAMS';
 		adminUser.employee_id = empRec.employee_id;
@@ -1285,7 +1297,7 @@ function secGetTenantID2(userName,companyName){
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);//	get a tenant foundset
 	//users.loadRecords();
 	if(users.find()){													//	search the tenant foundset...
-		users.user_name = userName;								//	search by tenant name
+		users.user_name = userName.toString();								//	search by tenant name
 		if (application.isInDeveloper()){application.output('finding user ('+userName+')')}
 		users.delete_flag = '^';	
 		if (companyName != ""){
@@ -1295,7 +1307,8 @@ function secGetTenantID2(userName,companyName){
 			null;
 			
 		}
-		var count = users.search();
+		var count = users.search();//users.loadRecords();
+		//var count = users.getSize();
 		if (application.isInDeveloper()){application.output('Users '+count)}
 		if(count){
 			if (count > 1){
@@ -1971,6 +1984,7 @@ function secCheckLicense(solutionName,tenantID,userID){
 	/** @type {JSFoundSet<db:/stsservoy/associations>} */	
 	var AS = databaseManager.getFoundSet(as);
 	var rec2 = AS.getRecord(1);
+	if (!rec2){rec2 = {licenses_mobile : 1,licenses_desktop : 1}}
 	licenseAvail['STSmobile'] = rec2.licenses_mobile;
 	licenseAvail['STS3'] = rec2.licenses_desktop;
 	assocId = rec2.association_uuid;
@@ -2071,7 +2085,9 @@ function secCheckLicense(solutionName,tenantID,userID){
 	}
 	//if (!licAvail){licAvail = 5}
 	licensed += "License:"+licAvail+":"+licenseAvail[solutionName]+":"+licensesInUse[solutionName]+':'+clientOver+' '+clientMaxTime+' max idle pref '+maxIdle+' killed '+killed;
-
+	if (!licensed){
+		licensed = "License:5:1:0:0:;";
+	}
 	return licensed;
 }
 
@@ -2213,20 +2229,39 @@ function getPrefsMaxIdleMinutes(tenantID){
  */
 function getBrowserInfo(){
 	null;
-	if (!globals.clientUserAgent){
-		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
+	var date = new Date();
+	//application.updateUI();
+	//application.output('Query Browser Information '+date,LOGGINGLEVEL.WARNING);
+	//if (!globals.clientUserAgent){
+		//plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		plugins.WebClientUtils.executeClientSideJS('window.innerHeight',globals.storeClientHeightOnLogin,['window.innerHeight']);
+		if (!globals.clientUserAgent){
+			application.output('Second Query for Browser Info '+date,LOGGINGLEVEL.WARNING);
+			plugins.WebClientUtils.executeClientSideJS('window.innerHeight',globals.storeClientHeightOnLogin,['window.innerHeight']);
+			//application.output('Width: '+clientWidth+'x  Height: '+clientHeight+' Agent:  '+clientUserAgent,LOGGINGLEVEL.WARNING);
+			if (!clientHeight){clientHeight = 320}
+			if (!clientWidth){clientWidth = 240}
+			if (!clientUserAgent){clientUserAgent = 'Windows CE'}
+		}
 	}
+	//}
 	null;
 
 }
 /**
  * @param userAgent
+ * @param clientH
+ * @param clientW
  *
  * @properties={typeid:24,uuid:"5CDAD678-12AB-4030-A185-114CBABCC805"}
  */
-function storeUserAgentOnLogin(userAgent){
+function storeUserAgentOnLogin(userAgent,clientW,clientH){
 	globals.clientUserAgent = userAgent;
-	application.output('RM '+userAgent);
+	globals.clientHeight = clientH;
+	globals.clientWidth = clientW;
+	application.output('RM '+userAgent,LOGGINGLEVEL.WARNING);
+	application.output('RM Browser: '+clientW+'x'+clientH,LOGGINGLEVEL.WARNING);
 }
 /**
  * @properties={typeid:24,uuid:"6954C3DF-E0D3-40E6-8220-3B86643DF763"}
@@ -2344,4 +2379,13 @@ function secCreateP2Address(p2Id){
 	recA.country = 'USA';
 	databaseManager.saveData(recA);
 	return recA;
+}
+/**
+ * @param clientH
+ *
+ * @properties={typeid:24,uuid:"306E3F9C-EE57-4040-98F2-A6AE2F77D161"}
+ */
+function storeClientHeightOnLogin(clientH){
+	globals.clientHeight= clientH;
+	application.output('RM '+clientH);
 }

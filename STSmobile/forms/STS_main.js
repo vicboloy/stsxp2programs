@@ -112,11 +112,13 @@ function onActionTemp(event) {
  */
 function onShow(firstShow, event) {
 	//application.output('RM main onShow begin');
+	globals.getBrowserInfo();
 	var win = application.getActiveWindow();
 	var width = application.getScreenWidth();
 	var osName = application.getOSName();
 	var elWidth = elements.elHelp.getWidth();//elHelp and mainMenu same width
 	var screenHeight = application.getScreenHeight();
+	application.output('UserAgent is '+globals.clientUserAgent+'w/screenheight of '+globals.clientHeight,LOGGINGLEVEL.INFO);
 	var screenWidth = application.getScreenWidth();
 	var newScale = 1.0;
 	if (firstShow){
@@ -177,6 +179,11 @@ function onShow(firstShow, event) {
 				
 			}
 		}
+	}
+	if (globals.clientUserAgent.search(/Windows CE/) != -1){
+		application.output('Windows CE Login. Resizing Main Menu.',LOGGINGLEVEL.WARNING);
+		elements.mainMenu.setSize(Math.floor(globals.clientWidth),Math.floor(globals.clientHeight-60));
+		elements.elHelp.setSize(Math.floor(globals.clientWidth),Math.floor(globals.clientHeight-60));
 	}
 	if (false && osName.search(/(Linux)|(Mac)/i) != -1){
 		screenHeight = 50;

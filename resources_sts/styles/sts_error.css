@@ -1,115 +1,56 @@
 /* 
  * Default Styling for all Servoy objects
-label.dialogs_icon_generic { background-image: url('media:///dialogs_icon_generic.png'); }
  */
-label.dialogs_message { font: 12pt 'Lucida Grande', Arial, Helvetica, sans-serif; }
-label.dialogs_icon_generic { 
-	background-image: url('media:///dialogs_icon_generic0.png'); 
-}
-label.dialogs_icon_info { background-image: url('media:///dialogs_icon_info.png'); }
-label.dialogs_icon_warning { background-image: url('media:///dialogs_icon_warning.png'); }
-label.dialogs_icon_error { background-image: url('media:///dialogs_icon_error.png'); }
 form {
-	color: black;
 	background-color: #F3F5F8;
 	border: 0px solid;
 }
 
-
 tabpanel {
-	color: black;
 	border: 0px solid;
-	font-size: 12px;
 }
 
-label {
-	color :blue;
-	color: black;
-	font-family: Arial;
-	font-size: 11px;
-	text-align: left;
-	vertical-align: middle;
-}
-
-field {
-	color: black;
-	font-family: Arial;
-	font-size: 11px;
-	text-align: left;
-	vertical-align: middle;
-}
-
-button, combobox, check, radio, spinner {
-	color: black;
-	font-family: Arial;
-	font-size: 13px;
-	text-align: left;
-	vertical-align: middle;
+label, button, field, combobox, check, radio, listbox, spinner {
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	font-size: 10px;
+	word-wrap: break-word;
 	white-space: normal;
 }
 
-
-listbox {
-	color: green;
-	font-family: Arial;
-	font-size: 10pt;
-	text-align: left;
-	vertical-align: middle;	
-}
-
-field, combobox {
-	/* background-color: #FFF; */
-	color: black;
+field {
+	background-color: #FFF;
+	color: #000;
 	border: 2px ridge #FFF;
 	margin-left: 3px;
 	margin-right: 3px;
 }
 
-combobox {}
+combobox {
+	background-color: #FFF;
+	color: #000;
+}
 
 check {}
 
 radio {}
 
-listbox {
-	color: black;
-	font-size: 10px;
-}
+listbox {}
 
 spinner {}
 
 label {
-	color: black;
+	color: #727784;
 }
 
 label.fieldlabel {
 	text-align: right;
-	font-size: 12px;
-}
-
-label.darker {
-	color: black;
-	
+	font-size: 8px;
 }
 
 label.title {
 	font-size: 12px;
 }
 
-label.notice {
-	font-size:33px;
-	color:gray;
-	opacity:0.3;
-}
-
-button.notice {
-	color:black;
-	font-size:10px;
-    word-wrap: break-word; /* Internet Explorer 5.5+ */
-}
-button.larger, label.larger {
-	font-size: 13px;
-}
 button {}
 
 portal {}
@@ -128,7 +69,7 @@ even {}
 
 selected {
 	background-color: #d4d4d4;
-	color: black;
+	color: #FFF;
 }
 
 /* 
@@ -181,9 +122,3 @@ form.detail field.pk { /*Style for Fields having a StyleClass "pk" on a form hav
 tabpanel.detail { /*StyleClass for a tabpanel in which a detail form is displayed*/
 	border: 3px solid #FFF;	
 }
-label.dialogs_message { font: 12pt 'Courier New', Arial, 'Lucida Grande', Helvetica, sans-serif; }
-label.dialogs_icon_generic { background-image: url('media:///dialogs_icon_generic.png'); }
-label.dialogs_icon_info { background-image: url('media:///dialogs_icon_info.png'); }
-label.dialogs_icon_warning { background-image: url('media:///dialogs_icon_warning.png'); }
-label.dialogs_icon_error { background-image: url('media:///dialogs_icon_error0.png'); }
-

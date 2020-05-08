@@ -46,7 +46,8 @@ function onDataChange(oldValue, newValue, event) {
 		foundset.setSelectedIndex(foundset.getRecordIndex(rec));
 	}
 	
-	forms.customer_specs.elements.tabs.tabIndex = 2;
+	//forms.customer_specs.elements.tabs.tabIndex = 2;//intent here was to ensure barcode was completed for New Customer 
+	// removed due to expectation jumping to barcode was an error as per email Thu, Apr 23, 2020 8:03 am
 
 	verifyCustomerInput(event);
 	return true;
@@ -72,12 +73,27 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.where.add(q.columns.customer_number.eq(newValue));
 	var fsQ = databaseManager.getFoundSet(q);
-	if (!oldValue && fsQ.getSize() > 0){
+	if (fsQ.getSize() > 0){
 		var rec = fsQ.getRecord(1);
-		var idx = foundset.getSelectedIndex();
-		foundset.deleteRecord(idx);
-		idx = foundset.getRecordIndex(rec);
-		foundset.setSelectedIndex(idx);
+		var idx = forms['customer_specs'].foundset.getRecordIndex(rec);
+		application.output('record index for customer:'+idx);
+		if (forms['customer_specs'].foundset.getRecord(idx) && !forms['customer_specs'].foundset.getRecord(idx).name){
+			forms['customer_specs'].foundset.deleteRecord(idx);
+		}
+		idx = forms['customer_specs'].foundset.getRecordIndex(rec);
+		var limit = 120;
+		while (idx == -1 && limit > 0){
+			limit--;
+			forms['customer_specs'].foundset.getRecord(foundset.getSize()+1);
+			idx = forms['customer_specs'].foundset.getRecordIndex(rec);
+			forms['customer_specs'].foundset.setSelectedIndex(idx);
+			//application.output('foundset size: '+forms['customer_specs'].foundset.getSize()+ ' idx:'+idx+' foundset.selectedIdx:'+forms['customer_specs'].foundset.getSelectedIndex())
+			if (forms['customer_specs'].foundset.getSelectedIndex() == idx){break}
+			//controller.setSelectedIndex(foundset.getRecordIndex(rec))
+		}
+		application.sleep(1000)
+		forms['customer_specs'].foundset.setSelectedIndex(idx);
+		forms['customer_specs'].controller.setSelectedIndex(idx);
 		var instance = globals.getInstanceForm(event);
 		forms['customer_specs'+instance].onActionCancelEdit(event);
 		onActionEdit(event,false);

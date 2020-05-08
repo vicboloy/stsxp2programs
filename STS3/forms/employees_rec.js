@@ -132,7 +132,19 @@ function createEmpList(event){
 	elements.tabless.removeAllTabs();
 	elements.tabless.addTab('employees_lstB'+instance);
 	
-	forms['employees_lstB'+instance].foundset.loadRecords(L);
+	var fs = forms['employees_lstB'+instance].foundset;
+	fs.loadRecords(L);
+	application.output('editing sort is '+forms["employee_specs"+instance].editingSort)
+	fs.sort(forms["employee_specs"+instance].editingSort);
+	var rec = null;var idx = 1;
+	while (rec = fs.getRecord(idx)){
+		if (rec.employee_id == forms['employee_specs'+instance].editingId){
+			fs.setSelectedIndex(idx);
+			break;
+		}
+		idx++;
+	}
+	
 	null;
 }
 /**

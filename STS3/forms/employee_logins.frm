@@ -27,6 +27,7 @@ typeid:7,
 uuid:"68EBBCBF-43E8-42E9-AA8B-6774B2102548"
 },
 {
+anchors:12,
 enabled:false,
 horizontalAlignment:0,
 location:"107,381",
@@ -40,6 +41,7 @@ typeid:7,
 uuid:"A814D1A5-CB0E-4CFA-888D-293A0B29F01A"
 },
 {
+anchors:12,
 enabled:false,
 horizontalAlignment:0,
 location:"20,350",
@@ -75,6 +77,7 @@ typeid:16,
 uuid:"DAC11390-35C4-4891-A2F2-C1A87763D9CD"
 },
 {
+anchors:12,
 enabled:false,
 horizontalAlignment:0,
 location:"374,350",

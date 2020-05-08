@@ -57,6 +57,7 @@ function onActionAdd(event,recordKeyID){
 			form.elements.job_number.requestFocus();
 		}
 		form.keep_minors = (scopes.prefs.lKeepMinorPcMarks) ? 1 : 0;
+		form.metric_job = (scopes.prefs.lMeasurementSystemMetric*1 == 1) ? 1 : 0;
 		forms['jobs_general']
 	}
 }

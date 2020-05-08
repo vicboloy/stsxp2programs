@@ -50,6 +50,7 @@ function onEditCarrier(event,editStatus){
 	forms['carriers'+instanceForm].controller.readOnly = !editStatus;
 	//forms.carriers_lst.controller.enabled = !editStatus;
 	editCarrierFlag = editStatus;
+	forms['carrier_info'+instanceForm].controller.readOnly = !editStatus;
 	forms['carriers_rec'+instanceForm].elements.btn_New.visible = !editStatus;
 	forms['carrier_info'+instanceForm].elements.btn_Delete.visible = !editStatus;
 	forms['carrier_info'+instanceForm].elements.btn_Cancel.visible = editStatus;
@@ -148,6 +149,7 @@ function onShow(firstShow, event) {
 		elements.btn_Delete.visible = false;
 		scopes.jobs.formPermissions(event,true);
 	}
+	onEditCarrier(event,false);
 	return _super.onShow(firstShow, event)
 }
 

@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/employee_class",
+items:[
+{foreignColumnName:"employee_clas_id",primaryDataProviderID:"employee_clas_id",typeid:23,uuid:"BED4FE82-1646-498F-8461-FAA66068197D"}
+],
+joinType:1,
+name:"sts_status_to_class_code",
+primaryDataSource:"db:/stsservoy/status_valid_classes",
+typeid:22,
+uuid:"F49E12A6-5100-4B9B-99BC-05EEBB8CD1C0"

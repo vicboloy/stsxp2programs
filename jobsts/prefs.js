@@ -539,7 +539,13 @@ var iconFile = "";
  * @properties={typeid:35,uuid:"78ED0F24-2A60-4312-A335-BFAF860DF5AD"}
  */
 var winTitle = "";
-
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"19275B11-818C-4CBE-BD0A-9561A5D03F3E",variableType:4}
+ * global measurement display preference imperial default / metric by choice
+ */
+var lMeasurementSystemMetric = 0; 
 //Hardware Settings preferences -----------------------------------------------------------------
 
 /**
@@ -1517,7 +1523,10 @@ function onActionPrintLabels(event) {
 	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.inventory.move')) {
 		specs = scopes.printer.getBTFieldData('R');	
 		srcForm = 'rf_mobile_view';
-	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.build.bundles')){
+	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.inventory.move')) {
+		specs = scopes.printer.getBTFieldData('R');	
+		srcForm = 'rf_mobile_view';
+	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.status')){
 		specs = scopes.printer.getBTFieldData('P');	
 		srcForm = 'rf_mobile_view';		
 	}	else {
@@ -1544,12 +1553,17 @@ function onActionPrintLabels(event) {
 	var formTable = formName+"_table";
 	
 	var updateIdfile = true;
+	var rePrint = false;
 	if (globals.session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw') ||
 		globals.session.program == i18n.getI18NMessage('sts.mobile.inventory.move')){
 		fs = globals.session.tempFS;
 	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.build.bundles')){
 		fs = globals.session.tempFS;
 		updateIdfile = false;
+	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.status')){
+		fs = globals.session.tempFS;
+		updateIdfile = false;
+		rePrint = true;
 	} else {
 		/** @type JSFoundSet */
 		var fs = forms[formTable].foundset;
@@ -3243,6 +3257,7 @@ function getUserDestination(){
 				case i18n.getI18NMessage('sts.mobile.checklist.receive.w.rem'):
 				case i18n.getI18NMessage('sts.mobile.checklist.status'):
 				case i18n.getI18NMessage('sts.mobile.inventory.audit'):
+				case i18n.getI18NMessage('sts.mobile.inventory.audit.sweep'):
 				case i18n.getI18NMessage('sts.mobile.inventory.move'):
 					destination.printerRaw = rec.printer_name;
 					destination.labelRaw = rec.label_template_name;

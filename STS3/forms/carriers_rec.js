@@ -23,14 +23,21 @@ function addCarrierRecord(event) {
 	var idx = forms['carriers_lst'+instance].foundset.newRecord();
 	/** @type {JSFoundSet<db:/stsservoy/carrier>} */
 	var rec = forms['carriers_lst'+instance].foundset.getRecord(idx);
-	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
+	/* * @type {JSFoundSet<db:/stsservoy/addresses>} * /
 	var addressFS = databaseManager.getFoundSet('db:/stsservoy/addresses');
 	var addIdx = addressFS.newRecord();
 	addressRec = addressFS.getRecord(addIdx);
 	addressRec.tenant_uuid = globals.session.tenant_uuid;
-	addressRec.address_type = i18n.getI18NMessage('sts.txt.carrier.shipper').toUpperCase();
+	addressRec.address_type = i18n.getI18NMessage('sts.txt.address.carrier').toUpperCase();
 	addressRec.edit_date = new Date();
-	rec.carrier_address_uuid = addressRec.address_id;
+	addressRec.customer_id = carrier_id; */
+	var newAddr = {};
+	newAddr.entity_uuid = rec.carrier_id;
+	newAddr.tenant_uuid = globals.session.tenant_uuid;
+	newAddr.address_type = i18n.getI18NMessage('sts.txt.address.carrier').toUpperCase();
+	newAddr.edit_date = new Date();
+	
+	rec.carrier_address_uuid = globals.createAddress(event,newAddr);
 	forms['carrier_info'+instance].onEditCarrier(event,true);
 	forms['carrier_info'+instance].elements.carrier_number.requestFocus();
 }

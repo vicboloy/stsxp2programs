@@ -48,3 +48,6 @@ function onHide(event) {
 	///form['loads_criteria'+instance].elements['btn_Browse'].enabled = true;
 	return _super.onHide(event)
 }
+
+
+

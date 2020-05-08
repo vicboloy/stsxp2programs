@@ -1,4 +1,22 @@
 /**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"173C7486-B3E9-48F9-9895-23BEFBE8DF07"}
+ */
+var findCustomerString = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"DCCC099D-F886-4D5C-9523-EEE35A0DED06"}
+ */
+var findCustomerStringLast = '';
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"D1737956-8001-4DD5-A3C3-03257A5F2CB5",variableType:4}
+ */
+var findCustomerStringIdx = 0;
+/**
  * @properties={typeid:35,uuid:"4137BDC4-EC26-4862-85D9-B069B6EEE5C2",variableType:-4}
  */
 var editCustomerFlag = false;
@@ -18,6 +36,8 @@ function onShow(firstShow, event) {
 	//controller.readOnly = true;
 	onActionEdit(event,false);
 	globals.setUserFormPermissions(event,false);
+	
+	findCustomerString = '';
 }
 
 /**
@@ -135,4 +155,96 @@ function onActionClose(event) {
 function onHide(event) {
 	onActionClose(event);
 	return true
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {String} oldValue old value
+ * @param {String} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"A1BD9D12-D378-47E3-A098-94A22C86DCD6"}
+ */
+function onDataChangeFindCustomer(oldValue, newValue, event) {
+	if (!newValue){return}
+	findCustomerStringLast = newValue;
+	onActionReFind(event);
+	if (1){return}
+	/** @type {QBSelect<db:/stsservoy/customers>} */
+	var q = databaseManager.createSelect('db:/stsservoy/customers');
+	q.where.add(q.columns.customer_number.eq(newValue.toUpperCase()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var Q = databaseManager.getFoundSet(q);
+	if (Q.getSize() == 1){
+		var rec = Q.getRecord(1);
+		foundset.setSelectedIndex(foundset.getRecordIndex(rec));
+	} else {
+		q.where.clear();
+		q.where.add(q.columns.name.upper.like(newValue.toUpperCase()+'%'));
+		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		Q = databaseManager.getFoundSet(q);
+		if (Q.getSize() > 0){
+			if (findCustomerStringIdx && findCustomerStringIdx < Q.getSize()){findCustomerStringIdx++}else{findCustomerStringIdx = 1}
+			rec = Q.getRecord(findCustomerStringIdx);
+			var limit = 120;
+			var idx = foundset.getRecordIndex(rec);
+			while (idx == -1 && limit > 0){
+				limit--;
+				foundset.getRecord(foundset.getSize()+1);
+				foundset.setSelectedIndex(idx);
+				if (foundset.getSelectedIndex() == idx){break}
+				//controller.setSelectedIndex(foundset.getRecordIndex(rec))
+			}
+			foundset.setSelectedIndex(idx);
+			//findCustomerStringIdx = idx;
+		}
+	}
+	findCustomerString = '';
+	elements.custSearch.requestFocus();
+	return true
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"C41FE927-E7C0-4474-9305-825063B568B0"}
+ */
+function onActionReFind(event) {
+	/** @type {QBSelect<db:/stsservoy/customers>} */
+	var q = databaseManager.createSelect('db:/stsservoy/customers');
+	q.where.add(q.columns.customer_number.eq(findCustomerStringLast.toUpperCase()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var Q = databaseManager.getFoundSet(q);
+	if (Q.getSize() == 1){
+		var rec = Q.getRecord(1);
+		foundset.setSelectedIndex(foundset.getRecordIndex(rec));
+	} else {
+		q.where.clear();
+		q.where.add(q.columns.name.upper.like(findCustomerStringLast.toUpperCase()+'%'));
+		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		Q = databaseManager.getFoundSet(q);
+		if (Q.getSize() > 0){
+			if (findCustomerStringIdx && findCustomerStringIdx < Q.getSize()){findCustomerStringIdx++}else{findCustomerStringIdx = 1}
+			rec = Q.getRecord(findCustomerStringIdx);
+			var limit = 120;
+			var idx = foundset.getRecordIndex(rec);
+			while (idx == -1 && limit > 0){
+				limit--;
+				foundset.getRecord(foundset.getSize()+1);
+				foundset.setSelectedIndex(idx);
+				if (foundset.getSelectedIndex() == idx){break}
+				//controller.setSelectedIndex(foundset.getRecordIndex(rec))
+			}
+			foundset.setSelectedIndex(idx);
+			//findCustomerStringIdx = idx;
+		}
+	}
+	findCustomerString = '';
+	elements.custSearch.requestFocus();
+
 }

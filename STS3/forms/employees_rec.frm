@@ -1,5 +1,6 @@
 dataSource:"db:/stsservoy/employee",
 extendsID:"-1",
+initialSort:"employee_lastname asc",
 items:[
 {
 height:338,

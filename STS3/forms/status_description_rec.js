@@ -23,6 +23,16 @@ var availFabCodes = [];
  */
 var localStations = [];
 /**
+ * @properties={typeid:35,uuid:"751F9124-45DD-4C30-B323-1E7C2966A9B3",variableType:-4}
+ */
+var statusClassCodeList = i18n.getI18NMessage('sts.empty.entry');
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"C1A3C549-DCF9-4166-A0B1-A6B32A36F6A2"}
+ */
+var statusClassCodes = '';
+/**
  * @type {Number}
  *
  * @properties={typeid:35,uuid:"08848E6F-5047-4405-955A-1E51286BCDA0",variableType:4}
@@ -60,6 +70,8 @@ function onShowStatusDescr(firstShow, event) {
 	forms.status_description_rec.elements.percent_complete.enabled = (end_for_status != null) && promptFS;
 	forms.status_description_rec.elements.fabtrol_labor_code.enabled = promptFS;
 	forms.status_description_rec.elements.fabtrol_labor_code.transparent = !promptFS;
+	//elements.status_class_code_list.enabled = false;
+	elements.status_class_code_select.visible = false;
 	//elements.percent_complete.enabled = (end_for_status != i18n.getI18NMessage('sts.btn.default.empty.entry'))
 	forms.status_description_rec.controller.readOnly = true;
 	if (forms.status_description_table.controller.getMaxRecordIndex() == 0){
@@ -141,14 +153,30 @@ function onEdit(event,editStatus){
 	elements.btn_Save.visible = editStatus;
 	elements.btn_Cancel.visible = editStatus;
 	
-	if (status_code && (status_code.search(RegExp('TRANS')) != -1 || status_code.search(RegExp('XFER')) != -1)) {
+	/** if (status_code && (status_code.search(RegExp('TRANS')) != -1 || status_code.search(RegExp('XFER')) != -1)) {
 		elements.req_xfer_status.enabled = true;
 	} else {
 		elements.req_xfer_status.enabled = false;
-	}
+	} */
+	//get base  i18n for status type and do pattern match for the code
+	// do same for both xfer and bundle
+	// process codes are already in i18n format for the program
+	elements.req_xfer_status.enabled = (status_type == i18n.getI18NMessage('sts.status.fab.transfer'));
+	elements.req_bundle_status.enabled = (status_type == i18n.getI18NMessage('sts.status.fab.bundled'));
+
 	elements.push_transaction.enabled = (globals.processCodes.shipping.indexOf(status_type) != -1);
 	elements.percent_complete.enabled = (end_for_status != null);
+	elements.status_class_code_select.visible = false;
+	elements.btn_UpdateCodes.enabled = (emp_number_required == 1 && editStatus);
+	if (elements.btn_UpdateCodes.enabled){
+		elements.btn_UpdateCodes.text = i18n.getI18NMessage('sts.txt.employee.class.codes.update');
+	} else {
+		elements.btn_UpdateCodes.text = i18n.getI18NMessage('sts.txt.employee.class.codes');
+	}
+	
 	globals.permissionsCacheHit(event,null);
+	
+	
 	//application.output(elements.push_transaction.enabled+ ' '+status_type+' '+globals.processCodes.shipping.indexOf(status_type))
 }
 
@@ -162,6 +190,7 @@ function onEdit(event,editStatus){
  */
 function onActionCancelEdit(event) {
 	databaseManager.revertEditedRecords(foundset);
+	statusClassCodeList = '';
 	onEdit(event,false);
 	if (false && globals.newRecordKey != null){
 		controller.deleteRecord();
@@ -202,6 +231,7 @@ function onActionSaveEdit(event) {
 	if (forms['status_descriptions'].currentSort) {
 		controller.sort(forms['status_descriptions'].currentSort);
 	}
+	
 	//forms.status_description_lst.foundset.loadRecords();
 	//databaseManager.setAutoSave(true);
 }
@@ -553,6 +583,7 @@ function onRecordSelection(event) {
 	if (application.isInDeveloper()){
 		application.output(status_type+' index:'+globals.processCodes.shipping.indexOf(status_type)+' push transaction enabled '+elements.push_transaction.enabled);
 		application.output('process types:\n'+globals.processCodes.shipping)}
+	getClassCodes(event);
 	//thirdPartyActive(event);
 }
 /**
@@ -578,6 +609,9 @@ function verifyStatusInput(event){
  */
 function onDataChangeProcessType(oldValue, newValue, event) {
 	verifyStatusInput(event);
+	elements.req_xfer_status.enabled = (status_type == i18n.getI18NMessage('sts.status.fab.transfer'));
+	elements.req_bundle_status.enabled = (status_type == i18n.getI18NMessage('sts.status.fab.bundled'));
+
 	return true
 }
 
@@ -692,10 +726,166 @@ function onDataChangePriorIncomplete(oldValue, newValue, event) {
  * @properties={typeid:24,uuid:"606B1B2B-A0FB-40A0-A8D5-DC59ADE9004B"}
  */
 function onDataChangeEndFor(oldValue, newValue, event) {
-	application.output('new value '+newValue);
+	//application.output('new value '+newValue);
 	elements.percent_complete.enabled = (newValue != null);
 	if (newValue == null){
 		prompt_complete = 0;
 	}
 	return true
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"9FE2889F-E8BD-4F4A-ADCB-B38DC944E8E7"}
+ */
+function onActionClassStatus(event) {
+	if (controller.readOnly){return}
+	
+	/** @type {QBSelect<db:/stsservoy/employee_class>} */
+	var ec = databaseManager.createSelect('db:/stsservoy/employee_class');
+	ec.where.add(ec.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	ec.sort.add(ec.columns.class_code.asc);
+	var EC = databaseManager.getFoundSet(ec);
+	/** @type {JSFoundSet<db:/stsservoy/employee_class>} */
+	var ecRec = null; var idx = 1;
+	var ecCodes = [];var ecUUIDs = [];
+	while (ecRec = EC.getRecord(idx++)){
+		ecCodes.push(ecRec.class_code);
+		ecUUIDs.push(ecRec.employee_clas_id);
+	}
+	ecCodes.unshift(i18n.getI18NMessage('sts.empty.entry'));
+	ecUUIDs.unshift(null);
+	application.setValueListItems('stsvl_work_classes',ecCodes);
+	elements.status_class_code_select.visible = true;
+}
+
+/**
+ * Handle focus lost event of the element.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"A42799A1-5E54-4149-9874-367F1A9AEEC9"}
+ */
+function onFocusLostStatusClass(event) {
+	var selected = elements.status_class_code_select.getSelectedElements();
+	if (selected && selected.length > 0){
+		statusClassCodes = '';
+		for (var idxx = 0;idxx < selected.length;idxx++){
+			if (selected[idxx] == i18n.getI18NMessage('sts.empty.entry')){selected = [];break;}
+			statusClassCodes += selected[idxx];
+			if (idxx != selected.length-1){statusClassCodes += '\n'}
+		}
+	}
+
+	forms['status_description_rec'].elements.status_class_code_select.visible = false;
+	/** @type {QBSelect<db:/stsservoy/employee_class>} */
+	var ec = databaseManager.createSelect('db:/stsservoy/employee_class');
+	ec.where.add(ec.columns.class_code.isin(selected));
+	ec.where.add(ec.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	var EC = databaseManager.getFoundSet(ec);
+	/** @type {JSFoundSet<db:/stsservoy/employee_class>} */
+	var ecRec = null;var idx = 1;
+	var classIDs = [];
+	while (ecRec = EC.getRecord(idx++)){
+		classIDs.push(ecRec.employee_clas_id);
+	}
+	//remove class codes not selected
+	/** @type {QBSelect<db:/stsservoy/status_valid_classes>} */
+	var sc = databaseManager.createSelect('db:/stsservoy/status_valid_classes');
+	sc.where.add(sc.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	sc.where.add(sc.columns.status_description_id.eq(status_description_id.toString()));
+	if (selected.length > 0){
+		sc.where.add('classsid',sc.columns.employee_clas_id.not.isin(classIDs));
+	}
+	var SC = databaseManager.getFoundSet(sc);
+	if (SC.getSize() > 0){
+		SC.deleteAllRecords();
+	}
+	sc.where.remove('classsid');
+	var SC2 = databaseManager.getFoundSet(sc);
+	/** @type {JSFoundSet<db:/stsservoy/status_valid_classes>} */
+	var scRec = null;idx = 1;var setClasses = [];var edDate = new Date();
+	while (scRec = SC2.getRecord(idx++)){if (setClasses.indexOf(scRec.employee_clas_id.toString()) == -1){
+		setClasses.push(scRec.employee_clas_id.toString());}
+	}
+	var saveSet = false;
+	for (idx = 0;idx < classIDs.length;idx++){
+		//application.output('setclasses '+setClasses);
+		//application.output('existing '+classIDs);
+		if (setClasses.indexOf(classIDs[idx].toString()) == -1){
+			var idxRec = SC2.newRecord();
+			scRec = SC2.getRecord(idxRec);
+			scRec.tenant_uuid = globals.session.tenant_uuid;
+			scRec.edit_date = edDate;
+			scRec.employee_clas_id = classIDs[idx].toString();
+			scRec.status_description_id = status_description_id;
+			scRec.logic_flag = 1;
+			saveSet = true;
+		}
+	}
+	if (saveSet){
+		databaseManager.saveData(SC2);
+	}
+}
+
+/**
+ * Handle changed data.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @returns {Boolean}
+ *
+ * @properties={typeid:24,uuid:"380359E8-0010-4304-BE81-B3D988E504B8"}
+ */
+function onDataChangeWorkerRequired(oldValue, newValue, event) {
+	elements.status_class_code_select.visible = false;
+	if (newValue == 0){
+		statusClassCodeList = i18n.getI18NMessage('sts.empty.entry');
+		elements.btn_UpdateCodes.text = i18n.getI18NMessage('sts.txt.employee.class.codes');
+		forms['status_description_rec'].elements.btn_UpdateCodes.enabled = false;
+	} else {
+		elements.btn_UpdateCodes.text = i18n.getI18NMessage('sts.txt.employee.class.codes.update');
+		forms['status_description_rec'].elements.btn_UpdateCodes.enabled = true;
+	}
+	return true
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"C1D38186-F66C-458C-863A-38CF0E0C5ED6"}
+ */
+function getClassCodes(event){
+	statusClassCodes = '';
+	/** @type {QBSelect<db:/stsservoy/status_valid_classes>} */
+	var q = databaseManager.createSelect('db:/stsservoy/status_valid_classes');
+	q.where.add(q.columns.status_description_id.eq(status_description_id));
+	q.result.add(q.columns.employee_clas_id);
+	var Q = databaseManager.getFoundSet(q);
+	if (emp_number_required == 0 || emp_number_required == null){
+		Q.deleteAllRecords();
+	}
+	var QQ = databaseManager.getDataSetByQuery(q,-1);
+	var ids = QQ.getColumnAsArray(1);
+	
+	if (ids && ids.length > 0){
+		/** @type {QBSelect<db:/stsservoy/employee_class>} */
+		var r = databaseManager.createSelect('db:/stsservoy/employee_class');
+		r.where.add(r.columns.employee_clas_id.isin(ids));
+		r.sort.add(r.columns.class_code.asc);
+		r.result.add(r.columns.class_code);
+		var R = databaseManager.getDataSetByQuery(r,-1);
+		var codes = R.getColumnAsArray(1);
+		statusClassCodes = '';
+		for (var idx = 0;idx < codes.length;idx++){
+			statusClassCodes += codes[idx];
+			if (idx < codes.length-1){statusClassCodes += '\n'}
+		}
+	} else {
+		statusClassCodes = i18n.getI18NMessage('sts.empty.entry');//i18n.getI18NMessage('sts.btn.default.empty.entry')
+	}
 }

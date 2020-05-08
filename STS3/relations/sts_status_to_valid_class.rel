@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/status_valid_classes",
+items:[
+{foreignColumnName:"status_description_id",primaryDataProviderID:"status_description_id",typeid:23,uuid:"EC77B5BF-E656-490B-886D-87FC47907BD4"}
+],
+joinType:1,
+name:"sts_status_to_valid_class",
+primaryDataSource:"db:/stsservoy/status_description",
+typeid:22,
+uuid:"2D4ECBD1-984F-487B-A764-2ED7247F8401"

@@ -15,6 +15,16 @@ var windowName = "Employee Edit";
  */
 var employeeFullName = "";
 /**
+ * @properties={typeid:35,uuid:"A964FB46-90E6-4D47-B924-1E1C5088132A",variableType:-4}
+ */
+var editingId = null;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"22F9D6B1-F94B-4F83-9255-7625F45A1EF2"}
+ */
+var editingSort = 'employee_lastname asc';
+/**
  * @param event
  *
  * @properties={typeid:24,uuid:"EA67BADD-A0DE-431B-990E-658FFA0FB68F"}
@@ -34,6 +44,11 @@ function onRender(event) {
 function onEdit(event,editStatus){
 	var formRev = scopes.globals.getInstanceForm(event);
 
+	if (!editStatus){
+		editingId = employee_id;
+	} else {
+		editingSort = forms["employees_rec"+formRev].foundset.getCurrentSort();
+	}
 	forms["employees"+formRev].controller.readOnly = !editStatus;
 	forms["employees_lst"+formRev].controller.enabled = !editStatus;
 	forms["employees"+formRev].editEmployeeFlag = editStatus;
@@ -65,6 +80,7 @@ function onEdit(event,editStatus){
 function onActionEdit(event, editStatus) {
 	if (!editStatus && elements.btn_Edit.enabled == true && elements.btn_Edit.visible == true){return}
 	var formRev = scopes.globals.getInstanceForm(event);
+	editingSort = forms["employees_lstB"+formRev].foundset.getCurrentSort();//retain editing sort on edit
 	var tabCount = elements.tabs.getMaxTabIndex();
 	for (var index = 1;index <= tabCount;index++){
 		var tabFormName = elements.tabs.getTabFormNameAt(index);
@@ -91,6 +107,7 @@ function onActionEdit(event, editStatus) {
 	}
 	//forms['employees_rec'+formRev].currentRecord = foundset.getSelectedRecord();//20190219 editing employee not synced with list
 	forms['employee_login_lst'+formRev].onRecordSelection(event);
+	editingId = forms["employees_rec"+formRev].employee_id;
 	databaseManager.setAutoSave(false);
 	globals.permissionsCacheHit(event,"employees_rec"+formRev);
 	globals.permissionsCacheHit(event,'employees_lstB'+formRev);
@@ -133,7 +150,7 @@ function onActionSaveEdit(event){
 	}
 	onActionEdit(event,false);
 	elements.tabs.setTabEnabledAt(3,true);//disable addresses tab after save
-	forms['employees_lst'+scopes.globals.getInstanceForm(event)].foundset.clear();
+	//forms['employees_lst'+scopes.globals.getInstanceForm(event)].foundset.clear();
 	forms['employees_rec'+scopes.globals.getInstanceForm(event)].refreshUsers(event);
 	//onActionEdit(event,true);
 	//onActionEdit(event,false);

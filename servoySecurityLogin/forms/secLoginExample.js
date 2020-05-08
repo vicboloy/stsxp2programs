@@ -153,7 +153,7 @@ function onShow(firstShow, event) {
 		}
 
 		application.output('RM login newscale '+newScale+' '+width+' '+osName);
-		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
+		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent;window.innerHeight',globals.storeUserAgentOnLogin,['navigator.userAgent','window.innerWidth','window.innerHeight']);
 	}
 
 	errorMessage = '';//application.getScreenWidth()+' x '+application.getScreenHeight();

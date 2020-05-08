@@ -3,13 +3,13 @@
  *
  * @properties={typeid:35,uuid:"15470D31-A577-49CD-BDB4-10305BBAD619"}
  */
-var verSTS = '796';
+var verSTS = '806';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"D4EFBB6B-0863-4F82-BC59-019CC36D2676"}
  */
-var verSTSmobile = '482';
+var verSTSmobile = '610';
 /**
  * @type {String}
  *
@@ -837,6 +837,13 @@ var sampleMultiArray = [
 /**
  * Modify rfChangeWindow, getMenuList to show rfViews Required, Optional, Validate
  * @properties={typeid:35,uuid:"330BF446-5753-4F19-83DF-DA7E07C4CD6D",variableType:-4}
+ * Add a view, set sts.mobile.{viewName}
+ * Add and create fields for new View
+ * function rfFunctionKeys(screen) add function keys for that screen
+ * getMenuList in jobssts add view there
+ * getMappings() to set mobile FS print and views settings
+ * Add case to rfChangeWindow()
+ * Add menu to rf_mobile_view
  */
 var rfViews = {
 	Sample : {
@@ -1020,7 +1027,6 @@ var rfViews = {
 		itemweight : 'V',
 		shoporder : 'V',
 		ps : 'V'
-
 	},
 	'Transactions' : {
 		genericin : 'R',
@@ -1146,6 +1152,7 @@ var rfViews = {
 		locationin : 'R',
 		barcodeclin : 'R',
 		strikethruin : 'R',
+		printidin : 'R',
 		asnin : 'R',//always the fabsuite barcode to check in cut list		asnin : 'R',
 		// ASN / Serial # cutstrikethrough? Y/N Print Out The ID Labels For This Cut List Line? Y/N  if Y send BarTender. MSG: Number of Item Sent To Queue: X MSG: Number Items Already Printed: Y if no strikethrough, fill NONE 
 		quantityin : 'R',
@@ -1226,15 +1233,15 @@ var rfViews = {
 		bundledin :'R',
 		quantityin : 'R',
 		invmaterial : 'V',
-		invgrade : 'V',
 		itemlength:'V',
+		invgrade : 'V',
 		heat : 'V',
-		location1 : 'V',
 		ponumber : 'V',
 		billoflading : 'V',
 		ordered : 'V',
 		remains : 'V',
-		location2 : 'V'	
+		location1 : 'V',
+		location2 : 'V'
 	},
 	'Inventory Status' : {
 		genericin : 'R',
@@ -1248,10 +1255,63 @@ var rfViews = {
 		heat : 'V',
 		ponumber : 'V',
 		location1 : 'V',
-		location2 : 'V',
+		association : 'V',
 		jobnumberx : 'V',
 		itemwidth : 'V'
+	},
+	'Inventory Sweep' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		isauditin : 'R',
+		asnin : 'R',
+		invmaterial : 'V',
+		itemlength:'V',
+		itemweight:'V',
+		heat : 'V',
+		ponumber : 'V',
+		location1 : 'V',
+		association : 'V',
+		sweepquanremain : 'V',
+		sweepfound : 'V',
+		sweepmovedinout : 'V',
+		sweepmovedoutcomplete : 'V',
+		sweepcomplete : 'V'	
+	},
+	'Inventory TFS' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		asnin : 'R',
+		quantityin : 'R',
+		tfsjobin : 'R',
+		droplengthin : 'R',
+		dropjobin : 'R',
+		droplocin : 'R',
+		invmaterial : 'V',
+		itemlength : 'V',
+		quantityx : 'V',
+		invgrade : 'V',
+		heat : 'V',
+		location1 : 'V',
+		association : 'V'
+	},
+	'Inventory ASN Receiving' : {
+		genericin : 'R',
+		genericin2 : 'R',
+		stocklocationin : 'R',
+		asnin : 'R',
+		rawmaterialid : 'V',
+		ponumber : 'V',
+		ordered : 'V',
+		remains : 'V',
+		invmaterial : 'V',
+		invgrade : 'V',
+		heat : 'V',
+		itemlength : 'V',
+		itemweight : 'V',
+		invlocation : 'V',
+		association : 'V'
 	}
+
 }
 /**
  * @properties={typeid:35,uuid:"27E84AA2-A492-48E4-8E9C-7961D804A5A6",variableType:-4}
@@ -1542,6 +1602,54 @@ var iaResult = {};
  */
 var showPrintQueueEffort = false;
 /**
+ * @properties={typeid:35,uuid:"55BDB716-6228-4DAC-AC99-F91A410EDCFD",variableType:-4}
+ */
+var interimLoadCreation = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"E52A8C5A-01C1-47F7-B6C3-5BB44A2313EE"}
+ */
+var rfYesNoDialogText = '';
+/**
+ * @properties={typeid:35,uuid:"489E0E9C-C0C5-4654-BB68-FD98D3B1A33E",variableType:-4}
+ */
+var rfYesNoDialog = {
+	text : '',
+	to_be_returned : false,
+	load_number : '',
+	interim_load : false,
+	destinationIdx : -1,
+	destination : '',
+	destinations : [],
+	win : null,
+	win_question : null,
+	win_entry : null
+}
+
+/**
+ * @properties={typeid:35,uuid:"12A51394-5A60-481F-8D2D-F3889246F25D",variableType:-4}
+ */
+var loginError = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"BFE7EBBD-5FCC-4624-BE8C-7AB4736E669F"}
+ */
+var queryMessageMobile = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"3D00E0C7-1FDD-48E9-8053-2C7AAB472E35"}
+ */
+var backupFileNameAndPath = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"9EEAE23A-3E14-4C0A-A499-DE9DC0C13AB5"}
+ */
+var statusCodeSelection = '';
+/**
  * @AllowToRunInFind
  * 
  * @param assocID
@@ -1640,7 +1748,7 @@ function getMappings(){
 	 'sts.mobile.cut.cutlist.raw.sts.id',
 	 'sts.mobile.cut.cutlist.raw.sts.minorid',
 	 'sts.mobile.cut.sts.inventory',
-	 'sts.mobile.tfs.inventory',
+	 'sts.mobile.inventory.tfs',
 	 'sts.mobile.inventory.move',
 	 'sts.mobile.inventory.status',
 	 'sts.mobile.inventory.audit'];
@@ -1654,7 +1762,8 @@ function getMappings(){
 	 'sts.mobile.inventory.audit',
 	 'sts.mobile.inventory.audit.sweep',
 	 'sts.mobile.return.receive',
-	 'sts.mobile.tfs.inventory',
+	 'sts.mobile.inventory.tfs',
+	 'sts.mobile.inventory.asn.receiving',
 	 'sts.mobile.cut.cutlist.raw'];
 }
 
@@ -2387,10 +2496,10 @@ function getWorkers(){
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
 	q.where.add(q.columns.employee_active_flag.eq(1));
-	/** @type {QBJoin<db:/stsservoy/users>} */
-	var u = q.joins.add('db:/stsservoy/users');
+	/** @type {QBJoins<db:/stsservoy/users>} */
+	var u = q.joins.add('db:/stsservoy/users',JSRelation.FULL_JOIN);
 	u.on.add(u.columns.employee_id.eq(q.columns.employee_id));
-	u.root.where.add(u.columns.employee_id.eq(q.columns.employee_id));
+	//u.root.where.add(u.columns.employee_id.eq(q.columns.employee_id));
 	q.result.add(q.columns.employee_number);
 	q.result.add(q.columns.employee_firstname);
 	q.result.add(q.columns.employee_lastname);
@@ -2407,8 +2516,9 @@ function getWorkers(){
 	for (var index = 1;index <= fsQ.getSize();index++){
 		/** @type {JSFoundSet<db:/stsservoy/employee>} */
 		var rec = fsQ.getRecord(index);
+		//application.output(rec);
 		var employeeId = rec.employee_id.toString();
-		var userId = rec.user_uuid.toString();
+		var userId = (rec.user_uuid) ? rec.user_uuid.toString() : '';
 		m.workerList[rec.employee_number] = employeeId;
 		if (rec.user_uuid){
 			if (!m.loginToUser[userId]){
@@ -2456,7 +2566,8 @@ function getWorkers(){
 	}
 	m.workerListAssoc = m.workerListAssoc.sort();
 	session.workerListAssoc = m.workerListAssoc.sort();
-	if (application.isInDeveloper()){application.output('workerLIstAssoc '+session.workerListAssoc)}
+	if (application.isInDeveloper()){application.output('workerLIstAssoc '+session.workerListAssoc);application.output('workerList: '+m.workerList)}
+	application.output('workerList: '+m.workerList);
 }
 /**
  * @param inArray
@@ -2868,6 +2979,18 @@ function rfChangeWindow(event,winName){
 		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit')];
 		currWin.show('rf_mobile_view');
 		break;
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit.sweep')]:
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit.sweep')];
+		currWin.show('rf_mobile_view');
+		break;
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.tfs')]:
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.tfs')];
+		currWin.show('rf_mobile_view');
+		break;
+	case mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.asn.receiving')]:
+		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.asn.receiving')];
+		currWin.show('rf_mobile_view');
+		break;
 	case mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.status')]:
 		session.program = mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.status')];
 		currWin.show('rf_mobile_view');
@@ -2984,6 +3107,11 @@ function rfFunctionKeys(screen){
 			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f3.history.list');//'F3 - List History'
 			functionKeyProcedure[dex] = 'globals.rfF3';
 			if (enableFuctionKeys){plugins.window.createShortcut('F3',functionKeyProcedure[dex]);}
+			dex = 6;
+			printF6Robbed = true;
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f6.reprint.id.label');//'F6 - rePrint ID label;
+			functionKeyProcedure[dex] = 'globals.rfF6ReprintIdLabel';
+			if (enableFuctionKeys){plugins.window.createShortcut('F6',functionKeyProcedure[dex]);}
 			break;
 		//case i18n.getI18NMessage('')://'rf_transactions':
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.transactions')]://'Transactions':
@@ -3042,6 +3170,13 @@ function rfFunctionKeys(screen){
 				functionKeyProcedure[dex] = 'globals.rfF8BundleRemoveFrom';
 				if (enableFuctionKeys){plugins.window.createShortcut('F8',functionKeyProcedure[dex]);}
 			}
+			break;
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.asn.receiving')]:
+			globals.mobForm = "rf_mobile_view";
+			dex = 2;
+			functionKeyDescrip[dex] = i18n.getI18NMessage('sts.fkey.f2.switch.plants');//'F2 - Switch Plants';
+			functionKeyProcedure[dex] = 'globals.rfF2SwitchPlants';
+			if (enableFuctionKeys){plugins.window.createShortcut('F2',functionKeyProcedure[dex]);}			
 			break;
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.shipping')]://'Shipping2':
 		//case i18n.getI18NMessage('')://'Shipping':
@@ -3447,12 +3582,23 @@ function rfErrorShow(message){
 	if (!dualEntry){
 		//mobDisableForm(true);//disable lock form? 4/28/2019
 	}
+	
+	var tmpMsg = errorMessageMobile.replace(/(\<html\>|\<br\>)/gi,'');
+	message = tmpMsg+' | '+message;
 	errorMessageMobile = textWrap(message,25);
+	//errorMessageMobile = errorMessageMobile.replace(/\|/g,'<br><br>')
+	application.output('Current Error in Browser: '+errorMessageMobile);
 	//if (globals.clientUserAgent.search(/(Android|Linux|iPhone|iPad|Mac)/i) != -1){//reset error window location for web client
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//reset error window location for web client
-		errorMessageMobile = message;
-		forms[formName].elements.errorWindow.setSize(400,30);
+		errorMessageMobile = '<html>'+errorMessageMobile;
+		forms[formName].elements.errorWindow.setSize(230,200);
 		//forms[formName].elements.errorWindow.horizontalAlignment = SM_ALIGNMENT.LEFT;
+		var startDate = new Date();
+		startDate = new Date(startDate.getTime()+2800);
+		var endDate = new Date(startDate.getTime()+28000);
+		application.output('current jobs:'+ plugins.scheduler.getCurrentJobNames());
+		plugins.scheduler.removeJob('hideError');
+		plugins.scheduler.addJob('hideError', startDate, globals.rfErrorHide, 30000, 0, endDate);
 	}
 	forms[formName].elements.errorWindow.enabled = true;
 	forms[formName].elements.errorWindow.visible = true;
@@ -3463,6 +3609,10 @@ function rfErrorShow(message){
 		forms[formName].controller.focusField('errorWindow',false);
 		forms[formName].elements.genericin.requestFocus();
 	}
+	//if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//reset error window location for web client
+	//	application.sleep(3000);
+	//}
+	//application.output('Current Error in Browser: '+errorMessageMobile+' '+errorMessageMobile.length);
 }
 /**
  * @param event
@@ -3470,6 +3620,7 @@ function rfErrorShow(message){
  * @properties={typeid:24,uuid:"376C6315-A576-4572-AD5F-9208DDF1E543"}
  */
 function rfErrorHide(event) {
+	plugins.scheduler.removeJob('showError');
 	session.errorShow = false;
 	var formName = session.errorForm;
 	if (!formName){
@@ -3481,6 +3632,7 @@ function rfErrorHide(event) {
 	forms[formName].elements.errorWindow.visible = false;
 	forms[formName].elements.errorWindow.enabled = false;
 	forms[formName].elements.errorWindow.transparent = false;
+	errorMessageMobile = '';
 	if (formName != 'rf_mobile_view'){
 		if (forms[formName].elements[elName]){forms[formName].controller.focusField(elName,false);}
 	} else {
@@ -3580,7 +3732,10 @@ function getMenuList(){
 	pushWindow('sts.mobile.labor.transactions');//set windows elements and data sources
 	pushWindow('sts.mobile.inventory.move');
 	pushWindow('sts.mobile.inventory.audit');
+	pushWindow('sts.mobile.inventory.audit.sweep');
 	pushWindow('sts.mobile.inventory.status');
+	pushWindow('sts.mobile.inventory.tfs');
+	pushWindow('sts.mobile.inventory.asn.receiving');
 	
 	session.rfViewsOffice = [];
 	session.rfViewsOffice.push(i18n.getI18NMessage('sts.mobile.status'));//Status
@@ -4412,10 +4567,10 @@ function rfTimed(event){
  */
 function rfActivity(){
 	var formName = application.getActiveWindow().controller.getName();
+	var stsinstalled = scopes.prefs.stsInstalled == 'Fabricator';
 	var action = 'MO';
 	switch (session.program) {
-		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections')]:
-		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections.w.revs')]://"Inspections w/Rev's"
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.load.verify')]:
 			action = "VR";
 			break;
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.transactions.w.revs')]://"Transactions w/Rev's":
@@ -4425,6 +4580,8 @@ function rfActivity(){
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.saw')]://'Saw':
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.status')]://'Status':
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.find.piece.marks')]://'Find Piece Marks':
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections')]:
+		case mobileWindows[i18n.getI18NMessage('sts.mobile.inspections.w.revs')]://"Inspections w/Rev's"
 			action = "MO";
 			break;
 		case mobileWindows[i18n.getI18NMessage('sts.mobile.receiving')]://'Receiving':
@@ -4984,6 +5141,7 @@ function showMain(){
  */
 function textWrap(message, length){
 	message = message.toString().replace(/ +/g,' ');
+	message = message.trim();
 	var formatted = '';
 	/** @type {Array} */
 	var words = message.split(' ');
@@ -5106,10 +5264,15 @@ function errorDialogMobile(event,errorNum,returnField,additionalMsg){
 	errorMessage = i18n.getI18NMessage(errorNum);
 	if (!errorMessage){i18n.getI18NMessage("1048")}
 	errorMessage = errorMessage + " " + additionalMsg;
-	if (mobile){
+	errorMessage = errorMessage.replace(/\!/g,' ');
+	if (mobile && returnField != 'dialog'){
 		globals.rfErrorShow(errorMessage);
 	} else {
-		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.error.number', new Array(errorNum)),errorMessage);
+		if (errorNum.match(/^[0-9]+$/)){
+			globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.error.number', new Array(errorNum)),errorMessage);
+		} else {
+			globals.DIALOGS.showInfoDialog(i18n.getI18NMessage('sts.txt.error.number', new Array(errorNum)),errorMessage);
+		}
 	}
 	scopes.globals.logger(false,errorMessage);
 }
@@ -5181,6 +5344,7 @@ function showExecLogout(){
  * @properties={typeid:24,uuid:"16CA9F21-FA73-4D11-B7A8-DF1231429DBE"}
  */
 function rfLogout(){
+
 	security.logout('STSmobile');
 }
 /**
@@ -5440,7 +5604,7 @@ function rfProcessBarcode(event){
 		return true;
 	}
 	if (!globals.laborScreenActive && !flagF8 && currentPercent > 0 && !isInterimLoad){//skip error check to enter F8 reversal code
-		errorDialogMobile(null,767,'genericin','');
+		errorDialogMobile(null,767,'genericin','');//Status Already Started In Labor Screen.
 		return true;	
 	}
 	forms['rf_mobile_view'].laborPercentComplete = currentPercent;
@@ -5521,8 +5685,8 @@ function rfProcessBarcode(event){
 					var arrayRevs = [];
 					arrayRevs.push(i18n.getI18NMessage('sts.mobile.transactions.w.revs'));
 					arrayRevs.push(i18n.getI18NMessage('sts.mobile.inspections.w.revs'));
-					var jobInfo = globals.getJobIdInfo(forms['rf_mobile_view'].jobNumber);
-					var isThirdParty = jobInfo.job_rec.rf_interface.toUpper() != i18n.getI18NMessage('sts.interface.none')
+					//var jobInfo = globals.getJobIdInfo(forms['rf_mobile_view'].jobNumber);
+					var isThirdParty = mob.job.rf != i18n.getI18NMessage('sts.interface.none')
 					if (flagF8){//F8 must unload and unship 2019-10-10 08.29 Shipping Definitive Servoy Meeting.mp4
 						application.output('entered F8 for this function');
 						rfF8ReversalPrep();
@@ -5614,6 +5778,8 @@ function rfProcessBarcode(event){
 					break;
 				case i18n.getI18NMessage('sts.mobile.status')://Status
 				case i18n.getI18NMessage('sts.mobile.find.piece.marks')://Find Piece Marks
+					forms[formName].elements['errorWindow'].visible = false;
+					errorMessageMobile = '';
 					rfWindowLastInfoDisplay(event);
 					rfGetLocationStats2(forms[formName].id_location);
 					break;
@@ -5771,7 +5937,8 @@ function onDataChangeLocation(oldValue, newValue, event) {
 	if (onDataChangeFixEntry(oldValue,newValue,event)){return true;}
 	session.userEntry = newValue;
 	var formName = event.getFormName();
-	var invUpdate = (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]);
+	var invUpdate = (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')] ||
+						session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.asn.receiving')]);
 	mob.locationArea = '';
 	mob.stockLocationArea = '';
 	var elementName = 'locationin';//event.getElementName();
@@ -5799,7 +5966,11 @@ function onDataChangeLocation(oldValue, newValue, event) {
 		forms['rf_mobile_view'].stockLocation = newValue;
 	} else {
 		mob.locationArea = newValue;
-		forms['rf_mobile_view'].statusLocation = newValue;
+		if (session.program == i18n.getI18NMessage('sts.mobile.inventory.tfs')){
+			forms['rf_mobile_view'].dropLocation = newValue;
+		} else {
+			forms['rf_mobile_view'].statusLocation = newValue;
+		}
 	}
 	switch (formName){
 		case 'rf_mobile_view':
@@ -5965,6 +6136,7 @@ function onDataChangeJob(oldValue, newJob, event) {
 			if (forms[formName].fieldErroredName !== 'undefined'){forms[formName].fieldErroredName = ''}
 			var dataProv = forms['rf_mobile_view'].elements['jobnumberin'].getDataProviderID();
 			forms['rf_mobile_view'][dataProv] = newJob;
+			if (session.program == i18n.getI18NMessage('sts.mobile.inventory.tfs')){forms['rf_mobile_view'].tfsJob = newJob}
 			forms['rf_mobile_view'].currentBundle = '';
 			forms['rf_mobile_view'].loadNumber = '';
 			if (true || application.isInDeveloper()){application.output('job is '+newJob+' dataprov '+dataProv)}
@@ -7062,7 +7234,23 @@ function loadNumberCheck(event,loadNumber){
 				var dataProv = form.elements['loadnumberin'].getDataProviderID();
 				//if (noNextNum || loadNumber != ''){session.loadNextNumber = loadNumber}
 				if (!loadNumber || thirdPartyCheck){loadNumber = session.loadNextNumber}//no STS load number returned and 3rd party load exists, skip 3rd party number
-				var message = i18n.getI18NMessage('301')+' '+i18n.getI18NMessage('sts.txt.load.use.new.number')+loadNumber;
+				var message = i18n.getI18NMessage('301')+' '+i18n.getI18NMessage('sts.txt.load.use.new.number')+loadNumber+'?';
+				
+				var dualEntry = (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT &&
+				forms['rf_mobile_view'] &&
+				forms['rf_mobile_view'].elements['genericin2'].visible);
+				if (dualEntry) {//cannot do this in safari
+					application.output('Using alternate dialogs');
+					clearDialogData(event);
+					rfYesNoDialog.text = message;
+					rfYesNoDialogText = message;
+					rfYesNoDialog.load_number = loadNumber;
+					showYesNoDialog(event);
+					return true;
+				}
+			
+			
+
 				var response = globals.DIALOGS.showQuestionDialog(
 					i18n.getI18NMessage('sts.txt.load.new.number'),
 					message,
@@ -7081,10 +7269,10 @@ function loadNumberCheck(event,loadNumber){
 					response = i18n.getI18NMessage('sts.btn.no');//prefs to permit interim shipments or not
 					if (scopes.prefs.lAllowInterimShipments){
 						response = globals.DIALOGS.showQuestionDialog(
-						i18n.getI18NMessage('sts.txt.load.use.interim.load'),
-						i18n.getI18NMessage('sts.txt.load.use.interim.load'),
-						i18n.getI18NMessage('sts.btn.no'),
-						i18n.getI18NMessage('sts.btn.yes'));
+							i18n.getI18NMessage('sts.txt.load.use.interim.load'),
+							i18n.getI18NMessage('sts.txt.load.use.interim.load'),
+							i18n.getI18NMessage('sts.btn.no'),
+							i18n.getI18NMessage('sts.btn.yes'));
 					}
 					var interimLoad = (response == i18n.getI18NMessage('sts.btn.yes'));
 					if (interimLoad){
@@ -7814,7 +8002,7 @@ function ftDecToString(convertType, decimal, length, returnType){
  * @properties={typeid:24,uuid:"2F61C8B7-1CA0-46CC-B765-C9A608725BDD"}
  */
 function mmToIn(mm){
-	return Math.floor(((mm * 0.03937) * 16)+0.5)/16;
+	return Math.floor(((mm * 0.039370078740157) * 16)+0.5)/16;
 }
 /**
  * @param kg
@@ -9819,6 +10007,20 @@ function xxxunusedlistNamedElements(){
  */
 function setUserFormPermissions(event,readOnlyForm){
 	var formName = event.getFormName();
+	if (formName && forms[formName].elements.btn_Crossover){
+		var reportFolder = plugins.VelocityReport.getReportFolder();
+		if (reportFolder.charAt(reportFolder.length-1)){reportFolder=reportFolder+'\\'}
+		var filePassWithPath = reportFolder+'STSCutover.txt';
+		//application.output(reportFolder+' first: '+reportFolder.charAt(0)+'  last:'+reportFolder.charAt(reportFolder.length-1))
+		//reportFolder = reportFolder.replace(/\\/g,'/');
+		//if (reportFolder.charAt(0) == "\\".charAt(0)){
+		//	var file = plugins.file.convertToRemoteJSFile(filePassWithPath);
+		//} else {
+		var file = plugins.file.convertToJSFile(filePassWithPath);
+		// }
+		forms[formName].elements.btn_Crossover.visible = (file && file.exists());
+		//application.output('STSCrossover.txt exists: '+file.exists()+' '+filePassWithPath);
+	}
 	readOnlyForm = globals.openWindowRO;
 	//set auxiliary array that sets form..element..visible..enabled
 	if (session.loginUserNum == 'P'){return}
@@ -9954,6 +10156,9 @@ function setUserFormPermissions(event,readOnlyForm){
 				forms[formName2].elements[el].visible = false;
 			}
 		}
+	}
+	if (formName2 && forms[formName2].elements.btn_Crossover){
+		forms[formName2].elements.btn_Crossover.visible = (file && file.exists());
 	}
 }
 /**
@@ -10958,26 +11163,15 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 	}
 	if (!newValue){return}
 
-	var randBCode = false;
-	if (scopes.prefs.lFsAllowNonSerial && //this should be boolean in prefs
-			session.program == i18n.getI18NMessage('sts.mobile.inventory.audit')){//is there a raw material barcode entered? 20200225 as per paul movie of this date
-		if (newValue.search(/(BY)|(BN)/) != 0){//bundle yes/no entered
-			if (newValue.length != 12 && !newValue.match(/IA[0-9]+/)){//assumes Internal Audit barcodes are 12 characters in FS
-				if (!newValue.match(/Q[0-9]+/)){//check for Quantity input
-					if (newValue.length <= 40){//!newValue.match(/[0-9A-Z]+/)){//only permit raw material barcodes that ARE alphanumeric
-						//okay, so this MIGHT be a raw material barcode
-						if (!scopes.jobs.findRMNumber(event,newValue)){
-							randBCode = true;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	//form[dataProv] = newValue;
+	var randBCode = allowRandomRawBarcode(event,newValue);
+	
 	var action = newValue.substr(0,1);
 	var data = newValue.replace(action.toUpperCase(),'').toUpperCase();
+	if (newValue.match(/^(Y|YES|N|NO)$/) && form.elements['queryWindow'].visible){
+		action = '';
+		if (newValue.match(/^(Y|YES)$/i)){action = 'YES'}
+		if (newValue.match(/^(N|NO)$/i)){action = 'NO'}
+	}
 	if (newValue.length > 9 && checkValidSerialID(newValue)){
 		action = 'D';
 		entryType = 'D';
@@ -11028,30 +11222,9 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			anticipEntry = 'P';
 		}	
 	}
-	/** for (var fld in commandPrefixes){
-		if (forms['rf_mobile_view'].shownFields.indexOf(fld) == -1){continue}
-		if (commandPrefixes[fld] == action){
-			if (action == 'B' && data.search('ND') == 0){
-				data = 'B'+data;
-				if (statusTypes.indexOf(mob.statusCode) != -1){
-					anticipEntry = 'D';
-				}
-			}
-			if (action == 'P'){
-				if (checkValidSerialID(newValue)){
-					anticipEntry = 'D';
-					data = newValue;
-				} else if (checkValidSerial(data)){
-					anticipEntry = 'P';
-				}
-			} else {
-				anticipEntry = fld;
-			}
-			break;
-		}
-	} */
-	//if (application.isInDeveloper()){application.output('field '+anticipEntry+' prefix '+action)}
-	if (newValue.length >= scopes.prefs.barcodeLength && !rfOkToProcessId(event) && action != 'Piecemark Scan' && action != 'B' && action != 'RM'){//task #214 accept bar code without prefix I(D) Number
+
+	if (newValue.length >= scopes.prefs.barcodeLength && 
+			!rfOkToProcessId(event) && action != 'Piecemark Scan' && action != 'B' && action != 'RM'){//task #214 accept bar code without prefix I(D) Number
 		/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
 		var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
 		q.where.add(q.columns.id_serial_number.eq(newValue));
@@ -11106,8 +11279,13 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		action = 'RM';
 		data = newValue;
 	}
+	rfLoggerMobile(event,'action:'+action.toUpperCase()+' entry:'+newValue);
 	switch (action.toUpperCase()){
 		case 'NOTHING':
+			break;
+		case 'YES':
+		case 'NO':
+			queryResponseHandler(event,action);
 			break;
 		case 'PON':
 			form['printEnabled'] = 'ON';
@@ -11205,7 +11383,8 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 				break;
 			}
 			if (forms['rf_mobile_view'].shownFields.indexOf('locationin') == -1 &&
-				forms['rf_mobile_view'].shownFields.indexOf('stocklocationin') == -1){
+					forms['rf_mobile_view'].shownFields.indexOf('stocklocationin') == -1 &&
+					forms['rf_mobile_view'].shownFields.indexOf('droplocin') == -1){
 				errorDialogMobile(event,1229,'genericin','Location');
 				break;
 			}
@@ -11248,22 +11427,21 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		case 'G':
 			entryType = 'G';
 			if (newValue.match(/(G[O]{0,1})$/) && 
+					session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.tfs')]){
+				//showPrintQueueEffort = true;
+				showPrintQueueEffort = (rfGetInventoryTFS(event));
+				break;
+			}
+			if (newValue.match(/(G[O]{0,1})$/) && 
 					session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
 				null;// GO or G
 				showPrintQueueEffort = true;
 				if (!dataEntryComplete(event,'quantityin')){break}
 				var cutAll = (form.strikeThru == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
 				var shop = globals.session.association;
-				var loc1 = shop;
-				var loc2 = form.statusLocation;
-				/** var loc2 = loc1;
-				if (scopes.prefs.lFsFlipPrimSecWhenShop == 1){
-					loc1 = shop;
-				} else {
-					loc2 = shop;
-				} */
+				var locs = scopes.fs.locationNormalize(event,shop,form.statusLocation);
 				null;
-				var TFSresponse = scopes.fs.matchCLtoRMBarcodesProcess(event,null,form.cutlistBarcode,form.asnNumber,form.quantity,cutAll,form.dropWidth,form.dropLength,loc1,loc2);
+				var TFSresponse = scopes.fs.matchCLtoRMBarcodesProcess(event,null,form.cutlistBarcode,form.asnNumber,form.quantity,cutAll,form.dropWidth,form.dropLength,locs.division,locs.location);
 				var stock = '';
 				if (TFSresponse.rtsmessage == i18n.getI18NMessage('sts.btn.scrap')){
 					stock = i18n.getI18NMessage('sts.btn.scrap').toUpperCase();
@@ -11289,8 +11467,9 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 							//print scrap label, check prefs
 						} else {
 							//update inventory values
-							var inventoryUpdate = scopes.fs.getInventorySerial(event,form.asnNumber);
+							//var inventoryUpdate = scopes.fs.getInventorySerial(event,form.asnNumber);
 							//form.asnNumber = scopes.jobs.updateSTSInventory(event,form.asnNumber,inventoryUpdate,false,form.quantity);
+							//scopes.jobs.updateSTSInventory(event,form.asnNumber,inventoryUpdate,false,form.quantity);//20200305
 							//print invBarcode. fabsuite prefs, printing ON, 
 							if (form['printEnabled'] == 'ON' && (!(scopes.prefs.lFsDoNotPrintScrapLabels*1) || TFSresponse.rtsmessage == 'Restock')){
 								application.output('Printing Remnant '+form.asnNumber);
@@ -11351,6 +11530,12 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			onDataChangeHeat(oldValue,data,event);
 			break;
 		case 'I'://
+			if (forms['rf_mobile_view'].shownFields.indexOf('isauditin') != -1){
+				if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit.sweep')]){
+					rfGetInventorySweepInfo(event,newValue);
+				}
+				break;
+			}
 			if (forms['rf_mobile_view'].shownFields.indexOf('iaauditin') != -1){
 				if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit')]){
 					iaResult = scopes.fs.fabSuiteInventoryAuditScan(event,newValue);
@@ -11372,7 +11557,15 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//J or j - (J)ob Numbers
 		case 'J':
 			entryType = 'J';
-			if (forms['rf_mobile_view'].shownFields.indexOf('jobnumberin') == -1){
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.tfs')]){
+				if (!rfJobCheck(data,session.associationId)){
+					// error job not in user's division
+					errorDialogMobile(event,'1294','dialog','');
+					break;
+				}
+			}
+			if (forms['rf_mobile_view'].shownFields.indexOf('jobnumberin') == -1 && 
+					forms['rf_mobile_view'].shownFields.indexOf('dropjobin') == -1 ){
 				errorDialogMobile(event,1229,'genericin','Job Number');
 				break;
 			}
@@ -11383,7 +11576,8 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//L or l - (L)oad Numbers
 		case 'L':
 			entryType = 'L';
-			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')]){
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')] ||
+					session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.tfs')]){
 				var drop = globals.strToDec('FEET',data);
 				if (drop == -1){
 					form['dropLength'] = '';
@@ -11395,6 +11589,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					//process cut list here
 					form['dropLength'] = globals.ftDecToString('FEET',drop,13,'ALL');
 				}
+				rfLocalChangeToInventory(event);
 				break;
 			}
 			if (forms['rf_mobile_view'].shownFields.indexOf('loadnumberin') != -1 &&
@@ -11448,6 +11643,11 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//P or p - (P)art Serial Number [Ex. P0000000001 thru PZZZZZZZZZZ then it is P0000000001 again] - starting point for barcoding w/FS Built In
 		case 'P':
 			entryType = 'P';
+			if (form.shownFields.indexOf('printidin') != -1){
+				form.printIdLabel = (newValue.match(/^(PY|PYES)$/i)) ? i18n.getI18NMessage('sts.btn.yes').toUpperCase() : i18n.getI18NMessage('sts.btn.no').toUpperCase();
+				if (!scopes.prefs.lFsPrintIDFromCutList || scopes.prefs.lFsPrintIDFromCutList == 0){form.printIdLabel = i18n.getI18NMessage('sts.btn.no').toUpperCase();}
+				break;
+			}
 			if (forms['rf_mobile_view'].shownFields.indexOf('partnumberin') == -1){
 				errorDialogMobile(event,1229,'genericin','Part Serial');
 				break;
@@ -11474,6 +11674,10 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 			form['quantity'] = data;
 			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit')]){
 				scopes.jobs.rfProcessInventoryAudit(event,iaResult,form.asnNumber,form.quantity);
+				break;
+			}
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.tfs')]){
+				checkInventoryTFSQty(event,data);
 				break;
 			}
 			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
@@ -11542,9 +11746,11 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 		//R or r - Use(r)Name - * - FS user name - this is username for fabSuite
 		case 'R':
 		case 'RM':
-			if (action == 'RM'){
-				form.asnNumber = data;
-				break;
+			var fsHasInventory = false;
+			if (action == 'RM' || newValue.match(/RM[0-9]{9,15}/)){
+				if (action == 'RM'){form.asnNumber = data;}//add raw material data serial
+				fsHasInventory = syncFSSTSInventory(event,newValue);//check with FS and sync before any other ops
+				//break;
 			}
 			entryType = 'R';
 			if (forms['rf_mobile_view'].shownFields.indexOf('remarksin') == -1 &&
@@ -11565,18 +11771,44 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 				rfInventoryMove(event);
 				break;
 			}
+			if (action == 'RM' && session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.asn.receiving')]){
+				rfASNReceiving(event,newValue);
+				break;
+			}
+			if (action == 'R' && session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.tfs')]){
+				if (rfJobCheck(data,session.associationId)){//rfCheckValidJob(event,data)){//check that job is in current users division
+					form['dropJob'] = data;
+				} else {
+					errorDialogMobile(event,'1294','dialog',i18n.getI18NMessage('1295'));//job does not exist in the division its returned to
+					form['dropJob'] = '';
+				}
+				break;
+			}
 			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit')]){
-				if (!scopes.jobs.inventoryCheck(newValue)){
-					errorDialogMobile(event,'1285','genericin','');
+				if (scopes.jobs.inventoryCheck(newValue)){
+					errorDialogMobile(event,'1286','genericin','');//inventory already in STSX, now verify against EPM
 					break;
 				}
 				form['asnNumber'] = newValue;
 				rfInventoryAudit(event);
 				break;
 			}
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit.sweep')]){
+				//if (scopes.jobs.inventoryCheck(newValue)){
+				//	errorDialogMobile(event,'1286','genericin','');//inventory already in STSX, now verify against EPM
+				//	break;
+				//}
+				form['asnNumber'] = newValue;
+				rfInventoryAuditSweep(event,newValue);
+				break;
+			}
 			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.status')]){
 				form['asnNumber'] = newValue;
 				rfInventoryStatus(event,newValue);
+				break;
+			}
+			if (session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.tfs')]){
+				rfPopulateInvInfoTFS(event,newValue,fsHasInventory);
 				break;
 			}
 
@@ -11612,7 +11844,7 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 					if (invLine.qtyremaining == 0){
 						errorDialogMobile(event,1075,'genericin','');
 					}
-				} else if (newValue.search('RM') == 0 && newValue.match(/(RM[0-9]+)/) &&
+				} else if ((randBCode || (newValue.search('RM') == 0 && newValue.match(/(RM[0-9]+)/))) &&
 						session.program == mobileWindows[i18n.getI18NMessage('sts.mobile.inventory.audit')]){
 					var inv = scopes.jobs.inventoryCheck(newValue);
 					if (inv && !(!inv.inventory_ref_number)){
@@ -11620,8 +11852,9 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 						break;
 					}
 					form.asnNumber = newValue;
+					form.bundled = i18n.getI18NMessage('sts.btn.yes').toUpperCase();
 					break;
-				} else if (newValue.search('RM') == 0 && newValue.match(/(RM[0-9]+)/) &&
+				} else if ((randBCode || (newValue.search('RM') == 0 && newValue.match(/(RM[0-9]+)/))) &&
 							session.program != mobileWindows[i18n.getI18NMessage('sts.mobile.checklist.receive')]){
 					// check RMxxx serial
 					if (!dataEntryComplete(event,'asnin')){break}
@@ -11634,21 +11867,42 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 						form['heat'] = matchInfo.heatnumber;
 					} else {
 						errorDialogMobile(event,1220,'genericin',matchInfo.error);
+						form['heat'] = '';
+						form['asnNumber'] = '';
+						//for (var i = 0;i < 5;i++){
+						//	errorDialogMobile(event,'Added This Error','genericin','dog dog cat'+i);
+						//	application.output('adding additional errors')
+						//	application.sleep(1000)
+						//}
 						break;
 					}
-					var response = i18n.getI18NMessage('sts.btn.no');
-					if (scopes.prefs.lFsPrintIDFromCutList == '1' ){
-						response = globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.question'),i18n.getI18NMessage('sts.txt.question.print.out.cutlist.labels'),i18n.getI18NMessage('sts.btn.no'),i18n.getI18NMessage('sts.btn.yes'));
-					}
-					if (response == i18n.getI18NMessage('sts.btn.no')){
+					//var response = i18n.getI18NMessage('sts.btn.no');
+					//if (session.dualEntry && scopes.prefs.lFsPrintIDFromCutList == '1'){
+					//	queryMobileShow(event,i18n.getI18NMessage('sts.txt.question.print.out.cutlist.labels'));
+					//	break;
+					//}
+					//if (scopes.prefs.lFsPrintIDFromCutList == '1' ){
+					//	response = globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.question'),i18n.getI18NMessage('sts.txt.question.print.out.cutlist.labels'),i18n.getI18NMessage('sts.btn.no'),i18n.getI18NMessage('sts.btn.yes'));
+					//}
+					//if (response == i18n.getI18NMessage('sts.btn.no')){
 						/** var cutarray = globals.session.cutlistdata.cutarray;
 						for (var idx3 = 0;idx3 < cutarray.length;idx3++){
 							var cutItem = cutarray[idx3];
 							cutItem.Barcode = '';cutItem.SerialNumber = '';
 						} */
+					//	globals.session.rawCutPiecemarksSelected = [];
+					//	break;
+					//}//always ask before printing cut list labels for piecemarks
+					if (scopes.prefs.lFsPrintIDFromCutList == '1' ){
+						if (form['printIdLabel'].match(/^(N|NO)$/i)){
+							globals.session.rawCutPiecemarksSelected = [];
+							break;
+						}
+					} else {
 						globals.session.rawCutPiecemarksSelected = [];
 						break;
-					}//always ask before printing cut list labels for piecemarks
+					}
+					showPrintQueueEffort = true;
 					form['labelPrintType'] = 'piecemark';
 					//session.rawCutPiecemarks = [];
 					scopes.jobs.printCutListLabels(event);//ask before printing, but need Raw Material Label for the heat number
@@ -13985,7 +14239,9 @@ function backupDatabase(event){
 	var date = new Date();
 	var baseDir = plugins.UserManager.Server().servoyDirectory;
 	var backupName = 'backupSTS_'+scopes.jobs.formatDate(date);
-	backupName = backupName.replace(/ /g,'_').replace(/:/g,'-').replace(/\//g,'_')+'.tar';
+	var backupDest = plugins.VelocityReport.getReportFolder();
+	backupDest = backupDest.replace(/\\/g,'/');
+	backupName = backupName.replace(/ /g,'_').replace(/:/g,'').replace(/\//g,'_')+'.tar';
 	var drive = 'C:';
 	var port = '5432';
 	port = '5432';
@@ -13996,13 +14252,15 @@ function backupDatabase(event){
 	//var backupExecute = '\\p2server01\\stsx\\backupDB.bats';//baseDir+'\\backupDB.bats';
 	//backupExecute = 'e:\\\\STSX\\backupServoySTS_DB.bat';
 	if (application.isInDeveloper()){
-		absPath = 'E:/STSx/'+backupProg;
+		absPath = '\\\\alienware-pc\\stsx\\'+backupProg;
 		drive = 'E:';
 		port = '5474';
 		pathName = '\\Programs\\PostgreSQL\\9.5\\bin\\'
 	}
 	var dumpVars = 'pg_env.bat';
-	var dumpCmd = '\"'+pathName+'\\pg_dump\"  --port='+scopes.prefs.progDbPort+' --username='+scopes.prefs.progDbAdmin+' --format=t --no-password stsservoy > '+backupName;
+	backupFileNameAndPath = (backupDest.charAt(backupDest.length-1) == "/") ? backupDest+backupName : backupDest+'/'+backupName;
+	var backupFile = backupFileNameAndPath.replace(/\//g,'\\');
+	var dumpCmd = '\"'+pathName+'\\pg_dump\"  --port='+scopes.prefs.progDbPort+' --username='+scopes.prefs.progDbAdmin+' --format=t --no-password stsservoy > '+backupFile;
 	var passPath = 'SET PGPASSWORD='+scopes.prefs.progDbPassword;//'SET PGPASS=\\stsx\\pgpass.conf.txt';//+plugins.file.getDefaultUploadLocation()+'\\pgpass.conf.txt';
 	var backupScript = '@echo on\n'+'\n'+passPath+'\n\n'+dumpCmd+'\n\n';
 	//var file = plugins.file.getDefaultUploadLocation()+scopes.prefs.
@@ -14023,7 +14281,7 @@ function backupDatabase(event){
 	plugins.file.streamFilesToServer(file);
 	/** @type {String} */
 	var fullBackProgPath = plugins.file.getDefaultUploadLocation()+'\\'+backupProg;
-	application.output('full prog path: '+fullBackProgPath+' passpath: '+passPath);
+	//application.output('full prog path: '+fullBackProgPath+' passpath: '+passPath);
 	var idx = 200;
 	while (!remoteFile.exists() && idx > 0){
 		idx--;
@@ -14036,8 +14294,32 @@ function backupDatabase(event){
 	var output = plugins.UserManager.Server().executeProgram(fullBackProgPath);
 
 	application.output('database backup '+dumpCmd+' '+output);
-	plugins.dialogs.showErrorDialog(i18n.getI18NMessage('sts.txt.backup.initiated'),i18n.getI18NMessage('sts.txt.backup.initiated'));
-	
+	errorDialogMobile(event,'sts.txt.backup.initiated',null,null);
+	//plugins.dialogs.showErrorDialog(i18n.getI18NMessage('sts.txt.backup.initiated'),i18n.getI18NMessage('sts.txt.backup.initiated'));
+	if (backupFileNameAndPath){
+		var file = plugins.file.convertToJSFile(backupFileNameAndPath);
+		if (!file){
+			globals.errorDialogMobile(event,'7004',null,backupFileNameAndPath);//sts.txt.crossover.nofile
+			return;
+		}
+		var size = file.size();
+		var time = new Date().getTime();
+		var origTime = time;
+		while (size == 0){
+			var newTime = new Date().getTime();
+			var diffTime = newTime - time;
+			if (diffTime > 1000){
+				size = file.size();
+				//application.output('Time: '+time+' Size: '+size);
+				time = new Date().getTime();
+			}
+			if ((newTime - origTime) > 20000){break}
+			if ((newTime - origTime) > 200 && application.isInDeveloper()){break}
+		}
+		if (file.size() == 0){
+			globals.errorDialogMobile(event,'7004',null,backupFileNameAndPath);//sts.txt.crossover.nofile
+		}
+	}	
 }
 /**
  * @param {JSDataSource} table
@@ -14646,6 +14928,7 @@ function rfClearDependentEntries(event,entryField){
 	for (var idx = currIdx+1;idx < lastIdx;idx++){
 		var elName = form['requiredFields'][idx];
 		if (elName == 'strikethruin'){continue}//task361
+		if (elName == 'printidin'){continue}//as per paul parks 20200318
 		var el = form.elements[elName];
 		var dataProv = el.getDataProviderID();
 		form[dataProv] = '';
@@ -15003,8 +15286,8 @@ function printedLabelsShowError(event){
  */
 function rfInventoryMove(event){
 	var rmSerial = forms['rf_mobile_view'].asnNumber;
-	var location1 = globals.session.association;
-	var location2 = forms['rf_mobile_view'].statusLocation;
+	var division = globals.session.association;
+	var location = forms['rf_mobile_view'].statusLocation;
 	var form = forms['rf_mobile_view'];
 	var prevResponse = scopes.fs.getInventorySerial(event,rmSerial);
 	if (prevResponse && prevResponse.error){
@@ -15022,7 +15305,7 @@ function rfInventoryMove(event){
 	} */
 
 	//application.output('location1 is '+location1+ ' location2 is '+location2+' for serial '+rmSerial);
-	var response = scopes.fs.fabSuiteInventoryMove(event,rmSerial,location1,location2)
+	var response = scopes.fs.fabSuiteInventoryMove(event,rmSerial,division,location);
 	if (response.error){
 		errorDialogMobile(event,1220,'genericin',response.error);
 		
@@ -15294,6 +15577,7 @@ function createPdfOfLabelFieldNames(event){
 /**
  * @param {JSEvent} event
  * @param {String} serialNumber
+ * @param {Boolean} doNotReportError
  *
  * @properties={typeid:24,uuid:"ED878730-78E5-4C39-A090-6B05C6DFF6AB"}
  * 			is_metric : isMetric,
@@ -15317,45 +15601,80 @@ function createPdfOfLabelFieldNames(event){
 			coo : validCoO,
 			error : ''
  */
-function rfInventoryStatus(event,serialNumber){//STILL NEED NON-FS LOOKUP
+function rfInventoryStatus(event,serialNumber,doNotReportError){//STILL NEED NON-FS LOOKUP
 	var inv = scopes.fs.getInventorySerial(event,serialNumber);
 	var form = forms['rf_mobile_view'];
 	if (!inv.error){
 		form.jobNumber = inv.job_number;
-		form.location1 = inv.location;
-		form.location2 = inv.location2;
+		var droploc = '';
+		var loc1 = inv.location;
+		var loc2 = inv.location2;
+		droploc = loc2;
+		if (scopes.prefs.lFsFlipPrimSecWhenShop*1 == 1){
+			var tmp = loc1;
+			loc1 = loc2;
+			loc2 = (scopes.prefs.lFsNoPushSecLoc*1 == 0) ? tmp : '';
+		}
+		form.location1 = loc1;
+		form.location2 = loc2;
+		var locDL = scopes.fs.locationNormalize(event,loc1,loc2);
+		form.location1 = locDL.location;
+		form.division = locDL.division;
+		if (session.program == i18n.getI18NMessage('sts.mobile.inventory.tfs')){
+			form.tfsJob = inv.job_number;
+			form.tfsSequence = '';
+			form.dropJob = inv.job_number;
+			form.dropLocation = droploc;
+		}
 		inv = rfInventoryFromFS(event,inv);
+		if (session.program == i18n.getI18NMessage('sts.mobile.inventory.asn.receiving')){
+			form.invLocation = locDL.location;
+			form.association = locDL.division;
+		}
 		var metric = false;
 		if (inv && inv.isMetric){
 			metric = (inv.isMetric);
 		} else if (inv && inv.job_uuid){
-			jobInfo = scopes.jobs.getJobIdInfo(inv.job_uuid);
+			var jobInfo = scopes.jobs.getJobIdInfo(inv.job_uuid);
 			metric = (jobInfo && jobInfo.job_metric);
 		}
 		var rmSerial = forms['rf_mobile_view'].asnNumber;
 		form.invMaterial = inv.model_part;
 		form.lastQty = inv.quantity;
 		if (metric){
-			scopes.globals.mobWeightUnits = i18n.getI18NMessage('sts.txt.weight.metric');
-			scopes.globals.mobItemWeight = inv.item_weight;
+			globals.mobWeightUnits = i18n.getI18NMessage('sts.txt.weight.metric');
+			globals.mobLengthUnits = i18n.getI18NMessage('sts.txt.length.metric');
+			globals.mobItemWeight = inv.item_weight;
 			form.itemWidth = inv.item_width;
-			scopes.globals.mobItemLength = inv.item_length;
+			globals.mobItemLength = inv.item_length;
 			///form.itemWeight = inv.item_weight;
 		} else {
-			scopes.globals.mobLengthUnits = i18n.getI18NMessage('sts.txt.weight.imperial');
-			scopes.globals.mobItemWeight = inv.item_weight_lbs;
+			globals.mobLengthUnits = i18n.getI18NMessage('sts.txt.length.imperial');
+			globals.mobWeightUnits = i18n.getI18NMessage('sts.txt.weight.imperial');
+			globals.mobItemWeight = inv.item_weight_lbs;
 			form.itemWidth = inv.item_width_char;			
-			scopes.globals.mobItemLength = inv.item_length_char;
+			globals.mobItemLength = inv.item_length_char;
+			//application.output('SSSSSSSSSSSSSSSSSSSSSSSSS '+globals.mobItemLength)
 			//form.itemWeight = inv.item_weight_lbs;
 		}
 		form.invGrade = inv.grade;//invgrade;
 		form.heat = inv.heat;
 		form.poNumber = inv.po_number;
+		if (!form.division){
+			if (form.jobNumber){
+				var jobInfo = scopes.jobs.getJobIdInfo(form.jobNumber);
+				form.division = globals.m.assocs[jobInfo.job_assoc];
+			}
+				
+		}
 	} else {
-		errorDialogMobile(event,1220,'genericin',inv.error);
-		form.asnNumber = '';
+		if (!doNotReportError){
+			errorDialogMobile(event,1220,'genericin',inv.error+ ' '+serialNumber);
+			form.asnNumber = '';
+		}
+		return false;
 	}
-	null;
+	return true;
 }
 /**
  * @param event
@@ -15395,8 +15714,8 @@ function rfInventoryFromFS(event,fsRec){
 		
 	}
 	rec.quantity = fsRec.quantity;
-	rec.location = fsRec.location;
-	rec.location2 = fsRec.location2;
+	rec.location = fsRec.locationsts;
+	//rec.location2 = fsRec.location2;
 	//if (!rec.location){rec.location = fsRec.location}
 	rec.heat = fsRec.heat;
 	rec.grade = fsRec.grade;
@@ -15423,11 +15742,11 @@ function rfInventoryFromFS(event,fsRec){
  */
 function rfInventoryAudit(event){
 	var form = forms['rf_mobile_view'];
-	var iaSerial = form.auditBarcode;
+	//var iaSerial = form.auditBarcode;
 	var invSerial = form.asnNumber;
-	var quantity = form.quantity;
-	var bundled = form.bundled;
-	
+	//var quantity = form.quantity;
+	//var bundled = form.bundled;
+	//if (invSerial) {form.bundled = i18n.getI18NMessage('sts.btn.yes').toUpperCase()}// : i18n.getI18NMessage('sts.btn.no');// as per PP , leave bundled as to them
 }
 /**
  * @param event
@@ -15441,7 +15760,8 @@ function populateIaResult(event){
 	var aiResult = form.aiResult;
 	form.invMaterial = iaResult.model_part;
 	form.invGrade = iaResult.grade;
-	scopes.globals.mobItemLength = iaResult.length;
+	scopes.globals.mobItemLength = iaResult.length_char;
+	scopes.globals.mobLengthUnits = 'I';
 	form.heat = iaResult.heat;
 	form.location1 = iaResult.location1;
 	form.location2 = iaResult.location2;
@@ -15453,7 +15773,8 @@ function populateIaResult(event){
 	
 	form.asnNumber = '';
 	form.quantity = '';
-	form.bundled = '';
+	if (!form.bundled){form.bundled = i18n.getI18NMessage('sts.btn.no').toUpperCase();}//initial setting NO, PP 20200325
+	//form.bundled = '';
 }
 /**
  * @param event
@@ -15567,6 +15888,7 @@ function checkRequiredComplete(event,fldName){
 	/** @type {Array} */
 	var reqFlds = form['requiredFields'];
 	var idxId = reqFlds.indexOf('currentidin');
+	if (fldName){idxId = reqFlds.indexOf(fldName)}
 	for (var idx = 0;idx < idxId;idx++){
 		/** @type {String} */
 		var fld = reqFlds[idx];
@@ -15581,4 +15903,752 @@ function checkRequiredComplete(event,fldName){
 		}
 	}
 	return true;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"B8FF772A-47A0-4520-9211-4DE43C6FDCEF"}
+ */
+function showYesNoDialog(event){
+	var rfWin = forms['rf_mobile_view'].controller.getWindow();
+	var win = application.createWindow('Question',JSWindow.DIALOG,rfWin);
+	win.title = 'Question';
+	rfYesNoDialog.win_question = win;
+	win.show('yes_no_dialog');
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"2A6CB630-FDAC-442D-A114-BC7700620CCF"}
+ */
+function showEntryDialog(event){
+	var rfWin = forms['rf_mobile_view'].controller.getWindow();
+	var win = application.createWindow('Entry',JSWindow.DIALOG,rfWin);
+	win.title = 'Entry';
+	rfYesNoDialog.win_entry = win;
+	win.show('entry_dialog');
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"9669D915-D54C-495D-82C9-49E143B9E3B2"}
+ */
+function rfInterimDests(event){
+	var dests = globals.getDestinationList(event);
+	globals.rfYesNoDialog.destinations = dests;
+	var destStr = i18n.getI18NMessage('sts.txt.interim.destination.set');
+	for (var idx = 0;idx < dests.length;idx++){
+		var nextDestNum = idx + 1;
+		destStr += '\n    '+nextDestNum+' - '+dests[idx];
+	}
+	for (idx = 18;idx < 6;idx++){
+		destStr += '\n    '+idx+' - '+'TEST';
+	}
+	globals.rfYesNoDialog.text = destStr;
+	globals.rfYesNoDialogText = globals.rfYesNoDialog.text;
+
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"38490F69-8309-49C6-9545-97828A1FB289"}
+ */
+function clearDialogData(event){
+	var s = globals.rfYesNoDialog;
+	s.destination = '';
+	s.destinationIdx = -1;
+	s.destinations = [];
+	s.interim_load = false;
+	s.load_number = '';
+	s.win = null;
+	s.win_entry = null;
+	s.win_question = null;
+	s.to_be_returned = false;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"91ED757A-48CD-4CF4-B6F8-19F7F808FD37"}
+ */
+function rfLoadNumberCheckIOS(event){
+	var s = globals.rfYesNoDialog;
+	var form = forms['rf_mobile_view'];
+	
+	if (s.load_number){
+		if (scopes.prefs.lFabsuiteInstalled && session.jobIsFabSuite){
+			if (s.interim_load){
+				var fsLoadNum = scopes.fs.checkFSLoad(s.load_number,s.destination,s.to_be_returned,true);
+			} else {
+				fsLoadNum = scopes.fs.checkFSLoad(s.load_number,'','',true);
+			}
+			if (fsLoadNum != null){
+				form['loadNumber'] = '';
+				errorDialogMobile(event,1024,'genericin',s.load_number);
+				return false;
+			}
+		}
+	}
+	var rec = loadCreateValid(s.load_number,s.interim_load);
+	var foundRec = rec;
+	session.loadId = rec.load_id;//20181003
+	mob.load.currentId = session.loadId;
+	session.interim = (foundRec.interim_load == 1); 
+	if (!foundRec){
+		//forms['rf_mobile_view'].loadNumber = session.loadNextNumber;
+		//forms['rf_mobile_view'].loadNumber = forms['rf_mobile_view'].loadNumber.split('.')[0];
+	} else {
+		form.loadNumber = s.load_number;
+	}
+}
+/**
+ * @param {JSEvent} event
+ * @param newValue
+ *
+ * @properties={typeid:24,uuid:"73B60B46-EE40-41AD-8B12-05330784A854"}
+ * @AllowToRunInFind
+ */
+function allowRandomRawBarcode(event,newValue){
+	//if (newValue.match(/^RM[0-9]{5,19}$/)){return false}
+	var form = forms[event.getFormName()];
+	if (session.program == i18n.getI18NMessage('sts.mobile.inventory.asn.receiving') &&
+			form.stockLocation != '' &&
+			!newValue.match(/^C*{0,10}$/)){//exclude any inputs which may match a location entry AFTER a location is filled in NUCOR (RM) ASN BC
+		return true;
+	}	
+	if (scopes.prefs.lFsAllowNonSerial && //this should be boolean in prefs
+			(form['shownFields'].indexOf('asnin') != -1)){// && // only applies when needing a Raw Material ID scan
+			
+				
+		if (session.program == i18n.getI18NMessage('sts.mobile.inventory.audit')){//is there a raw material barcode entered? 20200225 as per paul movie of this date
+			if (newValue.search(/^(BY)|(BN)/) != 0){//bundle yes/no entered
+				if (!newValue.match(/IA[0-9]+/)){//assumes Internal Audit barcodes are 12 characters in FS
+					if (!newValue.match(/^Q[0-9]+/)){//check for Quantity input
+						if (newValue.length <= 40){//!newValue.match(/[0-9A-Z]+/)){//only permit raw material barcodes that ARE alphanumeric
+							//okay, so this MIGHT be a raw material barcode
+							if (!globals.rfInventoryStatus(event,newValue,true)){
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (session.program == i18n.getI18NMessage('sts.mobile.inventory.audit.sweep')){//is there a raw material barcode entered? 20200225 as per paul movie of this date
+			if (newValue.length <= 40){//!newValue.match(/[0-9A-Z]+/)){//only permit raw material barcodes that ARE alphanumeric
+				//okay, so this MIGHT be a raw material barcode
+				if (globals.rfInventoryStatus(event,newValue,true)){
+					return true;
+				}
+			}
+		}
+		if (session.program == i18n.getI18NMessage('sts.mobile.inventory.move') ||
+				session.program == i18n.getI18NMessage('sts.mobile.inventory.tfs')){
+			if (newValue.length <= 40){//!newValue.match(/[0-9A-Z]+/)){//only permit raw material barcodes that ARE alphanumeric
+				//okay, so this MIGHT be a raw material barcode
+				if (globals.rfInventoryStatus(event,newValue,true)){
+					return true;
+				}
+			}
+		}
+		
+		
+		if (session.program == i18n.getI18NMessage('sts.mobile.inventory.status')){
+			if (newValue.length <= 40){//!newValue.match(/[0-9A-Z]+/)){//only permit raw material barcodes that ARE alphanumeric
+				//okay, so this MIGHT be a raw material barcode
+				if (globals.rfInventoryStatus(event,newValue,true)){
+					return true;
+				}
+			}
+		}
+
+		if (session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+			if (!newValue.match(/(^G$|^GO$)/) && form.statusCode && form.statusLocation ){
+				if (!newValue.match(/^CL[0-9]{10}$/)){
+					if (newValue.length <= 40){//!newValue.match(/[0-9A-Z]+/)){//only permit raw material barcodes that ARE alphanumeric
+						//okay, so this MIGHT be a raw material barcode
+						if (globals.rfInventoryStatus(event,newValue,true)){
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	return false;
+}
+/**
+ * @param event
+ * @param rmSerial
+ *
+ * @properties={typeid:24,uuid:"092AE97B-2F44-4356-A6E9-86C35DD9BDA3"}
+ */
+function syncFSSTSInventory(event,rmSerial){
+	var fsInv = scopes.fs.getInventorySerial(event,rmSerial);
+	if (fsInv.error){return false;}
+	stsInv = rfInventoryFromFS(event,fsInv);
+	return true;
+}
+/**
+ * @param event
+ * @param message
+ *
+ * @properties={typeid:24,uuid:"D68438AE-86D9-4A03-85D9-1099C536EA0F"}
+ */
+function queryMobileShow(event,message){
+	var form = forms['rf_mobile_view'];
+	queryMessageMobile = message;
+	form.elements['queryWindow'].visible = true;
+}
+/**
+ * @param event
+ * @param queryAnswer
+ *
+ * @properties={typeid:24,uuid:"E78FE143-15C9-4BD1-97CA-7FE5DFA21CD0"}
+ */
+function queryResponseHandler(event,queryAnswer){
+	var form = forms['rf_mobile_view'];
+	if (session.program == i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+		if (queryAnswer == 'YES'){
+			form.showPrintQueueEffort = true;
+			form['labelPrintType'] = 'piecemark';
+			scopes.jobs.printCutListLabels(event);//ask before printing, but need Raw Material Label for the heat number
+			globals.printedLabelsShowError(event);
+		}
+	}
+	//Close Query Window
+	form.elements['queryWindow'].visible = false;
+	queryMessageMobile = '';
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"F1B1F76C-BEA8-4F7C-AD06-B9569FB92D5F"}
+ */
+function rfF6ReprintIdLabel(event){
+	if (rfErrorVisible('rf_mobile_view')){
+		rfErrorHide(event);
+		return;
+	}
+	session.functionName = 'F6RePrintIdLabel';
+	var thisFunction = thisFuncName(arguments.callee.toString());
+	if (flagFunction != null && thisFunction != flagFunction){return} // another function active
+	var form = forms['rf_mobile_view'];
+	form.functionKeyEntered = true;
+	if (!form.currentID){return}
+	var inProgress = (thisFunction == flagFunction); // toggle function
+	//flagFunction = (inProgress) ? null : thisFunction;//no need to prevent using this function key again
+
+	showPrintQueueEffort = true;
+	form['labelPrintType'] = 'piecemark';
+	session.rawCutPiecemarks[mobRepIdfileId] = form.currentID;
+	scopes.jobs.printSingleLabel(event,mob.job.Id,mob.piecemark.piecemark_id,mob.idfile.idfile_id);
+	globals.printedLabelsShowError(event);
+	rfErrorHideAuto(event);
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} isNumber
+ *
+ * @properties={typeid:24,uuid:"4AA7A69C-D202-42F4-8B5D-158F24B748F7"}
+ */
+function rfGetInventorySweepInfo(event,isNumber){
+	var form = forms['rf_mobile_view'];
+	if (!isNumber.match(/^IS[0-9]+$/)){
+		errorDialogMobile(event,1292,'genericin',null);
+		form.sweepBarcode = '';
+		return;
+	}
+	form.sweepBarcode = isNumber;
+	var isInfo = scopes.fs.inventorySweepRequest(event,isNumber);
+	if (isInfo.error){
+		errorDialogMobile(event,1291,'genericin',isInfo.error);
+		form.sweepBarcode = '';
+		return;
+	}
+	
+	//form.qSweepRemain = isInfo.quantity_remaining;
+	form.qSweepFound = isInfo.quantity_found;
+	//form.qSweepMovedIn = isInfo.quantity_moved_in;
+	//form.qSweepMovedOut = isInfo.quantity_moved_out;
+	form.qSweepMovedOutComplete = isInfo.quantity_moved_out_complete;
+	form.qSweepComplete = (isInfo.sweep_complete*1 == 1) ? i18n.getI18NMessage('sts.btn.yes') : i18n.getI18NMessage('sts.btn.no');
+	form.qSweepMovedInOut = isInfo.quantity_moved_in+' / '+isInfo.quantity_moved_out;
+	form.qSweepQuanRemain = isInfo.quantity+' / '+isInfo.quantity_remaining;
+	form.lastQty = isInfo.quantity;
+	var loc1 = isInfo.location1;
+	var loc2 = isInfo.location2;
+	if (scopes.prefs.lFsFlipPrimSecWhenShop*1 == 1){
+		var tmp = loc1;
+		loc1 = loc2;
+		loc2 = (scopes.prefs.lFsNoPushSecLoc*1 == 0) ? tmp : '';
+	}
+	if (isInfo.new_location1){loc1 = isInfo.new_location1;loc2 = '';}
+	if (isInfo.new_location2){loc2 = isInfo.new_location2}
+	form.location1 = loc1;
+	form.location2 = loc2;
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} rmNumber
+ *
+ * @properties={typeid:24,uuid:"885899E9-60D6-4F3A-BAD5-CA7F83B11660"}
+ */
+function rfInventoryAuditSweep(event,rmNumber){
+	var form = forms['rf_mobile_view'];
+	var response = rfGetInventorySweepRaw(event,form.sweepBarcode,form.asnNumber);
+	if (!response.error){
+		rfGetInventorySweepInfo(event,form.sweepBarcode);
+		syncFSSTSInventory(event,form.sweepBarcode);
+	} else {
+		errorDialogMobile(event,1291,'genericin',response.error);
+	}
+	form.asnNumber = '';
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} sweepBar
+ * @param {String} rawBar
+ *
+ * @properties={typeid:24,uuid:"42ED0130-4F71-4CFA-9419-2D9C0F31DCB6"}
+ */
+function rfGetInventorySweepRaw(event,sweepBar,rawBar){
+	application.output(sweepBar+' '+rawBar)
+	var response = scopes.fs.inventorySweepRequestScan(event,sweepBar,rawBar);
+	return response;
+}
+/**
+ * @param event
+ * @param message
+ *
+ * @properties={typeid:24,uuid:"6BFEA11B-86DE-443B-9025-7457A27CA517"}
+ */
+function rfLoggerMobile(event,message){
+	if (!session.capture){return}
+	var form = forms['rf_mobile_view'];
+	var inputs = form.requiredFields;
+	/** @type {JSFoundSet<db:/stsservoy/rf_transactions>} */
+	var fs = databaseManager.getFoundSet('db:/stsservoy/rf_transactions');
+	fs.newRecord(false);
+	fs.transaction_date = new Date();
+	fs.tenant_uuid = session.tenant_uuid;
+	fs.rf_comm_data = message;
+	fs.fabrication_shop = session.fabShop;
+	fs.job_number = session.jobNumber;
+	fs.rf_program = session.program;
+	fs.signon_employee = session.login;
+	if (mob){
+		fs.status_code = mob.statusCode;
+	}
+	fs.status_location = session.statusLocation;
+	fs.worker = session.worker;
+	fs.division = session.association;
+	fs.entry_response = session.userEntry;
+	fs.rf_client = session.sessionId;
+	fs.ip_address = session.sessionIp;
+	
+	databaseManager.saveData(fs);
+
+}
+/**
+ * @param {JSEvent} event
+ * @param data
+ *
+ * @properties={typeid:24,uuid:"B41BF8D5-04A4-495B-A762-1AA9038382F3"}
+ */
+function checkInventoryTFSQty(event,data){
+	var form = forms['rf_mobile_view'];
+	var qtyInventory = form.lastQty;
+	if (data <= 0 || data > qtyInventory){
+		errorDialogMobile(event,601,'genericin','Entered:'+data+' > Inventory:'+qtyInventory);
+		form.quantity = '';
+	} else {
+		form.quantity = data;
+	}
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"8D573362-44A9-4C19-8529-675C203BE26C"}
+ */
+function rfGetInventoryTFS(event){
+	// check entries for complete before GO
+	var form = forms['rf_mobile_view'];
+	showPrintQueueEffort = false;
+	if (!dataEntryComplete(event)){
+		return false;
+	}
+	showPrintQueueEffort = true;
+	var response = scopes.fs.getInventoryTFS(event);
+	if (response.error){
+		errorDialogMobile(event,1291,'genericin',response.error);
+		form.quantity = '';
+		return false;
+	} else {
+		var invUpdate = rfLocalChangeToInventory(event);
+		invUpdate.disposition = response.rtsmessage;
+		var invBarcode = scopes.jobs.updateSTSInventory(event,form.asnNumber,invUpdate,true,form.quantity);
+		if (form.quantity == form.lastQty){
+			mobItemLength = form.dropLength;
+		}
+		form.lastQty = (form.quantity == form.lastQty) ? form.lastQty : form.lastQty-form.quantity;
+		form.quantity = '';
+		/** var formPrintDrop = (form['printEnabled'] == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
+		//if (response.restockstatus != 'Restock'){//Restock,Scrap,No Drop
+			var printDrop = (scopes.prefs.lFsDoNotPrintScrapLabels != 1) && (response.restockstatus == "Scrap");
+		//}
+		if (printDrop && formPrintDrop){
+			scopes.printer.onActionPrintRMLabels(event,[rec.inventory_uuid]);
+			//print new label		
+		} */
+		var invUUIDs = [];
+		if (response.rtsmessage){//process STS side, transactions, RM barcode
+			var stock = '';
+			if (response.rtsmessage == i18n.getI18NMessage('sts.btn.scrap')){
+				stock = i18n.getI18NMessage('sts.btn.scrap').toUpperCase();
+			} else if (response.rtsmessage == i18n.getI18NMessage('sts.btn.restock')){
+				stock = i18n.getI18NMessage('sts.btn.restock');
+			}
+			if (response.rtsmessage == 'No Drop'){//responses No Drop/Scrap/Restock
+				//remove inventory number
+				scopes.jobs.updateSTSInventory(event,form.asnNumber,null,true,0);
+				//print scrap label, check prefs
+			} else {
+				//update inventory values
+				//var inventoryUpdate = scopes.fs.getInventorySerial(event,form.asnNumber);
+				//form.asnNumber = scopes.jobs.updateSTSInventory(event,form.asnNumber,inventoryUpdate,false,form.quantity);
+				//scopes.jobs.updateSTSInventory(event,form.asnNumber,inventoryUpdate,false,form.quantity);//20200305
+				//print invBarcode. fabsuite prefs, printing ON, 
+				if (form['printEnabled'] == 'ON' && (!(scopes.prefs.lFsDoNotPrintScrapLabels*1) || response.rtsmessage == 'Restock')){
+					application.output('Printing Remnant '+invBarcode);
+					var tempPrtUUID = getInvUUID(event,invBarcode);
+					if (tempPrtUUID){
+						if (!invUUIDs){invUUIDs = new Array()}
+						invUUIDs.push(tempPrtUUID.toString());
+						form['labelPrintType'] = 'material';
+						scopes.printer.onActionPrintRMLabels(event,invUUIDs)
+					}
+				}
+				if (response.rtsmessage == 'Scrap'){
+					//scopes.jobs.updateSTSInventory(event,form.asnNumber,inventoryUpdate,false,form.quantity);	
+				}
+			}
+			if (invUUIDs){
+				if (response.rtsmessage != 'No Drop'){//Scrap Restock
+					errorDialogMobile(event,1220,'genericin',response.rtsmessage+' '+stock+' Labels: '+invUUIDs.length);
+				} else {
+					errorDialogMobile(event,1220,'genericin',' '+stock+' Labels: '+invUUIDs.length);
+				}
+			}
+		}
+		// perform STS inventory update here
+		form.quantity = '';
+		form.dropLength = '';
+		//globals.rfClearDependentEntries(event,'locationin');
+	}
+	if (response.rtsmessage != 'No Drop'){//Scrap Restock
+		errorDialogMobile(event,1220,'genericin',response.rtsmessage+' '+stock);
+	}	
+	return true;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param jobNumber
+ *
+ * @properties={typeid:24,uuid:"B6574F35-6861-413C-9138-08DA1199B07D"}
+ */
+function rfCheckValidJob(event,jobNumber){
+	var form = forms['rf_mobile_view'];
+	jobNumber = jobNumber.trim();
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var q = databaseManager.createSelect('db:/stsservoy/jobs');
+	q.where.add(q.columns.job_number.eq(jobNumber));
+	q.where.add(q.columns.association_id.eq(session.associationId.toString()));
+	var Q = databaseManager.getFoundSet(q);
+	return (Q.getSize() > 0);
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"A60DA02F-E370-4AC0-A126-FA12334BCC64"}
+ * @AllowToRunInFind
+ */
+function rfLocalChangeToInventory(event){
+	var form = forms['rf_mobile_view'];
+	var invUpdate = {localChange:true,disposition:''};
+	var uomMetric = false;
+	if (form.dropLength){
+		var dropMetric = (form.dropLength.search(/(['"])/) == -1);
+
+		invUpdate.item_length_in = (dropMetric) ?  globals.inToMM(form.dropLength) : globals.strToDec('FEET',form.dropLength.replace(/[^0-9]/g,' '));
+		invUpdate.item_length = (dropMetric) ? form.dropLength : inToMM(invUpdate.item_length_in);
+		invUpdate.item_length_char = (dropMetric) ? globals.ftDecToString('FEET',invUpdate.item_length_in,13,'ALL') : form.dropLength;
+	}
+	if (form.dropLocation){
+		invUpdate.location = form.dropLocation;
+	}
+	if (form.quantity){
+		invUpdate.quantity_form = form.quantity;//not immediate update to inventory, manual edit/change
+	}
+	if (form.lastQty){
+		invUpdate.quantity_fs = form.lastQty;//not immediate update to inventory, manual edit/change
+	}
+	if (form.dropJob){
+		var jobInfo = globals.getJobIdInfo(form.dropJob);
+		invUpdate.job_uuid = jobInfo.job_id;
+		invUpdate.job_number = form.dropJob;
+	}
+	if (form.statusLocation){
+		invUpdate.location = form['statusLocation'];
+	}
+	var msg = 'invUpdate:{';
+	for (var item in invUpdate){
+		msg += item+':'+invUpdate[item]+',';
+	}
+	msg += '}';
+	application.output(msg);
+	return invUpdate;
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} asnNumber
+ * @param {Boolean} fsHasInventory
+ *
+ * @properties={typeid:24,uuid:"C1CE2A03-4FB5-41ED-AC8F-43C05862D1E2"}
+ */
+function rfPopulateInvInfoTFS(event,asnNumber,fsHasInventory){
+	var form = forms['rf_mobile_view'];
+	if (dataEntryComplete(event,'all')){
+		if (processGoEvent(event)){
+			return;
+		}
+	}
+	rfInventoryStatus(event,asnNumber);
+	if (form.jobNumber && !rfJobCheck(form.jobNumber,session.associationId)){////check that job is in current users division
+		errorDialogMobile(event,'1294','dialog','');//job does not exist in the division its returned to
+	}
+	form.dropLength = '';
+	if (form.lastQty){
+		if (form.lastQty*1 == 1){form.quantity = form.lastQty;} else {form.quantity = ''}
+	}
+	if (fsHasInventory){
+		form['asnNumber'] = asnNumber;
+	}
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} rmBarcode
+ *
+ * @properties={typeid:24,uuid:"DA9EB312-C93A-4F86-9E59-E0F9D86349AB"}
+ */
+function rfASNReceiving(event,rmBarcode){
+	var form = forms['rf_mobile_view'];
+	//check F2 setting for division entry
+	//check for valid rmBarcode
+	form.asnNumber = rmBarcode;
+	var location = form.stockLocation;
+	var response = scopes.fs.receiveASN(event,rmBarcode,location);
+	var retList = '';
+	for (var item in response){
+		retList += item+': '+response[item]+',';
+	}
+	application.output('{'+retList+'}');
+	if (!response.error){
+		form.poNumber = response.po_number;
+		form.invOrdered = response.quantity_ordered;//invordered
+		form.invRemains = response.quantity_remaining;
+		form.invMaterial = response.shape+' x '+response.dims;//invmaterial
+		form.invGrade = response.grade;//invgrade
+		form.heat = response.heat;
+		form.invLocation = location;//invlocation
+		form.association = globals.session.association;
+		var metric = false;
+		if (metric){
+			globals.mobItemLength = response.item_length;
+			globals.mobItemWeight = response.item_weight;
+			globals.mobLengthUnits = 'mm';
+			globals.mobItemWeightUnits = 'kg';
+			//form.item_length = ;
+			//form.item_length_units = "mm";
+			//form.item_weight = response.item_weight;
+			//form.item_weight_units = 'kg';
+		} else {
+			globals.mobItemLength = response.item_length_char;
+			globals.mobItemWeight = response.item_weight_lbs;
+			globals.mobLengthUnits = '';
+			globals.mobItemWeightUnits = 'lbs';
+			//form.item_length = response.item_length_char;
+			//form.item_length_units = '';
+			//form.item_weight_lbs = response.item_weight_lbs;
+			//form.item_weight_units = 'lbs';
+		}
+		syncFSSTSInventory(event,rmBarcode);
+	} else {
+		errorDialogMobile(event,1220,'genericin',response.error);
+		rfInventoryStatus(event,rmBarcode,true);
+	}
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ * @param address
+ *
+ * @properties={typeid:24,uuid:"E79B78C8-B78D-4065-BDF2-007CECC93DE0"}
+ * {entity_uuid, address_type, city, state, country, edit_date, line1, line2, logic_flag, zip, note, other_addresses}
+ * @AllowToRunInFind
+ */
+function createAddress(event,address){
+	/** @type {QBSelect<db:/stsservoy/addresses>} */
+	var a = databaseManager.createSelect('db:/stsservoy/addresses');
+	var A = databaseManager.getFoundSet(a);
+	var idx2 = A.newRecord();
+	/** @type {JSFoundSet<db:/stsservoy/addresses>} */
+	var addrRec = A.getRecord(idx2);
+	addrRec.tenant_uuid = globals.session.tenant_uuid;
+	/** @type {JSFoundSet<db:/stsservoy/zipcodes>} */
+	var zipRec = null;var tempCity = '';var tempState = '';var tempZip = '';
+	if (address.complete){
+		var addressInfo = address.complete.split('\n');
+		for (var index = addressInfo.length-1;index > -1;index--){
+			var addrLine = addressInfo[index];
+			if (address.state && address.city && address.line2 && !address.line1){
+				address.line1 = addrLine;
+			}
+			if (address.state && address.city && !address.line2){
+				address.line2 = addrLine;
+			}
+			//is a zip
+			if (!address.zip){
+				var zip = addrLine.match(/([0-9]{5})-{0,1}[0-9]{0,4}/);
+				if (zip){
+					address.zip = zip[1];
+					/** @type {QBSelect<db:/stsservoy/zipcodes>} */
+					var q = databaseManager.createSelect('db:/stsservoy/zipcodes');
+					q.where.add(q.columns.zipcode_id.eq(address.zip));
+					var Q = databaseManager.getFoundSet(q);
+					zipRec = Q.getRecord(1);
+					var tempCity = zipRec.primary_city;
+					var tempState = zipRec.state;
+					if (addrLine.search(tempCity) != -1){address.city = tempCity;}
+					if (addrLine.search(tempState) != -1){address.state = tempState}
+					
+				}
+			}
+			if (!address.state){
+				var possState = addrLine.match(/[^A-Z]([A-Z]{2})[^A-Z]/);
+				if (possState){
+					/** @type {QBSelect<db:/stsservoy/zipcodes>} */
+					var r = databaseManager.createSelect('db:/stsservoy/zipcodes');
+					r.where.add(r.columns.state.eq(possState));
+					var R = databaseManager.getFoundSet(r);
+					if (R.getSize() > 0){
+						addrLine.state = possState;
+						var idx = 1;
+						while (zipRec = R.getRecord(idx++)){
+							tempCity = zipRec.primary_city;
+							if (addrLine.search(tempCity) == 0){
+								address.city = tempCity;
+							}
+							if (!address.zip){
+								address.zip = zipRec.zipcode_id;
+							}
+							
+						}
+					}
+
+				}
+			}
+			// is a city
+			//is a state
+			// is first line
+			// is second line
+			
+		}
+		if (address.line2 && !address.line1){
+			address.line1 = address.line2;
+			address.line2 = '';
+		}
+		
+	}
+	var editDate = new Date();
+	addrRec.customer_id = (address.entity_uuid) ? address.entity_uuid.toString() : null;
+	addrRec.address_type = (address.address_type) ? address.address_type.toUpperCase() : 'ADDRESS';
+	addrRec.city = (address.city) ? address.city : '';
+	addrRec.state = (address.state) ? address.state : '';
+	addrRec.country = (address.country) ? address.country : '';	
+	addrRec.edit_date = (address.edit_date) ? address.edit_date : editDate;
+	addrRec.line1 = (address.line1) ? address.line1 : '';
+	addrRec.line2 = (address.line2) ? address.line2 : '';
+	addrRec.logic_flag = true;//(address.logic_flag) ? address.logic_flag : false;
+	addrRec.zip_postal_code = (address.zip) ? address.zip : '';
+	addrRec.note = (address.note) ? address.note : '';
+	if (address.complete){
+		addrRec.note = address.complete;
+	}
+	databaseManager.saveData(addrRec);
+	return addrRec.address_id;
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"06A81B66-74BA-4C69-9F29-7C025B98233E"}
+ */
+function crossoverSTSdata(event){
+	if (globals.session.login != 'P'){
+		globals.errorDialogMobile(event,'1297',null,null);
+		return;
+	}
+	var backupData = globals.DIALOGS.showQuestionDialog(i18n.getI18NMessage('sts.txt.backup.database.title'),
+					i18n.getI18NMessage('sts.txt.backup.database.question'),
+					[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);	
+	if (backupData == i18n.getI18NMessage('sts.btn.no')){
+		globals.errorDialogMobile(event,'7005',null,null);//sts.txt.crossover.cancelled
+		return;
+	}
+	// perform backup
+	backupDatabase(event);
+	//application.output('Path '+backupFileNameAndPath)
+	if (backupFileNameAndPath){
+		var file = plugins.file.convertToJSFile(backupFileNameAndPath);
+		if (file.size() == 0){
+			globals.errorDialogMobile(event,'7003',null,null);//sts.txt.crossover.failed
+			if (!application.isInDeveloper) {
+				return;
+			}
+		}
+	}
+
+	if (0){
+		globals.errorDialogMobile(event,'sts.txt.crossover.employee.class',null,null);
+		scopes.jobs.cutoverEmployeeClassDBF();
+		
+		globals.errorDialogMobile(event,'sts.txt.crossover.employee',null,null);
+		scopes.jobs.cutoverEmployeeDBF(event);
+		
+		globals.errorDialogMobile(event,'sts.txt.crossover.customer',null,null);
+		scopes.jobs.cutoverCustomerDBF(event);
+		
+		globals.errorDialogMobile(event,'sts.txt.crossover.carrier',null,null);
+		scopes.jobs.cutoverCarrierDBF(event);
+	}
+
+	globals.errorDialogMobile(event,'sts.txt.crossover.status.description',null,null);
+	scopes.jobs.cutoverStatusDescriptionDBF(event);
+
+	//scopes.jobs.cutoverInventoryDBF();
+	globals.errorDialogMobile(event,'sts.txt.crossover.complete',null,null);
+	
+	var reportFolder = plugins.VelocityReport.getReportFolder();
+	if (reportFolder.charAt(reportFolder.length-1)){reportFolder=reportFolder+'\\'}
+	var filePassWithPath = reportFolder+'STSCutover.txt';
+	var file = plugins.file.convertToJSFile(filePassWithPath);
+	if (file.exists() && !application.isInDeveloper()){
+		file.deleteFile();
+		var form = forms[event.getFormName()];
+		if (form && form.elements.btn_Crossover){
+			form.elements.btn_Crossover.visible = false;
+		}
+		return;
+	}
 }

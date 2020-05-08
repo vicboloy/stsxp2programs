@@ -607,7 +607,7 @@ function onActionClickMainButton(event,windowTitle,formName,xOrigin,yOrigin,xWid
  * @properties={typeid:24,uuid:"027567CC-C0C7-43F6-8F87-7A8878ED6B55"}
  */
 function onActionClickCustomer(event) {
-	onActionClickMainButton(event,'Customers','customers',10,10,890,556,false);//20191227 on call with paul. deactivated due to reuse and no use case for mw customer
+	onActionClickMainButton(event,'Customers','customers',10,10,890,560,false);//20191227 on call with paul. deactivated due to reuse and no use case for mw customer
 	// see employees to reenable by using that method for multi window capability
 }
 
@@ -617,7 +617,7 @@ function onActionClickCustomer(event) {
  * @properties={typeid:24,uuid:"B0C80879-16DA-4098-8801-18C1D7F24E96"}
  */
 function onActionClickEmployee(event) {
-	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.employees'),'employees_pre',50,50,920,505,true);
+	onActionClickMainButton(event,i18n.getI18NMessage('sts.window.employees'),'employees_pre',50,50,920,525,true);
 }
 
 /**
@@ -1404,6 +1404,17 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
+	if (1){return}
+	if (globals.session.login != 'P'){
+		globals.errorDialogMobile(event,'1006',null,'Only admin "P" can do this.');
+		return;
+	}
+	//scopes.jobs.importEmployeeClassDBF();
+	//scopes.jobs.importEmployeeDBF(event);
+	scopes.jobs.importCustomerDBF(event);
+	globals.errorDialogMobile(event,'1006',null,'Completed.');
+
+	if (1){return}
 	//scopes.jobs.importInventoryDBF();
 	//if (1==1){return}
 	//scopes.jobs.setUpIndexing();

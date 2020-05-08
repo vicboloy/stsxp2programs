@@ -572,9 +572,9 @@ function getBTFieldData(labelFldType){
 		241 ASMECODE Character 10 sheets.sh_asmecode 15,\
 		242 OPERATEMP Character 10 sheets.sh_operatemp 10,\
 		243 OPERAPRES Character 10 sheets.sh_operapres 10,\
-		244 CUTLISTBC Character 20 idfiles.cut_list_bc 20,\
-		245 PCMKCOUNT Character 10 pcmk_instances.pcmk_count 10,\
-		246 LGTNUMMM Numeric 11.4 piecemarks.item_length 11.4";
+		244 CUTLISTBC Character 20 idfiles.if_cut_list_bc 20,\
+		245 PCMKCOUNT Character 10 piecemarks.pm_pcmk_qty 10,\
+		246 LGTNUMMM Numeric 11.4 piecemarks.pm_item_length 11.4";
 	
 	// check missing bt label print columns, check PDF for column, check this table column index and column name, then go to jobs.query_assembly_raw to set column name and data source
 	var barTenderRawSpecs = '\
@@ -769,7 +769,7 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	//determine is this metric or imperial labeling?  
 	var form = forms[event.getFormName()];
 	if (form.printEnabled == i18n.getI18NMessage('sts.txt.off')){application.output('no printing');return}
-	var labelQtyRequested = form.quantity;
+	var labelQtyRequested = (form.bundled && form.bundled.match(/^Y/)) ? 1 : form.quantity;
 	//start show printing warning
 	//var countStr = labelQtyRequested;
 	//scopes.globals.errorDialogMobile(event,1220,'sts.txt.printing.inventory.number',countStr);
@@ -800,7 +800,9 @@ function onActionPrintRMLabels(event,invUUIDs) {
 		q.result.add(q.columns[invCols[i]]);
 	}
 
-	q.result.addValue(form.quantity,'labelqty');
+	var bundled = (form.bundled && form.bundled.match(/^Y/)) ? true : false;
+	var labelQuantity = (bundled) ? form.quantity : 1;
+	q.result.addValue(1,'labelqty');
 	q.result.add(s.columns.customer_number,'CUSTNUM');
 	q.result.addValue(rawMaterialLabelFormat,'LABELFMT');
 	q.result.add(r.columns.job_number,'POJOBNUM');
@@ -887,9 +889,10 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	// ** @type {num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number} */
 	var specObj = {num:0,name:'',dbtype:'',size:0,dbcol:'',dbsize:0};
 	var tabContents = '';var fileLine = '';var qIndex = 1;
-	if (application.isInDeveloper()){application.output('There are '+Q.getMaxRowIndex()+' labels to print. Qty bundled:'+labelQtyRequested)}
-	var bundleCount = (labelQtyRequested*1 == Q.getMaxRowIndex()) ? 1 : labelQtyRequested*1;
-	var numberToPrinter = bundleCount;
+	if (application.isInDeveloper()){application.output('There are '+Q.getMaxRowIndex()+' labels to print. Labels Requested On form:'+labelQtyRequested)}
+	var numberToPrinter = (bundled || globals.session.program == i18n.getI18NMessage('sts.mobile.inventory.audit')) ? 1: labelQtyRequested;//(labelQtyRequested*1 == Q.getMaxRowIndex()) ? 1 : labelQtyRequested*1;
+	//var numberToPrinter = bundleCount;//(forms[formName].bundled.matchbundleCount;
+	var bundleCount = 1;//(bundled) ? 1: labelQtyRequested;
 	for (qIndex = 1;qIndex <= Q.getMaxRowIndex();qIndex++){
 		Q.rowIndex = qIndex;
 		var rec = Q;
@@ -925,7 +928,7 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	if (!useServer){
 		scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER		
 	}
-	
+	updateInventoryPrinted(event,barcodePrintedArray);
 	//close show printing warning
 	//scopes.globals.rfErrorHide(event);
 	
@@ -943,4 +946,23 @@ function getDefaultPrinterName(){
  	if (!$printerName){printerName = ''}
  	return $printerName.trim();
 	//application.output($printerName)
+}
+/**
+ * @param event
+ * @param barcodePrintedArray
+ *
+ * @properties={typeid:24,uuid:"E76C854A-8607-4A3A-9A59-23DDCAA158D7"}
+ */
+function updateInventoryPrinted(event,barcodePrintedArray){
+	if (barcodePrintedArray && barcodePrintedArray.length == 0){return}
+	/** @type {QBSelect<db:/stsservoy/inventory>} */
+	var q = databaseManager.createSelect('db:/stsservoy/inventory');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.inventory_uuid.isin(barcodePrintedArray));
+	var Q = databaseManager.getFoundSet(q);
+	var R = databaseManager.getFoundSetUpdater(Q);
+	var printDate = new Date();
+	R.setColumn('print_date',printDate);
+	R.setColumn('lprint',1);
+	R.performUpdate();
 }

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
 	<buildpathentry excluding=".stp/|medias/" kind="src" path=""/>
-	<buildpathentry exported="true" kind="prj" path="/before_import_clearDataBases"/>
+	<buildpathentry exported="true" kind="prj" path="/fabSuiteCom"/>
 	<buildpathentry exported="true" kind="prj" path="/jobsts"/>
 	<buildpathentry exported="true" kind="prj" path="/kiss_import"/>
+	<buildpathentry exported="true" kind="prj" path="/mod_dialog"/>
 	<buildpathentry exported="true" kind="prj" path="/servoyCommons"/>
 	<buildpathentry exported="true" kind="prj" path="/servoySecurity"/>
 	<buildpathentry exported="true" kind="prj" path="/servoySecurityAuthenticator"/>

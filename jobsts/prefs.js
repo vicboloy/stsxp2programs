@@ -1014,9 +1014,11 @@ var lFsAllowNonSerial = false;
  */
 var lFsLocnBatch = false;
 /**
- * @properties={typeid:35,uuid:"05B71A8F-DC06-4892-A310-7FB7DA680BE3",variableType:-4}
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"05B71A8F-DC06-4892-A310-7FB7DA680BE3",variableType:4}
  */
-var lFsPrintIDFromCutList = true;
+var lFsPrintIDFromCutList = 0;
 /**
  * @type {Number}
  *
@@ -1503,6 +1505,8 @@ function onActionFormTemplate(event) {
  * Perform the element default action.
  *
  * @param {JSEvent} event the event that triggered the action
+ * Use case is print to labelase, print under STSmobile directly to server, print to server, 
+ * print to user-specific printers, print with and without db in the bartender template
  *
  * @properties={typeid:24,uuid:"D533C90F-42D6-426E-83DA-2ADE3C394DBC"}
  * @AllowToRunInFind
@@ -1544,7 +1548,9 @@ function onActionPrintLabels(event) {
 	//var formName = event.getFormName();
 	var versionForm = globals.getInstanceForm(event);
 	var useServer = (forms[srcForm].useServerPrinters == 1);
-	if (formName == 'rf_mobile_view'){useServer = true}
+	var useLabeLase = (forms[srcForm].useLabeLasePrinter && forms[srcForm].useLabeLasePrinter == 1);
+	var useBTPrint = (forms[srcForm].useBarTender && forms[srcForm].useBarTender == 1);
+	if (formName == 'rf_mobile_view'){useServer = true;useBTPrint = true}
 
 	var labCnt = 0;
 	//if (true || true) {return;}
@@ -1572,6 +1578,8 @@ function onActionPrintLabels(event) {
 	databaseManager.saveData(fs);//20190531 keep sort on close for printing labels
 	var i = 1;
 	var fileLine = "";
+	var llfileLine = "";
+
 	var itemsSelected = false; globals.barcodePrintedArray = [];var printedIndexes = [];
 	//var btSpec = {num: 0, name:'', size: 0,dbcol:'',dbtype:'',dbsize:0}
 	var printed = false;
@@ -1591,6 +1599,9 @@ function onActionPrintLabels(event) {
 		if (rec.inventory_uuid){globals.barcodePrintedArray.push(rec.inventory_uuid.toString())}
 		itemsSelected = true;
 		//var altSystem = ['PARTWT','LGTNUM','WT','WIDNUM'];
+		if (useLabeLase){
+			llfileLine += 'LLP\t';
+		}
 		for (var index = 0;index < tabCount;index++){
 			/** @type {JSRecord<num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number>} */
 			var specObj = specs[index];
@@ -1598,19 +1609,27 @@ function onActionPrintLabels(event) {
 			var dbCol = specObj.db_field.split('.');
 			var dbField = dbCol[dbCol.length-1];//get unique record field
 			tabContents = rec[dbField];
+			if (application.isInDeveloper()){application.output('Index: '+index+' dbField:'+dbField+' Content:'+tabContents);}
+
 			if (typeof tabContents === 'undefined'){// || altSystem.indexOf(specObj.field_name) != -1){
-				if (application.isInDeveloper()){application.output('undefined or unknown - '+dbField+' '+specObj.field_name);}
+				//if (application.isInDeveloper()){application.output('undefined or unknown - '+dbField+' '+specObj.field_name);}
 				var fieldTagName = specObj.field_name;
 				tabContents = getNonRecordValues(rec,fieldTagName);
 			}
 			if (!tabContents){tabContents = ''}
 			
 			tabContents = tabContentFormat(tabContents,specObj);
-			if (application.isInDeveloper()){application.output('contents '+tabContents);}
+			if (0 && application.isInDeveloper()){application.output('contents '+tabContents);}
 			if (tabContents == ''){
 				fileLine += '\t';
+				if (useLabeLase){
+					llfileLine += '\t';
+				}
 			} else {
 				fileLine += tabContents+"\t";
+				if (useLabeLase){
+					llfileLine += tabContents+"\t";
+				}
 			}
 			//fileLine += tabContents+"\t";
 		}
@@ -1618,14 +1637,39 @@ function onActionPrintLabels(event) {
 		if (!useServer){//use multipleLines
 			fileLine += "\n";
 		} else {
-			scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER
-			fileLine = '';
-			printed = true;
+			if (useBTPrint){
+				scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER
+				fileLine = '';
+				printed = true;
+			}
 		}
+		if (useLabeLase){
+			llfileLine += '\n';
+			application.output('LABELASE: '+llfileLine);
+		}
+
 	}
-	if (!useServer && itemsSelected){
+	if (!useServer && itemsSelected && useBTPrint){
 		scopes.prefs.bartenderPrint(event,fileLine); //BARTENDER	
 		printed = true;	
+	}
+	if (useLabeLase){//write labelase1000.txt file
+		var reportPth = scopes.prefs.reportpath.replace('.','');
+		var tempDir = (forms[srcForm].useLocalDirectory) ? forms[srcForm].localDir : plugins.file.getDefaultUploadLocation()+scopes.prefs.temppath.replace('.','');
+		//tempDir = tempDir.replace(plugins.file.getDefaultUploadLocation(),'');
+		tempDir = tempDir.replace(/\/+/g,'\\').replace('.','');
+		var labeLasePath = plugins.file.getDefaultUploadLocation()+reportPth+"\\"+forms[srcForm].labeLaseFormat;
+		labeLasePath = labeLasePath.replace(/\/+/g,'\\');
+		//application.output('printing LabeLase Template: '+labeLasePath);
+		//application.output('llfileLine:\n'+llfileLine);
+		var llText = llfileLine.replace(/LLP/g,labeLasePath);
+		//application.output('with LabeLase Path:'+llText);
+		var labeLaseFile = tempDir+'\\LabeLase1000.txt';
+		labeLaseFile = labeLaseFile.replace(/\/+/g,'\\');
+		var labeLase = plugins.file.convertToJSFile(labeLaseFile);
+		labeLase.deleteFile();
+		status = plugins.file.appendToTXTFile(labeLaseFile,llText);
+		//status = plugins.file.copyFile(randFileName,labeLaseFile);
 	}
 	if (updateIdfile && printed){
 		for (var i2 = 0; i2 < printedIndexes.length;i2++){
@@ -1749,7 +1793,12 @@ function bartenderPrint(event,txtString,labelCount){
 	if (status){globals.loggerDev(this,'Status append to txt file fail.');}
 	//status = plugins.file.copyFile(fileName,randFileName);
 	null;
-	if (forms[formName].useLabeLasePrinter){
+	if (0 && forms[formName].useLabeLasePrinter){
+		var labeLasePath = plugins.file.getDefaultUploadLocation()+reportPth+"\\"+barForm.labeLaseFormat;
+		labeLasePath = labeLasePath.replace(/\/+/g,'\\');
+		application.output('printing LabeLase Template: '+labeLasePath);
+		var llText = txtString.replace(/^(\t)/g,labeLasePath+'\t');
+		application.output('with LabeLase Path:'+llText);
 		var labeLaseFile = tempDir+'\\LabeLase1000.txt';
 		labeLaseFile = labeLaseFile.replace(/\/+/g,'\\');
 		status = plugins.file.copyFile(randFileName,labeLaseFile);
@@ -2058,9 +2107,10 @@ function tabContentFormat(tabContents,tabSpec){
 			break;
 		default:
 	}
-	a = blanks+a;
-	a = a.substr(a.length-length);
-	return a+b;
+	///a = blanks+a;
+	//a = a.substr(a.length-length);
+	a = a.toString().trim();
+	return a;//a+b;
 }
 /**
  * @properties={typeid:24,uuid:"A0BDA211-2B39-4739-87CC-E244592AA285"}

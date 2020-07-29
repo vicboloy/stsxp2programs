@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/addresses",
+items:[
+{foreignColumnName:"address_type",operator:7,primaryDataProviderID:"scopes.globals.billRgx",typeid:23,uuid:"4506601F-022E-46D7-A96A-394C9499F448"},
+{foreignColumnName:"customer_id",primaryDataProviderID:"customer_id",typeid:23,uuid:"50AC60F3-2025-4847-A655-F7E963581242"}
+],
+joinType:1,
+name:"x_cust_addr_billing",
+primaryDataSource:"db:/stsservoy/customers",
+typeid:22,
+uuid:"F02621DB-CDBF-460C-BFBF-CF9E6BE0363D"

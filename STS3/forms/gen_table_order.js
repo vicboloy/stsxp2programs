@@ -599,7 +599,34 @@ function onActionSave(event) {
 function getColumnI18nMapping(event,tableFormName,elName){
 	var tableI18n = '';
 	if (tableFormName.search('transactions') != -1){
-		tableI18n = i18n.getI18NMessage('sts.table.transactions.'+elName);
+		tableI18n = i18n.getI18NMessage('table.transactions.'+elName);
+	} else if (tableFormName.search('raw') != -1){
+		var i18nText = i18n.getI18NMessage('table.inventory.'+elName);
+		if (!i18nText.match('!') ){
+			tableI18n = '(inventory) '+ i18nText;
+		} else {
+			if (application.isInDeveloper()){application.output(elName)}
+			switch (elName){
+			case 'barcode_printer_name' : tableI18n = '(form) '+i18n.getI18NMessage('table.general.barcode_printer_name');break;
+			case 'association_name' : tableI18n = '(associations) '+i18n.getI18NMessage('table.associations.association_name');break;
+			case 'btw_file_path' : tableI18n = '(form) '+i18n.getI18NMessage('table.general.btw_file_path');break;
+			case 'labelfmt' : tableI18n = '(form) '+i18n.getI18NMessage('table.general.btw_file_path');break;
+			case 'lgtnummm' : tableI18n = '(inventory) '+i18n.getI18NMessage('table.inventory.item_length');break;
+			case 'wtkg' : tableI18n = '(inventory) '+i18n.getI18NMessage('table.inventory.item_weight');break;
+			case 'cust_customer_number' : tableI18n = '(customers) '+i18n.getI18NMessage('table.general.job_customer_number');break;
+			case 'customer_number' : tableI18n = '(customers) '+i18n.getI18NMessage('table.general.job_customer_number');break;
+			case 'employee_number' : tableI18n = '(customers) '+i18n.getI18NMessage('table.employee.employee_number');break;
+			case 'fabshop' : tableI18n = '(associations) '+i18n.getI18NMessage('table.associations.association_name');break;
+			case 'shop' : tableI18n = '(associations) '+i18n.getI18NMessage('table.associations.association_name');break;
+			case 'plant' : tableI18n = '(associations) '+i18n.getI18NMessage('table.associations.association_name');break;
+			case 'quantity' : tableI18n = '(form) '+i18n.getI18NMessage('sts.txt.quantity');break;
+			case 'job_customer_name' : tableI18n = '(customers) '+i18n.getI18NMessage('table.general.job_customer_name');break;
+			case 'job_number' : tableI18n = '(jobs) '+i18n.getI18NMessage('table.jobs.job_number');break;
+			case 'job_number_group' : tableI18n = '(jobs) '+i18n.getI18NMessage('table.jobs.job_number_group');break;
+				default: tableI18n = elName;application.output('defaulted '+elName)
+			}
+			//tableI18n = scopes.jobs.determineI18n(elName,'readable');
+		}
 	} else {
 		tableI18n = scopes.jobs.determineI18n(elName,'source');
 	}

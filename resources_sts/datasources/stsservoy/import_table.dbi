@@ -145,6 +145,12 @@ name:"last_bc_wt"
 },
 {
 allowNull:true,
+creationOrderIndex:42,
+dataType:4,
+name:"logic_flag"
+},
+{
+allowNull:true,
 creationOrderIndex:31,
 dataType:12,
 length:15,

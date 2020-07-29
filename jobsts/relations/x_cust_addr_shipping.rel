@@ -1,0 +1,11 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/addresses",
+items:[
+{foreignColumnName:"customer_id",primaryDataProviderID:"customer_id",typeid:23,uuid:"553D1CF6-EB58-4FF6-B25F-98133A83FD70"},
+{foreignColumnName:"address_type",operator:7,primaryDataProviderID:"scopes.globals.shipRgx",typeid:23,uuid:"6AE92A5F-D01F-4E09-8A97-37C1AA3F53CF"}
+],
+joinType:1,
+name:"x_cust_addr_shipping",
+primaryDataSource:"db:/stsservoy/customers",
+typeid:22,
+uuid:"2CBF3DCB-C705-4F47-A8E9-D9F3C112CD8F"

@@ -19,7 +19,7 @@ function onActionEnable(event) {
 	elements.lFsLocnBatch.enabled = fabsuiteEnabled;
 	elements.lFsAllowNonSerial.enabled = fabsuiteEnabled;
 	elements.getFabsuiteRootPath.enabled = fabsuiteEnabled;
-	elements.lFsPrintCutList.enabled = fabsuiteEnabled;
+	elements.lFsPrintIDFromCutList.enabled = fabsuiteEnabled;
 	elements.lFsFlipPrimSecWhenShop.enabled = (fabsuiteEnabled && scopes.prefs.promptFabShop == 1);
 	
 	if (!event){return}

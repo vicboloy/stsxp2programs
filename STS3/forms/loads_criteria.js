@@ -17,6 +17,8 @@ function onShow(firstShow, event) {
 		forms[event.getFormName()].baseForm = event.getFormName().replace(forms[event.getFormName()].versionForm,'');
 		elements.btn_Browse.enabled  = false;
 	}
+	scopes.globals.hideEmptyColumns = 0;//20200513 request by PP by text message Could you make default for the check box
+	// to hide empty columns on the viewloads window UNCHECKED.
 	globals.setUserFormPermissions(event,false);
 	//forms.loads_pcmk_combo;
 }

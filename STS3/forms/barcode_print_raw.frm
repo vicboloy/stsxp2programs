@@ -15,6 +15,7 @@ items:[
 {
 containsFormID:"3F96FAE4-508A-45D8-8D88-A5A43249CB58",
 location:"5,32",
+relationName:"sts_job_to_rawlabel",
 text:"barcode_id_raw",
 typeid:15,
 uuid:"6C5BB2E5-E723-4D4E-8166-ABF5CC9F64F7"

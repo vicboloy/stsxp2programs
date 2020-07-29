@@ -332,7 +332,7 @@ function onShow(firstShow, event) {
 	suffix = '.btw';
 	var path = plugins.file.getDefaultUploadLocation()+'\\'+scopes.prefs.reportpath;
 	var btwFiles = plugins.file.getFolderContents(path.replace(/\/+/g,'/'),suffix);
-	labelList.push('<NONE>');
+	labelList.push(i18n.getI18NMessage('sts.empty.entry'));
 	for (var index = 0;index < btwFiles.length;index++){
 		labelList.push(btwFiles[index].getName());
 	}
@@ -342,7 +342,7 @@ function onShow(firstShow, event) {
 	var labelaseList = [];
 	var suffixLabelase = ['.itl','.itlx'];
 	var labFiles = plugins.file.getFolderContents(path.replace(/\/+/g,'/'),suffixLabelase);
-	labelaseList.push('<NONE>');
+	labelaseList.push(i18n.getI18NMessage('sts.empty.entry'));
 	for (index = 0;index < labFiles.length;index++){
 		labelaseList.push(labFiles[index].getName());
 	}

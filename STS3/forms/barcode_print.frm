@@ -39,6 +39,7 @@ items:[
 {
 containsFormID:"AD05C8C0-2CED-41FF-96ED-79396FDFCB4B",
 location:"85,32",
+relationName:"sts_job_to_idlabel",
 text:"barcode_idlabel",
 typeid:15,
 uuid:"2FBDC1E9-61E8-432E-91F1-4A65BD318FA0"

@@ -447,6 +447,7 @@ null,\
 }",
 dataProviderID:"labelName",
 displayType:2,
+editable:false,
 formIndex:5,
 location:"140,447",
 onActionMethodID:"-1",
@@ -557,6 +558,7 @@ null,\
 }",
 dataProviderID:"printerName",
 displayType:2,
+editable:false,
 formIndex:7,
 location:"140,421",
 onActionMethodID:"-1",
@@ -570,6 +572,7 @@ valuelistID:"419FADD3-4849-4E61-8880-3A3D26126014"
 {
 dataProviderID:"labeLaseFormat",
 displayType:2,
+editable:false,
 formIndex:4,
 location:"140,473",
 size:"310,26",

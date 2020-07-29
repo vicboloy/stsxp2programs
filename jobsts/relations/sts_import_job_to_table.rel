@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/import_table",
+items:[
+{foreignColumnName:"job_id",primaryDataProviderID:"scopes.jobs.importJobID",typeid:23,uuid:"627C028C-85D6-44AB-A020-64E7C31AF0E6"}
+],
+joinType:1,
+name:"sts_import_job_to_table",
+primaryDataSource:"db:/stsservoy/import_table",
+typeid:22,
+uuid:"C542AD5E-C9B1-490E-A6AE-0401A048BAD3"

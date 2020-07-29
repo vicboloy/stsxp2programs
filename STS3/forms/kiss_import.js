@@ -214,6 +214,7 @@ function fileReceipt(file){
  */
 function getKissFile(event){
 	if (globals.deBounce(event)){return}
+	scopes.kiss.removeExtraKissFiles(event);
 	controller.enabled = false;
 	randFile = 'Import_'+vJobNumber+'_'+new Date().getTime()+'.kss';
 	scopes.jobs.importJob.guidOrder = 1;
@@ -258,7 +259,6 @@ function getKissFile(event){
 			<IncludeLotNumbers>1</IncludeLotNumbers>\n\
 			</ExportJob>\n\
 			</FabSuiteXMLRequest>';
-		//application.output(request);
 		if (vSeqNumber && vSeqNumber.search(',') == -1){
 			request = request.replace('SEQ','<Sequence>'+vSeqNumber+'</Sequence>');
 		} else {
@@ -545,20 +545,25 @@ function onDataChangeLotSeq(oldValue, newValue, event) {
 function removeJobImportData(jobNumber){
 	var date = new Date().getTime() - 1000*60*60*24;
 	var delDate = new Date(date);
-	delDate = utils.dateFormat(delDate, 'yyyy-MM-dd')
+	//delDate = utils.dateFormat(delDate, 'yyyy-MM-dd')
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
-	q.where.add(q.or
-		.add(q.columns.job_number.eq(jobNumber))
-		.add(q.columns.creation_date.lt(delDate))
-	);
+	q.where.add(q.columns.job_number.eq(jobNumber));
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	q.result.add(q.columns.import_table_id);
+	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
+	var Q = null;
+	Q = databaseManager.getFoundSet(q);
+	databaseManager.saveData(Q);
 	var jobId = null;
-	var Q = databaseManager.getFoundSet(q);
-	if (Q.getSize() > 0){
+	if (application.isInDeveloper()){application.output('size of import table records '+Q.getSize())}
+	if (Q && Q.getSize() > 0){
 		var rec = Q.getRecord(1);
 		jobId = rec.job_uuid;
+		Q.loadAllRecords(); var idx = Q.getSize();
+		while (rec = Q.getRecord(idx++)){
+			idx = Q.getSize()+1;
+		}
 		Q.deleteAllRecords();
 	}
 	if (application.isInDeveloper()){application.output('size of import table records '+Q.getSize())}

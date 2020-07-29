@@ -293,21 +293,23 @@ function collectCriteria(formName){
  */
 function onActionClear(event) {
 	var formName = event.getFormName();
-	forms[formName].foundset.clear();
-	//forms[formName].elements.btn_Print.enabled = false;
-	forms[formName].elements.btn_PrintSelected.enabled = false;
-	//forms[formName].elements.btn_PrintAll.enabled = false;
 	var form = forms[formName];
-	for (var element in forms[formName].elements){
+	form.foundset.clear();
+	//forms[formName].elements.btn_Print.enabled = false;
+	form.elements.btn_PrintSelected.enabled = false;
+	//forms[formName].elements.btn_PrintAll.enabled = false;
+	//var form = forms[formName];
+	for (var element in form.elements){
 		if (element.search('frm') == 0 && element.search(/JobNum/) == -1){elements[element].enabled = false;}
 		if (forms[formName].elements[element].getElementType() == "CHECK"){
-			var provider = forms[formName].elements[element].getDataProviderID();
+			var provider = form.elements[element].getDataProviderID();
+			application.output('provider '+provider);
 			form[provider] = 0;			
 		}
-		if (forms[formName].elements[element].getElementType().search(/(TEXT|TYPE)/) == -1){continue}
-		provider = forms[formName].elements[element].getDataProviderID();
+		if (form.elements[element].getElementType().search(/(TEXT|TYPE)/) == -1){continue}
+		provider = form.elements[element].getDataProviderID();
 		form[provider] = "";
-		forms[formName].elements[element].bgcolor = 'white';
+		form.elements[element].bgcolor = 'white';
 	}
 	useServerPrinters = 1;
 }

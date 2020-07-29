@@ -303,6 +303,12 @@ var endVars = null;
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var q = databaseManager.createSelect('db:/stsservoy/import_table');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(scopes.jobs.importJobID.toString()));
+	forms.import_table.foundset.loadRecords(q);
+	excludeFS = null;//20200605
 	scopes.jobs.warningsMessage('Opening Import Options Windows',true);
 
 	emptyPiecemarkValues = scopes.jobs.checkMissingPMs(event);
@@ -486,17 +492,22 @@ function onShow(firstShow, event) {
 	//handle excludes by shape and summaries by piecemark
 	scopes.jobs.warningsMessage("Apply initial preferences to piecemark table.",true);
 	//applyImportPreferences(); 20180110 task disable upon load, use button instead
-	databaseManager.saveData(foundset);
+	//databaseManager.saveData(foundset);
 	forms['import_table'].foundset.sort('item_qty desc');
 	scopes.jobs.warningsMessage("Table complete.",true);
 	scopes.jobs.readPieceTables('import');
 	elements.importRecInfo.visible = (application.isInDeveloper());
 	applyImportPreferences(event,true);
+	//applyImportPreferences(event,false);
 	null;
+	updateUI();
 	if (emptyPiecemarkValues){
 		globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('sts.txt.question.continue.with.import'),
 			i18n.getI18NMessage('sts.txt.import.empty.piecemarks'));
 	}
+	forms.import_table.foundset.sort('item_qty desc');
+	var sortOrder = forms.import_table.foundset.getCurrentSort();
+	application.output('current sort import table:'+sortOrder);
 	scopes.jobs.warningsX(event);
 }
 /**
@@ -623,7 +634,16 @@ function defineExclDataset(){
 	//var lineFieldIndex = scopes.jobs.getFieldDataMapping("mapped_field","piecemarks.material").split(",")[1]-1;
 	//for (var i = 0;i < results.getSize();i++){
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
-	var fs = databaseManager.getFoundSet('db:/stsservoy/import_table');
+	//var fs = databaseManager.getFoundSet('db:/stsservoy/import_table');
+	//fs.loadRecords();
+	var jobInfo = scopes.globals.getJobIdInfo(scopes.jobs.importJob.jobNumber);
+	
+	/** @type {QBSelect<db:/stsservoy/import_table>} */
+	var q = databaseManager.createSelect('db:/stsservoy/import_table');
+	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(jobInfo.job_id.toString()));
+	q.result.add(q.columns.import_table_id);
+	var fs = databaseManager.getFoundSet(q);
 	fs.loadRecords();
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
 	var rec = null; var i = 1;
@@ -1810,6 +1830,9 @@ function applyImportPreferences(event,skipDialog){
 		if (rec.summarize == 1){sumList+=" "+rec.shape+" "}
 	}
 	var fs = forms.import_table.foundset;
+	fs.sort('parent_piecemark asc,logic_flag desc,piecemark asc');
+	//fs.loadAllRecords();
+	////fs.loadRecords();
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
 	rec = null; i = 1; var totRec = 0;
 	while (rec = fs.getRecord(i++)){
@@ -1819,7 +1842,7 @@ function applyImportPreferences(event,skipDialog){
 		var minorPm = rec.piecemark;
 		totRec++;
 		if (!majorPm){continue}
-		var minorRecord = (keepMinors == 0) && ((minorPm != "") && majorPm.toLowerCase() != minorPm.toLowerCase());
+		var minorRecord = (keepMinors == 0) && ((minorPm != "") && rec.logic_flag == 0);//majorPm.toLowerCase() != minorPm.toLowerCase());
 		
 		/** @type String */
 		var shape = rec.material.split(' ')[0];
@@ -1834,15 +1857,28 @@ function applyImportPreferences(event,skipDialog){
 		} else if ((sumList.search(shape) != -1)) {
 			rec.import_status = smText;
 		}
-		if (majorPm.toLowerCase() != minorPm.toLowerCase()){
+		if (rec.logic_flag == 0){//majorPm.toLowerCase() != minorPm.toLowerCase()){
 				
-			if (keepMinors == 1){
+			if (keepMinors == 1 && 
+					(!scopes.jobs.applyDiscardTypes || (scopes.jobs.applyDiscardTypes && (excList.search(shape) == -1)))){
 				if (rec.sts_qty != 0){rec.import_status = i18n.getI18NMessage('import.update')}
 				if (rec.sts_qty == 0){rec.import_status = i18n.getI18NMessage('import.create')}
 			} else {
 				rec.import_status = i18n.getI18NMessage('import.ignore');
 			}
 		}
+		if (rec.logic_flag == 1 && rec.sts_qty*1 != 0 && 
+			(rec.item_qty*1 != rec.sequence_quantity*1 ||
+			rec.sts_qty*1 != rec.item_qty*1)){// ||//difference between AL pcmks and this sequence/lot
+				rec.import_status = i18n.getI18NMessage('import.review.sequence');
+		}
+		if (rec.set_bc_qty != 1 && rec.set_bc_qty*1 != rec.item_qty*1){//20200619 copied from kiss.importPopSaveDetailRow
+			if (rec.import_status == i18n.getI18NMessage('import.review.sequence')){
+				rec.import_status = i18n.getI18NMessage('import.review.label.sequence');
+			} else {
+				rec.import_status = i18n.getI18NMessage('import.review.label');
+			}
+		}//20200619 copied from kiss.importPopSaveDetailRow
 
 		//var special = majorPm+' '+minorPm+' '+material+" "+sourceDb.grade+" "+sourceDb.finish+sourceDb.item_weight;
 		//application.output('minor '+minorRecord+' '+special);
@@ -1850,11 +1886,12 @@ function applyImportPreferences(event,skipDialog){
 			//sourceDb.removeRow(i1);
 		}
 
-	
+		databaseManager.saveData(rec);
 	}
 	importRecordCount = totRec;
 	scopes.jobs.warningsMessage('Finished applying import prefs.',true);
-	databaseManager.saveData(fs);
+	databaseManager.saveData(forms.import_table.foundset);
+	application.updateUI();
 	scopes.jobs.warningsX(null);
 }
 /**

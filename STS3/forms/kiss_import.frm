@@ -281,6 +281,7 @@ uuid:"F87D040C-62AD-458D-B27F-C2ABA972FF83"
 },
 {
 dataProviderID:"vDrawingNumber",
+format:"|U",
 location:"37,307",
 name:"numDraw",
 onActionMethodID:"FA580FD8-5BA3-4072-9970-D83AC77F3E56",

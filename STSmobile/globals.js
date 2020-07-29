@@ -58,10 +58,13 @@ function onSolutionOpen(){
 	application.setValueListItems('stsvlg_location',globals.l.locations); // status codes for this association
 	//application.output()
 	application.setValueListItems('stsvlg_status_codes',globals.m.statusCodesDiv[session.associationId]); // status codes for this association
+	application.output('Log Login Entry');
 	globals.logger(true,i18n.getI18NMessage('sts.txt.application.opened.mobile'));
 	//application.setValueListItems('rfProgramList',['Transactions','Exit']);
 	scopes.prefs.mobilePrefs = "";
+	application.output('OnStartLoadPrefs');
 	globals.onStartLoadPrefs();
+	application.output('EPM/FS Check');
 	if (scopes.prefs.lFabsuiteInstalled == 1 || scopes.prefs.lFabsuiteInstalled == true){
 		scopes.fs.checkComFabsuite(null);//Log into FabSuite
 		if (globals.loginError){//logout
@@ -69,6 +72,7 @@ function onSolutionOpen(){
 			rfLogout();
 		}
 	}
+	application.output('Get Mobile Menu List');
 	globals.getMenuList();
 	globals.rfFunctionKeys('STS_main');
 	//globals.functionKeyDescrip[0] = " ";

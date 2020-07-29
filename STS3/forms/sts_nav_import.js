@@ -11,5 +11,8 @@ function onShow(firstShow, event) {
 	if (firstShow){
 	}
 	globals.setUserFormPermissions(event,false);
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		elements.btn_KissImport.enabled = false;
+	}
 	return _super.onShow(firstShow, event)
 }

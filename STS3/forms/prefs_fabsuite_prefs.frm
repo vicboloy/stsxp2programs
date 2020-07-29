@@ -55,7 +55,7 @@ uuid:"329A71E7-BED2-497D-AE4B-1E560D79A0E9"
 dataProviderID:"scopes.prefs.lFsPrintIDFromCutList",
 displayType:4,
 location:"156,212",
-name:"lFsPrintCutList",
+name:"lFsPrintIDFromCutList",
 onDataChangeMethodID:"04DB1200-402E-4A31-85CB-8F463D135F52",
 size:"435,20",
 text:"i18n:sts.txt.applications.fs.print.labels.from.cut.list",

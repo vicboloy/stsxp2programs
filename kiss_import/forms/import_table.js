@@ -54,6 +54,9 @@ function onRenderRequestBarCount(event) {
 	var rend=event.getRenderable();
 	
 	var color = 'yellow';//rend.bgcolor;
+	//var importReview = (rend && rec && rec.import_status && 
+	//	(rec.import_status == i18n.getI18NMessage('import.review.label') ||
+	//		rec.import_status == i18n.getI18NMessage('import.review.sequence')));
 	//rend.bgcolor = cyan;
 	if (rend){
 		if (rec && !rend.toolTipText){
@@ -122,10 +125,10 @@ function onShow(firstShow, event) {
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
 	//q.where.add(q.columns.import_status.not.eq(i18n.getI18NMessage('import.ignore')));
-	q.where.add(q.columns.job_number.eq(forms['kiss_option_import'].jobNumber));
+	q.where.add(q.columns.job_id.eq(scopes.jobs.importJob.jobId));
 	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
 	foundset.loadRecords(databaseManager.getFoundSet(q));
-	foundset.loadAllRecords();
+	//foundset.loadAllRecords();
 	null;
 	//scopes.kiss.setDbTableCounts(event);
 	//databaseManager.getTableFilterParams('stsservoy');
@@ -136,7 +139,7 @@ function onShow(firstShow, event) {
  * @properties={typeid:24,uuid:"4E347EEF-947C-4A80-9D36-2FBA5E95DC5B"}
  */
 function setBarcodesCounts(rec){
-	rec.set_bc_qty = ((rec.item_qty == 1) || (rec && rec.parent_piecemark != rec.piecemark))? 1: rec.item_qty;
+	rec.set_bc_qty = ((rec.item_qty == 1) || (rec && (rec.parent_piecemark != rec.piecemark || (rec.is_assembly && rec.is_assembly == 0))))? 1: rec.item_qty;
 	var nums = scopes.jobs.createBCnums(rec.set_bc_qty,rec.item_qty,rec.item_weight);
 	rec.last_bc_qty = nums.last;
 	rec.barcode_qty = nums.per;
@@ -160,6 +163,12 @@ function onRenderStatus(event) {
 		if (rec){
 			if (rec.import_status == i18n.getI18NMessage('import.summarize')) {
 				rend.bgcolor = '#99ffff';
+			} else if (rec.import_status == i18n.getI18NMessage('import.review.sequence')){
+				rend.bgcolor = '#99ffff';
+			} else if (rec.import_status == i18n.getI18NMessage('import.review.label')){
+				rend.bgcolor = '#99ffff';
+				//rend.fgcolor = '#000000';
+				//rend.font = {Size: 17};
 			} else if (rec.import_status == i18n.getI18NMessage('import.ignore')) {
 				rend.bgcolor = '#d6d6c2';
 			} else if (rec.import_status == i18n.getI18NMessage('import.dirty')){

@@ -412,7 +412,7 @@ function getBTFieldData(labelFldType){
 		81 LODPO Character 20 loads.ship_load_po 20,\
 		82 LODRELEASE Character 20 loads.ship_load_release 20,\
 		83 LODSHIPTO Character 10 loads.ship_customer_number 15,\
-		84 LOT Character 11 lots.lt_lot 15,\
+		84 LOT Character 11 lots.lt_lot_number 15,\
 		85 MRR Character 10 idfiles.if_mrr 15,\
 		86 ORIGEMPL Character 5 emp.job_original_employee 15,\
 		87 OTHRXTIME Character 8 UNUSED 0 ,\

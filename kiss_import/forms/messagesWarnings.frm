@@ -17,6 +17,7 @@ uuid:"AA44DC60-DC0E-4DE8-95F0-40FFA00E8421"
 ],
 name:"messagesWarnings",
 navigatorID:"-1",
+onHideMethodID:"0F4DD408-068C-49F2-BAD0-60F172027187",
 showInMenu:true,
 size:"407,268",
 styleName:"sts_one",

@@ -839,7 +839,7 @@ function checkComFabsuite(event){
 		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 	}
 	if (!globals.fsCom || !globals.fsCom.isJACOBLoaded()) {
-		scopes.jobs.warnings("Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError(),true);
+		scopes.jobs.warningsMessage("Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError(),true);
 		globals.DIALOGS.showErrorDialog('Error loading COM','Error loading COM');
 		globals.loginError = true;
 		return 'Error Loading COM';
@@ -849,7 +849,7 @@ function checkComFabsuite(event){
 	var fsUser = scopes.prefs.fabsuiteUserid;
 	var fsPort = scopes.prefs.fabsuiteDatabase;
 	if (!fsServer || !fsPass || !fsPort || !fsUser){
-		scopes.jobs.warnings("Fabsuite Connection in Preferences Empty",true);
+		scopes.jobs.warningsMessage("Fabsuite Connection in Preferences Empty",true);
 		globals.DIALOGS.showErrorDialog('FabSuite Empty Connection Preferences','FabSuite Empty Connection Preferences')
 		globals.loginError = true;
 		return 'FabSuite Empty Connection Preferences';
@@ -1159,8 +1159,9 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	
 	//var commitType = 'Save';//Save/Delete/required use F8 to indicate removal
 	var jobNumber = globals.mob.job.number;
-	var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];
-	var lotNumber = (!globals.mob.piecemark.lot) ? '' : globals.mob.piecemark.lot;
+	var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];// this is a one-way mapping, independent of job number
+	var lotNumber = forms.rf_mobile_view.vLotList[globals.mob.idfile.lot_id];
+	//application.output('lot number is '+lotNumber);
 	var instanceNumbers = globals.mob.idfile.pcmk_instance;//accepts only numeric values, as well as hyphen
 	//instanceNumbers = '';
 	var serialNumber = 'FS-5319D7A3-D71F-11E5-8AFE-A292F4137E41';
@@ -1246,9 +1247,9 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 				saveDataXML = (!loadNumber) ? saveDataXML.replace('TRUCK','') : saveDataXML.replace('TRUCK',_loadNumber+'\n');
 				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber+'\n');
 				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark+'\n');
-				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark);
-				saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence+'\n');
-				saveDataXML = (!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
+				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark+'\n');
+				saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','<Sequence/>\n') : saveDataXML.replace('SEQUENCENUM',_sequence+'\n');
+				saveDataXML = (!lotNumber) ? saveDataXML.replace('LOTNUMBER','<LotNumber/>\n') : saveDataXML.replace('LOTNUMBER',_lotNumber+'\n');
 				//saveDataXML.replace('LOTNUMBER',_lotNumber+'\n');////
 				saveDataXML = saveDataXML.replace('STATION',_station+'\n');
 				saveDataXML = saveDataXML.replace('QUANTITY',_quantity+'\n');
@@ -1288,15 +1289,15 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 				saveDataXML = '<FabSuiteXMLRequest>\n\
 					<Load>\n\
 					TYPE JOBNUMBER MAJOR MINOR SEQUENCENUM LOTNUMBER QUANTITY INSTANCES \
-					TRUCKNUMBER SERIALNUM ASUSER EMPLOYEE DATE \
+					TRUCKNUMBER SERIALNUM ASUSER DATE \
 					</Load>\n\
 					</FabSuiteXMLRequest>';
 				saveDataXML = saveDataXML.replace('TYPE',_commitValue+'\n');
 				saveDataXML = (!jobNumber) ? saveDataXML.replace('JOBNUMBER','') : saveDataXML.replace('JOBNUMBER',_jobNumber+'\n');
 				saveDataXML = (!mainMark) ? saveDataXML.replace('MAJOR','') : saveDataXML.replace('MAJOR',_mainMark+'\n');
 				saveDataXML = (!pieceMark || (pieceMark.toUpperCase() == mainMark.toUpperCase())) ? saveDataXML.replace('MINOR','') : saveDataXML.replace('MINOR',_pieceMark+'\n');
-				saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','') : saveDataXML.replace('SEQUENCENUM',_sequence+'\n'); 
-				saveDataXML = (!lotNumber) ? saveDataXML.replace('LOTNUMBER','') : saveDataXML.replace('LOTNUMBER',_lotNumber);
+				saveDataXML = (!sequence) ? saveDataXML.replace('SEQUENCENUM','<Sequence/>\n') : saveDataXML.replace('SEQUENCENUM',_sequence+'\n'); 
+				saveDataXML = (!lotNumber) ? saveDataXML.replace('LOTNUMBER','<LotNumber/>\n') : saveDataXML.replace('LOTNUMBER',_lotNumber+'\n');
 				//saveDataXML.replace('LOTNUMBER',_lotNumber+'\n');
 				saveDataXML = saveDataXML.replace('QUANTITY',_quantity+'\n');
 				saveDataXML = (!instanceNumbers) ? saveDataXML.replace('INSTANCES','') : saveDataXML.replace('INSTANCES',_instanceNumbers+'\n');
@@ -1310,7 +1311,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 			break;
 		default:
 		}
-		saveDataXML = saveDataXML.replace(/\n+/g,'\n');
+		saveDataXML = saveDataXML.replace(/\n+/g,'\n').replace(/\t+/g,'');
 		application.output('RM: \n'+saveDataXML);
 		var _updateLoadWeight = globals.rfGetSpecsLoad(globals.session.program);
 		
@@ -1338,14 +1339,17 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 					break;
 				case 'Load':
 					addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.added.to.load');
+					fabSuiteUpdate('Delete');//20200518 remove errored out failed Ship action
 					break;
 				case 'Unload':
 					addMessage = i18n.getI18NMessage('sts.txt.fs.item.not.removed.from.load');
+					fabSuiteUpdate('Save');//20200518 restore errored out failed Ship action
 					break;
 				default:
 			}
 			if (!(!addMessage)){addMessage = ' '+addMessage}
-			globals.rfErrorShow('FabSuite: '+fsErr);
+			globals.errorDialogMobile(null,1220,'genericin','EPM: '+fsErr);//20200518 related to NO ERROR issue on IOS
+			//globals.rfErrorShow('FabSuite: '+fsErr);
 			return false;
 		}
 		if (idx == 0){break}//exit normal 1:1 processing
@@ -1643,6 +1647,8 @@ function getFSCutList(event,clBarcode){
 		    if (!pWidth){pWidth = [].concat(emptyData)}
 		    var pLength = cutPartDataItem.match(/<Length UOM="(.*)">(.*)<\/Length>/);
 		    if (!pLength){pLength = [].concat(emptyData)}
+		    var pWidth = cutPartDataItem.match(/<Width UOM="(.*)">(.*)<\/Width>/);
+		    if (!pWidth){pWidth = [].concat(emptyData)}
 		    var pArea = cutPartDataItem.match(/<Area UOM="(.*)">(.*)<\/Area>/);
 		    if (!pArea){pArea = [].concat(emptyData)}
 		    var pRoute = cutPartDataItem.match(/<Route>(.*)<\/Route>/);
@@ -1670,7 +1676,7 @@ function getFSCutList(event,clBarcode){
 			    	newPart.pStrikeThru = (pStrikeThru[1] == 1);
 				    cutPartArray.push(newPart);
 		    	}
-			    //application.output(cutPartEl);
+			    application.output(cutPartEl);//CONTROL
 		    }
 		}
 		application.output('cutlist: \n');
@@ -1690,8 +1696,8 @@ function getFSCutList(event,clBarcode){
 			weight : weightData[2],
 			dropType : dropData[1],
 			drop : dropData[2],
-			dropWidthType : '',
-			dropWidth : '',
+			dropWidthType : widthData[1],
+			dropWidth : widthData[2],
 			dropreservejob : dropReserveData[1],
 			dropreserveroption : dropReserveData[2],
 			dropreserveprompt : dropReserveData[3],
@@ -1702,7 +1708,7 @@ function getFSCutList(event,clBarcode){
 		}
 		//if (cutlistFields.dropType.search('sq') != -1){
 			//    <ExpectedDrop UOM="sqin">422.8477</ExpectedDrop>
-			var dropXY = convertDropAreaToLW(event,cutlistFields.drop,cutlistFields.dropType);
+			var dropXY = convertDropAreaToLW(event,cutlistFields);
 			cutlistFields.dropType = dropXY.dropType;
 			cutlistFields.drop = dropXY.drop;
 			cutlistFields.widthType = dropXY.dropWType;
@@ -1990,9 +1996,13 @@ function getInventorySerial(event,serialNumber){
 		var locs = locationNormalize(event,validLoc,validLoc2);
 		validLoc = locs.division;
 		validLoc2 = locs.location;
+		var tmpModelPart = validShape.trim()+' '+validDims.trim();
+		if (tmpModelPart.match(/x *$/)){
+			tmpModelPart = (validWUom != "in") ? validShape.trim()+' '+validDims.trim()+' '+Math.floor(validWidth*1+0.5) : validShape.trim()+' '+validDims.trim()+' '+Math.floor(validWidthIn*1+0.5);
+		}
 		var rawMatFields = {
 			is_metric : isMetric,
-			model_part : validShape+' '+validDims,
+			model_part : tmpModelPart,
 			grade : validGrade,
 		    heat : validHeat,
 		    quantity : validQuant*1,
@@ -2084,9 +2094,12 @@ function processRawCutBarcodes(event,cutlistData){
 		var pcmk = cutlistData.cutarray[idx];
 		globals.mob.job.number = pcmk.pJob;//var jobNumber = 
 		globals.mob.idfiles = pcmk.available;//required var quantity = length 
-		var seqId = scopes.jobs.getSeqId(globals.mob.job.number,pcmk.pSeq);
-		forms['rf_mobile_view'].vSequenceList[pcmk.available.sequence_id] = pcmk.pSeq;// get sequence mapping
-		globals.mob.idfile.sequence_id = pcmk.available.sequence_id;//.toString();//var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id]
+		var seqId = scopes.jobs.getSeqId(pcmk.pJob,pcmk.pSeq);
+		var lotId = scopes.jobs.getLotId(pcmk.pJob,pcmk.pLot);
+		forms['rf_mobile_view'].vSequenceList[pcmk.available.sequence_id] = pcmk.pSeq;// get sequence mapping, which is one-way, job independent
+		forms['rf_mobile_view'].vLotList[pcmk.available.lot_id] = pcmk.pLot;//get lot mapping
+		globals.mob.idfile.sequence_id = seqId;//pcmk.available.sequence_id;//.toString();//var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id]
+		globals.mob.idfile.lot_id = lotId;
 		globals.mob.piecemark.lot = pcmk.pLot;//var lotNumber = 
 		globals.mob.barcode = pcmk.Barcode;//serialNumber = 
 		globals.mob.piecemark.piecemark = pcmk.pMinor;//var pieceMark = exclude this when showing assembly, no minors
@@ -2437,33 +2450,35 @@ function fabSuiteInventoryAuditScan(event,iaSerial){
  *
  * @properties={typeid:24,uuid:"99FC967F-D82E-4F3B-BEA9-65C573220862"}
  */
-function convertDropAreaToLW(event,drop,dropType){
+function convertDropAreaToLW(event,cutlistFields){
+	var dropW = cutlistFields.dropWidth;
+	var dropType = cutlistFields.dropType;
 	var dropDims = {};
 	var isImperial = (dropType.search(/(in)|(ft)/) != -1);
 	if (dropType.search('sq') != -1){
 		if (isImperial){
-			dropDims.dropW = '48"';
+			dropDims.dropW = cutlistFields.dropWidth;
 			dropDims.dropWType = 'in';
 			dropDims.dropType = 'ft';
-			var dropLength = drop/48;//convert area/48 to feet
+			var dropLength = cutlistFields.drop/cutlistFields.dropWidth;//convert area/48 to feet
 			dropDims.drop = globals.ftDecToString('FEET',dropLength,13,'ALL');
 		} else {
-			dropDims.dropW = globals.inToMM(48.0);
+			dropDims.dropW = globals.inToMM(cutlistFields.dropWidth);
 			dropDims.dropWType = 'mm';
 			dropDims.dropType = 'mm';
-			dropDims.drop = drop/dropDims.dropW;//convert to mm
+			dropDims.drop = cutlistFields.drop/dropDims.dropW;//convert to mm
 		}
 	} else {
 		dropDims.dropW = "0";
 		if (isImperial){
 			dropDims.dropWType = "in";
-			dropDims.drop = globals.ftDecToString('FEET',drop,13,'ALL');
+			dropDims.drop = globals.ftDecToString('FEET',cutlistFields.drop,13,'ALL');
 		} else {
 			dropDims.dropWType = "mm";
-			dropDims.drop = drop;
+			dropDims.drop = cutlistFields.drop;
 		}
 	}
-	if (application.isInDeveloper()){application.output('drop '+drop+' '+dropType+' '+dropDims.dropW+'x'+dropDims.drop)}
+	if (application.isInDeveloper()){application.output('drop '+cutlistFields.drop+' '+dropType+' '+dropDims.dropW+'x'+dropDims.drop)}
 	return dropDims;
 }
 /**

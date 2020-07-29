@@ -166,6 +166,13 @@ titleText:"i18n:table.piecemarks.handling_minutes"
 },
 {
 allowNull:true,
+creationOrderIndex:50,
+dataType:4,
+name:"is_assembly",
+titleText:"i18n:table.piecemarks.is_assembly"
+},
+{
+allowNull:true,
 compatibleColumnTypes:"[[8,17,17]]",
 creationOrderIndex:32,
 dataType:8,

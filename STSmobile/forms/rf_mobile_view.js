@@ -257,6 +257,10 @@ var functionKeyEntered = false;
  */
 var vSequenceList = [];
 /**
+ * @properties={typeid:35,uuid:"EBD9FBD0-3ED6-460B-AC01-BBAC8FE62D84",variableType:-4}
+ */
+var vLotList = [];
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"24D8949A-9B0B-4037-9A66-F68D2297DF99"}
@@ -643,6 +647,7 @@ function onShowForm(firstShow,event) {
 
 	}
 	globals.getSequenceNumbers();
+	globals.getLotNumbers();
 	requiredFields = [];
 	inputFields = [];
 	var formName = event.getFormName();
@@ -681,7 +686,7 @@ function onShowForm(firstShow,event) {
 			var elementUnits = forms[formName].elements[item+'units'];
 			element.visible = false;
 			element.bgcolor = 'DEFAULT';
-			elementLabel.visible = false;
+			if (elementLabel) {elementLabel.visible = false;}
 			if (elementUnits){elementUnits.visible = false;}
 		}
 	}
@@ -864,8 +869,9 @@ function onShowForm(firstShow,event) {
 
 	if (requiredFields.indexOf('strikethruin') != -1){strikeThru = i18n.getI18NMessage('sts.btn.yes')}//default to StrikeThru YES #
 	if (requiredFields.indexOf('printidin') != -1){
-		printIdLabel = (!scopes.prefs.lFsPrintIDFromCutList || scopes.prefs.lFsPrintIDFromCutList == 0) ?  i18n.getI18NMessage('sts.btn.no').toUpperCase() : i18n.getI18NMessage('sts.btn.yes').toUpperCase();
+		printIdLabel = (scopes.prefs.lFsPrintIDFromCutList == false || scopes.prefs.lFsPrintIDFromCutList*1 == 0) ?  i18n.getI18NMessage('sts.btn.no').toUpperCase() : i18n.getI18NMessage('sts.btn.yes').toUpperCase();
 	}
+	null;
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.
@@ -1177,7 +1183,10 @@ function onDataChangeTestGeneric(oldValue, newValue, event) {
  * @AllowToRunInFind
  */
 function onFocusLost(event) {
+	application.output('RM2 inside onfocuslost pre');
 	if (globals.clientUserAgent.search(/(iPhone|iPad)/i) != 0 && application.getOSName().search(/Mac/i) != 0){
+		null;
+		application.output('RM2 focus lost');
 		return true;
 	}
 	if (application.isInDeveloper()){application.output('firing onFocusLost '+event.getElementName())}

@@ -1405,7 +1405,9 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
+	scopes.jobs.testSerialNonOdo();
 	if (1){return}
+	scopes.kiss.removeExtraKissFiles(event);
 	if (globals.session.login != 'P'){
 		globals.errorDialogMobile(event,'1006',null,'Only admin "P" can do this.');
 		return;
@@ -1765,7 +1767,10 @@ function onActionClickInfoSheet(event){
 		var sp = s.joins.add('db:/stsservoy/piecemarks');
 		sp.on.add(s.columns.sheet_id.eq(sp.columns.sheet_id));
 		sp.root.where.add(sp.columns.delete_flag.isNull);
-		sp.root.where.add(sp.columns.parent_piecemark.eq(sp.columns.piecemark));//restrict printed Barcodes to major marks 20180525
+		sp.root.where.add(sp.root.or
+			.add(sp.columns.parent_piecemark.eq(sp.columns.piecemark))
+			.add(sp.columns.is_assembly.eq(1))
+			);//restrict printed Barcodes to major marks 20180525
 		/** @type {QBJoin<db:/stsservoy/idfiles>} */
 		var si = sp.joins.add('db:/stsservoy/idfiles');
 		si.on.add(sp.columns.piecemark_id.eq(si.columns.piecemark_id));
@@ -1947,4 +1952,14 @@ function getFormList(event,formName){
 		}
 	}
 
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"81DF7DA5-59AE-4285-9989-A4A8185B221F"}
+ */
+function onActionClickReQueryDB(event){
+	plugins.rawSQL.flushAllClientsCache('stsservoy','jobs');
+	plugins.rawSQL.flushAllClientsCache('stsservoy','piecemarks');
+	plugins.rawSQL.flushAllClientsCache('stsservoy','idfiles');
 }

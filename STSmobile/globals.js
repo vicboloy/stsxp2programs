@@ -10,7 +10,12 @@ var statusId = "";
  * @SuppressWarnings(wrongparameters)
  */
 function onSolutionOpen(){
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		globals.getBrowserInfo();
+	}
+
 	globals.mob.userAgent = globals.clientUserAgent;
+	application.output('JJJJJJJJJJJJJJJJJ '+globals.mob.userAgent);
 	//var appWidth = application.getScreenWidth();
 	//viewport = viewport.replace('320',appWidth);
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STSmobile/globals.js');}
@@ -114,4 +119,33 @@ function createPostGreSqlIndexes(){
 function onSolutionClose(){
 	scopes.fs.fabSuiteClose();
 	scopes.prefs.bartenderClose(null)
+}
+/**
+ * @properties={typeid:24,uuid:"121BE622-B186-4AF6-930D-A5A212D2EEB2"}
+ */
+function timedResize() {
+	if (forms.STS_main){
+		var event = null;
+		forms.STS_main.onActionResize(event);
+	}
+}
+/**
+ * @properties={typeid:24,uuid:"B36BD55B-5C9C-4AB0-B5CF-4502EA177117"}
+ */
+function timedResizeScreens() {
+	if (forms.rf_mobile_view){
+		var event = null;
+		forms.rf_mobile_view.onActionResize(event);
+	}
+}
+/*
+ * @properties={typeid:24,uuid:"15008C4C-F6F0-4FEA-BEA4-A08D24388298"}
+ */
+/**
+ * @properties={typeid:24,uuid:"3F47B4C7-49F0-47B5-9AC2-4BD4923D5608"}
+ */
+function timedResizeLogin() {
+	if (forms.secLoginExample){
+		forms.secLoginExample.onActionResize();
+	}
 }

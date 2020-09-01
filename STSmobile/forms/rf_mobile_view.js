@@ -637,6 +637,18 @@ function onShowForm(firstShow,event) {
 		forms.rf_mobile_view.elements.tablessHistory.setTabEnabledAt(2,true);
 		fieldErroredName = '';
 	}
+	if (globals.clientUserAgent.search(/Windows CE/) != -1 && application.getOSName().search(/Win32/) != -1){
+		if (firstShow){
+			 scopes.globals.viewport = scopes.globals.viewportSrc;
+			 plugins.WebClientUtils.executeClientSideJS('resizer();');
+		} else {
+			var date = new Date();
+			date.setTime(date.getTime()+500);
+			plugins.scheduler.removeJob('refresherScr');
+			plugins.scheduler.addJob('refresherScr',date,globals.timedResizeScreens,10000,0);
+
+		}
+	}
 	var scaleWidth = application.getScreenWidth();
 	var currWidth = elements.showHelp.getWidth()+elements.showHelp.getLocationX();
 	
@@ -1095,6 +1107,7 @@ function onFocusLostx(event) {
  * @param {JSEvent} event the event that triggered the action
  *
  * @properties={typeid:24,uuid:"D49305CF-0F07-42B3-9F66-123604D7DD22"}
+ * @AllowToRunInFind
  */
 function onLoad(event) {
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
@@ -1254,4 +1267,15 @@ function onDataChangeIOS(oldValue, newValue, event) {
 		globals.onDataChangeGeneric(oldValue,newValue,event);
 	}
 	return true
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"17F9FAE5-AB53-40EB-A970-A4B12D739E2C"}
+ */
+function onActionResize(event) {
+	if(application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		plugins.WebClientUtils.executeClientSideJS('resize();');
+	}
 }

@@ -233,7 +233,7 @@ function callError(msg){
  * @AllowToRunInFind
  */
 function onLoad(event) {
-	newScale = 1.0;
+	/** newScale = 1.0;
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		var osName = application.getOSName();
 		var width = application.getScreenWidth();
@@ -250,7 +250,7 @@ function onLoad(event) {
 
 		application.output('RM login newscale '+newScale+' '+showWidth);
 		scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
-	}
+	} */
 	textAreaString = "";
 	for (var item in plugins){
 		if (application.isInDeveloper()){application.output('loaded '+item)}
@@ -325,6 +325,10 @@ function onLoad(event) {
 		forms.secLoginExample.hideLogo();
 	}
 	//errorMessage = 'Desk ('+solutionNames['STS3']+') Mobile ('+solutionNames['STSmobile']+' of '+licenses+'.';
+	if (0 && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		scopes.globals.viewport2 = scopes.globals.viewportSrc;
+		plugins.WebClientUtils.executeClientSideJS('var newZoom=resize()',globals.rfSetWebZoomLevelLogin, ['newZoom']);
+	}
 
 	var msg = "inside load";
 }

@@ -37,6 +37,10 @@ var textAreaString = "";
  */
 var licenseErrorMessage = "";
 /**
+ * @properties={typeid:35,uuid:"D0AD0F9D-A1B1-4EAC-9C20-EE05FCB8006F",variableType:-4}
+ */
+var zoomSet = false;
+/**
  * Handle changed data.
  *
  * @param {String} oldValue old value
@@ -122,6 +126,12 @@ function onFocusLost(event) {
  * @AllowToRunInFind
  */
 function onShow(firstShow, event) {
+	//if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	//	scopes.globals.viewport = scopes.globals.viewportSrc;
+	//	plugins.WebClientUtils.executeClientSideJS('resize();');
+	//	zoomSet = true;
+	//}
+
 	if (elements.companyName.visible){
 		elements.companyName.requestFocus();
 	} else {
@@ -134,29 +144,71 @@ function onShow(firstShow, event) {
 	} else {
 		forms.secLoginExample.showLogo();
 	}
+	errorMessage = '';//application.getScreenWidth()+' x '+application.getScreenHeight();
 	newScale = 1.0;
+	application.output('RM before set scale');
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		var osName = application.getOSName();
 		var width = application.getScreenWidth();
+		var appWidth = application.getScreenWidth();
+		var appHeight = application.getScreenHeight();
 
+		//if (osName.search(/Win32/) != -1){	
+		//	elements.banner.setSize(240,15);
+		//}
+		application.output('os Name is '+osName+' on client UserAgent ('+globals.clientUserAgent+')');
 		if (osName.search(/(Linux)|(Mac)/i) != -1){
 			var newScale = Math.floor(width/240*10)/10;
 			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
 			if (osName.search(/Linux/i) != -1){ 
-				newScale = Math.floor(width/240*10)/10;
+				application.output('Linux / Android set scale of '+newScale);
+				newScale = Math.floor(width/240);
 				scopes.globals.viewport = scopes.globals.viewportSrc;//.replace('initial-scale=1.0','initial-scale='+newScale);
-				//scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale='+newScale);  
+				//if (!zoomSet){
+				//	plugins.WebClientUtils.executeClientSideJS('resize();');
+				//	zoomSet = true;
+				//}
+				scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale='+newScale);  
 				//scopes.globals.viewport = scopes.globals.viewport.replace('user-scalable=1','user-scalable=0');
-				
+
 				newScale = 1.0;
 			}			
+		} else {
+			if (firstShow){
+				if (osName.search(/Win32/) != -1){
+					scopes.globals.viewport = scopes.globals.viewportSrc;
+					plugins.WebClientUtils.executeClientSideJS('resizer();');
+					//if (!application.isInDeveloper()){
+					application.output('setting viewport for function')
+					//}
+					////plugins.WebClientUtils.executeClientSideJS('if (typeof resize !== "undefined" {resize();} else if (typeof resizer !== "undefined") {resizer();}');
+					//globals.zoomed = true;
+//onActionResize();
+					var date = new Date();
+					date.setTime(date.getTime()+500);
+					plugins.scheduler.removeJob('refresherL');
+					plugins.scheduler.addJob('refresherL',date,onActionResize,1000,0);
+				} 
+				/** else {
+					if (osName.search(/Win32/) != -1 && globals.clientUserAgent == ""){
+						application.output("pushing new zoom job");
+						var date = new Date();
+						date.setTime(date.getTime()+8500);
+						plugins.scheduler.removeJob('refresherL');
+						plugins.scheduler.addJob('refresherL',date,onActionResize,1000,0);
+					}
+				} */
+			} else {
+				onActionResize();
+				
+			}
 		}
 
-		application.output('RM login newscale '+newScale+' '+width+' '+osName);
-		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent;window.innerHeight',globals.storeUserAgentOnLogin,['navigator.userAgent','window.innerWidth','window.innerHeight']);
+		application.output('RM login newscale '+newScale+' '+application.getScreenWidth()+'x'+application.getScreenHeight()+' '+osName);
+		//plugins.WebClientUtils.executeClientSideJS('navigator.userAgent;window.innerHeight',globals.storeUserAgentOnLogin,['navigator.userAgent','window.innerWidth','window.innerHeight']);
+		//plugins.WebClientUtils.executeClientSideJS('resize()');
 	}
 
-	errorMessage = '';//application.getScreenWidth()+' x '+application.getScreenHeight();
 	//errorMessage = plugins.UserManager.Client().ipAddress;
 }
 
@@ -186,4 +238,24 @@ function enableLicenseWarn(message){
  */
 function showLogo(){
 	elements.banner.visible = true;
+}
+/**
+ * @properties={typeid:24,uuid:"26BB037E-CCBF-4B18-A53D-04FB0DB30F85"}
+ */
+function onActionResize(){
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		plugins.WebClientUtils.executeClientSideJS('resizer();');
+	}
+}
+
+/**
+ * Perform the element default action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"2F64F4EE-3239-49B0-B9B8-887EDE5C1D29"}
+ */
+function onActionResizeLogin(event) {
+	onActionResize();
+	elements.userName.requestFocus();
 }

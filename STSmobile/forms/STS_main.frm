@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onHideMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 dataSource:"db:/stsservoy/transactions",
 encapsulation:60,
 extendsID:"72E0B299-FCCD-4C42-8A48-15F726CE17F1",
@@ -59,12 +65,11 @@ uuid:"83549217-B6E7-4528-803C-1CF8CBFAC287"
 },
 {
 anchors:6,
+dataProviderID:"scopes.globals.viewportSrc",
 extendsID:"5C78A937-DF8C-4362-834C-C79AA2AE8F40",
 formIndex:0,
-transparent:false,
 typeid:4,
-uuid:"8E89D3E6-54C2-4546-97DC-DC74B56DD980",
-visible:true
+uuid:"8E89D3E6-54C2-4546-97DC-DC74B56DD980"
 },
 {
 extendsID:"E082B205-F6E9-4457-9D80-4E59FA43A491",
@@ -115,7 +120,6 @@ visible:false
 }
 ],
 name:"STS_main",
-onHideMethodID:"-1",
 onLoadMethodID:"28761D3F-8A1A-45E4-BE3B-942E9C29542B",
 onShowMethodID:"B48A3328-0E53-428C-979D-FE0FA2E98598",
 showInMenu:true,

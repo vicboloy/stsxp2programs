@@ -1378,6 +1378,8 @@ function importPopKISSTable(event,fileName) {
 						newRec.finish = lineArray[10];
 						newRec.pcmk_qty = Math.floor(lineArray[5]).toFixed(0);
 						newRec.item_length = lineArray[9];
+						newRec.item_length_mm = Math.floor(newRec.item_length);
+						newRec.item_length_char = globals.ftDecToString('FEET',globals.mmToIn(newRec.item_length),13,'ALL');
 						newRec.material = lineArray[dShape]+' '+lineArray[dDims];
 						newRec.tenant_uuid = globals.session.tenant_uuid;
 						newRec.revision_level = lineArray[dRevision];

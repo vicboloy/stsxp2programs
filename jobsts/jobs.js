@@ -18265,6 +18265,7 @@ function cutoverPiecemarksDBF(event){
 	var indexCount = 0;
 	index = 1;var newRecCount = 0;var recList = [];var totalRec = Q.getMaxRowIndex();
 	warningsYes(event);
+	stopImport = false;
 	for (index = 1;index <= Q.getMaxRowIndex();index++){
 		Q.rowIndex = index;
 		if (!Q.sheetnum){continue}
@@ -18304,12 +18305,8 @@ function cutoverPiecemarksDBF(event){
 		r.where.add(r.columns.piecemark.eq(Q.pcmark));
 		r.where.add(r.columns.sheet_id.eq(sheetUUID));
 		r.where.add(r.columns.job_uuid.eq(jobUUID));
-		//if (grade){
 		r.where.add(r.columns.grade.eq(grade));
-		//}
-		//if (finish){
 		r.where.add(r.columns.finish.eq(finish));
-		//}
 		r.result.add(r.columns.sheet_id);
 	
 		var R = databaseManager.getFoundSet(r);
@@ -18317,12 +18314,6 @@ function cutoverPiecemarksDBF(event){
 		warningsMessage('Piecemarks index: '+index+' / '+totalRec,false);
 
 		if (R.getSize() == 0){
-		//if (1){
-			//var progressMsg = 'create piecemark: '+Q.pcmark+', '+Q.sheetnum+'('+sheetUUID+'), '+' Grade:'+grade+' Finish:'+finish+
-			//					' create in job: '+Q.jobid+' uuid: '+jobUUID;
-			//application.output(progressMsg);
-			//application.output('create piecemark: '+Q.pcmark+' create in job: '+Q.jobid);
-			
 			newRecCount++;
 			indexCount++;
 			if (1){
@@ -18342,7 +18333,7 @@ function cutoverPiecemarksDBF(event){
 				rec.piecemark = Q.pcmark;
 				rec.grade = grade;
 				rec.finish = finish;
-				rec.description = (Q.descr2) ? Q.descr1+' '+Q.descr2 : Q.descr1;
+				rec.material = (Q.descr2) ? Q.descr1+' '+Q.descr2 : Q.descr1;
 				rec.cost_each = Q.costea;
 				rec.cost_of_work_quantity = Q.cowqty;
 				rec.cost_of_work_code = Q.pccowcode;//need cowcode, pccowcode,pcuom,pcuomdoll
@@ -18445,4 +18436,201 @@ function importStop(event){
 	}
 	warningsYes(event);
 	return false;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"BAFF1315-C53C-4D2F-A194-86FBDB05726B"}
+ */
+function cutoverPiecemarkMinorsDBF(event){
+	warningsMessage('Piecemark Minors Cutover',true);
+
+	var count = 1;
+	var impDate = new Date();
+	var startTime = new Date().getTime();
+	var currJobNumId = '';
+	var index = 1;
+	var jobIdMap = [];
+	var jobSheetToId = [];
+	var m = databaseManager.createSelect('db:/dbf_data/jobs');
+	m.result.add(m.columns.jobid);
+	m.result.add(m.columns.jobnum);
+	var M = databaseManager.getDataSetByQuery(m,-1);
+	for (index = 1;index <= M.getMaxRowIndex();index++){
+		M.rowIndex = index;
+		if (jobIdMap[M.jobid]){application.output(jobIdMap[M.jobid]+' M.dupe job id to number '+M.jobid+' '+M.jobnumber);continue}
+		jobIdMap[M.jobid] = M.jobnum;
+		//application.output('jobid: '+M.jobid+'job: '+M.jobnum);
+	}	
+	var jobMap = [];
+	var jobMetric = [];
+	
+	var table = databaseManager.getTable('db:/dbf_data/sheetbom');
+	var tableCols = table.getColumnNames();
+	/** @type {QBSelect<db:/dbf_data/pcmkid>} */
+	var q = databaseManager.createSelect('db:/dbf_data/sheetbom');
+	for (var idx = 0;idx < tableCols.length;idx++){
+		q.result.add(q.columns[tableCols[idx]]);
+	}
+	q.sort.add(q.columns.jobid.asc);
+	var Q = databaseManager.getDataSetByQuery(q,-1);
+
+	var indexCount = 0;
+	index = 1;var newRecCount = 0;var recList = [];var totalRec = Q.getMaxRowIndex();
+	warningsYes(event);
+
+	stopImport = false;
+
+	for (index = 1;index <= Q.getMaxRowIndex();index++){
+		Q.rowIndex = index;
+		if (!Q.sheetnum){continue}
+		if (!Q.bompartnum){continue}
+		var jobUUID = null;
+		var sheetUUID = null;
+		if (Q.jobid){
+			if (jobIdMap[Q.jobid]){
+				if (jobMap[jobIdMap[Q.jobid]]){
+					jobUUID = jobMap[jobIdMap[Q.jobid]]
+				} else {
+					var jobInfo = globals.getJobIdInfo(jobIdMap[Q.jobid])
+					jobMap[jobIdMap[Q.jobid]] = jobInfo.job_id;
+					jobUUID = jobInfo.job_id;
+				}
+				jobMetric[jobUUID] = Q.metricjob;
+				if (jobUUID != currJobNumId){
+					currJobNumId = jobUUID;
+					jobSheetToId = [];
+				}
+			}
+		}
+		//application.output('line: '+index+' jobuuid: '+jobUUID+' JOBIDSTS: '+Q.jobid);
+		if (!jobUUID){continue}
+		warningsMessage('Piecemark Minors index: '+index+' / '+totalRec,false);
+
+		if (jobSheetToId[jobUUID+''+Q.sheetnum.trim()]){
+			sheetUUID = jobSheetToId[jobUUID+''+Q.sheetnum.trim()];
+		} else {
+			sheetUUID = getSheetIdUnused(jobUUID,Q.sheetnum.trim());
+			jobSheetToId[jobUUID+''+Q.sheetnum.trim()] = sheetUUID;
+		}
+		var grade = (Q.bomgrade) ? Q.bomgrade.trim() : '';
+		var finish = (Q.bomfinish) ? Q.bomfinish.trim() : '';
+		if (1){
+		// piecemark is major, minor, sheet, grade, finish - makes it unique
+		/** @type {QBSelect<db:/stsservoy/piecemarks>} */
+		var r = databaseManager.createSelect('db:/stsservoy/piecemarks');
+		r.where.clear();
+		r.where.add(r.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		r.where.add(r.columns.piecemark.eq(Q.bompartnum));
+		if (!Q.parentpcmk){
+			r.where.add(r.columns.parent_piecemark.eq(Q.bompartnum));
+		} else {
+			r.where.add(r.columns.parent_piecemark.eq(Q.parentpcmk));
+		}
+		r.where.add(r.columns.sheet_id.eq(sheetUUID));
+		r.where.add(r.columns.job_uuid.eq(jobUUID));
+		r.where.add(r.columns.grade.eq(grade));
+		r.where.add(r.columns.finish.eq(finish));
+		r.result.add(r.columns.sheet_id);
+	
+		var R = databaseManager.getFoundSet(r);
+		}
+		if (R.getSize() == 0){
+			newRecCount++;
+			indexCount++;
+			if (1){
+				if (!sheetUUID){
+					application.output(Q.jobid+' '+Q.pcmark+' '+Q.grade+' '+Q.sheetnum+' '+sheetUUID+' ');
+				}
+				/** @type {JSFoundSet<db:/stsservoy/piecemarks>} */
+				var rec = R.getRecord(R.newRecord());
+				rec.logic_flag = 2;//Q.logicflag;
+				rec.tenant_uuid = globals.session.tenant_uuid;
+				rec.edit_date = (Q.origdate) ? globals.dateAndTimeToDate(Q.origdate,null) : impDate;
+				if (Q.delete_dt){rec.delete_flag = true;}
+				rec.job_uuid = jobUUID;
+				rec.sheet_id = sheetUUID;
+				rec.piecemark = Q.bompartnum;
+				
+				rec.parent_piecemark = (!Q.parentpcmk) ? Q.bompartnum : Q.parentpcmk.trim();
+				rec.is_assembly = (!Q.parentpcmk || Q.parentpcmk.trim() == Q.bompartnum.trim()) ? 1 : 0;//all marks from this table are assemblies, unless there is no parent_piecemark indicated
+				rec.grade = grade;
+				rec.finish = finish;
+				rec.material = (Q.bomsize) ? Q.bomsize+' '+Q.bommatl : Q.bommatl;
+				rec.item_weight = globals.lbToKg(Q.bomitemwt);
+				rec.item_weight_lbs = Q.bomitemwt //lbs item weight imperial;
+				rec.item_width = globals.inToMM(Q.bomwidnum);
+				rec.item_width_in = Q.bomwidnum; //inches
+				rec.item_length_char = globals.ftDecToString('FEET',Q.bomlgtnum,13,'ALL');
+				rec.item_length = globals.inToMM(Q.bomlgtnum);
+				rec.item_length_in = Q.bomlgtnum //inches;
+				/** 
+				rec.cost_each = Q.costea;
+				rec.cost_of_work_quantity = Q.cowqty;
+				rec.cost_of_work_code = Q.pccowcode;//need cowcode, pccowcode,pcuom,pcuomdoll
+				rec.piecemark_unit_of_measure = (Q.pcuom) ? Q.pcuom.trim() : '';
+				rec.piecemark_uom_dollars = Q.pcuomdoll;
+				//within piecemarks user cow_xref_id, piecemark_uom_dollars, piecemark_unit_of_measure,
+				//	cost_of_work_code
+				rec.cow_xref_id;//need xref
+				rec.ship_tag = Q.shiptag;
+				rec.product_type = (Q.prodtype) ? Q.prodtype.trim() : '';
+				rec.e_route_code_id = globals.m.routes[Q.routecode];// need route codes e_route_code_id
+				rec.fireproof_cubic_feet = Q.firepfcf;
+				rec.detail_minutes = Q.detailmin;
+				rec.fabrication_minutes = Q.fabmin;
+				rec.handling_minutes = Q.handlmin;
+				rec.paint_minutes = Q.paintmin;
+				rec.saw_minutes = Q.sawmin;
+				rec.weld_minutes = Q.weldmin;
+				rec.rule_code = Q.rulecode;
+				rec.ft_assytyp = Q.ft_assytyp;
+				rec.ft_assydes = Q.ft_assydes;
+				rec.camber = Q.camber;
+				rec.material_specification = Q.matlspec;
+				rec.subcategory = Q.subcatg;
+				*/
+				recList.push(rec);
+				// Need COW tables and uuid
+				// Need route codes
+				//custso,cntlnum,pccolor,batch,pcrelease,pcphase,pclevel,insulation,seqqty,seqnum not in new piecemarks table
+				// in idfle custso, 
+				// cntlnum=control_number, pccolor=piece_color,batch=id_batch,pcrelease=piece_release,pc_phase=piece_phase,pclevel=sheetbom.piece_level?revision_level,sheetb ominsulation=,seqqty=item_qty,seqnum=SEE SEQUENCES,
+				//if qty barcode > 1 item on barcode , id_file_multiguid holds guids for all of the items on that guid matching serial number by jobid and barcode
+				//  piecemarks in an assembly are all in the sheetbom table
+				// all values imperial from STS? 
+				
+			//databaseManager.saveData(rec);
+			}
+		}
+		if (newRecCount > 50){
+			newRecCount = 0;
+			var newRec = null;
+			while (newRec = recList.pop()){
+				databaseManager.saveData(newRec);
+			}
+			databaseManager.saveData(R);
+			//X.clear();
+		}
+		if (indexCount > 40000){
+			databaseManager.saveData();
+			R.clear();
+			indexCount = 0;
+			scopes.jobs.warningsMessage('Reindexing pcmks_insert_idx ',true);
+			rawSQL = 'REINDEX INDEX pcmks_idx';
+			response = plugins.rawSQL.executeSQL('stsservoy','piecemarks',rawSQL);
+			if (!response){
+				plugins.rawSQL.executeSQL('stsservoy','piecemarks','CREATE INDEX  pcmks_insert_idx ON piecemarks (job_uuid,sheet_id,parent_piecemark,piecemark,grade,finish);');
+			}
+		}
+		if (scopes.jobs.stopImport){break;}
+	}
+	databaseManager.saveData(R);
+
+	var doneTime = new Date().getTime();
+	var minutes = (doneTime-startTime)/60000;
+	warningsX(event);
+	application.output('Count: '+index+' minutes: '+minutes);
+	
 }

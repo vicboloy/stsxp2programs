@@ -8,6 +8,19 @@ var viewport = '<html><head></head></html><meta name="viewport" content="width=d
 /**
  * @type {String}
  *
+ * @properties={typeid:35,uuid:"BD22D90C-11DA-4FB4-88AC-23FA6DDCC942"}
+ */
+var viewportCE2 = '<html><head></head></html><meta name="ViewPort" content="UseWideViewPort=1; ViewPortWidth=device-width; ViewPortInitialScale=1.9;"/>';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"720EF63E-A8AC-476E-84DB-D55355DEB330"}
+ */
+var viewportCE = '<html><head></head></html><ViewportEnabled value="1"/><ViewportWidth value="1.9"/>';
+
+/**
+ * @type {String}
+ *
  * @properties={typeid:35,uuid:"3CC8707C-679F-4555-AAFF-FC0305F56813"}
  */
 var viewportSrc = '<html><head><audio id="playX" src="media:///error.mp3" type="audio/mpeg" onload="auto"></audio>\
@@ -19,7 +32,21 @@ var viewportSrc = '<html><head><audio id="playX" src="media:///error.mp3" type="
 		} else {\
 			document.getElementById("playX").play();\
 		}\
-	}</script></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
+	}\
+	function resizer(){\
+		var currentZoom = 1;\
+    	var newZoom;\
+        var currentWidth = document.body.clientWidth;\
+        if (currentWidth > 239){\
+        	newZoom = currentWidth / 240 * .9;\
+         } else {\
+            newZoom = 1;\
+         }\
+         if (newZoom > (currentZoom*1 + 0.1) || newZoom < (currentZoom - 0.1)){\
+            document.getElementsByTagName("html")[0].style.zoom = newZoom;\
+         }\
+         if (0){return newZoom;}\
+    }</script></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
 /**
  * @type {String}
  *
@@ -301,6 +328,10 @@ var clientWidth = '';
  * @properties={typeid:35,uuid:"A29DEFF9-7FD1-4B31-94B8-F133FA5E0BB6"}
  */
 var fabsuiteResponse = '';
+/**
+ * @properties={typeid:35,uuid:"0B53834A-EE36-4106-9F65-2C8439BDDA10",variableType:-4}
+ */
+var zoomed = false;
 /**
  * Adds the specified user to the named group
  * Looks first in the current tenant's groups, then the current application-wide groups
@@ -2229,21 +2260,21 @@ function getPrefsMaxIdleMinutes(tenantID){
  */
 function getBrowserInfo(){
 	null;
+
 	var date = new Date();
 	//application.updateUI();
 	//application.output('Query Browser Information '+date,LOGGINGLEVEL.WARNING);
 	//if (!globals.clientUserAgent){
 		//plugins.WebClientUtils.executeClientSideJS('navigator.userAgent',globals.storeUserAgentOnLogin,['navigator.userAgent']);
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		plugins.WebClientUtils.executeClientSideJS('navigator.userAgent;',globals.storeUserAgentOnLogin,['navigator.userAgent']);
 		plugins.WebClientUtils.executeClientSideJS('window.innerHeight',globals.storeClientHeightOnLogin,['window.innerHeight']);
 		if (!globals.clientUserAgent){
-			application.output('Second Query for Browser Info '+date,LOGGINGLEVEL.WARNING);
-			plugins.WebClientUtils.executeClientSideJS('window.innerHeight',globals.storeClientHeightOnLogin,['window.innerHeight']);
 			//application.output('Width: '+clientWidth+'x  Height: '+clientHeight+' Agent:  '+clientUserAgent,LOGGINGLEVEL.WARNING);
 			if (!clientHeight){clientHeight = 320}
 			if (!clientWidth){clientWidth = 240}
-			if (!clientUserAgent){clientUserAgent = 'Windows CE'}
 		}
+		application.output('RM Client UserAgent '+clientUserAgent,LOGGINGLEVEL.WARNING);
 	}
 	//}
 	null;
@@ -2253,15 +2284,16 @@ function getBrowserInfo(){
  * @param userAgent
  * @param clientH
  * @param clientW
+ * @param altUserAgent
  *
  * @properties={typeid:24,uuid:"5CDAD678-12AB-4030-A185-114CBABCC805"}
  */
-function storeUserAgentOnLogin(userAgent,clientW,clientH){
+function storeUserAgentOnLogin(userAgent,clientW,clientH,altUserAgent){
 	globals.clientUserAgent = userAgent;
-	globals.clientHeight = clientH;
-	globals.clientWidth = clientW;
-	application.output('RM '+userAgent,LOGGINGLEVEL.WARNING);
-	application.output('RM Browser: '+clientW+'x'+clientH,LOGGINGLEVEL.WARNING);
+	//globals.clientHeight = clientH;
+	//globals.clientWidth = clientW;
+	application.output('RM from StoreUserAgent '+userAgent,LOGGINGLEVEL.WARNING);
+	//application.output('RM Browser: '+clientW+'x'+clientH,LOGGINGLEVEL.WARNING);
 }
 /**
  * @properties={typeid:24,uuid:"6954C3DF-E0D3-40E6-8220-3B86643DF763"}
@@ -2389,3 +2421,23 @@ function storeClientHeightOnLogin(clientH){
 	globals.clientHeight= clientH;
 	application.output('RM '+clientH);
 }
+/**
+function resize(){
+	alert("setting zoom");
+	document.getElementsByTagName("html")[0].style.zoom = 2;
+	alert("set zoom to 2");
+	if (1){return 2}
+	var currentZoom = 1;//document.getElementsByTagName("html")[0].style.zoom;
+	var newZoom;
+    var currentWidth = document.body.clientWidth;
+    if (currentWidth > 240){
+    	newZoom = currentWidth / 240;
+     } else {
+        newZoom = 1;
+     }
+     if (newZoom > (currentZoom*1 + 0.1) || newZoom < (currentZoom - 0.1)){
+        document.getElementsByTagName("html")[0].style.zoom = newZoom;
+     }
+     return newZoom;
+} 
+*/

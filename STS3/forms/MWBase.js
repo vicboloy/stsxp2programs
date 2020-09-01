@@ -1405,6 +1405,8 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
+	plugins.rawSQL.flushAllClientsCache('stsservoy', 'transactions');
+	if (1){return}
 	scopes.jobs.testSerialNonOdo();
 	if (1){return}
 	scopes.kiss.removeExtraKissFiles(event);

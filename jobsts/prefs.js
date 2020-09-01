@@ -1533,6 +1533,9 @@ function onActionPrintLabels(event) {
 	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.status')){
 		specs = scopes.printer.getBTFieldData('P');	
 		srcForm = 'rf_mobile_view';		
+	} else if (globals.session.program == i18n.getI18NMessage('sts.mobile.build.bundles')){
+		specs = scopes.printer.getBTFieldData('P');	
+		srcForm = 'rf_mobile_view';		
 	}	else {
 		specs = scopes.printer.getBTFieldData('R');//raw material
 		srcForm = 'barcode_id_raw'+versionForm
@@ -1547,6 +1550,7 @@ function onActionPrintLabels(event) {
 	//var useServer = false;
 	//var formName = event.getFormName();
 	var versionForm = globals.getInstanceForm(event);
+	if (forms[srcForm].useServerPrinters == null){forms[srcForm].useServerPrinters = 1}//20200827 print bundles and shipping not yet set
 	var useServer = (forms[srcForm].useServerPrinters == 1);
 	var useLabeLase = (forms[srcForm].useLabeLasePrinter && forms[srcForm].useLabeLasePrinter == 1);
 	var useBTPrint = (forms[srcForm].useBarTender && forms[srcForm].useBarTender == 1);

@@ -3,13 +3,20 @@
  *
  * @properties={typeid:35,uuid:"15470D31-A577-49CD-BDB4-10305BBAD619"}
  */
-var verSTS = '855';
+var verSTS = '860';
 /**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"D4EFBB6B-0863-4F82-BC59-019CC36D2676"}
  */
-var verSTSmobile = '626';
+var verSTSmobile = '630';
+/**
+ * @type {Number}
+ * This is the level of zoom for a webclient
+ *
+ * @properties={typeid:35,uuid:"FE3F9B20-5453-46FD-9EC3-BF421A99F42A",variableType:4}
+ */
+var viewZoom = 0;
 /**
  * @type {String}
  *
@@ -276,6 +283,7 @@ var mob = {
 		Number : '',
 		Name : ''
 	},
+	editDate : null,//edit date of transaction
 	heat : '',
 	heatId : '',
 	idfiles : [], 		// idfile_id list
@@ -336,9 +344,13 @@ var mob = {
 	timedTotalMin : 0.0, // total time for timed transactions
 	timedError : "", 	// error raised during timed evaluation
 	timedTargetRec : null, // target rec, used for exact field start
+	timedCloseOut : 0, //end timed station
+	timedPrompt : false, // prompt for timed station
 	userAgent : '', // reported web agent
 	laborPercent : 0, //20190705 labor percent entered in Labor transactions/inspections screen
 	routeId : null, //20190705 route id for piecemark
+	begTimedStation : '',
+	begTimedDate : '',
 	endItem : null,
 	noDelayToPrint : false, //20191226 delay for autohide is disabled
 	printedLabels : 0   
@@ -422,6 +434,7 @@ var processCodes = {	all : [
 		i18n.getI18NMessage('sts.status.jobsite.received')//'Jobsite Received',
 	],
 	transactions : [//'Fab Rel2Fab','Fab Cut','Fab Beam Line','Fab Blasted','Fab Drilled','Fab Layout','Fab Fitup','Fab Welded','Fab Fabricated','Fab Paint','Fab Bundled','Fab Move','Jobsite Painted','Jobsite Field Work','Jobsite Move','Jobsite Issued','Jobsite Erected'],
+		i18n.getI18NMessage('sts.status.none'),
 		i18n.getI18NMessage('sts.status.fab.rel2fab'),//'Release2Fab,
 		i18n.getI18NMessage('sts.status.fab.cut'),//'Fab Cut',
 		i18n.getI18NMessage('sts.mobile.cut.cutlist.raw'),//Fab Cut Raw,
@@ -442,6 +455,7 @@ var processCodes = {	all : [
 		i18n.getI18NMessage('sts.status.jobsite.erected') //'Jobsite Erected'
 	],
 	inspections : [//'Fab 1stInspect','Fab 2ndInspect','Fab 3rdInspect','Fab 4thInspect','Fab Inspected','Jobsite Inspected']
+		i18n.getI18NMessage('sts.status.none'),
 		i18n.getI18NMessage('sts.status.fab.1stinspect'),//'Fab 1stInspect',
 		i18n.getI18NMessage('sts.status.fab.2ndinspect'),//'Fab 2ndInspect',
 		i18n.getI18NMessage('sts.status.fab.3rdinspect'),//'Fab 3rdInspect',
@@ -2071,7 +2085,7 @@ function rfF8ReversalTransaction(){
 		if (application.isInDeveloper()){application.output('trans end status '+status)}
 	}
 	// start with just status, and report if there is a status not in this division
-	var rec = null;
+	var rec = null;//if this is a fitend,  then find the start to remove the 100 percent begin fit
 	for (var index = 1; index <= transactions.getSize(); index++){
 		rec = transactions.getRecord(index);
 		if (application.isInDeveloper()){application.output(index+' REC '+rec.status_description_id+' start '+transStart+' end '+transEnd)}
@@ -2138,7 +2152,7 @@ function rfF8ReversalTransaction(){
 			fsUpdater.setColumn('labor_percentage',0);
 			fsUpdater.setColumn('labor_quantity',0);
 			fsUpdater.performUpdate(); //411 100% complete Removed From the STOP Status Code.
-			if (!(!fTransStart && !fTransEnd)){// no error message on removing from a non-labor tracked transaction
+			if (!(!fTransStart && !fTransEnd)){// && mob.completeStatus*1 != 1)){// no error message on removing from a non-labor tracked transaction
 				errorDialogMobile('rf_mobile_view.currentidin',411,'currentidin','');
 			}
 			//return null;
@@ -2203,18 +2217,33 @@ function rfF8ReversalPrep(){
 	if (!removal){return}
 	// 3rd party handling
 	var rec = null;
-	mob.date = new Date();var idx = 1;
+	mob.date = new Date();var idx = 1;mob.completeStatus = 0;mob.editDate = new Date();
+	//identify if timed element, and get starting stationId
+	var timedElementEnd = m.stations[m.stations[mob.station+', '+mob.statusCode]];
+	mob.begTimedStation = '';//start here to determine begin or end of time status
+	if (timedElementEnd){mob.begTimedStation = m.stationsTimedEnds[timedElementEnd]}
 	while (rec = transactions.getRecord(idx)){
-		if (rec.trans_status == mob.statusCode){
+		if (mob.begTimedStation && rec.status_description_id.toString() == mob.begTimedStation.toString()){//find START status code
+			mob.begTimedDate = rec.transaction_end;
+			//mob.completeStatus = (mob.completeStatus*1 == 1) ? 1 : 0;//END Status not established, so do not remove from EPM
+			//mob.completeStatus = (rec.transaction_end) ? 1 : 0;
+			break;//if (!mob.completeStatus){break;}// here we know that the transaction is ended and a new BEGIN trans is a go
+		}
+		if (rec.trans_status == mob.statusCode){// find START status code
 			mob.date = rec.transaction_date;
 			mob.reverseWorker = null;
+			mob.completeStatus = (rec.labor_percentage >= 100) ? 1 : 0;
+			mob.timedCloseOut = mob.completeStatus;
+			mob.edit_date = mob.editDate;
+			if (!mob.timedBegStat && !mob.timedEndStat){break;}
 			//for (var worker in m.workerList){
 			//	if (m.workerList[worker].toString() == rec.worker_id.toString()){
 			//		mob.reverseWorker = worker;
 			//		break;
 			//	}
 			//}
-			break;
+			//if (!mob.begTimedStation){mob.begTimedStation = rec.status_description_id} // there was no prior END status code
+			//break;//if (!mob.begTimedStation){continue;}//break;
 		}
 		idx++;
 	}
@@ -4011,7 +4040,7 @@ function onDataChangeStatus(oldValue, newValue, event) {
 			break; */
 		case 'rf_mobile_view':
 			switch (session.program){
-				case i18n.getI18NMessage('sts.mobile.receiving')://'Receiving':
+				case i18n.getI18NMessage('sts.mobile.receiving')://'Receiving': 
 					permitted = processCodes.receiving;
 					break;
 				case i18n.getI18NMessage('sts.mobile.build.bundles')://'rf_bundles':'Bundles2':
@@ -4022,11 +4051,13 @@ function onDataChangeStatus(oldValue, newValue, event) {
 				case i18n.getI18NMessage('sts.mobile.inspections.w.revs').replace("'","")://'Inspections w/Rev\'s2':
 					permitted = processCodes.inspections.concat(processCodes.transactions);
 					forbidden = processCodes.shipping.concat(processCodes.receiving);
+					//forbidden same as transactions except inspections
 					break;
 				case i18n.getI18NMessage('sts.mobile.transactions')://'Transactions2':
 				case i18n.getI18NMessage('sts.mobile.labor.transactions')://'Labor Transactions':
 				case i18n.getI18NMessage('sts.mobile.transactions.w.revs').replace("'","")://'Transactions w/Rev\'s2':
 					permitted = processCodes.transactions;
+					//forbidden shipping, bundling, inspections
 					break;
 				case i18n.getI18NMessage('sts.mobile.shipping')://'Shipping2':
 					permitted = processCodes.shipping;
@@ -4048,9 +4079,11 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	//		return true;			
 	//	}
 	//}
-	if (!globals.laborScreenActive){
+	mob.statusCode = newValue;//20200814 need to id begin and end stations if timed
+	session.stationId = m.stations[session.associationId+', '+newValue];
+	if (!globals.laborScreenActive && (!rfStatusBegin() && !rfStatusEnd())){//20200814 also DO NOT set timed status codes to 100
 		//if (session.program.search('Labor') != 0){//20190708 set non-labor transactions to a mob.percent of 100
-		mob.percent = 100;
+		mob.percent = 100;//timed stations didn't work frm 20190708 until 20200814
 	}
 	if (forbidden.indexOf(m.statusToProcess[newValue]) != -1){
 		errorDialogMobile(event,404,statusField,null);//404 This Is Not A Valid Status Code For This Screen / Operation.
@@ -4483,9 +4516,12 @@ function rfTimed(event){
 		/** @type {JSFoundset} */
 		var transacts = mob.transactions;
 		/** @type {JSFoundSet<db:/stsservoy/transactions>} */
-		var rec = null; var index = 1;
+		var rec = null; var index = 1;var statusEnded = false;
 		while (rec = transacts.getRecord(index++)){
-			if (rec.trans_status == mob.timedBegStat){ // begin with null end
+			if (rec.trans_status == mob.timedBegStat && statusEnded){
+				break;
+			}
+			if (rec.trans_status == mob.timedBegStat && !statusEnded){ // begin with null end
 				globals.logger(true,i18n.getI18NMessage('sts.txt.timed.cycle.start')+mob.timedBegStat);
 				if (rec.transaction_end == null){
 					globals.logger(true,i18n.getI18NMessage('sts.txt.timed.cycle.start.not.ended',new Array(mob.timedBegStat)));
@@ -4494,6 +4530,7 @@ function rfTimed(event){
 				}
 			}
 			if (rec.trans_status == mob.timedEndStat){
+				if (rec.transaction_end){statusEnded = true;}
 				if (rec.quantity == 100){
 					mob.timedError = "1130"; // this is in saying that the status is already 100% complete, so no more this status
 					return true;
@@ -4523,14 +4560,17 @@ function rfTimed(event){
 			if (rec.labor_percentage == 100.0){break}
 			if (application.isInDeveloper()){application.output('timed rec adding '+rec);}
 			mob.timedTotalMin = mob.timedTotalMin*1+rec.transaction_duration*1;
+			mob.edit_date = mob.date;
 			if (!mob.completeAsk){mob.percent = 100;mob.completeStatus = 1;} // ticket #139 there is no repeat operation for timed operations
 			if (application.isInDeveloper()){application.output('mob total min '+mob.timedTotalMin);}
 		}
 		index = 1;
 		while (rec = transacts.getRecord(index++)){
 			if (application.isInDeveloper()){application.output('xxx transaction '+rec);} // look for all unfinished starts, not just ascending first
+			//if (rec.labor_quantity == 1 && rec.trans_status == mob.timedEndStat){continue}
 			if (rec.trans_status == mob.timedBegStat){
-				if (rec.transaction_end == null){ // ok to end transaction
+				if (rec.transaction_end == null){// && mob.completeAsk){ // ok to end transaction
+					//mob.edit_date = mob.date;
 					mob.timedBegin = rec.transaction_start;
 					mob.timedEnd = endDate;
 					mob.timedDuration = getMinutesDuration(mob.timedBegin,mob.timedEnd);
@@ -4538,6 +4578,8 @@ function rfTimed(event){
 					mob.timedTargetRec = rec;
 					mob.timedError = "";
 					mob.percent = 0;
+					mob.timedCloseOut = 0;
+					mob.timedPrompt = (l.promptComplete.indexOf(mob.statusCode) != -1);
 					if (l.promptComplete.indexOf(mob.statusCode) != -1){//ticket #103 timed ops
 						var message = i18n.getI18NMessage('sts.txt.total.cycle.minutes')+
 											Math.ceil((mob.timedTotalMin+0.005)*100)/100+
@@ -4554,13 +4596,16 @@ function rfTimed(event){
 								i18n.getI18NMessage('sts.btn.yes'));
 							//	'End of Timed Cycle', message, 'NO', 'yes');
 							if (response == i18n.getI18NMessage('sts.btn.yes')){
+								//mob.closeoutTimed = 1;
 								mob.percent = 100;//labor
-								mob.completeStatus = 1;//process complete
+								mob.timedCloseOut = 1;//process complete
+								mob.completeStatus = 1;
 							}
 						}
 					} else {
 						mob.percent = 100;//labor ticket #139
 						mob.completeStatus = 1;//process complete
+						mob.edit_date = mob.date;
 					}
 						
 					//if (event.getElementName() != 'genericin'){
@@ -4862,8 +4907,8 @@ function rfSaveScanTransaction(event,routeOK, statusId, sLocation){
 	// status out of order, then false
 	// if okay for other stations, then true
 
-	var isManHours = (scopes.prefs.showManHours == 1);
 	var transDate = new Date(); 
+	var isManHours = (scopes.prefs.showManHours == 1);
 	globals.logger(true,i18n.getI18NMessage('sts.txt.transactions.save.scan'));
 	//worker_id,worker2_id,worker3_id,worker4_id,worker5_id, tenant_uuid, employee_id,fabshop_id (guids)
 	//location, status, code, edit_date
@@ -4916,8 +4961,12 @@ function rfSaveScanTransaction(event,routeOK, statusId, sLocation){
 	if (processCodes.shipping.indexOf(statusShipType) != -1){
 		pushStation = (qqRec.push_a_station == 1);
 	}
+	isTimed = (!(!m.stationsTimed[session.stationId]) || !(!m.stationsTimedEnds[session.stationId]));
+	var isLabor = (l.laborStations.indexOf(mob.statusCode) != -1);
+
 	application.output('RM FS Action Save');//push station first and then set shipped 2019-10-10 08.29 Shipping Definitive Servoy Meeting.mp4
-	if (mob.laborCompleted && pushStation &&
+	//if (mob.completeStatus == 1 && mob.laborCompleted && pushStation &&
+	if (((!isTimed && !isLabor) || mob.timedCloseOut*1 == 1 || (mob.laborCompleted && isLabor)) && pushStation &&
 			!rfSaveThirdParties('Save')){//handles only pushing 3rd party stations
 		return false;
 	}
@@ -4925,7 +4974,8 @@ function rfSaveScanTransaction(event,routeOK, statusId, sLocation){
 	if (session.program == i18n.getI18NMessage('sts.mobile.final.ship')){commitAction = "Ship"}
 	if (session.program == i18n.getI18NMessage('sts.mobile.shipping')){commitAction = 'Load'}
 	application.output('FS Action '+commitAction);
-	if (mob.laborCompleted &&
+	//if (mob.completeStatus == 1 && //missing untimed events
+	if (((!isTimed && !isLabor) || mob.completeStatus == 1 || (mob.laborCompleted && isLabor)) &&
 			!rfSaveThirdParties(commitAction)){
 		//var unCommit = (commitAction == 'Ship') ? 'Unship' : 'Unload';
 		//rfSaveThirdParties('unCommit');
@@ -4944,10 +4994,20 @@ function rfSaveScanTransaction(event,routeOK, statusId, sLocation){
 				if (application.isInDeveloper()){application.output('rfIsTimed rec is found');}
 			}
 		} 
-		if (newRec != null){//only update timed transaction records
+		var timedElementEnd = m.stations[m.stations[mob.station+', '+mob.statusCode]];
+		mob.begTimedStation = '';
+		if (timedElementEnd){mob.begTimedStation = m.stationsTimedEnds[timedElementEnd]}
+		if (newRec != null){//only update timed transaction records and only if complete
 			if (application.isInDeveloper()){application.output('status trans rec found. updating');}
 			// dialog for completion of timed event
-			newRec.transaction_end = mob.timedEnd;
+			if (timedElementEnd && newRec.status_description_id.toString() != mob.begTimedStation.toString()){
+				newRec.transaction_end = mob.timedEnd;
+			}
+			if (!timedElementEnd){
+				newRec.transaction_end = null;
+			} else {
+				newRec.transaction_end = mob.timedEnd;
+			}
 		} else {
 			mob.timedEnd = null;
 		}
@@ -4959,6 +5019,7 @@ function rfSaveScanTransaction(event,routeOK, statusId, sLocation){
 			}
 			/** @type {JSFoundSet<db:/stsservoy/transactions>} */
 			var newRecB = resultQ.getRecord(newRecNum);
+			newRecB.edit_date = transDate;
 			newRecB.status_description_id = session.stationId;
 			newRecB.employee_id = session.employeeId; //globals.mobLoggedEmployeeId;//UUID
 			newRecB.idfile_id = mob.idfiles[index];
@@ -4983,10 +5044,13 @@ function rfSaveScanTransaction(event,routeOK, statusId, sLocation){
 				newRecB.transaction_end = mob.timedEnd;
 				newRecB.transaction_duration = mob.timedDuration;//12 get timedDuration * currentWorkers.length / mob.idfiles.length
 			}
-			if (mob.percent == 0){mob.percent = 100}
+			if (mob.percent == 0 && l.laborStations.indexOf(mob.statusCode) != -1){mob.percent = 100}
+			if (mob.timedPrompt && mob.timedCloseOut*1 == 0){mob.percent = 0}
 			if (mob.percent > 0){newRecB.labor_percentage = mob.percent}//mob.percent moved outside to enable 100 percent on all status code entries 
-			newRecB.quantity = (!mob.laborCompleted) ? 0 : totalIdfileCnt;// || mob.percent != 100
-			newRecB.labor_quantity = totalIdfileCnt;
+			if (mob.timedCloseOut*1 == 1){//if station complete OR not a station complete OR save as complete, save labor
+				newRecB.quantity = (!mob.laborCompleted) ? 0 : totalIdfileCnt;// || mob.percent != 100
+				newRecB.labor_quantity = totalIdfileCnt;
+			}
 			for (var index2 = 0; index2 < currentWorkers.length; index2++) {
 				switch (index2) {
 				case 0:
@@ -5013,6 +5077,7 @@ function rfSaveScanTransaction(event,routeOK, statusId, sLocation){
 	if (mob.timedEnd){
 		mob.timedBegin = null;
 		mob.timedEnd = null;
+		mob.timedTotalMin = 0;
 		if (mob.completeStatus == 1){newRecB.quantity = 1;mob.completeStatus = 0}//Set up as per ticket #103
 	}
 	//var dbStatus = databaseManager.commitTransaction();
@@ -5553,6 +5618,7 @@ function rfProcessBarcode(event){
 	//if (typeof statusWorker === 'undefined'){statusWorker = ""}
 	mob.locationArea = forms[formName].statusLocation;
 	mob.workers = forms[formName].statusWorker;
+	//mob.percent = 0;
 	mob.date = new Date();
 	var jobInfo = getJobIdInfo(mob.job.number);
 	if (jobInfo){
@@ -5740,7 +5806,10 @@ function rfProcessBarcode(event){
 							return true;
 						}
 						unCommitAction = 'Delete';
-						if (!rfSaveThirdParties(unCommitAction)){//fs will not allow undo station if it  is on a load 
+						var isTimed = (!(!m.stationsTimed[session.stationId]) || !(!m.stationsTimedEnds[session.stationId]));
+						if ((!isTimed || mob.completeStatus*1 == 1) && !rfSaveThirdParties(unCommitAction)){//fs will not allow undo station if it  is on a load 
+						//if (!rfSaveThirdParties(unCommitAction)){//fs will not allow undo station if it  is on a load 
+						
 							application.output('return on !rfsavethirdparties');
 							return false;//2019-10-10 08.29 Shipping Definitive Servoy Meeting.mp4
 						}
@@ -5749,6 +5818,7 @@ function rfProcessBarcode(event){
 						//if (!rfSaveThirdParties(commitAction)){return false}// Remove third party status
 
 						rfF8ReversalTransaction();
+						rfUnsetEndTransaction(event);
 						mob.reverseWorker = null;
 						if (session.program == i18n.getI18NMessage('sts.mobile.shipping')){
 							rfGetLoadStats(session.loadId);//loadGetData();
@@ -6763,6 +6833,7 @@ function rfF5BundlePrint(event){
 	if (application.isInDeveloper()){application.output('entered F5 bundle print')}
 	if (!form.jobNumber || !form.currentBundle){return}
 	if (application.isInDeveloper()){application.output('entered F5 bundle print. still here')}
+	if (!mob.bundleFS){return}//20200827 bundle error if nothing to print
 	var idfileRec = mob.bundleFS.getRecord(1);
 	if (idfileRec){
 		scopes.jobs.printSingleLabel(event,form.jobNumber,idfileRec.piecemark_id,idfileRec.idfile_id);
@@ -7239,7 +7310,11 @@ function loadNumberCheck(event,loadNumber){
 		}
 	} */
 	if (!session.loadId){ // receiving and final ship cannot create new load numbers
-		getNextLoadNumber();
+		if (thirdPartyCheck){
+			session.loadNextNumber = loadNumber;//20200826 load number fails to create although in EPM
+		} else {
+			getNextLoadNumber();
+		}
 		switch (session.program){
 			case mobileWindows[i18n.getI18NMessage('sts.mobile.receiving')]:
 			case mobileWindows[i18n.getI18NMessage('sts.mobile.final.ship')]:
@@ -7698,7 +7773,7 @@ function ftDecToString(convertType, decimal, length, returnType){
 	* pass a numeric value that will be converted to feet and inches and
 	*  this function will return the text version of that decimal value
 	*/
-	if (application.isInDeveloper()){application.output(decimal)}
+	//if (application.isInDeveloper()){application.output(decimal)}
 	convertType = convertType.toUpperCase();
 	returnType = (returnType) ? returnType.toUpperCase() : returnType;
 	///var itemdimen = "";
@@ -7727,7 +7802,7 @@ function ftDecToString(convertType, decimal, length, returnType){
 			//var minVal = 999;
 			//var minInit = 0;
 			//var minBase = 0;
-			if (application.isInDeveloper()){application.output('fraction input: '+fraction)}
+			//if (application.isInDeveloper()){application.output('fraction input: '+fraction)}
 			if (fraction > 0){
 				fractionOut = fraction16(fraction);
 				if (fractionOut == "1"){
@@ -7775,7 +7850,7 @@ function ftDecToString(convertType, decimal, length, returnType){
 			//var minVal = 999;
 			//var minInit = 0;
 			//var minBase = 0;
-			if (application.isInDeveloper()){application.output('fraction input: '+fraction)}
+			//if (application.isInDeveloper()){application.output('fraction input: '+fraction)}
 			if (fraction > 0){
 				fractionOut = fraction16(fraction);
 				if (fractionOut == "1"){
@@ -14484,7 +14559,7 @@ function rfSaveLoadTransaction(event){
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var rec = null;var idx = 1;
 	while (rec = fs.getRecord(idx++)){
-		rec.edit_date = mob.date;
+		//rec.edit_date = mob.date;
 		rec.current_load_id = mob.load.shipId;
 		rec.edit_date = mob.date;
 		rec.id_location = mob.locationArea;
@@ -15125,6 +15200,7 @@ function rfCollectStationCompletes(){
 		if (rec.delete_flag == 99 || rec.delete_flag == 10){continue}
 		percentComp = (!rec.labor_percentage) ? 0 : rec.labor_percentage;
 		if (!session.stationsComplete[rec.status_description_id]){session.stationsComplete[rec.status_description_id] = 0}
+		if (l.stationsMultiScan.indexOf(rec.status_description_id.toString()) != -1){continue}//another example of a complete station, but isn't complete due to multi-scan
 		session.stationsComplete[rec.status_description_id] += percentComp; 
 	}
 }
@@ -16664,6 +16740,10 @@ function crossoverSTSdata(event){
 	}
 	// perform backup
 	backupDatabase(event);
+	if (application.isInDeveloper()){
+		scopes.jobs.importInProcess = true;
+		scopes.jobs.stopImport = false;
+	}
 	//application.output('Path '+backupFileNameAndPath)
 	if (backupFileNameAndPath){
 		var file = plugins.file.convertToJSFile(backupFileNameAndPath);
@@ -16674,7 +16754,8 @@ function crossoverSTSdata(event){
 			}
 		}
 	}
-
+	scopes.jobs.importInProcess = true;
+	scopes.jobs.stopImport = false;
 	if (0){
 		//scopes.jobs.cutoverInventoryDBF();
 		globals.errorDialogMobile(event,'sts.txt.crossover.employee.class',null,null);
@@ -16709,9 +16790,13 @@ function crossoverSTSdata(event){
 		
 	}
 
+
 	scopes.jobs.importInProcess == true;
 	globals.errorDialogMobile(event,'sts.txt.crossover.piecemarks',null,null);
 	scopes.jobs.cutoverPiecemarksDBF(event);
+
+	globals.errorDialogMobile(event,'sts.txt.crossover.piecemark.minors',null,null);
+	scopes.jobs.cutoverPiecemarkMinorsDBF(event);
     
 	if (scopes.jobs.stopImport){
 		scopes.jobs.importInProcess == false;
@@ -16817,4 +16902,40 @@ function getLotNumbers(){
 	}
 	if (application.isInDeveloper()){application.output('form lot list origin '+form.vLotList)}
 	return ds;
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"3109668D-D3EF-4F24-99E4-7312F205CB3A"}
+ */
+function rfUnsetEndTransaction(event){
+	//still need to ensure that the idfiles match the collected results
+	
+	if (!mob.begTimedStation){return}
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid.toString()));
+	q.where.add(q.columns.status_description_id.eq(mob.begTimedStation.toString()));
+	q.where.add(q.columns.transaction_end.eq(mob.begTimedDate));//this is the transaction end date
+	var Q = databaseManager.getFoundSet(q);
+	var updaterQ = databaseManager.getFoundSetUpdater(Q);
+	updaterQ.setColumn('transaction_end',null);
+	updaterQ.performUpdate();
+	
+}
+/**
+ * @param zoomLevel
+ *
+ * @properties={typeid:24,uuid:"8AAD5964-D25F-46DB-B64A-9826C9C9868C"}
+ */
+function rfSetWebZoomLevel(zoomLevel){
+	globals.viewZoom = zoomLevel;
+	application.output('Zoom level on menu: '+globals.viewZoom);
+	return viewZoom;
+}
+/**
+ * @properties={typeid:24,uuid:"85C04179-9518-4F20-8828-8698083B1F2D"}
+ */
+function rfEmptyCallback(){
+	application.output('Done resize.');
 }

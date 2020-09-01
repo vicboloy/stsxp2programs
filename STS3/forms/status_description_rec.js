@@ -369,6 +369,9 @@ function onDataChangeFabShop(oldValue, newValue, event) {
 	//changeToStation(event);
 	getStatusList();
 	verifyStatusInput(event);
+	if (status_code){
+		onDataChangeStatus(status_code,status_code,event);
+	}
 
 	return true;
 }

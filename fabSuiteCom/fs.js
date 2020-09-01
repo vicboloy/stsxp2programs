@@ -1175,7 +1175,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	var month = date.getMonth()+1;
 	if (month < 10){month = "0"+month}
 	var execDate = date.getFullYear()+'-'+month+'-'+day;//required
-	var hours = 0;
+	var hours = (globals.mob.timedTotalMin*1 > 0) ? globals.mob.timedTotalMin/60 : 0;
 	var batchId = '';
 	var _commitType = '<CommitType>'+commitType+'</CommitType>\n';
 	var _jobNumber = '<JobNumber>'+jobNumber+'</JobNumber>\n';

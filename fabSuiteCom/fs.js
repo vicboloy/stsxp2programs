@@ -1176,7 +1176,9 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	if (month < 10){month = "0"+month}
 	var execDate = date.getFullYear()+'-'+month+'-'+day;//required
 	var hours = (globals.mob.timedTotalMin*1 > 0) ? globals.mob.timedTotalMin/60 : 0;
-	var batchId = '';
+	var batchId = (forms['rf_mobile_view'] && 
+			forms['rf_mobile_view'].statusLocation != '' && 
+			scopes.prefs.lFsLocnBatch*1 == 1) ? forms['rf_mobile_view'].statusLocation.trim() : '';//20200903 added BatchID entry if location batch ID exists
 	var _commitType = '<CommitType>'+commitType+'</CommitType>\n';
 	var _jobNumber = '<JobNumber>'+jobNumber+'</JobNumber>\n';
 	var _station = '<Station>'+station+'</Station>\n';

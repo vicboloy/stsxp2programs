@@ -275,6 +275,8 @@ function onLoad(event) {
 		var licenses = licenseCount();
 		licenseTotal = licenses;
 		var currentTime = new Date().getTime();
+		solutionNames['STS3'] = 0;
+		solutionNames['STSmobile'] = 0;
 		for (var indexC = 0;indexC < clientArray.length;indexC++){
 			var client = clientArray[indexC];
 			client = client.clientId;

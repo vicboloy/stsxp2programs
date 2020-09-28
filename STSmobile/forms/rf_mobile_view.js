@@ -658,8 +658,8 @@ function onShowForm(firstShow,event) {
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 
 	}
-	globals.getSequenceNumbers();
-	globals.getLotNumbers();
+	if (!vSequenceList || vSequenceList.length == 0){globals.getSequenceNumbers();}
+	if (!vLotList || vLotList.length == 0){globals.getLotNumbers();}
 	requiredFields = [];
 	inputFields = [];
 	var formName = event.getFormName();

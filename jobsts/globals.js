@@ -3,7 +3,7 @@
  *
  * @properties={typeid:35,uuid:"15470D31-A577-49CD-BDB4-10305BBAD619"}
  */
-var verSTS = '860';
+var verSTS = '861';
 /**
  * @type {String}
  *

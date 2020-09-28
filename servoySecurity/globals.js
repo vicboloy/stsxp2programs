@@ -2056,7 +2056,7 @@ function secCheckLicense(solutionName,tenantID,userID){
 	for (var index = 0;index < clientArray.length;index++){
 		var client = clientArray[index];
 		var clientId = client.clientId;
-		var clientInfo = plugins.UserManager.getClientByUID(client);
+		var clientInfo = plugins.UserManager.getClientByUID(clientId);
 		var clientSolution = (clientInfo.solutionName) ? clientInfo.solutionName : 'Login';
 		var clientIdle = (clientInfo.idle) ? clientInfo.idle : currentDate;
 		var clientIdleTime = (currentDate - clientIdle.getTime())/60000;
@@ -2094,6 +2094,7 @@ function secCheckLicense(solutionName,tenantID,userID){
 			licensesInUse['servoySecurityLogin'] =  licensesInUse['servoySecurityLogin']*1 + 1*1;			
 		}
 	}
+	application.output('LICENSES IN USE. STS3: '+licensesInUse['STS3']+' STSmobile: '+licensesInUse['STSmobile']);
 	var licAvail = 0;
 	var killed = 'no';
 	if (solutionName.search('mobile') != -1){

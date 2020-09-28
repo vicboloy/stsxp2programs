@@ -1522,6 +1522,8 @@ function licenseCount() {
  * @SuppressWarnings(wrongparameters)
  */
 function getTenantUsedLicenses(){
+	var isCorp = globals.session.corpUser;//(association_uuid == tenant_group_uuid);
+
 	var totalLicenses = parseInt(licenseCount());
 	var usedLicenses = 0;
 	var assocIds = [];
@@ -1530,6 +1532,11 @@ function getTenantUsedLicenses(){
 		if (indexT.search("-") == -1) {continue}
 		assocIds.push(indexT);
 	}
+	//remove filter on licensing
+	if (!isCorp){
+		databaseManager.removeTableFilterParam('stsservoy','filterAssocASSOCIATIONS');
+	}
+
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/associations');
 	q.result.add(q.columns.association_uuid);
@@ -1545,6 +1552,10 @@ function getTenantUsedLicenses(){
 		/** @type {JSFoundSet<db:/stsservoy/associations>} */
 		usedLicenses += rec.licenses_desktop*1+rec.licenses_mobile*1;
 	}
+	if (!isCorp){
+		databaseManager.addTableFilterParam('stsservoy','associations','association_uuid','=',session.associationId,'filterAssocASSOCIATIONS');
+	}
+
 	var remaining = parseInt(totalLicenses-usedLicenses);
 	var avail = "";
 	if (remaining > 0){avail = "+";}

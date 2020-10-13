@@ -1170,8 +1170,8 @@ function loginUserInfo(userId){
 	var u = databaseManager.createSelect('db:/stsservoy/employee');
 	u.result.add(u.columns.employee_id);
 	u.where.add(u.columns.delete_flag.isNull);
-	u.where.add(u.columns.tenant_uuid.eq(session.tenant_uuid.toString()));
-	u.where.add(u.columns.user_uuid.eq(userId.toString()));
+	u.where.add(u.columns.tenant_uuid.eq(globals.makeUUID(session.tenant_uuid)));
+	u.where.add(u.columns.user_uuid.eq(globals.makeUUID(userId)));
 	var U = databaseManager.getFoundSet(u);
 	/** @type {JSFoundSet<db:/stsservoy/employee>} */
 	var rec = U.getRecord(1);
@@ -1504,7 +1504,7 @@ function licenseCount() {
 	var q = databaseManager.createSelect('db:/stsservoy/tenant_list');
 	q.result.add(q.columns.tenant_uuid);
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(session.tenant_uuid)));
 	var T = databaseManager.getFoundSet(q);
 	if (T.getSize() > 0){
 		/** @type {JSRecord<db:/stsservoy/tenant_list>} */
@@ -1522,6 +1522,8 @@ function licenseCount() {
  * @SuppressWarnings(wrongparameters)
  */
 function getTenantUsedLicenses(){
+	var isCorp = globals.session.corpUser;//(association_uuid == tenant_group_uuid);
+
 	var totalLicenses = parseInt(licenseCount());
 	var usedLicenses = 0;
 	var assocIds = [];
@@ -1530,13 +1532,18 @@ function getTenantUsedLicenses(){
 		if (indexT.search("-") == -1) {continue}
 		assocIds.push(indexT);
 	}
+	//remove filter on licensing
+	if (!isCorp){
+		databaseManager.removeTableFilterParam('stsservoy','filterAssocASSOCIATIONS');
+	}
+
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/associations');
 	q.result.add(q.columns.association_uuid);
 	q.result.add(q.columns.licenses_desktop);
 	q.result.add(q.columns.licenses_mobile);
 	q.where.add(q.columns.delete_flag.isin([null,0]));
-	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(session.tenant_uuid)));
 	var resultQ = databaseManager.getFoundSet(q);
 	usedLicenses = 0; var index = 1;
 	/** @type {JSRecord<db:/stsservoy/associations>} */
@@ -1545,6 +1552,10 @@ function getTenantUsedLicenses(){
 		/** @type {JSFoundSet<db:/stsservoy/associations>} */
 		usedLicenses += rec.licenses_desktop*1+rec.licenses_mobile*1;
 	}
+	if (!isCorp){
+		databaseManager.addTableFilterParam('stsservoy','associations','association_uuid','=',session.associationId,'filterAssocASSOCIATIONS');
+	}
+
 	var remaining = parseInt(totalLicenses-usedLicenses);
 	var avail = "";
 	if (remaining > 0){avail = "+";}
@@ -1895,9 +1906,9 @@ function loadZipCodeFile(event){
 function getAssocCorporate(assocId){
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/associations');
-	q.where.add(q.columns.association_uuid.eq(assocId.toString()));
-	q.where.add(q.columns.tenant_group_uuid.eq(session.tenant_uuid.toString()));
-	q.where.add(q.columns.tenant_group_uuid.eq(assocId.toString()));
+	q.where.add(q.columns.association_uuid.eq(globals.makeUUID(assocId)));
+	q.where.add(q.columns.tenant_group_uuid.eq(globals.makeUUID(session.tenant_uuid)));
+	q.where.add(q.columns.tenant_group_uuid.eq(globals.makeUUID(assocId)));
 	var fs = databaseManager.getFoundSet(q);
 	if (fs.getSize() != 0){
 		var rec = fs.getRecord(1);
@@ -1938,7 +1949,7 @@ function savePrefsLocal(event,elementArray){
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
 	q.result.add(q.columns.preferences2_id);
-	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(session.tenant_uuid)));
 	q.where.add(q.columns.form_name.eq(formName));
 	var Q = databaseManager.getFoundSet(q);
 	var index = 0;
@@ -1987,7 +1998,7 @@ function restorePrefsLocal(event){
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
 	q.result.add(q.columns.preferences2_id);
-	q.where.add(q.columns.tenant_uuid.eq(session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(session.tenant_uuid)));
 	q.where.add(q.columns.form_name.eq(formName));
 	var Q = databaseManager.getFoundSet(q);
 	var index = 1;

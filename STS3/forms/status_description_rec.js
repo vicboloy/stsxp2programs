@@ -273,10 +273,10 @@ function onDataChangeStatus(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var s = databaseManager.createSelect('db:/stsservoy/status_description');
 	s.result.add(s.columns.status_description_id);
-	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	s.where.add(s.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	s.where.add(s.columns.delete_flag.isNull);
 	s.where.add(s.columns.status_code.eq(newValue));
-	s.where.add(s.columns.association_id.eq(association_id.toString()));
+	s.where.add(s.columns.association_id.eq(globals.makeUUID(association_id)));
 	var S = databaseManager.getFoundSet(s);
 	
 	if (S.getSize() > 0){
@@ -417,7 +417,7 @@ function getStatusList(){
 	q.result.add(q.columns.association_id);
 	q.result.add(q.columns.status_code);
 	q.sort.add(q.columns.status_sequence.asc);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.delete_flag.isNull);
 
 	var resultQ = databaseManager.getFoundSet(q);
@@ -518,9 +518,9 @@ function onFocusGainedStatusCode(event) {
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var s = databaseManager.createSelect('db:/stsservoy/status_description');
 	s.result.add(s.columns.status_description_id);
-	s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	s.where.add(s.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	s.where.add(s.columns.delete_flag.isNull);
-	s.where.add(s.columns.association_id.eq(association_id.toString()));
+	s.where.add(s.columns.association_id.eq(globals.makeUUID(association_id)));
 	s.sort.add(s.columns.status_code);
 	var S = databaseManager.getFoundSet(s);
 	
@@ -541,7 +541,7 @@ function getFabShops(event){
 	/** @type {QBSelect<db:/stsservoy/associations>} */
 	var a = databaseManager.createSelect('db:/stsservoy/associations');
 	a.result.add(a.columns.association_uuid);
-	a.where.add(a.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	a.where.add(a.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	a.where.add(a.columns.delete_flag.isNull);
 	a.where.add(a.or
 		.add(a.columns.logic_flag.isNull)
@@ -749,7 +749,7 @@ function onActionClassStatus(event) {
 	
 	/** @type {QBSelect<db:/stsservoy/employee_class>} */
 	var ec = databaseManager.createSelect('db:/stsservoy/employee_class');
-	ec.where.add(ec.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	ec.where.add(ec.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	ec.sort.add(ec.columns.class_code.asc);
 	var EC = databaseManager.getFoundSet(ec);
 	/** @type {JSFoundSet<db:/stsservoy/employee_class>} */
@@ -787,7 +787,7 @@ function onFocusLostStatusClass(event) {
 	/** @type {QBSelect<db:/stsservoy/employee_class>} */
 	var ec = databaseManager.createSelect('db:/stsservoy/employee_class');
 	ec.where.add(ec.columns.class_code.isin(selected));
-	ec.where.add(ec.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	ec.where.add(ec.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var EC = databaseManager.getFoundSet(ec);
 	/** @type {JSFoundSet<db:/stsservoy/employee_class>} */
 	var ecRec = null;var idx = 1;
@@ -798,8 +798,8 @@ function onFocusLostStatusClass(event) {
 	//remove class codes not selected
 	/** @type {QBSelect<db:/stsservoy/status_valid_classes>} */
 	var sc = databaseManager.createSelect('db:/stsservoy/status_valid_classes');
-	sc.where.add(sc.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	sc.where.add(sc.columns.status_description_id.eq(status_description_id.toString()));
+	sc.where.add(sc.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	sc.where.add(sc.columns.status_description_id.eq(globals.makeUUID(status_description_id)));
 	if (selected.length > 0){
 		sc.where.add('classsid',sc.columns.employee_clas_id.not.isin(classIDs));
 	}
@@ -866,7 +866,7 @@ function getClassCodes(event){
 	statusClassCodes = '';
 	/** @type {QBSelect<db:/stsservoy/status_valid_classes>} */
 	var q = databaseManager.createSelect('db:/stsservoy/status_valid_classes');
-	q.where.add(q.columns.status_description_id.eq(status_description_id));
+	q.where.add(q.columns.status_description_id.eq(globals.makeUUID(status_description_id)));
 	q.result.add(q.columns.employee_clas_id);
 	var Q = databaseManager.getFoundSet(q);
 	if (emp_number_required == 0 || emp_number_required == null){

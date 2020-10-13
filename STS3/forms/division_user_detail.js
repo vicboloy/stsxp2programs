@@ -64,7 +64,7 @@ function getEmployees(event){
 	q.where.add(
 	q.and
 		.add(q.columns.delete_flag.isNull)
-		.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+		.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var resultQ = databaseManager.getFoundSet(q);
@@ -87,7 +87,7 @@ function getEmployees(event){
 	r.where.add(
 	r.and
 		.add(r.columns.delete_flag.isNull)
-		.add(r.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+		.add(r.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)))
 		//.add(r.columns.user_uuid.isNull)
 		//		.add(r.columns.user_uuid.not.isin(loginIds)) CANNOT NEGATE AN ISIN FIELD
 	);
@@ -164,7 +164,7 @@ function onRecordSelection(event) {
 	if (association_uuid){
 		/** @type {QBSelect<db:/stsservoy/associations>} */
 		var assoc = databaseManager.createSelect('db:/stsservoy/associations');
-		assoc.where.add(assoc.columns.association_uuid.eq(association_uuid.toString()));
+		assoc.where.add(assoc.columns.association_uuid.eq(globals.makeUUID(association_uuid)));
 		assoc.result.add(assoc.columns.logic_flag);
 		/** @type {JSRecord<db:/stsservoy/associations>} */
 		var a = databaseManager.getFoundSet(assoc);
@@ -226,7 +226,7 @@ function validateUserName(oldValue, newValue, event) {
 		/** @type {QBSelect<db:/stsservoy/users>} */
 		var u = databaseManager.createSelect('db:/stsservoy/users');
 		u.where.add(u.columns.user_name.eq(newValue));
-		u.where.add(u.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		u.where.add(u.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		u.result.add(u.columns.user_uuid);
 		var U = databaseManager.getFoundSet(u);
 		U.loadRecords();
@@ -483,20 +483,20 @@ function onActionSetLabelDests(event) {
  */
 function onActionCancelEditLabelDests(event){
 	var form = forms['division_user_detail'];
-	var userID = form.user_uuid.toString();
+	var userID = form.user_uuid;
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
 	u.result.add(u.columns.user_uuid);
-	u.where.add(u.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	u.where.add(u.columns.user_uuid.eq(userID));
+	u.where.add(u.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	u.where.add(u.columns.user_uuid.eq(globals.makeUUID(userID)));
 	var U = databaseManager.getFoundSet(u);
 	if (U.getSize() > 0){return}
 	
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/label_destinations');
 	q.result.add(q.columns.label_destination_uuid);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.user_uuid.eq(userID));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.user_uuid.eq(globals.makeUUID(userID)));
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() > 0){
 		Q.deleteAllRecords();

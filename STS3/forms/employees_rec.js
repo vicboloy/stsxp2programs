@@ -60,7 +60,7 @@ function createEmpList(event){
 	var dv = databaseManager.createSelect('db:/stsservoy/associations');
 	dv.result.add(dv.columns.association_uuid);
 	dv.result.add(dv.columns.association_name);
-	dv.where.add(dv.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	dv.where.add(dv.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	dv.where.add(dv.columns.delete_flag.isNull);
 	var DV = databaseManager.getFoundSet(dv);
 	/** @type {JSDataSet<association_name:String,association_uuid:String>} */

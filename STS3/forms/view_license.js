@@ -264,12 +264,13 @@ function createLicenseTable(event){
 
 	 	if (headerText == 'Stop'){
 			item = checkForm.newButton('X',columnPos,21,3,21,killMethod);
-			item.name = label; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
-			item.horizontalAlignment = SM_ALIGNMENT.CENTER;
+			item.name = label.replace(' ','_').toLowerCase(); item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+			item.horizontalAlignment = SM_ALIGNMENT.CENTER;item.text = label;
 	 	} else {
 			item = checkForm.newTextField(label,columnPos,21,15,21);
 			item.printSliding = SM_PRINT_SLIDING.GROW_WIDTH | SM_PRINT_SLIDING.ALLOW_MOVE_X;
-			item.name = label; item.editable = false; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+			item.name = label.replace(' ','_').toLowerCase(); item.editable = false; item.anchors = SM_ANCHOR.NORTH | SM_ANCHOR.WEST | SM_ANCHOR.EAST;
+			item.text = label;
 			if (label == i18n.getI18NMessage('table.general.idle.time') || label == i18n.getI18NMessage('table.general.logged.time') ){
 				item.horizontalAlignment = SM_ALIGNMENT.RIGHT;
 			}

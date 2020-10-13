@@ -140,7 +140,7 @@ function onDataChange(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/employee_class>} */
 	var q = databaseManager.createSelect('db:/stsservoy/employee_class');
 	q.result.add(q.columns.class_code);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.class_code.eq(newValue));
 	var Q = databaseManager.getFoundSet(q);
 	var qSize = Q.getSize();

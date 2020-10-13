@@ -821,7 +821,7 @@ function secSetCurrentTenant(tenantID){
 		/** @type {QBSelect<db:/stsservoy/tenant_list>} */
 		var q = databaseManager.createSelect('db:/stsservoy/tenant_list');
 		q.result.add(q.columns.tenant_uuid);
-		q.where.add(q.columns.tenant_uuid.not.eq(tenantID.toString()));
+		q.where.add(q.columns.tenant_uuid.not.eq(makeUUIDs(tenantID)));
 		/** @type {JSRecord<db:/stsservoy/tenant_list>} */
 		var Q = databaseManager.getFoundSet(q);
 		Q.loadAllRecords();
@@ -832,7 +832,7 @@ function secSetCurrentTenant(tenantID){
 			secCurrentTenantID = tenantID;// either create embedded tenant or skip creation
 			q = databaseManager.createSelect('db:/stsservoy/tenant_list');
 			q.result.add(q.columns.tenant_uuid);
-			q.where.add(q.columns.tenant_uuid.eq(tenantID.toString()));
+			q.where.add(q.columns.tenant_uuid.eq(makeUUIDs(tenantID)));
 			Q = databaseManager.getFoundSet(q);
 			Q.loadAllRecords();
 			if (Q.getSize() == 0){
@@ -846,7 +846,7 @@ function secSetCurrentTenant(tenantID){
 				/** @type {QBSelect<db:/stsservoy/associations>} */
 				var s = databaseManager.createSelect('db:/stsservoy/associations');
 				s.result.add(s.columns.association_uuid);
-				s.where.add(s.columns.tenant_uuid.eq(tenantID.toString()));
+				s.where.add(s.columns.tenant_uuid.eq(makeUUIDs(tenantID)));
 				s.where.add(s.columns.association_name.eq('EMBEDDED'));
 				/** @type {JSRecord<db:/stsservoy/associations>} */
 				var S = databaseManager.getFoundSet(s);
@@ -2002,16 +2002,16 @@ function secCheckLicense(solutionName,tenantID,userID){
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/users');
 	fs.result.add(fs.columns.user_uuid);
-	fs.where.add(fs.columns.user_uuid.eq(userID.toString()));
-	fs.where.add(fs.columns.tenant_uuid.eq(tenantID.toString()));
+	fs.where.add(fs.columns.user_uuid.eq(makeUUIDs(userID)));
+	fs.where.add(fs.columns.tenant_uuid.eq(makeUUIDs(tenantID)));
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var FS = databaseManager.getFoundSet(fs);
 	var rec = FS.getRecord(1);
 	/** @type {QBSelect<db:/stsservoy/associations>} */	
 	var as = databaseManager.createSelect('db:/stsservoy/associations');
 	as.result.add(as.columns.association_uuid);
-	as.where.add(as.columns.tenant_uuid.eq(tenantID.toString()));
-	as.where.add(as.columns.association_uuid.eq(rec.association_uuid.toString()));
+	as.where.add(as.columns.tenant_uuid.eq(makeUUIDs(tenantID)));
+	as.where.add(as.columns.association_uuid.eq(makeUUIDs(rec.association_uuid)));
 	/** @type {JSFoundSet<db:/stsservoy/associations>} */	
 	var AS = databaseManager.getFoundSet(as);
 	var rec2 = AS.getRecord(1);
@@ -2025,8 +2025,8 @@ function secCheckLicense(solutionName,tenantID,userID){
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	fs = databaseManager.createSelect('db:/stsservoy/users');
 	fs.result.add(fs.columns.user_uuid);
-	fs.where.add(fs.columns.tenant_uuid.eq(tenantID.toString()));
-	fs.where.add(fs.columns.association_uuid.eq(assocId.toString()));
+	fs.where.add(fs.columns.tenant_uuid.eq(makeUUIDs(tenantID)));
+	fs.where.add(fs.columns.association_uuid.eq(makeUUIDs(assocId)));
 	fs.where.add(fs.columns.delete_flag.isNull);
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	FS = databaseManager.getFoundSet(fs);
@@ -2050,14 +2050,18 @@ function secCheckLicense(solutionName,tenantID,userID){
 	var clientOver = '';
 	var clientDeskTimedOut = '';
 	var clientMobileTimedOut = '';
+	var clientLoginTimedOut = '';
 	var clientMaxTime = 0;
 	var clientDeskMaxTime = 0;
 	var clientMobileMaxTime = 0;
+	var clientLoginMaxTime = 0;
+	var maxLogins = 0;
 	for (var index = 0;index < clientArray.length;index++){
 		var client = clientArray[index];
 		var clientId = client.clientId;
-		var clientInfo = plugins.UserManager.getClientByUID(client);
+		var clientInfo = plugins.UserManager.getClientByUID(clientId);
 		var clientSolution = (clientInfo.solutionName) ? clientInfo.solutionName : 'Login';
+		
 		var clientIdle = (clientInfo.idle) ? clientInfo.idle : currentDate;
 		var clientIdleTime = (currentDate - clientIdle.getTime())/60000;
 		if (clientSolution.search('mobile') != -1){
@@ -2071,8 +2075,15 @@ function secCheckLicense(solutionName,tenantID,userID){
 				clientDeskMaxTime = clientIdleTime;
 				clientDeskTimedOut = clientId;
 			}
-			
 		}
+		if (clientSolution.search('servoySecurityLogin') != -1){
+			maxLogins = maxLogins*1 + 1*1;
+			if (clientIdleTime > clientLoginMaxTime){
+				clientLoginMaxTime = clientIdleTime;
+				clientLoginTimedOut = clientId;
+			}
+		}
+
 		//application.output('client idletime '+clientIdleTime);
 		//if ((currentDate - clientIdle.getTime() > maxIdle)){
 		//	clientsOverIdle[client] = clientIdleTime;
@@ -2080,7 +2091,7 @@ function secCheckLicense(solutionName,tenantID,userID){
 		//	clientsOver += client.split('-')[0]+',';
 		//}
 		//application.output('clientSolution '+clientSolution);
-		if (!clientSolution){continue}//REMOVE unable to login verification. Why?
+		if (!clientSolution){continue}//REMOVE unable to login verification. Why? Might be that form created too soon?
 		
 		if (allUsers.indexOf(clientInfo.userUid+"") == -1){continue} // not in this company
 		//if (!licensesInUse[clientSolution]){licensesInUse[clientSolution] = 0}
@@ -2094,6 +2105,7 @@ function secCheckLicense(solutionName,tenantID,userID){
 			licensesInUse['servoySecurityLogin'] =  licensesInUse['servoySecurityLogin']*1 + 1*1;			
 		}
 	}
+	application.output('LICENSES IN USE. STS3: '+licensesInUse['STS3']+' STSmobile: '+licensesInUse['STSmobile']+' Login Screen: '+licensesInUse['servoySecurityLogin'],LOGGINGLEVEL.WARNING);
 	var licAvail = 0;
 	var killed = 'no';
 	if (solutionName.search('mobile') != -1){
@@ -2114,6 +2126,16 @@ function secCheckLicense(solutionName,tenantID,userID){
 			killed = 'yes';
 		}
 	}
+	if (solutionName.search('servoySecurityLogin') != -1){
+		licAvail = licenseAvail['servoySecurityLogin'] - licensesInUse['servoySecurityLogin'];		
+		if ((maxLogins > 3 || licAvail == 0) && clientDeskMaxTime > maxIdle){
+			clientObj = plugins.UserManager.getClientByUID(clientDeskTimedOut);
+			clientObj.shutdown();
+			licAvail = 1;
+			killed = 'yes';
+		}
+	}
+
 	//if (!licAvail){licAvail = 5}
 	licensed += "License:"+licAvail+":"+licenseAvail[solutionName]+":"+licensesInUse[solutionName]+':'+clientOver+' '+clientMaxTime+' max idle pref '+maxIdle+' killed '+killed;
 	if (!licensed){
@@ -2245,7 +2267,7 @@ function getPrefsMaxIdleMinutes(tenantID){
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
 	q.result.add(q.columns.field_value);
-	q.where.add(q.columns.tenant_uuid.eq(tenantID.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(makeUUIDs(tenantID)));
 	q.where.add(q.columns.field_name.eq('maxIdleMinutes'));
 	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */
 	var Q = databaseManager.getDataSetByQuery(q,-1);
@@ -2322,7 +2344,7 @@ function secCreateP2Customer(){
 	/** @type {QBSelect<db:/stsservoy/customers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/customers');
 	q.where.add(q.columns.customer_number.eq('P2PROG'));
-	q.where.add(q.columns.tenant_uuid.eq(secCurrentTenantID.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(makeUUIDs(secCurrentTenantID)));
 	q.result.add(q.columns.customer_id);
 	var Q = databaseManager.getFoundSet(q);
 	Q.loadRecords();
@@ -2352,7 +2374,7 @@ function secCreateP2Customer(){
 function secCreateP2Employee(){
 	/** @type {QBSelect<db:/stsservoy/employee>} */
 	var e = databaseManager.createSelect('db:/stsservoy/employee');
-	e.where.add(e.columns.tenant_uuid.eq(secCurrentTenantID));
+	e.where.add(e.columns.tenant_uuid.eq(makeUUIDs(secCurrentTenantID)));
 	e.where.add(e.columns.employee_number.eq('P2'));
 	e.result.add(e.columns.employee_id);
 	
@@ -2388,8 +2410,8 @@ function secCreateP2Address(p2Id){
 	/** @type {QBSelect<db:/stsservoy/addresses>} */
 	var a = databaseManager.createSelect('db:/stsservoy/addresses');
 	a.where.add(a.columns.address_type.eq('BILL TO'));
-	a.where.add(a.columns.tenant_uuid.eq(secCurrentTenantID));
-	a.where.add(a.columns.customer_id.eq(p2Id.toString()));
+	a.where.add(a.columns.tenant_uuid.eq(makeUUIDs(secCurrentTenantID)));
+	a.where.add(a.columns.customer_id.eq(makeUUIDs(p2Id)));
 	a.result.add(a.columns.address_id);
 	var A = databaseManager.getFoundSet(a);
 	A.loadRecords();
@@ -2440,4 +2462,13 @@ function resize(){
      }
      return newZoom;
 } 
-*/
+/**
+* 
+ * TODO generated, please specify type and doc for the params
+ * @param uuid
+ *
+ * @properties={typeid:24,uuid:"3840642F-8C9A-4BD9-93B2-13F35E6C44D1"}
+ */
+function makeUUIDs(uuid){
+	return application.getUUID(uuid);
+}

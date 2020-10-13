@@ -189,9 +189,9 @@ function collectCriteria(formName){
 	if (vLoadNum != '' || loadAll){
 		/** @type {QBSelect<db:/stsservoy/loads>} */
 		var q = databaseManager.createSelect('db:/stsservoy/loads');
-		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		if (vJobID){
-			q.where.add(q.columns.job_id.eq(vJobID))
+			q.where.add(q.columns.job_id.eq(globals.makeUUID(vJobID)))
 		}
 		if (!loadAll && vLoadNum != ''){
 			q.where.add(q.columns.load_number.isin(scopes.globals.csvToArray(vLoadNum)));

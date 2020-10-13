@@ -3,7 +3,7 @@
  *
  * @properties={typeid:35,uuid:"1619B802-9007-405B-BA89-B2006D02E485"}
  */
-var rfHtml = '<html> \
+var rfHtml = '<html>  \
 	<head> \
 	<script type="text/javascript"> \
 	function saveLocalStorage() { \
@@ -40,6 +40,12 @@ var licenseErrorMessage = "";
  * @properties={typeid:35,uuid:"D0AD0F9D-A1B1-4EAC-9C20-EE05FCB8006F",variableType:-4}
  */
 var zoomSet = false;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"8E0C8FEA-F6FD-4C57-9BD4-CA72770CECFF"}
+ */
+var textAreaString2 = "";
 /**
  * Handle changed data.
  *

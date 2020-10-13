@@ -155,9 +155,9 @@ function createPermissTable(event,formName){
 	/** @type {QBSelect<db:/stsservoy/permissions>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/permissions');
 	fs.result.add(fs.columns.permission_uuid);
-	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	fs.where.add(fs.columns.form_name.eq(formName));
-	fs.where.add(fs.columns.key_uuid.eq(key_uuid.toString()));
+	fs.where.add(fs.columns.key_uuid.eq(globals.makeUUID(key_uuid)));
 	var PRM = databaseManager.getFoundSet(fs);
 	/** @type {JSRecord<db:/stsservoy/permissions>} */
 	var rec = null;var idx = 1;
@@ -291,10 +291,10 @@ function saveEdits(event, record, stopEdit) {
 			/** @type {QBSelect<db:/stsservoy/permissions>} */
 			var fs = databaseManager.createSelect('db:/stsservoy/permissions');
 			fs.result.add(fs.columns.permission_uuid);
-			fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+			fs.where.add(fs.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 			fs.where.add(fs.columns.element_name.eq(formRec.element_name));
 			fs.where.add(fs.columns.form_name.eq(form_name));
-			fs.where.add(fs.columns.key_uuid.eq(currentKey.toString()));
+			fs.where.add(fs.columns.key_uuid.eq(globals.makeUUID(currentKey)));
 			var PRM = databaseManager.getFoundSet(fs);
 			if (PRM.getSize() > 0){
 				/** @type {JSRecord<db:/stsservoy/permissions>} */

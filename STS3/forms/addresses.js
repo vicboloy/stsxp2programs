@@ -123,10 +123,10 @@ function onAddressTypeChange(event, oldValue, newValue) {
 	var e = databaseManager.createSelect('db:/stsservoy/addresses');
 
 	e.result.add(e.columns.address_id);
-	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	e.where.add(e.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	e.where.add(e.columns.delete_flag.isNull);
 	e.where.add(e.columns.address_type.eq(address_type));
-	e.where.add(e.columns.customer_id.eq(entityId.toString()));
+	e.where.add(e.columns.customer_id.eq(globals.makeUUID(entityId)));
 	var E = databaseManager.getFoundSet(e);
 	if (E.getSize() > 0){
 		/** @type {JSFoundSet<db:/stsservoy/addresses>} */
@@ -235,8 +235,8 @@ function onShow(firstShow, event) {
 	/** @type {QBSelect<db:/stsservoy/addresses>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/addresses');
 	fs.result.add(fs.columns.address_type);
-	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	fs.where.add(fs.columns.customer_id.eq(currentID.toString()));
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	fs.where.add(fs.columns.customer_id.eq(globals.makeUUID(currentID)));
 	var A = databaseManager.getFoundSet(fs);
 	var count = A.getSize();
 	for (var index = 1;index <= count;index++){
@@ -401,8 +401,8 @@ function addressIsDeployed(event,addressId){
 	//check jobs table
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var q = databaseManager.createSelect('db:/stsservoy/jobs');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.ship_to.eq(addressId.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.ship_to.eq(globals.makeUUID(addressId)));
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() > 0){
 		return '[jobs]';

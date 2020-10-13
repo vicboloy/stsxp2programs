@@ -263,10 +263,9 @@ function onRecordSelection(event) {
 		elements.btn_Delete.visible =  (employee_number != "P2") // protect admin account
 	}
 	var empId = employee_id;
-	if (empId){empId = empId.toString()}
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
-	u.where.add(u.columns.employee_id.eq(empId));
+	u.where.add(u.columns.employee_id.eq(globals.makeUUID(empId)));
 	var uFs = databaseManager.getFoundSet(u);
 	uFs.loadRecords();
 	if (uFs.getSize() != 0){

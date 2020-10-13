@@ -125,9 +125,9 @@ var bundlePieces = 0;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"79C858C6-4575-4D63-9007-1CBE6EC49FD4",variableType:4}
+ * @properties={typeid:35,uuid:"79C858C6-4575-4D63-9007-1CBE6EC49FD4",variableType:8}
  */
-var bundleWeight = 0;
+var bundleWeight = 0.0;
 /**
  * @type {Number}
  *
@@ -137,9 +137,9 @@ var width = 0;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"6648D84A-8F9C-4E3D-8187-A4513C8CFD23",variableType:4}
+ * @properties={typeid:35,uuid:"6648D84A-8F9C-4E3D-8187-A4513C8CFD23",variableType:8}
  */
-var weight = 0;
+var weight = 0.0;
 /**
  * @type {Number}
  *
@@ -179,9 +179,9 @@ var shipPieces = 0;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"1682909D-5ED3-4F25-A60E-896719E0D385",variableType:4}
+ * @properties={typeid:35,uuid:"1682909D-5ED3-4F25-A60E-896719E0D385",variableType:8}
  */
-var shipWeight = 0;
+var shipWeight = 0.0;
 /**
  * @type {String}
  *
@@ -658,8 +658,10 @@ function onShowForm(firstShow,event) {
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 
 	}
-	globals.getSequenceNumbers();
-	globals.getLotNumbers();
+	if (!vSequenceList || vSequenceList.length == 0){globals.rfAddToSequencesAndLots();}//20201005 load Seqs and Lots faster
+
+	//globals.getSequenceNumbers();
+	//globals.getLotNumbers();
 	requiredFields = [];
 	inputFields = [];
 	var formName = event.getFormName();

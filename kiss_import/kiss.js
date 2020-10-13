@@ -481,7 +481,7 @@ var jobCowCodes = [];
  *
  * @properties={typeid:35,uuid:"2A11737F-8BDE-4E17-AB05-BFBDD702C40A",variableType:8}
  */
-var jobWeightTotal = 0;
+var jobWeightTotal = 0.0;
 /**
  * Selected job's number of barcodes
  * @type {Number}
@@ -978,7 +978,7 @@ function importFSFileInfo(file){
 	jobsFS.result.add(jobsFS.columns.job_id);
 	jobsFS.result.add(jobsFS.columns.customer_id);
 	jobsFS.result.add(jobsFS.columns.job_number);
-	jobsFS.where.add(jobsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	jobsFS.where.add(jobsFS.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	jobsFS.where.add(jobsFS.columns.job_number.eq(jobNumber));
 	var JFS = databaseManager.getFoundSet(jobsFS);
 	JFS.loadRecords();
@@ -1474,9 +1474,9 @@ function importPopKISSTable(event,fileName) {
 	
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.delete_flag.eq(1));
-	q.where.add(q.columns.job_id.eq(scopes.jobs.importJob.jobId.toString()));
+	q.where.add(q.columns.job_id.eq(globals.makeUUID(scopes.jobs.importJob.jobId)));
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() > 0){
 		Q.deleteAllRecords();
@@ -1605,7 +1605,7 @@ function importPopSaveDetailRow(event,recDate,flagParentFollows,filterSeqs,filte
 			if (!parentRec){
 				/** @type {QBSelect<db:/stsservoy/import_table>} */
 				var qq = databaseManager.createSelect('db:/stsservoy/import_table');
-				qq.where.add(qq.columns.import_table_id.eq(scopes.jobs.tmpParentRecId.toString()));
+				qq.where.add(qq.columns.import_table_id.eq(globals.makeUUID(scopes.jobs.tmpParentRecId)));
 				var Q = databaseManager.getFoundSet(qq);
 				if (Q.getSize() == 1){
 					parentRec = Q.getRecord(1);
@@ -1841,9 +1841,9 @@ function clearKissTables(event,recDate){
 	xt.result.add(xt.columns.import_table_id);
 	xt.where.add(xt.or
 		.add(xt.columns.modification_date.lt(delDate))
-		.add(xt.columns.job_id.eq(jobId.toString()))
+		.add(xt.columns.job_id.eq(globals.makeUUID(jobId)))
 	);
-	xt.where.add(xt.columns.tenant_uuid.eq(tenantId));
+	xt.where.add(xt.columns.tenant_uuid.eq(globals.makeUUID(tenantId)));
 	var XT = databaseManager.getFoundSet(xt);
 	scopes.jobs.warningsMessage('Clearing Import Table records.',true);
 	if (XT.getSize() > 0){XT.deleteAllRecords()}
@@ -1853,9 +1853,9 @@ function clearKissTables(event,recDate){
 	xg.result.add(xg.columns.import_guid_uuid);
 	xg.where.add(xg.or
 		.add(xg.columns.modification_date.lt(delDate))
-		.add(xg.columns.job_id.eq(jobId.toString()))
+		.add(xg.columns.job_id.eq(globals.makeUUID(jobId)))
 	);
-	xg.where.add(xg.columns.tenant_uuid.eq(tenantId))
+	xg.where.add(xg.columns.tenant_uuid.eq(globals.makeUUID(tenantId)))
 	var XG = databaseManager.getFoundSet(xg);
 	scopes.jobs.warningsMessage('Clearing Import FS GUIDs Table records.',true);
 	if (XG.getSize() > 0){XG.deleteAllRecords()}
@@ -1887,7 +1887,7 @@ function readLotsK(){
 	var q = databaseManager.createSelect('db:/stsservoy/lots');
 	q.result.add(q.columns.lot_id);
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.sequence_id.isin(tempSeqIdList));
 	dsLots = databaseManager.getFoundSet(q);
 	
@@ -1934,7 +1934,7 @@ function readBarcodesK(jobID){
 	q.result.add(q.columns.id_serial_number_id);
 	q.where.add(q.columns.delete_flag.isNull);
 	q.where.add(q.columns.id_serial_number_id.isin(bcListArray));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	dsBarcodes = databaseManager.getFoundSet(q);
 	if (dsBarcodes.getSize == 0){return}
 	dsBarcodeArray = [];
@@ -1964,9 +1964,9 @@ function readSequencesK(jobID){
 	/** @type {QBSelect<db:/stsservoy/sequences2>} */
 	var q = databaseManager.createSelect('db:/stsservoy/sequences2');
 	q.result.add(q.columns.sequence_id);
-	q.where.add(q.columns.job_id.eq(jobID));
+	q.where.add(q.columns.job_id.eq(globals.makeUUID(jobID)));
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	/** @type {JSDataSet} */
 	dsSequences = databaseManager.getFoundSet(q);
 
@@ -2020,7 +2020,7 @@ function readIdfilesK(){
 	q.result.add(q.columns.idfile_id);
 	q.where.add(q.columns.piecemark_id.isin(piecemarkArray));
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	
 	dsIdfiles = databaseManager.getFoundSet(q);
 	var rows = dsIdfiles.getSize();
@@ -2154,7 +2154,7 @@ function readPiecemarksK(){
 	pm.result.add(pm.columns.material);
 	pm.result.add(pm.columns.sheet_id);
 	pm.result.add(pm.columns.finish);
-	pm.where.add(pm.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	pm.where.add(pm.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	pm.where.add(pm.columns.delete_flag.isNull);
 	pm.where.add(pm.columns.sheet_id.isin(dsSheetIds));
 	dsPiecemarks = databaseManager.getDataSetByQuery(pm,-1);
@@ -2172,7 +2172,7 @@ function readPiecemarksK(){
 		var unique = uniquePiecemark(dsPiecemarks);
 		dsPiecemarkArray[unique] = pmId;
 	}
-	query = "SELECT sum(pcmk_quantity),sum(item_weight*pcmk_quantity) " + // item_quantity set to pcmk_qty 20190102
+	query = "SELECT sum(pcmk_quantity) sum1,sum(item_weight*pcmk_quantity) sum2 " + // item_quantity set to pcmk_qty 20190102
 	"FROM piecemarks " +
 	"WHERE sheet_id IN " + textList + " "+
 	" AND delete_flag IS null " +
@@ -2181,8 +2181,10 @@ function readPiecemarksK(){
 	args = [];
 	/** @type {JSDataSet} */
 	var weightTotal = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
-	scopes.kiss.jobWeightTotal  = weightTotal[0][1]; 	
-	scopes.kiss.jobPiecesCount  = weightTotal[0][0]; 	
+	scopes.jobs.jobWeightTotal  = weightTotal['sum2'];
+	scopes.jobs.jobPiecesCount  = weightTotal['sum1']; 	
+	//scopes.kiss.jobWeightTotal  = weightTotal[0][1]; 	
+	//scopes.kiss.jobPiecesCount  = weightTotal[0][0]; 	
 	scopes.kiss.jobPcmkCount = dsPiecemarks.getMaxRowIndex();
 	if (application.isInDeveloper()){application.output("piecemarks "+scopes.kiss.jobPcmkCount)}
 }
@@ -2219,9 +2221,9 @@ function readSheetsK(jobID){
 	var sh = databaseManager.createSelect('db:/stsservoy/sheets');
 	sh.result.add(sh.columns.sheet_id);
 	sh.result.add(sh.columns.sheet_number);
-	sh.where.add(sh.columns.job_id.eq(jobID));
+	sh.where.add(sh.columns.job_id.eq(globals.makeUUID(jobID)));
 	sh.where.add(sh.columns.delete_flag.isNull);
-	sh.where.add(sh.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	sh.where.add(sh.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	dsSheets = databaseManager.getFoundSet(sh);
 	dsSheets = databaseManager.getDataSetByQuery(sh,-1);
 	//dsSheets = databaseManager.getDataSetByQuery('stsservoy', query, args , maxReturnedRows);
@@ -2384,7 +2386,7 @@ function readSheetBomsK(jobID){
 	q.result.add(q.columns.sheet_id);
 	q.result.add(q.columns.item_number);
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.sheet_id.isin(sheetIdsList));
 
 	/** @type {JSDataSet} */
@@ -2424,7 +2426,7 @@ function saveImportSettings(event){
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.where.add(j.columns.job_number.eq(jobNumber));
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var J = databaseManager.getFoundSet(j);
 	J.loadRecords();
 	var recJ = J.getRecord(1);
@@ -2434,7 +2436,7 @@ function saveImportSettings(event){
 	var q = databaseManager.createSelect('db:/stsservoy/import_prefs');
 	q.result.add(q.columns.import_pref_id);
 	q.where.add(q.columns.job_number.eq(jobNumber));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var Q = databaseManager.getFoundSet(q);
 	Q.loadRecords();
 	/** @type {JSFoundSet<db:/stsservoy/import_prefs>} */
@@ -3124,7 +3126,7 @@ function deleteIdfilesK(){
 				 .add(u.columns.piecemark_id.isin(piecemarks))
 				 .add(u.columns.idfile_id.not.isin(idfilesToDelete))
 				 .add(u.columns.delete_flag.isNull)
-				 .add(u.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+				 .add(u.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)))
 			);
 		var resultP = databaseManager.getFoundSet(u);
 		index = 1;
@@ -3150,7 +3152,7 @@ function deleteIdfilesK(){
 			u.where.add(u.and
 					 .add(u.columns.piecemark_id.isin(piecemarksDelete))
 					 .add(u.columns.delete_flag.isNull)
-					 .add(u.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+					 .add(u.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)))
 				);
 			resultP = databaseManager.getFoundSet(u);
 			
@@ -3803,7 +3805,7 @@ function deletePiecemarksK(){
 	q.where.add(q.and
 		.add(q.columns.delete_flag.isNull)
 		.add(q.columns.piecemark_id.isin(piecemarksToDelete))
-		.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+		.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)))
 	);
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var resultI = databaseManager.getFoundSet(q);
@@ -4056,8 +4058,8 @@ function createBarCodePrefixK(){
 		/** @type {QBSelect<db:/stsservoy/customers>} */
 		var c = databaseManager.createSelect('db:/stsservoy/customers');
 		c.result.add(c.columns.customer_id);
-		c.where.add(c.columns.customer_id.eq(importJob.customerId.toString()));
-		c.where.add(c.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		c.where.add(c.columns.customer_id.eq(globals.makeUUID(importJob.customerId)));
+		c.where.add(c.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		c.where.add(c.columns.delete_flag.isNull);
 		var C = databaseManager.getFoundSet(c);
 		custRec = C.getRecord(1);
@@ -4072,8 +4074,8 @@ function createBarCodePrefixK(){
 		/** @type {QBSelect<db:/stsservoy/customers>} */
 		var c2 = databaseManager.createSelect('db:/stsservoy/customers');
 		c2.result.add(c2.columns.customer_id);
-		c2.where.add(c2.columns.customer_id.eq(useCustId.toString()));
-		c2.where.add(c2.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		c2.where.add(c2.columns.customer_id.eq(globals.makeUUID(useCustId)));
+		c2.where.add(c2.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		c2.where.add(c2.columns.delete_flag.isNull);
 		/** @type {JSFoundSet<db:/stsservoy/customers>} */
 		var C2 = databaseManager.getFoundSet(c2);
@@ -4200,7 +4202,7 @@ function createBarCodeSerialK(){
 	/** @type {QBSelect<db:/stsservoy/last_id_serial>} */
 	var b = databaseManager.createSelect('db:/stsservoy/last_id_serial');
 	b.result.add(b.columns.last_id_serial_id);
-	b.where.add(b.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	b.where.add(b.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	b.where.add(b.columns.prefix.eq(barcodePrefix));
 	var B = databaseManager.getFoundSet(b);
 	if (B.getSize() > 0){
@@ -4716,7 +4718,7 @@ function loadImportSettings(event){
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.where.add(j.columns.job_number.eq(jobNumber));
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var J = databaseManager.getFoundSet(j);
 	J.loadRecords();
 	var recJ = J.getRecord(1);
@@ -4729,7 +4731,7 @@ function loadImportSettings(event){
 	var q = databaseManager.createSelect('db:/stsservoy/import_prefs');
 	q.result.add(q.columns.import_pref_id);
 	q.where.add(q.columns.job_number.eq(jobNumber));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var Q = databaseManager.getFoundSet(q);
 	Q.loadRecords();
 	/** @type {JSFoundSet<db:/stsservoy/import_prefs>} */
@@ -4779,17 +4781,17 @@ function getBarcodeCount(record){
 	if (!pmId){return 0}
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.piecemark_id.eq(pmId.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.piecemark_id.eq(globals.makeUUID(pmId)));
 	q.where.add(q.columns.delete_flag.isNull);
 	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number]){
 		scopes.jobs.createSequenceNumber(record.sequence_number);
 	}
-	q.where.add(q.columns.sequence_id.eq(scopes.jobs.dsSequenceArray['_'+record.sequence_number].toString()));
+	q.where.add(q.columns.sequence_id.eq(globals.makeUUID(scopes.jobs.dsSequenceArray['_'+record.sequence_number])));
 	if (!scopes.jobs.dsLotArray['_'+record.lot_number]){
 		scopes.jobs.createLotNumber(record.lot_number);
 	}
-	q.where.add(q.columns.lot_id.eq(scopes.jobs.dsLotArray['_'+record.lot_number].toString()));
+	q.where.add(q.columns.lot_id.eq(globals.makeUUID(scopes.jobs.dsLotArray['_'+record.lot_number])));
 	q.groupBy.add(q.columns.id_serial_number_id);
 	q.result.distinct = true;
 	q.result.add(q.columns.id_serial_number_id);
@@ -4814,8 +4816,8 @@ function getCurrentPcmkIdfileCount(event,record){
 	var jobId = form.vJobID;
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q = databaseManager.createSelect('db:/stsservoy/sheets');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.job_id.eq(jobId.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.job_id.eq(globals.makeUUID(jobId)));
 	/** @type {QBJoin<db:/stsservoy/piecemarks>} */
 	var w = q.joins.add('db:/stsservoy/piecemarks');
 	w.on.add(w.columns.sheet_id.eq(q.columns.sheet_id));
@@ -4823,7 +4825,7 @@ function getCurrentPcmkIdfileCount(event,record){
 	w.root.where.add(w.columns.parent_piecemark.eq(record.parent_piecemark));
 	var sheetId = scopes.jobs.dsSheetArray['_'+record.sheet_number];
 	if (!sheetId){return 0} else {sheetId = sheetId.toString()}
-	w.root.where.add(w.columns.sheet_id.eq(sheetId.toString()));
+	w.root.where.add(w.columns.sheet_id.eq(globals.makeUUID(sheetId)));
 	w.root.where.add(w.columns.grade.eq(record.grade));
 	w.root.where.add(w.columns.finish.eq(record.finish));
 	/** @type {QBJoin<db:/stsservoy/idfiles>} */
@@ -4834,8 +4836,8 @@ function getCurrentPcmkIdfileCount(event,record){
 	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number]){return 0}
 	var lotId = (scopes.jobs.dsLotArray['_'+record.lot_number]) ? scopes.jobs.dsLotArray['_'+record.lot_number] : scopes.jobs.createLotNumber(record.lot_number);
 	if (!scopes.jobs.dsLotArray['_'+record.lot_number]){return 0}
-	x.root.where.add(x.columns.sequence_id.eq(seqId.toString()));
-	x.root.where.add(x.columns.lot_id.eq(lotId.toString()));
+	x.root.where.add(x.columns.sequence_id.eq(globals.makeUUID(seqId)));
+	x.root.where.add(x.columns.lot_id.eq(globals.makeUUID(lotId)));
 	//q.groupBy.add(x.columns.idfile_id);
 	q.result.add(x.columns.idfile_id.count,'count');
 	var Q = databaseManager.getDataSetByQuery(q,-1);
@@ -4886,7 +4888,7 @@ function removeImportFileFromServer(jobNumber){
 	/** @type {QBSelect<db:/stsservoy/import_prefs>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_prefs');
 	q.result.add(q.columns.import_file);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.job_number.eq(jobNumber));
 	var Q = databaseManager.getDataSetByQuery(q,-1);
 	if (Q.getMaxRowIndex() == 0){return}

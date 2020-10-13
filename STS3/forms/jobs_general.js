@@ -168,7 +168,7 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/customers>} */
 	var c = databaseManager.createSelect('db:/stsservoy/customers');
 	c.result.add(c.columns.customer_id);
-	c.where.add(c.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	c.where.add(c.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	c.where.add(c.columns.delete_flag.isNull);
 	c.where.add(c.columns.customer_id.eq(newValue.toString()));
 	/** @type {JSFoundSet<db:/stsservoy/customers>} */
@@ -184,10 +184,10 @@ function onDataChangeCustomerNumber(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.result.add(j.columns.job_id);
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	j.where.add(j.columns.delete_flag.isNull);
-	j.where.add(j.columns.customer_id.eq(newValue.toString()));
-	j.where.add(j.columns.job_id.eq(job_id.toString()));
+	j.where.add(j.columns.customer_id.eq(globals.makeUUID(newValue)));
+	j.where.add(j.columns.job_id.eq(globals.makeUUID(job_id)));
 	var J = databaseManager.getFoundSet(j);
 	if (J.getSize() > 0 && job_number != null){
 		/**
@@ -220,7 +220,7 @@ function onDataChangeJobNum(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.result.add(j.columns.job_id);
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	j.where.add(j.columns.delete_flag.isNull);
 	j.where.add(j.columns.job_number.eq(newValue));
 	var J = databaseManager.getFoundSet(j);
@@ -424,7 +424,7 @@ function loadFoundset(){
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var j = databaseManager.createSelect('db:/stsservoy/jobs');
 	j.result.add(j.columns.job_id);
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	j.where.add(j.columns.delete_flag.isNull);
 	var J = databaseManager.getFoundSet(j);
 	

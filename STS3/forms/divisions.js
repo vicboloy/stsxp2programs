@@ -180,7 +180,7 @@ function onDataChangeDivision(oldValue, newValue, event) {
 		.add(a.columns.delete_flag.isNull)
 		);
 	//.add(a.where.add(a.columns.delete_flag.isNull)))
-	a.where.add(a.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	a.where.add(a.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var A = databaseManager.getFoundSet(a);
 	// ** @type {QBSelect<db:/stsservoy/associations>} */
 	//var b = databaseManager.createSelect('db:/stsservoy/associations');

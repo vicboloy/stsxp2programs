@@ -202,7 +202,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	var fs = databaseManager.createSelect('db:/stsservoy/jobs');
 	fs.result.add(fs.columns.job_id);
 	fs.where.add(fs.columns.delete_flag.isNull)
-	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	fs.where.add(fs.columns.job_number.eq(newValue));
 	var J = databaseManager.getFoundSet(fs);
 	

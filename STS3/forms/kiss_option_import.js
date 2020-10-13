@@ -305,8 +305,8 @@ function onShow(firstShow, event) {
 	}
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.job_id.eq(scopes.jobs.importJobID.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.job_id.eq(globals.makeUUID(scopes.jobs.importJobID)));
 	forms.import_table.foundset.loadRecords(q);
 	excludeFS = null;//20200605
 	scopes.jobs.warningsMessage('Opening Import Options Windows',true);
@@ -349,7 +349,7 @@ function onShow(firstShow, event) {
 	j.result.add(j.columns.job_id);
 	j.where.add(j.columns.job_number.eq(scopes.jobs.importJob.jobNumber));
 	//j.where.add(j.columns.customer_id.eq(scopes.jobs.importJob.customerId));
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var J = databaseManager.getFoundSet(j);
 	/** @type {JSRecord<db:/stsservoy/jobs>} */
 	var jobRec;
@@ -421,7 +421,7 @@ function onShow(firstShow, event) {
 	/** @type {QBSelect<db:/stsservoy/routings>} */
 	var routes = databaseManager.createSelect('db:/stsservoy/routings');
 	routes.result.add(routes.columns.routing_id);
-	routes.where.add(routes.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	routes.where.add(routes.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	routes.where.add(routes.columns.delete_flag.isNull);
 	var R = databaseManager.getFoundSet(routes);
 	/** @type {JSRecord<db:/stsservoy/routings>} */
@@ -555,7 +555,7 @@ function loadExclSumms() {
 		var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
 		prefsFS.result.add(prefsFS.columns.preferences2_id);
 		prefsFS.result.add(prefsFS.columns.field_value);
-		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		prefsFS.where.add(prefsFS.columns.user_uuid.isNull);
 		prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
 		prefsFS.where.add(prefsFS.columns.field_name.eq('excludeArray'));
@@ -593,7 +593,7 @@ function saveExclSumms(){
 		/** @type {QBSelect<db:/stsservoy/preferences2>} */
 		var prefsFS = databaseManager.createSelect('db:/stsservoy/preferences2');
 		prefsFS.result.add(prefsFS.columns.preferences2_id);
-		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		prefsFS.where.add(prefsFS.columns.user_uuid.isNull);
 		prefsFS.where.add(prefsFS.columns.form_name.eq(formName));
 		prefsFS.where.add(prefsFS.columns.field_name.eq('excludeArray'));
@@ -640,8 +640,8 @@ function defineExclDataset(){
 	
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.job_id.eq(jobInfo.job_id.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.job_id.eq(globals.makeUUID(jobInfo.job_id)));
 	q.result.add(q.columns.import_table_id);
 	var fs = databaseManager.getFoundSet(q);
 	fs.loadRecords();
@@ -2180,7 +2180,7 @@ Used within keep minor marks checkbox to show excludes
 	elements.btn_Hide.enabled = true;
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var j = databaseManager.createSelect('db:/stsservoy/import_table');
-	j.where.add(j.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	j.where.add(j.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var J = databaseManager.getFoundSet(j);
 	null;
 }

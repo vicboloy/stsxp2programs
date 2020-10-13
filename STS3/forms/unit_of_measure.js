@@ -130,7 +130,7 @@ function onDataChange(oldValue, newValue, event) {
 	var q = databaseManager.createSelect('db:/stsservoy/uom_types');
 	q.result.add(q.columns.uom_code);
 	q.where.add(q.columns.uom_code.eq(newValue));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var Q = databaseManager.getFoundSet(q);
 	var size = Q.getSize();
 	if (size > 0){

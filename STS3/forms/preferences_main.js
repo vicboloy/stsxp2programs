@@ -58,7 +58,7 @@ function onActionUpdatePrefs(event, prefType) {
 		///var fieldType = typeof(prefs[index]);
 		variableSetting +="";
 		//saveRec = false;
-		fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		fs.where.add(fs.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		fs.where.add(fs.columns.user_uuid.isNull);
 		fs.where.add(fs.columns.field_name.eq(variable));
 		/** @type {JSRecord<db:/stsservoy/preferences2>} */

@@ -31,7 +31,7 @@ function onDataChange(oldValue, newValue, event) {
 	var e = databaseManager.createSelect('db:/stsservoy/employee'); //#task02
 	//e.result.add(e.columns.employee_id);
 	e.where.add(e.columns.employee_number.eq(newValue.trim()));
-	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	e.where.add(e.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var E = databaseManager.getFoundSet(e);
 	if (E.getSize() > 1){
 		/** @type {JSRecord<db:/stsservoy/employee>} */
@@ -103,10 +103,10 @@ function onRecordSelection(event) {
 	var userFS = databaseManager.createSelect('db:/stsservoy/users');
 	
 	userFS.result.add(userFS.columns.user_uuid);
-	userFS.where.add(userFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	userFS.where.add(userFS.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	userFS.where.add(userFS.columns.delete_flag.isNull);
 	var empId = (employee_id) ? employee_id.toString() : employee_id;
-	userFS.where.add(userFS.columns.employee_id.eq(empId));
+	userFS.where.add(userFS.columns.employee_id.eq(globals.makeUUID(empId)));
 	var U = databaseManager.getFoundSet(userFS);
 	/** @type {JSFoundSet<db:/stsservoy/users>} */
 	var rec = null; var index = 1;

@@ -229,7 +229,7 @@ function onShow(firstShow, event) {
 	/** @type {QBSelect<db:/stsservoy/routings>} */
 	var routes = databaseManager.createSelect('db:/stsservoy/routings');
 	routes.result.add(routes.columns.routing_id);
-	routes.where.add(routes.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	routes.where.add(routes.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	routes.where.add(routes.columns.delete_flag.isNull);
 	var R = databaseManager.getFoundSet(routes);
 	/** @type {JSRecord<db:/stsservoy/routings>} */

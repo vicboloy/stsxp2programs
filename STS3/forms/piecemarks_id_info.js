@@ -90,7 +90,7 @@ function setRecord(event,rec){
 	var idfileId = rec.if_idfile_id;
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
-	q.where.add(q.columns.idfile_id.eq(idfileId.toString()));
+	q.where.add(q.columns.idfile_id.eq(globals.makeUUID(idfileId)));
 	var Q = databaseManager.getFoundSet(q);
 	foundset.loadRecords(Q);
 	if (foundset.getSize() == 0){

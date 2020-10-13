@@ -104,6 +104,10 @@ var login2 = null;
  */
 var CHECK_BROWSER = 'getBrowserInfo';
 /**
+ * @properties={typeid:35,uuid:"0817C34F-6077-400F-BCD5-A359BCECF150",variableType:-4}
+ */
+var innocuousValue = null;
+/**
  * @properties={typeid:24,uuid:"5F3B8ABB-AEC5-4217-967B-77FCB4D07DDA"}
  * @AllowToRunInFind
  */
@@ -252,6 +256,7 @@ function onLoad(event) {
 		scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
 	} */
 	textAreaString = "";
+	textAreaString2 = "";
 	for (var item in plugins){
 		if (application.isInDeveloper()){application.output('loaded '+item)}
 		textAreaString += item+",";
@@ -265,26 +270,45 @@ function onLoad(event) {
 	if (application.isInDeveloper()){application.output('usermanager registered '+registered+' counter '+counter)}
 	//var solutionNames = []; // either STS3 or STSmobile
 	var solutionNames = [];
-
+	/** @type {QBSelect<db:/stsservoy/tenant_list>} * /
+	var q = databaseManager.createSelect('db:/stsservoy/tenant_list');
+	var activeValue = [0,null];
+	q.where.add(q.columns.delete_flag.isin(activeValue));
+	var Q = databaseManager.getFoundSet(q);
+	var idleKillPref = 999999999;
+	var tenantID = ''; */
+	if (Q.getSize() == 1){//last_item #2
+		/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
+		var rec = Q.getRecord(1);
+		tenantID = rec.tenant_uuid;
+		var idleKillPref = globals.getPrefsMaxIdleMinutes(tenantID);
+	}
+	
+	
 	try {
 		// get license info on load  for this tenant addresses #45 unfuddle
 		if (application.isInDeveloper()){application.output(application.getSolutionName())}
 		var solutionName = application.getSolutionName(); // addresses #45
 
-		var clientArray = new Array();//plugins.UserManager.getClients();
+		var clientArray = new Array();//
+		clientArray = plugins.UserManager.getClients();
 		var licenses = licenseCount();
 		licenseTotal = licenses;
 		var currentTime = new Date().getTime();
+		var loginExpired = "";var maxIdle = 0;var maxIdleLoginClient = '';var clientTypes = '';
 		for (var indexC = 0;indexC < clientArray.length;indexC++){
 			var client = clientArray[indexC];
 			client = client.clientId;
 			var clientInfo = plugins.UserManager.getClientByUID(client);
 			var clientSolution = clientInfo.solutionName;
+			clientTypes += '|'+clientSolution;
 			if (!solutionNames[clientSolution]){solutionNames[clientSolution] = 0}
 			solutionNames[clientSolution] =  parseInt(solutionNames[clientSolution]) + 1;
 			var clientIdle = clientInfo.idle;
 			var beginTime = clientIdle.getTime();
-			var idleMillis = Math.floor((currentTime - beginTime)/100);
+			var idleMillis = Math.floor((currentTime - beginTime))/100;
+			if (clientSolution == "servoySecurityLogin" && idleMillis*1 > maxIdle*1){maxIdle = idleMillis;maxIdleLoginClient = client;}
+			if (clientSolution == "servoySecurityLogin" && idleMillis > 3000){loginExpired = "client:"+client+' time:'+idleMillis}
 			if (application.isInDeveloper()){application.output(clientArray[indexC]+' loginId:'+clientInfo.userUid+' client:'+client+' IP:'+clientInfo.ipAddress+' Login:'+clientInfo.login+' solution:'+clientInfo.solutionName+' idle:'+clientInfo.idle+' solution '+clientInfo.solutionName+' idle seconds '+idleMillis)}
 			if (application.isInDeveloper()){application.output(clientInfo)}
 		}
@@ -293,6 +317,11 @@ function onLoad(event) {
 		if (application.isInDeveloper()){application.output('solution counts '+solutionNames)}
 		var moreLic = plugins.UserManager.Server().getSettingsProperty('license.0.company_name');
 		textAreaString += "license "+licenses+' more - '+moreLic+' -';
+		textAreaString2 = licenses+ 'max idle: '+maxIdle+ ' prefs timeout:'+idleKillPref*60*100+' session:'+maxIdleLoginClient+' idle:'+maxi;//loginExpired;
+		if (maxIdle > idleKillPref*60*10 && !maxIdleLoginClient){//last_item if there are licenses available, do not kill
+			var clientObj = plugins.UserManager.getClientByUID(maxIdleLoginClient);
+			clientObj.shutdown();
+		}
 	} catch (e)	{
 		
 	}
@@ -386,4 +415,13 @@ function fabsuite(xmlStuff){
 	var fabsuiteResponse = fabsuiteCom.call('FabSuiteXML',xmlStuff);
 	application.output('testing fabsuite')
 	return fabsuiteResponse;
+}
+/**
+ * TODO generated, please specify type and doc for the params
+ * @param uuid
+ *
+ * @properties={typeid:24,uuid:"E8223119-581F-4905-A24D-515655507EDB"}
+ */
+function makeUUIDs(uuid){
+	return application.getUUID(uuid);
 }

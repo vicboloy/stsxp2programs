@@ -123,7 +123,7 @@ function onDataChangeCarrierName(oldValue, newValue, event) { //#task03
 	/** @type {QBSelect<db:/stsservoy/carrier>} */
 	var c = databaseManager.createSelect('db:/stsservoy/carrier');
 	c.result.add(c.columns.carrier_id);
-	c.where.add(c.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	c.where.add(c.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	c.where.add(c.columns.delete_flag.isNull);
 	c.where.add(c.columns.carrier_number.eq(newValue));
 	var C = databaseManager.getFoundSet(c);

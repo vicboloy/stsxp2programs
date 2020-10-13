@@ -93,13 +93,13 @@ function onActionMarked(event) {
 					.add(m.columns.delete_flag.isNull)
 //					.add(m.columns.cost_of_work_code.not.isNull)
 //					.add(m.columns.cow_xref_id.not.isNull)
-					.add(m.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+					.add(m.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)))
 					.add(m.columns.material.eq(vMaterial))
 //					.add(m.columns.sheet_id.isin(sheetQuery))
 				);
 			if (pcmk){m.where.add(m.columns.piecemark.eq(vPiecemark))}
 			if (sheet){
-				m.where.add(m.columns.sheet_id.eq(vSheetNum.toString()));
+				m.where.add(m.columns.sheet_id.eq(globals.makeUUID(vSheetNum)));//last_item  #3
 			}
 			var result = databaseManager.getDataSetByQuery(m,-1);
 			var fs = null;
@@ -174,7 +174,7 @@ function onActionCalcCost(event) {
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var i = databaseManager.createSelect('db:/stsservoy/idfiles');
 	i.result.add(i.columns.idfile_id);
-	i.where.add(i.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	i.where.add(i.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	i.where.add(i.columns.delete_flag.isNull);
 	i.where.add(i.columns.piecemark_id.isin(piecemarkArray));
 	if (skipShipped){
@@ -264,8 +264,8 @@ function onActionRefresh(event) {
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q =  databaseManager.createSelect("db:/stsservoy/sheets");
 	q.result.add(q.columns.sheet_id);
-	q.where.add(q.columns.job_id.eq(globals.vJobIDXref.toString()));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(globals.makeUUID(globals.vJobIDXref)));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.delete_flag.isNull);
 
 	/** @type {QBSelect<db:/stsservoy/piecemarks>} */

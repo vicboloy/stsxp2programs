@@ -235,12 +235,14 @@ onActionMethodID:{\
 arguments:[\
 null,\
 \"'progDbBinaryPath'\",\
-\"'Prefs'\"\
+\"'Prefs'\",\
+\"true\"\
 ],\
 parameters:[\
 \"event\",\
 \"updateValue\",\
-\"prefsType\"\
+\"prefsType\",\
+\"nowritetest\"\
 ]\
 }\
 }",

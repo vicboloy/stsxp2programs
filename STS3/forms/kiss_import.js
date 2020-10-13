@@ -157,7 +157,7 @@ function fileReceipt(file){
 	jobsFS.result.add(jobsFS.columns.job_id);
 	jobsFS.result.add(jobsFS.columns.customer_id);
 	jobsFS.result.add(jobsFS.columns.job_number);
-	jobsFS.where.add(jobsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	jobsFS.where.add(jobsFS.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	jobsFS.where.add(jobsFS.columns.job_number.eq(jobNumber));
 	var JFS = databaseManager.getFoundSet(jobsFS);
 	var count = JFS.getSize();
@@ -549,7 +549,7 @@ function removeJobImportData(jobNumber){
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
 	q.where.add(q.columns.job_number.eq(jobNumber));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.result.add(q.columns.import_table_id);
 	/** @type {JSFoundSet<db:/stsservoy/import_table>} */
 	var Q = null;
@@ -579,7 +579,7 @@ function removeJobImportData(jobNumber){
 	/** @type {QBSelect<db:/stsservoy/import_guids>} */
 	var s = databaseManager.createSelect('db:/stsservoy/import_guids');
 	s.where.add(s.or
-		.add(s.columns.job_id.eq(jobId))
+		.add(s.columns.job_id.eq(globals.makeUUID(jobId)))
 		.add(s.columns.edit_date.lt(delDate))
 	);
 	//s.where.add(s.columns.import_table_id.isin(tableIds));

@@ -176,7 +176,7 @@ function onDataChangeFindCustomer(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/customers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/customers');
 	q.where.add(q.columns.customer_number.eq(newValue.toUpperCase()));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() == 1){
 		var rec = Q.getRecord(1);
@@ -184,7 +184,7 @@ function onDataChangeFindCustomer(oldValue, newValue, event) {
 	} else {
 		q.where.clear();
 		q.where.add(q.columns.name.upper.like(newValue.toUpperCase()+'%'));
-		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		Q = databaseManager.getFoundSet(q);
 		if (Q.getSize() > 0){
 			if (findCustomerStringIdx && findCustomerStringIdx < Q.getSize()){findCustomerStringIdx++}else{findCustomerStringIdx = 1}
@@ -218,7 +218,7 @@ function onActionReFind(event) {
 	/** @type {QBSelect<db:/stsservoy/customers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/customers');
 	q.where.add(q.columns.customer_number.eq(findCustomerStringLast.toUpperCase()));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() == 1){
 		var rec = Q.getRecord(1);
@@ -226,7 +226,7 @@ function onActionReFind(event) {
 	} else {
 		q.where.clear();
 		q.where.add(q.columns.name.upper.like(findCustomerStringLast.toUpperCase()+'%'));
-		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		Q = databaseManager.getFoundSet(q);
 		if (Q.getSize() > 0){
 			if (findCustomerStringIdx && findCustomerStringIdx < Q.getSize()){findCustomerStringIdx++}else{findCustomerStringIdx = 1}

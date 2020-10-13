@@ -191,9 +191,8 @@ function setRouteCodesLists(){
 	fs.sort.add(fs.columns.route_order.asc);
 	fs.where.add(fs.columns.delete_flag.isNull);
 	var routeId = routing_id;
-	if (routeId){routeId = routeId.toString()}
-	fs.where.add(fs.columns.e_route_code_id.eq(routeId));
-	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.e_route_code_id.eq(globals.makeUUID(routeId)));
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 
 	var FS = databaseManager.getFoundSet(fs);
 	/**@type {JSFoundSet<db:/stsservoy/route_detail>} */
@@ -360,7 +359,7 @@ function onActionOrderByProcess(event,valuelist) {
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var fs1 = databaseManager.createSelect('db:/stsservoy/status_description');
 	fs1.result.add(fs1.columns.status_description_id);
-	fs1.where.add(fs1.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs1.where.add(fs1.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	fs1.where.add(fs1.columns.delete_flag.isNull);
 	fs1.sort.add(fs1.columns.status_sequence.asc);
 	var fs = databaseManager.getFoundSet(fs1);
@@ -432,8 +431,8 @@ function onActionSaveEdit(event) {
 	var rtDtl = databaseManager.createSelect('db:/stsservoy/route_detail');
 	rtDtl.result.add(rtDtl.columns.e_route_code_id);
 	rtDtl.where.add(rtDtl.columns.delete_flag.isNull);
-	rtDtl.where.add(rtDtl.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	rtDtl.where.add(rtDtl.columns.e_route_code_id.eq(routing_id.toString()));
+	rtDtl.where.add(rtDtl.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	rtDtl.where.add(rtDtl.columns.e_route_code_id.eq(globals.makeUUID(routing_id)));
 	var RTD = databaseManager.getFoundSet(rtDtl);
 	
 	databaseManager.startTransaction();

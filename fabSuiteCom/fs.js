@@ -809,6 +809,7 @@ function checkComFabsuite(event){
 	}
 	if (globals.fsCom){
 		if (!fabSuitePing(event)){
+			application.output('There shows to be a connection to EPM/FS but Ping failed.  Releasing and getting COM.');
 			globals.fsCom.release();
 			globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 			if (fabSuitePing(event)){
@@ -818,6 +819,7 @@ function checkComFabsuite(event){
 			return '';
 		}
 	} else {
+		application.output('No Initial COM Connection To EPM/FS.  Getting COM.');
 		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 		//return '';
 	}
@@ -836,6 +838,7 @@ function checkComFabsuite(event){
 	}
 	fabSuiteLocal = false;
 	if (!globals.fsCom){
+		application.output('Second No Initial COM Connection To EPM/FS.  Retrying COM.');
 		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 	}
 	if (!globals.fsCom || !globals.fsCom.isJACOBLoaded()) {
@@ -875,12 +878,14 @@ function checkComFabsuite(event){
 		var sam2 = globals.fsCom;
 		var sample = sam2.toString();
 		if (sample.search('RemoteCOM') != -1){
+			application.output('Initial Connect String To EPM/FS COM Link Set. Logging into EPM/FS.');
 			response = globals.fsCom.call('FabSuiteXML',xmlConnect);		
 		} else {
+			application.output('Initial Connect String To EPM/FS COM Rerequested. Getting COM and Logging into EPM/FS.');
 			globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 			response = globals.fsCom.call('FabSuiteXML',xmlConnect);	
 		}
-		application.output('FABsuite Status: '+response);
+		application.output('FabSuite Status: '+response);
 		var error = fabSuiteError(response);
 		if (!error){
 			break;
@@ -1067,6 +1072,7 @@ function fabSuitePing(event){
 		<Ping>\n\
 		</Ping>\n\
 		</FabSuiteXMLRequest>';
+	application.output('Ping Test To EPM...');
 	if (globals.fsCom){
 		var fsResp = globals.fsCom.call('FabSuiteXML',fsPing);
 		if (fabSuiteResponse(fsResp) == ''){
@@ -1176,7 +1182,9 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	if (month < 10){month = "0"+month}
 	var execDate = date.getFullYear()+'-'+month+'-'+day;//required
 	var hours = (globals.mob.timedTotalMin*1 > 0) ? globals.mob.timedTotalMin/60 : 0;
-	var batchId = '';
+	var batchId = (forms['rf_mobile_view'] && 
+			forms['rf_mobile_view'].statusLocation != '' && 
+			scopes.prefs.lFsLocnBatch*1 == 1) ? forms['rf_mobile_view'].statusLocation.trim() : '';//20200903 added BatchID entry if location batch ID exists
 	var _commitType = '<CommitType>'+commitType+'</CommitType>\n';
 	var _jobNumber = '<JobNumber>'+jobNumber+'</JobNumber>\n';
 	var _station = '<Station>'+station+'</Station>\n';
@@ -1307,6 +1315,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 				saveDataXML = (!equipEmployee) ? saveDataXML.replace('ASUSER','') : saveDataXML.replace('ASUSER',_asUser+'\n');//save employee who is running the mobile computer
 				saveDataXML = saveDataXML.replace('TRUCKNUMBER',_loadNumber+'\n');
 				saveDataXML = saveDataXML.replace('ASUSER',_asUser+'\n');
+				saveDataXML = (!batchId) ? saveDataXML.replace('BATCH','') : saveDataXML.replace('BATCH',_batchId+'\n');
 	
 			break;
 		default:

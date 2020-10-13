@@ -46,15 +46,15 @@ var vLoadRelease = "";
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"A9132D2F-D053-4BFE-B39F-4BD88123F820",variableType:4}
+ * @properties={typeid:35,uuid:"A9132D2F-D053-4BFE-B39F-4BD88123F820",variableType:8}
  */
-var vJobWeight = 0;
+var vJobWeight = 0.0;
 /**
  * @type {Number}
  *
- * @properties={typeid:35,uuid:"5EB9242C-1455-4632-BE0C-F38A262999A1",variableType:4}
+ * @properties={typeid:35,uuid:"5EB9242C-1455-4632-BE0C-F38A262999A1",variableType:8}
  */
-var vLoadWeight = 0;
+var vLoadWeight = 0.0;
 /**
  * @type {String}
  *
@@ -1691,9 +1691,9 @@ function onActionClickInfoSheet(event){
 	var q = databaseManager.createSelect('db:/stsservoy/jobs');
 	q.result.add(q.columns.job_number);
 	q.result.add(q.columns.job_id);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.delete_flag.isNull);
-	q.where.add(q.columns.association_id.eq(globals.session.associationId.toString()));
+	q.where.add(q.columns.association_id.eq(globals.makeUUID(globals.session.associationId)));
 	var Q = databaseManager.getDataSetByQuery(q,-1);
 	var jobs = Q.getColumnAsArray(1);
 	var jobIds = Q.getColumnAsArray(2);
@@ -1706,7 +1706,7 @@ function onActionClickInfoSheet(event){
 	/** @type {QBSelect<db:/stsservoy/status_description>} */
 	var r = databaseManager.createSelect('db:/stsservoy/status_description');
 	r.result.add(r.columns.status_code);
-	r.where.add(r.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	r.where.add(r.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	r.where.add(r.columns.delete_flag.isNull);
 	r.sort.add(r.columns.status_sequence.asc);
 	var R = databaseManager.getDataSetByQuery(r,-1);
@@ -1761,8 +1761,8 @@ function onActionClickInfoSheet(event){
 		/** @type {QBSelect<db:/stsservoy/sheets>} */
 		var s = databaseManager.createSelect('db:/stsservoy/sheets');
 		s.where.add(s.columns.delete_flag.isNull);
-		s.where.add(s.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-		s.where.add(s.columns.job_id.eq(jobId.toString()));
+		s.where.add(s.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+		s.where.add(s.columns.job_id.eq(globals.makeUUID(jobId)));
 		s.result.add(s.columns.job_id);
 		
 		/** @type {QBJoin<db:/stsservoy/piecemarks>} */

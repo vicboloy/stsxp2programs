@@ -132,12 +132,12 @@ function onRecordSelection(event,buttonTextSrc) {
 		databaseManager.removeTableFilterParam('stsservoy','filterAssocSTATUS_DESCRIPTION');
 		/** @type {QBSelect<db:/stsservoy/route_detail>} */
 		var q = databaseManager.createSelect('db:/stsservoy/route_detail');
-		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-		q.where.add(q.columns.e_route_code_id.eq(routeId.toString()));
+		q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+		q.where.add(q.columns.e_route_code_id.eq(globals.makeUUID(routeId)));
 		/** @type {QBJoin<db:/stsservoy/status_description>} */
 		var r = q.joins.add('db:/stsservoy/status_description');
 		r.on.add(r.columns.status_description_id.eq(q.columns.status_description_id));
-		r.root.where.add(r.columns.association_id.not.eq(assocId.toString()));
+		r.root.where.add(r.columns.association_id.not.eq(globals.makeUUID(assocId)));
 		q.result.add(r.columns.association_id);
 		var Q = databaseManager.getDataSetByQuery(q,-1);
 		var extRtErr = (Q.getMaxRowIndex() > 0);

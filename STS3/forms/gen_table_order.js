@@ -142,7 +142,7 @@ function tablePrefsColumnsToHide(tableName){
 	prefsFS.result.add(prefsFS.columns.preferences2_id);
 	prefsFS.where.add(prefsFS.columns.user_uuid.isNull);//FFFFFFFF-0000-0000-DDDDDDDDDDDD
 	prefsFS.where.add(prefsFS.columns.form_name.eq(tableName.replace(version,"")));
-	prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	prefsFS.where.add(prefsFS.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var P = databaseManager.getFoundSet(prefsFS);
 	
 	var index = 1;

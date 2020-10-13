@@ -27,7 +27,7 @@ var vCustomerName = '';
  *
  * @properties={typeid:35,uuid:"172C3F70-AAE3-44BD-8D71-3E8BFD057081",variableType:4}
  */
-var vJobWeight = 0;
+var vJobWeight = 0.0;
 /**
  * @type {String}
  *
@@ -143,7 +143,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var q = databaseManager.createSelect('db:/stsservoy/jobs');
 	q.where.add(q.columns.job_number.eq(vJobNumber));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.delete_flag.isNull);
 	var fs = databaseManager.getFoundSet(q);
 	foundset.loadRecords(fs);
@@ -153,7 +153,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	}
 	/** @type {QBSelect<db:/stsservoy/addresses>} */
 	var r = databaseManager.createSelect('db:/stsservoy/addresses');
-	r.where.add(r.columns.address_id.eq(ship_to.toString()));
+	r.where.add(r.columns.address_id.eq(globals.makeUUID(ship_to)));
 	vJobID = job_id;
 	vJobWeight = 0;
 	if (metric_job == 1){

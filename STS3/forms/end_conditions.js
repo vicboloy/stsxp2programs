@@ -140,7 +140,7 @@ function onDataChange(oldValue, newValue, event) {
 	var e = databaseManager.createSelect('db:/stsservoy/end_conditions');
 	e.result.add(e.columns.end_condition_id);
 	e.where.add(e.columns.delete_flag.isNull);
-	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	e.where.add(e.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	e.where.add(e.columns.end_prep.eq(newValue));
 	var E = databaseManager.getFoundSet(e);
 	if (E.getSize() > 0){
@@ -175,7 +175,7 @@ function loadFoundset(){
 	var e = databaseManager.createSelect('db:/stsservoy/end_conditions');
 	e.result.add(e.columns.end_condition_id);
 	e.where.add(e.columns.delete_flag.isNull);
-	e.where.add(e.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	e.where.add(e.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var E = databaseManager.getFoundSet(e);
 	foundset.loadRecords(E);
 }

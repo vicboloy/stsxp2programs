@@ -205,7 +205,7 @@ function createEditI18nTable(event){
 	/** @type {QBSelect<db:/stsservoy/preferences2>} */
 	var q = databaseManager.createSelect('db:/stsservoy/preferences2');
 	q.where.add(q.columns.form_name.eq('i18n_edit_list_table'));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var Q = databaseManager.getFoundSet(q);
 	var fields = [];
 	/** @type {JSFoundSet<db:/stsservoy/preferences2>} */

@@ -1190,9 +1190,9 @@ function onActionUpdatePrefs(event) {
 	fs.result.add(fs.columns.preferences2_id);
 	fs.where.add(fs.or
 			.add(fs.columns.user_uuid.isNull)
-			.add(fs.columns.user_uuid.eq(userID))
+			.add(fs.columns.user_uuid.eq(globals.makeUUID(userID)))
 		);
-	fs.where.add(fs.columns.tenant_uuid.eq(tenant));
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.makeUUID(tenant)));
 	if (globals.tempPrefsChanged){
 		var thesePrefs = globals.tempPrefsChanged.sort();
 		fs.where.add(fs.columns.field_name.isin(thesePrefs)); //20180108 save only changed prefs
@@ -1365,7 +1365,7 @@ function onDataChangePrefsGeneral(oldValue, newValue, event,prefsType) {
  * @properties={typeid:24,uuid:"BF49A765-9ECE-4164-AAF0-208CA327A66C"}
  * @AllowToRunInFind
  */
-function onActionFileOpenDialog(event,updateValue,prefsType) {
+function onActionFileOpenDialog(event,updateValue,prefsType,nowritetest) {
 	//var priorPath = (prefsType == 'Printer') ? scopes.printer[updateValue]: scopes.prefs[updateValue];
 	//if (priorPath == "" || priorPath == null){priorPath = "C:\\"}
     var defaultDir = plugins.file.getDefaultUploadLocation();
@@ -1374,7 +1374,8 @@ function onActionFileOpenDialog(event,updateValue,prefsType) {
 	var dirs = plugins.file.showDirectorySelectDialog(baseDirObj,i18n.getI18NMessage('sts.txt.select.default.directory'));
 	if (!dirs){return}
 	var intendedDir = dirs.getAbsolutePath();
-	if (intendedDir.indexOf(defaultDir) != 0 && updateValue.search('user') != 0){
+	application.output('Intended Dir: '+intendedDir+' ');
+	if (intendedDir.indexOf(defaultDir) != 0 && updateValue.search('user') != 0 && intendedDir.indexOf('Program') == -1){
 		//application.output('intended '+intendedDir+' default '+defaultDir);
 		scopes.globals.errorDialogMobile(event,1258,'','');//The Base Directory Is Unavailable From This Client
 		//return;
@@ -1393,14 +1394,16 @@ function onActionFileOpenDialog(event,updateValue,prefsType) {
 			error = true;
 		}
 	} else {
-		if (!file.createNewFile()){
-			//application.output(stsTestFile+' could not create');
-			error = true;
-		} else {
-			//application.output(stsTestFile+' file created');
-			if (!file.deleteFile()){
-				//application.output(stsTestFile+' file deleted');
+		if (!nowritetest){
+			if (!file.createNewFile()){
+				//application.output(stsTestFile+' could not create');
 				error = true;
+			} else {
+				//application.output(stsTestFile+' file created');
+				if (!file.deleteFile()){
+					//application.output(stsTestFile+' file deleted');
+					error = true;
+				}
 			}
 		}
 	}
@@ -1681,7 +1684,7 @@ function onActionPrintLabels(event) {
 			if (rec.inventory_uuid){
 				/** @type {QBSelect<db:/stsservoy/inventory>} */
 				var q = databaseManager.createSelect('db:/stsservoy/inventory');
-				q.where.add(q.columns.inventory_uuid.eq(rec.inventory_uuid.toString()));
+				q.where.add(q.columns.inventory_uuid.eq(globals.makeUUID(rec.inventory_uuid)));
 				q.result.add(q.columns.inventory_uuid);
 				var Q = databaseManager.getFoundSet(q);
 				if (Q.getSize() != 0){
@@ -3095,16 +3098,16 @@ function getUsersWithScreenPrintPerms(event){
 	 */
 	var form = forms['mc_label_dests'];
 	var userID = form.userID.toString();
-	var assocID = forms['division_user_detail'].association_uuid.toString();
+	var assocID = forms['division_user_detail'].association_uuid;
 	var tenantID = globals.session.tenant_uuid;
 	var notDeleted = [null,0];
 	/** @type {QBSelect<db:/stsservoy/users>} */
 	var u = databaseManager.createSelect('db:/stsservoy/users');
 	u.result.add(u.columns.user_uuid);
-	u.where.add(u.columns.association_uuid.eq(assocID));
-	u.where.add(u.columns.tenant_uuid.eq(tenantID));
+	u.where.add(u.columns.association_uuid.eq(globals.makeUUID(assocID)));
+	u.where.add(u.columns.tenant_uuid.eq(globals.makeUUID(tenantID)));
 	u.where.add(u.columns.delete_flag.isin(notDeleted));
-	u.where.add(u.columns.user_uuid.not.eq(userID));
+	u.where.add(u.columns.user_uuid.not.eq(globals.makeUUID(userID)));
 	var U = databaseManager.getDataSetByQuery(u,-1);
 	var uArray = U.getColumnAsArray(1);
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
@@ -3112,7 +3115,7 @@ function getUsersWithScreenPrintPerms(event){
 	q.result.add(q.columns.user_uuid);
 	q.result.distinct = true;
 	q.groupBy.add(q.columns.user_uuid);
-	q.where.add(q.columns.tenant_uuid.eq(tenantID));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(tenantID)));
 	q.where.add(q.columns.delete_flag.isin(notDeleted));
 	q.where.add(q.columns.user_uuid.isin(uArray));
 	var Q = databaseManager.getDataSetByQuery(q,-1);
@@ -3123,8 +3126,8 @@ function getUsersWithScreenPrintPerms(event){
 	v.result.add(v.columns.user_name);
 	v.sort.add(v.columns.user_name.asc);
 	v.where.add(v.columns.user_uuid.isin(qArray));
-	v.where.add(v.columns.tenant_uuid.eq(tenantID));
-	v.where.add(v.columns.association_uuid.eq(assocID));
+	v.where.add(v.columns.tenant_uuid.eq(globals.makeUUID(tenantID)));
+	v.where.add(v.columns.association_uuid.eq(globals.makeUUID(assocID)));
 	var V = databaseManager.getDataSetByQuery(v,-1);
 	var uuidUsers = V.getColumnAsArray(1);
 	var nameUsers = V.getColumnAsArray(2);
@@ -3291,8 +3294,8 @@ function getUserDestination(){
 	var destination = {labelRaw:null, printerRaw:null, labelMajor:null, printerMajor:null, labelMinor:null, printerMinor:null}
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var dest = databaseManager.createSelect('db:/stsservoy/label_destinations');
-	dest.where.add(dest.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	dest.where.add(dest.columns.user_uuid.eq(userUUID.toString()));
+	dest.where.add(dest.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	dest.where.add(dest.columns.user_uuid.eq(globals.makeUUID(userUUID)));
 	if (screens.length != 0){
 		dest.where.add(dest.columns.rf_screen_name.isin(screens));
 	} else {
@@ -3410,7 +3413,7 @@ function markRecPrinted(recUUID,printDate){
 	if (!printDate){printDate = new Date()};
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
-	q.where.add(q.columns.idfile_id.eq(recUUID));
+	q.where.add(q.columns.idfile_id.eq(globals.makeUUID(recUUID)));
 	q.result.add(q.columns.idfile_id);
 	var Q = databaseManager.getFoundSet(q);
 	if (Q.getSize() > 0){

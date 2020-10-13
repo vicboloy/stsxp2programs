@@ -47,8 +47,8 @@ function deleteRecord(event, index) {
 	var ug = databaseManager.createSelect('db:/stsservoy/user_groups');
 	ug.result.add(ug.columns.user_group_uuid);
 	ug.where.add(ug.columns.delete_flag.isNull);
-	ug.where.add(ug.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	ug.where.add(ug.columns.group_uuid.eq(group_uuid.toString()));
+	ug.where.add(ug.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	ug.where.add(ug.columns.group_uuid.eq(globals.makeUUID(group_uuid)));
 	var UG = databaseManager.getFoundSet(ug);
 
 	if (UG.getSize() > 0){
@@ -101,7 +101,7 @@ function onActionDupe(event) {
 	var q = databaseManager.createSelect('db:/stsservoy/groups');
 	q.result.add(q.columns.group_name);
 	//q.where.add(q.columns.group_name.upper.eq(currGroupName.toUpperCase()));
-	q.where.add(q.columns.tenant_uuid.eq(currentRec.tenant_uuid.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(currentRec.tenant_uuid)));
 	var Q = databaseManager.getFoundSet(q);
 	var existNames = [];
 	for (var index = 1;index <= Q.getSize();index++){
@@ -118,8 +118,8 @@ function onActionDupe(event) {
 	/** @type {QBSelect<db:/stsservoy/group_keys>} */
 	var s = databaseManager.createSelect('db:/stsservoy/group_keys');
 	s.result.add(s.columns.group_key_uuid);
-	s.where.add(s.columns.tenant_uuid.eq(currentRec.tenant_uuid.toString()));
-	s.where.add(s.columns.group_uuid.eq(currentRec.group_uuid.toString()));
+	s.where.add(s.columns.tenant_uuid.eq(globals.makeUUID(currentRec.tenant_uuid)));
+	s.where.add(s.columns.group_uuid.eq(globals.makeUUID(currentRec.group_uuid)));
 	var S = databaseManager.getFoundSet(s);
 	var Ssize = S.getSize();
 	for (index = 1;index <= Ssize;index++){

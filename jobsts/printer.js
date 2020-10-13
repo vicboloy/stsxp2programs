@@ -777,7 +777,7 @@ function onActionPrintRMLabels(event,invUUIDs) {
 	//var employeeNumber = globals.session.employeeNum;
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.inventory_uuid.isin(invUUIDs));//verified with sql server
 	//q.result.add(q.columns.serial_number)
 	//q.result.add(q.columns.inventory_uuid);
@@ -957,7 +957,7 @@ function updateInventoryPrinted(event,barcodePrintedArray){
 	if (barcodePrintedArray && barcodePrintedArray.length == 0){return}
 	/** @type {QBSelect<db:/stsservoy/inventory>} */
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.inventory_uuid.isin(barcodePrintedArray));
 	var Q = databaseManager.getFoundSet(q);
 	var R = databaseManager.getFoundSetUpdater(Q);

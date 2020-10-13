@@ -34,7 +34,7 @@ function onDataChangeJobNumber(oldValue, newValue, event) {
 	fs.result.add(fs.columns.job_id);
 	fs.where.add(fs.columns.job_number.like(newValue));
 	fs.where.add(fs.columns.delete_flag.isNull);
-	fs.where.add(fs.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	fs.where.add(fs.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	var FS = databaseManager.getFoundSet(fs);
 
 	if (FS.getSize() > 0){

@@ -125,8 +125,8 @@ function onShow(firstShow, event) {
 	/** @type {QBSelect<db:/stsservoy/import_table>} */
 	var q = databaseManager.createSelect('db:/stsservoy/import_table');
 	//q.where.add(q.columns.import_status.not.eq(i18n.getI18NMessage('import.ignore')));
-	q.where.add(q.columns.job_id.eq(scopes.jobs.importJob.jobId));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(globals.makeUUID(scopes.jobs.importJob.jobId)));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	foundset.loadRecords(databaseManager.getFoundSet(q));
 	//foundset.loadAllRecords();
 	null;
@@ -250,12 +250,12 @@ function hideIgnoredRecords(hide){
 		var q = databaseManager.createSelect('db:/stsservoy/import_table');
 		q.where.add(q.columns.import_status.not.eq(i18n.getI18NMessage('import.ignore')));
 		q.where.add(q.columns.job_number.eq(forms['kiss_option_import'].jobNumber));
-		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		foundset.loadRecords(databaseManager.getFoundSet(q));
 	} else {
 		/** @type {QBSelect<db:/stsservoy/import_table>} */
 		q = databaseManager.createSelect('db:/stsservoy/import_table');
-		q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+		q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 		q.where.add(q.columns.job_number.eq(forms['kiss_option_import'].jobNumber));
 		foundset.loadRecords(databaseManager.getFoundSet(q));
 	}

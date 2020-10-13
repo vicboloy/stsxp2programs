@@ -67,6 +67,12 @@ titleText:"i18n:table.inventory.deleted_date"
 },
 {
 allowNull:true,
+creationOrderIndex:41,
+dataType:93,
+name:"deletion_date"
+},
+{
+allowNull:true,
 creationOrderIndex:38,
 dataType:12,
 length:25,
@@ -245,6 +251,14 @@ dataType:12,
 length:40,
 name:"model_part",
 titleText:"i18n:table.inventory.model_part"
+},
+{
+allowNull:true,
+autoEnterSubType:9,
+autoEnterType:1,
+creationOrderIndex:40,
+dataType:93,
+name:"modification_date"
 },
 {
 allowNull:true,

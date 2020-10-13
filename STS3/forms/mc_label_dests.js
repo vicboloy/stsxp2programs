@@ -220,8 +220,8 @@ function onActionDupe(event){
 	/** @type {QBSelect<db:/stsservoy/label_destinations>} */
 	var q = databaseManager.createSelect('db:/stsservoy/label_destinations');
 	q.result.add(q.columns.label_destination_uuid);
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
-	q.where.add(q.columns.user_uuid.eq(dupeUser.toString()));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	q.where.add(q.columns.user_uuid.eq(globals.makeUUID(dupeUser)));
 	q.where.add(q.columns.delete_flag.isin(notDeleted));
 	var Q = databaseManager.getFoundSet(q);
 	/** @type {JSFoundSet<db:/stsservoy/label_destinations>} */

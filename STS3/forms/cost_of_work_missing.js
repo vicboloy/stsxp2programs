@@ -69,8 +69,8 @@ function refreshFoundset(event){
 	/** @type {QBSelect<db:/stsservoy/sheets>} */
 	var q =  databaseManager.createSelect("db:/stsservoy/sheets");
 	q.result.add(q.columns.sheet_id);
-	q.where.add(q.columns.job_id.eq(globals.vJobIDXref.toString()));
-	q.where.add(q.columns.tenant_uuid.eq(globals.session.tenant_uuid));
+	q.where.add(q.columns.job_id.eq(globals.makeUUID(globals.vJobIDXref)));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.delete_flag.isNull);
 	//application.output('Job ID '+globals.vJobIDXref);
 	sheetQuery = q;
@@ -182,13 +182,13 @@ function onActionApply(event) {
 		m.where.add(m.and
 				.add(m.columns.delete_flag.isNull)
 				.add(m.columns.cost_of_work_code.isNull)
-				.add(m.columns.tenant_uuid.eq(globals.session.tenant_uuid))
+				.add(m.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)))
 				.add(m.columns.material.eq(vMaterial))
 				.add(m.columns.sheet_id.isin(sheetQuery))
 			);
 		if (pcmk){m.where.add(m.columns.piecemark.eq(vPiecemark))}
 		if (sheet){
-			m.where.add(m.columns.sheet_id.eq(vSheetNum.toString()));
+			m.where.add(m.columns.sheet_id.eq(globals.makeUUID(vSheetNum)));//last_item #4
 		}
 		var result = databaseManager.getDataSetByQuery(m,-1);
 		var fs = null;

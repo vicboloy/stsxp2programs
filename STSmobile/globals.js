@@ -15,7 +15,7 @@ function onSolutionOpen(){
 	}
 
 	globals.mob.userAgent = globals.clientUserAgent;
-	application.output('JJJJJJJJJJJJJJJJJ '+globals.mob.userAgent);
+	//application.output('JJJJJJJJJJJJJJJJJ '+globals.mob.userAgent);
 	//var appWidth = application.getScreenWidth();
 	//viewport = viewport.replace('320',appWidth);
 	if (application.isInDeveloper()){application.output('globals onSolutionOpen opened. STSmobile/globals.js');}

@@ -941,8 +941,17 @@ function onActionPrintRMLabels(event,invUUIDs) {
  * @properties={typeid:24,uuid:"F26D6542-5AFC-41A1-B72B-2D4326BF156B"}
  */
 function getDefaultPrinterName(){
+	// wmic printer get name,default
+	var getInfo = application.executeProgram('wmic',new Array('printer','get','name,default'));
+	application.output('Printer Info: '+getInfo);
+	var defaultPrinter = getInfo.match(/TRUE +(.*)\n/);
+	if (defaultPrinter){
+		return defaultPrinter[1].trim();
+	}
+	
 	var $printService = new Packages.javax.print.PrintServiceLookup.lookupDefaultPrintService();
  	var $printerName = $printService.getName();
+ 	application.output('Default Printer From Function: '+$printerName);
  	if (!$printerName){printerName = ''}
  	return $printerName.trim();
 	//application.output($printerName)
@@ -959,10 +968,46 @@ function updateInventoryPrinted(event,barcodePrintedArray){
 	var q = databaseManager.createSelect('db:/stsservoy/inventory');
 	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.inventory_uuid.isin(barcodePrintedArray));
+	q.result.add(q.columns.inventory_uuid);
+	q.result.add(q.columns.print_date);
+	q.result.add(q.columns.lprint);
 	var Q = databaseManager.getFoundSet(q);
-	var R = databaseManager.getFoundSetUpdater(Q);
-	var printDate = new Date();
-	R.setColumn('print_date',printDate);
-	R.setColumn('lprint',1);
-	R.performUpdate();
+	if (Q.getSize() > 0){
+		databaseManager.saveData(Q);
+		var R = databaseManager.getFoundSetUpdater(Q);
+		var printDate = new Date();
+		R.setColumn('print_date',printDate);
+		R.setColumn('lprint',1);
+		if (!R.performUpdate()){
+			var idx = 1;var rec = null;
+			while (rec = Q.getRecord(idx++)){
+				rec.print_date = printDate;
+				rec.lprint = 1;
+			}
+			databaseManager.saveData(Q);
+		}
+	}
+	null;
+}
+/**
+ * @properties={typeid:24,uuid:"6F9CEA36-B7BC-473F-976D-D018129A96D1"}
+ */
+function getServerPrinters(){
+	var getInfo = application.executeProgram('wmic',new Array('printer','get','name,default'));
+	var defPrinter = getInfo.match(/TRUE +(.*)\n/);
+	var defaultPrinter = '';
+	if (defPrinter){defaultPrinter = defPrinter[1].trim();}
+	var printers = getInfo.split('\n');
+	var printerList = [];
+	for (var i = 0;i < printers.length;i++){
+		var matchItem = printers[i].match(/(TRUE|FALSE) +(.*)/)
+		if (matchItem){printerList.push(matchItem[2].trim());}
+	}
+	printerList.sort();
+	application.output(printerList)
+	application.setValueListItems('stsvl_server_printers',printerList)
+	if (defaultPrinter){
+		scopes.prefs.defaultPrinter = defaultPrinter;
+	}
+
 }

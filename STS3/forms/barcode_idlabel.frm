@@ -344,6 +344,7 @@ onDataChangeMethodID:"5E05D197-475E-4B5F-BB50-FEA18968FE86",
 size:"115,26",
 tabSeq:8,
 text:"i18n:sts.txt.use.server.side.data",
+toolTipText:"i18n:sts.txt.use.server.side.data.help",
 transparent:true,
 typeid:4,
 uuid:"6520075D-F4D4-424E-A2F9-93098503D2DF"

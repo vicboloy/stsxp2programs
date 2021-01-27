@@ -1405,6 +1405,8 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
+	scopes.prefs.cleanTempDir(event,'tmp');
+	if (1){return}
 	plugins.rawSQL.flushAllClientsCache('stsservoy', 'transactions');
 	if (1){return}
 	scopes.jobs.testSerialNonOdo();
@@ -1840,7 +1842,9 @@ function onActionFoxFireReports(event){
 	if (execPath.search('////') != 0){
 		var serverDir = plugins.file.getDefaultUploadLocation();
 		var reportsDir = scopes.prefs.reportpath;
-		var execPath = serverDir+reportsDir;
+		var foxfireDir = scopes.prefs.foxfirepath;
+		//var execPath = serverDir+foxfireDir;
+		execPath = foxfireDir.replace(/\.\\/,'\\')+'\\ff.bat';
 		var regexp = new RegExp(/\\([^\\]*)$/);
 		var execInDir = scopes.prefs.foxfireexe.replace(regexp,'');
 		execInDir = scopes.prefs.foxfireexe;
@@ -1848,6 +1852,8 @@ function onActionFoxFireReports(event){
 		//C:\FoxFire\ffstart9.exe 5242262B-748A-4D67-90E7-57DE90DB1ED1,,,,SYSTEM
 		var assocID = (globals.session.associationId);
 		var emptyParam = '';
+		execPath = serverDir+foxfireDir+'\\ff.bat';
+		execPath = execPath.replace(/\.\\/,'\\');
 		//application.output('Tenant: '+globals.session.tenant_uuid+' Division: '+assocID+' EmptyParam: '+emptyParam+' Exec dir: '+execInDir);
 		//application.output(scopes.prefs.foxfireexe+'\\ffstart9.exe FoxFire params: '+"["+globals.session.tenant_uuid+","+emptyParam+","+emptyParam+","+emptyParam+",SYSTEM]");
 		//application.output('\\\\p2server01\\STSX\\foxfire\\ff.bat '+globals.session.tenant_uuid+","+emptyParam+","+emptyParam+","+emptyParam+",SYSTEM");
@@ -1855,9 +1861,15 @@ function onActionFoxFireReports(event){
 			//application.executeProgram(scopes.prefs.foxfireexe+'\\ffstart9.exe',[globals.session.tenant_uuid,emptyParam,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
 			//application.output('Tenant: '+globals.session.tenant_uuid+' Division: '+assocID+' Command Line: '+globals.session.tenant_uuid+","+emptyParam+","+emptyParam+","+emptyParam+",SYSTEM");			
 			//plugins.UserManager.executeCommand('f:\\shares\\stsx\\foxfire\\ff.bat '+globals.session.tenant_uuid+","+emptyParam+","+emptyParam+","+emptyParam+",SYSTEM");//\\p2server01\STSX\foxfire
-			application.executeProgramInBackground('f:\\shares\\stsx\\foxfire\\ff.bat',[globals.session.tenant_uuid,emptyParam,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
+			//application.executeProgramInBackground('f:\\shares\\stsx\\foxfire\\ff.bat',[globals.session.tenant_uuid,emptyParam,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
+			///application.executeProgramInBackground(execPath,[globals.session.tenant_uuid,emptyParam,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
+			application.output(execPath+' '+globals.session.tenant_uuid+','+emptyParam+','+execInDir+','+'STX3'+','+'SYSTEM')
+			application.executeProgramInBackground(execPath,[globals.session.tenant_uuid,execInDir,'STX3','SYSTEM']);
 		} else {
-			application.executeProgramInBackground('f:\\shares\\stsx\\foxfire\\ff.bat',[globals.session.tenant_uuid,assocID,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
+			//C:\STSX\FFP2\ffvar.exe 6ED97DAB-56BB-48D7-9953-1F26E6B68966,,\\wss-pfab\stsx\ffp2,STX3,SYSTEM
+			application.output(execPath+' '+globals.session.tenant_uuid+','+assocID+','+execInDir+','+'STX3'+','+'SYSTEM')
+			application.executeProgramInBackground(execPath,[globals.session.tenant_uuid,assocID,execInDir,'STX3','SYSTEM']);
+			//application.executeProgramInBackground('f:\\shares\\stsx\\foxfire\\ff.bat',[globals.session.tenant_uuid,assocID,emptyParam,emptyParam,'SYSTEM'],null,execInDir);
 			//application.output('Tenant: '+globals.session.tenant_uuid+' Division: '+assocID+' Command Line: '+globals.session.tenant_uuid+","+assocID+","+emptyParam+","+emptyParam+",SYSTEM");			
 			//plugins.UserManager.executeCommand('f:\\shares\\stsx\\foxfire\\ff.bat '+globals.session.tenant_uuid+","+assocID+","+emptyParam+","+emptyParam+",SYSTEM");//\\p2server01\STSX\foxfire
 		}

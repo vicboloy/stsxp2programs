@@ -157,14 +157,14 @@ function onShow(firstShow, event) {
 		}
 
 
-		if (osName.search(/Win32/) != -1){//9090 is 240x320
+		if (osName.search(/(Win32|Linux)/) != -1){//9090 is 240x320
 		//	if (globals.clientUserAgent.search(/Windows CE/) != -1 && osName.search(/Win32/) != -1){
 			if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 			 //newScale = screenHeight/appHeight;
 			 //scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale='+newScale);
 			 //scopes.globals.viewport = scopes.globals.viewportSrc;
-			elements.elHelp.setSize(230,270);//Math.floor(screenHeight*.9));//screenHeight-30);
-			elements.mainMenu.setSize(230,270);//Math.floor(screenHeight*.9));//screenHeight-30);
+			//j33elements.elHelp.setSize(230,270);//Math.floor(screenHeight*.9));//screenHeight-30);
+			//j33elements.mainMenu.setSize(230,270);//Math.floor(screenHeight*.9));//screenHeight-30);
 
 			 if (firstShow){
 				 //scopes.globals.viewport = scopes.globals.viewportSrc;
@@ -173,7 +173,8 @@ function onShow(firstShow, event) {
 				 //plugins.WebClientUtils.executeClientSideJS('resize();');
 			 }
 		}
-	} else if (globals.clientUserAgent.search(/(Linux)|(iPhone)|(iPad)/i) == -1 && application.getOSName().search(/Mac/i) == -1){
+	} else if (0 && globals.clientUserAgent.search(/(Linux|iPhone|iPad|Android)/i) == -1 
+			&& application.getOSName().search(/Mac/i) == -1){
 		//screenHeight = 30;
 		//elements.elHelp.setSize(elWidth,screenHeight);
 		//elements.mainMenu.setSize(elWidth,screenHeight);
@@ -191,26 +192,40 @@ function onShow(firstShow, event) {
 		if (x+320 > screenWidth){x = screenWidth-320}
 		if (y+480 > screenHeight){y = screenHeight-480}
 		win.setLocation(x,y);
-		elements.elHelp.setSize(width,screenHeight);
-		elements.mainMenu.setSize(width,screenHeight);
+		if (osName.search(/Windows CE/) == -1){elements.elHelp.setSize(width,screenHeight);}
+		if (osName.search(/Windows CE/) == -1){elements.mainMenu.setSize(width,screenHeight);}
 		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
-			screenHeight = (screenHeight > 420) ? 420 : screenHeight;
+			if (osName.search(/Windows CE/) == -1){screenHeight = (screenHeight > 420) ? 420 : screenHeight;}
 			//scopes.globals.viewport = scopes.globals.viewport.replace('initial-scale=1.0','initial-scale='+newScale);
 		} else {
 			elements.mainMenu.setSize(230,420);
 		}
-		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
-			screenHeight = application.getScreenHeight();
+		if (0 && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+			if (0){
+				plugins.WebClientUtils.executeClientSideJS('resizer();');
+				return;
+			}
+			screenHeight = application.getScreenHeight();application.getScreenHeight()
 			screenWidth = application.getScreenWidth();
 			var appWidth = win.getWidth();
-			var appHeight = Math.floor(screenHeight*0.85);
+			var appHeight = win.getHeight();
+			application.output('width: '+screenWidth+' height: '+screenHeight);
+			//var appHeight = Math.floor(screenHeight*0.80);
+			var ratioW = screenWidth/240;
+			var ratioH = screenHeight/320;
+			var ratio = (ratioW < ratioH) ? ratioW : ratioH;
+			application.output('ratioW '+ratioW+' ratioH '+ratioH);
 			if (application.isInDeveloper()){application.output('screeni '+screenWidth+'x'+screenHeight+' app: '+appWidth+'x'+appHeight);}
-			win.setSize(appWidth,appHeight);
-			elements.mainMenu.setSize(500,480); // This was the change that doesn't go past the end of the screen
+			win.setSize(screenWidth,screenHeight);
+			if (osName.search(/Windows CE/) == -1){elements.mainMenu.setSize(500,480);} // This was the change that doesn't go past the end of the screen
+			if (osName.search(/(Linux|Android)/i) != -1){
+				elements.mainMenu.setSize(Math.floor(240*ratioW*.90),Math.floor(320*ratioH*.75));
+				elements.elHelp.setSize(Math.floor(240*ratioW*.75),Math.floor(320*ratioH*.75));
+			}
 		}
 
 	} else {
-		if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		if (0 && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//j5
 			screenHeight = application.getScreenHeight();
 			screenWidth = application.getScreenWidth();
 			appWidth = win.getWidth();
@@ -232,7 +247,7 @@ function onShow(firstShow, event) {
 		elements.mainMenu.setSize(Math.floor(globals.clientWidth),Math.floor(globals.clientHeight-60));
 		elements.elHelp.setSize(Math.floor(globals.clientWidth),Math.floor(globals.clientHeight-60));
 	}
-	if (osName.search(/(Linux)|(Mac)/i) != -1){
+	if (0 && osName.search(/(Linux)|(Mac)/i) != -1){
 		screenHeight = 50;
 		elements.elHelp.setSize(elWidth,screenHeight+10);
 		elements.mainMenu.setSize(screenWidth,screenHeight);
@@ -250,17 +265,47 @@ function onShow(firstShow, event) {
 	//globals.geti18nScreenNameMapping();//20190202 get i18n screen mapping to i18n key
 	application.output('Scaling Main Factor: '+newScale,LOGGINGLEVEL.WARNING);
 	elements.mainMenu.requestFocus();
-	if (application.getOSName().search(/Win32/) != -1 && application.getScreenWidth() > 240){
-	//if (globals.clientUserAgent.search(/Windows CE/) != -1 && application.getOSName().search(/Win32/) != -1){
-		if (true||firstShow){
-			var date = new Date();
-			date.setTime(date.getTime()+500);
-			plugins.scheduler.removeJob('refresher');
-			plugins.scheduler.addJob('refresher',date,globals.timedResize,10000,0);
-			//application.updateUI();
-			//plugins.WebClientUtils.executeClientSideJS('resize();');
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		if (application.getOSName().search(/Win32/) != -1 && application.getScreenWidth() > 240){
+			//if (globals.clientUserAgent.search(/Windows CE/) != -1 && application.getOSName().search(/Win32/) != -1){
+				if (true||firstShow){
+					var date = new Date();
+					date.setTime(date.getTime()+500);
+					plugins.scheduler.removeJob('refresher');
+					plugins.scheduler.addJob('refresher',date,globals.timedResize,10000,0);
+					//application.updateUI();
+					//plugins.WebClientUtils.executeClientSideJS('resize();');
+				}
+			}
+		if (osName.search(/(Linux)|(Mac)/i) != -1){
+			elements.viewPort.visible = true;
+			plugins.WebClientUtils.executeClientSideJS('resizer();');
+		}
+		if (osName.search(/(Android|iOS)/i) != -1){
+			screenHeight = application.getScreenHeight();application.getScreenHeight()
+			screenWidth = application.getScreenWidth();
+			var appWidth = win.getWidth();
+			var appHeight = win.getHeight();
+			application.output('width: '+screenWidth+' height: '+screenHeight);
+			//var appHeight = Math.floor(screenHeight*0.80);
+			var ratioW = screenWidth/240;
+			var ratioH = screenHeight/320;
+			var ratio = (ratioW < ratioH) ? ratioW : ratioH;
+			application.output('ratioW '+ratioW+' ratioH '+ratioH);
+			if (application.isInDeveloper()){application.output('screeni '+screenWidth+'x'+screenHeight+' app: '+appWidth+'x'+appHeight);}
+			//win.setSize(screenWidth,screenHeight);
+			if (osName.search(/Windows CE/) == -1){elements.mainMenu.setSize(500,480);} // This was the change that doesn't go past the end of the screen
+			if (osName.search(/(Linux|Android|iOS)/i) != -1){
+				scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+ratioW+' minimum-scale='+ratioW+'; maximum-scale='+ratioW);
+				//scopes.globals.viewport = scopes.globals.viewport.replace('600;','240; width=320');
+				
+				elements.mainMenu.setSize(230,270);
+				elements.elHelp.setSize(230,230);
+			}
+
 		}
 	}
+	null;
 	//var licCount = plugins.UserManager.Server().getSettingsProperty('license.0.licenses');
 	//plugins.dialogs.showErrorDialog('Message','License count'+licCount);
 	//globals.rfGetLocalStorage('deviceName'); //JOE DISABLE

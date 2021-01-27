@@ -97,6 +97,7 @@ function onShow(firstShow, event) {
 function showLicensing(){
 	totalLicenses = scopes.globals.getTenantUsedLicenses();
 	if (totalLicenses.search('-') != -1){
+		globals.licenseError = true;
 		if (application.getApplicationType() == APPLICATION_TYPES.SMART_CLIENT){
 			globals.errorDialogMobile(null,'1073','','');//1073 license count exceeded
 		}

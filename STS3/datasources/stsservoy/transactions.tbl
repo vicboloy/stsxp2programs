@@ -1,3 +1,11 @@
 dataSource:"db:/stsservoy/transactions",
+items:[
+{
+dataProviderIDToAggregate:"labor_quantity",
+name:"labor_qty",
+typeid:40,
+uuid:"0987AF44-4C34-49B9-A6F0-95664FBC786C"
+}
+],
 typeid:39,
 uuid:"F490BE09-124B-4D24-B354-A36278DE596A"

@@ -100,6 +100,7 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onActionPrint(event) {
+	if (!globals.checkBarTemplateWithServerOkay(event)){return}
 	elements.frmServerPrinters.requestFocus();
 	var printers = application.getValueListArray('stsvl_get_printer_list');
 	var debug = 1;
@@ -294,7 +295,9 @@ function collectCriteria(formName){
 function onActionClear(event) {
 	var formName = event.getFormName();
 	var form = forms[formName];
-	form.foundset.clear();
+	try {
+		form.foundset.clear();
+	} catch (e){}
 	//forms[formName].elements.btn_Print.enabled = false;
 	form.elements.btn_PrintSelected.enabled = false;
 	//forms[formName].elements.btn_PrintAll.enabled = false;
@@ -312,6 +315,16 @@ function onActionClear(event) {
 		form.elements[element].bgcolor = 'white';
 	}
 	useServerPrinters = 1;
+	elements.useBarTender.enabled = (scopes.printer.barTender_installed == 1);
+	useBarTender = (scopes.printer.barTender_installed == 1) ? 1 : 0;
+	elements.useLabeLase.enabled = (scopes.printer.labeLaseInstalled == 1);
+	localDir = scopes.printer.userTempPath;
+	elements.writeTemp.enabled = (localDir != '');
+	printerName = scopes.printer.idBarcodePrinter;
+	labelName = scopes.printer.idBarcodeLabelFormat;
+	labeLaseFormat = scopes.printer.idLabeLaseTemplate;
+	printingLabel = scopes.printer.default_label_name;
+
 }
 /**
  * @param event

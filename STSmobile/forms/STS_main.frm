@@ -65,7 +65,6 @@ uuid:"83549217-B6E7-4528-803C-1CF8CBFAC287"
 },
 {
 anchors:6,
-dataProviderID:"scopes.globals.viewportSrc",
 extendsID:"5C78A937-DF8C-4362-834C-C79AA2AE8F40",
 formIndex:0,
 typeid:4,
@@ -103,7 +102,7 @@ location:"5,25",
 name:"mainMenu",
 onActionMethodID:"138D6C44-7A06-4841-B9A7-409FF1B186A0",
 onDataChangeMethodID:"-1",
-size:"230,290",
+size:"230,255",
 typeid:4,
 uuid:"ED5A1AE2-8AC5-44DB-8347-4D3042625C80",
 valuelistID:"FB987A2B-8B01-41F8-BAA0-B2752F3002E6"

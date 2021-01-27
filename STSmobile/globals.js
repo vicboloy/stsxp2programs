@@ -10,10 +10,13 @@ var statusId = "";
  * @SuppressWarnings(wrongparameters)
  */
 function onSolutionOpen(){
+	application.output('STSMobile start');
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+		var runtimeForm = forms['mobile_standard'] //get the runtime instance of that frm
+		var runtimeHtmlArea = runtimeForm.elements['viewPort'] //get the runtime html area element
+		//j2 runtimeHtmlArea.putClientProperty(APP_UI_PROPERTY.TRUST_DATA_AS_HTML, true);
 		globals.getBrowserInfo();
 	}
-
 	globals.mob.userAgent = globals.clientUserAgent;
 	//application.output('JJJJJJJJJJJJJJJJJ '+globals.mob.userAgent);
 	//var appWidth = application.getScreenWidth();
@@ -102,6 +105,7 @@ function onSolutionOpen(){
 	//application.output("-----------------------");
 	//application.output('begin retrieve local storage '+session.localStorage);
 	//globals.rfTimerBrowser();
+	var loc = new Date();
 }
 /**
  * @properties={typeid:24,uuid:"4AA8BF4F-DE1F-4389-A0FA-01053692FB7D"}

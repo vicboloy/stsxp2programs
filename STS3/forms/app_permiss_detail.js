@@ -302,7 +302,7 @@ function saveEdits(event, record, stopEdit) {
 				if (formRec.is_ignored == 1){
 					PRM.deleteRecord(searchRec);
 				} else {
-					var saveRec = false;
+					var saveRec = true;
 					if (searchRec.is_accessible != formRec.is_enabled){
 						searchRec.is_accessible = formRec.is_enabled;
 						saveRec = true;
@@ -357,6 +357,7 @@ function saveEdits(event, record, stopEdit) {
 			}
 		}
 	}
+	closeDialog(event);
 	return _super.saveEdits(event, record, stopEdit)
 }
 /**

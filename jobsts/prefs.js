@@ -742,6 +742,12 @@ var progDbPassword = '';
  * @properties={typeid:35,uuid:"B5A928D1-F343-4D30-A6EA-4A2EDEE7EA9B"}
  */
 var progDbPort = '';
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"2FD1EC10-DD9F-4424-9D1C-280BFDD955C3"}
+ */
+var defaultPrinter = '';
 
 //Material Type Settings preferences -----------------------------------------------------------------
 
@@ -1591,8 +1597,26 @@ function onActionPrintLabels(event) {
 	//var btSpec = {num: 0, name:'', size: 0,dbcol:'',dbtype:'',dbsize:0}
 	var printed = false;
 	var printDate = new Date();
-	/** @type {JSRecord<selection:Number>} */
+	/** @type {{selection:Number,serial_number:String,bc_id_serial_number_id:String,inventory_uuid:String}} */
 	var rec = null; i = 1;
+	while (rec = fs.getRecord(i++)){
+		var tabContents = "";
+		if (updateIdfile && rec.selection != 1 && globals.session.program != i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
+			if (globals.session.program != i18n.getI18NMessage('sts.mobile.inventory.move')){//reprint in progress for inventory move
+				continue;
+			}
+		}
+		if (rec.inventory_uuid){
+			var upRec = scopes.jobs.invUpdate(event,rec.serial_number);
+			if (upRec){
+				databaseManager.copyMatchingFields(upRec,rec,true)
+			}
+		}
+	}
+	if (databaseManager.hasRecordChanges(fs)){
+		databaseManager.saveData(fs);
+	}
+	i = 1;
 	while (rec = fs.getRecord(i++)){
 		var tabContents = "";
 		if (updateIdfile && rec.selection != 1 && globals.session.program != i18n.getI18NMessage('sts.mobile.cut.cutlist.raw')){
@@ -1603,14 +1627,20 @@ function onActionPrintLabels(event) {
 		labCnt++;
 		printedIndexes.push(i);//index of  printed elements for later view marking as printed
 		if (rec.bc_id_serial_number_id){globals.barcodePrintedArray.push(rec.bc_id_serial_number_id.toString())}
-		if (rec.inventory_uuid){globals.barcodePrintedArray.push(rec.inventory_uuid.toString())}
+		if (rec.inventory_uuid){
+			scopes.jobs.invUpdate(event,rec.serial_number);
+			if (globals.barcodePrintedArray.indexOf(rec.inventory_uuid.toString()) == -1){
+				globals.barcodePrintedArray.push(rec.inventory_uuid.toString());
+			}
+			rec = fs.getRecord(i-1);//get changed record
+		}
 		itemsSelected = true;
 		//var altSystem = ['PARTWT','LGTNUM','WT','WIDNUM'];
 		if (useLabeLase){
 			llfileLine += 'LLP\t';
 		}
 		for (var index = 0;index < tabCount;index++){
-			/** @type {JSRecord<num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number>} */
+			/** @type {{num:Number,name:String,dbtype:String,size:Number,dbcol:String,dbsize:Number}} */
 			var specObj = specs[index];
 			/** @type {Array} */
 			var dbCol = specObj.db_field.split('.');
@@ -1781,7 +1811,7 @@ function bartenderPrint(event,txtString,labelCount){
 	btwFile = btwFile.replace(/\/+/g,'\\');
 	var btwFileMinor = plugins.file.getDefaultUploadLocation()+reportPth+"\\"+labelMinor;
 	btwFileMinor = btwFileMinor.replace(/\/+/g,'\\');
-	if (debug){application.output('btwFile bartender print '+btwFile)}//REMOVE
+	if (debug){application.output('btwFile bartender print '+btwFile+' printer: '+printer)}//REMOVE
 	//var btwExists = plugins.file.createFile(btwFile);
 	//if (!btwExists.exists()){
 	//	globals.DIALOGS.showErrorDialog(i18n.getI18NMessage('1226'),i18n.getI18NMessage('1226'));//BarTender Template Does Not Exist in Reports Location
@@ -1790,13 +1820,17 @@ function bartenderPrint(event,txtString,labelCount){
 	//}
 
 	var randFileName = tempDir+"\\" + globals.getRandomG() +".txt";
-	if (debug){application.output('randfilename bartender print '+randFileName)}//REMOVE
+	if (debug){application.output('randfilename bartender printx'+randFileName)}//REMOVE
 	randFileName = randFileName.replace(/\/+/g,'\\');
+	//randFileName = randFileName.replace(/\\\\/,'/').replace(/\\/g,'/');
+	var serverRandFile = plugins.file.convertToJSFile(randFileName);
 
-	var status = plugins.file.writeTXTFile(randFileName,txtString);
+	var status = plugins.file.writeTXTFile(serverRandFile,txtString);
 	if (status){globals.loggerDev(this,'Status write to txt file fail.');}
-	status = plugins.file.appendToTXTFile(randFileName,line + "\n");
-	cleanTempDir(event,tempDir);//20190530
+	status = plugins.file.appendToTXTFile(serverRandFile,line + "\n");
+	try {
+		cleanTempDir(event,tempDir);//20190530
+	} catch (e) {}//20210120 problematic, but likely resolved
 	if (status){globals.loggerDev(this,'Status append to txt file fail.');}
 	//status = plugins.file.copyFile(fileName,randFileName);
 	null;
@@ -1834,6 +1868,7 @@ function bartenderPrint(event,txtString,labelCount){
 				rec.bt_printer = printer;
 				rec.bt_btwtemplate = btwFile;
 			} else {
+				if (!printerMinor){printerMinor = printer}
 				rec.bt_printer = printerMinor;
 				rec.bt_btwtemplate = btwFileMinor;
 			}
@@ -2007,17 +2042,36 @@ function bartenderPrint(event,txtString,labelCount){
 			}
 		}
 	}
+	if (application.isInDeveloper()){application.output('barcode printed array: '+globals.barcodePrintedArray)}
 	if (event.getFormName() == 'rf_mobile_view'){return}//there are no serial numbers to save in id_serial_numbers
 	/** @type {QBSelect<db:/stsservoy/id_serial_numbers>} */
 	var q = databaseManager.createSelect('db:/stsservoy/id_serial_numbers');
 	q.where.add(q.columns.id_serial_number_id.isin(globals.barcodePrintedArray));
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.result.add(q.columns.id_serial_number_id);
 	var Q = databaseManager.getFoundSet(q);
 	Q.loadRecords();
 	//globals.printedLabels(Q.getSize());
-	var Qupdate = databaseManager.getFoundSetUpdater(Q);
-	Qupdate.setColumn('printed',1);
-	Qupdate.performUpdate();
+	if (Q.getSize() > 0){
+		if (application.isInDeveloper()){application.output('set pcmk serial number as printed '+globals.barcodePrintedArray)}
+		var Qupdate = databaseManager.getFoundSetUpdater(Q);
+		Qupdate.setColumn('printed',1);
+		Qupdate.performUpdate();
+	}
+	/** @type {QBSelect<db:/stsservoy/inventory>} */
+	var qq = databaseManager.createSelect('db:/stsservoy/inventory');
+	qq.where.add(qq.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+	qq.where.add(qq.columns.inventory_uuid.isin(globals.barcodePrintedArray));
+	qq.result.add(qq.columns.inventory_uuid);
+	var QQ = databaseManager.getFoundSet(qq);
+	QQ.loadRecords();
+	if (QQ.getSize() > 0){
+		if (application.isInDeveloper()){application.output('set inventory number as printed '+globals.barcodePrintedArray)}
+		var QQupdate = databaseManager.getFoundSetUpdater(QQ);
+		QQupdate.setColumn('lprint',1);
+		QQupdate.setColumn('print_date',new Date());
+		QQupdate.performUpdate();
+	}
 	
 	scopes.jobs.warningsX();
 }
@@ -3363,7 +3417,9 @@ function useServerPrinters(server){
  * @AllowToRunInFind
  */
 function cleanTempDir(event,tempDir){//20190530 globals.checkedForTempFiles
-	if (globals.checkedForTempFiles){return}// && !application.isInDeveloper()){return}
+	application.output('Clean temp directory: '+tempDir);
+	tempDir = tempDir.replace(/\\/g,'/');
+	if (!application.isInDeveloper() && globals.checkedForTempFiles){return}// && !application.isInDeveloper()){return}
 	globals.checkedForTempFiles = true;
 	if (tempDir.search('temp') == -1 && tempDir.search('tmp') == -1 ){return}
 	var currDate = new Date();
@@ -3374,13 +3430,15 @@ function cleanTempDir(event,tempDir){//20190530 globals.checkedForTempFiles
 	if (!getDir){
 		getDir = plugins.file.getRemoteFolderContents(tempDir);
 	}
-	for (var idx = 0;idx < getDir.length;idx++){
-		var fileObj = getDir[idx];
-		var fileDate = fileObj.lastModified();
-		var deleteFlag = (fileDate < delDate);
-		if (application.isInDeveloper()){application.output('File name: '+fileObj.getName()+' last mod: '+fileDate+' delete: '+deleteFlag);}
-		if (deleteFlag){
-			fileObj.deleteFile();
+	if (getDir){
+		for (var idx = 0;idx < getDir.length;idx++){
+			var fileObj = getDir[idx];
+			var fileDate = fileObj.lastModified();
+			var deleteFlag = (fileDate < delDate);
+			if (application.isInDeveloper()){application.output('File name: '+fileObj.getName()+' last mod: '+fileDate+' delete: '+deleteFlag);}
+			if (deleteFlag){
+				fileObj.deleteFile();
+			}
 		}
 	}
 	//var delDateSql = utils.dateFormat(delDate,'yyyy-MM-dd HH:mm:ss');
@@ -3423,4 +3481,62 @@ function markRecPrinted(recUUID,printDate){
 		rec.lprint = 1;
 		databaseManager.saveData(rec);
 	}
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} btwFile
+ * @param {String} printerName
+ *
+ * @properties={typeid:24,uuid:"B96CD287-CC64-4E23-B52F-58DD1BF8B4F2"}
+ */
+function bartenderCheckDatabaseOrNot(event,btwFileName,printerName){
+	var com = plugins.servoyguy_servoycom.getNewClientJSCOM("BarTender.Application");
+	if (!com || !com.isJACOBLoaded()) {
+		globals.errorDialog('953');
+		application.output('RM COM: Error Loading COM');
+		plugins.dialogs.showErrorDialog( "Error", "Error loading COM: \n" + plugins.servoyguy_servoycom.getLastError());
+		return '';
+	}
+	com.put("Visible","false");//change to false bartender
+	var formats = com.getChildJSCOM("Formats");
+	if (!formats){
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+		application.output('RM COM: No Formats Found');
+		return '';
+	}
+	var reportPth = scopes.prefs.reportpath.replace('.','');
+
+	var btwFile = plugins.file.getDefaultUploadLocation()+reportPth+"\\"+btwFileName;
+	btwFile = btwFile.replace(/\/+/g,'\\');
+	var format = formats.getChildJSCOM("Open","",[btwFile,false,printerName]);
+	if (!format){
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1225'),i18n.getI18NMessage('1225')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+		return '';
+	}
+	var DBs = format.getChildJSCOM("Databases");
+
+	//var db = DBs.getChildJSCOM("GetDatabase","",[1]);
+	var db = DBs.get('Configuration')+"";
+	if (!db){
+		plugins.dialogs.showErrorDialog(i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError(),i18n.getI18NMessage('1266')+plugins.servoyguy_servoycom.getLastError());//could not open BarTender
+		return '';
+	}
+
+	var regexp = new RegExp(/SelectCommand.*\[(.*)\].*SelectCommand/);
+	var regexpAlt = new RegExp(/RecordSet Name="(.*)" Connection/);
+	var database = db.match(regexp);
+	var databaseAlt = db.match(regexpAlt);
+	//application.output('RM COM: bartender database '+database+' DB ');
+	//application.output('RM \ndatabase alt '+databaseAlt)
+	com.call("Quit",1); // BarTender.BtSaveOptions.btDoNotSaveChanges = 1
+	com.release();
+
+	if (database){
+		application.output('RM Using local template');
+		return 'local';
+		
+	}
+	application.output('RM Using Server Automation');
+	null;
+	return 'server';
 }

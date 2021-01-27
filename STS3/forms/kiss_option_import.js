@@ -610,7 +610,7 @@ function saveExclSumms(){
 			/** @type {JSRecord<db:/stsservoy/preferences2>} */
 			var newRec = P.getRecord(newDex);
 			newRec.tenant_uuid = globals.session.tenant_uuid;
-			newRec.user_uuid = uuidGen.toString();
+			newRec.user_uuid = globals.makeUUID(globals.session.userId);
 			newRec.form_name = formName;
 			newRec.field_name = 'excludeArray';
 			newRec.value_description = rec.shape;

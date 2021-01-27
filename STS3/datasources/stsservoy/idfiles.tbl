@@ -1,3 +1,11 @@
 dataSource:"db:/stsservoy/idfiles",
+items:[
+{
+dataProviderIDToAggregate:"idfile_id",
+name:"quantity_bc",
+typeid:40,
+uuid:"C92F1127-3B9B-490F-AB87-A0B590966E97"
+}
+],
 typeid:39,
 uuid:"2E80376E-368C-4948-B756-6D8250CD8086"

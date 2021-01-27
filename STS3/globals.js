@@ -915,11 +915,17 @@ var checkedForTempFiles = false;
  */
 var useFasterQuery = true;
 /**
+ * @properties={typeid:35,uuid:"72AFC04D-9F31-4188-9B1F-D4D7061CA662",variableType:-4}
+ */
+var laborHoursTrans = {};
+/**
  * Callback method for when solution is opened.
  *
  * @properties={typeid:24,uuid:"D0109E13-1A5A-42E8-91A7-1211E35A99EC"}
  */
 function onSolutionOpen() {
+
+	globals.useISODate = globals.databaseName();
 	//if (1==1){globals.recreateTableIndices()}
 	//copySeqsToSeqs2();
 	//scopes.prefs.loadArrays();
@@ -946,7 +952,7 @@ function onSolutionOpen() {
 	databaseManager.nullColumnValidatorEnabled = false;
 	var success = false;
 	current_db = "stsservoy";
-	new_project_db = "stsservoy_ms";
+	new_project_db = "stsservoy_ms";//cannot switch to mssql sql server here, need to rename databases from postgres to sqlserver targets
 	var switchRemote = false && databaseManager.switchServer(current_db,new_project_db) && application.isInDeveloper();
 	//new_project_db = "";
 	if (switchRemote) {
@@ -1091,7 +1097,8 @@ function onSolutionOpen() {
 	if (screenHeight*1 < (yOrigin*1+yHeight*1)){yOrigin = screenHeight-yHeight}
 	win.setSize(xWidth,yHeight);
 	win.setLocation(xOrigin,yOrigin);
-
+	var verInfo = application.getVersionInfo()
+	application.output('Version for this app: '+verInfo['STS3']);
 }
 
 /**
@@ -1580,8 +1587,14 @@ function onDataChangeLicenseDesktop(oldValue, newValue, event) {
 	forms[event.getFormName()].showLicensing();
 	if (licenseError){
 		licenseError = false;
-		forms[event.getFormName()].licenses_desktop = newValue;
-		forms[event.getFormName()].showLicensing();
+		//forms[event.getFormName()].showLicensing();
+		var question = plugins.dialogs.showQuestionDialog(
+			i18n.getI18NMessage('sts.txt.question.license.save'),
+			i18n.getI18NMessage('sts.txt.question.license.save'),
+			i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no'));
+		if (question == i18n.getI18NMessage('btn.yes')){
+			forms[event.getFormName()].licenses_mobile = oldValue;
+		}
 	}
 	return true;
 }
@@ -1602,8 +1615,15 @@ function onDataChangeLicenseMobile(oldValue, newValue, event) {
 	forms[event.getFormName()].showLicensing();
 	if (licenseError){
 		licenseError = false;
-		forms[event.getFormName()].licenses_mobile = oldValue;
-		forms[event.getFormName()].showLicensing();
+		//forms[event.getFormName()].showLicensing();
+		var question = plugins.dialogs.showQuestionDialog(
+			i18n.getI18NMessage('sts.txt.question.license.save'),
+			i18n.getI18NMessage('sts.txt.question.license.save'),
+			i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no'));
+		if (question == i18n.getI18NMessage('btn.yes')){
+			forms[event.getFormName()].licenses_mobile = oldValue;
+		}
+		
 	}
 	
 	return true;
@@ -2502,4 +2522,96 @@ function recreateTableIndices() {
 		plugins.rawSQL.executeSQL('stsservoy','user_groups','CREATE INDEX CONCURRENTLY user_groups_groupuuid__idx ON user_groups (group_uuid);');
 	} catch (e) {}
 
+}
+/**
+ * @AllowToRunInFind
+ * 
+ * 31, 28, 31, 30, 31, 30 , 31, 31, 30, 31, 30, 31
+ * @properties={typeid:24,uuid:"87F64F92-F616-4EA6-A3B1-C4E3D2F30032"}
+ */
+function julData(){
+	var date = new Date();
+	var data = date.toString().split(' ');
+	var mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+	var monDays = [31, 28, 31, 30, 31, 30 , 31, 31, 30, 31, 30, 31]
+	var ly = ((data[3]*1 == Math.floor(data[3]/4)*4) || (data[3]*1 != Math.floor(data[3]/100)*100) && (data[3]*1 == Math.floor(data[3]/400)*400)) ? 1 : 0;
+	var days = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
+	var julDate = data[3].substr(-2)*1000+days[mon.indexOf(data[1])]*1+ly+data[2]*1;
+	var fileDate = plugins.file.getDefaultUploadLocation()+'\\.servoy\\barcode';
+	var fileObj = plugins.file.convertToJSFile(fileDate);
+	if (!fileObj.exists()){
+		fileObj = plugins.file.convertToJSFile(fileDate);
+		if (!fileObj.exists()){
+			globals.errorDialogMobile(null,1306,null,'');
+			return false;
+		}
+	}
+	var text = plugins.file.readTXTFile(fileObj);
+	if (text){
+		var lic = text.split('-'); 
+		var endDate = lic[2];
+		if (julDate*1 <= endDate*1){//license active
+			text = plugins.file.readTXTFile(fileObj);
+			if (text){
+				var lic = text.split('-'); 
+				var endDate = lic[2];
+				if (julDate*1 <= endDate*1){//license active
+					return true;
+				}
+			}
+		}
+	}
+	//try again
+	globals.errorDialogMobile(null,1307,null,'');
+	
+	return false;//license expired
+	
+}
+/**
+ * @properties={typeid:24,uuid:"B1BB580F-6787-4F63-A5F0-352D30652C4D"}
+ */
+function onNullClose(){
+	security.logout();
+	application.closeSolution();
+}
+/**
+ * 
+ * @param {UUID} trans_id
+ * @param {Number} labor_quantity
+ *
+ * @properties={typeid:24,uuid:"DC9DF642-955E-40B1-8A60-FD1A4076A8BB"}
+ */
+function laborHours(trans_id, labor_quantity){
+	if (!trans_id){return 0}
+	if (!labor_quantity){labor_quantity = 0}
+	if (!globals.laborHoursTrans){globals.laborHoursTrans = {}}
+	if (globals.laborHoursTrans[trans_id]){
+		return globals.laborHoursTrans[trans_id];
+	}
+	application.output('trans ID: '+trans_id+' '+labor_quantity);
+	//globals.laborHoursTrans;//object, access like array
+	/** @type {QBSelect<db:/stsservoy/transactions>} */
+	var q = databaseManager.createSelect('db:/stsservoy/transactions');
+	q.where.add(q.columns.trans_id.eq(makeUUID(trans_id)));
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var r = q.joins.add('db:/stsservoy/idfiles');
+	var M = databaseManager.getFoundSet(q);
+	application.output('Mrec: '+M.getRecord(1))
+	r.on.add(q.columns.idfile_id.eq(r.columns.idfile_id));
+	/** @type {QBJoin<db:/stsservoy/idfiles>} */
+	var s = r.joins.add('db:/stsservoy/idfiles');
+	s.on.add(r.columns.id_serial_number_id.eq(s.columns.id_serial_number_id));
+
+	
+	var Q = databaseManager.getFoundSet(q);
+	application.output('rec '+Q.getRecord(1))
+	application.output('size : '+Q.getSize())
+	var resQ = Q.getSize() * labor_quantity;
+	if (resQ == 0){resQ = null}
+
+	application.output('labor Hours output: '+resQ);
+	globals.laborHoursTrans[trans_id] = resQ;
+	application.output('labor Hours output2: '+globals.laborHoursTrans[trans_id]);
+
+	return resQ;
 }

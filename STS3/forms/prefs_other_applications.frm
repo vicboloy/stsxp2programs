@@ -1,3 +1,9 @@
+customProperties:"methods:{\
+onShowMethodID:{\
+arguments:null,\
+parameters:null\
+}\
+}",
 extendsID:"-1",
 items:[
 {
@@ -48,6 +54,7 @@ uuid:"F8EA1249-FBDF-4C70-956E-D2CF125928FF"
 ],
 name:"prefs_other_applications",
 navigatorID:"-1",
+onShowMethodID:"1F6A7B79-A463-47FD-BAC8-96A1C35E84CE",
 size:"676,499",
 styleName:"sts_one",
 typeid:3,

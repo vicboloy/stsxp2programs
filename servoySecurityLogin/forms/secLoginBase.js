@@ -162,7 +162,7 @@ function login(){
 			application.output('Registered UM: '+registration);
 			application.output('passcheck: '+passCheck+' TenID: '+tenantID+' UID: '+userID);//REMOVE2
 			checkLicense = security.authenticate(AUTH_SOLUTION,AUTH_METHOD_CHECK_LICENSE,[application.getSolutionName(),tenantID,userID]);
-			application.output('license use '+checkLicense);
+			application.output('license use '+checkLicense+'\nAvail:Limit:inUse:minutesIdleMax');
 			if(passCheck && checkLicense.split(':')[1] > 0){
 				if (security.authenticate(AUTH_SOLUTION,AUTH_METHOD_LOGIN,[userID])){
 					globals.secCurrentUserID = userID;
@@ -255,6 +255,7 @@ function onLoad(event) {
 		application.output('RM login newscale '+newScale+' '+showWidth);
 		scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
 	} */
+	//j2 elements.html.putClientProperty(APP_UI_PROPERTY.TRUST_DATA_AS_HTML, true);
 	textAreaString = "";
 	textAreaString2 = "";
 	for (var item in plugins){
@@ -276,13 +277,13 @@ function onLoad(event) {
 	q.where.add(q.columns.delete_flag.isin(activeValue));
 	var Q = databaseManager.getFoundSet(q);
 	var idleKillPref = 999999999;
-	var tenantID = ''; */
+	var tenantID = '';
 	if (Q.getSize() == 1){//last_item #2
-		/** @type {JSFoundSet<db:/stsservoy/tenant_list>} */
+		/** @type {JSFoundSet<db:/stsservoy/tenant_list>} * /
 		var rec = Q.getRecord(1);
 		tenantID = rec.tenant_uuid;
 		var idleKillPref = globals.getPrefsMaxIdleMinutes(tenantID);
-	}
+	} */
 	
 	
 	try {
@@ -295,7 +296,12 @@ function onLoad(event) {
 		var licenses = licenseCount();
 		licenseTotal = licenses;
 		var currentTime = new Date().getTime();
-		var loginExpired = "";var maxIdle = 0;var maxIdleLoginClient = '';var clientTypes = '';
+		solutionNames['STS3'] = 0;
+		solutionNames['STSmobile'] = 0;
+		var loginExpired = "";
+		var maxIdle = 0;
+		var maxIdleLoginClient = '';
+		var clientTypes = '';
 		for (var indexC = 0;indexC < clientArray.length;indexC++){
 			var client = clientArray[indexC];
 			client = client.clientId;
@@ -313,11 +319,11 @@ function onLoad(event) {
 			if (application.isInDeveloper()){application.output(clientInfo)}
 		}
 		//errorMessage = 'Desk ('+solutionNames['STS3']+') Mobile ('+solutionNames['STSmobile']+' of '+licenses+'.';
-		if (application.isInDeveloper()){application.output('sol '+solutionName+' license count '+licenses+' solution STS3 '+solutionNames['STS3']+' STSmobile '+solutionNames['STSmobile'])}
-		if (application.isInDeveloper()){application.output('solution counts '+solutionNames)}
+		if (1 || application.isInDeveloper()){application.output('sol '+solutionName+' license count '+licenses+' solution STS3 '+solutionNames['STS3']+' STSmobile '+solutionNames['STSmobile'])}
+		if (1 || application.isInDeveloper()){application.output('solution counts '+solutionNames)}
 		var moreLic = plugins.UserManager.Server().getSettingsProperty('license.0.company_name');
 		textAreaString += "license "+licenses+' more - '+moreLic+' -';
-		textAreaString2 = licenses+ 'max idle: '+maxIdle+ ' prefs timeout:'+idleKillPref*60*100+' session:'+maxIdleLoginClient+' idle:'+maxi;//loginExpired;
+		textAreaString2 = licenses+ 'max idle: '+maxIdle+ ' prefs timeout:'+idleKillPref*60*100+' session:'+maxIdleLoginClient+' idle:'+maxIdle;//loginExpired;
 		if (maxIdle > idleKillPref*60*10 && !maxIdleLoginClient){//last_item if there are licenses available, do not kill
 			var clientObj = plugins.UserManager.getClientByUID(maxIdleLoginClient);
 			clientObj.shutdown();
@@ -354,7 +360,7 @@ function onLoad(event) {
 		forms.secLoginExample.hideLogo();
 	}
 	//errorMessage = 'Desk ('+solutionNames['STS3']+') Mobile ('+solutionNames['STSmobile']+' of '+licenses+'.';
-	if (0 && application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		scopes.globals.viewport2 = scopes.globals.viewportSrc;
 		plugins.WebClientUtils.executeClientSideJS('var newZoom=resize()',globals.rfSetWebZoomLevelLogin, ['newZoom']);
 	}

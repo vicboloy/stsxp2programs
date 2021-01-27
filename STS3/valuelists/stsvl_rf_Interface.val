@@ -1,9 +1,8 @@
 addEmptyValue:1,
 customValues:"i18n:sts.empty.entry\r\
-i18n:sts.interface.fabsuite\r\
-i18n:sts.interface.fabtrol\r\
-i18n:sts.interface.romac\r\
-i18n:sts.interface.fabtrol.only",
+i18n:sts.interface.fabsuite",
+displayValueType:12,
 name:"stsvl_rf_Interface",
+realValueType:12,
 typeid:34,
 uuid:"A77777B7-95F6-460F-8023-FC73A2BAC602"

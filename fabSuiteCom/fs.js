@@ -1126,6 +1126,7 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	if (checkComFabsuite(null) != ''){application.output('returning  null from fabSuiteUpdate');return null}
 	var date = globals.mob.date;//new Date();//flow down from data update
 	var processAsLoad = (globals.session.program == i18n.getI18NMessage('sts.mobile.final.ship'));
+	var processAsBundle = globals.barcodeIsBundle(globals.mob.barcode);
 	
 
 	var equipEmployee = (globals.m.employee3rdParty[globals.session.employeeNum]);
@@ -1165,8 +1166,8 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	
 	//var commitType = 'Save';//Save/Delete/required use F8 to indicate removal
 	var jobNumber = globals.mob.job.number;
-	var sequence = forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];// this is a one-way mapping, independent of job number
-	var lotNumber = forms.rf_mobile_view.vLotList[globals.mob.idfile.lot_id];
+	var sequence = globals.getSeqNumber(globals.mob.idfile.sequence_id);//forms.rf_mobile_view.vSequenceList[globals.mob.idfile.sequence_id];// this is a one-way mapping, independent of job number
+	var lotNumber = globals.getLotNumber(globals.mob.idfile.lot_id);//forms.rf_mobile_view.vLotList[globals.mob.idfile.lot_id];
 	//application.output('lot number is '+lotNumber);
 	var instanceNumbers = globals.mob.idfile.pcmk_instance;//accepts only numeric values, as well as hyphen
 	//instanceNumbers = '';
@@ -1182,6 +1183,9 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 	if (month < 10){month = "0"+month}
 	var execDate = date.getFullYear()+'-'+month+'-'+day;//required
 	var hours = (globals.mob.timedTotalMin*1 > 0) ? globals.mob.timedTotalMin/60 : 0;
+	if (hours == 0 && globals.session.cutDuration && globals.session.cutDuration.hours){//20201125 push time duration to EPM 664
+		hours = globals.session.cutDuration.hours;
+	}
 	var batchId = (forms['rf_mobile_view'] && 
 			forms['rf_mobile_view'].statusLocation != '' && 
 			scopes.prefs.lFsLocnBatch*1 == 1) ? forms['rf_mobile_view'].statusLocation.trim() : '';//20200903 added BatchID entry if location batch ID exists
@@ -1210,13 +1214,34 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 			}
 		}
 	}
-		
+	if (processAsBundle){
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var qq = databaseManager.createSelect('db:/stsservoy/idfiles');
+		qq.where.add(qq.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
+		qq.where.add(qq.columns.bundle_bc.eq(serialNumber));
+		var QQ = databaseManager.getFoundSet(qq);
+		rec = ''; idx = 1; countSerial = [];
+		while (rec = QQ.getRecord(idx++)){
+			serialNumber = rec.sts_idfile_to_serial.id_serial_number;
+			application.output('serial: '+serialNumber);
+			if (!countSerial[serialNumber]){
+				countSerial[serialNumber] = 1;
+			} else {
+				countSerial[serialNumber] += 1;
+			}
+		}
+
+	}
 	//exit condition is within the loop, an idx of zero will terminate or a null load record
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
-	var rec = '';var idx = 1;
+	rec = '';idx = 1;
 	while (true){
-		if (processAsLoad){
-			rec = globals.mob.load.loadFs.getRecord(idx++);
+		if (processAsLoad || processAsBundle){
+			if (processAsLoad){
+				rec = globals.mob.load.loadFs.getRecord(idx++);
+			} else {
+				rec = QQ.getRecord(idx++);
+			}
 			if (!rec){break}//end process load here
 			serialNumber = rec.sts_idfile_to_serial.id_serial_number;
 			if (countSerial[serialNumber] == 0){continue}//skip if serial number already processed
@@ -1224,10 +1249,12 @@ function fabSuiteUpdate(commitType){//shopFloorSave
 			sequence = rec.sts_idfile_to_seq.sequence_number;
 			lotNumber = rec.sts_idfile_to_lot.lot_number;
 			mainMark = rec.sts_idfile_to_pcmks.parent_piecemark;
+			application.output('countSerial: '+countSerial[serialNumber]+' qty: '+rec.summed_quantity)
 			quantity = countSerial[serialNumber] * rec.summed_quantity;
 			countSerial[serialNumber] = 0;//one way to prevent multiple inserts into fs
 			
 			application.output(serialNumber+' '+mainMark+ ' '+pieceMark+' Seq:'+sequence+' Lot:'+lotNumber+' Qty:'+quantity); 
+			
 		} else {
 			idx = 0;// process to end of while then exit
 		}
@@ -1504,11 +1531,18 @@ function fabsuiteGetReceivedBarcodeInv(event,barcode){
 		</ValInventory>\n\
 		</FabSuiteXMLRequest>';
 	var rawMat = globals.fsCom.call('FabSuiteXML',xmlReadReceiveBC).toString();
+	application.output(xmlReadReceiveBC);
+	application.output(rawMat);
 	var errorMatch = rawMat.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
-	if (!errorMatch){
+	if (!errorMatch){//20201105 cannot get job number from inventory item
+		var jobNum = rawMat.match(/<JobReserve>(.*)<\/JobReserve>/);
 		var rawMatFields = {
-			jobnumber : rawMat.match(/<JobReserve>(.*)<\/JobReserve>/)[1],
-			error : ''
+			error : '',
+			jobnumber : ''
+		}
+		if (jobNum && jobNum[1]){
+			jobNum = jobNum[1];
+			rawMatFields.jobnumber = jobNum;
 		}
 	} else {
 		rawMatFields = {
@@ -1723,7 +1757,7 @@ function getFSCutList(event,clBarcode){
 			cutlistFields.widthType = dropXY.dropWType;
 			cutlistFields.width = dropXY.dropW;
 		//}
-		if (application.isInDeveloper()){application.output(cutlistFields)}
+		application.output(cutlistFields);
 	} else {
 		cutlistFields = {
 			error : errorMatch[1]
@@ -1791,6 +1825,7 @@ function matchCLtoRMBarcodesProcess(event,jobNumber,clBarcode,rmBarcode,quantity
 	
 	var currentCL = scopes
 	var _asUser = '<AsUser>'+equipEmployee+'</AsUser>\n<PieceTrackingUsername>'+equipEmployee+'</PieceTrackingUsername>';
+	var ptHours = 1.25;//j6 process STSX and station side one-at-a-time
 
 	if (application.isInDeveloper()){application.output('inside matchCLtoRMBarcodesProcess');}
 	if (checkComFabsuite(event) != ''){return ''}
@@ -1854,6 +1889,7 @@ function matchCLtoRMBarcodesProcess(event,jobNumber,clBarcode,rmBarcode,quantity
 		<InventorySerialNumber>'+rmBarcode.trim()+'</InventorySerialNumber>\n\
 		<Quantity>'+Math.floor(quantity*1)+'</Quantity>\n\
 		<CutAll>'+cutListAll+'</CutAll>\n\
+		<PieceTrackingHours>'+ptHours+'</PieceTrackingHours>\n\
 		AS_USER\
 		<DropWidth UOM="'+uom+'">'+dropWidth+'</DropWidth>\n\
 		<DropLength UOM="'+uom+'">'+dropLength+'</DropLength>\n\
@@ -1937,8 +1973,12 @@ function getInventorySerial(event,serialNumber){
 		</ValInventory>\n\
 		</FabSuiteXMLRequest>';
 	application.output(xmlReadReceive);
-	/** @type {String} */
-	var valid = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
+	
+	var validX = globals.fsCom.call('FabSuiteXML',xmlReadReceive);
+	var valid = '';
+	if (validX){
+		valid = validX.toString();
+	}
 	application.output(valid);
 	if (application.isInDeveloper()){application.output(valid)}
 	var errorMatch = valid.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
@@ -2324,7 +2364,9 @@ function returnXMLDataObj(xmlData){
     //<Length UOM="in">480</Length>
 	test = xmlData.match(/<Length UOM="(.*)">(.*)<\/Length>/);
 	if (test){
-		uom = test[1].toUpper();
+		application.output('xmlData '+xmlData+'|'+test[1]+'|');
+		uom = test[1];
+		uom = uom.toString().toUpperCase();
 		if (uom.search("IN") == 0){
 			data.item_length_in = test[2];
 			data.item_length = globals.inToMM(data.item_length_in);
@@ -2333,7 +2375,7 @@ function returnXMLDataObj(xmlData){
 			data.item_length_in = globals.mmToIn(data.item_length);
 		}
 	}
-	if (data.luom){data.is_metric = (data.luom != "in")}
+	if (data.luom){data.is_metric = (data.luom.toString() != "in")}
 	test = xmlData.match(/<PONumber>(.*)<\/PONumber>/);
 	if (test){data.po_number = test[1]}
 	test = xmlData.match(/<BillOfLadingNumber>(.*)<\/BillOfLadingNumber>/);
@@ -2725,4 +2767,32 @@ function receiveASN(event,rmBarcode,location){
 	var serialInfo = returnXMLDataObj(fsResp);
 	return serialInfo;
 
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"467FBABE-F9C6-424D-9ED7-9494CD71418C"}
+ */
+function fsGetJobList(event){
+	var xmlAction  = '<FabSuiteXMLRequest>\n\
+		<GetProductionControlJobs>\n\
+		</GetProductionControlJobs>\n\
+		</FabSuiteXMLRequest>';
+	application.output(xmlAction);
+	var fsResp = globals.fsCom.call('FabSuiteXML',xmlAction).toString();
+	var match = fsResp.match(/<Successful>1<\/Successful>/);
+	if (match){
+		var jobList = [];
+		var separator = '';
+		var response = fsResp.split('\n');
+		for (var index = 0;index < response.length;index++){
+			var matchJob = response[index].match(/<JobNumber>(.*)<\/JobNumber>/);
+			if (matchJob){
+				jobList.push(matchJob[1]);
+			}
+		}
+		jobList.sort();
+		var newList = jobList.join();
+		application.output('EPM jobs: '+newList); 
+	}
 }

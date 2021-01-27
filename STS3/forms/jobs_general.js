@@ -1,4 +1,11 @@
 /**
+ * Removed from RF Interface Dropdown in Jobs_general form in the value list 'stsvl_rf_Interface'
+i18n:sts.interface.fabtrol
+i18n:sts.interface.romac
+i18n:sts.interface.fabtrol.only
+ */
+
+/**
  * @type {String}
  *
  * @properties={typeid:35,uuid:"28451C0F-8383-4EA6-B55C-96E636E34410"}

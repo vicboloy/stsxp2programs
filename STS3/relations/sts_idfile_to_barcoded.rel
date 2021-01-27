@@ -1,0 +1,10 @@
+allowCreationRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/idfiles",
+items:[
+{foreignColumnName:"id_serial_number_id",primaryDataProviderID:"id_serial_number_id",typeid:23,uuid:"57D40489-2BA5-4FDC-8559-69DC29B35230"}
+],
+joinType:1,
+name:"sts_idfile_to_barcoded",
+primaryDataSource:"db:/stsservoy/idfiles",
+typeid:22,
+uuid:"56A0D512-1DA1-4AA1-8722-8146ED53738E"

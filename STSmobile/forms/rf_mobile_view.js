@@ -601,6 +601,12 @@ var dropJob = '';
  */
 var dropLocation = '';
 /**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"3A6C0B66-8E56-4B40-9BEB-C4F8CB17DA74",variableType:4}
+ */
+var origF1Size = 0;
+/**
  * @properties={typeid:24,uuid:"F751B935-0829-43CB-B81E-46E1EDE348B2"}
  */
 function resetWorkerCode(){
@@ -617,7 +623,15 @@ function resetWorkerCode(){
  * @AllowToRunInFind
  */
 function onShowForm(firstShow,event) {
-
+	var showCount = 1;
+	for (var item in globals.rfViews[globals.session.program]){
+		if (item == 'genericin2' 
+			&& ((application.getApplicationType() == APPLICATION_TYPES.SMART_CLIENT)
+			|| !globals.session.dualEntry)){continue}//CHANGE FROM DUAL ENTRY OPS  //dual entry
+		showCount++;
+	}
+	
+	application.output('showing field count: '+showCount);
 	printEnabledScreen = !(!globals.m.i18nMobilePrintViews[globals.session.program.replace('\'','')]);
 	var osName = application.getOSName();
 	globals.isAndroid = (globals.clientUserAgent.search(/Android/i) != -1 || osName.search(/Linux/i) != -1);
@@ -711,19 +725,32 @@ function onShowForm(firstShow,event) {
 		var estimatedHeight = (show.length+1)*21;
 		var scaleY = Math.floor(10*height/(show.length*21))/10;
 		var scaleX = Math.floor(width/(elements.elHelp.getWidth()+elements.elHelp.getLocationX())*10)/10;
+		var scaleVP = application.getScreenWidth()/240;
+		application.output('Scale ViewPortX:'+scaleVP+' ScaleX: '+scaleX+' app width: '+application.getScreenWidth());
+		scaleX = 1;
+		scaleY = 1;
 		application.output('+ + + + + + + RM globals.clientUserAgent = '+globals.clientUserAgent);
-		if (globals.clientUserAgent.search(/(iPhone|iPad)/i) != -1 || osName.search(/Mac/i) != -1){
-			elements.elHelp.setSize(elWidth,55);
-			scaleWidth = (scaleY < scaleX) ? scaleY : scaleX;scaleWidth = scaleWidth - 0.1;
-			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+scaleWidth);
+		if (globals.clientUserAgent.search(/(iPhone|iPad|iOS)/i) != -1 || osName.search(/(iOS|Android|Mac)/i) != -1){
+			elements.elHelp.setSize(elWidth,250);
+			scaleWidth = scaleX;//(scaleY < scaleX) ? scaleY : scaleX;scaleWidth = scaleWidth - 0.1;
+			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+scaleVP);
+			scopes.globals.viewport = scopes.globals.viewport.replace('600;',showCount*20);
+			
 			newScale = 1.0;
-		} else if (globals.clientUserAgent.search(/Android/i) != -1 || osName.search(/Linux/i) != -1){
+		} else if (globals.clientUserAgent.search(/(Android|Linux)/i) != -1 || osName.search(/Android/i) != -1){
 			if (application.isInDeveloper()){application.output('is Android')}
-			isAndroid = true;
+			
+			globals.isAndroid = true;
 			scaleWidth = Math.floor(width/240*10)/10;
 			scaleX = Math.floor(width/240*10)/10;
 			scaleWidth = (scaleY < scaleX) ? scaleY : scaleX;
-			elements.elHelp.setSize(Math.floor(elements.elHelp.getWidth()*scaleWidth),45)
+			if (origF1Size == 0){
+				origF1Size = height*.75;
+			}
+
+			elements.elHelp.setSize(Math.floor(elements.elHelp.getWidth()*scaleWidth*.75),origF1Size);
+			var win = application.getActiveWindow();
+			win.setSize(win.getWidth(),700)
 			//scaleWidth = 0.5;
 			newScale = scaleWidth;
 			//newScale = 0.8;scaleWidth = 1.0;
@@ -861,7 +888,7 @@ function onShowForm(firstShow,event) {
 	elements.genericinnone.visible=true;
 	elements.genericinnone.enabled=true;
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){//reset error window location for web client
-		plugins.WebClientUtils.executeClientSideJS('playSoundX(null);');
+		//plugins.WebClientUtils.executeClientSideJS('playSoundX(null);');
 		//adjust error window to hover over the window title to the very edge of the input area
 		var width1 = application.getScreenWidth();
 		var height1 = elements.genericin.getLocationX();
@@ -879,13 +906,17 @@ function onShowForm(firstShow,event) {
 	application.getSolutionRelease()
 	var title = win.title;
 	var solName = application.getSolutionName();
-	win.title = solName+' '+globals.verSTSmobile+'('+application.getSolutionRelease()+')';
+	win.title = solName+' '+application.getVersionInfo()['STSmobile'];
 
 	if (requiredFields.indexOf('strikethruin') != -1){strikeThru = i18n.getI18NMessage('sts.btn.yes')}//default to StrikeThru YES #
 	if (requiredFields.indexOf('printidin') != -1){
 		printIdLabel = (scopes.prefs.lFsPrintIDFromCutList == false || scopes.prefs.lFsPrintIDFromCutList*1 == 0) ?  i18n.getI18NMessage('sts.btn.no').toUpperCase() : i18n.getI18NMessage('sts.btn.yes').toUpperCase();
 	}
 	null;
+	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT && !globals.isAndroid){
+		elements.viewPort.visible = true;
+		plugins.WebClientUtils.executeClientSideJS('resizer();');
+	}
 }
 /**
  * Handle focus lost event of an element on the form. Return false when the focus lost event of the element itself shouldn't be triggered.
@@ -1113,8 +1144,8 @@ function onFocusLostx(event) {
  */
 function onLoad(event) {
 	if (application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
-		application.output('viewport globals '+globals.viewport+' -end-');
-		plugins.WebClientUtils.executeClientSideJS('playSoundX("init");');
+		//application.output('viewport globals '+globals.viewport+' -end-');
+		//plugins.WebClientUtils.executeClientSideJS('playSoundX("init");');
 	}
 
  // globals.viewPort2 = globals.viewPort2.toXMLString().replace(']]>','').replace('<![CDATA[','');
@@ -1280,4 +1311,18 @@ function onActionResize(event) {
 	if(application.getApplicationType() == APPLICATION_TYPES.WEB_CLIENT){
 		plugins.WebClientUtils.executeClientSideJS('resize();');
 	}
+}
+/**
+ * Perform the element onclick action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"3DB3E0CD-8AC7-4888-AD85-A1A37FAB6778"}
+ */
+function onActionShowHelp2(event) {
+	var time = new Date().getTime();
+	debugCount = time.toString().substr(-4);
+	application.output(debugCount);
+	application.updateUI();
+	//elements.genericin.requestFocus();
 }

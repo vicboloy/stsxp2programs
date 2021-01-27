@@ -167,7 +167,7 @@ uuid:"A344D926-F77F-4373-9404-5340A6F79EE3",
 visible:false
 },
 {
-anchors:14,
+anchors:9,
 formIndex:4,
 horizontalAlignment:0,
 imageMediaID:"3BF3F99F-39FF-4723-83BB-80E145D6ECFD",

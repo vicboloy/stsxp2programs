@@ -21,32 +21,36 @@ var viewportCE = '<html><head></head></html><ViewportEnabled value="1"/><Viewpor
 /**
  * @type {String}
  *
- * @properties={typeid:35,uuid:"3CC8707C-679F-4555-AAFF-FC0305F56813"}
- */
-var viewportSrc = '<html><head><audio id="playX" src="media:///error.mp3" type="audio/mpeg" onload="auto"></audio>\
-	<audio id="playBeep" src="media:///beep.mp3" type="audio/mpeg" onload="auto"></audio>\
-	<script type="text/javascript">\
-	function playSoundX(init){\
-		if (!(!init)){\
+ *<audio id="playX" src="media:///error.mp3" type="audio/mpeg" onload="auto"></audio>
+ *		if (!(!init)){\
 			document.getElementById("playBeep").play();return;\
 		} else {\
 			document.getElementById("playX").play();\
 		}\
+	<audio id="playBeep" src="media:///beep.mp3" type="audio/mpeg" onload="auto"></audio>\
+
+ *
+ * @properties={typeid:35,uuid:"3CC8707C-679F-4555-AAFF-FC0305F56813"}
+ */
+var viewportSrc = '<html><head>\
+	<script type="text/javascript">\
+	function playSoundX(init){\
 	}\
 	function resizer(){\
 		var currentZoom = 1;\
     	var newZoom;\
-        var currentWidth = document.body.clientWidth;\
+        var currentWidth = (window.innerWidth) ? window.innerWidth : document.body.clientWidth;\
+        var currentHeight = (window.innerHeight) ? window.innerHeight : document.body.clientHeight;\
         if (currentWidth > 239){\
         	newZoom = currentWidth / 240 * .9;\
          } else {\
             newZoom = 1;\
          }\
          if (newZoom > (currentZoom*1 + 0.1) || newZoom < (currentZoom - 0.1)){\
-            document.getElementsByTagName("html")[0].style.zoom = newZoom;\
+            if (0){document.getElementsByTagName("html")[0].style.zoom = newZoom;}\
          }\
          if (0){return newZoom;}\
-    }</script></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1;"/>';
+    }</script></head></html><meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=4.0; user-scalable=1; height=600; "/>';
 /**
  * @type {String}
  *
@@ -2035,25 +2039,32 @@ function secCheckLicense(solutionName,tenantID,userID){
 	index = 1;
 	var rec3 = null;
 	while (rec3 = FS.getRecord(index++)){
-		allUsers.push(rec3.user_uuid+"");
+		allUsers.push(rec3.user_uuid.toString());
 	}		
 
 	var licensesInUse = [];
 	licensesInUse['STS3'] = 0; licensesInUse['STSmobile'] = 0; licensesInUse['servoySecurityLogin'] = 0; licensesInUse['servoySecurityAuthenticator'] = 0;
+	licensesInUse['STSmobileALL'] = 0; licensesInUse['STS3ALL'] = 0;
 	
 	var clientArray = plugins.UserManager.getClients();
 
 	//licensed += ' clients '+clientArray.length;
+	var notice = '';
 	var clientsOverIdle = [];
 	var currentDate = new Date();
 	var maxIdle = getPrefsMaxIdleMinutes(tenantID);
 	var clientOver = '';
+	var clientObj = '';
+	var clientLoginTimedOut = '';
 	var clientDeskTimedOut = '';
 	var clientMobileTimedOut = '';
-	var clientLoginTimedOut = '';
+	var clientDeskTimedOutALL = '';
+	var clientMobileTimedOutALL = '';
 	var clientMaxTime = 0;
 	var clientDeskMaxTime = 0;
 	var clientMobileMaxTime = 0;
+	var clientMobileMaxTimeALL = 0;
+	var clientDeskMaxTimeALL = 0;
 	var clientLoginMaxTime = 0;
 	var maxLogins = 0;
 	for (var index = 0;index < clientArray.length;index++){
@@ -2062,8 +2073,25 @@ function secCheckLicense(solutionName,tenantID,userID){
 		var clientInfo = plugins.UserManager.getClientByUID(clientId);
 		var clientSolution = (clientInfo.solutionName) ? clientInfo.solutionName : 'Login';
 		
+		if (!clientSolution){continue}//REMOVE unable to login verification. Why? Might be that form created too soon?
 		var clientIdle = (clientInfo.idle) ? clientInfo.idle : currentDate;
 		var clientIdleTime = (currentDate - clientIdle.getTime())/60000;
+		
+		if (clientSolution.search('mobile') != -1){
+			if (clientIdleTime > clientMobileMaxTimeALL){
+				clientMobileMaxTimeALL = clientIdleTime;
+				clientMobileTimedOutALL = clientId;
+			}
+		} 
+		if (clientSolution.search('STS3') != -1){
+			if (clientIdleTime > clientDeskMaxTimeALL){
+				clientDeskMaxTimeALL = clientIdleTime;
+				clientDeskTimedOutALL = clientId;
+			}
+		}
+		
+		if (clientInfo.userUid && allUsers.indexOf(clientInfo.userUid.toString()) == -1){continue} // not in this company, but if there is not userUid, continue on
+		
 		if (clientSolution.search('mobile') != -1){
 			if (clientIdleTime > clientMobileMaxTime){
 				clientMobileMaxTime = clientIdleTime;
@@ -2091,9 +2119,6 @@ function secCheckLicense(solutionName,tenantID,userID){
 		//	clientsOver += client.split('-')[0]+',';
 		//}
 		//application.output('clientSolution '+clientSolution);
-		if (!clientSolution){continue}//REMOVE unable to login verification. Why? Might be that form created too soon?
-		
-		if (allUsers.indexOf(clientInfo.userUid+"") == -1){continue} // not in this company
 		//if (!licensesInUse[clientSolution]){licensesInUse[clientSolution] = 0}
 		if (clientSolution.search('mobile') != -1){
 			licensesInUse['STSmobile'] =  licensesInUse['STSmobile']*1 + 1*1;			
@@ -2105,39 +2130,57 @@ function secCheckLicense(solutionName,tenantID,userID){
 			licensesInUse['servoySecurityLogin'] =  licensesInUse['servoySecurityLogin']*1 + 1*1;			
 		}
 	}
-	application.output('LICENSES IN USE. STS3: '+licensesInUse['STS3']+' STSmobile: '+licensesInUse['STSmobile']+' Login Screen: '+licensesInUse['servoySecurityLogin'],LOGGINGLEVEL.WARNING);
+	//application.output('LICENSES IN USE. STS3: '+licensesInUse['STS3']+' STSmobile: '+licensesInUse['STSmobile']+' Login Screen: '+licensesInUse['servoySecurityLogin']);
 	var licAvail = 0;
 	var killed = 'no';
-	if (solutionName.search('mobile') != -1){
-		licAvail = licenseAvail['STSmobile'] - licensesInUse['STSmobile'];
-		if (licAvail == 0 && clientMobileMaxTime > maxIdle){
-			var clientObj = plugins.UserManager.getClientByUID(clientMobileTimedOut);
-			clientObj.shutdown();
-			licAvail = 1;
-			killed = 'yes';
-		}
-	}
-	if (solutionName.search('STS3') != -1){
-		licAvail = licenseAvail['STS3'] - licensesInUse['STS3'];		
-		if (licAvail == 0 && clientDeskMaxTime > maxIdle){
-			clientObj = plugins.UserManager.getClientByUID(clientDeskTimedOut);
-			clientObj.shutdown();
-			licAvail = 1;
-			killed = 'yes';
-		}
-	}
 	if (solutionName.search('servoySecurityLogin') != -1){
 		licAvail = licenseAvail['servoySecurityLogin'] - licensesInUse['servoySecurityLogin'];		
-		if ((maxLogins > 3 || licAvail == 0) && clientDeskMaxTime > maxIdle){
+		if ((maxLogins > 3 || licAvail*1 <= 0) && clientLoginMaxTime > maxIdle){
+			clientObj = plugins.UserManager.getClientByUID(clientLoginTimedOut);
+			clientObj.shutdown();
+			licAvail = 1;
+			killed = 'yes';
+			notice = 'LOGIN KILL';
+		}
+	}
+	if (killed == 'no' && solutionName.search('STS3') != -1){
+		licAvail = licenseAvail['STS3'] - licensesInUse['STS3'];
+		if (licAvail*1 <= 0 && clientDeskMaxTime <= maxIdle){
+			licAvail = 0;
+			killed = 'no';
+		} else if (licAvail*1 <= 0 && clientDeskMaxTime > maxIdle){
 			clientObj = plugins.UserManager.getClientByUID(clientDeskTimedOut);
 			clientObj.shutdown();
 			licAvail = 1;
 			killed = 'yes';
+		} else if (licAvail*1 <= 0 && clientDeskMaxTimeALL > maxIdle){
+			clientObj = plugins.UserManager.getClientByUID(clientDeskTimedOutALL);
+			clientObj.shutdown();
+			licAvail = 1;
+			killed = 'yes';
+		}
+	}
+	if (killed == 'no' && solutionName.search('mobile') != -1){
+		licAvail = licenseAvail['STSmobile'] - licensesInUse['STSmobile'];
+		if (licAvail*1 <= 0 && clientMobileMaxTime <= maxIdle){
+			licAvail = 0;
+			killed = 'no';
+		} else if (licAvail*1 <= 0 && clientMobileMaxTime > maxIdle){
+			clientObj = plugins.UserManager.getClientByUID(clientMobileTimedOut);
+			clientObj.shutdown();
+			licAvail = 1;
+			killed = 'yes';
+		} else if (licAvail*1 <= 0 && clientMobileMaxTimeALL > maxIdle){
+			clientObj = plugins.UserManager.getClientByUID(clientMobileTimedOutALL);
+			clientObj.shutdown();
+			licAvail = 1;
+			killed = 'yes';			
 		}
 	}
 
 	//if (!licAvail){licAvail = 5}
-	licensed += "License:"+licAvail+":"+licenseAvail[solutionName]+":"+licensesInUse[solutionName]+':'+clientOver+' '+clientMaxTime+' max idle pref '+maxIdle+' killed '+killed;
+	// This following line is a return data item.  Don't embellish.  Just return the data.
+	licensed += "License:"+licAvail+":"+licenseAvail[solutionName]+":"+licensesInUse[solutionName]+':'+clientOver+' '+clientMaxTime+' max idle pref '+maxIdle+' killed '+killed+' '+notice;
 	if (!licensed){
 		licensed = "License:5:1:0:0:;";
 	}

@@ -69,3 +69,22 @@ function onDataChangeFlipLocs(oldValue, newValue, event) {
 	}
 	return true
 }
+
+/**
+ * Perform the element onclick action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"568A9818-F4BE-4616-96A0-70475A110BEA"}
+ */
+function onActionVerifyEPM(event) {
+	var status = scopes.fs.checkComFabsuite(event)
+	scopes.jobs.warningsX(event);
+	application.output('status: '+status);
+	if (status != ''){
+		globals.errorDialogMobile(event,'1170',null,status);
+	} else {
+		globals.errorDialogMobile(event,'1214','info',status);
+		scopes.fs.fsGetJobList(event);
+	}
+}

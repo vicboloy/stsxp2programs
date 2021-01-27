@@ -183,7 +183,7 @@ visible:false
 },
 {
 anchors:11,
-dataProviderID:"sec_parent_association.association_name",
+dataProviderID:"sec_associations.sec_association_to_tenants.company_name",
 editable:false,
 formIndex:5,
 location:"192,91",

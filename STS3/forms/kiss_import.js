@@ -214,10 +214,14 @@ function fileReceipt(file){
  */
 function getKissFile(event){
 	if (globals.deBounce(event)){return}
+	elements.numSeq.requestFocus();
 	scopes.kiss.removeExtraKissFiles(event);
 	controller.enabled = false;
 	randFile = 'Import_'+vJobNumber+'_'+new Date().getTime()+'.kss';
 	scopes.jobs.importJob.guidOrder = 1;
+	scopes.jobs.getJobIdInfo(vJobNumber);
+	scopes.jobs.importJob.jobNumber = vJobNumber;
+	//scopes.jobs.importJob.job
 	scopes.kiss.saveImportSettings(event);
 
 	scopes.jobs.warningsYes(event);
@@ -280,18 +284,35 @@ function getKissFile(event){
 	if (application.isInDeveloper()){application.output('kiss on server');}
 	
 	if (useKissFile){
+		// check if available already in EPM and exit if checkbox set AND exists in EPM
+		scopes.jobs.getJobIdInfo(vJobNumber);
+		if (verifyJobFabsuite && globals.mob.job.rf == i18n.getI18NMessage('sts.interface.fabsuite')){
+			onActionHide(event);//close this window
+			scopes.jobs.warningsX(event);
+			globals.errorDialogMobile(event,'1301',null,'');
+			return;
+		}
 		//push file to server
 		var homeDir = scopes.prefs.temppath;
 		servoyDir = scopes.prefs.importpath;
 		if (application.isInDeveloper()){
 			homeDir = servoyDir;
 		}
-		if (application.isInDeveloper()){application.output('directory is '+servoyDir)}
+		var baseDir = plugins.file.getDefaultUploadLocation();
+		var importDir = baseDir+scopes.prefs.xportpath.replace(/\.\\/,'\\');
+		importDir = '/'+importDir.replace('\\\\','/').replace(/\\/g,'/');
+		if (application.isInDeveloper()){application.output('directory is '+importDir)}
 		var servoyDir = plugins.UserManager.Server().servoyDirectory;
 		//randFile = 'Import_'+vJobNumber+'_'+new Date().getTime()+'.kss';
 		//servoyDir = servoyDir+'\\'+randFile;
 		//servoyDir = servoyDir.replace('[A-Z]:\\','/');application.output('dir '+servoyDir);
-		var file = plugins.file.showFileOpenDialog(1, homeDir, false, new Array("KISS Files", "kss", "txt"));
+		var file = plugins.file.showFileOpenDialog(1, importDir, false, new Array("KISS Files", "kss", "txt","*"));
+		if (!file){
+			globals.errorDialogMobile(event,'1300',null,'');//file not found
+			scopes.jobs.warningsX(event);
+			onActionHide(event);//close this window
+			return;
+		}
 		application.output('reading text file for KISS');
 		scopes.jobs.readFile(file);//read file through java
 		var file1 = plugins.file.convertToJSFile(file);
@@ -300,9 +321,10 @@ function getKissFile(event){
 		while (idx++ < 30){
 			/** @type {String} */
 			var kssLine = kssText[idx].split('/n');
-			var kssFlds = kssLine.split(',');
-			if (kssFlds[0] == 'H'){
+			var kssFlds = kssLine.toString().split(',');
+			if (kssFlds[0].search(/H/) != -1){
 				kssJob = kssFlds[1];
+				break;
 			}
 		}
 		var jobs = application.getValueListArray('stsvl_jobs_association');
@@ -315,11 +337,15 @@ function getKissFile(event){
 		//plugins.UserManager.copyFileToServer(String filePathToCopy / JSFile fileToCopy)
 		var server = plugins.file.getHomeFolder();
 		var userDir = plugins.UserManager.Server().userDir;
-		application.output('user dir '+userDir);
 		var vOverwrite = false;
 		success = plugins.UserManager.copyFileToServer(file,servoyDir,vOverwrite);
+		if (success){
+			var fileName = file.getName();
+			globals.session.importFile = servoyDir+'\\'+fileName;
+			request = '';
+		}
 		application.output(file+' file write to '+servoyDir+ ' server success: '+success);
-		return;
+		//return;
 	}
 	scopes.jobs.importJob.sheetImportOnly = (!vSeqNumber && !vLotNumber && !vPartNumber);//can only delete items when sheet or full import only, use during import to STS db
 	removeJobImportData(vJobNumber);
@@ -452,10 +478,14 @@ function onShow(firstShow, event) {
 	elements.btn_GetKiss.enabled = false;
 	elements.btn_Close.enabled = true;
 	elements.btn_Clear.enabled = true;
+	useKissFile = 0;
+	verifyJobFabsuite = 0;
 	elements.jobEntry.requestFocus(false);
 	currentAssocName = globals.session.association;
 	application.setValueListItems('stsvl_jobs_association',scopes.jobs.getJobsList());
 	globals.permissionsCacheHit(event,null);
+	globals.setUserFormPermissions(event,false);
+	null;
 }
 /**
  * @param event
@@ -611,4 +641,24 @@ function removeJobImportData(jobNumber){
 function onHide(event) {
 	globals.stopWindowTrackEvent(event);
 	return _super.onHide(event)
+}
+
+/**
+ * Handle changed data, return false if the value should not be accepted. In NGClient you can return also a (i18n) string, instead of false, which will be shown as a tooltip.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @return {Boolean}
+ *
+ * @properties={typeid:24,uuid:"2A5D2F87-1568-4258-9757-F37E48695FEB"}
+ */
+function onDataChangeUseFile(oldValue, newValue, event) {
+	if (newValue == 1){
+		verifyJobFabsuite = 1;
+	} else {
+		verifyJobFabsuite = 0;
+	}
+	return true
 }

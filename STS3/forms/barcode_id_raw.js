@@ -120,6 +120,7 @@ function onShow(firstShow, event) {
  * @AllowToRunInFind
  */
 function onActionPrint(event) {
+	if (!globals.checkBarTemplateWithServerOkay(event)){return}
 	elements.frmServerPrinters.requestFocus();
 	scopes.jobs.labelPrintStatus = event.getFormName();
 	var printers = application.getValueListArray('stsvl_get_printer_list');
@@ -198,7 +199,7 @@ function onActionPrint(event) {
 	elements.btn_PrintSelected.enabled = false;
 	elements.btn_Clear.enabled = false;
 
-	win.show(forms[newFormName]);
+	win.show(forms[newFormName]);//set a new window called from the print menu and show in that window
 	scopes.jobs.removeFormHist(newFormName+'_table');
 	elements.btn_PrintSelected.enabled = false;
 	elements.btn_Clear.enabled = false;
@@ -315,12 +316,13 @@ function collectCriteria(formName){
  */
 function onActionClear(event) {
 	var formName = event.getFormName();
-	forms[formName].foundset.clear();
-	//forms[formName].elements.btn_Print.enabled = false;
+	try {
+		forms[formName].foundset.clear();
+	} catch (e){}
 	forms[formName].elements.btn_PrintSelected.enabled = true;//disabled for raw material
-	//forms[formName].elements.btn_PrintAll.enabled = false;
 	var form = forms[formName];
 	 for (var element in forms[formName].elements){
+	 	//if (element.search(/(useBartender|useLabeLase|useServer|tempDirectory)/) != -1){continue}
 		if (element.search('frm') == 0){elements[element].enabled = true;}
 		if (forms[formName].elements[element].getElementType() == "CHECK"){
 			var provider = forms[formName].elements[element].getDataProviderID();
@@ -334,6 +336,18 @@ function onActionClear(event) {
 	useServerPrinters = 1;
 	allControlNumbers = 1;
 	allSerialNumbers = 1;
+	
+	labelPrintOrder = i18n.getI18NMessage('sts.print.order.id.number');
+	elements.useBarTender.enabled = (scopes.printer.barTender_installed == 1);
+	useBarTender = (scopes.printer.barTender_installed == 1) ? 1 : 0;
+	elements.useLabeLase.enabled = (scopes.printer.labeLaseInstalled == 1);
+	localDir = scopes.printer.userTempPath;
+	elements.writeTemp.enabled = (localDir != '');
+	printerName = scopes.printer.rawMaterialPrinter;//.idBarcodePrinter;
+	labelName = scopes.printer.rawMaterialLabelFormat;// idBarcodeLabelFormat;
+	labeLaseFormat = scopes.printer.rawLabeLaseTemplate;//idLabeLaseTemplate;
+	printingLabel = scopes.printer.default_label_name;
+
 }
 
 /**

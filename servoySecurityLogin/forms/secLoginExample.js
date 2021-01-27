@@ -159,31 +159,36 @@ function onShow(firstShow, event) {
 		var appWidth = application.getScreenWidth();
 		var appHeight = application.getScreenHeight();
 
+		globals.viewport = globals.viewportSrc;
 		//if (osName.search(/Win32/) != -1){	
 		//	elements.banner.setSize(240,15);
 		//}
 		application.output('os Name is '+osName+' on client UserAgent ('+globals.clientUserAgent+')');
-		if (osName.search(/(Linux)|(Mac)/i) != -1){
-			var newScale = Math.floor(width/240*10)/10;
+		if (osName.search(/(iOS|Mac|Android)/i) != -1){
+			//j5if (osName.search(/(Linux)|(Mac)/i) != -1){
+			var newScale = width/240;
+			application.output('ViewPort Scale: '+newScale);
 			scopes.globals.viewport = scopes.globals.viewportSrc.replace('initial-scale=1.0','initial-scale='+newScale);
+			scopes.globals.viewport = scopes.globals.viewport.replace('height=600','height='+240);
 			if (osName.search(/Linux/i) != -1){ 
 				application.output('Linux / Android set scale of '+newScale);
-				newScale = Math.floor(width/240);
+				newScale = width/240;
 				scopes.globals.viewport = scopes.globals.viewportSrc;//.replace('initial-scale=1.0','initial-scale='+newScale);
 				//if (!zoomSet){
 				//	plugins.WebClientUtils.executeClientSideJS('resize();');
 				//	zoomSet = true;
 				//}
-				scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale='+newScale);  
+				scopes.globals.viewport = scopes.globals.viewport.replace('maximum-scale=4.0','maximum-scale='+newScale+'initial-scale='+newScale+';height="device-height";width="device-width";');  
 				//scopes.globals.viewport = scopes.globals.viewport.replace('user-scalable=1','user-scalable=0');
 
 				newScale = 1.0;
 			}			
 		} else {
 			if (firstShow){
-				if (osName.search(/Win32/) != -1){
+				if (osName.search(/(Win32|Windows CE|Linux|Android)/i) != -1){
 					scopes.globals.viewport = scopes.globals.viewportSrc;
 					plugins.WebClientUtils.executeClientSideJS('resizer();');
+					application.output('ran resizer');
 					//if (!application.isInDeveloper()){
 					application.output('setting viewport for function')
 					//}

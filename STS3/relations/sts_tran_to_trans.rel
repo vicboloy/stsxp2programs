@@ -1,0 +1,14 @@
+allowCreationRelatedRecords:true,
+deleteRelatedRecords:true,
+foreignDataSource:"db:/stsservoy/transactions",
+items:[
+{foreignColumnName:"job_uuid",primaryDataProviderID:"job_uuid",typeid:23,uuid:"29FC2857-433A-471B-819E-C624CD228957"},
+{foreignColumnName:"transaction_date",primaryDataProviderID:"transaction_date",typeid:23,uuid:"8E7C5D3E-7C6A-4918-AF51-8BDB85837233"},
+{foreignColumnName:"tenant_uuid",primaryDataProviderID:"tenant_uuid",typeid:23,uuid:"B7C64FCB-3E4B-49CC-9E73-22CDB399DDC2"},
+{foreignColumnName:"status_description_id",primaryDataProviderID:"status_description_id",typeid:23,uuid:"FD7FAFE3-9A7C-4A1B-A89E-B320B998877F"}
+],
+joinType:1,
+name:"sts_tran_to_trans",
+primaryDataSource:"db:/stsservoy/transactions",
+typeid:22,
+uuid:"5268FF76-8C7F-4DEA-A09E-F16FF1CABFD0"

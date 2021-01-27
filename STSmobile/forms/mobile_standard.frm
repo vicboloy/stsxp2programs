@@ -127,7 +127,7 @@ location:"10,21",
 name:"elHelp",
 onActionMethodID:"D5858A57-8078-44A2-8DD2-E6078946ED31",
 scrollbars:32,
-size:"220,23",
+size:"220,265",
 tabSeq:-2,
 text:"<html>Select Item or use FKey",
 typeid:4,
@@ -136,7 +136,7 @@ valuelistID:"50572CD7-F913-419A-BC33-20D5675C299F",
 visible:false
 },
 {
-height:320,
+height:400,
 partType:5,
 typeid:19,
 uuid:"A4842B95-DD5A-40B3-8202-9B70F65AECF7"

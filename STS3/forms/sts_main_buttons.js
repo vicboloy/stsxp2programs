@@ -145,6 +145,16 @@ function onActionLogout(event) {
  * @properties={typeid:24,uuid:"723791EB-AA78-41D4-92B3-DA1A525766B1"}
  */
 function onShow(firstShow, event) {
+	var closeEm = !globals.julData();
+	if (closeEm){//license check
+		
+		var openDate = new Date();
+		var startDate = new Date(openDate.getTime()+5000);
+		plugins.scheduler.addJob('stopped',startDate,globals.onNullClose,20000,0);
+		plugins.scheduler.getCurrentJobNames();
+	}
+
+
 	if (firstShow){
 		if (application.isInDeveloper()){
 			application.output('solution Release: '+application.getSolutionRelease());
@@ -177,7 +187,8 @@ function onShow(firstShow, event) {
 	var title = win.title;
 	var appName = i18n.getI18NMessage('sts.txt.name.app.desktop');
 	if (scopes.prefs.winTitle){appName = scopes.prefs.winTitle}
-	title = appName +' '+globals.verSTS+ ' (' + globals.session.login + ' - ' + globals.session.fullName + ', ' + i18n.getI18NMessage('sts.label.division')+ ' ' + globals.session.association +')';
+	//globals.verSTS = application.getVersion();
+	title = appName +' v'+application.getVersionInfo()['STS3']+ ' (' + globals.session.login + ' - ' + globals.session.fullName + ', ' + i18n.getI18NMessage('sts.label.division')+ ' ' + globals.session.association +')';
 	win.title = title;
 	elements.split.rightFormMinSize = 40;
 	elements.split.dividerLocation = 0.80;

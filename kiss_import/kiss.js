@@ -802,6 +802,9 @@ function importFSOnServer(event,xmlRequest,filters){
 			win.title = "KISS Import";
 			win.show(forms.kiss_option_import);
 		}
+	} else {
+		scopes.jobs.warningsX(event);
+		return;
 	}
 	/** else {
 	 headless = plugins.headlessclient.createClient('STSx','S','S',['headless']);// onSolutionOpen argument
@@ -830,7 +833,7 @@ function importFSRequest(event,xmlRequest,filters){
 	var ok = scopes.fs.checkComFabsuite(event);
 	application.output('FS Request Job')
 	if (application.isInDeveloper()){application.output('FS Request Job')}
-	if (ok == ''){
+	if (!xmlRequest || ok == ''){
 		/** response = scopes.fs.com.call('FabSuiteXML',xmlConnect);
 		response = response.toString();
 		application.output('FS Test Successful Connect for Login');
@@ -839,6 +842,7 @@ function importFSRequest(event,xmlRequest,filters){
 			return;
 		} */
 		var newDate2 = new Date();
+if (xmlRequest){
 		scopes.jobs.warningsMessage('FS Request For Job Data '+newDate2,true)
 		var response = globals.fsCom.call('FabSuiteXML',xmlRequest);
 		response = response.toString();
@@ -869,6 +873,9 @@ function importFSRequest(event,xmlRequest,filters){
 		application.output('file '+fileAndPath[1]);
 		if (application.isInDeveloper()){application.output('Get Import File Metadata')}
 		scopes.jobs.warningsMessage('Get Import File Info',true);
+	} else {
+		fileAndPath = ['',globals.session.importFile];
+	}
 		importFSFileInfo(fileAndPath[1]);//IMPORT 3.1 importFSFileInfo
 		scopes.jobs.warningsMessage('Set Import Filters',true);
 		importSetTableFilters(event,filters);//IMPORT 3.2 importSetTableFilters
@@ -1246,6 +1253,7 @@ function importPopKISSTable(event,fileName) {
     _oBR = new Packages.java.io.BufferedReader(_oIR),
     _sLine = "dummy",
     index = 0;
+    if (globals.databaseName()){editDate = editDate.toISOString()}//20210121 microsoft mssql sql server STSALL #0015
     
 	//try {
 	    while (_sLine) {
@@ -1731,10 +1739,11 @@ function importPopSaveDetailRow(event,recDate,flagParentFollows,filterSeqs,filte
 		var sqlArgs = [];var guidsArr = [];var newGuidTemp = [];
 		var guidsCols = ['import_guid_uuid','assem_guid','part_guid','import_table_id','edit_date','guid_order','tenant_uuid','job_id'];
 		for (var cnt = 1;cnt <= popQty;cnt++){
-			if (cnt/1000 == Math.floor(cnt/1000)){
+			if (scopes.jobs.sqlArgsToSqlData(guidsArr).length > 8 && cnt/1000 == Math.floor(cnt/1000)){//20201112 No EPM GUIDs For This Pcmk, check sqlArgsToSqlData
 				var cntDate = new Date();
+				//application.output('Import GUIDs Action on length: '+scopes.jobs.sqlArgsToSqlData(guidsArr).length);
 				var sql = 'INSERT INTO import_guids '+scopes.jobs.sqlArrayToColumnNames(guidsCols)+' VALUES '+scopes.jobs.sqlArgsToSqlData(guidsArr)+';';
-				//application.output(sql);
+				//if (application.isInDeveloper()){application.output(sql);}
 				var result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql);
 				guidsArr = [];
 
@@ -1754,7 +1763,7 @@ function importPopSaveDetailRow(event,recDate,flagParentFollows,filterSeqs,filte
 			tArr[guidsCols.indexOf('assem_guid')] = assemGuid;
 			tArr[guidsCols.indexOf('part_guid')] = partGuid;
 			tArr[guidsCols.indexOf('import_table_id')] = newRec.import_table_id.toString();
-			tArr[guidsCols.indexOf('edit_date')] = editDate;
+			tArr[guidsCols.indexOf('edit_date')] = editDate;//.toISOString();//RMM jmc 20201211 mssql
 			tArr[guidsCols.indexOf('tenant_uuid')] = globals.session.tenant_uuid;
 			tArr[guidsCols.indexOf('job_id')] = scopes.jobs.importJob.jobId.toString();
 			tArr[guidsCols.indexOf('guid_order')] = scopes.jobs.importJob.guidOrder++;
@@ -1791,7 +1800,8 @@ function importPopSaveDetailRow(event,recDate,flagParentFollows,filterSeqs,filte
 			r.job_id = scopes.jobs.importJob.jobId;
 			//r.job_number = scopes.jobs.importJob.jobNumber; */
 		}
-		if (guidsArr.length > 0){
+		if (scopes.jobs.sqlArgsToSqlData(guidsArr).length > 8 && guidsArr.length > 0){//20201112 No EPM GUIDs For This Pcmk
+			application.output('Import Final GUIDs Action on length: '+scopes.jobs.sqlArgsToSqlData(guidsArr).length);
 			sql = 'INSERT INTO import_guids '+scopes.jobs.sqlArrayToColumnNames(guidsCols)+' VALUES '+scopes.jobs.sqlArgsToSqlData(guidsArr)+';';
 			//application.output(sql);
 			result = plugins.rawSQL.executeSQL('stsservoy','import_guids',sql);
@@ -4765,6 +4775,7 @@ function loadImportSettings(event){
 		if (rec.sequence_numbers){form.vSeqNumber = rec.sequence_numbers;form.vSeqAll = 0}
 		if (rec.part_numbers){form.vPartNumber = rec.part_numbers;}
 		if (rec.lot_numbers){form.vLotNumber = rec.lot_numbers;form.vLotAll = 0}
+		if (rec.job_number){scopes.fs.importData.jobNumber = rec.job_number}//20210121 keeping the wrong job number on import
 	}
 	databaseManager.saveData(rec);
 	return rec;

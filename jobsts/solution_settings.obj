@@ -2,4 +2,5 @@ firstFormID:"D9357F7A-F143-4920-A583-B90E2466AFAE",
 i18nDataSource:"db:/stsservoy/i18n_table",
 modulesNames:"mod_dialog",
 typeid:43,
-uuid:"558EF3B2-D215-48BD-A15A-A10ECC767ABB"
+uuid:"558EF3B2-D215-48BD-A15A-A10ECC767ABB",
+version:"1"

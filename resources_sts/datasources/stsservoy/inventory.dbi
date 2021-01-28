@@ -278,6 +278,12 @@ titleText:"i18n:table.inventory.po_number"
 },
 {
 allowNull:true,
+creationOrderIndex:42,
+dataType:93,
+name:"print_date"
+},
+{
+allowNull:true,
 creationOrderIndex:32,
 dataType:4,
 name:"qc_approved_flag",

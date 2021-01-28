@@ -1,4 +1,5 @@
 i18nDataSource:"db:/stsservoy/i18n_table",
 modulesNames:"servoySecurityAuthenticator",
 typeid:43,
-uuid:"F8697DD2-558D-44D8-9CDF-7A92757B12D1"
+uuid:"F8697DD2-558D-44D8-9CDF-7A92757B12D1",
+version:"2"

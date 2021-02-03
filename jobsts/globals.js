@@ -8251,7 +8251,8 @@ function isJobMetric(jobNumber){
 function arrayToString(itemCSV){
 	if (!itemCSV){return null}
 	/** @type {Array} */
-	var arrayN = itemCSV.split(",");
+	//var arrayN = itemCSV.split(",");
+	var arrayN = itemCSV;
 	var arrayStr = "(";
 	var comma = ",";
 	var length = arrayN.length;
@@ -8309,11 +8310,13 @@ function convertLotToId(itemCSV,arraytoStr){
 	var arrayN = [];
 	arrayN = itemCSV.split(",");
 	if (arrayN.length == 0){return null}
+	var empty = [null,0];
 	/** @type {QBSelect<db:/stsservoy/lots>} */
 	var fs = databaseManager.createSelect('db:/stsservoy/lots');
 	fs.result.add(fs.columns.lot_id);
 	fs.where.add(fs.columns.tenant_uuid.eq(makeUUID(session.tenant_uuid)));
-	fs.where.add(fs.columns.delete_flag.isNull);
+	fs.where.add(fs.columns.lot_number.isin(arrayN));
+	fs.where.add(fs.columns.delete_flag.isin(empty));
 	var L = databaseManager.getFoundSet(fs);
 	var idx = 1;
 	/** @type {JSRecord<db:/stsservoy/lots>} */
@@ -8323,7 +8326,11 @@ function convertLotToId(itemCSV,arraytoStr){
 		lotIds.push(rec.lot_id.toString());
 	}
 	if (arraytoStr){
-		return arrayToString(lotIds);
+		if (lotIds.length == 0){
+			return '';
+		} else {
+			return arrayToString(lotIds);
+		}
 	}
 	return lotIds;
 }

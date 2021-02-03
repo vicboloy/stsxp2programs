@@ -2864,7 +2864,7 @@ function createIdfileRecord(idfilesFSet,pmkUniq,piecemarkId,sequence,lot,barcode
 	var iCols = scopes.jobs.importJob.idfileCols;//see here if a column needs to be populated
 	var tIdfile = new Array(iCols.length);
 	//var importDateStr = importDate.toString().replace(/GMT-0500 /,'');
-	var importDateStr = new Date(importDate).toISOString();//20210121 adjust for mssql sql server STSALL #0015
+	var importDateStr = (globals.databaseName().search(/microsoft/i) != -1) ? importDate.toISOString() : importDate;//20210121 adjust for mssql sql server STSALL #0015
 
 	var seqId = (!dsSequenceArray["_"+sequence]) ? createSequenceNumber(sequence) : dsSequenceArray["_"+sequence];
 	var lotId = (!dsLotArray["_"+lot]) ? createLotNumber(lot) : dsLotArray["_"+lot];
@@ -2992,7 +2992,8 @@ function createIdfileRecord(idfilesFSet,pmkUniq,piecemarkId,sequence,lot,barcode
  * @properties={typeid:24,uuid:"6B7CC441-0D80-437B-A251-4809C83CB448"}
  */
 function createPiecemark(fsRec,unique){
-	var importDateStr = importDate.toISOString();//.toString().replace(/GMT-0500 /,'');
+	//var importDateStr = importDate.toISOString();//.toString().replace(/GMT-0500 /,'');
+	var importDateStr = (globals.databaseName().search(/microsoft/i) != -1) ? importDate.toISOString() : importDate;
 	var pCols = scopes.jobs.importJob.pcmkCols;
 	var tPcmk = new Array(pCols.length);
 	var pcmkId = application.getUUID().toString();
@@ -8413,7 +8414,9 @@ function queryAssembly(criteria,formName,subquery){
 	if (criteria.seqida && criteria.seqida.length > 0){
 		st.where.add(id1.columns.sequence_id.isin(criteria.seqida));//fabtrol specific
 	}
-	
+	if (criteria.lotnum && criteria.lotnum.length > 0){
+		st.where.add(id1.columns.lot_id.isin(criteria.lotnum));//20210202 not showing true collection size
+	}
 	if (criteria.fabshopa && criteria.fabshopa.length > 0){
 		if (subquery != 'summary'){
 			st.where.add((st.exists(uIdIdfile.root.where.add(id1.columns.idfile_id.eq(uIdIdfile.columns.idfile_id)).root)))

@@ -1525,6 +1525,7 @@ function importPopSaveDetailRow(event,recDate,flagParentFollows,filterSeqs,filte
 	 * Attach existing FS GUIDs to each Assembly and SubAssembly
 	 */
 
+	var editDateStr = editDate;
 	var length = sequenceArr.length;//get total number of sequences for this major mark
 	if (length == 0) {
 		null;
@@ -1763,7 +1764,7 @@ function importPopSaveDetailRow(event,recDate,flagParentFollows,filterSeqs,filte
 			tArr[guidsCols.indexOf('assem_guid')] = assemGuid;
 			tArr[guidsCols.indexOf('part_guid')] = partGuid;
 			tArr[guidsCols.indexOf('import_table_id')] = newRec.import_table_id.toString();
-			tArr[guidsCols.indexOf('edit_date')] = editDate;//.toISOString();//RMM jmc 20201211 mssql
+			tArr[guidsCols.indexOf('edit_date')] = editDateStr;//.toISOString();//RMM jmc 20201211 mssql 20210128
 			tArr[guidsCols.indexOf('tenant_uuid')] = globals.session.tenant_uuid;
 			tArr[guidsCols.indexOf('job_id')] = scopes.jobs.importJob.jobId.toString();
 			tArr[guidsCols.indexOf('guid_order')] = scopes.jobs.importJob.guidOrder++;

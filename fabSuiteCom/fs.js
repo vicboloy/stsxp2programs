@@ -1825,7 +1825,7 @@ function matchCLtoRMBarcodesProcess(event,jobNumber,clBarcode,rmBarcode,quantity
 	
 	var currentCL = scopes
 	var _asUser = '<AsUser>'+equipEmployee+'</AsUser>\n<PieceTrackingUsername>'+equipEmployee+'</PieceTrackingUsername>';
-	var ptHours = 1.25;//j6 process STSX and station side one-at-a-time
+	var ptHours = 0.0;//j6 process STSX and station side one-at-a-time
 
 	if (application.isInDeveloper()){application.output('inside matchCLtoRMBarcodesProcess');}
 	if (checkComFabsuite(event) != ''){return ''}

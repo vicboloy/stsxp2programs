@@ -155,7 +155,7 @@ function onRecordSelection(event) {
 		scopes.jobs.tableFilterAssoc(event,'employee',false);
 		employeeNumber = fs.employee_id.toString();
 		employeeName = fs.employee_firstname+' '+fs.employee_lastname;
-		elements.btn_Edit.visible = true;
+		//202010210 unneeded elements.btn_Edit.visible = (forms['division_users'].elements.btn_New.enabled) || !elements.btn_Save.enabled || !elements.btn_Cancel.enabled;
 	} else {
 		employeeNumber = "";
 		employeeName = "";
@@ -289,6 +289,8 @@ function stopEditing(event) {
 	onActionCancelEditLabelDests(event);
 	databaseManager.revertEditedRecords(foundset);
 	onEdit(event,false);
+	onRecordSelection(event);
+
 	//return _super.stopEditing(event)
 }
 
@@ -302,6 +304,15 @@ function stopEditing(event) {
  * @properties={typeid:24,uuid:"C2852854-E526-4E84-8D85-6BBE100EA028"}
  */
 function saveEdits(event, record, stopEdit) {
+	if (!verifyNewUserInput(event)){
+		stopEditing(event);
+		onRecordSelection(event);
+		//elements.btn_Save.enabled = true;
+		//elements.btn_Edit.enabled - true;
+		globals.errorDialogMobile(event,'1308','','');
+		
+		return;
+	}
 	if (!user_password){
 		is_account_active = null;
 	}
@@ -351,16 +362,22 @@ function onHide(event) {
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"0F54EE3F-591A-4271-8617-4C7C71207F4B"}
+ * @AllowToRunInFind
  */
 function onDataChangeEmployeeNum(oldValue, newValue, event) {
 	null;
+	var formName = event.getFormName();
 	if (populatedEmployees.indexOf(newValue) != -1){
 		newValue = "";
+		verifyNewUserInput(event);
+		onRecordSelection(event);
 		return true;
 	}
 	is_account_active = (newValue == null || newValue == 0) ? 0 : 1;
 	if (is_account_active == 1){newValue.toUpperCase()}
 	employee_id = (newValue == null || newValue == 0) ? null : newValue;
+	verifyNewUserInput(event);
+	onRecordSelection(event);
 	return true;
 }
 /**
@@ -434,7 +451,12 @@ function verifyNewUserInput(event){
 	if (is_admin_account == null){is_admin_account = false}
 	var form = forms['division_user_detail'];
 	var saveBtn = form.elements.btn_Save;
-	saveBtn.enabled = !(!form.user_name || !form.association_uuid || !userGroups);
+	var cnclBtn = form.elements.btn_Cancel;
+	var editBtn = form.elements.btn_Edit;
+	saveBtn.enabled = !(!form.user_name || !form.association_uuid || !userGroups || !employee_id);
+	//cnclBtn.enabled = saveBtn.enabled;
+	//editBtn.visible = !saveBtn.enabled;
+	return saveBtn.enabled;
 }
 /**
  * Handle focus lost event of the element.
@@ -501,4 +523,15 @@ function onActionCancelEditLabelDests(event){
 	if (Q.getSize() > 0){
 		Q.deleteAllRecords();
 	}
+}
+/**
+ * Perform the element onclick action.
+ *
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @properties={typeid:24,uuid:"7E5FD7B1-4584-4B5C-9DAA-C5A7D3678949"}
+ */
+function onActionUpdateVerify(event) {
+	verifyNewUserInput(event);
+	onRecordSelection(event);
 }

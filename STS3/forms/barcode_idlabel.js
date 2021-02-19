@@ -236,7 +236,9 @@ function collectCriteria(formName){
 		sonum : scopes.globals.arrayToString(vSONum),
 		sonuma : scopes.globals.csvToArray(vSONum),
 		sortby : labelPrintOrder,
-		minors : vMinors // ticket #278
+		minors : vMinors, // ticket #278
+		material : scopes.globals.csvToArray(vMaterial.toUpperCase()), //20210217 pp requests additional filter with wildcards
+		materialwild : vWildCards //20210217 pp requests additional filter with wildcards
 	}
 	if (1==1){return criteria;}
 	// feeds jobs.viewBTableToForm()
@@ -306,7 +308,7 @@ function onActionClear(event) {
 		if (element.search('frm') == 0 && element.search(/JobNum/) == -1){elements[element].enabled = false;}
 		if (forms[formName].elements[element].getElementType() == "CHECK"){
 			var provider = form.elements[element].getDataProviderID();
-			application.output('provider '+provider);
+			//application.output('provider '+provider);
 			form[provider] = 0;			
 		}
 		if (form.elements[element].getElementType().search(/(TEXT|TYPE)/) == -1){continue}

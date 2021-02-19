@@ -1331,7 +1331,24 @@ function secGetTenantID2(userName,companyName){
 	}
 	users = databaseManager.getFoundSet(SEC_SERVER,SEC_TABLE_USERS);//	get a tenant foundset
 	//users.loadRecords();
-	if(users.find()){													//	search the tenant foundset...
+	/** @type {QBSelect<db:/stsservoy/users>} */
+	var q = databaseManager.createSelect('db:/stsservoy/users');
+	q.where.add(q.columns.user_name.eq(userName));
+	q.where.add(q.columns.delete_flag.isNull);
+	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUIDs(tenantID)));
+	var Q = databaseManager.getFoundSet(q);//20210204 this is to match user case EXACTLY
+	var passCase = false;
+	if (Q.getSize() > 0){
+		/** @type {JSRecord<db:/stsservoy/users>} */
+		var rec = null;var idx = 1;
+		while (rec = Q.getRecord(idx++)){
+			if (rec.user_name == userName){
+				passCase = true;
+				break;
+			}
+		}
+	}
+	if(passCase && users.find()){													//	search the tenant foundset...
 		users.user_name = userName.toString();								//	search by tenant name
 		if (application.isInDeveloper()){application.output('finding user ('+userName+')')}
 		users.delete_flag = '^';	

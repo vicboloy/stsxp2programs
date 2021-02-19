@@ -974,6 +974,7 @@ function onSolutionOpen() {
 	secCurrentUserID = security.getUserUID().toString();
 	secCurrentTenantID = sec_current_user.tenant_uuid.toString(); 
 	var tenantID = sec_current_user.tenant_uuid.toString();
+	//globals.installPrefsInitiate(tenantID);//20210203 initialize preferences from backup file
 	scopes.globals.mobTenantId = secCurrentTenantID; 
 	secCurrentAssociationID = sec_current_user.association_uuid;
 	//secCurrentAssociationMasterID = secGetCurrentMasterAssociation(secCurrentTenantID);
@@ -1011,6 +1012,7 @@ function onSolutionOpen() {
 	globals.getMappings();
 	application.setValueListItems('stsvl_fab_shop',l.assocs);
 	databaseManager.removeTableFilterParam('stsservoy','filterCurrentTenant');//20171228 filter current tenant and assoc for nonOffice access
+
 	databaseManager.addTableFilterParam('stsservoy',null,'tenant_uuid','=',session.tenant_uuid,'filterCurrentTenant');
 	if (globals.SEC_ASSOCIATION_FILTER && session.corporate){
 		databaseManager.removeTableFilterParam('stsservoy',globals.SEC_ASSOCIATION_FILTER);
@@ -1097,7 +1099,7 @@ function onSolutionOpen() {
 	if (screenHeight*1 < (yOrigin*1+yHeight*1)){yOrigin = screenHeight-yHeight}
 	win.setSize(xWidth,yHeight);
 	win.setLocation(xOrigin,yOrigin);
-	var verInfo = application.getVersionInfo()
+	var verInfo = application.getVersionInfo();
 	application.output('Version for this app: '+verInfo['STS3']);
 }
 

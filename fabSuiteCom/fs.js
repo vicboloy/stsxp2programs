@@ -1553,7 +1553,7 @@ function fabsuiteGetReceivedBarcodeInv(event,barcode){
 
 }
 /**
- * @param event
+ * @param {JSEvent} event
  * @param barcode
  * @param qty
  *
@@ -1581,6 +1581,8 @@ function fabsuiteSetReceivedBarcode(event,clBarcode,stsBarcode,qty,bcData){
 			loc2 = '';
 		}
 	}
+	var finalz = (bcData.finalize) ? 1 : 0;
+	//xmlReadReceiveBC = (bcData.finalize) ? xmlReadReceiveBC.replace('_FN','<Finalize>'+finalz+'</Finalize>\\\n') : xmlReadReceiveBC.replace('_FN','');
 	xmlReadReceiveBC = (bcData.ponumber) ? xmlReadReceiveBC.replace('_PO','<PONumber>'+bcData.ponumber+'</PONumber>\\\n') : xmlReadReceiveBC.replace('_PO','');
 	xmlReadReceiveBC = (bcData.deliverydate) ? xmlReadReceiveBC.replace('_DD','<DeliveryDate>'+getFsDateFormat(bcData.deliverydate)+'</DeliveryDate>\\\n') : xmlReadReceiveBC.replace('_DD','');
 	xmlReadReceiveBC = (bcData.countryoforigin) ? xmlReadReceiveBC.replace('_CO','<CountryOfOrigin>'+bcData.countryoforigin+'</CountryOfOrigin>\\\n') : xmlReadReceiveBC.replace('_CO','');

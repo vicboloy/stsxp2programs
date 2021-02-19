@@ -504,7 +504,18 @@ var vHeatNum = '';
  * @properties={typeid:35,uuid:"049B9DB4-6B57-4ED7-B083-F07A319D7E46",variableType:4}
  */
 var vNumLabels = 1;
-
+/**
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"C8A07C16-6E92-426B-8DB7-66C56BF0AC41",variableType:4}
+ */
+var vWildCards = 0;
+/**
+ * @type {String}
+ *
+ * @properties={typeid:35,uuid:"75BF6CC3-29BD-4C40-BC26-97734A68E8BF"}
+ */
+var vMaterial = '';
 /**
  * @param {JSEvent} event System selection event
  * @param windowTitle Window bar title
@@ -1145,7 +1156,8 @@ function onActionElementPicks(event) {
 			return true;
 		}
 	}
-	var arrayInUse = [];
+	var arrayInUse = null;
+	arrayInUse = [];
 	var topForm = application.getActiveWindow().controller.getName();
 	var jobInfo = forms[topForm].jobIdData;
 	var invInfo = forms[topForm].invIdData;
@@ -1224,6 +1236,10 @@ function onActionElementPicks(event) {
 		case 'Location':
 			scopes.jobs.invLocations(topForm);
 			arrayInUse = arrayInUse.concat(invInfo.locations);
+			break;
+		case 'Material':
+			var materiel = scopes.jobs.getMaterialJob(jobInfo.job_id);
+			arrayInUse = arrayInUse.concat(materiel);
 			break;
 		default:
 			
@@ -1386,6 +1402,7 @@ function setActiveElement(elementName){
 	else if (elementName.search('Heat') != -1) {activeEl = 'Heat'}
 	else if (elementName.search('Model') != -1) {activeEl = 'Model'} 
 	else if (elementName.search('Serial') != -1) {activeEl = 'Serial'} 
+	else if (elementName.search('Material') != -1) {activeEl = 'Material'} 
 
 	else if (elementName.search("Load") != -1){
 		if (elementName.search("Rel") != -1){
@@ -1405,6 +1422,9 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
+	//globals.installPrefsInitiate(globals.session.tenant_uuid);
+	globals.backupPrefsInitiate();
+	if (1) {return}
 	scopes.prefs.cleanTempDir(event,'tmp');
 	if (1){return}
 	plugins.rawSQL.flushAllClientsCache('stsservoy', 'transactions');

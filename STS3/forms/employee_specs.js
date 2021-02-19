@@ -80,7 +80,9 @@ function onEdit(event,editStatus){
 function onActionEdit(event, editStatus) {
 	if (!editStatus && elements.btn_Edit.enabled == true && elements.btn_Edit.visible == true){return}
 	var formRev = scopes.globals.getInstanceForm(event);
-	editingSort = forms["employees_lstB"+formRev].foundset.getCurrentSort();//retain editing sort on edit
+	if (forms["employees_lstB"+formRev]){//20210204 during close of the view screen, foundset doesn't exist
+		editingSort = forms["employees_lstB"+formRev].foundset.getCurrentSort();//retain editing sort on edit
+	}
 	var tabCount = elements.tabs.getMaxTabIndex();
 	for (var index = 1;index <= tabCount;index++){
 		var tabFormName = elements.tabs.getTabFormNameAt(index);

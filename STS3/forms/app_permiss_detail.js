@@ -354,6 +354,8 @@ function saveEdits(event, record, stopEdit) {
 				var index3 = fs2.getRecordIndex(record2);
 				foundset.setSelectedIndex(index3);
 				closeDialog(event);
+			} else {
+				databaseManager.saveData(foundset);
 			}
 		}
 	}

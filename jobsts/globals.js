@@ -11917,10 +11917,11 @@ function onDataChangeGeneric(oldValue, newValue, event) {
 				var bundled = (form.bundled.toUpperCase() == i18n.getI18NMessage('sts.btn.yes').toUpperCase());
 				var recCount = (bundled) ? 1 : form.quantity;
 				var bndQuantity = (bundled) ? form.quantity : 1;
+				var finalize = (form.finalize == i18n.getI18NMessage('sts.btn.yes'));
 				var recvDate = new Date();
 				var barcodeData = {ponumber:form.poNumber,deliverydate:recvDate,billoflading:form.billOfLading,
 					receivingremarks:form.remarks,countryoforigin:form.countryOfOrigin,
-					heatnumber:form.heat,location:session.association,location2:form.stockLocation};
+					heatnumber:form.heat,location:session.association,location2:form.stockLocation,finalize:finalize};
 				/** if (scopes.prefs.promptFabShop == 1){//20190201 select where to place raw received if prefs indicate
 					if (scopes.prefs.lFsFlipPrimSecWhenShop == 1){
 						barcodeData.location2 = session.association;//location first, shop second
@@ -17008,24 +17009,24 @@ function crossoverSTSdata(event){
 
 		globals.errorDialogMobile(event,'sts.txt.crossover.loads',null,null);
 		scopes.jobs.cutoverLoadsDBF(event);
-	}
 
 		globals.errorDialogMobile(event,'sts.txt.crossover.sheets',null,null);
 		scopes.jobs.cutoverSheetsDBF(event);
 
-
+		scopes.jobs.importInProcess == true;
+		globals.errorDialogMobile(event,'sts.txt.crossover.piecemarks',null,null);
+		scopes.jobs.cutoverPiecemarksDBF(event);
 	
+		globals.errorDialogMobile(event,'sts.txt.crossover.piecemark.minors',null,null);
+		scopes.jobs.cutoverPiecemarkMinorsDBF(event);
 
+		globals.errorDialogMobile(event,'sts.txt.crossover.last.id',null,null);
+		scopes.jobs.cutoverLastID(event);
+		
+	}
 
-	scopes.jobs.importInProcess == true;
-	globals.errorDialogMobile(event,'sts.txt.crossover.piecemarks',null,null);
-	scopes.jobs.cutoverPiecemarksDBF(event);
-
-	globals.errorDialogMobile(event,'sts.txt.crossover.piecemark.minors',null,null);
-	scopes.jobs.cutoverPiecemarkMinorsDBF(event);
-    
 	globals.errorDialogMobile(event,'sts.txt.crossover.idfiles',null,null);
-	//scopes.jobs.cutoverIdfilesDBF(event);
+	scopes.jobs.cutoverIdfilesDBF(event);
 
 	if (scopes.jobs.stopImport){
 		scopes.jobs.importInProcess == false;
@@ -17307,8 +17308,7 @@ function getSeqNumber(seq_uuid){
 	return null;
 }
 /**
- * @param {JSEvent} event
- * 
+ * @param {String} skip
  * Check for existence of a initialize_prefs.txt.
  * Check for non-tenant_uuid not matching the current tenant_uuid.
  * Rename the new tenant_uuid to the current_uuid.
@@ -17316,18 +17316,136 @@ function getSeqNumber(seq_uuid){
  *
  * @properties={typeid:24,uuid:"F8DD1918-9F78-478D-A2D5-74A43ECC534C"}
  */
-function installPrefsInitiate(event){
+function installPrefsInitiate(skip){
+	if (application.getApplicationType() != APPLICATION_TYPES.SMART_CLIENT){return}
 	var initPrefs = plugins.file.getDefaultUploadLocation()+'\\.servoy\\initialize_prefs';
 	var fileObj = plugins.file.convertToJSFile(initPrefs);
-	if (fileObj.exists()){
-		var tables = ['preferences2','group_keys','groups','keys','permissions','user_groups'];
-		
+	if (!fileObj){return}
+	var tenantId = session.tenant_uuid;
+	var date = new Date();
+	var backupDest = plugins.VelocityReport.getReportFolder();
+	var dirs = plugins.file.getFolderContents(backupDest);
+	if (dirs.indexOf('backups') == -1){
+		var dir = plugins.file.createFolder(backupDest+'/backups');
+		if (dir){
+			if (backupDest.substr(-1) == '\\'){
+				backupDest = backupDest+'backups\\';
+			} else {
+				backupDest = backupDest+'\\backups\\';
+			}
+		}
 	}
+	var tables = ['preferences2','group_keys','groups','keys','permissions','user_groups','zipcodes'];
+	for  (var idx = 0;idx < tables.length;idx++){
+		var tableName = tables[idx];
+		//if (tableName != 'groups'){continue}
+		var backupName = 'backupPref_'+tables[idx]+'.txt';
+		application.output('Backup Destination Orig: '+backupDest);
+		backupDest = backupDest.replace(/\\/g,'/');
+		var backupFileAndPath = backupDest+backupName;
+		var fileIn = plugins.file.convertToJSFile(backupFileAndPath);
+		application.output(backupFileAndPath);
+		var textIn = plugins.file.readTXTFile(fileIn);
+		var lines = textIn.split('\n');
+		application.output(backupFileAndPath+ ' Lines: '+lines.length)
 
+		var q = databaseManager.createSelect('db:/stsservoy/'+tableName);
+		var Q = databaseManager.getFoundSet(q);
+		Q.loadRecords();
+		if (Q.getSize() != 0){continue}//protections against 
+		var tableCols = databaseManager.getTable('stsservoy',tableName).getColumnNames();
+		var rec = null;
+		//databaseManager.startTransaction();
+		for (var idx2 = 0;idx2 < lines.length;idx2++){
+			var cols = lines[idx2].toString().split('\t');
+			if (cols.length != tableCols.length+1){continue}
+			var recIdx = Q.newRecord();
+			rec = Q.getRecord(recIdx);
+			for (var idx3 = 0;idx3 < cols.length;idx3++){
+				var colValue = cols[idx3].split('|');
+				if (!colValue){continue}
+				var column = colValue[0];
+				var value = colValue[1];
+				if (value == 'null'){value = null}
+				if (column == 'tenant_uuid'){
+					rec['tenant_uuid'] = tenantId;
+				} else if (column.match(/edit_date/)){
+					var dateTime = date;
+					rec[column] = dateTime;
+				} else {
+					rec[column] = value;
+				}
+			}
+		}
+		databaseManager.saveData(Q);
+		//databaseManager.commitTransaction();
+	}
 }
 /**
  * @properties={typeid:24,uuid:"E0EBC8DE-455F-4A2B-BA61-8854469CBB05"}
  */
 function databaseName(){
 	return databaseManager.getDatabaseProductName('stsservoy');
+}
+/**
+ * @properties={typeid:24,uuid:"27F5D44C-821C-49B0-B870-B0B239966920"}
+ */
+function backupPrefsInitiate(){
+	var tenantId = session.tenant_uuid;
+	var date = new Date();
+	var backupDest = plugins.VelocityReport.getReportFolder();
+	var dirs = plugins.file.getFolderContents(backupDest);
+	if (dirs.indexOf('backups') == -1){
+		var dir = plugins.file.createFolder(backupDest+'/backups');
+		if (dir){
+			if (backupDest.substr(-1) == '\\'){
+				backupDest = backupDest+'backups\\';
+			} else {
+				backupDest = backupDest+'\\backups\\';
+			}
+		}
+	}
+	var tables = ['preferences2','group_keys','groups','keys','permissions','user_groups','zipcodes'];
+	for  (var idx = 0;idx < tables.length;idx++){
+		var tableName = tables[idx];
+		var backupName = 'backupPref_'+tables[idx]+'.txt';
+		application.output('Backup Destination Orig: '+backupDest);
+		backupDest = backupDest.replace(/\\/g,'/');
+		var backupFileAndPath = backupDest+backupName;
+		application.output(backupFileAndPath);
+		var fileOut = plugins.file.convertToJSFile(backupFileAndPath);
+		if (fileOut.canRead() && fileOut.size() != 0){
+			var backupData = globals.DIALOGS.showQuestionDialog(i18n.getI18NMessage('sts.txt.backup.prefs'),
+				i18n.getI18NMessage('sts.txt.backup.prefs')+' '+tableName,
+				[i18n.getI18NMessage('sts.btn.yes'),i18n.getI18NMessage('sts.btn.no')]);	
+			if (backupData == i18n.getI18NMessage('sts.btn.no')){
+				continue;
+			}	
+		}
+		var q = databaseManager.createSelect('db:/stsservoy/'+tables[idx]);
+		if (tableName != 'valuelists' && tableName != 'zipcodes'){
+			q.where.add(q.columns.tenant_uuid.eq(tenantId))
+		}
+		var Q = databaseManager.getFoundSet(q);
+		Q.loadRecords();
+		var rec = null; var idx2 = 1;var table = databaseManager.getTable('stsservoy',tableName);
+		var tableCols = table.getColumnNames();
+		var text_data = '';
+		while (rec = Q.getRecord(idx2++)){
+			//application.output(rec);
+			var text_line = '';
+			for (var idx3 = 0;idx3 < tableCols.length;idx3++){
+				var colName = tableCols[idx3];
+				var colValue = (rec[colName]) ? rec[colName] : 'null';
+				text_line += colName+'|'+colValue+'\t';
+			}
+			text_data += '\n'+text_line;
+		}
+		application.output(Q.getSize()+' Records');
+		var writeFile = plugins.file.writeTXTFile(fileOut,text_data);
+		if (!writeFile){
+			application.output('Writing prefs failed.');
+			break;
+		}
+	}
 }

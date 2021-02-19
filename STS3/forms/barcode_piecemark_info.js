@@ -37,7 +37,7 @@ function onShow(firstShow, event) {
 		var ordered = scopes.jobs.tmp_LabelSort;
 		switch (ordered){
 			case i18n.getI18NMessage('sts.print.order.piecemark'):
-				fs.sort('piecemarks.piecemark asc');
+				fs.sort('piecemark asc');
 				break;
 			case i18n.getI18NMessage('sts.print.order.id.number'):
 				if (formName.search('raw') == -1){
@@ -47,7 +47,7 @@ function onShow(firstShow, event) {
 				}
 				break;
 			case i18n.getI18NMessage('sts.print.order.drawing.number'):
-				fs.sort('piecemarks.drawing_number asc');
+				fs.sort('drawing_number asc');
 				break;
 			case i18n.getI18NMessage('sts.print.order.material'):
 				fs.sort('material asc');
@@ -57,7 +57,7 @@ function onShow(firstShow, event) {
 				break;
 			default:
 				if (formName.search('raw') == -1){
-					fs.sort('piecemarks.piecemark asc');
+					fs.sort('piecemark asc');
 				} else {
 					fs.sort('id_serial_number asc');
 				}

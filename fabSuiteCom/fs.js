@@ -716,12 +716,16 @@ function serverFSCallRequest(xml){
 	if (!globals.fsCom){
 		globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
 	}
+	var fsServer = scopes.prefs.fabsuiteServerName;
+	var fsPass = scopes.prefs.fabsuitepassword;
+	var fsUser = scopes.prefs.fabsuiteUserid;
+	var fsPort = scopes.prefs.fabsuiteDatabase;
 	var xmlConnect = '<FabSuiteXMLRequest>\n\
 		<Connect>\n\
-		<IPAddress>localhost</IPAddress>\n\
-		<PortNumber>3306</PortNumber>\n\
-		<Username>admin</Username>\n\
-		<Password>fab</Password>\n\
+		<IPAddress>'+fsServer+'</IPAddress>\n\
+		<PortNumber>'+fsPort+'</PortNumber>\n\
+		<Username>'+fsUser+'</Username>\n\
+		<Password>'+fsPass+'</Password>\n\
 		</Connect>\n\
 	</FabSuiteXMLRequest>';
 	var response = 'NO COM';
@@ -802,6 +806,7 @@ function showProgessDone(event){
  * @properties={typeid:24,uuid:"4A3F4C5B-D25D-4DA7-B20A-17CF4D63C1C5"}
  */
 function checkComFabsuite(event){
+	//if (application.isInDeveloper()){return 'xxx'};
 	globals.loginError = false;//create temp global variable indicating issue on login
 	if (application.isInDeveloper()){
 		application.output('current FS COM: '+globals.fsCom);
@@ -857,7 +862,7 @@ function checkComFabsuite(event){
 		globals.loginError = true;
 		return 'FabSuite Empty Connection Preferences';
 	}
-	var serverList = [fsServer,'localhost']; var server = '';//20180108 if first server identified fails, use localhost
+	var serverList = [fsServer]; var server = '';//20180108 if first server identified fails, use localhost
 	var asUser = 'admin';
 	if (globals.session.employeeNum){
 		asUser = globals.m.employee3rdParty[globals.session.employeeNum]
@@ -878,8 +883,8 @@ function checkComFabsuite(event){
 		var sam2 = globals.fsCom;
 		var sample = sam2.toString();
 		if (sample.search('RemoteCOM') != -1){
-			application.output('Initial Connect String To EPM/FS COM Link Set. Logging into EPM/FS.');
-			response = globals.fsCom.call('FabSuiteXML',xmlConnect);		
+			application.output('Initial Connect String To EPM/FS COM Link Set. Logging into EPM/FS.\n'+xmlConnect);
+			response = globals.fsCom.call('FabSuiteXML',xmlConnect);
 		} else {
 			application.output('Initial Connect String To EPM/FS COM Rerequested. Getting COM and Logging into EPM/FS.');
 			globals.fsCom = plugins.servoyguy_servoycom.getNewClientJSCOM("FabSuite.FabSuiteAPI.FabSuiteAPI");
@@ -896,6 +901,11 @@ function checkComFabsuite(event){
 		globals.DIALOGS.showErrorDialog('FabSuite Error','FabSuite Error: \n'+error);
 	}
 
+	if (!response){
+		globals.loginError = true;
+		globals.DIALOGS.showErrorDialog('FabSuite Error','No Response from FabSuite');
+		return 'No Response from FabSuite';
+	}
 
 	/** @type {String} */
 	var response2 = response.toString();
@@ -1782,20 +1792,27 @@ function matchCLtoRMBarcodes(event,clBarcode,rmBarcode){
 		<InventorySerialNumber>'+rmBarcode+'</InventorySerialNumber>\n\
 		</ValCutListItem>\n\
 		</FabSuiteXMLRequest>';
+	
 	application.output(xmlReadReceive);
 	var valid = globals.fsCom.call('FabSuiteXML',xmlReadReceive).toString();
 	if (application.isInDeveloper()){application.output(valid)}
 	var errorMatch = valid.match(/<ErrorMessage>(.*)<\/ErrorMessage>/);
 	if (!errorMatch){
+		var heatMatch = valid.match(/<HeatNumber>(.*)<\/HeatNumber>/);
+		var heatNum = '';
+		if (heatMatch){
+			heatNum = heatMatch[1];
+		}
+		//ponumber : valid.match(/<PONumber>(.*)<\/PONumber>/)[1],
+		//qtyordered : valid.match(/<QuantityOrdered>(.*)<\/QuantityOrdered>/)[1],
+		//qtyremaining : valid.match(/<QuantityRemaining>(.*)<\/QuantityRemaining>/)[1],
+		//shape : valid.match(/<Shape>(.*)<\/Shape>/)[1],
+		//grade : valid.match(/<Grade>(.*)<\/Grade>/)[1],
+		//dimensions : valid.match(/<Dimensions>(.*)<\/Dimensions>/)[1],
+		//length : valid.match(/<Length>(.*)<\/Length>/)[1],
+		//weighteach : valid.match(/<WeightEach>(.*)<\/WeightEach>/)[1],
 		var rawMatFields = {
-			//ponumber : valid.match(/<PONumber>(.*)<\/PONumber>/)[1],
-			//qtyordered : valid.match(/<QuantityOrdered>(.*)<\/QuantityOrdered>/)[1],
-			//qtyremaining : valid.match(/<QuantityRemaining>(.*)<\/QuantityRemaining>/)[1],
-			//shape : valid.match(/<Shape>(.*)<\/Shape>/)[1],
-			//grade : valid.match(/<Grade>(.*)<\/Grade>/)[1],
-			//dimensions : valid.match(/<Dimensions>(.*)<\/Dimensions>/)[1],
-			//length : valid.match(/<Length>(.*)<\/Length>/)[1],
-			//weighteach : valid.match(/<WeightEach>(.*)<\/WeightEach>/)[1],
+			heatnumber : heatNum,
 			error : ''
 		}
 	} else {
@@ -2781,7 +2798,11 @@ function fsGetJobList(event){
 		</GetProductionControlJobs>\n\
 		</FabSuiteXMLRequest>';
 	application.output(xmlAction);
-	var fsResp = globals.fsCom.call('FabSuiteXML',xmlAction).toString();
+	var fsResp = globals.fsCom.call('FabSuiteXML',xmlAction);
+	if (!fsResp){
+		return;
+	}
+	fsResp = fsResp.toString();
 	var match = fsResp.match(/<Successful>1<\/Successful>/);
 	if (match){
 		var jobList = [];
@@ -2797,4 +2818,31 @@ function fsGetJobList(event){
 		var newList = jobList.join();
 		application.output('EPM jobs: '+newList); 
 	}
+}
+/**
+ * @param event
+ *
+ * @properties={typeid:24,uuid:"B7CD783A-22EB-418E-A0F5-F47507EB8A99"}
+ */
+function getVersion(event){
+	var xmlAction  = '<FabSuiteXMLRequest>\n\
+		<Version>\n\
+		</Version>\n\
+		</FabSuiteXMLRequest>';
+	//application.output(xmlAction);
+	var fsResp = globals.fsCom.call('FabSuiteXML',xmlAction);
+	if (!fsResp){
+		return '';
+	}
+	fsResp = fsResp.toString();
+	application.output(fsResp)
+	var match = fsResp.match(/<Successful>1<\/Successful>/);
+	if (match){
+		match = fsResp.match(/<InterfaceVersionNumber>(.*)<\/InterfaceVersionNumber>/);
+		if (match){
+			var version = '_'+match[1];
+			return version;
+		}
+	}
+	return '';
 }

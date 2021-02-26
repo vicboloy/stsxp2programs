@@ -71,6 +71,7 @@ function deleteRecord(event, index) {
  */
 function onShow(firstShow, event) {
 	//foundset.loadAllRecords();
+	null;
 	return _super.onShow(firstShow, event)
 }
 

@@ -98,7 +98,6 @@ typeid:7,
 uuid:"65AB41DE-1AA9-4211-9E8B-5FEE10237710"
 },
 {
-enabled:false,
 location:"264,258",
 name:"btn_RestorePrefs",
 onActionMethodID:"F8DD1918-9F78-478D-A2D5-74A43ECC534C",

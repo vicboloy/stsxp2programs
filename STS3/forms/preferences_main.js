@@ -17,7 +17,7 @@ var errorMessage = "";
 function onShow(firstShow, event) {
 	if (firstShow){
 	}
-	elements.btn_ExportPreferences.visible = (globals.session.login == 'P');
+	elements.btn_ExportPreferences.enabled = (globals.session.login == 'P');
 	globals.setUserFormPermissions(event,false);
 	//elements.btn_ExportPreferences.enabled = (globals.session.login == 'P');
 	//for (var index=0;index < globals.aStatusTypes.length;index++){

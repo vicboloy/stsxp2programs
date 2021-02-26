@@ -74,7 +74,11 @@ function onSolutionOpen(){
 	globals.onStartLoadPrefs();
 	application.output('EPM/FS Check');
 	if (scopes.prefs.lFabsuiteInstalled == 1 || scopes.prefs.lFabsuiteInstalled == true){
-		scopes.fs.checkComFabsuite(null);//Log into FabSuite
+		try {// trycatch 20210222 added due to saying a connection exists but none does to EPM
+			scopes.fs.checkComFabsuite(null);//Log into FabSuite
+		} catch (e) {
+			globals.loginError = i18n.getI18NMessage('1170')+' Comm Check.';
+		}
 		if (globals.loginError){//logout
 			application.sleep(4000);
 			rfLogout();

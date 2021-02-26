@@ -84,6 +84,7 @@ function onActionVerifyEPM(event) {
 	if (status != ''){
 		globals.errorDialogMobile(event,'1170',null,status);
 	} else {
+		status = 'V'+scopes.fs.getVersion(event);
 		globals.errorDialogMobile(event,'1214','info',status);
 		scopes.fs.fsGetJobList(event);
 	}

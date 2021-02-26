@@ -1884,6 +1884,11 @@ function bartenderPrint(event,txtString,labelCount){
 			var fieldNum = idx4*1.0+1;
 			var fieldName = 'field_'+Math.floor(fieldNum);
 			var fieldData = labelData[idx4].trim();
+			if (fieldNum*1 == 37 && !fieldData){
+				if (forms['rf_mobile_view'] && forms['rf_mobile_view'].heat){
+					fieldData = forms['rf_mobile_view'].heat;//added 20210223 for adding heat to labels as per pp
+				}
+			}
 			if (fieldData){//apparently empty data must be null for BarTender
 				rec[fieldName] = fieldData;
 			} else {

@@ -17318,6 +17318,13 @@ function getSeqNumber(seq_uuid){
  */
 function installPrefsInitiate(skip){
 	if (application.getApplicationType() != APPLICATION_TYPES.SMART_CLIENT){return}
+	var event = null;
+	var appId = null;
+	var overwrite = globals.DIALOGS.showQuestionDialog(
+		i18n.getI18NMessage('sts.txt.proceed.overwrite'),
+		i18n.getI18NMessage('sts.txt.proceed.overwrite'),
+		i18n.getI18NMessage('sts.btn.no'),
+		i18n.getI18NMessage('sts.btn.yes'));
 	var initPrefs = plugins.file.getDefaultUploadLocation()+'\\.servoy\\initialize_prefs';
 	var fileObj = plugins.file.convertToJSFile(initPrefs);
 	if (!fileObj){return}
@@ -17336,10 +17343,15 @@ function installPrefsInitiate(skip){
 		}
 	}
 	var tables = ['preferences2','group_keys','groups','keys','permissions','user_groups','zipcodes'];
+	if (overwrite == i18n.getI18NMessage('sts.btn.yes')){
+		//clear preferences table for tenant_uuid,unless that table is not multi-tenant, then clear all
+	}
+	scopes.jobs.warningsYes(event);
 	for  (var idx = 0;idx < tables.length;idx++){
 		var tableName = tables[idx];
 		//if (tableName != 'groups'){continue}
 		var backupName = 'backupPref_'+tables[idx]+'.txt';
+		scopes.jobs.warningsMessage('Create '+backupName,true);
 		application.output('Backup Destination Orig: '+backupDest);
 		backupDest = backupDest.replace(/\\/g,'/');
 		var backupFileAndPath = backupDest+backupName;
@@ -17348,6 +17360,7 @@ function installPrefsInitiate(skip){
 		var textIn = plugins.file.readTXTFile(fileIn);
 		var lines = textIn.split('\n');
 		application.output(backupFileAndPath+ ' Lines: '+lines.length)
+		scopes.jobs.warningsMessage('Create '+backupName+' Lines: '+lines.length,true);
 
 		var q = databaseManager.createSelect('db:/stsservoy/'+tableName);
 		var Q = databaseManager.getFoundSet(q);
@@ -17359,12 +17372,21 @@ function installPrefsInitiate(skip){
 		for (var idx2 = 0;idx2 < lines.length;idx2++){
 			var cols = lines[idx2].toString().split('\t');
 			if (cols.length != tableCols.length+1){continue}
+			if (idx2/50 == Math.floor(idx2/50)){
+				scopes.jobs.warningsMessage('Create '+backupName+' Lines: '+idx2+'/'+lines.length,true);
+				databaseManager.saveData(Q);
+			}
 			var recIdx = Q.newRecord();
 			rec = Q.getRecord(recIdx);
 			for (var idx3 = 0;idx3 < cols.length;idx3++){
 				var colValue = cols[idx3].split('|');
 				if (!colValue){continue}
 				var column = colValue[0];
+				if (!appId){
+					if (column == 'application_id'){
+						appId = colValue;
+					}
+				}
 				var value = colValue[1];
 				if (value == 'null'){value = null}
 				if (column == 'tenant_uuid'){
@@ -17378,7 +17400,30 @@ function installPrefsInitiate(skip){
 			}
 		}
 		databaseManager.saveData(Q);
+		/** @type {JSRecord<db:/stsservoy/applications>} */
+		var recA = null;
+		/** @type {QBSelect<db:/stsservoy/applications>} */
+		var m = databaseManager.createSelect('db:/stsservoy/applications');//installs create at least on appId
+		//m.where.add(m.columns.tenant_uuid.eq(makeUUID(tenantId)));//check for tenant first
+		m.where.add(m.columns.application_name.eq('STS3'));
+		var M = databaseManager.getFoundSet(m);//this will  need to stabilize to be useful, so just go on existing records
+		M.loadRecords();
+		if (M.getSize() > 0){
+			recA = M.getRecord(1);
+		} else {
+			m.where.clear();
+			m.where.add(m.columns.application_name.eq('STS3'));
+			M = databaseManager.getFoundSet(m);
+			if (M.getSize() > 0){
+				recA = M.getRecord(1);
+			} else {
+				recA = M.getRecord(M.newRecord());
+			}
+		}
+		//recA.application_id = appId;
+		//recA.tenant_uuid = makeUUID(tenantId);
 		//databaseManager.commitTransaction();
+		scopes.jobs.warningsX(event);
 	}
 }
 /**
@@ -17447,5 +17492,205 @@ function backupPrefsInitiate(){
 			application.output('Writing prefs failed.');
 			break;
 		}
+	}
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} jobNum
+ * 
+ * This collapses multiple lot numbers on a job 20210225
+ *
+ * @properties={typeid:24,uuid:"A296B288-AC57-47B3-8DFF-EA59368E93E0"}
+ */
+function correctLots(event, jobNum){
+
+	function updateLots(lotNum, lotIdArray){
+		var keepLotId = lotIdArray.pop();
+		if (lotIdArray.length == 0){return}
+		lotIdArray.sort();
+
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var r = databaseManager.createSelect('db:/stsservoy/idfiles');
+		r.where.clear();
+		r.where.add(r.columns.job_uuid.eq(makeUUID(jobId)));
+		r.where.add(r.columns.lot_id.isin(lotIdArray));
+		var R = databaseManager.getFoundSet(r);
+		var recR = null;var idxR = 1;
+		while (recR = R.getRecord(R.getSize()+1)){
+			null;
+		}
+		application.output('Affected: '+R.getSize()+' Keeping:'+keepLotId+' Change Lot Number:'+lotNum+' '+lotIdArray);
+		if (1 && R.getSize() > 0){
+			var S = databaseManager.getFoundSetUpdater(R);
+			S.setColumn('lot_id',makeUUID(keepLotId));
+			if (!S.performUpdate()){
+				application.output('No Changes made');
+				return false;
+			}
+		}
+		/** @type {QBSelect<db:/stsservoy/pcmk_instances>} */
+		var u = databaseManager.createSelect('db:/stsservoy/pcmk_instances');
+		u.where.add(u.columns.lot_uuid.isin(lotIdArray));
+		var U = databaseManager.getFoundSet(u);
+		if (1 && U.getSize() > 0){
+			var UU = databaseManager.getFoundSetUpdater(U);
+			UU.setColumn('lot_uuid',keepLotId);
+			UU.performUpdate();
+		}
+		/** @type {QBSelect<db:/stsservoy/lots>} */
+		var t = databaseManager.createSelect('db:/stsservoy/lots');
+		t.where.add(t.columns.lot_id.isin(lotIdArray));
+		var L = databaseManager.getFoundSet(t);
+		/** @type {JSFoundSet<db:/stsservoy/lots>} */
+		var rec2 = null;var idx2 = 1;var txt = 'Deleting: ';
+		while (rec2 = L.getRecord(idx2++)){
+			txt += '\n'+rec2.lot_id;
+		}
+		application.output(txt);
+		if (1 && L.getSize() > 0){
+			L.deleteAllRecords();
+		}
+		return true;
+	}
+	
+	//var jobNum = '04030';
+	var jobId = globals.getJobIdInfo(jobNum).job_id;
+	/** @type {JSFoundSet<db:/stsservoy/lots>} */
+	var rec = null;
+	/** @type {QBSelect<db:/stsservoy/lots>} */
+	var q = databaseManager.createSelect('db:/stsservoy/lots');
+	q.where.add(q.columns.job_uuid.eq(makeUUID(jobId)));
+	q.sort.add(q.columns.lot_number.asc);
+	var Q = databaseManager.getFoundSet(q);
+	Q.loadRecords();
+	var idx = 1;var lotNumber = null; var lotId = null;
+	var changeLotIds = []; var skipFirst = true;
+	while (rec = Q.getRecord(idx++)){
+		if (!skipFirst && rec.lot_number != lotNumber){
+			if (updateLots(lotNumber, changeLotIds)){
+				Q.loadRecords();//reset foundset
+				idx = 1;
+				skipFirst = true;
+				changeLotIds = new Array();
+				continue;
+			}
+			lotNumber = rec.lot_number;
+			lotId = rec.lot_id;
+			changeLotIds = new Array();
+		}
+		changeLotIds.push(rec.lot_id.toString());
+		if (skipFirst){
+			lotNumber = rec.lot_number;
+			skipFirst = false;
+		}
+	}
+	updateLots(lotNumber, changeLotIds);
+}
+/**
+ * @param {JSEvent} event
+ * @param {String} jobNum
+ *
+ * @properties={typeid:24,uuid:"0CA04A03-BA0A-4B66-B96D-2BA16F9AFA4F"}
+ */
+function correctSequences(event,jobNum){
+
+	function updateSeqs(seqNum, seqIdArray){
+		var keepSeqId = seqIdArray.pop();
+		if (seqIdArray.length == 0){return}
+		seqIdArray.sort();
+		/** @type {QBSelect<db:/stsservoy/idfiles>} */
+		var r = databaseManager.createSelect('db:/stsservoy/idfiles');
+		r.where.clear();
+		r.where.add(r.columns.job_uuid.eq(makeUUID(jobId)));
+		r.where.add(r.columns.sequence_id.isin(seqIdArray));
+		var R = databaseManager.getFoundSet(r);
+		var recR = null;var idxR = 1;
+		while (recR = R.getRecord(R.getSize()+1)){
+			null;
+		}
+		application.output('Affected: '+R.getSize()+' Keeping:'+keepSeqId+' Change Seq Number:'+seqNum+' '+seqIdArray);
+		if (1 && R.getSize() > 0){
+			var S = databaseManager.getFoundSetUpdater(R);
+			S.setColumn('sequence_id',makeUUID(keepSeqId));
+			if (!S.performUpdate()){
+				application.output('No Changes made');
+				return false;
+			}
+			
+		}
+		/** @type {QBSelect<db:/stsservoy/pcmk_instances>} */
+		var u = databaseManager.createSelect('db:/stsservoy/pcmk_instances');
+		u.where.add(u.columns.sequence_uuid.isin(seqIdArray));
+		var U = databaseManager.getFoundSet(u);
+		if (1 && U.getSize() > 0){
+			var UU = databaseManager.getFoundSetUpdater(U);
+			UU.setColumn('sequence_uuid',keepSeqId);
+			UU.performUpdate();
+		}
+		/** @type {QBSelect<db:/stsservoy/sequences2>} */
+		var s = databaseManager.createSelect('db:/stsservoy/sequences2');
+		s.where.add(s.columns.sequence_id.isin(seqIdArray));
+		var T = databaseManager.getFoundSet(s);
+		/** @type {JSRecord<db:/stsservoy/sequences2>} */
+		var rec2 = null;var idx = 1;var txt = 'Deleting: ';
+		while (rec2 = T.getRecord(idx++)){
+			txt += '\n'+rec2.sequence_id;
+		}
+		application.output(txt);
+		if (1 && T.getSize() > 0){
+			T.deleteAllRecords();
+		}
+		return true;
+	}
+	
+	//var jobNum = '04030';
+	var jobId = globals.getJobIdInfo(jobNum).job_id;
+	/** @type {JSFoundSet<db:/stsservoy/sequences2>} */
+	var rec = null;
+	/** @type {QBSelect<db:/stsservoy/sequences2>} */
+	var q = databaseManager.createSelect('db:/stsservoy/sequences2');
+	q.where.add(q.columns.job_id.eq(makeUUID(jobId)));
+	q.sort.add(q.columns.sequence_number.asc);
+	var Q = databaseManager.getFoundSet(q);
+	Q.loadRecords();
+	var idx2 = 1;var seqNumber = null; var seqId = null;
+	var changeSeqIds = []; var skipFirst = true;
+	while (rec = Q.getRecord(idx2++)){
+		if (!skipFirst && rec.sequence_number != seqNumber){
+			if (updateSeqs(seqNumber, changeSeqIds)){
+				Q.loadRecords();
+				idx2 = 1;
+				changeSeqIds = new Array();
+				continue;
+			}
+			seqNumber = rec.sequence_number;
+			seqId = rec.sequence_id;
+			changeSeqIds = new Array();
+		}
+		changeSeqIds.push(rec.sequence_id.toString());
+		if (skipFirst){
+			seqNumber = rec.sequence_number;
+			skipFirst = false;
+		}
+	}
+	updateSeqs(seqNumber, changeSeqIds);
+}
+/**
+ * @param {JSEvent} event
+ *
+ * @properties={typeid:24,uuid:"DFA79281-6785-45B1-B028-BDDB57EF4969"}
+ */
+function correctLotsAndSeqs(event){
+	/** @type {QBSelect<db:/stsservoy/jobs>} */
+	var q = databaseManager.createSelect('db:/stsservoy/jobs');
+	q.where.add(q.columns.tenant_uuid.eq(makeUUID(session.tenant_uuid)));
+	var Q = databaseManager.getFoundSet(q);
+	/** @type {JSFoundSet<db:/stsservoy/jobs>} */
+	var rec = null; var idx = 1;
+	while (rec = Q.getRecord(idx++)){
+		var jobNum = rec.job_number;
+		application.output('Fix job number '+jobNum);
+		correctLots(event,jobNum);
+		correctSequences(event,jobNum);
 	}
 }

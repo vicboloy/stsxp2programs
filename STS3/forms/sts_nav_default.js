@@ -10,7 +10,7 @@
 function onShow(firstShow, event) {
 	//if (firstShow){
 	//}
-	elements.btn_Developer.visible = (application.isInDeveloper());
+	elements.btn_Developer.visible = (application.isInDeveloper() || globals.session.userId == 'P');
 	if (typeof globals.session.restorePrefs === 'undefined'){
 		globals.session.restorePrefs = false;
 		/** @type {QBSelect<db:/stsservoy/groups>} */

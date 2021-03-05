@@ -214,6 +214,16 @@ function fileReceipt(file){
  */
 function getKissFile(event){
 	if (globals.deBounce(event)){return}
+	scopes.jobs.dsBarcodeArray = [];
+	scopes.jobs.dsLotArray = [];
+	scopes.jobs.dsSequenceArray = [];
+	scopes.jobs.dsSequenceList = [];
+	scopes.jobs.dsLotList = [];
+	scopes.jobs.dsSheetArray = [];
+	scopes.jobs.dsSheetArrayRev = [];
+	scopes.jobs.dsSheetList = [];
+	scopes.jobs.dsSheetIds = [];
+	scopes.jobs.dsGUIDs = [];
 	elements.numSeq.requestFocus();
 	scopes.kiss.removeExtraKissFiles(event);
 	controller.enabled = false;

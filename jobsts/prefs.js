@@ -1183,7 +1183,8 @@ function onActionUpdatePrefs(event) {
 		description = "Global Printer";
 		forms.preferences_printer.errorMessage = i18n.getI18NMessage('sts.txt.saving.preferences');
 		var form = forms[event.getFormName()];
-		var tempPrefsChanged = form.prefsChanged;
+		if (!globals.tempPrefsChanged){globals.tempPrefsChanged = []}
+		globals.tempPrefsChanged = form.prefsChanged;
 	}
 	scopes.jobs.warningsYes(event);
 	application.updateUI();

@@ -1987,7 +1987,7 @@ function readSequencesK(jobID){
 	while (rec = dsSequences.getRecord(index++)){
 		seqId = rec.sequence_id.toString();
 		seqNum = rec.sequence_number;
-		unique = "_"+seqNum;
+		unique = "_"+seqNum+'_'+rec.job_id;
 		if (seqNameList.indexOf(unique) == -1){
 			seqNameList.push(unique);
 		}
@@ -2658,11 +2658,11 @@ function importRecords(event){
 	deletedBarcodes = []; deletedIdfiles = []; deletedPiecemarks = [];
 	idfilesToDelete = [];
 	//insertedSequences = []; deletedSequences = [];
-	createSheets();//make sure sheets exist before import
+	scopes.jobs.createSheets();//make sure sheets exist before import
 	warningsMessage('Saving Sheets',true);
-	createSequenceNumbers();
+	scopes.jobs.createSequenceNumbers();
 	warningsMessage('Saving Sequences',true);
-	createLotNumbers();
+	scopes.jobs.createLotNumbers();
 	warningsMessage('Saving Lots',true);
 
 	if (databaseManager.saveData()){
@@ -2869,7 +2869,7 @@ function commitTransactions(){
  * @properties={typeid:24,uuid:"DD8784AE-7062-49FD-B80D-146ABD75EF8D"}
  */
 function createSequenceNumberK(sequenceNumber){
-	var unique = "_"+sequenceNumber;
+	var unique = "_"+sequenceNumber+'_'+scopes.globals.importJobFS.jobId;
 	/** @type {JSFoundSet<db:/stsservoy/sequences2>} */
 	var fs = databaseManager.getFoundSet('db:/stsservoy/sequences2');
 	if (dsSequenceArray[unique]){return dsSequenceArray[unique]}
@@ -2904,7 +2904,7 @@ function createSequenceNumbersK(){
 	}
 	var length = newItems.length;
 	for (index = 0;index < length;index++){
-		if (dsSequenceArray["_"+newItems[index]] != null){
+		if (dsSequenceArray["_"+newItems[index]+'_'+scopes.jobs.importJob.jobId] != null){
 			warningsMessage('Sequence exists '+newItems[index],false);
 			continue
 		}
@@ -3291,8 +3291,8 @@ function importRecordCheckIdfileCount(record,correct){
 			var recSeq = record.sequence_number;
 			var recLot = record.lot;
 			if (!recLot){recLot = ""}
-			var recSeqId = dsSequenceArray["_"+recSeq];
-			var recLotId = dsLotArray["_"+recLot+"|_"+recSeq];
+			var recSeqId = dsSequenceArray["_"+recSeq+'_'+scopes.jobs.importJob.jobId];
+			var recLotId = dsLotArray[+'_'+scopes.jobs.importJob.jobId];
 			if (dsIdfiles.sequence_id+"" == recSeqId && dsIdfiles.lot_id+'' == recLotId){
 				dbIdfiles.push(tDbIdFiles[index].toString());
 			}
@@ -3663,9 +3663,10 @@ function importRecordCheckIdfileCount(record,correct){
  * @properties={typeid:24,uuid:"2AFAD8DE-7E90-4E24-9E23-E53D866AB84E"}
  */
 function importRecordCheckSequence(record){
-	if (dsSequenceArray["_"+record.sheet_number] == null){
-		createSequenceNumber(record.sequence_number);
-	}
+	scopes.jobs.createSequenceNumber(record.sequence_number);
+	//if (dsSequenceArray["_"+record.sheet_number+'_'+scopes.jobs.importJob.jobId] == null){
+	//	scopes.jobs.createSequenceNumber(record.sequence_number);
+	//}
 }
 /**
  * This collects the barcode information record for incoming versus database counts.
@@ -3945,7 +3946,7 @@ function createIdfileRecordK(pmkUniq,piecemarkId,sequence,lot,barcodeId,quantity
 	/** @type {JSFoundSet<db:/stsservoy/idfiles>} */
 	var fs = databaseManager.getFoundSet('stsservoy','idfiles');
 
-	var seqId = dsSequenceArray["_"+sequence];
+	var seqId = dsSequenceArray["_"+sequence+'_'+scopes.jobs.importJob.jobId];
 	if (!seqId){seqId = createSequenceNumber(sequence)}
 	var lotId = dsLotArray["_"+lot+"|_"+sequence];
 	if (!lotId){lotId = createLotNumber(lot,sequence)}
@@ -4617,14 +4618,14 @@ function importExistingRecStatus(record){
 		return freshPcmk.toString();
 	}//application.output('no record')}
 	//var pcmkId = dsPiecemarkArray[uniqPcmk];
-	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number]){
+	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number+'_'+scopes.jobs.importJob.jobId]){
 		scopes.jobs.createSequenceNumber(record.sequence_number);
 	}
-	var seqId = scopes.jobs.dsSequenceArray['_'+record.sequence_number];
-	if (!scopes.jobs.dsLotArray['_'+record.lot_number]){
+	var seqId = scopes.jobs.dsSequenceArray['_'+record.sequence_number+'_'+scopes.jobs.importJob.jobId];
+	if (!scopes.jobs.dsLotArray['_'+record.lot_number+'_'+scopes.jobs.importJob.jobId]){
 		scopes.jobs.createLotNumber(record.lot_number);
 	}
-	var lotId = scopes.jobs.dsLotArray['_'+record.lot_number];
+	var lotId = scopes.jobs.dsLotArray['_'+record.lot_number+'_'+scopes.jobs.importJob.jobId];
 	//if (!lotId)
 	//application.output('sequenceID '+dsSequences[seqId]);dsIdfileArray;
 	var barSeen = [];
@@ -4796,14 +4797,16 @@ function getBarcodeCount(record){
 	q.where.add(q.columns.tenant_uuid.eq(globals.makeUUID(globals.session.tenant_uuid)));
 	q.where.add(q.columns.piecemark_id.eq(globals.makeUUID(pmId)));
 	q.where.add(q.columns.delete_flag.isNull);
-	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number]){
-		scopes.jobs.createSequenceNumber(record.sequence_number);
-	}
-	q.where.add(q.columns.sequence_id.eq(globals.makeUUID(scopes.jobs.dsSequenceArray['_'+record.sequence_number])));
-	if (!scopes.jobs.dsLotArray['_'+record.lot_number]){
-		scopes.jobs.createLotNumber(record.lot_number);
-	}
-	q.where.add(q.columns.lot_id.eq(globals.makeUUID(scopes.jobs.dsLotArray['_'+record.lot_number])));
+	var seqId = scopes.jobs.createSequenceNumber(record.sequence_number);
+	//if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number+'_'+scopes.jobs.importJob.jobId]){
+	//	scopes.jobs.createSequenceNumber(record.sequence_number);
+	//}
+	q.where.add(q.columns.sequence_id.eq(globals.makeUUID(seqId)));//scopes.jobs.dsSequenceArray['_'+record.sequence_number+'_'+scopes.jobs.importJob.jobId])));
+	var lotId = scopes.jobs.createLotNumber(record.lot_number);
+	//if (!scopes.jobs.dsLotArray['_'+record.lot_number+'_'+scopes.jobs.importJob.jobId]){
+	//	scopes.jobs.createLotNumber(record.lot_number);
+	//}
+	q.where.add(q.columns.lot_id.eq(globals.makeUUID(lotId)));//scopes.jobs.dsLotArray['_'+record.lot_number+'_'+scopes.jobs.importJob.jobId])));
 	q.groupBy.add(q.columns.id_serial_number_id);
 	q.result.distinct = true;
 	q.result.add(q.columns.id_serial_number_id);
@@ -4844,10 +4847,10 @@ function getCurrentPcmkIdfileCount(event,record){
 	var x = w.joins.add('db:/stsservoy/idfiles');
 	x.on.add(x.columns.piecemark_id.eq(w.columns.piecemark_id));
 	x.root.where.add(x.columns.delete_flag.isNull);
-	var seqId = (scopes.jobs.dsSequenceArray['_'+record.sequence_number]) ? scopes.jobs.dsSequenceArray['_'+record.sequence_number] : scopes.jobs.createSequenceNumber(record.sequence_number);
-	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number]){return 0}
-	var lotId = (scopes.jobs.dsLotArray['_'+record.lot_number]) ? scopes.jobs.dsLotArray['_'+record.lot_number] : scopes.jobs.createLotNumber(record.lot_number);
-	if (!scopes.jobs.dsLotArray['_'+record.lot_number]){return 0}
+	var seqId = (scopes.jobs.dsSequenceArray['_'+record.sequence_number+'_'+scopes.jobs.importJob.jobId]) ? scopes.jobs.dsSequenceArray['_'+record.sequence_number+'_'+scopes.jobs.importJob.jobId] : scopes.jobs.createSequenceNumber(record.sequence_number);
+	if (!scopes.jobs.dsSequenceArray['_'+record.sequence_number+'_'+scopes.jobs.importJob.jobId]){return 0}
+	var lotId = (scopes.jobs.dsLotArray['_'+record.lot_number+'_'+scopes.jobs.importJob.jobId]) ? scopes.jobs.dsLotArray['_'+record.lot_number+'_'+scopes.jobs.importJob.jobId] : scopes.jobs.createLotNumber(record.lot_number);
+	if (!scopes.jobs.dsLotArray['_'+record.lot_number+'_'+scopes.jobs.importJob.jobId]){return 0}
 	x.root.where.add(x.columns.sequence_id.eq(globals.makeUUID(seqId)));
 	x.root.where.add(x.columns.lot_id.eq(globals.makeUUID(lotId)));
 	//q.groupBy.add(x.columns.idfile_id);

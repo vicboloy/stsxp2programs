@@ -310,13 +310,11 @@ i18n:sts.txt.system.label.default
 		formx.printerName = scopes.printer.idBarcodePrinter;
 		formx.labelName = scopes.printer.idBarcodeLabelFormat;
 		formx.labeLaseTemplate = scopes.printer.idLabeLaseTemplate;
-	}
-	if (newValue == i18n.getI18NMessage('sts.txt.part.label.default')){
+	} else if (newValue == i18n.getI18NMessage('sts.txt.part.label.default')){
 		formx.printerName = scopes.printer.rawMaterialPrinter;
 		formx.labelName = scopes.printer.rawMaterialLabelFormat;
 		formx.labeLaseTemplate = scopes.printer.rawLabeLaseTemplate;
-	}
-	if (newValue == i18n.getI18NMessage('sts.txt.system.label.default')){
+	} else if (newValue == i18n.getI18NMessage('sts.txt.system.label.default')){
 		formx.printerName = scopes.printer.defaultSysPrinter;
 		formx.labelName = scopes.printer.defaultSysLabelFormat;
 		formx.labeLaseTemplate = scopes.printer.defaultLabeLaseTemplate;

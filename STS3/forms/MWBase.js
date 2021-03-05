@@ -1422,7 +1422,14 @@ function setActiveElement(elementName){
  * @properties={typeid:24,uuid:"DF92C8CD-42EB-49EA-81A7-3A5AC2D4DD59"}
  */
 function onActionClickDeveloper(event) {
-	globals.correctLotsAndSeqs(event);
+	if (application.isInDeveloper()){
+		scopes.jobs.buildPcmkInstances(event,'6236');
+	}
+	if (!application.isInDeveloper()){
+		var passcode = plugins.dialogs.showInputDialog('STSX',i18n.getI18NMessage('sts.txt.developer.query'));
+		if (passcode != 'P2Programs'){return}
+	}
+	if (!application.isInDeveloper()){globals.correctLotsAndSeqs(event);}
 	//globals.correctLots(event);
 	//globals.correctSequences(event);
 	if (1){return}

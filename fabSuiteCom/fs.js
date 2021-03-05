@@ -66,6 +66,10 @@ function checkFSJobNumber(importData){
 function getFabSuiteError(fsResponse){
 	var regX = new RegExp(/<ErrorMessage>(.*)<\/ErrorMessage>/);
 	var error = regX.exec(fsResponse);
+	if (!error){
+		application.output('No FS Error');
+		return '';
+	}
 	return i18n.getI18NMessage('sts.interface.fabsuite')+': '+error[1];
 
 }
@@ -2160,6 +2164,7 @@ function processRawCutBarcodes(event,cutlistData){
 	// existing cutlist data are sent to mob data for processing.  Back populate mob data with each cut's entry
 	for (var idx = 0; idx < cutlistData.cutarray.length;idx++){
 		var pcmk = cutlistData.cutarray[idx];
+		if (!pcmk.available){continue}
 		globals.mob.job.number = pcmk.pJob;//var jobNumber = 
 		globals.mob.idfiles = pcmk.available;//required var quantity = length 
 		var seqId = scopes.jobs.getSeqId(pcmk.pJob,pcmk.pSeq);

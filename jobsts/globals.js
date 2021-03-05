@@ -2732,7 +2732,7 @@ function barcodePercentage(){
  * @AllowToRunInFind
  */
 function barcodeIsBundle(bundleBC){
-	if (bundleBC.search(/^BND/) == -1){return false;}
+	if (!bundleBC || bundleBC.search(/^BND/) == -1){return false;}
 	/** @type {QBSelect<db:/stsservoy/idfiles>} */
 	var q = databaseManager.createSelect('db:/stsservoy/idfiles');
 	q.result.add(q.columns.idfile_id);
@@ -12346,20 +12346,20 @@ function dataEntryComplete(event,altField){
  * @properties={typeid:24,uuid:"7789CDA2-7B48-402E-BF3F-D40E04D35000"}
  */
 function getJobIdInfo(jobNum){
-	jobNum = jobNum.toUpperCase();
+	jobNum = jobNum.trim().toUpperCase();
 	/*
 	 * return sequence_number, load_number, load_release, customer so, shop, Lot, package, area, batch, drawing num, 
 	 */
 	var isEmpty = [0,null];
 	/** @type {QBSelect<db:/stsservoy/jobs>} */
 	var p = databaseManager.createSelect('db:/stsservoy/jobs');
-	p.result.add(p.columns.job_id);
-	p.result.add(p.columns.association_id);
-	p.result.distinct = true;
 	
 	p.where.add(p.columns.tenant_uuid.eq(makeUUID(session.tenant_uuid)));
 	p.where.add(p.columns.delete_flag.isin(isEmpty));
-	p.where.add(p.columns.job_number.eq(jobNum));
+	p.where.add(p.columns.job_number.eq(jobNum.toString()));
+	p.result.add(p.columns.job_id);
+	p.result.add(p.columns.association_id);
+	p.result.distinct = true;
 	/** @type {JSRecord<db:/stsservoy/jobs>} */
 	var fsJ = databaseManager.getFoundSet(p);
 	if (fsJ.getSize() != 0){
@@ -17022,12 +17022,16 @@ function crossoverSTSdata(event){
 
 		globals.errorDialogMobile(event,'sts.txt.crossover.last.id',null,null);
 		scopes.jobs.cutoverLastID(event);
-		
+
+		globals.errorDialogMobile(event,'sts.txt.crossover.idfiles',null,null);
+		scopes.jobs.cutoverIdfilesDBF(event);
+
 	}
 
-	globals.errorDialogMobile(event,'sts.txt.crossover.idfiles',null,null);
-	scopes.jobs.cutoverIdfilesDBF(event);
 
+	globals.errorDialogMobile(event,'Cutover pcmk instances',null,null);
+	scopes.jobs.cutoverPcmkInstances(event);
+	
 	if (scopes.jobs.stopImport){
 		scopes.jobs.importInProcess == false;
 		scopes.jobs.stopImport = false;
@@ -17342,17 +17346,37 @@ function installPrefsInitiate(skip){
 			}
 		}
 	}
+	var clearTable = true;
 	var tables = ['preferences2','group_keys','groups','keys','permissions','user_groups','zipcodes'];
-	if (overwrite == i18n.getI18NMessage('sts.btn.yes')){
+	if (overwrite == i18n.getI18NMessage('sts.btn.no')){
 		//clear preferences table for tenant_uuid,unless that table is not multi-tenant, then clear all
+		//1309
+		plugins.dialogs.showInfoDialog('1309',i18n.getI18NMessage('1309'));
+		clearTable = false;
+		return;
+
 	}
 	scopes.jobs.warningsYes(event);
 	for  (var idx = 0;idx < tables.length;idx++){
 		var tableName = tables[idx];
+
+		var tableDBI = 'db:/stsservoy/'+tableName;
+		var tableObj = databaseManager.getTable('stsservoy',tableName);
+		var tableCols = tableObj.getColumnNames();
+		var q = databaseManager.createSelect(tableDBI);
+		if (tableCols.indexOf('tenant_uuid') != -1){
+			q.where.add(q.columns.tenant_uuid.eq(makeUUID(session.tenant_uuid)));
+		}
+		var Q = databaseManager.getFoundSet(q);
+		var recQ = null;
+		while (recQ = Q.getRecord(Q.getSize()+1)){null}
+		scopes.jobs.warningsMessage('Clearing '+tableName+' Lines: '+Q.getSize(),true);
+		Q.deleteAllRecords();
+		
+		
 		//if (tableName != 'groups'){continue}
 		var backupName = 'backupPref_'+tables[idx]+'.txt';
-		scopes.jobs.warningsMessage('Create '+backupName,true);
-		application.output('Backup Destination Orig: '+backupDest);
+		scopes.jobs.warningsMessage('Restore '+backupName,true);
 		backupDest = backupDest.replace(/\\/g,'/');
 		var backupFileAndPath = backupDest+backupName;
 		var fileIn = plugins.file.convertToJSFile(backupFileAndPath);
@@ -17368,13 +17392,16 @@ function installPrefsInitiate(skip){
 		if (Q.getSize() != 0){continue}//protections against 
 		var tableCols = databaseManager.getTable('stsservoy',tableName).getColumnNames();
 		var rec = null;
-		//databaseManager.startTransaction();
+		databaseManager.startTransaction();
+
 		for (var idx2 = 0;idx2 < lines.length;idx2++){
 			var cols = lines[idx2].toString().split('\t');
 			if (cols.length != tableCols.length+1){continue}
-			if (idx2/50 == Math.floor(idx2/50)){
+			if (idx2/150 == Math.floor(idx2/150)){
 				scopes.jobs.warningsMessage('Create '+backupName+' Lines: '+idx2+'/'+lines.length,true);
+				databaseManager.commitTransaction();
 				databaseManager.saveData(Q);
+				databaseManager.startTransaction();
 			}
 			var recIdx = Q.newRecord();
 			rec = Q.getRecord(recIdx);
@@ -17399,6 +17426,7 @@ function installPrefsInitiate(skip){
 				}
 			}
 		}
+		databaseManager.commitTransaction();
 		databaseManager.saveData(Q);
 		/** @type {JSRecord<db:/stsservoy/applications>} */
 		var recA = null;

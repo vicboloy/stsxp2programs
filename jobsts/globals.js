@@ -17448,9 +17448,9 @@ function installPrefsInitiate(skip){
 				recA = M.getRecord(M.newRecord());
 			}
 		}
-		//recA.application_id = appId;
-		//recA.tenant_uuid = makeUUID(tenantId);
-		//databaseManager.commitTransaction();
+		recA.application_id = appId;
+		recA.application_name = 'STS3';
+		databaseManager.commitTransaction();
 		scopes.jobs.warningsX(event);
 	}
 }

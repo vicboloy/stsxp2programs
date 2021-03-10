@@ -362,7 +362,6 @@ function onHide(event) {
  * @returns {Boolean}
  *
  * @properties={typeid:24,uuid:"0F54EE3F-591A-4271-8617-4C7C71207F4B"}
- * @AllowToRunInFind
  */
 function onDataChangeEmployeeNum(oldValue, newValue, event) {
 	null;

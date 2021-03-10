@@ -63,10 +63,10 @@ valuelistID:"8A89996A-201D-4649-B6E6-20EB194D9480"
 {
 dataProviderID:"verifyJobFabsuite",
 displayType:4,
-editable:false,
 formIndex:18,
 location:"210,307",
 name:"verifyJob",
+onDataChangeMethodID:"5081B769-E90A-46CF-8D1C-33E07C46F78D",
 size:"257,20",
 text:"i18n:sts.chk.check.with.fabsuite",
 transparent:true,
@@ -106,7 +106,6 @@ uuid:"8D493CC5-26AA-4B98-A849-C70EC3AFD944"
 {
 dataProviderID:"useKissFile",
 displayType:4,
-editable:false,
 formIndex:17,
 location:"187,282",
 name:"useKISSFile",

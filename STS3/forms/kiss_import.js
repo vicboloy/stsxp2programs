@@ -485,7 +485,7 @@ function onShow(firstShow, event) {
 	controller.enabled = true;
 	//globals.setUserFormPermissions(event);
 	onActionClearForm(event);
-	elements.btn_GetKiss.enabled = false;
+	//elements.btn_GetKiss.enabled = false;
 	elements.btn_Close.enabled = true;
 	elements.btn_Clear.enabled = true;
 	useKissFile = 0;
@@ -669,6 +669,25 @@ function onDataChangeUseFile(oldValue, newValue, event) {
 		verifyJobFabsuite = 1;
 	} else {
 		verifyJobFabsuite = 0;
+	}
+	return true
+}
+
+/**
+ * Handle changed data, return false if the value should not be accepted. In NGClient you can return also a (i18n) string, instead of false, which will be shown as a tooltip.
+ *
+ * @param {Number} oldValue old value
+ * @param {Number} newValue new value
+ * @param {JSEvent} event the event that triggered the action
+ *
+ * @return {Boolean}
+ *
+ * @properties={typeid:24,uuid:"5081B769-E90A-46CF-8D1C-33E07C46F78D"}
+ */
+function onDataChangeVerifyFSConflict(oldValue, newValue, event) {
+	if (useKissFile == 0){
+		verifyJobFabsuite = 0;
+		return true;
 	}
 	return true
 }
